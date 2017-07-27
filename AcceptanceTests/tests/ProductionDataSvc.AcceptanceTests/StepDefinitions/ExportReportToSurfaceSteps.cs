@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
@@ -49,6 +50,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       exportReportRequester.DoInvalidRequest(url);
     }
+
+    [When(@"I request an Export Report To Surface expecting Unauthorized")]
+    public void WhenIRequestAnExportReportToSurfaceExpectingUnauthorized()
+    {
+      exportReportRequester.DoInvalidRequest(url, HttpStatusCode.Unauthorized);
+    }
+
 
     [Then(@"the report result should match the ""(.*)"" from the repository")]
     public void ThenTheReportResultShouldMatchTheFromTheRepository(string resultName)

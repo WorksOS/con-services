@@ -116,8 +116,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="tolerance">It is used in export to a surface .TTM file.</param>
     /// <returns>An instance of the ExportReport class.</returns>
     private async Task<ExportReport> GetExportReportRequest(
-      long? projectId,
-      Guid? projectUid,
+      Guid projectUid,
       DateTime? startUtc,
       DateTime? endUtc,
       CoordTypes coordType,
@@ -129,10 +128,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       string machineNames,
       double tolerance = 0.0)
     {
-      if (!projectId.HasValue)
-      {
-        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      }
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
 
       var headers = Request.Headers.GetCustomHeaders();
       var userPref = await prefProxy.GetUserPreferences(headers);
@@ -143,10 +139,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Pass count settings required for detailed pass count report"));
       }
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
 
       // Filter filter = settingsManager.CompactionFilter(startUtc, endUtc, null, null, null, null, this.GetMachines(assetId, machineName, isJohnDoe), null);
       Filter filter = settingsManager.CompactionFilter(null, null, null, null, null, null, null, excludedIds);
@@ -156,12 +152,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       if (exportType == ExportTypes.kSurfaceExport)
       {
-        raptorClient.GetDataModelExtents(projectId.Value,
+        raptorClient.GetDataModelExtents(projectId,
           RaptorConverters.convertSurveyedSurfaceExlusionList(excludedIds), out projectExtents);
       }
       else
       {
-        TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(projectId.Value);
+        TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(projectId);
 
         if (machineDetails != null)
         {
@@ -185,7 +181,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       userPref.Timezone = projectDescriptor.projectTimeZone;
 
       return ExportReport.CreateExportReportRequest(
-        projectId.Value,
+        projectId,
         liftSettings,
         filter,
         -1,
@@ -276,13 +272,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="fileName">Output file name.</param>
     /// <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
     /// <returns>An instance of the ExportResult class.</returns>
-    [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/export/surface")]
     [HttpGet]
     public async Task<ExportResult> GetExportReportSurface(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] double? tolerance
     )
@@ -292,7 +286,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       tolerance = tolerance ?? SURFACE_EXPORT_TOLLERANCE;
 
       ExportReport request = await GetExportReportRequest(
-        projectId,
         projectUid,
         null, //startUtc,
         null, //endUtc,
@@ -324,13 +317,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="fileName">Output file name.</param>
     /// <returns>An instance of the ExportResult class.</returns>
     /// 
-    [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/export/machinepasses")]
     [HttpGet]
     public async Task<ExportResult> GetExportReportMachinePasses(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] int coordType,
@@ -343,7 +334,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
       ExportReport request = await GetExportReportRequest(
-        projectId,
         projectUid,
         startUtc,
         endUtc,
@@ -371,13 +361,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="machineNames">Comma-separated list of machine names.</param>
     /// <returns>An instance of the ExportResult class.</returns>
     /// 
-    [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/export/veta")]
     [HttpGet]
     public async Task<ExportResult> GetExportReportVeta(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] string fileName,
@@ -386,7 +374,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogInformation("GetExportReportVeta: " + Request.QueryString);
 
       ExportReport request = await GetExportReportRequest(
-        projectId,
         projectUid,
         startUtc,
         endUtc,

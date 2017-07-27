@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
+using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -85,22 +86,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get color palettes for a project.
     /// </summary>
-    /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <returns>Color palettes for all display types</returns>
+    [ProjectUidVerifier]
     [Route("api/v2/compaction/colorpalettes")]
     [HttpGet]
     public async Task<CompactionColorPalettesResult> GetColorPalettes(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid)
+      [FromQuery] Guid projectUid)
     {
       log.LogInformation("GetColorPalettes: " + Request.QueryString);
-      if (!projectId.HasValue)
-      {
-        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      }
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
 
       //Note: elevation palette is a separate call as it requires a filter
       List<DisplayMode> modes = new List<DisplayMode>
@@ -218,7 +215,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get the elevation color palette for a project.
     /// </summary>
-    /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
@@ -237,11 +233,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>    
     /// <returns>Elevation color palette</returns>
+    [ProjectUidVerifier]
     [Route("api/v2/compaction/elevationpalette")]
     [HttpGet]
     public async Task<CompactionDetailPaletteResult> GetElevationPalette(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -253,18 +249,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetElevationPalette: " + Request.QueryString);
-      if (!projectId.HasValue)
-      {
-        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      }
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
       Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(projectId.Value, filter, projectSettings);
+      ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(projectId, filter, projectSettings);
       var compactionPalette = settingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettings);
 
       DetailPalette elevationPalette = null;

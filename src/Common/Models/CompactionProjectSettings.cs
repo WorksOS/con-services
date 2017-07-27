@@ -128,6 +128,7 @@ namespace VSS.Productivity3D.Common.Models
     public bool? useDefaultCutFillTolerances { get; private set; }
     /// <summary>
     /// The collection of custom cut-fill tolerances (m) when overriding the defaults. Values are in descending order, highest cut to lowest fill.
+    /// There must be 7 values (3 cut, on grade value = 0, and 3 fill).
     /// </summary>
     [JsonProperty(PropertyName = "customCutFillTolerances", Required = Required.Default)]
     public List<double> customCutFillTolerances { get; private set; }
@@ -148,6 +149,17 @@ namespace VSS.Productivity3D.Common.Models
     [Range(MIN_BULKING, MAX_BULKING)]
     [JsonProperty(PropertyName = "customBulkingPercent", Required = Required.Default)]
     public double? customBulkingPercent { get; private set; }
+    /// <summary>
+    /// Flag to determine if machine default pass count details settings or custom settings are used. Default is true.
+    /// </summary>
+    [JsonProperty(PropertyName = "useDefaultPassCountTargets", Required = Required.Default)]
+    public bool? useDefaultPassCountTargets { get; private set; }
+    /// <summary>
+    /// The collection of pass count targets when overriding the defaults. Values are in ascending order.
+    /// There must be 8 values and the first value must be 1.
+    /// </summary>
+    [JsonProperty(PropertyName = "customPassCountTargets", Required = Required.Default)]
+    public List<int> customPassCountTargets { get; private set; }
 
     /// <summary>
     /// Private constructor
@@ -184,7 +196,9 @@ namespace VSS.Productivity3D.Common.Models
       List<double> customCutFillTolerances,
       bool? useDefaultVolumeShrinkageBulking,
       double? customShrinkagePercent,
-      double? customBulkingPercent
+      double? customBulkingPercent,
+      bool? useDefaultPassCountTargets,
+      List<int> customPassCountTargets
       )
    
     {
@@ -213,7 +227,9 @@ namespace VSS.Productivity3D.Common.Models
         customCutFillTolerances = customCutFillTolerances,
         useDefaultVolumeShrinkageBulking = useDefaultVolumeShrinkageBulking,
         customShrinkagePercent = customShrinkagePercent,
-        customBulkingPercent = customBulkingPercent
+        customBulkingPercent = customBulkingPercent,
+        useDefaultPassCountTargets = useDefaultPassCountTargets,
+        customPassCountTargets = customPassCountTargets
       };
     }
 
@@ -243,7 +259,9 @@ namespace VSS.Productivity3D.Common.Models
           customCutFillTolerances = new List<double> {0.2, 0.1, 0.05, 0, -0.05, -0.1, -0.2},
           useDefaultVolumeShrinkageBulking = true,
           customShrinkagePercent = 0.0,
-          customBulkingPercent = 0.0
+          customBulkingPercent = 0.0,
+          useDefaultPassCountTargets = true,
+          customPassCountTargets = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 }
         };
       
 
@@ -272,6 +290,7 @@ namespace VSS.Productivity3D.Common.Models
       ValidateValue(useDefaultVolumeShrinkageBulking, customShrinkagePercent, "shrinkage %");
 
       ValidateCutFill();
+      ValidatePassCounts();
     }
 
     /// <summary>
@@ -307,6 +326,55 @@ namespace VSS.Productivity3D.Common.Models
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Cut-fill tolerances must be in order of highest cut to lowest fill"));
           }
+        }
+
+        if (customCutFillTolerances[CUT_FILL_TOTAL/2] != 0)
+        {        
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "On grade cut-fill tolerance must be 0"));
+        }
+      }
+    }
+
+  
+    private void ValidatePassCounts()
+    {
+      if (useDefaultPassCountTargets.HasValue && !useDefaultPassCountTargets.Value)
+      {
+        const int PASS_COUNT_TOTAL = 8;
+        if (customPassCountTargets == null || customPassCountTargets.Count != PASS_COUNT_TOTAL)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              $"Exactly {PASS_COUNT_TOTAL} pass count targets must be specified"));
+        }
+
+        for (int i = 0; i < PASS_COUNT_TOTAL; i++)
+        {
+          if (customPassCountTargets[i] < MIN_PASS_COUNT || customPassCountTargets[i] > MAX_PASS_COUNT)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                $"Pass count targets must be between {MIN_PASS_COUNT} and {MAX_PASS_COUNT}"));
+          }
+        }
+
+        for (int i = 1; i < PASS_COUNT_TOTAL; i++)
+        {
+          if (customPassCountTargets[i - 1] > customPassCountTargets[i])
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Pass count targets must be in ascending order"));
+          }
+        }
+
+        if (customPassCountTargets[0] != 1)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "First pass count target must be 1"));
         }
       }
     }

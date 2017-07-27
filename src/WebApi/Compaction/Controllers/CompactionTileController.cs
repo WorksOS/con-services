@@ -129,7 +129,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
-    /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
     /// <param name="startUtc">Start UTC.</param>
@@ -150,7 +149,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
-    [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles")]
     [HttpGet]
@@ -167,8 +165,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] int WIDTH,
       [FromQuery] int HEIGHT,
       [FromQuery] string BBOX,
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] DisplayMode mode,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
@@ -183,17 +180,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
 
-      if (!projectId.HasValue)
-      {
-        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      }
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
       Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      var tileResult = GetProductionDataTile(projectSettings, filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
+      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       if (mode==DisplayMode.Height)
         Response.GetTypedHeaders().CacheControl=new CacheControlHeaderValue(){NoCache = true, NoStore = true};
       return tileResult;
@@ -215,7 +209,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
-    /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
     /// <param name="startUtc">Start UTC.</param>
@@ -241,7 +234,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).
     /// </returns>
     /// <executor>TilesExecutor</executor> 
-    [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles/png")]
     [HttpGet]
@@ -258,8 +250,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] int WIDTH,
       [FromQuery] int HEIGHT,
       [FromQuery] string BBOX,
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] DisplayMode mode,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
@@ -274,17 +265,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
 
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
-      if (!projectId.HasValue)
-      {
-        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      }
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
       Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      var tileResult = GetProductionDataTile(projectSettings, filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
+      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
       if (mode == DisplayMode.Height)
         Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue() { NoCache = true, NoStore = true };
