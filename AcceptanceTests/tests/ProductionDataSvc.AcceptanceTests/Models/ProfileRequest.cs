@@ -152,7 +152,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
             if (other == null)
                 return false;
 
-            return // todo temp this.callId == other.callId &&
+            return this.callId == other.callId &&
                 this.success == other.success &&
                 Math.Round(this.minStation, 3) == Math.Round(other.minStation, 3) &&
                 Math.Round(this.maxStation, 3) == Math.Round(other.maxStation, 3) &&

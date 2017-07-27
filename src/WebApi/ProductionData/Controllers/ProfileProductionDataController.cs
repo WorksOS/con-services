@@ -260,8 +260,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       LiftBuildSettings liftBuildSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-
-      return ProfileProductionDataRequest.CreateProfileProductionData(projectId, null, profileType, filter, -1,
+      // callId is set to 'empty' because raptor will create and return a Guid if this is set to empty.
+      //     this would resault in the acceptance tests failing to see the callID == in its equality test
+      return ProfileProductionDataRequest.CreateProfileProductionData(projectId, Guid.Empty, profileType, filter, -1,
         designDescriptor, null, llPoints, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false);
     }
 
