@@ -270,13 +270,18 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       translations[4].Translation = "Request Canceled";
       translations[5].ID = 5;
       translations[5].Translation = "Maxmium records reached";
- 
-//      userPrefs = 
-//             ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences("NZ", "/", ":", ",", ".", 0.0, 0, 1, 0, 0, 1, 3); 
 
-
+      if (userPrefs.Equals(EmptyUserPreferences()))
+      {
+        userPrefs = 
+          ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences("NZ", "/", ":", ",", ".", 0.0, 0, 1, 0, 0, 1, 3);
+      }
     }
 
+    private TASNodeUserPreferences EmptyUserPreferences()
+    {
+      return ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(null, null, null, null, null, 0.0, 0, 0, 0, 0, 0, 0);
+    }
 
   }
 }

@@ -117,7 +117,7 @@ namespace VSS.Productivity3D.Common.Controllers
       TimeZoneInfo projecTimeZone = TimeZoneInfo.FindSystemTimeZoneById(userPref.Timezone);
       double projectTimeZoneOffset = projecTimeZone.GetUtcOffset(DateTime.Now).TotalHours;
 
-      return ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(
+      return __Global.Construct_TASNodeUserPreferences(
         userPref.Timezone,
         userPref.DateFormat,
         userPref.TimeFormat,
