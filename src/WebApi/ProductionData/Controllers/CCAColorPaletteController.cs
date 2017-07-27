@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [NotLandFillProjectWithUIDVerifier]
     [Route("api/v2/ccacolors")]
     [HttpGet]
-    public CCAColorPaletteResult Get([FromQuery] Guid? projectUid,
+    public CCAColorPaletteResult Get([FromQuery] Guid projectUid,
                                      [FromQuery] long assetId,
                                      [FromQuery] DateTime? startUtc = null,
                                      [FromQuery] DateTime? endUtc = null,

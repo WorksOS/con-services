@@ -183,7 +183,7 @@ this.FeatureBackground();
 #line 32
  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 33
- testRunner.When("I request an Export Report To VETA expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request an Export Report To VETA expecting Unauthorized", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 34
  testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -198,11 +198,13 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2017-06-23")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:MachineNames", "All")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "Test")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing project UID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing Project or project does not belong to specified customer or don\'t have ac" +
+            "cess to the project")]
         public virtual void ExportReportToVETA_BadRequest_NoProjectUID_()
         {
-            this.ExportReportToVETA_BadRequest_NoProjectUID("", "2005-01-01", "2017-06-23", "All", "Test", "-2", "Missing project UID", ((string[])(null)));
+            this.ExportReportToVETA_BadRequest_NoProjectUID("", "2005-01-01", "2017-06-23", "All", "Test", "-5", "Missing Project or project does not belong to specified customer or don\'t have ac" +
+                    "cess to the project", ((string[])(null)));
         }
         
         public virtual void ExportReportToVETA_BadRequest_NoDateRange(string requetsName, string projectUID, string machineNames, string fileName, string errorCode, string errorMessage, string[] exampleTags)

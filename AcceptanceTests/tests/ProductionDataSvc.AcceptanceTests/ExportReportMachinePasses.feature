@@ -31,11 +31,11 @@ Scenario Outline: ExportReportMachinePasses - Bad Request - NoProjectUID
   And restrictOutput "<RestrictOutput>"
   And rawDataOutput "<RawDataOutput>"
 	And fileName is "<FileName>"	
-	When I request an Export Report Machine Passes expecting BadRequest
+	When I request an Export Report Machine Passes expecting Unauthorized
 	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
-	| RequetsName | StartDate  | EndDate    | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ErrorCode | ErrorMessage        |
-	|             | 2005-01-01 | 2017-06-23 | 0         | 0          | false          | false         | Test     | -2        | Missing project UID |
+	| RequetsName | StartDate  | EndDate    | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ErrorCode | ErrorMessage                                                                                         |
+	|             | 2005-01-01 | 2017-06-23 | 0         | 0          | false          | false         | Test     |  -5       | Missing Project or project does not belong to specified customer or don't have access to the project |
 
 Scenario Outline: ExportReportMachinePasses - Bad Request - NoDateRange
 	And projectUid "<ProjectUID>"

@@ -27,11 +27,11 @@ Scenario Outline: ExportReportToSurface - Good Request - No Tolerance
 Scenario Outline: ExportReportToSurface - Bad Request - NoProjectUID
 	And fileName is "<FileName>"
 	And tolerance "<Tolerance>"
-	When I request an Export Report To Surface expecting BadRequest
+	When I request an Export Report To Surface expecting Unauthorized
 	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
-	| RequetsName | Tolerance | FileName | ErrorCode | ErrorMessage        |
-	|             | 0.05      | Test     | -2        | Missing project UID |
+	| RequetsName | Tolerance | FileName | ErrorCode | ErrorMessage                                                                                         |
+	|             | 0.05      | Test     |  -5       | Missing Project or project does not belong to specified customer or don't have access to the project |
 
 Scenario Outline: ExportReportToSurface - Bad Request - NoFileName
 	And projectUid "<ProjectUID>"

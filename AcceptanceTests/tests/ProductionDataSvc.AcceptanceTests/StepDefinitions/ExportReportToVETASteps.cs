@@ -61,6 +61,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.DoInvalidRequest(url);
     }
 
+    [When(@"I request an Export Report To VETA expecting Unauthorized")]
+    public void WhenIRequestAnExportReportToVETAExpectingUnauthorized()
+    {
+      exportReportRequester.DoInvalidRequest(url, HttpStatusCode.Unauthorized);
+    }
+
+
 
     [Then(@"the report result should match the ""(.*)"" from the repository")]
     public void ThenTheReportResultShouldMatchTheFromTheRepository(string resultName)

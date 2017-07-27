@@ -30,11 +30,11 @@ Scenario Outline: ExportReportToVETA - Bad Request - NoProjectUID
 	And startUtc "<StartDate>" and endUtc "<EndDate>"
 	And machineNames "<MachineNames>"
 	And fileName is "<FileName>"
-	When I request an Export Report To VETA expecting BadRequest
+	When I request an Export Report To VETA expecting Unauthorized
 	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
-	| RequetsName | StartDate  | EndDate    | MachineNames | FileName | ErrorCode | ErrorMessage        |
-	|             | 2005-01-01 | 2017-06-23 | All          | Test     | -2        | Missing project UID |
+	| RequetsName | StartDate  | EndDate    | MachineNames | FileName | ErrorCode | ErrorMessage                                                                                        |
+	|             | 2005-01-01 | 2017-06-23 | All          | Test     |  -5       |Missing Project or project does not belong to specified customer or don't have access to the project |
 
 Scenario Outline: ExportReportToVETA - Bad Request - NoDateRange
 	And projectUid "<ProjectUID>"

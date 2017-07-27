@@ -89,7 +89,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get elevation range from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
-    /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
@@ -108,13 +107,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>Elevation statistics</returns>
-    [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/elevationrange")]
     [HttpGet]
     public async Task<ElevationStatisticsResult> GetElevationRange(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -126,19 +123,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetElevationRange: " + Request.QueryString);
-      if (!projectId.HasValue)
-      {
-        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      }
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       try
       {
         var headers = Request.Headers.GetCustomHeaders();
-        var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+        var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
+        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
         Filter filter = settingsManager.CompactionFilter(
           startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
           this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-        ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId.Value, filter, projectSettings);
+        ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId, filter, projectSettings);
         if (result == null)
         {
           //Ideally want to return an error code and message only here
@@ -165,26 +159,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets project statistics from Raptor.
     /// </summary>
-    /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <returns>Project statistics</returns>
     /// <executor>ProjectStatisticsExecutor</executor>
-    [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/projectstatistics")]
     [HttpGet]
     public async Task<ProjectStatisticsResult> GetProjectStatistics(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid)
+      [FromQuery] Guid projectUid)
     {
       log.LogInformation("GetProjectStatistics: " + Request.QueryString);
-      if (!projectId.HasValue)
-      {
-        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      }
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid,
         Request.Headers.GetCustomHeaders());
-      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId.Value, excludedIds?.ToArray());
+      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
       request.Validate();
       try
       {

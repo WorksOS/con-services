@@ -131,7 +131,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpGet]
     public byte[] Get
     (
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] long assetId,
       [FromQuery] string machineName,
       [FromQuery] bool isJohnDoe,

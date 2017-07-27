@@ -259,7 +259,7 @@ this.FeatureBackground();
 #line 33
  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 34
- testRunner.When("I request an Export Report Machine Passes expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request an Export Report Machine Passes expecting Unauthorized", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 35
  testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -277,11 +277,13 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "Test")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing project UID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing Project or project does not belong to specified customer or don\'t have ac" +
+            "cess to the project")]
         public virtual void ExportReportMachinePasses_BadRequest_NoProjectUID_()
         {
-            this.ExportReportMachinePasses_BadRequest_NoProjectUID("", "2005-01-01", "2017-06-23", "0", "0", "false", "false", "Test", "-2", "Missing project UID", ((string[])(null)));
+            this.ExportReportMachinePasses_BadRequest_NoProjectUID("", "2005-01-01", "2017-06-23", "0", "0", "false", "false", "Test", "-5", "Missing Project or project does not belong to specified customer or don\'t have ac" +
+                    "cess to the project", ((string[])(null)));
         }
         
         public virtual void ExportReportMachinePasses_BadRequest_NoDateRange(string requetsName, string projectUID, string coordType, string outputType, string restrictOutput, string rawDataOutput, string fileName, string errorCode, string errorMessage, string[] exampleTags)
