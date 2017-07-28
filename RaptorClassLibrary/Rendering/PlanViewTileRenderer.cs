@@ -341,9 +341,29 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         protected void SetDisplayerPalette()
         {
-            // Do something simple for the POC
-            BoundingWorldExtent3D extent = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID).GetAdjustedDataModelSpatialExtents(new long[0]);
-            Palette = new HeightPalette(extent.MinZ, extent.MaxZ);
+            BoundingWorldExtent3D extent;
+
+            // Do something simple for the POC... Refactor this into a factory class for full implementation
+            switch (Mode)
+            {
+                case DisplayMode.Height:
+                    {
+                        extent = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID).GetAdjustedDataModelSpatialExtents(new long[0]);
+                        Palette = new HeightPalette(extent.MinZ, extent.MaxZ);
+                        break;
+                    }
+
+                case DisplayMode.MachineSpeed:
+                    {
+                        Palette = new SpeedPalette();
+                        break;
+                    }
+
+                default: // Just use the elevation palette as a default...
+                    extent = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID).GetAdjustedDataModelSpatialExtents(new long[0]);
+                    Palette = new HeightPalette(extent.MinZ, extent.MaxZ);
+                    break;
+            }
             Displayer.Palette = Palette;
 
             // TODO No palette implementation at present

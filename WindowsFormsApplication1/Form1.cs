@@ -23,20 +23,32 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 {
     public partial class Form1 : Form
     {
-        long ID = 2;
         BoundingWorldExtent3D extents = BoundingWorldExtent3D.Inverted();
 
         RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
         RaptorTileRenderingServer tileRender = RaptorTileRenderingServer.NewInstance();
 
+        /// <summary>
+        /// Convert the Projecft ID in the text box into a number. It if is invalid return project ID 2 as a default
+        /// </summary>
+        /// <returns></returns>
+        private long ID()
+        {
+            try
+            {
+                return Convert.ToInt64(editProjectID.Text);
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
         private Bitmap PerformRender()
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
             // SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID, false);
-
-            // Pull the sitemodel extents using the ProjectExtents executor which will use the Ignite instance created by the generic application service server above
-            // extents = ProjectExtents.ProductionDataOnly(ID);
+            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
 
             try
             {
@@ -68,18 +80,19 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 };
 
                 return tileRender.RenderTile(new TileRenderRequestArgument
-                (ID,
-                 DisplayMode.Height,
+                (ID(),
+                 (DisplayMode)displayMode.SelectedIndex, //DisplayMode.Height,
                  extents,
                  true, // CoordsAreGrid
-                 500, // PixelsX
-                 500, // PixelsY
+                 (ushort)pictureBox1.Width, // 500, // PixelsX
+                 (ushort)pictureBox1.Height, // 500, // PixelsY
                  new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
                  null // filter 2
                 ));
             }
             catch (Exception E)
             {
+                MessageBox.Show(String.Format("Exception: {0}", E));
                 return null;
             }
         }
@@ -88,7 +101,13 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         {
             InitializeComponent();
 
-            extents = ProjectExtents.ProductionDataOnly(ID);
+            // Set the display modes in the combo box
+            foreach (string mode in Enum.GetNames(typeof(DisplayMode)))
+            {
+                displayMode.Items.Add(mode);
+            }
+
+            displayMode.SelectedIndex = (int)DisplayMode.Height;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -123,7 +142,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         private void ZoomAll_Click(object sender, EventArgs e)
         {
             // Get the project extent so we know where to render
-            ViewPortChange(() => extents = ProjectExtents.ProductionDataOnly(ID));
+            ViewPortChange(() => extents = ProjectExtents.ProductionDataOnly(ID()));
         }
 
         private void btmZoomIn_Click(object sender, EventArgs e)
@@ -159,6 +178,16 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         private void btnRedraw_Click(object sender, EventArgs e)
         {
             ViewPortChange(() => { });
+        }
+
+        private void editProjectID_TextChanged(object sender, EventArgs e)
+        {
+            // Pull the sitemodel extents using the ProjectExtents executor which will use the Ignite instance created by the generic application service server above
+            if (ID() != -1)
+            {
+                extents = ProjectExtents.ProductionDataOnly(ID());
+                DoUpdateLabels();
+            }
         }
     }
 }

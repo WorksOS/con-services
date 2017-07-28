@@ -29,9 +29,9 @@ namespace VSS.VisionLink.Raptor.Client
         /// <summary>
         /// The ProjectID to process the TAG files into
         /// </summary>
-        public static Int64 projectID = 2;
+//        public static Int64 projectID = 2;
 
-        public static void TestTileRendering()
+        public static void TestTileRendering(long projectID)
         {
             int gridCuts = 10; // eg: A 4x4 grid of tiles
 
@@ -95,7 +95,7 @@ namespace VSS.VisionLink.Raptor.Client
             }
         }
 
-        public static void ProcessSingleTAGFile(string fileName)
+        public static void ProcessSingleTAGFile(long projectID, string fileName)
         {
             // Create the site model and machine etc to aggregate the processed TAG file into
             SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(projectID, true);
@@ -120,7 +120,7 @@ namespace VSS.VisionLink.Raptor.Client
             worker.ProcessTask(ProcessedTasks);
         }
 
-        public static void ProcessTAGFilesInFolder(string folder)
+        public static void ProcessTAGFiles(long projectID, string[] files)
         {
             int startcount = 0;
             int stopcount = 2000;
@@ -133,7 +133,6 @@ namespace VSS.VisionLink.Raptor.Client
             SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(projectID, true);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
-            string[] files = Directory.GetFiles(folder);
             foreach (string fileName in files)
             {
                 if (startcount-- <= 0)
@@ -163,35 +162,81 @@ namespace VSS.VisionLink.Raptor.Client
             }
         }
 
-        public static void ProcessMachine333TAGFiles()
+        public static void ProcessTAGFilesInFolder(long projectID, string folder)
         {
-            ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine333");
+            // If it is a single file, just process it
+            if (File.Exists(folder))
+            {
+                ProcessTAGFiles(projectID, new string[] { folder });
+            }
+            else
+            {
+                ProcessTAGFiles(projectID, Directory.GetFiles(folder));
+            }
         }
 
-        public static void ProcessMachine10101TAGFiles()
+        public static void ProcessMachine333TAGFiles(long projectID)
         {
-            ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101");
+            ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine333");
+        }
+
+        public static void ProcessMachine10101TAGFiles(long projectID)
+        {
+            ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101");
         }
 
         static void Main(string[] args)
         {
-            // Obtain a TAGFileProcessign client server
-            TAGFileProcessingServer TAGServer = new TAGFileProcessingServer();
-                
-            // ProcessMachine10101TAGFiles();
-            // ProcessMachine333TAGFiles();
+            try
+            {
+                if (args.Length < 2)
+                {
+                    Console.WriteLine("Usage: ProcessTAGFiles <ProjectID> <FolderPath>");
+                    return;
+                }
 
-            //ProcessSingleTAGFile(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");
-            //ProcessSingleTAGFile();
+                long projectID = -1;
+                string folderPath = "";
+                try
+                {
+                    projectID = Convert.ToInt64(args[0]);
+                    folderPath = args[1];
+                }
+                catch
+                {
+                    Console.WriteLine(String.Format("Invalid project ID {0} or folder path {1}", args[0], args[1]));
+                    return;
+                }
 
-            // Process all TAG files for project 4733:
-            ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 1");
-            //ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 2");
-            //ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 3");
-            //ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 4");
+                if (projectID == -1)
+                {
+                    return;
+                }
 
-            // Test out tile rendering against the processed TAG file data
-            TestTileRendering();
+                // Obtain a TAGFileProcessign client server
+                TAGFileProcessingServer TAGServer = new TAGFileProcessingServer();
+
+                ProcessTAGFilesInFolder(projectID, folderPath);
+
+                // ProcessMachine10101TAGFiles(projectID);
+                // ProcessMachine333TAGFiles(projectID);
+
+                //ProcessSingleTAGFile(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");
+                //ProcessSingleTAGFile(projectID);
+
+                // Process all TAG files for project 4733:
+                //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 1");
+                //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 2");
+                //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 3");
+                //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 4");
+
+                // Test out tile rendering against the processed TAG file data
+                TestTileRendering(projectID);
+            }
+            finally
+            {
+                Console.ReadKey();
+            }
         }
     }
 }

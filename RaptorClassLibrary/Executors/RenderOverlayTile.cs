@@ -340,7 +340,7 @@ namespace VSS.VisionLink.Raptor.Executors
 
             RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
 
-            /* Readd wen logging available
+            /* TODO Readd wen logging available
           if VLPDSvcLocations.Debug_EmitTileRenderRequestParametersToLog then
             begin
               if FCoordsAreGrid then

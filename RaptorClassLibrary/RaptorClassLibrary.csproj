@@ -155,7 +155,10 @@
     <Compile Include="Rendering\MapSurface.cs" />
     <Compile Include="Rendering\Palettes\HeightPalette.cs" />
     <Compile Include="Rendering\Palettes\Interfaces\IPlanViewPalette.cs" />
+    <Compile Include="Rendering\Palettes\PaletteBase.cs" />
     <Compile Include="Rendering\Palettes\PVMPaletteFactory.cs" />
+    <Compile Include="Rendering\Palettes\SpeedPalette.cs" />
+    <Compile Include="Rendering\Palettes\Transition.cs" />
     <Compile Include="Rendering\PVMDisplayerFactory.cs" />
     <Compile Include="Rendering\PlanViewTileRenderer.cs" />
     <Compile Include="Rendering\ProductionPVMDisplayerBase.cs" />
