@@ -33,14 +33,18 @@
     <PackageReference Include="Swashbuckle.SwaggerGen" Version="6.0.0-beta902" />
     <PackageReference Include="Swashbuckle.SwaggerUi" Version="6.0.0-beta902" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
-    <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
+    <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.1.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.0.*" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.csproj" />
   </ItemGroup>
 
 </Project>

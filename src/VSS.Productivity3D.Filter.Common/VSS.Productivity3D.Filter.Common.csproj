@@ -21,6 +21,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.1.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.1.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.0.*" />
   </ItemGroup>
 
 

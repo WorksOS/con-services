@@ -14,7 +14,9 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.WebApi.Filters;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.Filter.WebApi
 {
@@ -71,13 +73,12 @@ namespace VSS.Productivity3D.Filter.WebApi
 
       // Add framework services.
       services.AddApplicationInsightsTelemetry(Configuration);
-      // todo services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
-      services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      // todo possibly use for validation?? services.AddTransient<IRaptorProxy, RaptorProxy>();
-      services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddTransient<IProjectListProxy, ProjectListProxy>();
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddSingleton<IKafka, RdKafkaDriver>();
+      services.AddTransient<ICustomerProxy, CustomerProxy>(); // used in TDI auth for customer/user validation
+      services.AddTransient<IProjectListProxy, ProjectListProxy>(); // used for customer/project validation
+      services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
       services.AddMemoryCache();
       
       services.AddMvc(
