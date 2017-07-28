@@ -33,12 +33,12 @@ Scenario: Compaction Get CMV Summary
 		"""
 		{
 			"percents": [
-	      95.47749263777871,
-        4.5225073622212877,
+        0.0,
+        100.0,
         0.0,
         0.0,
         0.0
-			],
+      ],
 			"Code": 0,
 			"Message": "success"
 		}

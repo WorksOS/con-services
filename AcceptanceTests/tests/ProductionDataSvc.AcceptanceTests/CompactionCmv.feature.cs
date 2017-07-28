@@ -120,8 +120,8 @@ this.ScenarioSetup(scenarioInfo);
   testRunner.When("I request CMV details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 32
-  testRunner.Then("the CMV details result should be", "{\r\n\t\"percents\": [\r\n     95.47749263777871,\r\n      4.5225073622212877,\r\n      0.0," +
-                    "\r\n      0.0,\r\n      0.0\r\n\t],\r\n\t\"Code\": 0,\r\n\t\"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then("the CMV details result should be", "{\r\n\t\"percents\": [\r\n      0.0,\r\n      100.0,\r\n      0.0,\r\n      0.0,\r\n      0.0\r\n " +
+                    "   ],\r\n\t\"Code\": 0,\r\n\t\"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
