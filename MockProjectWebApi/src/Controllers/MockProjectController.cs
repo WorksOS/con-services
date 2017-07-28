@@ -96,31 +96,31 @@ namespace MockProjectWebApi.Controllers
       {
         settings = @"{
             useMachineTargetPassCount: false,
-            customTargetPassCountMinimum: 4,
-            customTargetPassCountMaximum: 6,
+            customTargetPassCountMinimum: 2,
+            customTargetPassCountMaximum: 3,
             useMachineTargetTemperature: false,
             customTargetTemperatureMinimum: 75,
             customTargetTemperatureMaximum: 130,
             useMachineTargetCmv: false,
-            customTargetCmv: 95,
+            customTargetCmv: 10,
             useMachineTargetMdp: false,
-            customTargetMdp: 60,
+            customTargetMdp: 145,
             useDefaultTargetRangeCmvPercent: false,
-            customTargetCmvPercentMinimum: 90,
-            customTargetCmvPercentMaximum: 110,
+            customTargetCmvPercentMinimum: 75,
+            customTargetCmvPercentMaximum: 100,
             useDefaultTargetRangeMdpPercent: false,
             customTargetMdpPercentMinimum: 90,
-            customTargetMdpPercentMaximum: 110,
+            customTargetMdpPercentMaximum: 100,
             useDefaultTargetRangeSpeed: false,
-            customTargetSpeedMinimum: 8,
-            customTargetSpeedMaximum: 12,
+            customTargetSpeedMinimum: 7,
+            customTargetSpeedMaximum: 11,
             useDefaultCutFillTolerances: false,
             customCutFillTolerances: [0.22, 0.11, 0.055, 0, -0.055, -0.11, -0.22],
             useDefaultVolumeShrinkageBulking: false,
             customShrinkagePercent: 3,
             customBulkingPercent: 6,
             useDefaultPassCountTargets: false,
-            customPassCountTargets: [1,5,7,9,11,13,14,15]
+            customPassCountTargets: [1,2,3,4,5,10,20,30]
           }";
       }
       return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
