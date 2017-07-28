@@ -100,6 +100,31 @@ namespace VSS.Common.ResultsHandling
 
 
     /// <summary>
+    ///   Failed to get results
+    /// </summary>
+    public static readonly int FailedToGetResults = FailedToGetResultsConst;
+    public const int FailedToGetResultsConst = -4;
+
+    /// <summary>
+    ///   Failed to authorize for the project
+    /// </summary>
+    public static readonly int AuthError = AuthErrorConst;
+    public const int AuthErrorConst = -5;
+
+    /// <summary>
+    ///   Failed to authorize for the project
+    /// </summary>
+    public static readonly int PartialData = PartialDataConst;
+    public const int PartialDataConst = -6;
+
+    /// <summary>
+    /// Asset does not have a valid subscription for specified date
+    /// </summary>
+    public static readonly int NoSubscription = NoSubscriptionConst;
+    public const int NoSubscriptionConst = -7;
+
+
+    /// <summary>
     /// Dynamically adds new error messages addwith offset.
     /// </summary>
     /// <param name="name">The name of error.</param>
