@@ -14,7 +14,7 @@ namespace VSS.MasterData.Models.ResultHandling
     /// <summary>
     /// The projects settings
     /// </summary>
-    [JsonProperty(PropertyName = "projectsettings")]
+    [JsonProperty(PropertyName = "settings")]
     public string Settings { get; set; }
 
   }
