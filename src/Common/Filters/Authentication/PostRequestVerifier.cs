@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.ResultHandling;
 
@@ -19,7 +21,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
         if (request == null)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Undefined requested data."));
         }
       }

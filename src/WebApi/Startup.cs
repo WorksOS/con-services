@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.Swagger.Model;
 using System;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;

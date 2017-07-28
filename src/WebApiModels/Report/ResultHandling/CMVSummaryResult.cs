@@ -1,5 +1,5 @@
 ﻿using ASNodeDecls;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {

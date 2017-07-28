@@ -6,7 +6,8 @@ using System;
 using System.IO;
 using System.Net;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -103,7 +104,7 @@ namespace VSS.Productivity3D.Common.Executors
               ContractExecutionStates.FirstNameWithOffset((int)raptorResult)));
 
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
-            ContractExecutionStatesEnum.FailedToGetResults,
+            ContractExecutionStatesEnum.InternalProcessingError,
             String.Format("Failed to get requested tile with error: {0}.",
               ContractExecutionStates.FirstNameWithOffset((int)raptorResult))));
         }

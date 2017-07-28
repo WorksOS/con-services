@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.ResultHandling;
 

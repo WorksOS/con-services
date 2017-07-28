@@ -7,6 +7,8 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using VLPDDecls;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Interfaces;
@@ -52,8 +54,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
     protected override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
-      RaptorResult.AddDesignProfileErrorMessages(ContractExecutionStates,
-        ContractExecutionStates.SecondDynamicOffset);
+      RaptorResult.AddDesignProfileErrorMessages(ContractExecutionStates);
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
@@ -83,7 +84,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
               ContractExecutionStatesEnum.FailedToGetResults,
               string.Format("Failed to update Raptor design cache with error: {0}",
-                ContractExecutionStates.FirstNameWithOffset((int)result1, ContractExecutionStates.SecondDynamicOffset))));
+                ContractExecutionStates.FirstNameWithOffset((int)result1))));
           }
         }
 
@@ -240,7 +241,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
           ContractExecutionStatesEnum.FailedToGetResults,
           string.Format("Failed to create " + FileUtils.DXF_FILE_EXTENSION + " file with error: {0}",
-            ContractExecutionStates.FirstNameWithOffset((int)designProfilerResult, ContractExecutionStates.SecondDynamicOffset))));
+            ContractExecutionStates.FirstNameWithOffset((int)designProfilerResult))));
       }
     }
 

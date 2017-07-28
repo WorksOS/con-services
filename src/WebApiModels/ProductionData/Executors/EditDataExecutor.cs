@@ -3,6 +3,8 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using ShineOn.Rtl;
 using TAGProcServiceDecls;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;

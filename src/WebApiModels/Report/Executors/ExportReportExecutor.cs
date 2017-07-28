@@ -5,6 +5,8 @@ using System;
 using System.IO;
 using System.Net;
 using VLPDDecls;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.Common.Interfaces

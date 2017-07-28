@@ -11,6 +11,8 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.Common.Controllers
 {
@@ -104,9 +106,9 @@ namespace VSS.Productivity3D.Common.Controllers
     public static void ProcessStatusCode(this Controller controller, ServiceException serviceException)
     {
       if (serviceException.Code == HttpStatusCode.BadRequest &&
-          serviceException.GetResult.Code == ContractExecutionStatesEnum.FailedToGetResults)
+          serviceException.GetResult.Code == ContractExecutionStatesEnum.InternalProcessingErrorConst)
       {
-        serviceException.Code = HttpStatusCode.NoContent;
+        //serviceException.Code = HttpStatusCode.NoContent;
       }
     }
   }
