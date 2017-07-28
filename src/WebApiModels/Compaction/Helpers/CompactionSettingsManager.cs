@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       var overrideRange = ps.useDefaultTargetRangeCmvPercent.HasValue && !ps.useDefaultTargetRangeCmvPercent.Value;
       var minPercent = ps.customTargetCmvPercentMinimum.HasValue ? ps.customTargetCmvPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum.Value;
       var maxPercent = ps.customTargetCmvPercentMaximum.HasValue ? ps.customTargetCmvPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum.Value;
-      return CMVSettings.CreateCMVSettings((short)targetValue, 1000, maxPercent, 200, minPercent, overrideTarget);
+      return CMVSettings.CreateCMVSettings((short)targetValue, MAX_CMV_MDP_VALUE, maxPercent, MIN_CMV_MDP_VALUE, minPercent, overrideTarget);
     }
 
     public MDPSettings CompactionMdpSettings(CompactionProjectSettings ps)
@@ -108,7 +108,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       var overrideRange = ps.useDefaultTargetRangeMdpPercent.HasValue && !ps.useDefaultTargetRangeMdpPercent.Value;
       var minPercent = ps.customTargetMdpPercentMinimum.HasValue ? ps.customTargetMdpPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum.Value;
       var maxPercent = ps.customTargetMdpPercentMaximum.HasValue ? ps.customTargetMdpPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum.Value;
-      return MDPSettings.CreateMDPSettings((short)targetValue, 1000, maxPercent, 200, minPercent, overrideTarget);
+      return MDPSettings.CreateMDPSettings((short)targetValue, MAX_CMV_MDP_VALUE, maxPercent, MIN_CMV_MDP_VALUE, minPercent, overrideTarget);
 
     }
 
@@ -284,6 +284,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         RGBToColor(0,0,255)
       };
     }
+
+    private const short MIN_CMV_MDP_VALUE = 0;
+    private const short MAX_CMV_MDP_VALUE = 2000;
 
   }
 }
