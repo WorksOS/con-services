@@ -120,7 +120,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       CMVRequest request = await GetCMVRequest(projectUid, startUtc, endUtc, vibeStateOn, elevationType,
         layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
       request.Validate();
-
+      log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
       try
       {
         var result =

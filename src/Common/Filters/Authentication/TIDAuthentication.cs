@@ -134,11 +134,10 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
           context.User = principal;
           //Thread.CurrentPrincipal = principal;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
           await SetResult("Invalid authentication", context);
           return;
-
         }
       }
       await _next.Invoke(context);

@@ -107,15 +107,50 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Compaction.feature.cs">
+    <Compile Include="CompactionCmv.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Compaction.feature</DependentUpon>
+      <DependentUpon>CompactionCmv.feature</DependentUpon>
+    </Compile>
+    <Compile Include="CompactionElevation.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionElevation.feature</DependentUpon>
+    </Compile>
+    <Compile Include="CompactionMdp.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionMdp.feature</DependentUpon>
+    </Compile>
+    <Compile Include="CompactionPalette.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionPalette.feature</DependentUpon>
+    </Compile>
+    <Compile Include="CompactionPassCount.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionPassCount.feature</DependentUpon>
+    </Compile>
+    <Compile Include="CompactionSpeed.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionSpeed.feature</DependentUpon>
     </Compile>
     <Compile Include="CompactionTagFile.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CompactionTagFile.feature</DependentUpon>
+    </Compile>
+    <Compile Include="CompactionTemperature.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionTemperature.feature</DependentUpon>
+    </Compile>
+    <Compile Include="CompactionTile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionTile.feature</DependentUpon>
     </Compile>
     <Compile Include="CoordinateConversion.feature.cs">
       <DependentUpon>CoordinateConversion.feature</DependentUpon>
@@ -317,8 +352,15 @@
     <Compile Include="StepDefinitions\CMVChangeSteps.cs" />
     <Compile Include="StepDefinitions\CMVDetailSteps.cs" />
     <Compile Include="StepDefinitions\CMVSummarySteps.cs" />
-    <Compile Include="StepDefinitions\CompactionSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionCmvSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionElevationSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionMdpSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionPaletteSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionPassCountSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionSpeedSteps.cs" />
     <Compile Include="StepDefinitions\CompactionTagFileSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionTemperatureSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionTileSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateConversionSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemGetSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemPostSteps.cs" />
@@ -410,13 +452,41 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CMVSummary.feature.cs</LastGenOutput>
     </None>
-    <None Include="Compaction.feature">
+    <None Include="CompactionCmv.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Compaction.feature.cs</LastGenOutput>
+      <LastGenOutput>CompactionCmv.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionElevation.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionElevation.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionMdp.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionMdp.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionPalette.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionPalette.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionPassCount.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionPassCount.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionSpeed.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionSpeed.feature.cs</LastGenOutput>
     </None>
     <None Include="CompactionTagFile.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CompactionTagFile.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionTemperature.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionTemperature.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionTile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionTile.feature.cs</LastGenOutput>
     </None>
     <None Include="CoordinateConversion.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

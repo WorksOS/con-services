@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.Swagger.Model;
 using System;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
@@ -29,14 +30,14 @@ namespace VSS.Productivity3D.WebApi
   /// </summary>
   public class Startup
   {
-    private readonly string loggerRepoName = "WebApi";
+    private const string loggerRepoName = "WebApi";
     private readonly bool isDevEnv;
     private IServiceCollection serviceCollection;
 
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="env"></param>
+    /// <param name="env">Provides information about the web hosting environment</param>
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
@@ -45,13 +46,7 @@ namespace VSS.Productivity3D.WebApi
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
       env.ConfigureLog4Net("log4net.xml", loggerRepoName);
-
       isDevEnv = env.IsEnvironment("Development");
-      if (isDevEnv)
-      {
-        // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-        builder.AddApplicationInsightsSettings(developerMode: true);
-      }
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -65,7 +60,7 @@ namespace VSS.Productivity3D.WebApi
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container.
     /// </summary>
-    /// <param name="services"></param>
+    /// <param name="services">The collection of service descriptors</param>
     public void ConfigureServices(IServiceCollection services)
     {
       //Configure CORS
@@ -77,7 +72,6 @@ namespace VSS.Productivity3D.WebApi
                   .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
       });
       // Add framework services.
-      services.AddApplicationInsightsTelemetry(Configuration);
       services.AddMemoryCache();
       services.AddCustomResponseCaching();
       services.AddMvc(
@@ -137,22 +131,16 @@ namespace VSS.Productivity3D.WebApi
 
       serviceCollection.AddSingleton(loggerFactory);
       var serviceProvider = serviceCollection.BuildServiceProvider();
-      app.UseFilterMiddleware<ExceptionsTrap>();
+      app.UseExceptionTrap();
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
-      //Enable TID here
       app.UseFilterMiddleware<TIDAuthentication>();
-
-      //For now don't use application insights as it clogs the log with lots of stuff.
-      //app.UseApplicationInsightsRequestTelemetry();
-      //app.UseApplicationInsightsExceptionTelemetry();
 
       app.UseResponseCaching();
       app.UseMvc();
 
       app.UseSwagger();
       app.UseSwaggerUi();
-
 
       //Check if the configuration is correct and we are able to connect to Raptor
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
@@ -162,7 +150,9 @@ namespace VSS.Productivity3D.WebApi
         serviceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out string config);
         log.LogTrace("Received config {0}", config);
         if (config.Contains("Error retrieving Raptor config"))
+        {
           throw new Exception(config);
+        }
       }
       catch (Exception e)
       {
@@ -170,7 +160,6 @@ namespace VSS.Productivity3D.WebApi
         log.LogCritical("Can't talk to Raptor for some reason - check configuration");
         Environment.Exit(138);
       }
-
     }
   }
 }
