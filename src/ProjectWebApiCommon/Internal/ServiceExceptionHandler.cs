@@ -2,7 +2,7 @@
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
-namespace VSS.MasterData.Project.WebAPI.Internal
+namespace VSS.MasterData.Project.WebAPI.Common.Internal
 {
   /// <summary>
   /// Common controller ServiceException handler.

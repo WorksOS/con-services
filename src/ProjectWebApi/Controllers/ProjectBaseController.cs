@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Filters;
-using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -111,9 +111,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.store = store;
 
       ServiceExceptionHandler = serviceExceptionHandler;
-
-      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                       store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      kafkaTopicName = (store.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
+                       store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
     }
 
     /// <summary>

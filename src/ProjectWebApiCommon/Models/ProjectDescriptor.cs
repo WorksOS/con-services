@@ -40,7 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
   /// <summary>
   /// Descriped standrd subscription
   /// </summary>
-  /// <seealso cref="Repositories.DBModels.Subscription" />
+  /// <seealso cref="Subscription" />
   public class SubscriptionDescriptor : Subscription
   {
     /// <summary>

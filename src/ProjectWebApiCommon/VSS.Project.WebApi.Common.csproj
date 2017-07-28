@@ -23,8 +23,18 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="AutoMapper" Version="6.1.1" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="2.0.0" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.0.*" />	
+    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.0.*" />
   </ItemGroup>
+
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
+
 
 </Project>

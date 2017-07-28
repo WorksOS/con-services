@@ -12,11 +12,11 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Filters;
-using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterDataProxies;
@@ -389,10 +389,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // this is needed so that when ASNode (raptor client), which is called from CoordinateSystemPost, can retrieve the just written project+cp
       isCreated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+
       if (isCreated == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
 
-      log.LogDebug($"Created CustomerProject in DB {customerProject}");
+      log.LogDebug($"Created CustomerProject in DB {JsonConvert.SerializeObject(customerProject)}");
       return project; // legacyID may have been added
     }
 
