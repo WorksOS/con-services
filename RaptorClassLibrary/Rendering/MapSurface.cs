@@ -489,7 +489,7 @@ double BorderSize)
 
         public void FitBoundsToView(ref double MinX, ref double MinY, ref double MaxX, ref double MaxY)
         {
-            double Aspect = BitmapCanvas.Height / BitmapCanvas.Width;
+            double Aspect = (double)BitmapCanvas.Height / (double)BitmapCanvas.Width;
 
             Utilities.MinMax.SetMinMax(ref MinX, ref MaxX);
             Utilities.MinMax.SetMinMax(ref MinY, ref MaxY);
@@ -559,7 +559,7 @@ double BorderSize)
         {
             const double Epsilon = 0.001;
 
-            double AspectRatio = (ClipHeight + 1) / (ClipWidth + 1);
+            double AspectRatio = ((double)ClipHeight + 1) / ((double)ClipWidth + 1);
 
             Utilities.MinMax.SetMinMax(ref MinX, ref MaxX);
             Utilities.MinMax.SetMinMax(ref MinY, ref MaxY);
@@ -574,7 +574,7 @@ double BorderSize)
             if (WidthX == 0)
                 WidthX = 10;
 
-            if (SquareAspect)    // Width is sacrosanct, sacrfice height
+            if (SquareAspect)    // Width is sacrosanct, sacrifice height
             {
                 if (Math.Abs((WidthY / WidthX) - AspectRatio) > Epsilon) //Make the displayed view fit the greatest extent 
                 {
@@ -1093,14 +1093,14 @@ double BorderSize)
                         if (HoldOriginOnResize)
                         {
                             SetWorldBounds(OriginX, OriginY,
-                                           OriginX + WidthX * (AWidth / PrevDisplayWidth),
-                                           OriginY + WidthY * (AHeight / PrevDisplayHeight),
+                                           OriginX + WidthX * ((double)AWidth / (double)PrevDisplayWidth),
+                                           OriginY + WidthY * ((double)AHeight / (double)PrevDisplayHeight),
                                            0);
                         }
                         else
                         {
-                            SetWorldBounds(LimitX - WidthX * (AWidth / PrevDisplayWidth),
-                                           LimitY - WidthY * (AHeight / PrevDisplayHeight),
+                            SetWorldBounds(LimitX - WidthX * ((double)AWidth / (double)PrevDisplayWidth),
+                                           LimitY - WidthY * ((double)AHeight / (double)PrevDisplayHeight),
                                            LimitX, LimitY,
                                            0);
                         }
