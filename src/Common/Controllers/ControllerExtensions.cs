@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ASNode.UserPreferences;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
@@ -11,6 +12,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Common.Controllers
 {
@@ -99,8 +101,10 @@ namespace VSS.Productivity3D.Common.Controllers
     }
 
     /// <summary>
-    /// 
+    /// Replaces a service exception's BadRequest status code with the NoContent one.
     /// </summary>
+    /// <param name="controller">The controller which received the request.</param>
+    /// <param name="serviceException">The ServiceException instance.</param>
     public static void ProcessStatusCode(this Controller controller, ServiceException serviceException)
     {
       if (serviceException.Code == HttpStatusCode.BadRequest &&
@@ -108,6 +112,33 @@ namespace VSS.Productivity3D.Common.Controllers
       {
         serviceException.Code = HttpStatusCode.NoContent;
       }
+    }
+
+    /// <summary>
+    /// Converts a set user preferences in the format understood by the Raptor for.
+    /// It is solely used by production data export WebAPIs.
+    /// </summary>
+    /// <param name="controller">The controller which received the request.</param>
+    /// <param name="userPref">The set of user preferences.</param>
+    /// <returns>The set of user preferences in Raptor's format</returns>
+    public static TASNodeUserPreferences convertUserPreferences(this Controller controller, UserPreferenceData userPref)
+    {
+      TimeZoneInfo projecTimeZone = TimeZoneInfo.FindSystemTimeZoneById(userPref.Timezone);
+      double projectTimeZoneOffset = projecTimeZone.GetUtcOffset(DateTime.Now).TotalHours;
+      
+      return __Global.Construct_TASNodeUserPreferences(
+        userPref.Timezone,
+        Preferences.DefaultDateSeparator,
+        Preferences.DefaultTimeSeparator,
+        userPref.ThousandsSeparator,
+        userPref.DecimalSeparator,
+        projectTimeZoneOffset,
+        Array.IndexOf(LanguageLocales.LanguageLocaleStrings, userPref.Language),
+        (int)UnitsTypeEnum.Metric,
+        Preferences.DefaultDateTimeFormat,
+        Preferences.DefaultNumberFormat,
+        Preferences.DefaultTemperatureUnit,
+        Preferences.DefaultAssetLabelTypeId);
     }
   }
 }

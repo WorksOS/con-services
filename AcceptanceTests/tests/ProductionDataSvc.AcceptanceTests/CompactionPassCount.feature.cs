@@ -75,30 +75,30 @@ namespace ProductionDataSvc.AcceptanceTests
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Passcount Summary", ((string[])(null)));
 #line 4
-  this.ScenarioSetup(scenarioInfo);
+this.ScenarioSetup(scenarioInfo);
 #line 5
- testRunner.Given("the Compaction Passcount Summary service URI \"/api/v2/compaction/passcounts/summa" +
+testRunner.Given("the Compaction Passcount Summary service URI \"/api/v2/compaction/passcounts/summa" +
                     "ry\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
- testRunner.When("I request Passcount summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I request Passcount summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 8
- testRunner.Then("the Passcount summary result should be", @"{
-  ""passCountSummaryData"": {
+testRunner.Then("the Passcount summary result should be", @"{
+""passCountSummaryData"": {
     ""percentEqualsTarget"": 3.3255301569815479,
     ""percentGreaterThanTarget"": 45.311209033324154,
     ""percentLessThanTarget"": 51.3632608096943,
     ""totalAreaCoveredSqMeters"": 1678.9744000000003,
     ""passCountTarget"": {
-      ""minPassCountMachineTarget"": 5,
-      ""maxPassCountMachineTarget"": 5,
-      ""targetVaries"": true
+    ""minPassCountMachineTarget"": 5,
+    ""maxPassCountMachineTarget"": 5,
+    ""targetVaries"": true
     }
-  },
-  ""Code"": 0,
-  ""Message"": ""success""
+},
+""Code"": 0,
+""Message"": ""success""
 }", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -111,17 +111,97 @@ namespace ProductionDataSvc.AcceptanceTests
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Passcount Details", ((string[])(null)));
 #line 27
- this.ScenarioSetup(scenarioInfo);
+this.ScenarioSetup(scenarioInfo);
 #line 28
-  testRunner.Given("the Compaction Passcount Details service URI \"/api/v2/compaction/passcounts/detai" +
+testRunner.Given("the Compaction Passcount Details service URI \"/api/v2/compaction/passcounts/detai" +
                     "ls\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 29
-  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 30
-  testRunner.When("I request Passcount details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I request Passcount details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 31
-  testRunner.Then("the Passcount details result should be", @"{
+testRunner.Then("the Passcount details result should be", @"{
+	""passCountDetailsData"": {
+		""percents"": [
+			19.632901900694421,
+			8.5406274791075756,
+			6.160684206522566,
+			5.132635651332877,
+			4.1589237005401056,
+			3.5981699431639118,
+			2.8341972853432442,
+			2.0126278268618436,
+			47.929232006433452
+		],
+		""totalCoverageArea"": 1678.9744000000003,
+		""passCountTarget"": {
+			""minPassCountMachineTarget"": 0,
+			""maxPassCountMachineTarget"": 0,
+			""targetVaries"": true
+		}
+	},
+	""Code"": 0,
+	""Message"": ""success""
+}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Passcount Summary  with project settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPassCount")]
+        public virtual void CompactionGetPasscountSummaryWithProjectSettings()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Passcount Summary  with project settings", ((string[])(null)));
+#line 59
+this.ScenarioSetup(scenarioInfo);
+#line 60
+testRunner.Given("the Compaction Passcount Summary service URI \"/api/v2/compaction/passcounts/summa" +
+                    "ry\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 61
+testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 62
+testRunner.When("I request Passcount summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 63
+testRunner.Then("the Passcount summary result should be", @"{
+""passCountSummaryData"": {
+    ""percentEqualsTarget"": 3.3255301569815479,
+    ""percentGreaterThanTarget"": 45.311209033324154,
+    ""percentLessThanTarget"": 51.3632608096943,
+    ""totalAreaCoveredSqMeters"": 1678.9744000000003,
+    ""passCountTarget"": {
+    ""minPassCountMachineTarget"": 5,
+    ""maxPassCountMachineTarget"": 5,
+    ""targetVaries"": true
+    }
+},
+""Code"": 0,
+""Message"": ""success""
+}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Passcount Details with project settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPassCount")]
+        public virtual void CompactionGetPasscountDetailsWithProjectSettings()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Passcount Details with project settings", ((string[])(null)));
+#line 82
+this.ScenarioSetup(scenarioInfo);
+#line 83
+testRunner.Given("the Compaction Passcount Details service URI \"/api/v2/compaction/passcounts/detai" +
+                    "ls\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 84
+testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 85
+testRunner.When("I request Passcount details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 86
+testRunner.Then("the Passcount details result should be", @"{
 	""passCountDetailsData"": {
 		""percents"": [
 			19.632901900694421,

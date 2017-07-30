@@ -12,7 +12,7 @@ Scenario Outline: ExportReportToVETA - Good Request
 	When I request an Export Report To VETA
 	Then the report result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequetsName       | ProjectUID                           | StartDate           | EndDate             | MachineNames                                                                                         | FileName | ResultName           |
+	| RequestName       | ProjectUID                           | StartDate           | EndDate             | MachineNames                                                                                         | FileName | ResultName           |
 	| Selected Machines | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2012-11-05T00:00:00 | 2012-11-06T00:00:00 | D61 SATD PE,KOMATSU PC210,ACOM,LIEBHERR 924C,CAT CS56B,VOLVO G946B,CASE CX160C,LIEBHERR724,JD 764 CV | Test     | AllMachinesLongDates |
 	| All Machines      | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2012-11-05T00:00:00 | 2012-11-06T00:00:00 | All                                                                                                  | Test     | AllMachinesLongDates |
 	 
@@ -23,7 +23,7 @@ Scenario Outline: ExportReportToVETA - Good Request - No Machines
 	When I request an Export Report To VETA
 	Then the report result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequetsName | ProjectUID                           | StartDate           | EndDate             | FileName | ResultName          |
+	| RequestName | ProjectUID                           | StartDate           | EndDate             | FileName | ResultName          |
 	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2012-11-05T00:00:00 | 2012-11-06T00:00:00 | Test     | NoMachinesLongDates |
 
 Scenario Outline: ExportReportToVETA - Bad Request - NoProjectUID
@@ -33,7 +33,7 @@ Scenario Outline: ExportReportToVETA - Bad Request - NoProjectUID
 	When I request an Export Report To VETA expecting Unauthorized
 	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
-	| RequetsName | StartDate  | EndDate    | MachineNames | FileName | ErrorCode | ErrorMessage                                                                                        |
+	| RequestName | StartDate  | EndDate    | MachineNames | FileName | ErrorCode | ErrorMessage        |
 	|             | 2005-01-01 | 2017-06-23 | All          | Test     |  -5       |Missing Project or project does not belong to specified customer or don't have access to the project |
 
 Scenario Outline: ExportReportToVETA - Bad Request - NoDateRange
@@ -43,7 +43,7 @@ Scenario Outline: ExportReportToVETA - Bad Request - NoDateRange
 	When I request an Export Report To VETA expecting BadRequest
 	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
-	| RequetsName | ProjectUID                           | MachineNames | FileName | ErrorCode | ErrorMessage                        |
+	| RequestName | ProjectUID                           | MachineNames | FileName | ErrorCode | ErrorMessage                        |
 	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | All          | Test     | -4        | Failed to get requested export data |
 
 Scenario Outline: ExportReportToVETA - Bad Request - NoFileName
@@ -53,7 +53,7 @@ Scenario Outline: ExportReportToVETA - Bad Request - NoFileName
 	When I request an Export Report To VETA expecting BadRequest
 	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
-	| RequetsName | ProjectUID                           | StartDate  | EndDate    | MachineNames | ErrorCode | ErrorMessage                        |
+	| RequestName | ProjectUID                           | StartDate  | EndDate    | MachineNames | ErrorCode | ErrorMessage                        |
 	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | All          | -4        | Failed to get requested export data |
 
 

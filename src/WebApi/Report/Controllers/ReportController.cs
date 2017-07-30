@@ -102,7 +102,19 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Creates an instance of the CMVRequest class and populate it with data.
     /// </summary>
-    /// <returns></returns>
+    /// <param name="projectId">Project identifier.</param>
+    /// <param name="projectUid">Project unique identifier.</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC.</param>
+    /// <param name="coordType">Either Northing/Easting or Latitude/Longitude.</param>
+    /// <param name="exportType">Export production data a surface .TTM file, machine passes export or machine passes export for an import to VETA.</param>
+    /// <param name="fileName">Output file name.</param>
+    /// <param name="restrictSize">Output .CSV file is restricted to 65535 rows if it is true.</param>
+    /// <param name="rawData">Column headers in an output .CSV file's are in the dBase format.</param>
+    /// <param name="outputType">Either all passes/last for pass machine passes export or all passes/final pass for export for VETA</param>
+    /// <param name="machineNames">Comma-separated list of machine names.</param>
+    /// <param name="tolerance">It is used in export to a surface .TTM file.</param>
+    /// <returns>An instance of the ExportReport class.</returns>
     private async Task<ExportReport> GetExportReportRequest(
       Guid projectUid,
       DateTime? startUtc,
@@ -114,12 +126,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       bool rawData,
       OutputTypes outputType,
       string machineNames,
-      double tolerance)
+      double tolerance = 0.0)
     {
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
 
       var headers = Request.Headers.GetCustomHeaders();
-      var userPref = prefProxy.GetUserPreferences(headers);
+      var userPref = await prefProxy.GetUserPreferences(headers);
 
       if (userPref == null)
       {
@@ -164,6 +176,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         }
       }
 
+      // Set User Preferences' time zone to the project's one and retriev ...
+      var projectDescriptor = (User as RaptorPrincipal).GetProject(projectUid);
+      userPref.Timezone = projectDescriptor.projectTimeZone;
 
       return ExportReport.CreateExportReportRequest(
         projectId,
@@ -187,7 +202,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         machineList,
         false,
         fileName,
-        exportType);
+        exportType,
+        this.convertUserPreferences(userPref));
     }
     #endregion
 
@@ -251,6 +267,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </summary>
     /// <returns></returns>
     /// 
+    /// <param name="projectId">Project identifier.</param>
+    /// <param name="projectUid">Project unique identifier.</param>
+    /// <param name="fileName">Output file name.</param>
+    /// <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
+    /// <returns>An instance of the ExportResult class.</returns>
     [ProjectUidVerifier]
     [Route("api/v2/export/surface")]
     [HttpGet]
@@ -285,7 +306,16 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Gets an export of production data in cell grid format report.
     /// </summary>
-    /// <returns></returns>
+    /// <param name="projectId">Project identifier.</param>
+    /// <param name="projectUid">Project unique identifier.</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC.</param>
+    /// <param name="coordType">Either Northing/Easting or Latitude/Longitude.</param>
+    /// <param name="outputType">Either all passes/last for pass machine passes export or all passes/final pass for export for VETA</param>
+    /// <param name="restrictOutput">Output .CSV file is restricted to 65535 rows if it is true.</param>
+    /// <param name="rawDataOutput">Column headers in an output .CSV file's are in the dBase format.</param>
+    /// <param name="fileName">Output file name.</param>
+    /// <returns>An instance of the ExportResult class.</returns>
     /// 
     [ProjectUidVerifier]
     [Route("api/v2/export/machinepasses")]
@@ -313,8 +343,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         restrictOutput,
         rawDataOutput,
         (OutputTypes)outputType,
-        "",
-        0.0);
+        "");
 
       request.Validate();
 
@@ -324,7 +353,13 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
     /// </summary>
-    /// <returns></returns>
+    /// <param name="projectId">Project identifier.</param>
+    /// <param name="projectUid">Project unique identifier.</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC.</param>
+    /// <param name="fileName">Output file name.</param>
+    /// <param name="machineNames">Comma-separated list of machine names.</param>
+    /// <returns>An instance of the ExportResult class.</returns>
     /// 
     [ProjectUidVerifier]
     [Route("api/v2/export/veta")]
@@ -348,8 +383,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         false,
         true,
         OutputTypes.etVedaAllPasses,
-        machineNames,
-        0.0);
+        machineNames);
 
       request.Validate();
 
