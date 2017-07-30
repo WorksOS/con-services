@@ -10,7 +10,7 @@ Scenario Outline: GetDesignBoundaries - Good Request - No Designs
 	When I request design boundaries
 	Then the result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequetsName | ProjectUID                           | Tolerance | ResultName |
+	| RequestName | ProjectUID                           | Tolerance | ResultName |
 	|             | 86a42bbf-9d0e-4079-850f-835496d715c5 | 1.00      | NoDesigns  |
 
 Scenario Outline: GetDesignBoundaries - Good Request
@@ -19,7 +19,7 @@ Scenario Outline: GetDesignBoundaries - Good Request
 	When I request design boundaries
 	Then the result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequetsName    | ProjectUID                           | Tolerance | ResultName    |
+	| RequestName    | ProjectUID                           | Tolerance | ResultName    |
 	| With Tolerance | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1.00      | WithTolerance |
 
 Scenario Outline: GetDesignBoundaries - Good Request - No Tolerance
@@ -27,7 +27,7 @@ Scenario Outline: GetDesignBoundaries - Good Request - No Tolerance
 	When I request design boundaries
 	Then the result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequetsName | ProjectUID                           | ResultName    |
+	| RequestName | ProjectUID                           | ResultName    |
 	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | WithTolerance |
 
 Scenario Outline: GetDesignBoundaries - Bad Request - NoProjectUID
@@ -35,5 +35,5 @@ Scenario Outline: GetDesignBoundaries - Bad Request - NoProjectUID
 	When I request design boundaries expecting BadRequest Unauthorized
 	Then the GetDesignBoundaries result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples: 
-	| RequetsName | Tolerance | ErrorCode | ErrorMessage                                                                                         |
+	| RequestName | Tolerance | ErrorCode | ErrorMessage                                                                                         |
 	|             | 1.00      | -5        | Missing Project or project does not belong to specified customer or don't have access to the project |

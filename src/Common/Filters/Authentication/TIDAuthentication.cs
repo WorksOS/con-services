@@ -119,7 +119,8 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
                 projectUid = project.ProjectUid,
                 projectId = project.LegacyProjectId,
                 coordinateSystemFileName = project.CoordinateSystemFileName,
-                projectGeofenceWKT = project.ProjectGeofenceWKT
+                projectGeofenceWKT = project.ProjectGeofenceWKT,
+                projectTimeZone = project.ProjectTimeZone
               };
               authProjects.Add(projectDesc);
             }

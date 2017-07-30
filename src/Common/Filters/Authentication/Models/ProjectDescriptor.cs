@@ -35,5 +35,10 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// Gets or sets the project boundary as WKT
     /// </summary>
     public string projectGeofenceWKT { get; set; }
+    /// <summary>
+    /// Gets or sets the project time zone.
+    /// </summary>
+   public string projectTimeZone { get; set; }
+
   }
 }

@@ -77,7 +77,7 @@ namespace ProductionDataSvc.AcceptanceTests
 #line hidden
         }
         
-        public virtual void ExportReportToSurface_GoodRequest(string requetsName, string projectUID, string tolerance, string fileName, string resultName, string[] exampleTags)
+        public virtual void ExportReportToSurface_GoodRequest(string requestName, string projectUID, string tolerance, string fileName, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToSurface - Good Request", exampleTags);
 #line 7
@@ -102,7 +102,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportToSurface - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportToSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "With Tolerance")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "With Tolerance")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "With Tolerance")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Tolerance", "1.50")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "SurfaceWithTolerance")]
@@ -112,7 +112,7 @@ this.FeatureBackground();
             this.ExportReportToSurface_GoodRequest("With Tolerance", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "1.50", "SurfaceWithTolerance", "WithTolerance", ((string[])(null)));
         }
         
-        public virtual void ExportReportToSurface_GoodRequest_NoTolerance(string requetsName, string projectUID, string fileName, string resultName, string[] exampleTags)
+        public virtual void ExportReportToSurface_GoodRequest_NoTolerance(string requestName, string projectUID, string fileName, string resultName, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "ignore"};
@@ -141,7 +141,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportToSurface - Good Request - No Tolerance")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportToSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "SurfaceNoTolerance")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoTolerance")]
@@ -150,7 +150,7 @@ this.FeatureBackground();
             this.ExportReportToSurface_GoodRequest_NoTolerance("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "SurfaceNoTolerance", "NoTolerance", ((string[])(null)));
         }
         
-        public virtual void ExportReportToSurface_BadRequest_NoProjectUID(string requetsName, string tolerance, string fileName, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void ExportReportToSurface_BadRequest_NoProjectUID(string requestName, string tolerance, string fileName, string errorCode, string errorMessage, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToSurface - Bad Request - NoProjectUID", exampleTags);
 #line 27
@@ -172,7 +172,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportToSurface - Bad Request - NoProjectUID")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportToSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Tolerance", "0.05")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "Test")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-5")]
@@ -184,7 +184,7 @@ this.FeatureBackground();
                     "cess to the project", ((string[])(null)));
         }
         
-        public virtual void ExportReportToSurface_BadRequest_NoFileName(string requetsName, string projectUID, string tolerance, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void ExportReportToSurface_BadRequest_NoFileName(string requestName, string projectUID, string tolerance, string errorCode, string errorMessage, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToSurface - Bad Request - NoFileName", exampleTags);
 #line 36
@@ -206,7 +206,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportToSurface - Bad Request - NoFileName")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportToSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Tolerance", "0.05")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
