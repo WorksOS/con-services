@@ -1,4 +1,4 @@
-set cmd="docker ps -aqf name=vssraptorservice_webapi "
+set cmd="docker ps -aqf name=vssproductivity3dservice_webapi "
 FOR /F "delims=" %%i IN (' %cmd% ') do set content=%%i
 for /f %%i in ('docker inspect --format "{{ .NetworkSettings.Networks.nat.IPAddress }}" %content%') do set ipaddress=%%i
 PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP %ipaddress%
