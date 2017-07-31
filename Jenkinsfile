@@ -37,11 +37,11 @@ node('Ubuntu_Slave') {
     stage 'Checkout'
     checkout scm
     stage 'Restore packages'
-    sh "dotnet restore --no-cache VSS.Visionlink.Project.sln"
+    sh "dotnet restore --no-cache VSS.Productivity3D.Filter.sln"
     stage 'Build solution'
     sh "bash ./build.sh"
-/*    stage 'Run unit tests'
-    sh "bash ./unittests.sh" */
+    stage 'Run unit tests'
+    sh "bash ./unittests.sh" 
     stage 'Prepare Acceptance tests'
     sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
     stage 'Compose containers'
@@ -66,24 +66,23 @@ node('Ubuntu_Slave') {
     if (currentBuild.result=='SUCCESS' && !branch.contains("master")) {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Get ecr login, push image to Repo'
-	   sh "bash ./awslogin.sh"
-     //  sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
+       sh "bash ./awslogin.sh"
 
 	if (branch.contains("release"))
 	{
 	       stage 'Build Release Images'
 
-	       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release-${fullVersion} ./artifacts/ProjectWebApi"
+	       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi:latest-release-${fullVersion} ./artifacts/FilterWebApi"
  
-	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release-${fullVersion}"
+	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi:latest-release-${fullVersion}"
 
-	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release-${fullVersion}"
+	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi:latest-release-${fullVersion}"
 		   
-		   sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion} ./database"
- 
-	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion}"
+               sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db:latest-release-${fullVersion} ./database"
 
-	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion}"
+	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db:latest-release-${fullVersion}"
+
+	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db:latest-release-${fullVersion}"
 
 	}
 	else
@@ -93,13 +92,13 @@ node('Ubuntu_Slave') {
 	stage 'Build Development Images'
 
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest ./artifacts/ProjectWebApi"
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi"
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi:latest ./artifacts/FilterWebApi"
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi:latest"
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest ./database"
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db"
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db:latest ./database"
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db:latest"
 	}
        }
 
@@ -120,7 +119,7 @@ node ('Jenkins-Win2016-Raptor')
            stage 'Build'
            bat "build47.bat"
           
-           archiveArtifacts artifacts: 'ProjectWebApiNet47.zip', fingerprint: true 
+           archiveArtifacts artifacts: 'FilterWebApiNet47.zip', fingerprint: true 
 
          }
         }
