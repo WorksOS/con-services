@@ -75,27 +75,63 @@ namespace ProductionDataSvc.AcceptanceTests
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get MDP Summary", ((string[])(null)));
 #line 4
- this.ScenarioSetup(scenarioInfo);
+this.ScenarioSetup(scenarioInfo);
 #line 5
- testRunner.Given("the Compaction MDP Summary service URI \"/api/v2/compaction/mdp/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction MDP Summary service URI \"/api/v2/compaction/mdp/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
- testRunner.When("I request MDP summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I request MDP summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 8
- testRunner.Then("the MDP result should be", @"{
-  ""mdpSummaryData"": {
+testRunner.Then("the MDP result should be", @"{
+""mdpSummaryData"": {
     ""percentEqualsTarget"": 79.3533176153587,
     ""percentGreaterThanTarget"": 0,
     ""percentLessThanTarget"": 20.646682384641295,
     ""totalAreaCoveredSqMeters"": 1029.6492000000003,
     ""mdpTarget"": {
-      ""mdpMachineTarget"": 150.0,
-      ""targetVaries"": false
+    ""mdpMachineTarget"": 150.0,
+    ""targetVaries"": false
     },
     ""minMDPPercent"": 80,
     ""maxMDPPercent"": 130
+},
+""Code"": 0,
+""Message"": ""success""
+}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get MDP Summary with project settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionMdp")]
+        public virtual void CompactionGetMDPSummaryWithProjectSettings()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get MDP Summary with project settings", ((string[])(null)));
+#line 28
+this.ScenarioSetup(scenarioInfo);
+#line 29
+testRunner.Given("the Compaction MDP Summary service URI \"/api/v2/compaction/mdp/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 30
+testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 31
+testRunner.When("I request MDP summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 32
+testRunner.Then("the MDP result should be", @"{
+  ""mdpSummaryData"": {
+    ""percentEqualsTarget"": 31.05422701246211,
+    ""percentGreaterThanTarget"": 21.129448748175591,
+    ""percentLessThanTarget"": 47.8163242393623,
+    ""totalAreaCoveredSqMeters"": 1029.6492000000003,
+    ""mdpTarget"": {
+      ""mdpMachineTarget"": 145.0,
+      ""targetVaries"": false
+    },
+    ""minMDPPercent"": 90.0,
+    ""maxMDPPercent"": 100.0
   },
   ""Code"": 0,
   ""Message"": ""success""

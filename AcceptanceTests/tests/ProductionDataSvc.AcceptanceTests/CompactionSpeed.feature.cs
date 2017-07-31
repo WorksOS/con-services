@@ -75,23 +75,47 @@ namespace ProductionDataSvc.AcceptanceTests
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Speed Summary", ((string[])(null)));
 #line 4
- this.ScenarioSetup(scenarioInfo);
+this.ScenarioSetup(scenarioInfo);
 #line 5
- testRunner.Given("the Compaction Speed Summary service URI \"/api/v2/compaction/speed/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction Speed Summary service URI \"/api/v2/compaction/speed/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
- testRunner.When("I request Speed summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I request Speed summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 8
- testRunner.Then("the Speed result should be", @"{
+testRunner.Then("the Speed result should be", "{\n\"speedSummaryData\": {\n    \"percentEqualsTarget\": 36.9,\n    \"percentGreaterThanT" +
+                    "arget\": 39.3,\n    \"percentLessThanTarget\": 23.8,\n    \"totalAreaCoveredSqMeters\":" +
+                    " 10636.7028,\n    \"minTarget\": 5.0,\n    \"maxTarget\": 10.0\n},\n\"Code\": 0,\n\"Message\"" +
+                    ": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Speed Summary with summary settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSpeed")]
+        public virtual void CompactionGetSpeedSummaryWithSummarySettings()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Speed Summary with summary settings", ((string[])(null)));
+#line 24
+this.ScenarioSetup(scenarioInfo);
+#line 25
+testRunner.Given("the Compaction Speed Summary service URI \"/api/v2/compaction/speed/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 26
+testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 27
+testRunner.When("I request Speed summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 28
+testRunner.Then("the Speed result should be", @"{
   ""speedSummaryData"": {
-    ""percentEqualsTarget"": 36.9,
-    ""percentGreaterThanTarget"": 39.3,
-    ""percentLessThanTarget"": 23.8,
+    ""percentEqualsTarget"": 25.0,
+    ""percentGreaterThanTarget"": 35.0,
+    ""percentLessThanTarget"": 40.1,
     ""totalAreaCoveredSqMeters"": 10636.7028,
-    ""minTarget"": 5.0,
-    ""maxTarget"": 10.0
+    ""minTarget"": 7.0,
+    ""maxTarget"": 11.0
   },
   ""Code"": 0,
   ""Message"": ""success""

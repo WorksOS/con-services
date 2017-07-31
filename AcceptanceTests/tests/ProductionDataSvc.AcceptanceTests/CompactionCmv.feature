@@ -65,7 +65,6 @@ Then the CMV % Change result should be
 }
 """
 
-@ignore
 Scenario: Compaction Get CMV Summary with project settings
 Given the Compaction CMV Summary service URI "/api/v2/compaction/cmv/summary"
 And a projectUid "3335311a-f0e2-4dbe-8acd-f21135bafee4"
@@ -74,23 +73,22 @@ Then the CMV summary result should be
 """
 {
   "cmvSummaryData": {
-    "percentEqualsTarget": 0.12620950778291964,
-    "percentGreaterThanTarget": 0,
-    "percentLessThanTarget": 99.873790492217083,
+    "percentEqualsTarget": 23.264619267984855,
+    "percentGreaterThanTarget": 30.374421539755996,
+    "percentLessThanTarget": 46.360959192259152,
     "totalAreaCoveredSqMeters": 549.56240000000014,
     "cmvTarget": {
-      "cmvMachineTarget": 70.0,
+      "cmvMachineTarget": 10.0,
       "targetVaries": false
     },
-    "minCMVPercent": 80,
-    "maxCMVPercent": 130
+    "minCMVPercent": 75.0,
+    "maxCMVPercent": 100.0
   },
   "Code": 0,
   "Message": "success"
 }
 """
 
-@ignore
 Scenario: Compaction Get CMV Details with project settings
 Given the Compaction CMV Details service URI "/api/v2/compaction/cmv/details"
 And a projectUid "3335311a-f0e2-4dbe-8acd-f21135bafee4"
@@ -98,11 +96,11 @@ When I request CMV details
 Then the CMV details result should be
 """
 {
-  "percents": [
+  "Percents": [
     0.0,
-    100.0,
-    0.0,
-    0.0,
+    68.321413546487165,
+    1.3041649137568363,
+    30.374421539755996,
     0.0
   ],
   "Code": 0,
@@ -110,7 +108,6 @@ Then the CMV details result should be
 }
 """
 
-@ignore
 Scenario: Compaction Get CMV % Change Summary with project settings
 Given the Compaction CMV % Change Summary service URI "/api/v2/compaction/cmv/percentchange"
 And a projectUid "3335311a-f0e2-4dbe-8acd-f21135bafee4"

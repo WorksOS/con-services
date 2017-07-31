@@ -23,26 +23,26 @@ Then the Temperature result should be
 "Message": "success"
 }
 """
-@ignore
+
 Scenario: Compaction Get Temperature Summary with project settings
 Given the Compaction Temperature Summary service URI "/api/v2/compaction/temperature/summary"
 And a projectUid "3335311a-f0e2-4dbe-8acd-f21135bafee4"
 When I request Temperature summary
 Then the Temperature result should be
 """
-{
-"temperatureSummaryData": {
-    "percentEqualsTarget": 0,
-    "percentGreaterThanTarget": 0,
-    "percentLessThanTarget": 100,
+:<{
+  "temperatureSummaryData": {
+    "percentEqualsTarget": 0.0,
+    "percentGreaterThanTarget": 0.0,
+    "percentLessThanTarget": 100.0,
     "totalAreaCoveredSqMeters": 953.93120000000022,
     "temperatureTarget": {
-    "minTemperatureMachineTarget": 90.0,
-    "maxTemperatureMachineTarget": 143.0,
-    "targetVaries": false
+      "minTemperatureMachineTarget": 75.0,
+      "maxTemperatureMachineTarget": 130.0,
+      "targetVaries": false
     }
-},
-"Code": 0,
-"Message": "success"
+  },
+  "Code": 0,
+  "Message": "success"
 }
 """
