@@ -53,20 +53,24 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Apache.Ignite.Core, Version=2.0.0.19668, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Apache.Ignite.2.0.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
+    <Reference Include="Apache.Ignite, Version=2.1.0.21604, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Ignite.2.1.0\lib\net40\Apache.Ignite.exe</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Apache.Ignite.EntityFramework, Version=2.0.0.19668, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Apache.Ignite.EntityFramework.2.0.0\lib\net40\Apache.Ignite.EntityFramework.dll</HintPath>
+    <Reference Include="Apache.Ignite.Core, Version=2.1.0.21604, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Ignite.2.1.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Apache.Ignite.Linq, Version=2.0.0.19668, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Apache.Ignite.Linq.2.0.0\lib\net40\Apache.Ignite.Linq.dll</HintPath>
+    <Reference Include="Apache.Ignite.EntityFramework, Version=2.1.0.21604, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Ignite.EntityFramework.2.1.0\lib\net40\Apache.Ignite.EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Apache.Ignite.Log4Net, Version=2.0.0.19668, Culture=neutral, PublicKeyToken=e2f4d92b0685a962, processorArchitecture=MSIL">
-      <HintPath>..\packages\Apache.Ignite.Log4Net.2.0.0\lib\net40\Apache.Ignite.Log4Net.dll</HintPath>
+    <Reference Include="Apache.Ignite.Linq, Version=2.1.0.21604, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Ignite.Linq.2.1.0\lib\net40\Apache.Ignite.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Apache.Ignite.Log4Net, Version=2.1.0.21604, Culture=neutral, PublicKeyToken=e2f4d92b0685a962, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Ignite.Log4Net.2.1.0\lib\net40\Apache.Ignite.Log4Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -143,7 +147,7 @@
   <PropertyGroup>
     <PostBuildEvent>
 if not exist "$(TargetDir)Libs" md "$(TargetDir)Libs"
-xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.0.0\Libs\*.*" "$(TargetDir)Libs"</PostBuildEvent>
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.1.0\Libs\*.*" "$(TargetDir)Libs"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
