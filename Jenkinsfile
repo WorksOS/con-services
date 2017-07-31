@@ -9,13 +9,6 @@ if (prjname.contains("MasterDataConsumers"))
  load './MasterDataConsumers/Jenkinsfile'
 }
 else
-{
-  if (!(branchc.contains("release")||branchc.contains("master"))) 
-  {
-   load './MockProjectWebApi/src/Jenkinsfile'
-  }
-}
-
  if (prjname.contains("Nuget"))
  {
   node('Jenkins-Win2016-Raptor') {
@@ -28,5 +21,11 @@ else
 
   }
  }
-
+ else
+ {
+   if (!(branchc.contains("release")||branchc.contains("master"))) 
+    {
+     load './MockProjectWebApi/src/Jenkinsfile'
+    }
+  }
 }
