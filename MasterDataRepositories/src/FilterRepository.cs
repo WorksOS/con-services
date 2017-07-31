@@ -7,6 +7,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories
 {
@@ -33,57 +34,50 @@ namespace VSS.MasterData.Repositories
       }
 
       log.LogDebug($"Event type is {evt.GetType()}");
-      //if (evt is CreateFilterEvent)
-      //{
-      //  var filterEvent = (CreateFilterEvent) evt;
-      //  var filter = new Filter()
-      //  {
-      //    CustomerUid = filterEvent.CustomerUid,
-      //    UserUid = filterEvent.UserUid,
-      //    ProjectUid = filterEvent.ProjectUid,
-      //    FilterUid = filterEvent.FilterUid,
-      //    Name = filterEvent.Name,
-      //    FilterJson = filterEvent.FilterJson,
-      //    LastActionedUtc = filterEvent.ActionUTC
-      //  };
+      if (evt is CreateFilterEvent)
+      {
+        var filterEvent = (CreateFilterEvent) evt;
+        var filter = new Filter()
+        {
+          CustomerUid = filterEvent.CustomerUID.ToString(),
+          UserUid = filterEvent.UserUID.ToString(),
+          ProjectUid = filterEvent.ProjectUID.ToString(),
+          FilterUid = filterEvent.FilterUID.ToString(),
+          Name = filterEvent.Name,
+          FilterJson = filterEvent.FilterJson,
+          LastActionedUtc = filterEvent.ActionUTC
+        };
 
-      //  upsertedCount = await UpsertFilterDetail(filter, "CreateFilterEvent");
-      //}
-      //else if (evt is UpdateFilterEvent)
-      //{
-      //  var filterEvent = (UpdateFilterEvent) evt;
-      //  var filter = new Filter()
-      //  {
-      //    CustomerUid = filterEvent.CustomerUid,
-      //    UserUid = filterEvent.UserUid,
-      //    ProjectUid = filterEvent.ProjectUid,
-      //    FilterUid = filterEvent.FilterUid,
-      //    Name = filterEvent.Name,
-      //    FilterJson = filterEvent.FilterJson,
-      //    LastActionedUtc = filterEvent.ActionUTC
-      //  };
-      //  upsertedCount = await UpsertFilterDetail(filter, "UpdateFilterEvent");
-      //}
-      //else if (evt is DeleteFilterEvent)
-      //{
-      //  var filterEvent = (DeleteFilterEvent) evt;
-      //  var filter = new Filter()
-      //  {
-      //    FilterUid = filterEvent.FilterUid,
-      //    LastActionedUtc = filterEvent.ActionUTC
-      //  };
-      //  upsertedCount = await UpsertFilterDetail(filter, "DeleteFilterEvent", filterEvent.DeletePermanently);
-      //}
-      ////else if (evt is UndeleteFilterEvent)
-      ////{
-      ////  var filterEvent = (UndeleteFilterEvent)evt;
-      ////  var filter = new Filter()
-      ////  {
-      ////    FilterUid = filterEvent.FilterUid,
-      ////    LastActionedUtc = filterEvent.ActionUTC
-      ////  };
-      ////  upsertedCount = await UpsertFilterDetail(filter, "UndeleteFilterEvent");
-      ////}
+        upsertedCount = await UpsertFilterDetail(filter, "CreateFilterEvent");
+      }
+      else if (evt is UpdateFilterEvent)
+      {
+        var filterEvent = (UpdateFilterEvent) evt;
+        var filter = new Filter()
+        {
+          CustomerUid = filterEvent.CustomerUID.ToString(),
+          UserUid = filterEvent.UserUID.ToString(),
+          ProjectUid = filterEvent.ProjectUID.ToString(),
+          FilterUid = filterEvent.FilterUID.ToString(),
+          Name = filterEvent.Name,
+          FilterJson = filterEvent.FilterJson,
+          LastActionedUtc = filterEvent.ActionUTC
+        };
+        upsertedCount = await UpsertFilterDetail(filter, "UpdateFilterEvent");
+      }
+      else if (evt is DeleteFilterEvent)
+      {
+        var filterEvent = (DeleteFilterEvent) evt;
+        var filter = new Filter()
+        {
+          CustomerUid = filterEvent.CustomerUID.ToString(),
+          UserUid = filterEvent.UserUID.ToString(),
+          ProjectUid = filterEvent.ProjectUID.ToString(),
+          FilterUid = filterEvent.FilterUID.ToString(),
+          LastActionedUtc = filterEvent.ActionUTC
+        };
+        upsertedCount = await UpsertFilterDetail(filter, "DeleteFilterEvent");
+      }
 
       return upsertedCount;
     }
@@ -96,16 +90,15 @@ namespace VSS.MasterData.Repositories
     /// </summary>
     /// <param name="filter"></param>
     /// <param name="eventType"></param>
-    /// <param name="isDeletePermanently"></param>
     /// <returns></returns>
-    private async Task<int> UpsertFilterDetail(Filter filter, string eventType, bool isDeletePermanently = false)
+    private async Task<int> UpsertFilterDetail(Filter filter, string eventType)
     {
       var upsertedCount = 0;
       var existing = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
                 f.fk_CustomerUid AS CustomerUID, f.fk_UserUID AS UserUID, 
                 f.fk_ProjectUID AS ProjectUID,  f.FilterUID,                
                 f.Name, f.FilterJson, 
-                f.IsDeleted, p.LastActionedUTC
+                f.IsDeleted, f.LastActionedUTC
               FROM Filter f
               WHERE f.FilterUID = @filterUid AND f.IsDeleted = 0",
         new {filter.FilterUid})).FirstOrDefault();
@@ -114,12 +107,12 @@ namespace VSS.MasterData.Repositories
         upsertedCount = await UpsertFilter(filter, existing);
 
       if (eventType == "DeleteFilterEvent")
-        upsertedCount = await DeleteFilter(filter, existing, isDeletePermanently);
+        upsertedCount = await DeleteFilter(filter, existing);
       return upsertedCount;
     }
 
 
-    private async Task<int> UpsertFilter(Filter filter, Filter existing) 
+    private async Task<int> UpsertFilter(Filter filter, Filter existing)
     {
       log.LogDebug($"FilterRepository/UpsertFilter: filter={JsonConvert.SerializeObject(filter)}))')");
       int upsertedCount = 0;
@@ -155,42 +148,27 @@ namespace VSS.MasterData.Repositories
       return upsertedCount.CalculateUpsertCount();
     }
 
-    private async Task<int> DeleteFilter(Filter filter, Filter existing, bool isDeletePermanently)
+    private async Task<int> DeleteFilter(Filter filter, Filter existing)
     {
       log.LogDebug(
-        $"FilterRepository/DeleteFilter: project={JsonConvert.SerializeObject(filter)} permanently: {isDeletePermanently}))')");
+        $"FilterRepository/DeleteFilter: project={JsonConvert.SerializeObject(filter)})')");
 
       var upsertedCount = 0;
       if (existing != null)
       {
         if (filter.LastActionedUtc >= existing.LastActionedUtc)
         {
-          if (isDeletePermanently)
-          {
-            log.LogDebug(
-              $"FilterRepository/DeleteFilter: deleting a filter permanently");
-            const string delete =
-              @"DELETE FROM Filter
-                    WHERE FilterUID = @FilterUid";
-            upsertedCount = await ExecuteWithAsyncPolicy(delete, filter);
-            log.LogDebug(
-              $"FilterRepository/DeleteFilter: deleted {upsertedCount}");
-            return upsertedCount;
-          }
-          else
-          {
-            log.LogDebug($"FilterRepository/DeleteFilter: updating filter");
+          log.LogDebug($"FilterRepository/DeleteFilter: updating filter");
 
-            const string update =
-              @"UPDATE Filter                
+          const string update =
+            @"UPDATE Filter                
                   SET IsDeleted = 1,
                     LastActionedUTC = @LastActionedUTC
                   WHERE FilterUID = @FilterUid";
-            upsertedCount = await ExecuteWithAsyncPolicy(update, filter);
-            log.LogDebug(
-              $"FilterRepository/DeleteFilter: upserted {upsertedCount} rows");
-            return upsertedCount;
-          }
+          upsertedCount = await ExecuteWithAsyncPolicy(update, filter);
+          log.LogDebug(
+            $"FilterRepository/DeleteFilter: upserted {upsertedCount} rows");
+          return upsertedCount;
         }
       }
       else
@@ -198,7 +176,7 @@ namespace VSS.MasterData.Repositories
         // a delete was processed before the create, even though it's actionUTC is later (due to kafka partioning issue)
         log.LogDebug(
           $"FilterRepository/DeleteFilter: delete event where no filter exists, creating one. filter={filter.FilterUid}");
-       
+
         const string delete =
           "INSERT Filter " +
           "    (fk_CustomerUid, fk_UserUID, fk_ProjectUID, FilterUID, IsDeleted, LastActionedUTC)" +
@@ -213,7 +191,7 @@ namespace VSS.MasterData.Repositories
       return upsertedCount;
     }
 
-  #endregion store
+    #endregion store
 
 
     #region getters
@@ -229,7 +207,7 @@ namespace VSS.MasterData.Repositories
                 f.fk_CustomerUid AS CustomerUID, f.fk_UserUID AS UserUID, 
                 f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
                 f.Name, f.FilterJson, 
-                f.IsDeleted, p.LastActionedUTC
+                f.IsDeleted, f.LastActionedUTC
               FROM Filter f
               WHERE f.fk_ProjectUID = @projectUid AND f.IsDeleted = 0",
         new {projectUid}));
@@ -247,12 +225,13 @@ namespace VSS.MasterData.Repositories
                 f.fk_CustomerUid AS CustomerUID, f.fk_UserUID AS UserUID, 
                 f.fk_ProjectUID AS ProjectUID, f.FilterUID,                  
                 f.Name, f.FilterJson, 
-                f.IsDeleted, p.LastActionedUTC
+                f.IsDeleted, f.LastActionedUTC
               FROM Filter f
               WHERE f.FilterUID = @filterUid AND f.IsDeleted = 0",
         new {filterUid})).FirstOrDefault();
       return filters;
     }
+
     #endregion getters
   }
 }
