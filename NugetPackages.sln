@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess.UnitTests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies.UnitTests", "MasterDataProxies\test\UnitTests\VSS.MasterData.Proxies.UnitTests.csproj", "{5A61E1F6-E2D6-436F-A1E2-BDC8630BDD18}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C69D8EB6-8A39-427B-B7B6-4294826F0D39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,5 +80,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F3F0F117-CBAB-4A87-974A-4984BC7152D9} = {C69D8EB6-8A39-427B-B7B6-4294826F0D39}
+		{5A61E1F6-E2D6-436F-A1E2-BDC8630BDD18} = {C69D8EB6-8A39-427B-B7B6-4294826F0D39}
 	EndGlobalSection
 EndGlobal
