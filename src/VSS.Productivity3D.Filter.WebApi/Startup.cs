@@ -15,6 +15,7 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.WebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
@@ -33,8 +34,7 @@ namespace VSS.Productivity3D.Filter.WebApi
         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
         .AddEnvironmentVariables();
-      Configuration = builder.Build();
-
+     
       env.ConfigureLog4Net("log4net.xml", loggerRepoName);
       isDevEnv = env.IsEnvironment("Development");
       if (isDevEnv)
@@ -43,6 +43,8 @@ namespace VSS.Productivity3D.Filter.WebApi
         builder.AddApplicationInsightsSettings(developerMode: true);
       }
 
+      Configuration = builder.Build();
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
     /// <summary>

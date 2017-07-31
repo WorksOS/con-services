@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
     /// <summary>
     /// Private constructor
     /// </summary>
-    private FilterRequest()
+    protected FilterRequest()
     {
     }
 
@@ -48,6 +48,32 @@ namespace VSS.Productivity3D.Filter.Common.Models
         projectUid = projectUid,
         name = name,
         filterJson = filterJson
+      };
+    }
+  }
+
+  public class FilterRequestFull : FilterRequest
+  {
+    public string customerUid { get; set; }
+
+    public string userUid { get; set; }
+
+    public bool isApplicationContext { get; set; }
+
+    public static FilterRequestFull CreateFilterFullRequest(string customerUid, 
+      bool isApplicationContext, string userUid, 
+      string projectUid, string filterUid = null,
+      string name = null, string filterJson = null)
+    {
+      return new FilterRequestFull
+      {
+        projectUid = projectUid,
+        filterUid = filterUid,
+        name = name,
+        filterJson = filterJson,
+        customerUid = customerUid,
+        isApplicationContext = isApplicationContext,
+        userUid = userUid
       };
     }
   }

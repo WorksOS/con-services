@@ -8,7 +8,9 @@ using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Common.Utilities;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -17,7 +19,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    public GetFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IProjectListProxy projectListProxy, IFilterRepository filterRepo, IKafka producer, string kafkaTopicName) : base(configStore, logger, serviceExceptionHandler, projectListProxy, filterRepo, producer, kafkaTopicName)
+    public GetFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger,
+      IServiceExceptionHandler serviceExceptionHandler, IProjectListProxy projectListProxy,
+      IFilterRepository filterRepo, IKafka producer, string kafkaTopicName) : base(configStore, logger,
+      serviceExceptionHandler, projectListProxy, filterRepo, producer, kafkaTopicName)
     {
     }
 
@@ -44,23 +49,31 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       ContractExecutionResult result = null;
       try
       {
-        string filterUid = item as string;
-
-        // todo 
-        // get !deleted 
-        //   for customer/project
-        //      and UserUid: If the calling context is == Application, then get all 
-        //                     else get only those for the calling UserUid
-        // try catch
-        var filter = await filterRepo.GetFilter(filterUid).ConfigureAwait(false);
-        if (filter == null)
+        var filterRequest = item as FilterRequestFull;
+        if (filterRequest != null)
         {
-          throw new NotImplementedException(); 
+          // get filterUid where !deleted 
+          //   must be ok for 
+          //      customer /project
+          //      and UserUid: If the calling context is == Application, then get all 
+          //                     else get only those for the calling UserUid
+          var filter = await filterRepo.GetFilter(filterRequest.filterUid).ConfigureAwait(false);
+          if (filter == null
+              || filter.CustomerUid != filterRequest.customerUid
+              || filter.ProjectUid != filterRequest.projectUid
+              || (!filterRequest.isApplicationContext && filter.UserUid != filterRequest.userUid))
+          {
+            result = new ContractExecutionResult();
+          }
+          else
+          {
+            result = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
+          }
         }
-
-        // todo map filters to result result = FiltersResult.CreateFiltersResult(projectUid, projectSettings?.Settings);
-        result = new FilterDescriptorSingleResult(new FilterDescriptor(){FilterUid = filter.FilterUid, Name = filter.Name, FilterJson = filter.FilterJson});
-        return result;
+        else
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69); // todo find a message
+        }
       }
       catch (Exception e)
       {

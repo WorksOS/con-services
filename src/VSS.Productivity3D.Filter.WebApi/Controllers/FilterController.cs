@@ -72,19 +72,19 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
       log.LogInformation($"{this.ToString()}: CustomerUID={(User as TIDCustomPrincipal).CustomerUid} isApplication={(User as TIDCustomPrincipal).isApplication} UserUid={((User as TIDCustomPrincipal).Identity as GenericIdentity).Name} projectUid: {projectUid}");
 
-      // todo? validate request; cust/project; and filterUid/userUid
-
-      // todo make unrequired params optional
+      var request =
+        FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal).CustomerUid,
+          (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal).Identity as GenericIdentity).Name,
+          projectUid);
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, projectListProxy, filterRepo, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(projectUid) as FilterDescriptorListResult;
+      var result = await executor.ProcessAsync(request) as FilterDescriptorListResult;
 
       log.LogInformation($"{this.ToString()} Completed: resultCode: {result.Code} filterCount={result.filterDescriptors.Count}");
-      return result as FilterDescriptorListResult;
+      return result;
     }
 
-    // todo will the getFilter by FilterUID context always have the Project context, or could it be switching context?
-    /// <summary>
+     /// <summary>
     /// Gets the filter requested
     ///    If the calling context is == Application, then get it, 
     ///       else get only if owned by the calling UserUid
@@ -102,15 +102,16 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
       log.LogInformation($"{this.ToString()}: CustomerUID={(User as TIDCustomPrincipal).CustomerUid} isApplication={(User as TIDCustomPrincipal).isApplication} UserUid={((User as TIDCustomPrincipal).Identity as GenericIdentity).Name} projectUid: {projectUid} filterUid: {filterUid}");
 
-      // todo? validate request; cust/project; and filterUid/userUid
-
+      var request =
+        FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal).CustomerUid,
+          (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal).Identity as GenericIdentity).Name,
+          projectUid, filterUid);
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, projectListProxy, filterRepo, producer, kafkaTopicName);
-      var result = (await executor.ProcessAsync(projectUid)) as FilterDescriptorSingleResult;
-      //todo var sdss = result.dsfd.Where(f => f.FilterUID = filterUID).FirstOrSingle();
-
+      var result = (await executor.ProcessAsync(request)) as FilterDescriptorSingleResult;
+      
       log.LogInformation($"{this.ToString()} Completed: resultCode: {result.Code} result: {JsonConvert.SerializeObject(result)}");
-      return result as FilterDescriptorSingleResult;
+      return result;
     }
 
     /// <summary>
