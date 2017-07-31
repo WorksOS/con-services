@@ -156,8 +156,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns></returns>
     public static TExecutor Build<TExecutor>(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IFilterRepository filterRepo, 
-      IKafka producer, string kafkaTopicName = null)
+      IFilterRepository filterRepo, IProjectListProxy projectListProxy = null,  
+      IKafka producer = null, string kafkaTopicName = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor()

@@ -1,6 +1,5 @@
-﻿using System;
-using AutoMapper;
-using VSS.MasterData.Repositories.DBModels;
+﻿using AutoMapper;
+using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -47,6 +46,9 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
           cfg.CreateMap<MasterData.Repositories.DBModels.Filter, FilterDescriptor>();
+          cfg.CreateMap<FilterRequestFull, CreateFilterEvent>()
+            .ForMember(x => x.ActionUTC, opt => opt.Ignore())
+            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore());
         }
       );
 

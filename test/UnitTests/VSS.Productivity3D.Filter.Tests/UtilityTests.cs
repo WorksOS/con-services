@@ -7,11 +7,6 @@ namespace VSS.Productivity3D.Filter.Tests
   [TestClass]
   public class UtilityTests
   {
-    [ClassInitialize]
-    public static void ClassInitialize(TestContext testContext)
-    {
-      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-    }
 
     [TestMethod]
     public void TestJWTKey()

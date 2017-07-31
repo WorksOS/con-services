@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           //                     else get only those for the calling UserUid
           var filters = (await filterRepo.GetFiltersForProject(projectRequest.projectUid).ConfigureAwait(false))
             .Where(f => f.CustomerUid == projectRequest.customerUid
-                        && (projectRequest.isApplicationContext || f.UserUid == projectRequest.userUid));
+                        && (/*projectRequest.isApplicationContext ||*/ f.UserUid == projectRequest.userUid));
 
           // may be zero, return success and empty list
           result = new FilterDescriptorListResult

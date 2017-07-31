@@ -8,12 +8,6 @@ namespace VSS.Productivity3D.Filter.Common.Models
   public class FilterRequest
   {
     /// <summary>
-    /// The projectUid whose filter is to be upserted
-    /// </summary>
-    [JsonProperty(PropertyName = "projectUid", Required = Required.Always)]
-    public string projectUid { get; set; }
-
-    /// <summary>
     /// The filterUid whose filter is to be udpated, empty for create
     /// </summary>
     [JsonProperty(PropertyName = "filterUid", Required = Required.Default)]
@@ -41,11 +35,10 @@ namespace VSS.Productivity3D.Filter.Common.Models
     /// <summary>
     /// Create instance of FilterRequest
     /// </summary>
-    public static FilterRequest CreateFilterRequest(string projectUid, string name, string filterJson)
+    public static FilterRequest CreateFilterRequest(string name, string filterJson)
     {
       return new FilterRequest
       {
-        projectUid = projectUid,
         name = name,
         filterJson = filterJson
       };
@@ -57,6 +50,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public string customerUid { get; set; }
 
     public string userUid { get; set; }
+    public string projectUid { get; set; }
 
     public bool isApplicationContext { get; set; }
 

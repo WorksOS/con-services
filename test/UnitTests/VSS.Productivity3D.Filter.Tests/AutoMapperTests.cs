@@ -1,7 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Tests
 {
@@ -13,10 +15,9 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
-
-
+    
     [TestMethod]
-    public void MapProjectToResult()
+    public void MapFilterToResult()
     {
       var filter = new MasterData.Repositories.DBModels.Filter
       {
@@ -38,5 +39,28 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filter.FilterJson, result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
+    [TestMethod]
+    public void MapFilterRequestToDBModel()
+    {
+      var filterRequest = FilterRequestFull.CreateFilterFullRequest
+        ( 
+        Guid.NewGuid().ToString(),
+        false,
+        Guid.NewGuid().ToString(),
+        Guid.NewGuid().ToString(),
+        Guid.NewGuid().ToString(),
+
+        "the Name",
+        "the Json"
+      );
+
+      var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
+      Assert.AreEqual(filterRequest.customerUid, result.CustomerUID.ToString(), "customerUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.userUid, result.UserUID.ToString(), "UserUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.projectUid, result.ProjectUID.ToString(), "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.name, result.Name, "Name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+    }
   }
 }

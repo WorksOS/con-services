@@ -32,9 +32,10 @@ namespace VSS.Productivity3D.Filter.Tests
       string name = "blah";
       string filterJson = "theJsonString";
 
-      // todo not needed
-      var projectListProxy = new Mock<IProjectListProxy>();
-      
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+
       var filterRepo = new Mock<IFilterRepository>();
       var filter = new MasterData.Repositories.DBModels.Filter()
       {
@@ -49,13 +50,8 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.Setup(ps => ps.GetFilter(It.IsAny<string>())).ReturnsAsync(filter);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
 
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-
       var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid);
-      var executor = RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, projectListProxy.Object, filterRepo.Object, producer.Object, kafkaTopicName);
+      var executor = RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo.Object);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor failed");
@@ -74,9 +70,10 @@ namespace VSS.Productivity3D.Filter.Tests
       string name = "blah";
       string filterJson = "theJsonString";
 
-      // todo not needed for get
-      var projectListProxy = new Mock<IProjectListProxy>();
-    
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      
       var filterRepo = new Mock<IFilterRepository>();
       var filters = new List<MasterData.Repositories.DBModels.Filter>()
       {
@@ -91,13 +88,8 @@ namespace VSS.Productivity3D.Filter.Tests
           .ToImmutableList()
       };
       
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-
       var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid);
-      var executor = RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, projectListProxy.Object, filterRepo.Object, producer.Object, kafkaTopicName);
+      var executor = RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo.Object);
       var filterListResult = await executor.ProcessAsync(request) as FilterDescriptorListResult;
 
       Assert.IsNotNull(filterListResult, "executor failed");

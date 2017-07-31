@@ -61,7 +61,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           if (filter == null
               || filter.CustomerUid != filterRequest.customerUid
               || filter.ProjectUid != filterRequest.projectUid
-              || (!filterRequest.isApplicationContext && filter.UserUid != filterRequest.userUid))
+              || /*(!filterRequest.isApplicationContext && */ filter.UserUid != filterRequest.userUid
+              )
           {
             result = new ContractExecutionResult();
           }
