@@ -77,28 +77,28 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 4
 this.ScenarioSetup(scenarioInfo);
 #line 5
- testRunner.Given("the Compaction CMV Summary service URI \"/api/v2/compaction/cmv/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction CMV Summary service URI \"/api/v2/compaction/cmv/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
- testRunner.When("I request CMV summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I request CMV summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 8
- testRunner.Then("the CMV summary result should be", @"{
-  ""cmvSummaryData"": {
-  ""percentEqualsTarget"": 0.12620950778291964,
-  ""percentGreaterThanTarget"": 0,
-  ""percentLessThanTarget"": 99.873790492217083,
-  ""totalAreaCoveredSqMeters"": 549.56240000000014,
-  ""cmvTarget"": {
+testRunner.Then("the CMV summary result should be", @"{
+""cmvSummaryData"": {
+""percentEqualsTarget"": 0.12620950778291964,
+""percentGreaterThanTarget"": 0,
+""percentLessThanTarget"": 99.873790492217083,
+""totalAreaCoveredSqMeters"": 549.56240000000014,
+""cmvTarget"": {
     ""cmvMachineTarget"": 70.0,
     ""targetVaries"": false
-  },
-  ""minCMVPercent"": 80,
-  ""maxCMVPercent"": 130
-  },
-  ""Code"": 0,
-  ""Message"": ""success""
+},
+""minCMVPercent"": 80,
+""maxCMVPercent"": 130
+},
+""Code"": 0,
+""Message"": ""success""
 }", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -111,17 +111,17 @@ this.ScenarioSetup(scenarioInfo);
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Details", ((string[])(null)));
 #line 28
- this.ScenarioSetup(scenarioInfo);
+this.ScenarioSetup(scenarioInfo);
 #line 29
-  testRunner.Given("the Compaction CMV Details service URI \"/api/v2/compaction/cmv/details\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction CMV Details service URI \"/api/v2/compaction/cmv/details\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 30
-  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 31
-  testRunner.When("I request CMV details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I request CMV details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 32
-  testRunner.Then("the CMV details result should be", "{\r\n\t\"percents\": [\r\n      0.0,\r\n      100.0,\r\n      0.0,\r\n      0.0,\r\n      0.0\r\n " +
-                    "   ],\r\n\t\"Code\": 0,\r\n\t\"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+testRunner.Then("the CMV details result should be", "{\r\n\t\"percents\": [\r\n0.0,\r\n100.0,\r\n0.0,\r\n0.0,\r\n0.0\r\n],\r\n\t\"Code\": 0,\r\n\t\"Message\": \"s" +
+                    "uccess\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -135,15 +135,103 @@ this.ScenarioSetup(scenarioInfo);
 #line 47
 this.ScenarioSetup(scenarioInfo);
 #line 48
- testRunner.Given("the Compaction CMV % Change Summary service URI \"/api/v2/compaction/cmv/percentch" +
+testRunner.Given("the Compaction CMV % Change Summary service URI \"/api/v2/compaction/cmv/percentch" +
                     "ange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 49
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 50
- testRunner.When("I request CMV % change", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I request CMV % change", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 51
- testRunner.Then("the CMV % Change result should be", "{\r\n  \"cmvChangeData\": {\r\n    \"percents\": [\r\n      4.9875827814569531,\r\n      12.6" +
+testRunner.Then("the CMV % Change result should be", "{\r\n\"cmvChangeData\": {\r\n    \"percents\": [\r\n    4.9875827814569531,\r\n    12.6034768" +
+                    "21192054,\r\n    20.695364238410598,\r\n    61.7135761589404\r\n    ],\r\n    \"totalArea" +
+                    "CoveredSqMeters\": 558.57920000000013\r\n},\r\n\"Code\": 0,\r\n\"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary with project settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
+        public virtual void CompactionGetCMVSummaryWithProjectSettings()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Summary with project settings", new string[] {
+                        "ignore"});
+#line 69
+this.ScenarioSetup(scenarioInfo);
+#line 70
+testRunner.Given("the Compaction CMV Summary service URI \"/api/v2/compaction/cmv/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 71
+testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 72
+testRunner.When("I request CMV summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 73
+testRunner.Then("the CMV summary result should be", @"{
+  ""cmvSummaryData"": {
+    ""percentEqualsTarget"": 0.12620950778291964,
+    ""percentGreaterThanTarget"": 0,
+    ""percentLessThanTarget"": 99.873790492217083,
+    ""totalAreaCoveredSqMeters"": 549.56240000000014,
+    ""cmvTarget"": {
+      ""cmvMachineTarget"": 70.0,
+      ""targetVaries"": false
+    },
+    ""minCMVPercent"": 80,
+    ""maxCMVPercent"": 130
+  },
+  ""Code"": 0,
+  ""Message"": ""success""
+}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Details with project settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
+        public virtual void CompactionGetCMVDetailsWithProjectSettings()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Details with project settings", new string[] {
+                        "ignore"});
+#line 94
+this.ScenarioSetup(scenarioInfo);
+#line 95
+testRunner.Given("the Compaction CMV Details service URI \"/api/v2/compaction/cmv/details\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 96
+testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 97
+testRunner.When("I request CMV details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 98
+testRunner.Then("the CMV details result should be", "{\r\n  \"percents\": [\r\n    0.0,\r\n    100.0,\r\n    0.0,\r\n    0.0,\r\n    0.0\r\n  ],\r\n  \"C" +
+                    "ode\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary with project settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
+        public virtual void CompactionGetCMVChangeSummaryWithProjectSettings()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV % Change Summary with project settings", new string[] {
+                        "ignore"});
+#line 114
+this.ScenarioSetup(scenarioInfo);
+#line 115
+testRunner.Given("the Compaction CMV % Change Summary service URI \"/api/v2/compaction/cmv/percentch" +
+                    "ange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 116
+testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 117
+testRunner.When("I request CMV % change", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 118
+testRunner.Then("the CMV % Change result should be", "{\r\n  \"cmvChangeData\": {\r\n    \"percents\": [\r\n      4.9875827814569531,\r\n      12.6" +
                     "03476821192054,\r\n      20.695364238410598,\r\n      61.7135761589404\r\n    ],\r\n    " +
                     "\"totalAreaCoveredSqMeters\": 558.57920000000013\r\n  },\r\n  \"Code\": 0,\r\n  \"Message\":" +
                     " \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");

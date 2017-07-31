@@ -23,7 +23,7 @@ Then the Temperature result should be
 "Message": "success"
 }
 """
-
+@ignore
 Scenario: Compaction Get Temperature Summary with project settings
 Given the Compaction Temperature Summary service URI "/api/v2/compaction/temperature/summary"
 And a projectUid "3335311a-f0e2-4dbe-8acd-f21135bafee4"
