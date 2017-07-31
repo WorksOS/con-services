@@ -252,6 +252,17 @@ namespace VSS.MasterData.Proxies
       }
     }
 
+    /// <summary>
+    /// Executes the request.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="endpoint">The endpoint.</param>
+    /// <param name="method">The method.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    /// <param name="payloadData">The payload data.</param>
+    /// <param name="retries">The retries.</param>
+    /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
+    /// <returns></returns>
     public async Task<T> ExecuteRequest<T>(string endpoint, string method,
       IDictionary<string, string> customHeaders = null,
       string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
@@ -286,6 +297,16 @@ namespace VSS.MasterData.Proxies
     }
 
 
+    /// <summary>
+    /// Executes the request.
+    /// </summary>
+    /// <param name="endpoint">The endpoint.</param>
+    /// <param name="method">The method.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    /// <param name="payloadData">The payload data.</param>
+    /// <param name="retries">The retries.</param>
+    /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
+    /// <returns></returns>
     public async Task<Stream> ExecuteRequest(string endpoint, string method,
       IDictionary<string, string> customHeaders = null,
       string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
@@ -320,6 +341,17 @@ namespace VSS.MasterData.Proxies
     }
 
 
+    /// <summary>
+    /// Executes the request.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="endpoint">The endpoint.</param>
+    /// <param name="payload">The payload.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    /// <param name="method">The method.</param>
+    /// <param name="retries">The retries.</param>
+    /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
+    /// <returns></returns>
     public async Task<T> ExecuteRequest<T>(string endpoint, Stream payload,
       IDictionary<string, string> customHeaders = null, string method = "POST", int retries = 3, bool suppressExceptionLogging = false)
     {
