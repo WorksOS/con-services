@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
@@ -85,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="endUtc">End UTC. </param>
     /// <param name="cutfillDesignUid">Design UID</param>
     /// <returns>
-    /// Returns JSON structure wtih operation result as profile calculations <see cref="Common.Contracts.ContractExecutionResult"/>
+    /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
     /// </returns>
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]

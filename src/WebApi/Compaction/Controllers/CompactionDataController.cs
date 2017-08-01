@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
     /// <returns>CMV summary</returns>
-    [ProjectUidVerifier]
+  /*  [ProjectUidVerifier]
     [Route("api/v2/compaction/cmv/summary")]
     [HttpGet]
     public async Task<CompactionCmvSummaryResult> GetCmvSummary(
@@ -109,9 +109,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
       try
       {
-        log.LogInformation($"Executing {typeof(E)}");
-        //TODO replace this builder with a single overloaded methid with a service
-        return converter(RequestExecutorContainer.Build<E>(logger, raptorClient, null).Process(request) as I);
+        //log.LogInformation($"Executing {typeof(E)}");
+        //TODO replace this builder with a single overloaded method with a service
+        //return converter(RequestExecutorContainer.Build<E>(logger, raptorClient, null).Process(request) as I);
       }
       catch (ServiceException se)
       {
@@ -121,9 +121,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       finally
       {
-        log.LogInformation($"Executed {typeof(E)} with result {Response.StatusCode}");
+       // log.LogInformation($"Executed {typeof(E)} with result {Response.StatusCode}");
       }
-    }
+    }*/
 
     /// <summary>
     /// Get MDP summary from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.

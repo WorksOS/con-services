@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -26,7 +27,7 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
 
               ContractExecutionStates.DynamicAddwithOffset(
                 "A second list of dynamic errors",
-                15, ContractExecutionStates.SecondDynamicOffset);
+                15);
             }
         }
 

@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
@@ -72,14 +74,14 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Helpers
           else
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+              new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
                 "Unable to access design file."));
           }
         }
         else
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
               "Project has no appropriate design files."));
         }
       }
