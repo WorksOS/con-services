@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
-using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {

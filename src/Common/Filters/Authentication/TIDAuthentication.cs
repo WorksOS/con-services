@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -32,9 +32,9 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     {
       if (!context.Request.Path.Value.Contains("swagger"))
       {
-        bool isApplicationContext = false;
-        string applicationName = "";
-        string userUid = "";
+        bool isApplicationContext;
+        string applicationName;
+        string userUid;
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
         string customerUid = context.Request.Headers["X-VisionLink-CustomerUid"];
@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
           {
             var customerResult =
               await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
-            if (customerResult.status != 200 || customerResult.customer == null ||
+            if (customerResult.status != StatusCodes.Status200OK || customerResult.customer == null ||
                 customerResult.customer.Count < 1 ||
                 !customerResult.customer.Exists(x => x.uid == customerUid))
             {
@@ -133,10 +133,11 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
             : new GenericIdentity(userUid, customerUid);
           var principal = new RaptorPrincipal(identity, customerUid, authProjects, isApplicationContext);
           context.User = principal;
-          //Thread.CurrentPrincipal = principal;
         }
         catch (Exception ex)
         {
+          log.LogError($"Error setting custom context: {ex.GetBaseException().Message}.");
+
           await SetResult("Invalid authentication", context);
           return;
 
@@ -145,9 +146,9 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
       await _next.Invoke(context);
     }
 
-    private async Task SetResult(string message, HttpContext context)
+    private static async Task SetResult(string message, HttpContext context)
     {
-      context.Response.StatusCode = 403;
+      context.Response.StatusCode = StatusCodes.Status403Forbidden;
       await context.Response.WriteAsync(message);
     }
   }

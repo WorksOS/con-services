@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ASNode.ExportProductionDataCSV.RPC;
+using BoundingExtents;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Linq;
-using ASNode.ExportProductionDataCSV.RPC;
-using BoundingExtents;
 using VLPDDecls;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
@@ -19,7 +19,6 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Compaction.Controllers;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Contracts;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
@@ -102,7 +101,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Creates an instance of the CMVRequest class and populate it with data.
     /// </summary>
-    /// <param name="projectId">Project identifier.</param>
     /// <param name="projectUid">Project unique identifier.</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC.</param>
@@ -248,8 +246,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// 
     /// </summary>
     /// <param name="request"></param>
-    /// <returns></returns>
-    /// 
     [PostRequestVerifier]
     [Route("api/v1/export")]
     [HttpPost]
@@ -265,9 +261,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Gets an export of 3D project data in .TTM file format report.
     /// </summary>
-    /// <returns></returns>
-    /// 
-    /// <param name="projectId">Project identifier.</param>
     /// <param name="projectUid">Project unique identifier.</param>
     /// <param name="fileName">Output file name.</param>
     /// <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
@@ -306,7 +299,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Gets an export of production data in cell grid format report.
     /// </summary>
-    /// <param name="projectId">Project identifier.</param>
     /// <param name="projectUid">Project unique identifier.</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC.</param>
@@ -316,7 +308,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="rawDataOutput">Column headers in an output .CSV file's are in the dBase format.</param>
     /// <param name="fileName">Output file name.</param>
     /// <returns>An instance of the ExportResult class.</returns>
-    /// 
     [ProjectUidVerifier]
     [Route("api/v2/export/machinepasses")]
     [HttpGet]
@@ -353,14 +344,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
     /// </summary>
-    /// <param name="projectId">Project identifier.</param>
     /// <param name="projectUid">Project unique identifier.</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC.</param>
     /// <param name="fileName">Output file name.</param>
     /// <param name="machineNames">Comma-separated list of machine names.</param>
     /// <returns>An instance of the ExportResult class.</returns>
-    /// 
     [ProjectUidVerifier]
     [Route("api/v2/export/veta")]
     [HttpGet]

@@ -30,8 +30,7 @@ namespace VSS.Productivity3D.Common.Contracts
     /// <param name="message">The verbose user-friendly message.</param>
     protected ContractExecutionResult(string message)
       : this(ContractExecutionStatesEnum.ExecutedSuccessfully, message)
-    {
-    }
+    { }
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="ContractExecutionResult" /> class with default
@@ -39,12 +38,16 @@ namespace VSS.Productivity3D.Common.Contracts
     /// </summary>
     public ContractExecutionResult()
       : this(DefaultMessage)
-    {
-    }
-
+    { }
 
     /// <summary>
     ///   Defines machine-readable code.
+    /// List of codes:
+    ///     OK = 0,
+    ///     Incorrect Requested Data = -1,
+    ///     Validation Error = -2
+    ///     InternalProcessingError = -3;
+    ///     FailedToGetResults = -4;
     /// </summary>
     /// <value>
     ///   Result code.

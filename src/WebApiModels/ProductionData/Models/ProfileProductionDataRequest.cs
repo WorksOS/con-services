@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using Newtonsoft.Json;
+using VSS.ConfigurationStore;
 using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
@@ -15,7 +17,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
   /// The request representation for a linear or alignment based profile request for all thematic types other than summary volumes.
   /// Model represents a production data profile
   /// </summary>
-  public class ProfileProductionDataRequest : ProjectID, IValidatable
+  public class ProfileProductionDataRequest : ProjectID
   {
     /// <summary>
     /// An identifying string from the caller
@@ -103,37 +105,12 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
     [Required]
     public bool returnAllPassesAndLayers { get; private set; }
 
-    /// <summary>
-    /// Private constructor.
-    /// </summary>
-    public ProfileProductionDataRequest()
-    {
-      // ...
-    }
-
-    /// <summary>
-    /// Creates an instance of ProfileProductionDataRequest class.
-    /// </summary>
-    /// <param name="projectID"></param>
-    /// <param name="callId"></param>
-    /// <param name="profileType"></param>
-    /// <param name="filter"></param>
-    /// <param name="filterID"></param>
-    /// <param name="alignmentDesign"></param>
-    /// <param name="gridPoints"></param>
-    /// <param name="wgs84Points"></param>
-    /// <param name="startStation"></param>
-    /// <param name="endStation"></param>
-    /// <param name="liftBuildSettings"></param>
-    /// <param name="returnAllPassesAndLayers"></param>
-    /// <returns></returns>
-    /// 
     public static ProfileProductionDataRequest CreateProfileProductionData(
-      long projectID,
+      long? projectID,
       Guid? callId,
       ProductionDataType profileType,
       Filter filter,
-      long filterID,
+      long? filterID,
       DesignDescriptor alignmentDesign,
       ProfileGridPoints gridPoints,
       ProfileLLPoints wgs84Points,
@@ -145,51 +122,44 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
     {
       return new ProfileProductionDataRequest
       {
-          projectId = projectID,
-          callId = callId,
-          profileType = profileType,
-          filter = filter,
-          filterID = filterID,
-          alignmentDesign = alignmentDesign,
-          gridPoints = gridPoints,
-          wgs84Points = wgs84Points,
-          startStation = startStation,
-          endStation = endStation,
-          liftBuildSettings = liftBuildSettings,
-          returnAllPassesAndLayers = returnAllPassesAndLayers
-        };
+        projectId = projectID,
+        callId = callId,
+        profileType = profileType,
+        filter = filter,
+        filterID = filterID,
+        alignmentDesign = alignmentDesign,
+        gridPoints = gridPoints,
+        wgs84Points = wgs84Points,
+        startStation = startStation,
+        endStation = endStation,
+        liftBuildSettings = liftBuildSettings,
+        returnAllPassesAndLayers = returnAllPassesAndLayers
+      };
     }
 
     /// <summary>
     /// Creates a sample instance of ProfileProductionDataRequest class to be displayed in the Help documentation.
     /// </summary>
-    /// <returns></returns>
     /// 
-    public new static ProfileProductionDataRequest HelpSample
+    /// 
+    public new static ProfileProductionDataRequest HelpSample => new ProfileProductionDataRequest
     {
-      get
-      {
-        return new ProfileProductionDataRequest
-        {
-          projectId = 404,
-          callId = new Guid(),
-          profileType = ProductionDataType.All,
-          filter = Filter.HelpSample,
-          filterID = 1,
-          alignmentDesign = DesignDescriptor.HelpSample,
-          gridPoints = null,
-          wgs84Points = ProfileLLPoints.HelpSample,
-          startStation = 0,
-          endStation = 100,
-          liftBuildSettings = LiftBuildSettings.HelpSample,
-          returnAllPassesAndLayers = true
-        };
-      }
-    }
-
+      projectId = 404,
+      callId = new Guid(),
+      profileType = ProductionDataType.All,
+      filter = Filter.HelpSample,
+      filterID = 1,
+      alignmentDesign = DesignDescriptor.HelpSample,
+      gridPoints = null,
+      wgs84Points = ProfileLLPoints.HelpSample,
+      startStation = 0,
+      endStation = 100,
+      liftBuildSettings = LiftBuildSettings.HelpSample,
+      returnAllPassesAndLayers = true
+    };
 
     /// <summary>
-    /// Validation method.
+    /// Validates the request and throws if validation fails.
     /// </summary>
     public override void Validate()
     {
@@ -199,30 +169,30 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                string.Format("Profile type {0} is out of range. It should be between: {1} and {2}.", (int)profileType, (int)ProductionDataType.All, (int)ProductionDataType.CCVChange)));
+              $"Profile type {(int)profileType} is out of range. It should be between: {(int)ProductionDataType.All} and {(int)ProductionDataType.CCVChange}."));
       }
-            
+
       if (filter != null)
       {
         // Validate filter...
         filter.Validate();
 
-        if (filterID.HasValue && (filterID.Value) <= 0)
+        if (filterID.HasValue && filterID.Value <= 0)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  string.Format("Filter ID {0} should be greater than zero.", filterID.Value)));
+                $"Filter ID {filterID.Value} should be greater than zero."));
         }
       }
 
-      if ((alignmentDesign == null) && (gridPoints == null) && (wgs84Points == null))
+      if (alignmentDesign == null && gridPoints == null && wgs84Points == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Either a linear or alignment based profile must be provided."));
       }
 
-      if ((alignmentDesign != null) && ((gridPoints != null) || (wgs84Points != null)))
+      if (alignmentDesign != null && (gridPoints != null || wgs84Points != null))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -244,14 +214,14 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
       else
       {
         // Validate profile points...
-        if ((gridPoints != null) && (wgs84Points != null))
+        if (gridPoints != null && wgs84Points != null)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                   "The profile line requires series either grid or WGS84 points."));
         }
 
-        if ((gridPoints == null) && (wgs84Points == null))
+        if (gridPoints == null && wgs84Points == null)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -259,13 +229,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
         }
       }
 
-      if (liftBuildSettings != null)
-      {
-        // Validate compaction settings...
-        liftBuildSettings.Validate();
-      }
+      liftBuildSettings?.Validate();
     }
-
-
-  }  
+  }
 }

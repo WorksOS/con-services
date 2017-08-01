@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ASNode.UserPreferences;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using ASNode.UserPreferences;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Common.Controllers
 {
@@ -34,10 +34,15 @@ namespace VSS.Productivity3D.Common.Controllers
     {
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
       if (fileList == null || fileList.Count == 0)
+      {
         return null;
-      return fileList
+      }
+
+      var results = fileList
         .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
         .Select(f => f.LegacyFileId).ToList();
+
+      return results;
     }
 
     /// <summary>
@@ -51,7 +56,7 @@ namespace VSS.Productivity3D.Common.Controllers
     /// <returns>The project settings</returns>
     public static async Task<CompactionProjectSettings> GetProjectSettings(this Controller controller, IProjectSettingsProxy projectSettingsProxy, Guid projectUid, IDictionary<string, string> customHeaders, ILogger log)
     {
-      CompactionProjectSettings ps = null;
+      CompactionProjectSettings ps;
       var jsonSettings = await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders);
       if (!string.IsNullOrEmpty(jsonSettings))
       {
