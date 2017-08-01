@@ -6,16 +6,15 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Extensions;
+using VSS.Productivity3D.WebApiModels.ProductionData.Helpers;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Helpers
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
   /// <summary>
   /// The request representation for a linear or alignment based profile request for all thematic types other than summary volumes.

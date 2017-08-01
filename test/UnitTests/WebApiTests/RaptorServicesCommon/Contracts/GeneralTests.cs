@@ -6,7 +6,7 @@ using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
 {
-    [TestClass]
+  [TestClass]
     public class GeneralTests
     {
         class TestContainer : RequestExecutorContainer
@@ -39,6 +39,5 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
             container.Process(WGSPoint.CreatePoint(1,1));
             Assert.AreEqual(8, container.GenerateErrorlist().Count);
         }
-
     }
 }

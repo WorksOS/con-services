@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
@@ -40,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="request">Profile production data request structure.></param>
     /// <returns>
-    /// Returns JSON structure wtih operation result as profile calculations <see cref="Common.Contracts.ContractExecutionResult"/>
+    /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
     /// </returns>
     [PostRequestVerifier]
     [ProjectIdVerifier]

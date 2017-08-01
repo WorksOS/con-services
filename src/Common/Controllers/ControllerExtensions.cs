@@ -7,16 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Common.Controllers
 {

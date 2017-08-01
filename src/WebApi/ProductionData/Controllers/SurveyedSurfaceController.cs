@@ -1,8 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -14,11 +13,11 @@ using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
-    /// <summary>
-    /// Controller for Surveyed Surfaces resource.
-    /// </summary>
-    /// 
-    [ResponseCache(NoStore = true)]
+  /// <summary>
+  /// Controller for Surveyed Surfaces resource.
+  /// </summary>
+  /// 
+  [ResponseCache(NoStore = true)]
     public class SurveyedSurfaceController : Controller, ISurveyedSurfaceContract
   {
     /// <summary>
