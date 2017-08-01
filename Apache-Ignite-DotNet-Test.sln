@@ -15,13 +15,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TAGFiles.Tests", "TAGFiles.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raptor.Common", "Raptor.Common\Raptor.Common.csproj", "{197081DD-40E6-42AF-8A77-A3A0445042EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorTAGFileProcessor", "RaptorClient\RaptorTAGFileProcessor.csproj", "{7DD49C6B-042D-40CE-8E8E-430146E3AF97}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorIgniteTest", "WindowsFormsApplication1\RaptorIgniteTest.csproj", "{BEAD32E3-AB58-4A6D-9D6F-65BD623E760A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorServerApplication", "RaptorServerApplication\RaptorServerApplication.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorPSNodeServer", "RaptorPSNodeServer\RaptorPSNodeServer.csproj", "{52BDC39B-A978-454B-8725-A0A887A263E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorTAGFileProcessor", "RaptorTAGFileProcessor\RaptorTAGFileProcessor.csproj", "{7DD49C6B-042D-40CE-8E8E-430146E3AF97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,14 +79,6 @@ Global
 		{197081DD-40E6-42AF-8A77-A3A0445042EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{197081DD-40E6-42AF-8A77-A3A0445042EB}.Release|x64.ActiveCfg = Release|x64
 		{197081DD-40E6-42AF-8A77-A3A0445042EB}.Release|x64.Build.0 = Release|x64
-		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|x64.ActiveCfg = Debug|x64
-		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|x64.Build.0 = Debug|x64
-		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|x64.ActiveCfg = Release|x64
-		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|x64.Build.0 = Release|x64
 		{BEAD32E3-AB58-4A6D-9D6F-65BD623E760A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BEAD32E3-AB58-4A6D-9D6F-65BD623E760A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BEAD32E3-AB58-4A6D-9D6F-65BD623E760A}.Debug|x64.ActiveCfg = Debug|x64
@@ -111,6 +103,14 @@ Global
 		{52BDC39B-A978-454B-8725-A0A887A263E3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52BDC39B-A978-454B-8725-A0A887A263E3}.Release|x64.ActiveCfg = Release|x64
 		{52BDC39B-A978-454B-8725-A0A887A263E3}.Release|x64.Build.0 = Release|x64
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|x64.ActiveCfg = Debug|x64
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|x64.Build.0 = Debug|x64
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|x64.ActiveCfg = Release|x64
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

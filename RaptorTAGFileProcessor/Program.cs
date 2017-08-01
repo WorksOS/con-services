@@ -10,6 +10,7 @@ using VSS.VisionLink.Raptor.Executors;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.Servers;
@@ -189,6 +190,7 @@ namespace VSS.VisionLink.Raptor.Client
         {
             try
             {
+                // Pull relevant arguments off the command line
                 if (args.Length < 2)
                 {
                     Console.WriteLine("Usage: ProcessTAGFiles <ProjectID> <FolderPath>");
@@ -213,7 +215,13 @@ namespace VSS.VisionLink.Raptor.Client
                     return;
                 }
 
-                // Obtain a TAGFileProcessign client server
+                // Ensure there is an active and available grid
+                if (!ActivatePersistentGridServer.SetGridActive(RaptorGrids.RaptorGridName()))
+                {
+                    Console.WriteLine("Unable to set grid {0} to active", RaptorGrids.RaptorGridName());
+                }
+
+                // Obtain a TAGFileProcessing client server
                 TAGFileProcessingServer TAGServer = new TAGFileProcessingServer();
 
                 ProcessTAGFilesInFolder(projectID, folderPath);
