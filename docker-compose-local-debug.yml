@@ -3,30 +3,34 @@ services:
   webapi:
     build: ./artifacts/VSS.Productivity3D.Filter.WebApi
     env_file:
-     - docker-compose.env
+     - docker-compose-local-debug.env 
     depends_on:
       - schema
   mockprojectwebapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
     env_file:
-     - docker-compose.env 
+     - docker-compose-local-debug.env
+    ports:
+     - "5001:5001"      
   schema:
     build: ./database 
     env_file:
-     - docker-compose.env
+     - docker-compose-local-debug.env 
     depends_on:
      - db  
   db:
     image: mysql/mysql-server:5.7.15 
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
     env_file:
-     - docker-compose.env
+     - docker-compose-local-debug.env 
+    ports:
+      - "3306:3306"     
   zookeeper:
     image: wurstmeister/zookeeper:3.4.6
   kafka:
     image: wurstmeister/kafka:latest
     env_file:
-     - docker-compose.env
+     - docker-compose-local-debug.env 
     environment:
      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
      - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.IFilterEvent:1:1
@@ -38,7 +42,7 @@ services:
   accepttest:
     build: ./AcceptanceTests/deploy
     env_file:
-     - docker-compose.env
+     - docker-compose-local-debug.env 
     volumes:
       - ./AcceptanceTests/deploy/testresults:/app/testresults
     depends_on:

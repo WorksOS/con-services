@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.Filter.Tests
   public class ValidationTests : ExecutorBaseTests
   {
     [TestMethod]
-    public async Task FilterRequestValidation_MissingCustomerUid()
+    public void FilterRequestValidation_MissingCustomerUid()
     {
       string custUid = "sfgsdfsf";
       string userUid = Guid.NewGuid().ToString();
@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task FilterRequestValidation_MissingUserUid()
+    public void FilterRequestValidation_MissingUserUid()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = "";
@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task FilterRequestValidation_MissingProjectUid()
+    public void FilterRequestValidation_MissingProjectUid()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task FilterRequestValidation_InvalidFilterUid()
+    public void FilterRequestValidation_InvalidFilterUid()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task FilterRequestValidation_InvalidName()
+    public void FilterRequestValidation_InvalidName()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
@@ -106,7 +106,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task FilterRequestValidation_InvalidFilterJson()
+    public void FilterRequestValidation_InvalidFilterJson()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task FilterRequestValidation_emptyName()
+    public void FilterRequestValidation_emptyName()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
@@ -143,7 +143,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
     [TestMethod]
     // this should fail once Json validation is in place
-    public async Task FilterRequestValidation_happyPath()
+    public void FilterRequestValidation_happyPath()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();

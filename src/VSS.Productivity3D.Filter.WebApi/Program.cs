@@ -8,12 +8,17 @@ using System.Diagnostics;
 
 namespace VSS.Productivity3D.Filter.WebApi
 {
-    public class Program
+  /// <summary>
+  /// VSS.Productivity3D.Filter program
+  /// </summary>
+  public class Program
+  {
+    /// <summary>
+    /// VSS.Productivity3D.Filter main
+    /// </summary>
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-#if NET_4_7
-//To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
+#if NET_4_7 //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
 
@@ -28,14 +33,14 @@ namespace VSS.Productivity3D.Filter.WebApi
 
       host.RunAsService();
 #else
-          var host = new WebHostBuilder()
-            .UseKestrel()
-            .UseContentRoot(Directory.GetCurrentDirectory())
-            .UseIISIntegration()
-            .UseStartup<Startup>()
-            .Build();
+      var host = new WebHostBuilder()
+        .UseKestrel()
+        .UseContentRoot(Directory.GetCurrentDirectory())
+        .UseIISIntegration()
+        .UseStartup<Startup>()
+        .Build();
 
-          host.Run();
+      host.Run();
 #endif
     }
   }

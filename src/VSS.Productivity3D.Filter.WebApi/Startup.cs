@@ -22,12 +22,18 @@ using VSS.Productivity3D.Filter.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Filter.WebApi
 {
+  /// <summary>
+  /// VSS.Productivity3D.Filter startup
+  /// </summary>
   public class Startup
   {
     private const string loggerRepoName = "WebApi";
     private readonly bool isDevEnv;
     IServiceCollection serviceCollection;
 
+    /// <summary>
+    /// VSS.Productivity3D.Filter startup
+    /// </summary>
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()

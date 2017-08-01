@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS Filter (
   InsertUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   UpdateUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (ID),
-  UNIQUE KEY UIX_Filter_CustomerUID (fk_CustomerUID, fk_UserUID, fk_ProjectUID, FilterUID),
+  UNIQUE KEY UIX_Filter_CustomerUID (fk_CustomerUID, fk_UserUID, fk_ProjectUID),
+  UNIQUE KEY UIX_Filter_FilterUID (FilterUID),
   KEY IX_Filter_ProjectUID (fk_ProjectUID),
   KEY IX_Filter_FilterUID (FilterUID)
 ) ENGINE=InnoDB CHARSET = DEFAULT COLLATE = DEFAULT;
