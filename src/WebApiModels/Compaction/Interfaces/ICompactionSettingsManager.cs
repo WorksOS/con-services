@@ -25,6 +25,5 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Interfaces
 
     List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents,
       CompactionProjectSettings projectSettings);
-
   }
 }

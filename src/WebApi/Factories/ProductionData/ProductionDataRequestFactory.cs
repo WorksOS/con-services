@@ -6,9 +6,8 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.ProductionData.Helpers;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Productivity3D.WebApi.ProductionData.Factories
+namespace VSS.Productivity3D.WebApi.Factories.ProductionData
 {
   /// <summary>
   /// 
@@ -37,6 +36,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Factories
     private CompactionProjectSettings _projectSettings;
     private List<long> _excludedIds;
 
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    /// <param name="logger">ILoggerFactory service implementation</param>
+    /// <param name="configStore">IConfigurationStore service implementation</param>
+    /// <param name="fileListProxy">MasterDataProxies IFileListProxy service</param>
+    /// <param name="settingsManager">ICompactionSettingsManager service implementation</param>
     public ProductionDataRequestFactory(ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
@@ -47,15 +53,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Factories
     }
 
     /// <summary>
-    /// 
-    /// 
-    /// 
+    /// Create instance of T.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
+    /// <typeparam name="T">Derived implementation of DataRequestBase</typeparam>
+    /// <returns>Returns instance of T with required attributes set.</returns>
     public T Create<T>(Action<ProductionDataRequestFactory> action) where T : DataRequestBase, new()
     {
-      //   var factory = new ProductionDataRequestFactory();
       action(this);
 
       var obj = new T

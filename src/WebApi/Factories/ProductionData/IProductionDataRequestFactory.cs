@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.ProductionData.Helpers;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Productivity3D.WebApi.ProductionData.Factories
+namespace VSS.Productivity3D.WebApi.Factories.ProductionData
 {
   public interface IProductionDataRequestFactory
   {
