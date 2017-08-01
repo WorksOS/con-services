@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C69D8EB6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore.UnitTests", "ConfigurationStore\test\UnitTests\VSS.ConfigurationStore.UnitTests.csproj", "{2244E500-82FC-4B52-8E3F-2C1DDF302366}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.Tests", "MasterDataModels\test\UnitTests\VSS.MasterData.Models.Tests.csproj", "{1248C5C4-C138-4215-825F-18D61639027D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.UnitTests", "MasterDataModels\test\UnitTests\VSS.MasterData.Models.UnitTests.csproj", "{1248C5C4-C138-4215-825F-18D61639027D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
