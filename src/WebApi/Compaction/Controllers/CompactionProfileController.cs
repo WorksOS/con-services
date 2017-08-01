@@ -73,6 +73,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.fileListProxy = fileListProxy;
       this.projectSettingsProxy = projectSettingsProxy;
       this.requestFactory = requestFactory;
+      this.raptorClient = raptorClient;
     }
 
     /// <summary>
@@ -122,9 +123,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainer.Build<ProfileProductionDataExecutor>(logger, raptorClient)
+        var result = RequestExecutorContainer
+          .Build<ProfileProductionDataExecutor>(logger, raptorClient)
           .Process(slicerProfileResult) as ProfileResult;
-        log.LogInformation("GetProfileProduction result: " + JsonConvert.SerializeObject(result));
+
+        log.LogTrace("GetProfileProduction result: " + JsonConvert.SerializeObject(result));
+
         return result;
       }
       catch (ServiceException se)
