@@ -8,6 +8,7 @@ using System.IO;
 using RestAPICoreTestFramework.Utils.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using RaptorSvcAcceptTestsCommon.Utils;
 
 namespace RaptorSvcAcceptTestsCommon.Utils
 {
@@ -348,6 +349,24 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         return default(TResponse);
     }
 
+    /// <summary>
+    /// Utility method for creating a poster and doing a valid request
+    /// </summary>
+    public static Poster<T, U> PostIt<T, U>(T request, string url)
+    {
+      Poster<T, U> poster = new Poster<T, U>(url, request);
+      poster.DoValidRequest();
+      return poster;
+    }
+
+    /// <summary>
+    /// Utility method for comparing actual response with expected response
+    /// </summary>
+    public void CompareIt<U>(string multilineText)
+    {
+      U expected = JsonConvert.DeserializeObject<U>(multilineText);
+      Assert.AreEqual(expected, this.CurrentResponse);
+    }
     #endregion
   }
 
@@ -507,8 +526,33 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
     }
 
+    /// <summary>
+    /// Utility method for creating a getter and doing a valid request
+    /// </summary>
+    public static Getter<T> GetIt<T>(string url, string projectUid, string queryParameters=null)
+    {
+      url = string.Format("{0}?projectUid={1}", url, projectUid);
+      if (!string.IsNullOrEmpty(queryParameters))
+        url += queryParameters;
+      Getter<T> getter = new Getter<T>(url);
+      getter.DoValidRequest();
+      return getter;
+    }
+
+    /// <summary>
+    /// Utility method for comparing actual response with expected response
+    /// </summary>
+    public void CompareIt<T>(string multilineText)
+    {
+      T expected = JsonConvert.DeserializeObject<T>(multilineText);
+      Assert.AreEqual(expected, this.CurrentResponse);
+    }
     #endregion
   }
+
+ 
+
+
 
   /// <summary>
   /// A mini logger class

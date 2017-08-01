@@ -77,7 +77,7 @@ namespace ProductionDataSvc.AcceptanceTests
 #line hidden
         }
         
-        public virtual void GetDesignBoundaries_GoodRequest_NoDesigns(string requetsName, string projectUID, string tolerance, string resultName, string[] exampleTags)
+        public virtual void GetDesignBoundaries_GoodRequest_NoDesigns(string requestName, string projectUID, string tolerance, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetDesignBoundaries - Good Request - No Designs", exampleTags);
 #line 7
@@ -99,7 +99,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetDesignBoundaries - Good Request - No Designs")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetDesignBoundaries")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "86a42bbf-9d0e-4079-850f-835496d715c5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Tolerance", "1.00")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesigns")]
@@ -108,7 +108,7 @@ this.FeatureBackground();
             this.GetDesignBoundaries_GoodRequest_NoDesigns("", "86a42bbf-9d0e-4079-850f-835496d715c5", "1.00", "NoDesigns", ((string[])(null)));
         }
         
-        public virtual void GetDesignBoundaries_GoodRequest(string requetsName, string projectUID, string tolerance, string resultName, string[] exampleTags)
+        public virtual void GetDesignBoundaries_GoodRequest(string requestName, string projectUID, string tolerance, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetDesignBoundaries - Good Request", exampleTags);
 #line 16
@@ -131,7 +131,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetDesignBoundaries - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetDesignBoundaries")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "With Tolerance")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "With Tolerance")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "With Tolerance")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Tolerance", "1.00")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "WithTolerance")]
@@ -140,7 +140,7 @@ this.FeatureBackground();
             this.GetDesignBoundaries_GoodRequest("With Tolerance", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "1.00", "WithTolerance", ((string[])(null)));
         }
         
-        public virtual void GetDesignBoundaries_GoodRequest_NoTolerance(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        public virtual void GetDesignBoundaries_GoodRequest_NoTolerance(string requestName, string projectUID, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetDesignBoundaries - Good Request - No Tolerance", exampleTags);
 #line 25
@@ -160,7 +160,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetDesignBoundaries - Good Request - No Tolerance")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetDesignBoundaries")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "WithTolerance")]
         public virtual void GetDesignBoundaries_GoodRequest_NoTolerance_()
@@ -168,7 +168,7 @@ this.FeatureBackground();
             this.GetDesignBoundaries_GoodRequest_NoTolerance("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "WithTolerance", ((string[])(null)));
         }
         
-        public virtual void GetDesignBoundaries_BadRequest_NoProjectUID(string requetsName, string tolerance, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void GetDesignBoundaries_BadRequest_NoProjectUID(string requestName, string tolerance, string errorCode, string errorMessage, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetDesignBoundaries - Bad Request - NoProjectUID", exampleTags);
 #line 33
@@ -189,7 +189,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetDesignBoundaries - Bad Request - NoProjectUID")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetDesignBoundaries")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Tolerance", "1.00")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing Project or project does not belong to specified customer or don\'t have ac" +

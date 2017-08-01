@@ -18,6 +18,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApi.ProductionData.Factories;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Notification.Helpers;
@@ -48,12 +49,7 @@ namespace VSS.Productivity3D.WebApi
       env.ConfigureLog4Net("log4net.xml", loggerRepoName);
 
       isDevEnv = env.IsEnvironment("Development");
-      if (isDevEnv)
-      {
-        // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-        builder.AddApplicationInsightsSettings(developerMode: true);
-      }
-
+  
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
     }
@@ -78,7 +74,6 @@ namespace VSS.Productivity3D.WebApi
                   .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
       });
       // Add framework services.
-      services.AddApplicationInsightsTelemetry(Configuration);
       services.AddMemoryCache();
       services.AddCustomResponseCaching();
       services.AddMvc(
@@ -120,6 +115,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddTransient<ITileGenerator, TileGenerator>();
       services.AddSingleton<IElevationExtentsProxy, ElevationExtentsProxy>();
       services.AddScoped<ICompactionSettingsManager, CompactionSettingsManager>();
+      services.AddScoped<IProductionDataRequestFactory, ProductionDataRequestFactory>();
 
       serviceCollection = services;
     }
@@ -143,10 +139,6 @@ namespace VSS.Productivity3D.WebApi
       app.UseCors("VSS");
       //Enable TID here
       app.UseFilterMiddleware<TIDAuthentication>();
-
-      //For now don't use application insights as it clogs the log with lots of stuff.
-      //app.UseApplicationInsightsRequestTelemetry();
-      //app.UseApplicationInsightsExceptionTelemetry();
 
       app.UseResponseCaching();
       app.UseMvc();

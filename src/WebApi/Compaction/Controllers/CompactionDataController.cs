@@ -13,7 +13,6 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
@@ -93,22 +92,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionCmvSummaryResult> GetCmvSummary(
       [FromQuery] Guid projectUid,
-      [FromQuery] Guid filterUid)
+      [FromQuery] DateTime? startUtc,
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn,
+      [FromQuery] ElevationType? elevationType,
+      [FromQuery] int? layerNumber,
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
-      //TODO no filter will be passed in the future - needs to be resolved through service as well
-      //something like - includes validation as well
-      // CMVRequest request = await requestBuilder<CMVRequest>.Build(filterService.Resolve(filterUid));
-
-/*      CMVRequest request = await GetCMVRequest(projectUid, startUtc, endUtc, vibeStateOn, elevationType,
-        layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);*/
-      //request.Validate();
-
-      return TryExecuteRequest<CompactionCmvSummaryResult, SummaryCMVExecutor, CMVRequest, CMVSummaryResult>(request,
-        (result) => CompactionCmvSummaryResult.CreateCmvSummaryResult(result, request.cmvSettings));
-    }
-
-    public T TryExecuteRequest<T,E,M,I>(M request, Func<I, T> converter) where I : ContractExecutionResult where E : RequestExecutorContainer, new() where M : ProjectID where T : ContractExecutionResult 
-    {
+      log.LogInformation("GetCmvSummary: " + Request.QueryString);
+      CMVRequest request = await GetCMVRequest(projectUid, startUtc, endUtc, vibeStateOn, elevationType,
+        layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      request.Validate();
+      log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
       try
       {
         log.LogInformation($"Executing {typeof(E)}");

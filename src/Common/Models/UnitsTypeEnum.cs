@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.WebApiModels.Notification.Models
+﻿namespace VSS.Productivity3D.Common.Models
 {
 
   /// <summary>

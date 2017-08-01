@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
             positionsAreGrid,
             startPt,
             endPt,
-            RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId, null, null),
+            RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
             RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
             RaptorConverters.DesignDescriptor(request.alignmentDesign),
             request.returnAllPassesAndLayers);
@@ -117,7 +117,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
             positionsAreGrid,
             startPt,
             endPt,
-            RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId, null, null),
+            RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId, null),
             RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
             RaptorConverters.DesignDescriptor(request.alignmentDesign),
             request.returnAllPassesAndLayers);
@@ -133,7 +133,5 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }
-
-
   }
 }
