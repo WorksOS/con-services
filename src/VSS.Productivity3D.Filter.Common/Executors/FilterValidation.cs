@@ -5,11 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using VSS.MasterData.Repositories;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Filter.Common.Models;
+using VSS.Productivity3D.Filter.Common.Internal;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -39,20 +37,18 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         log.LogError(
           $"ValidateCustomerProject: projectListProxy.GetProjectsV4 failed with exception. customerUid:{customerUid} projectUid:{projectUid}. Exception Thrown: {e.Message}. ");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 70,
-          "projectListProxy.GetProjectsV4", e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 7, e.Message);
       }
 
       if (project == null)
       {
         log.LogInformation(
           $"ValidateCustomerProject: projectListProxy: customerUid:{customerUid} projectUid:{projectUid}. returned no project match");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 70,
-          "projectListProxy.GetProjectsV4");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 8);
       }
 
       log.LogInformation(
-        $"ValidateCustomerProject: projectListProxy: customerUid:{customerUid} projectUid:{projectUid}. returned project: {JsonConvert.SerializeObject(project)}.");
+        $"ValidateCustomerProject: succeeded: customerUid:{customerUid} projectUid:{projectUid}.");
     }
 
   }

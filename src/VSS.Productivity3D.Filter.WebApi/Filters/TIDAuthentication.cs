@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Net.Http;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -9,9 +7,9 @@ using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Filter.Common.Internal;
 
 namespace VSS.Productivity3D.Filter.WebApi.Filters
 {

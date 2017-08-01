@@ -49,6 +49,12 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
           cfg.CreateMap<FilterRequestFull, CreateFilterEvent>()
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
             .ForMember(x => x.ReceivedUTC, opt => opt.Ignore());
+          cfg.CreateMap<FilterRequestFull, UpdateFilterEvent>()
+            .ForMember(x => x.ActionUTC, opt => opt.Ignore())
+            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore());
+          cfg.CreateMap<FilterRequestFull, DeleteFilterEvent>()
+            .ForMember(x => x.ActionUTC, opt => opt.Ignore())
+            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore());
         }
       );
 

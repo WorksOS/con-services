@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
-using VSS.Common.Exceptions;
 using VSS.Common.Filters;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -18,6 +17,8 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.WebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Productivity3D.Filter.Common.Internal;
+using VSS.Productivity3D.Filter.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Filter.WebApi
 {

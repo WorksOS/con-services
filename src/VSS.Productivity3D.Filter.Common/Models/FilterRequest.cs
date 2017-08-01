@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Net;
 using Newtonsoft.Json;
+using VSS.Productivity3D.Filter.Common.Internal;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
@@ -11,19 +11,19 @@ namespace VSS.Productivity3D.Filter.Common.Models
     /// The filterUid whose filter is to be udpated, empty for create
     /// </summary>
     [JsonProperty(PropertyName = "filterUid", Required = Required.Default)]
-    public string filterUid { get; set; }
+    public string filterUid { get; set; } = string.Empty;
 
     /// <summary>
     /// The name to be upserted, if empty then filter is transient
     /// </summary>
-    [JsonProperty(PropertyName = "name", Required = Required.Always)]
-    public string name { get; set; }
+    [JsonProperty(PropertyName = "name", Required = Required.Default)]
+    public string name { get; set; } = string.Empty;
 
     /// <summary>
     /// The filter containing the Json string. May be empty if all defaults
     /// </summary>
     [JsonProperty(PropertyName = "FilterJson", Required = Required.Always)]
-    public string filterJson { get; set; }
+    public string filterJson { get; set; } = string.Empty;
 
     /// <summary>
     /// Private constructor
@@ -69,6 +69,33 @@ namespace VSS.Productivity3D.Filter.Common.Models
         isApplicationContext = isApplicationContext,
         userUid = userUid
       };
+    }
+
+    public void Validation(IServiceExceptionHandler serviceExceptionHandler)
+    {
+      Guid customerUidGuid;
+      if (string.IsNullOrEmpty(customerUid) || Guid.TryParse(customerUid, out customerUidGuid) == false)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 27);
+
+      Guid userUidGuid;
+      if (string.IsNullOrEmpty(userUid) || (isApplicationContext == false && Guid.TryParse(userUid, out userUidGuid) == false))
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 28);
+
+      Guid projectUidGuid;
+      if (string.IsNullOrEmpty(projectUid) || Guid.TryParse(projectUid, out projectUidGuid) == false)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
+
+      Guid filterUidGuid;
+      if (!string.IsNullOrEmpty(filterUid) && Guid.TryParse(filterUid, out filterUidGuid) == false)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+
+      if (name == null)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 3);
+
+      if (filterJson == null)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 4);
+
+      // todo validate filterJson
     }
   }
 }

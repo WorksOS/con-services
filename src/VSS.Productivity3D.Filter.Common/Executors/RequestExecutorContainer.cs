@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Repositories;
-using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Common.Internal;
+using VSS.Productivity3D.Filter.Common.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {

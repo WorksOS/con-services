@@ -4,8 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
@@ -14,6 +13,7 @@ using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Filter.Common.Internal;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -55,14 +55,14 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         var filterRequest = item as FilterRequestFull;
         if (filterRequest != null)
         {
-          MasterData.Repositories.DBModels.Filter filter = null;
+          // todo getFiltersForProject(Cust,User,Project
+          // todo make ID primary and do exists - for performance
           var projectFilters =
             (await filterRepo.GetFiltersForProject(filterRequest.projectUid).ConfigureAwait(false))
-            .Where(f => f.UserUid == filterRequest.userUid);
+            .Where(f => f.CustomerUid == filterRequest.customerUid && f.UserUid == filterRequest.userUid).ToList();
           log.LogDebug(
-            $"UpsertFilter retrieved filter count for projectUID {filterRequest.projectUid} of {projectFilters.Count()}");
+            $"UpsertFilter retrieved filter count for projectUID {filterRequest.projectUid} of {projectFilters?.Count()}");
 
-          // todo!
           if (string.IsNullOrEmpty(filterRequest.name))
             result = await ProcessTransient(filterRequest, projectFilters).ConfigureAwait(false);
           else
@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
       catch (Exception e)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69, e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 15, e.Message);
       }
       return result;
     }
@@ -84,38 +84,42 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     }
 
     private async Task<FilterDescriptorSingleResult> ProcessTransient(FilterRequestFull filterRequest,
-      IEnumerable<MasterData.Repositories.DBModels.Filter> projectFilters)
+      IList<MasterData.Repositories.DBModels.Filter> projectFilters)
     {
-      // transient
-      //   if filterUid supplied, and it exists, then update it. 
-      //   else if one exists for the UserUid then update it.
 
+      // if filterUid supplied, and it exists for customer/user/project, and name is empty, then update it. 
+      //   else if one exists for the UserUid, and name is empty, then update it.
       MasterData.Repositories.DBModels.Filter filter = null;
       if (!string.IsNullOrEmpty(filterRequest.filterUid))
-        filter = projectFilters.SingleOrDefault(f => string.Equals(f.FilterUid, filterRequest.filterUid,
-          StringComparison.OrdinalIgnoreCase));
+      {
+        filter = projectFilters?.SingleOrDefault(
+          f => string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase) 
+               && string.IsNullOrEmpty(f.Name));
+        if (filter == null)
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 16);
+      }
 
       if (filter == null)
-        filter = projectFilters.SingleOrDefault(
-          f => string.Equals(f.UserUid, filterRequest.userUid, StringComparison.OrdinalIgnoreCase));
+        filter = projectFilters?.SingleOrDefault(f => string.IsNullOrEmpty(f.Name));
 
-      if (filter != null)
+      if (filter != null) // going to update it
       {
         try
         {
           var filterEvent = AutoMapperUtility.Automapper.Map<UpdateFilterEvent>(filterRequest);
           filterEvent.FilterUID = Guid.Parse(filter.FilterUid);
+          filterEvent.ActionUTC = DateTime.UtcNow;
           var updatedCount = await filterRepo.StoreEvent(filterEvent).ConfigureAwait(false);
           if (updatedCount == 0)
           {
             // error trying to update a transient filter
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69);
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 17);
           }
         }
         catch (Exception e)
         {
           // exception trying to update a transient filter
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69, e.Message);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 18, e.Message);
         }
       }
       else // (filter == null)
@@ -124,91 +128,121 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         {
           var filterEvent = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
           filterEvent.FilterUID = Guid.NewGuid();
+          filterEvent.ActionUTC = DateTime.UtcNow;
           var createdCount = await filterRepo.StoreEvent(filterEvent).ConfigureAwait(false);
           if (createdCount == 0)
           {
-            // error trying to update a transient filter
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69);
+            // error trying to create a transient filter
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 19);
           }
         }
         catch (Exception e)
         {
-          // exception trying to update a transient filter
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69, e.Message);
+          // exception trying to create a transient filter
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 20, e.Message);
         }
       }
-      return new FilterDescriptorSingleResult(new FilterDescriptor());
+
+      var retrievedFilter = (await filterRepo.GetFiltersForProject(filterRequest.projectUid).ConfigureAwait(false)).SingleOrDefault(f => string.IsNullOrEmpty(f.Name));
+      return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
     }
 
     private async Task<FilterDescriptorSingleResult> ProcessPersistant(FilterRequestFull filterRequest,
-      IEnumerable<MasterData.Repositories.DBModels.Filter> projectFilters)
+      IList<MasterData.Repositories.DBModels.Filter> projectFilters)
     {
-      // if permanent then a) if old name exists, do a delete(temp) of old
-      //                                        and create new
-      //                   b) name doesn't exist then create new
-      //   if filterUid supplied, and it exists, then update it. 
-      //   else if one exists for the UserUid then update it.
-
+      // if filterUid supplied, and it exists for customer/user/project, and name is NOT empty, then delete it.
+      // if old name exists, then delete it.
+      // now create new filter
+      // write to kafka (possible delete and the create)
       MasterData.Repositories.DBModels.Filter filter = null;
       if (!string.IsNullOrEmpty(filterRequest.filterUid))
-        filter = projectFilters.SingleOrDefault(
-          f => string.Equals(f.UserUid, filterRequest.userUid, StringComparison.OrdinalIgnoreCase));
-
-      if (filter != null && filter.UserUid != filterRequest.userUid)
       {
-        // todo filterUid belongs to a different user
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69);
+        filter = projectFilters?.SingleOrDefault(
+          f => string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase) 
+               && !string.IsNullOrEmpty(f.Name));
+        if (filter == null)
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 21);
       }
 
-      var filterByThisName = projectFilters.SingleOrDefault(
-        f => string.Equals(f.UserUid, filterRequest.userUid, StringComparison.OrdinalIgnoreCase) &&
-             f.Name == filterRequest.name);
-      if (filterByThisName != null && filter != null && filter.FilterUid != filterByThisName.FilterUid)
-      {
-        // todo user has another filter with this name. todo do we delete this and create a new one?
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69);
-      }
+      if (filter == null)
+        filter = projectFilters?.SingleOrDefault(f => f.Name == filterRequest.name);
 
-      if (filter != null)
+      DeleteFilterEvent deleteFilterEvent = null;
+      if (filter != null) // going to delete it
       {
         try
         {
-          var filterEvent = AutoMapperUtility.Automapper.Map<UpdateFilterEvent>(filterRequest);
-          filterEvent.FilterUID = Guid.Parse(filter.FilterUid);
-          var updatedCount = await filterRepo.StoreEvent(filterEvent).ConfigureAwait(false);
-          if (updatedCount == 0)
+          deleteFilterEvent = AutoMapperUtility.Automapper.Map<DeleteFilterEvent>(filterRequest);
+          deleteFilterEvent.FilterUID = Guid.Parse(filter.FilterUid);
+          deleteFilterEvent.ActionUTC = DateTime.UtcNow;
+          var deletedCount = await filterRepo.StoreEvent(deleteFilterEvent).ConfigureAwait(false);
+          if (deletedCount == 0)
           {
-            // error trying to update a transient filter
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69);
+            // error trying to delete a persistant filter
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 22);
           }
         }
         catch (Exception e)
         {
-          // exception trying to update a transient filter
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69, e.Message);
+          // exception trying to delete a persistant filter
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 23, e.Message);
         }
       }
-      else // (filter == null)
+      
+      // Create new filter
+      CreateFilterEvent createFilterEvent = null;
+      try
       {
-        try
+        createFilterEvent = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
+        createFilterEvent.FilterUID = Guid.NewGuid();
+        createFilterEvent.ActionUTC = DateTime.UtcNow;
+        var createdCount = await filterRepo.StoreEvent(createFilterEvent).ConfigureAwait(false);
+        if (createdCount == 0)
         {
-          var filterEvent = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
-          filterEvent.FilterUID = Guid.NewGuid();
-          var createdCount = await filterRepo.StoreEvent(filterEvent).ConfigureAwait(false);
-          if (createdCount == 0)
-          {
-            // error trying to update a transient filter
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69);
-          }
+          // error trying to create a persistant filter
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 24);
         }
-        catch (Exception e)
-        {
-          // exception trying to update a transient filter
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69, e.Message);
-        }
+      }
+      catch (Exception e)
+      {
+        // exception trying to create a persistant filter
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 25, e.Message);
       }
 
-      return new FilterDescriptorSingleResult(new FilterDescriptor());
+      var retrievedFilter = (await filterRepo.GetFiltersForProject(filterRequest.projectUid).ConfigureAwait(false)).SingleOrDefault(f => f.Name == filterRequest.name);
+      if (retrievedFilter != null)
+        WriteToKafka(deleteFilterEvent, createFilterEvent);
+
+      return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
+    }
+
+    private void WriteToKafka(DeleteFilterEvent deleteFilterEvent, CreateFilterEvent createFilterEvent)
+    {
+      try
+      {
+        if (deleteFilterEvent != null)
+        {
+          var messagePayloadDeleteEvent =
+            JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteFilterEvent });
+          producer.Send(kafkaTopicName,
+            new List<KeyValuePair<string, string>>
+            {
+              new KeyValuePair<string, string>(deleteFilterEvent.FilterUID.ToString(), messagePayloadDeleteEvent)
+            });
+        }
+
+        var messagePayloadCreateEvent =
+          JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent });
+        producer.Send(kafkaTopicName,
+          new List<KeyValuePair<string, string>>
+          {
+            new KeyValuePair<string, string>(createFilterEvent.FilterUID.ToString(), messagePayloadCreateEvent)
+          });
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 26, e.Message);
+      }
     }
 
   }

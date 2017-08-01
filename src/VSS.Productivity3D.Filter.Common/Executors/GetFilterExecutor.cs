@@ -2,15 +2,14 @@
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
+using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Common.Internal;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -61,7 +60,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           if (filter == null
               || filter.CustomerUid != filterRequest.customerUid
               || filter.ProjectUid != filterRequest.projectUid
-              || /*(!filterRequest.isApplicationContext && */ filter.UserUid != filterRequest.userUid
+              || filter.UserUid != filterRequest.userUid
               )
           {
             result = new ContractExecutionResult();
@@ -73,12 +72,12 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         }
         else
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69); // todo find a message
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 5);
         }
       }
       catch (Exception e)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69, e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 6, e.Message);
       }
       return result;
     }
