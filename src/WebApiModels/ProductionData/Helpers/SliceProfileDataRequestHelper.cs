@@ -56,7 +56,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Helpers
       DesignDescriptor designDescriptor = null;
       if (cutfillDesignUid.HasValue)
       {
-
         var fileList = fileListProxy.GetFiles(projectUid.ToString(), Headers).Result;
 
         if (fileList.Count > 0)
