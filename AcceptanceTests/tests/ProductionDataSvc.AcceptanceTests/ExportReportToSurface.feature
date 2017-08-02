@@ -4,6 +4,7 @@
 Background: 
 	Given the Export Report To Surface service URI "/api/v2/export/surface" and the result file "ExportReportToSurfaceResponse.json"
 
+@ignore
 Scenario Outline: ExportReportToSurface - Good Request
   And projectUid "<ProjectUID>"
 	And fileName is "<FileName>"
