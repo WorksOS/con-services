@@ -121,7 +121,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
       if (nativeValues)
       {
-        tempMin = tempMax * 10;
+        tempMin = tempMin * 10;
         tempMax = tempMax * 10;
       }
 
