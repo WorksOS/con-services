@@ -7,7 +7,7 @@ echo "Check the database and kafka to see if port is available"
 /bin/bash wait-for-it.sh db:3306 -t 0
 /bin/bash wait-for-it.sh kafka:9092 -t 0
 echo "Wait for 120 seconds"
-sleep 120s
+sleep 60s
 # Run the component tests
 echo "Run the component tests"
 
