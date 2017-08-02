@@ -1,7 +1,7 @@
 version: '2'
 services:
   webapi:
-    build: ./artifacts/VSS.Productivity3D.Filter.WebApi
+    build: ./artifacts/FilterWebApi
     env_file:
      - docker-compose.env
     depends_on:
