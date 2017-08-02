@@ -2,15 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <AssemblyName>ExecutorTests</AssemblyName>
-    <PackageId>ExecutorTests</PackageId>
+    <AssemblyName>RepositoryTests</AssemblyName>
+    <PackageId>RepositoryTests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion>1.1.2</RuntimeFrameworkVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <RootNamespace>ExecutorTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,13 +21,13 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-  </ItemGroup>
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.1.*" />
+	</ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
-    <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataProxies\src\VSS.MasterData.Proxies.Local.csproj" />
-    <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.Local.csproj" />
-    <ProjectReference Include="..\..\utilities\TestUtility\TestUtility.Local.csproj" />
+    <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.csproj" />
+    <ProjectReference Include="..\..\utilities\TestUtility\TestUtility.csproj" />
   </ItemGroup>
 
   <ItemGroup>

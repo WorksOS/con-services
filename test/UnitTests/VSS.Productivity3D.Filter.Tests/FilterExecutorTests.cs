@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.Filter.Tests
           LastActionedUtc = DateTime.UtcNow
         }
       };
-      filterRepo.Setup(ps => ps.GetFiltersForProject(It.IsAny<string>())).ReturnsAsync(filters);
+      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(filters);
 
       var filterListToTest = new FilterDescriptorListResult
       {
@@ -164,7 +164,7 @@ namespace VSS.Productivity3D.Filter.Tests
           LastActionedUtc = DateTime.UtcNow
         }
       };
-      filterRepo.Setup(ps => ps.GetFiltersForProject(It.IsAny<string>())).ReturnsAsync(filters);
+      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(filters);
       filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<UpdateFilterEvent>())).ReturnsAsync(1);
 
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
@@ -228,7 +228,7 @@ namespace VSS.Productivity3D.Filter.Tests
           LastActionedUtc = DateTime.UtcNow
         }
       };
-      filterRepo.Setup(ps => ps.GetFiltersForProject(It.IsAny<string>())).ReturnsAsync(filters);
+      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(filters);
       filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<DeleteFilterEvent>())).ReturnsAsync(1);
       filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<CreateFilterEvent>())).ReturnsAsync(1);
 
@@ -291,7 +291,7 @@ namespace VSS.Productivity3D.Filter.Tests
           LastActionedUtc = DateTime.UtcNow
         }
       };
-      filterRepo.Setup(ps => ps.GetFiltersForProject(It.IsAny<string>())).ReturnsAsync(filters);
+      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(filters);
       filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<DeleteFilterEvent>())).ReturnsAsync(1);
 
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));

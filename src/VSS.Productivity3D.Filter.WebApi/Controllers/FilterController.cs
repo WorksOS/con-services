@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
           projectUid);
-      requestFull.Validation(serviceExceptionHandler);
+      requestFull.Validate(serviceExceptionHandler);
 
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
           projectUid, filterUid);
-      requestFull.Validation(serviceExceptionHandler);
+      requestFull.Validate(serviceExceptionHandler);
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
           projectUid, request.filterUid, request.name, request.filterJson);
-      requestFull.Validation(serviceExceptionHandler);
+      requestFull.Validate(serviceExceptionHandler);
       await FilterValidation.ValidateCustomerProject(projectListProxy, log, serviceExceptionHandler, Request.Headers.GetCustomHeaders(),
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
@@ -148,7 +148,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
           projectUid, filterUid);
-      requestFull.Validation(serviceExceptionHandler);
+      requestFull.Validate(serviceExceptionHandler);
       await FilterValidation.ValidateCustomerProject(projectListProxy, log, serviceExceptionHandler, Request.Headers.GetCustomHeaders(),
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 

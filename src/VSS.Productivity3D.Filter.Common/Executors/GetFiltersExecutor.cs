@@ -50,17 +50,17 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       ContractExecutionResult result = null;
       try
       {
-        var projectRequest = item as FilterRequestFull;
-        if (projectRequest != null)
+        var filterRequest = item as FilterRequestFull;
+        if (filterRequest != null)
         {
           // get all for projectUid where !deleted 
           //   must be ok for 
           //      customer /project
           //      and UserUid: If the calling context is == Application, then get all 
           //                     else get only those for the calling UserUid
-          var filters = (await filterRepo.GetFiltersForProject(projectRequest.projectUid).ConfigureAwait(false))
-            .Where(f => f.CustomerUid == projectRequest.customerUid
-                        && (/*projectRequest.isApplicationContext ||*/ f.UserUid == projectRequest.userUid));
+          var filters = (await filterRepo
+            .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid)
+            .ConfigureAwait(false));
 
           // may be zero, return success and empty list
           result = new FilterDescriptorListResult

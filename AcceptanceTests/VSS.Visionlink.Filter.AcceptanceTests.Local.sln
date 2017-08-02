@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExecutorTests.Local", "test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.Local", "tests\IntegrationTests\IntegrationTests.Local.csproj", "{3489FEC4-8970-430A-A3BA-A3287E6B352A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryTests.Local", "tests\RepositoryTests\RepositoryTests.Local.csproj", "{CABF023E-D85E-4211-9453-8FD47D0370F8}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiTests.Local", "tests\WebApiTests\WebApiTests.Local.csproj", "{4E154DC7-E4A9-4505-9142-ACB9E1DC23A0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtility.Local", "utilities\TestUtility\TestUtility.Local.csproj", "{24FB1C64-EB05-437A-BE29-CC2060235A50}"
@@ -105,6 +107,10 @@ Global
 		{7222CC76-9860-4886-8319-782CE619DFD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7222CC76-9860-4886-8319-782CE619DFD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7222CC76-9860-4886-8319-782CE619DFD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CABF023E-D85E-4211-9453-8FD47D0370F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CABF023E-D85E-4211-9453-8FD47D0370F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CABF023E-D85E-4211-9453-8FD47D0370F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CABF023E-D85E-4211-9453-8FD47D0370F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,5 +122,6 @@ Global
 		{4E154DC7-E4A9-4505-9142-ACB9E1DC23A0} = {1464640F-AEAE-4331-BC58-52898DF893B6}
 		{24FB1C64-EB05-437A-BE29-CC2060235A50} = {63AD8236-F12D-44C8-B663-EE78D00EFC9A}
 		{AB1847CD-C06A-460F-B89A-C9A94461D414} = {63AD8236-F12D-44C8-B663-EE78D00EFC9A}
+		{CABF023E-D85E-4211-9453-8FD47D0370F8} = {1464640F-AEAE-4331-BC58-52898DF893B6}
 	EndGlobalSection
 EndGlobal

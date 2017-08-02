@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TestUtility.Local
+namespace TestUtility
 {
     class TestSupport
     {

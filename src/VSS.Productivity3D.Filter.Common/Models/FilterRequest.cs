@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public static FilterRequestFull CreateFilterFullRequest(string customerUid, 
       bool isApplicationContext, string userUid, 
       string projectUid, string filterUid = null,
-      string name = null, string filterJson = null)
+      string name = "", string filterJson = "")
     {
       return new FilterRequestFull
       {
@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
       };
     }
 
-    public void Validation(IServiceExceptionHandler serviceExceptionHandler)
+    public void Validate(IServiceExceptionHandler serviceExceptionHandler)
     {
       Guid customerUidGuid;
       if (string.IsNullOrEmpty(customerUid) || Guid.TryParse(customerUid, out customerUidGuid) == false)

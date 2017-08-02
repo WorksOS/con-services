@@ -53,11 +53,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
 
         var projectFilter =
-          (await filterRepo.GetFiltersForProject(filterRequest.projectUid).ConfigureAwait(false)).SingleOrDefault(
-            f => f.CustomerUid == filterRequest.customerUid && f.UserUid == filterRequest.userUid
-                 && f.FilterUid == filterRequest.filterUid);
-        log.LogDebug(
-          $"DeleteFilter retrieved filter {JsonConvert.SerializeObject(projectFilter)}");
+          (await filterRepo.GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid).ConfigureAwait(false))
+            .SingleOrDefault(f => f.FilterUid == filterRequest.filterUid);
+        log.LogDebug($"DeleteFilter retrieved filter {JsonConvert.SerializeObject(projectFilter)}");
         if (projectFilter == null)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 11);

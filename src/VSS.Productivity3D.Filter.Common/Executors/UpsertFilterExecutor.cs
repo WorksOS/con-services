@@ -55,18 +55,15 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         var filterRequest = item as FilterRequestFull;
         if (filterRequest != null)
         {
-          // todo getFiltersForProject(Cust,User,Project
-          // todo make ID primary and do exists - for performance
-          var projectFilters =
-            (await filterRepo.GetFiltersForProject(filterRequest.projectUid).ConfigureAwait(false))
-            .Where(f => f.CustomerUid == filterRequest.customerUid && f.UserUid == filterRequest.userUid).ToList();
-          log.LogDebug(
-            $"UpsertFilter retrieved filter count for projectUID {filterRequest.projectUid} of {projectFilters?.Count()}");
+          var filters =
+            (await filterRepo
+                .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid).ConfigureAwait(false)).ToList();
+          log.LogDebug($"UpsertFilter retrieved filter count for projectUID {filterRequest.projectUid} of {filters?.Count()}");
 
           if (string.IsNullOrEmpty(filterRequest.name))
-            result = await ProcessTransient(filterRequest, projectFilters).ConfigureAwait(false);
+            result = await ProcessTransient(filterRequest, filters).ConfigureAwait(false);
           else
-            result = await ProcessPersistant(filterRequest, projectFilters).ConfigureAwait(false);
+            result = await ProcessPersistant(filterRequest, filters).ConfigureAwait(false);
 
           return result;
         }
@@ -143,7 +140,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         }
       }
 
-      var retrievedFilter = (await filterRepo.GetFiltersForProject(filterRequest.projectUid).ConfigureAwait(false)).SingleOrDefault(f => string.IsNullOrEmpty(f.Name));
+      var retrievedFilter = (await filterRepo
+        .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid).ConfigureAwait(false))
+        .SingleOrDefault(f => string.IsNullOrEmpty(f.Name));
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
     }
 
@@ -209,7 +208,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 25, e.Message);
       }
 
-      var retrievedFilter = (await filterRepo.GetFiltersForProject(filterRequest.projectUid).ConfigureAwait(false)).SingleOrDefault(f => f.Name == filterRequest.name);
+      var retrievedFilter = (await filterRepo
+        .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid).ConfigureAwait(false))
+        .SingleOrDefault(f => f.Name == filterRequest.name);
       if (retrievedFilter != null)
         WriteToKafka(deleteFilterEvent, createFilterEvent);
 

@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
               || filter.UserUid != filterRequest.userUid
               )
           {
-            result = new ContractExecutionResult();
+            result = new FilterDescriptorSingleResult(new FilterDescriptor());
           }
           else
           {

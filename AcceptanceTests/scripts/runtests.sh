@@ -22,6 +22,11 @@ echo "Integration tests finished"
 echo "Run Executor tests starting...."
 dotnet TestRun/TestRun.dll results=/testresults/ExecutorTestResults project=ExecutorTests
 echo "Executor tests finished"
+
+echo "Run Repository tests starting...."
+dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestResults project=RepositoryTests
+echo "Repository tests finished"
+
 echo " "
 echo " "
 echo " All acceptance tests completed"
