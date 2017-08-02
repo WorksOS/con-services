@@ -33,7 +33,6 @@
     <PackageReference Include="Swashbuckle.SwaggerGen" Version="6.0.0-beta902" />
     <PackageReference Include="Swashbuckle.SwaggerUi" Version="6.0.0-beta902" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
-    <PackageReference Include="AutoMapper" Version="6.1.1" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
   </ItemGroup>
   

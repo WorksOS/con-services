@@ -7,7 +7,7 @@ using MySql.Data.MySqlClient;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace ExecutorTests
+namespace RepositoryTests
 {
   [TestClass]
   public class RepositoryTests : TestControllerBase
