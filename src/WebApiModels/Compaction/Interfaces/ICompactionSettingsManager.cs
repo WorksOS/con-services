@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Interfaces
     CMVSettings CompactionCmvSettings(CompactionProjectSettings projectSettings);
 
     MDPSettings CompactionMdpSettings(CompactionProjectSettings projectSettings);
-    TemperatureSettings CompactionTemperatureSettings(CompactionProjectSettings projectSettings);
+    TemperatureSettings CompactionTemperatureSettings(CompactionProjectSettings projectSettings, bool nativeValues = true);
 
     double[] CompactionCmvPercentChangeSettings(CompactionProjectSettings projectSettings);
 

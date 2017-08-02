@@ -315,7 +315,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
-      TemperatureSettings temperatureSettings = settingsManager.CompactionTemperatureSettings(projectSettings);
+      TemperatureSettings temperatureSettings = settingsManager.CompactionTemperatureSettings(projectSettings, false);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
       Filter filter = settingsManager.CompactionFilter(
