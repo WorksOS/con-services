@@ -72,17 +72,17 @@ node('Ubuntu_Slave') {
 	{
 	       stage 'Build Release Images'
 
-	       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi:latest-release-${fullVersion} ./artifacts/FilterWebApi"
+	       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion} ./artifacts/FilterWebApi"
  
-	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi:latest-release-${fullVersion}"
+	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion}"
 
-	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi:latest-release-${fullVersion}"
+	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion}"
 		   
-               sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db:latest-release-${fullVersion} ./database"
+               sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion} ./database"
 
-	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db:latest-release-${fullVersion}"
+	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion}"
 
-	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db:latest-release-${fullVersion}"
+	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion}"
 
 	}
 	else
@@ -92,13 +92,13 @@ node('Ubuntu_Slave') {
 	stage 'Build Development Images'
 
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi:latest ./artifacts/FilterWebApi"
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi"
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-webapi:latest"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest ./artifacts/FilterWebApi"
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest"
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db:latest ./database"
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db"
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-filter-db:latest"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest ./database"
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest"
 	}
        }
 
