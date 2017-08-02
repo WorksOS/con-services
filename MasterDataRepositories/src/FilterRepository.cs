@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.MasterData.Repositories.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -26,6 +25,8 @@ namespace VSS.MasterData.Repositories
 
     public async Task<int> StoreEvent(IFilterEvent evt)
     {
+      // following are immutable: FilterUID, fk_CustomerUid, fk_ProjectUID, fk_UserUID
+      // filterJson is only updateable if transient i.e empty name
       var upsertedCount = 0;
       if (evt == null)
       {
@@ -95,16 +96,19 @@ namespace VSS.MasterData.Repositories
     {
       var upsertedCount = 0;
       var existing = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
-                f.fk_CustomerUid AS CustomerUID, f.fk_UserUID AS UserUID, 
-                f.fk_ProjectUID AS ProjectUID,  f.FilterUID,                
+                f.FilterUID, f.fk_CustomerUid AS CustomerUID, 
+                f.fk_ProjectUID AS ProjectUID, f.fk_UserUID AS UserUID,                                  
                 f.Name, f.FilterJson, 
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
-              WHERE f.FilterUID = @filterUid AND f.IsDeleted = 0",
+              WHERE f.FilterUID = @filterUid",
         new {filter.FilterUid})).FirstOrDefault();
 
+      if (eventType == "CreateFilterEvent")
+        upsertedCount = await CreateFilter(filter, existing);
+
       if (eventType == "UpdateFilterEvent")
-        upsertedCount = await UpsertFilter(filter, existing);
+        upsertedCount = await UpdateFilter(filter, existing);
 
       if (eventType == "DeleteFilterEvent")
         upsertedCount = await DeleteFilter(filter, existing);
@@ -112,9 +116,55 @@ namespace VSS.MasterData.Repositories
     }
 
 
-    private async Task<int> UpsertFilter(Filter filter, Filter existing)
+    private async Task<int> CreateFilter(Filter filter, Filter existing)
     {
-      log.LogDebug($"FilterRepository/UpsertFilter: filter={JsonConvert.SerializeObject(filter)}))')");
+      log.LogDebug($"FilterRepository/CreateFilter: filter={JsonConvert.SerializeObject(filter)}))')");
+      int upsertedCount = 0;
+      
+      if (existing == null)
+      {
+        const string insert =
+          @"INSERT Filter
+                 (fk_CustomerUid, fk_UserUID, fk_ProjectUID, FilterUID,
+                  Name, FilterJson, 
+                  IsDeleted, LastActionedUTC)
+            VALUES
+              (@CustomerUid, @UserUID, @ProjectUID, @FilterUID,  
+                  @Name, @FilterJson, 
+                  @IsDeleted, @LastActionedUTC)";
+
+        upsertedCount = await ExecuteWithAsyncPolicy(insert, filter);
+        log.LogDebug($"FilterRepository/CreateFilter: created {upsertedCount}");
+        return upsertedCount;
+      }
+
+      // a delete was processed before the create, even though it's actionUTC is later (due to kafka partioning issue)
+      //       update everything but ActionUTC from the create
+      if (existing.LastActionedUtc >= filter.LastActionedUtc && existing.IsDeleted) 
+      {
+        filter.IsDeleted = true;
+        log.LogDebug("FilterRepository/CreateFilter: going to update filter if received after a delete");
+        const string update =
+          @"UPDATE Filter
+              SET Name = @Name,
+                  FilterJson = @FilterJson
+              WHERE FilterUID = @FilterUID";
+
+        upsertedCount = await ExecuteWithAsyncPolicy(update, filter);
+        log.LogDebug($"FilterRepository/CreateFilter: (update): updated {upsertedCount}");
+        return upsertedCount;
+      }
+
+      // if Create received after it's been , then ignore it 
+      //   as Name; FilterJson and actionUtc will be more recent
+      
+      return upsertedCount;
+    }
+
+
+    private async Task<int> UpdateFilter(Filter filter, Filter existing)
+    {
+      log.LogDebug($"FilterRepository/UpdateFilter: filter={JsonConvert.SerializeObject(filter)}))')");
       int upsertedCount = 0;
 
       // following are immutable: FilterUID, fk_CustomerUid, fk_ProjectUID, fk_UserUID
@@ -122,36 +172,43 @@ namespace VSS.MasterData.Repositories
       if (existing != null && !string.IsNullOrEmpty(existing.Name))
         return upsertedCount;
 
-      const string upsert =
-        @"INSERT Filter
+      if (existing != null)
+      {
+        const string update =
+          @"UPDATE Filter
+              SET Name = @Name,
+                  FilterJson = @FilterJson,
+                  LastActionedUTC = @LastActionedUTC
+              WHERE FilterUID = @FilterUID";
+
+        upsertedCount = await ExecuteWithAsyncPolicy(update, filter);
+        log.LogDebug($"FilterRepository/UpdateFilter: updated {upsertedCount}");
+        return upsertedCount;
+      }
+
+      // update received before create
+      if (existing == null)
+      {
+        const string insert =
+          @"INSERT Filter
                  (fk_CustomerUid, fk_UserUID, fk_ProjectUID, FilterUID,
                   Name, FilterJson, 
                   IsDeleted, LastActionedUTC)
             VALUES
               (@CustomerUid, @UserUID, @ProjectUID, @FilterUID,  
-                  @Name, @FilterJson, 
-                  @IsDeleted, @LastActionedUTC)
-            ON DUPLICATE KEY UPDATE
-              LastActionedUTC =
-                IF ( ( VALUES(LastActionedUTC) >= LastActionedUTC), 
-                    VALUES(LastActionedUTC), LastActionedUTC),
-              Name =
-                IF ( ( VALUES(LastActionedUTC) >= LastActionedUTC), 
-                    VALUES(Name), Name),
-              FilterJson =
-                IF ( ( VALUES(LastActionedUTC) >= LastActionedUTC), 
-                    VALUES(FilterJson), FilterJson)";
+               @Name, @FilterJson, 
+               @IsDeleted, @LastActionedUTC)";
 
-      upsertedCount = await ExecuteWithAsyncPolicy(upsert, filter);
-      log.LogDebug(
-        $"FilterRepository/UpsertFilter: upserted {upsertedCount} rows (1=insert, 2=update)");
-      return upsertedCount.CalculateUpsertCount();
+        upsertedCount = await ExecuteWithAsyncPolicy(insert, filter);
+        log.LogDebug($"FilterRepository/UpdateFilter: created {upsertedCount}");
+        return upsertedCount;
+      }
+      return upsertedCount;
     }
 
     private async Task<int> DeleteFilter(Filter filter, Filter existing)
     {
-      log.LogDebug(
-        $"FilterRepository/DeleteFilter: project={JsonConvert.SerializeObject(filter)})')");
+      log.LogDebug($"FilterRepository/DeleteFilter: project={JsonConvert.SerializeObject(filter)})')");
 
       var upsertedCount = 0;
       if (existing != null)
@@ -177,11 +234,18 @@ namespace VSS.MasterData.Repositories
         log.LogDebug(
           $"FilterRepository/DeleteFilter: delete event where no filter exists, creating one. filter={filter.FilterUid}");
 
+        filter.Name = string.Empty;
+        filter.FilterJson = string.Empty;
+
         const string delete =
-          "INSERT Filter " +
-          "    (fk_CustomerUid, fk_UserUID, fk_ProjectUID, FilterUID, IsDeleted, LastActionedUTC)" +
-          "  VALUES " +
-          "    (@CustomerUid,  @UserUID,  @ProjectUID, @FilterUID, 1, @LastActionedUTC)";
+          @"INSERT Filter
+                 (fk_CustomerUid, fk_UserUID, fk_ProjectUID, FilterUID,
+                  Name, FilterJson, 
+                  IsDeleted, LastActionedUTC)
+            VALUES
+              (@CustomerUid, @UserUID, @ProjectUID, @FilterUID,  
+               @Name, @FilterUid, 
+               1, @LastActionedUTC)";
 
         upsertedCount = await ExecuteWithAsyncPolicy(delete, filter);
         log.LogDebug(
@@ -197,6 +261,29 @@ namespace VSS.MasterData.Repositories
     #region getters
 
     /// <summary>
+    ///   get all active filters for a customer/Project/User
+    /// </summary>
+    /// <param name="customerUid"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="userUid"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Filter>> GetFiltersForProjectUser(string customerUid, string projectUid, string userUid)
+    {
+      var filters = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
+                f.fk_CustomerUid AS CustomerUID, f.fk_UserUID AS UserUID, 
+                f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
+                f.Name, f.FilterJson, 
+                f.IsDeleted, f.LastActionedUTC
+              FROM Filter f
+              WHERE f.fk_CustomerUID = @customerUid 
+                AND f.fk_ProjectUID = @projectUid 
+                AND f.fk_UserUID = @userUid 
+                AND f.IsDeleted = 0",
+        new { customerUid, projectUid, userUid }));
+      return filters;
+    }
+
+    /// <summary>
     ///   get all active filters for a project
     /// </summary>
     /// <param name="projectUid"></param>
@@ -210,7 +297,7 @@ namespace VSS.MasterData.Repositories
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
               WHERE f.fk_ProjectUID = @projectUid AND f.IsDeleted = 0",
-        new {projectUid}));
+        new { projectUid }));
       return filters;
     }
 
@@ -221,7 +308,7 @@ namespace VSS.MasterData.Repositories
     /// <returns></returns>
     public async Task<Filter> GetFilter(string filterUid)
     {
-      var filters = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
+      var filter = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
                 f.fk_CustomerUid AS CustomerUID, f.fk_UserUID AS UserUID, 
                 f.fk_ProjectUID AS ProjectUID, f.FilterUID,                  
                 f.Name, f.FilterJson, 
@@ -229,9 +316,26 @@ namespace VSS.MasterData.Repositories
               FROM Filter f
               WHERE f.FilterUID = @filterUid AND f.IsDeleted = 0",
         new {filterUid})).FirstOrDefault();
-      return filters;
+      return filter;
     }
 
+    /// <summary>
+    /// get filter if active
+    /// </summary>
+    /// <param name="filterUid"></param>
+    /// <returns></returns>
+    public async Task<Filter> GetFilterForUnitTest(string filterUid)
+    {
+      var filter = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
+                f.fk_CustomerUid AS CustomerUID, f.fk_UserUID AS UserUID, 
+                f.fk_ProjectUID AS ProjectUID, f.FilterUID,                  
+                f.Name, f.FilterJson, 
+                f.IsDeleted, f.LastActionedUTC
+              FROM Filter f
+              WHERE f.FilterUID = @filterUid",
+        new { filterUid })).FirstOrDefault();
+      return filter;
+    }
     #endregion getters
   }
 }

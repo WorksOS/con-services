@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.MasterData.Repositories.DBModels;
@@ -8,6 +7,7 @@ namespace VSS.MasterData.Repositories
 {
   public interface IFilterRepository
   {
+    Task<IEnumerable<Filter>> GetFiltersForProjectUser(string customerUid, string projectUid, string userUid);
     Task<IEnumerable<Filter>> GetFiltersForProject(string projectUid);
     Task<Filter> GetFilter(string filterUid);
    
