@@ -153,33 +153,31 @@ testRunner.Then("the CMV % Change result should be", "{\r\n\"cmvChangeData\": {\
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary with project settings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void CompactionGetCMVSummaryWithProjectSettings()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Summary with project settings", new string[] {
-                        "ignore"});
-#line 69
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Summary with project settings", ((string[])(null)));
+#line 68
 this.ScenarioSetup(scenarioInfo);
-#line 70
+#line 69
 testRunner.Given("the Compaction CMV Summary service URI \"/api/v2/compaction/cmv/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 71
+#line 70
 testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 72
+#line 71
 testRunner.When("I request CMV summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 73
+#line 72
 testRunner.Then("the CMV summary result should be", @"{
   ""cmvSummaryData"": {
-    ""percentEqualsTarget"": 0.12620950778291964,
-    ""percentGreaterThanTarget"": 0,
-    ""percentLessThanTarget"": 99.873790492217083,
+    ""percentEqualsTarget"": 23.264619267984855,
+    ""percentGreaterThanTarget"": 30.374421539755996,
+    ""percentLessThanTarget"": 46.360959192259152,
     ""totalAreaCoveredSqMeters"": 549.56240000000014,
     ""cmvTarget"": {
-      ""cmvMachineTarget"": 70.0,
+      ""cmvMachineTarget"": 10.0,
       ""targetVaries"": false
     },
-    ""minCMVPercent"": 80,
-    ""maxCMVPercent"": 130
+    ""minCMVPercent"": 75.0,
+    ""maxCMVPercent"": 100.0
   },
   ""Code"": 0,
   ""Message"": ""success""
@@ -191,23 +189,21 @@ testRunner.Then("the CMV summary result should be", @"{
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Details with project settings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void CompactionGetCMVDetailsWithProjectSettings()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Details with project settings", new string[] {
-                        "ignore"});
-#line 94
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Details with project settings", ((string[])(null)));
+#line 92
 this.ScenarioSetup(scenarioInfo);
-#line 95
+#line 93
 testRunner.Given("the Compaction CMV Details service URI \"/api/v2/compaction/cmv/details\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 96
+#line 94
 testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 97
+#line 95
 testRunner.When("I request CMV details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 98
-testRunner.Then("the CMV details result should be", "{\r\n  \"percents\": [\r\n    0.0,\r\n    100.0,\r\n    0.0,\r\n    0.0,\r\n    0.0\r\n  ],\r\n  \"C" +
-                    "ode\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 96
+testRunner.Then("the CMV details result should be", "{\r\n  \"Percents\": [\r\n    0.0,\r\n    68.321413546487165,\r\n    1.3041649137568363,\r\n " +
+                    "   30.374421539755996,\r\n    0.0\r\n  ],\r\n  \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -215,22 +211,20 @@ testRunner.Then("the CMV details result should be", "{\r\n  \"percents\": [\r\n 
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary with project settings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void CompactionGetCMVChangeSummaryWithProjectSettings()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV % Change Summary with project settings", new string[] {
-                        "ignore"});
-#line 114
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV % Change Summary with project settings", ((string[])(null)));
+#line 111
 this.ScenarioSetup(scenarioInfo);
-#line 115
+#line 112
 testRunner.Given("the Compaction CMV % Change Summary service URI \"/api/v2/compaction/cmv/percentch" +
                     "ange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 116
+#line 113
 testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 117
+#line 114
 testRunner.When("I request CMV % change", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 118
+#line 115
 testRunner.Then("the CMV % Change result should be", "{\r\n  \"cmvChangeData\": {\r\n    \"percents\": [\r\n      4.9875827814569531,\r\n      12.6" +
                     "03476821192054,\r\n      20.695364238410598,\r\n      61.7135761589404\r\n    ],\r\n    " +
                     "\"totalAreaCoveredSqMeters\": 558.57920000000013\r\n  },\r\n  \"Code\": 0,\r\n  \"Message\":" +

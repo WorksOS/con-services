@@ -112,31 +112,31 @@ testRunner.Then("the Temperature result should be", @"{
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Temperature Summary with project settings", new string[] {
                         "ignore"});
-#line 27
-this.ScenarioSetup(scenarioInfo);
 #line 28
+this.ScenarioSetup(scenarioInfo);
+#line 29
 testRunner.Given("the Compaction Temperature Summary service URI \"/api/v2/compaction/temperature/su" +
                     "mmary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 29
-testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 30
+testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 31
 testRunner.When("I request Temperature summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 31
-testRunner.Then("the Temperature result should be", @"{
-""temperatureSummaryData"": {
-    ""percentEqualsTarget"": 0,
-    ""percentGreaterThanTarget"": 0,
-    ""percentLessThanTarget"": 100,
+#line 32
+testRunner.Then("the Temperature result should be", @":<{
+  ""temperatureSummaryData"": {
+    ""percentEqualsTarget"": 0.0,
+    ""percentGreaterThanTarget"": 0.0,
+    ""percentLessThanTarget"": 100.0,
     ""totalAreaCoveredSqMeters"": 953.93120000000022,
     ""temperatureTarget"": {
-    ""minTemperatureMachineTarget"": 90.0,
-    ""maxTemperatureMachineTarget"": 143.0,
-    ""targetVaries"": false
+      ""minTemperatureMachineTarget"": 75.0,
+      ""maxTemperatureMachineTarget"": 130.0,
+      ""targetVaries"": false
     }
-},
-""Code"": 0,
-""Message"": ""success""
+  },
+  ""Code"": 0,
+  ""Message"": ""success""
 }", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
