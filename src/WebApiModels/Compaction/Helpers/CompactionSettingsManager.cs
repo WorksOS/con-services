@@ -119,7 +119,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       var tempMin = ps.customTargetTemperatureMinimum.HasValue ? ps.customTargetTemperatureMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMinimum.Value;
       var tempMax = ps.customTargetTemperatureMaximum.HasValue ? ps.customTargetTemperatureMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMaximum.Value;
 
-      return TemperatureSettings.CreateTemperatureSettings((short)(tempMax * 10), (short)(tempMin + 10), overrideRange);
+      return TemperatureSettings.CreateTemperatureSettings((short)(tempMax * 10), (short)(tempMin * 10), overrideRange);
     }
 
     public double[] CompactionCmvPercentChangeSettings(CompactionProjectSettings ps)
