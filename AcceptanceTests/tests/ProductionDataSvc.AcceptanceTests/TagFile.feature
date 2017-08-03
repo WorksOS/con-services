@@ -13,9 +13,9 @@ Scenario Outline: TagFile - Bad Tag File
 	Then the Tag Process Service response should contain Code <Code> and Message <Message>
 	Examples: 
 	| Code | Message                                                                                                                     |
-	| 105  | "Failed to process tagfile with error: The TAG file was found to be corrupted on its pre-processing scan."                  |
-	| 108  | "Failed to process tagfile with error: OnChooseMachine. Machine Subscriptions Invalid."                                     |
-	| 114  | "Failed to process tagfile with error: OnChooseDataModel. First Epoch Blade Position Does Not Lie Within Project Boundary." |
+	| 2005 | "Failed to process tagfile with error: The TAG file was found to be corrupted on its pre-processing scan."                  |
+	| 2008 | "Failed to process tagfile with error: OnChooseMachine. Machine Subscriptions Invalid."                                     |
+	| 2014 | "Failed to process tagfile with error: OnChooseDataModel. First Epoch Blade Position Does Not Lie Within Project Boundary." |
 
 Scenario Outline: TagFile - Bad Request
 	When I POST a Tag file with name "<paramName>" from the repository expecting bad request return
@@ -26,6 +26,6 @@ Scenario Outline: TagFile - Bad Request
 	| NullData         | -1   |
 	| NullBoundary     | -1   |
 #this is valid - machine ID can be null if not overriden
-| NullMachineId    | 108  |
+| NullMachineId    | 2008 |
 	| InvalidProjectId | -1   |
 	| FilenameTooLong  | -1   |

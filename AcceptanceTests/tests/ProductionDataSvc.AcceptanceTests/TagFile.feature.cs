@@ -113,39 +113,39 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Bad Tag File")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "105")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "105")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "2005")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "2005")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "\"Failed to process tagfile with error: The TAG file was found to be corrupted on " +
             "its pre-processing scan.\"")]
-        public virtual void TagFile_BadTagFile_105()
+        public virtual void TagFile_BadTagFile_2005()
         {
-            this.TagFile_BadTagFile("105", "\"Failed to process tagfile with error: The TAG file was found to be corrupted on " +
+            this.TagFile_BadTagFile("2005", "\"Failed to process tagfile with error: The TAG file was found to be corrupted on " +
                     "its pre-processing scan.\"", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Bad Tag File")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "108")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "108")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "2008")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "2008")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "\"Failed to process tagfile with error: OnChooseMachine. Machine Subscriptions Inv" +
             "alid.\"")]
-        public virtual void TagFile_BadTagFile_108()
+        public virtual void TagFile_BadTagFile_2008()
         {
-            this.TagFile_BadTagFile("108", "\"Failed to process tagfile with error: OnChooseMachine. Machine Subscriptions Inv" +
+            this.TagFile_BadTagFile("2008", "\"Failed to process tagfile with error: OnChooseMachine. Machine Subscriptions Inv" +
                     "alid.\"", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Bad Tag File")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "114")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "114")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "2014")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "2014")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "\"Failed to process tagfile with error: OnChooseDataModel. First Epoch Blade Posit" +
             "ion Does Not Lie Within Project Boundary.\"")]
-        public virtual void TagFile_BadTagFile_114()
+        public virtual void TagFile_BadTagFile_2014()
         {
-            this.TagFile_BadTagFile("114", "\"Failed to process tagfile with error: OnChooseDataModel. First Epoch Blade Posit" +
+            this.TagFile_BadTagFile("2014", "\"Failed to process tagfile with error: OnChooseDataModel. First Epoch Blade Posit" +
                     "ion Does Not Lie Within Project Boundary.\"", ((string[])(null)));
         }
         
@@ -203,10 +203,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NullMachineId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:paramName", "NullMachineId")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "108")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "2008")]
         public virtual void TagFile_BadRequest_NullMachineId()
         {
-            this.TagFile_BadRequest("NullMachineId", "108", ((string[])(null)));
+            this.TagFile_BadRequest("NullMachineId", "2008", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]

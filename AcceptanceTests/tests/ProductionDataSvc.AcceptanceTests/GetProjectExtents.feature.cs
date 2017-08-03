@@ -167,7 +167,7 @@ this.FeatureBackground();
 #line 26
  testRunner.When("I try to get the extents expecting badrequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 27
- testRunner.Then("I should get error code -2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("I should get error code -1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -187,7 +187,7 @@ this.FeatureBackground();
 #line 31
  testRunner.When("I try to get the extents expecting badrequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 32
- testRunner.Then("I should get error code -2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("I should get error code -1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -198,15 +198,15 @@ this.FeatureBackground();
         public virtual void GetProjectExtents_BadRequestDeletedProject()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetProjectExtents - Bad Request (Deleted Project)", ((string[])(null)));
-#line 38
+#line 34
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 39
+#line 35
  testRunner.Given("a GetProjectExtents project id 1000992", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 40
+#line 36
  testRunner.When("I try to get the extents expecting badrequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 41
+#line 37
  testRunner.Then("I should get error code -4", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

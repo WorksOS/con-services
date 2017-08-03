@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="settingsManager">Compaction settings manager</param>
-    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy, 
+    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy,
       IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
@@ -83,9 +83,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get CMV summary from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
-    /// <param name="filterUid">Filter UID</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber">The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>CMV summary</returns>
-  /*  [ProjectUidVerifier]
+    [ProjectUidVerifier]
     [Route("api/v2/compaction/cmv/summary")]
     [HttpGet]
     public async Task<CompactionCmvSummaryResult> GetCmvSummary(
@@ -107,9 +122,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
       try
       {
-        //log.LogInformation($"Executing {typeof(E)}");
-        //TODO replace this builder with a single overloaded method with a service
-        //return converter(RequestExecutorContainer.Build<E>(logger, raptorClient, null).Process(request) as I);
+        var result =
+          RequestExecutorContainer.Build<SummaryCMVExecutor>(logger, raptorClient, null).Process(request) as
+            CMVSummaryResult;
+        var returnResult = CompactionCmvSummaryResult.CreateCmvSummaryResult(result, request.cmvSettings);
+        log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(returnResult));
+        return returnResult;
       }
       catch (ServiceException se)
       {
@@ -119,9 +137,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       finally
       {
-       // log.LogInformation($"Executed {typeof(E)} with result {Response.StatusCode}");
+        log.LogInformation("GetCmvSummary returned: " + Response.StatusCode);
       }
-    }*/
+    }
 
     /// <summary>
     /// Get MDP summary from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
@@ -514,7 +532,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
        * and value) and this code needs to be updated to be consistent. This requires a change to Raptor
        * to accept a list of CMV values like for pass count details.
        **************************************************************************************************/
-        
+
       log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
       CMVRequest request = await GetCMVRequest(projectUid, startUtc, endUtc, vibeStateOn, elevationType,
@@ -632,8 +650,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private async Task<CMVRequest> GetCMVRequest(Guid projectUid, DateTime? startUtc, DateTime? endUtc,
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
       string machineName, bool? isJohnDoe)
-    {     
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);     
+    {
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
       CMVSettings cmvSettings = settingsManager.CompactionCmvSettings(projectSettings);

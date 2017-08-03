@@ -240,7 +240,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 41
  testRunner.When("I request a Dxf Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 42
- testRunner.Then("I should get error code -2 and message \"Missing file type\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("I should get error code -1 and message \"Missing file type\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -265,7 +265,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 49
  testRunner.When("I request a Dxf Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 50
-  testRunner.Then("I should get error code -2 and message \"Unsupported file type SurveyedSurface\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then("I should get error code -1 and message \"Unsupported file type SurveyedSurface\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
