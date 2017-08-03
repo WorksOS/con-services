@@ -51,7 +51,7 @@ node('Ubuntu_Slave') {
     sh "bash ./wait_container.sh testcontainers"
     stage 'Bring containers down and archive the logs'
     sh "(mkdir -p ./logs && docker-compose logs > ./logs/logs.txt)" 
-    sh "docker-compose down"
+    //sh "docker-compose down"
 
 //Here we need to find test results and decide if the build successfull
     stage 'Publish test results and logs'
