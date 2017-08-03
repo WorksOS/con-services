@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Filter.Tests

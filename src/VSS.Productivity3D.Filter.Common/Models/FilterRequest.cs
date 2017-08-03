@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Productivity3D.Filter.Common.Internal;
+using VSS.Common.Exceptions;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
