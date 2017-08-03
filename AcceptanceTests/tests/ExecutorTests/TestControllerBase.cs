@@ -3,13 +3,13 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Filter.Common.Internal;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace ExecutorTests
