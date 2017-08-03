@@ -107,23 +107,21 @@ testRunner.Then("the Temperature result should be", @"{
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Temperature Summary with project settings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTemperature")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void CompactionGetTemperatureSummaryWithProjectSettings()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Temperature Summary with project settings", new string[] {
-                        "ignore"});
-#line 28
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Temperature Summary with project settings", ((string[])(null)));
+#line 27
 this.ScenarioSetup(scenarioInfo);
-#line 29
+#line 28
 testRunner.Given("the Compaction Temperature Summary service URI \"/api/v2/compaction/temperature/su" +
                     "mmary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 30
+#line 29
 testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 31
+#line 30
 testRunner.When("I request Temperature summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 32
-testRunner.Then("the Temperature result should be", @":<{
+#line 31
+testRunner.Then("the Temperature result should be", @"{
   ""temperatureSummaryData"": {
     ""percentEqualsTarget"": 0.0,
     ""percentGreaterThanTarget"": 0.0,

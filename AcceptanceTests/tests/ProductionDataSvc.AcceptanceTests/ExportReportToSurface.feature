@@ -10,7 +10,7 @@ Scenario Outline: ExportReportToSurface - Good Request
 	And fileName is "<FileName>"
 	And tolerance "<Tolerance>"
 	When I request an Export Report To Surface
-	Then the report result should match the "<ResultName>" from the repository
+	Then the export result should successful
 	Examples: 
 	| RequestName    | ProjectUID                           | Tolerance | FileName             | ResultName    |
 	| With Tolerance | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1.50      | SurfaceWithTolerance | WithTolerance |
@@ -20,7 +20,7 @@ Scenario Outline: ExportReportToSurface - Good Request - No Tolerance
   And projectUid "<ProjectUID>"
 	And fileName is "<FileName>"
 	When I request an Export Report To Surface
-	Then the report result should match the "<ResultName>" from the repository
+	Then the export result should successful
 	Examples: 
 	| RequestName | ProjectUID                           | FileName           | ResultName  |
 	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | SurfaceNoTolerance | NoTolerance |
