@@ -4,7 +4,6 @@
 Background: 
 	Given the Export Report To Surface service URI "/api/v2/export/surface" and the result file "ExportReportToSurfaceResponse.json"
 
-@ignore
 Scenario Outline: ExportReportToSurface - Good Request
   And projectUid "<ProjectUID>"
 	And fileName is "<FileName>"
@@ -15,7 +14,6 @@ Scenario Outline: ExportReportToSurface - Good Request
 	| RequestName    | ProjectUID                           | Tolerance | FileName             | ResultName    |
 	| With Tolerance | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1.50      | SurfaceWithTolerance | WithTolerance |
 
-@ignore
 Scenario Outline: ExportReportToSurface - Good Request - No Tolerance
   And projectUid "<ProjectUID>"
 	And fileName is "<FileName>"
