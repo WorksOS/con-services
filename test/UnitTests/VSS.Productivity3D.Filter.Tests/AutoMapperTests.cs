@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapFilterToResult()
+    public void MapDBModelToResult()
     {
       var filter = new MasterData.Repositories.DBModels.Filter
       {
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapCreateFilterRequestToDBModel()
+    public void MapFilterRequestToCreateKafkaEvent()
     {
       var filterRequest = FilterRequestFull.CreateFilterFullRequest
       (
@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapUpdateFilterRequestToDBModel()
+    public void MapFilterRequestToUpdateKafkaEvent()
     {
       var filterRequest = FilterRequestFull.CreateFilterFullRequest
       (
@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapDeleteFilterRequestToDBModel()
+    public void MapFilterRequestToDeleteKafkaEvent()
     {
       var filterRequest = FilterRequestFull.CreateFilterFullRequest
       (
@@ -113,6 +113,32 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterRequest.projectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
       Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
+    }
+
+    [TestMethod]
+    public void MapDBModelRequestToDeleteKafkaEvent()
+    {
+      var filter = new MasterData.Repositories.DBModels.Filter
+      {
+        CustomerUid = Guid.NewGuid().ToString(),
+        UserUid = Guid.NewGuid().ToString(),
+        ProjectUid = Guid.NewGuid().ToString(),
+        FilterUid = Guid.NewGuid().ToString(),
+
+        Name = "the Name",
+        FilterJson = "the Json",
+
+        IsDeleted = false,
+        LastActionedUtc = new DateTime(2017, 01, 21)
+      };
+
+      var result = AutoMapperUtility.Automapper.Map<DeleteFilterEvent>(filter);
+      Assert.AreEqual(filter.CustomerUid, result.CustomerUID.ToString(),
+        "customerUid has not been mapped correctly");
+      Assert.AreEqual(filter.UserUid, result.UserUID.ToString(), "UserUid has not been mapped correctly");
+      Assert.AreEqual(filter.ProjectUid, result.ProjectUID.ToString(),
+        "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(filter.FilterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
     }
   }
 }
