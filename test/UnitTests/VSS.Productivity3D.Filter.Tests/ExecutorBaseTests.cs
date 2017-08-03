@@ -4,12 +4,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.Filter.Tests
@@ -41,6 +43,7 @@ namespace VSS.Productivity3D.Filter.Tests
         .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<ICustomerProxy, CustomerProxy>()
         .AddTransient<IProjectListProxy, ProjectListProxy>()
+        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>()
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();

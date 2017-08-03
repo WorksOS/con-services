@@ -9,12 +9,14 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using VSS.Common.Exceptions;
 using VSS.Common.Filters;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.WebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -87,6 +89,7 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<ICustomerProxy, CustomerProxy>(); // used in TDI auth for customer/user validation
       services.AddTransient<IProjectListProxy, ProjectListProxy>(); // used for customer/project validation
       services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
+      services.AddTransient<IErrorCodesProvider,ErrorCodesProvider>();
       services.AddMemoryCache();
       
       services.AddMvc(
