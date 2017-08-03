@@ -25,7 +25,7 @@ echo "RepositoryTests finished"
 
 echo "Run the component/acceptance tests"
 echo "EventTests event tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/EventTestsResults project=EventTests
+dotnet TestRun/TestRun.dll results=/testresults/EventTestsResults project=EventTests messages=false
 echo "EventTests event tests finished"
 
 echo " "
