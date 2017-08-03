@@ -11,7 +11,16 @@ namespace VSS.Common.Exceptions
     /// <summary>
     /// The contract execution states enum
     /// </summary>
-    private readonly ContractExecutionStatesEnum _contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    private readonly IErrorCodesProvider _contractExecutionStatesEnum;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceExceptionHandler"/> class.
+    /// </summary>
+    /// <param name="errorProvider">The error provider.</param>
+    public ServiceExceptionHandler(IErrorCodesProvider errorProvider)
+    {
+      _contractExecutionStatesEnum = errorProvider;
+    }
 
     /// <summary>
     /// Correctly throw ServiceException for controller types.
