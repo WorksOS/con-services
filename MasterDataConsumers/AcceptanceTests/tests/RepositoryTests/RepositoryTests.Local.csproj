@@ -32,9 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\ConfigurationStore\src\ConfigStore.Local.csproj" />
-    <ProjectReference Include="..\..\..\..\log4netExtensions\log4netExtensions.Local.csproj" />
-    <ProjectReference Include="..\..\..\..\MasterDataRepositories\src\Repo.Local.csproj" />
+    <ProjectReference Include="..\..\..\..\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
+    <ProjectReference Include="..\..\..\..\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
+    <ProjectReference Include="..\..\..\..\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
   </ItemGroup>
 
   <ItemGroup>

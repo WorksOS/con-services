@@ -42,6 +42,7 @@ namespace RepositoryTests
         .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()          
         .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
+        .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
         .BuildServiceProvider();
 
       var retrievedloggerFactory = serviceProvider.GetService<ILoggerFactory>();

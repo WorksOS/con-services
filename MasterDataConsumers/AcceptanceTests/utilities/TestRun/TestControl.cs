@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
+using TestUtility;
 
 namespace TestRun
 {
@@ -333,6 +334,7 @@ namespace TestRun
                 stats.AddSuiteCount();
                 stats.AddGlobalCount();
                 stats.StartLocalTime();
+                Console.WriteLine($"Running instance {instance.ToSafeString()} with info {method.ToSafeString()}");
                 method.Invoke(instance, null);
                 stats.AddSuitePassCount();
                 stats.EndDateTimeOneTest = DateTime.Now;

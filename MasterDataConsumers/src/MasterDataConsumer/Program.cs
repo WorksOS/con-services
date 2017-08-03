@@ -111,7 +111,8 @@ namespace VSS.Productivity3D.MasterDataConsumer
         .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
         .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
+        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
+        .AddTransient<IRepository<IFilterEvent>, FilterRepository>();
 
       // catch-22 here. I want to use the GenericConfig to get the kafkaTopics
       //     I can't use it until it is in DI (as it needs a logger)

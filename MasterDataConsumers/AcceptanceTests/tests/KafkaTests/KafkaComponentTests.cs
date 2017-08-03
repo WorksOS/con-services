@@ -58,6 +58,7 @@ namespace KafkaTests
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
           .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
+          .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
           .AddLogging()
           .AddSingleton<ILoggerFactory>(loggerFactory)

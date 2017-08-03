@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies.Unit
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.UnitTests.Local", "MasterDataModels\test\UnitTests\VSS.MasterData.Models.UnitTests.Local.csproj", "{47BD9DB9-86D3-4AF9-9408-0AD3AAB21577}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{AE6404FE-B292-4B1B-A164-891F3EBA2397}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE6404FE-B292-4B1B-A164-891F3EBA2397}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE6404FE-B292-4B1B-A164-891F3EBA2397}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47BD9DB9-86D3-4AF9-9408-0AD3AAB21577}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47BD9DB9-86D3-4AF9-9408-0AD3AAB21577}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47BD9DB9-86D3-4AF9-9408-0AD3AAB21577}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47BD9DB9-86D3-4AF9-9408-0AD3AAB21577}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,5 +90,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8BB595E1-DDB7-4049-941E-8174445DE336} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
 		{AE6404FE-B292-4B1B-A164-891F3EBA2397} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
+		{47BD9DB9-86D3-4AF9-9408-0AD3AAB21577} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
 	EndGlobalSection
 EndGlobal

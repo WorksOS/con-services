@@ -4,19 +4,17 @@ using System.Reflection;
 
 namespace VSS.Common.ResultsHandling
 {
-
   public abstract class GenericEnum<T, U> where T : GenericEnum<T, U>, new()
   {
     private readonly List<string> names;
     private readonly List<U> values;
-    private bool allowInstanceExceptions;
 
     public GenericEnum()
     {
       Type t = typeof(T);
       Type u = typeof(U);
       if (t == u)
-        throw new InvalidOperationException(String.Format("{0} and its underlying type cannot be the same",
+        throw new InvalidOperationException(string.Format("{0} and its underlying type cannot be the same",
                 t.Name));
       BindingFlags bf = BindingFlags.Static | BindingFlags.Public;
       FieldInfo[] fia = t.GetFields(bf);
@@ -31,14 +29,10 @@ namespace VSS.Common.ResultsHandling
         }
       }
       if (names.Count == 0)
-        throw new InvalidOperationException(String.Format("{0} has no suitable fields", t.Name));
+        throw new InvalidOperationException(string.Format("{0} has no suitable fields", t.Name));
     }
 
-    public bool AllowInstanceExceptions
-    {
-      get { return allowInstanceExceptions; }
-      set { allowInstanceExceptions = value; }
-    }
+    public bool AllowInstanceExceptions { get; set; }
 
     public string[] GetNames()
     {
@@ -82,7 +76,7 @@ namespace VSS.Common.ResultsHandling
       {
         return values[index];
       }
-      throw new ArgumentException(String.Format("'{0}' is not a defined name of {1}", name, typeof(T).Name));
+      throw new ArgumentException(string.Format("'{0}' is not a defined name of {1}", name, typeof(T).Name));
     }
 
     public string FirstNameWith(U value)
@@ -92,7 +86,7 @@ namespace VSS.Common.ResultsHandling
       {
         return names[index];
       }
-      throw new ArgumentException(String.Format("'{0}' is not a defined value of {1}", value, typeof(T).Name));
+      throw new ArgumentException(string.Format("'{0}' is not a defined value of {1}", value, typeof(T).Name));
     }
 
     public int FirstIndexWith(U value)
@@ -102,7 +96,7 @@ namespace VSS.Common.ResultsHandling
       {
         return index;
       }
-      throw new ArgumentException(String.Format("'{0}' is not a defined value of {1}", value, typeof(T).Name));
+      throw new ArgumentException(string.Format("'{0}' is not a defined value of {1}", value, typeof(T).Name));
     }
 
     public string NameAt(int index)
@@ -111,7 +105,7 @@ namespace VSS.Common.ResultsHandling
       {
         return names[index];
       }
-      throw new IndexOutOfRangeException(String.Format("Index must be between 0 and {0}", Count - 1));
+      throw new IndexOutOfRangeException(string.Format("Index must be between 0 and {0}", Count - 1));
     }
 
     public U ValueAt(int index)
@@ -120,47 +114,38 @@ namespace VSS.Common.ResultsHandling
       {
         return values[index];
       }
-      throw new IndexOutOfRangeException(String.Format("Index must be between 0 and {0}", Count - 1));
+      throw new IndexOutOfRangeException(string.Format("Index must be between 0 and {0}", Count - 1));
     }
 
-    public Type UnderlyingType
-    {
-      get { return typeof(U); }
-    }
+    public Type UnderlyingType => typeof(U);
 
-    public int Count
-    {
-      get { return names.Count; }
-    }
+    public int Count => names.Count;
 
     public bool IsDefinedName(string name)
     {
-      if (names.IndexOf(name) >= 0) return true;
-      return false;
+      return names.IndexOf(name) >= 0;
     }
 
     public bool IsDefinedValue(U value)
     {
-      if (values.IndexOf(value) >= 0) return true;
-      return false;
+      return values.IndexOf(value) >= 0;
     }
 
     public bool IsDefinedIndex(int index)
     {
-      if (index >= 0 && index < Count) return true;
-      return false;
+      return index >= 0 && index < Count;
     }
 
     public T ByName(string name)
     {
       if (!IsDefinedName(name))
       {
-        if (allowInstanceExceptions)
-          throw new ArgumentException(String.Format("'{0}' is not a defined name of {1}", name,
+        if (AllowInstanceExceptions)
+          throw new ArgumentException(string.Format("'{0}' is not a defined name of {1}", name,
                   typeof(T).Name));
         return null;
       }
-      T t = new T {_index = names.IndexOf(name)};
+      T t = new T { _index = names.IndexOf(name) };
       return t;
     }
 
@@ -168,12 +153,12 @@ namespace VSS.Common.ResultsHandling
     {
       if (!IsDefinedValue(value))
       {
-        if (allowInstanceExceptions)
-          throw new ArgumentException(String.Format("'{0}' is not a defined value of {1}", value,
+        if (AllowInstanceExceptions)
+          throw new ArgumentException(string.Format("'{0}' is not a defined value of {1}", value,
                   typeof(T).Name));
         return null;
       }
-      T t = new T {_index = values.IndexOf(value)};
+      T t = new T { _index = values.IndexOf(value) };
       return t;
     }
 
@@ -181,11 +166,11 @@ namespace VSS.Common.ResultsHandling
     {
       if (index < 0 || index >= Count)
       {
-        if (allowInstanceExceptions)
-          throw new ArgumentException(String.Format("Index must be between 0 and {0}", Count - 1));
+        if (AllowInstanceExceptions)
+          throw new ArgumentException(string.Format("Index must be between 0 and {0}", Count - 1));
         return null;
       }
-      T t = new T {_index = index};
+      T t = new T { _index = index };
       return t;
     }
 
@@ -193,13 +178,13 @@ namespace VSS.Common.ResultsHandling
 
     public int Index
     {
-      get { return _index; }
+      get => _index;
       set
       {
         if (value < 0 || value >= Count)
         {
-          if (allowInstanceExceptions)
-            throw new ArgumentException(String.Format("Index must be between 0 and {0}", Count - 1));
+          if (AllowInstanceExceptions)
+            throw new ArgumentException(string.Format("Index must be between 0 and {0}", Count - 1));
           return;
         }
         _index = value;
@@ -208,14 +193,14 @@ namespace VSS.Common.ResultsHandling
 
     public string Name
     {
-      get { return names[_index]; }
+      get => names[_index];
       set
       {
         int index = names.IndexOf(value);
         if (index == -1)
         {
-          if (allowInstanceExceptions)
-            throw new ArgumentException(String.Format("'{0}' is not a defined name of {1}", value,
+          if (AllowInstanceExceptions)
+            throw new ArgumentException(string.Format("'{0}' is not a defined name of {1}", value,
                     typeof(T).Name));
           return;
         }
@@ -225,14 +210,14 @@ namespace VSS.Common.ResultsHandling
 
     public U Value
     {
-      get { return values[_index]; }
+      get => values[_index];
       set
       {
         int index = values.IndexOf(value);
         if (index == -1)
         {
-          if (allowInstanceExceptions)
-            throw new ArgumentException(String.Format("'{0}' is not a defined value of {1}", value,
+          if (AllowInstanceExceptions)
+            throw new ArgumentException(string.Format("'{0}' is not a defined value of {1}", value,
                     typeof(T).Name));
           return;
         }
@@ -245,19 +230,14 @@ namespace VSS.Common.ResultsHandling
       return names[_index];
     }
 
-    private int dynamicCount;
-
     public void ClearDynamic()
     {
-      names.RemoveRange(names.Count - dynamicCount, dynamicCount);
-      values.RemoveRange(values.Count - dynamicCount, dynamicCount);
-      dynamicCount = 0;
+      names.RemoveRange(names.Count - DynamicCount, DynamicCount);
+      values.RemoveRange(values.Count - DynamicCount, DynamicCount);
+      DynamicCount = 0;
     }
 
-    public int DynamicCount
-    {
-      get { return dynamicCount; }
-    }
+    public int DynamicCount { get; private set; }
 
     public void DynamicAdd(string name, U value)
     {
@@ -265,17 +245,13 @@ namespace VSS.Common.ResultsHandling
       {
         names.Add(name);
         values.Add(value);
-        dynamicCount++;
+        DynamicCount++;
       }
       else
       {
-        throw new InvalidOperationException(String.Format("'{0}' is already an element of {1}", name,
+        throw new InvalidOperationException(string.Format("'{0}' is already an element of {1}", name,
                 typeof(T).Name));
       }
     }
   }
-
-
-
 }
-
