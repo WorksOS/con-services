@@ -72,7 +72,7 @@ node('Ubuntu_Slave') {
 	{
 	       stage 'Build Release Images'
 
-	       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion} ./artifacts/FilterWebApi"
+	       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion} ./artifacts/VSS.Productivity3D.Filter.WebApi"
  
 	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion}"
 
@@ -92,7 +92,7 @@ node('Ubuntu_Slave') {
 	stage 'Build Development Images'
 
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest ./artifacts/FilterWebApi"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest ./artifacts/VSS.Productivity3D.Filter.WebApi"
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest"
 	   
