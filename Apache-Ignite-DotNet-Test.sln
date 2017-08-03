@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorPSNodeServer", "Rapto
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorTAGFileProcessor", "RaptorTAGFileProcessor\RaptorTAGFileProcessor.csproj", "{7DD49C6B-042D-40CE-8E8E-430146E3AF97}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExceptionReproducer", "ExceptionReproducer\ExceptionReproducer.csproj", "{771ADABE-410E-4786-8625-305FDCCD4737}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,14 @@ Global
 		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|x64.ActiveCfg = Release|x64
 		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|x64.Build.0 = Release|x64
+		{771ADABE-410E-4786-8625-305FDCCD4737}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{771ADABE-410E-4786-8625-305FDCCD4737}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{771ADABE-410E-4786-8625-305FDCCD4737}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{771ADABE-410E-4786-8625-305FDCCD4737}.Debug|x64.Build.0 = Debug|Any CPU
+		{771ADABE-410E-4786-8625-305FDCCD4737}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{771ADABE-410E-4786-8625-305FDCCD4737}.Release|Any CPU.Build.0 = Release|Any CPU
+		{771ADABE-410E-4786-8625-305FDCCD4737}.Release|x64.ActiveCfg = Release|Any CPU
+		{771ADABE-410E-4786-8625-305FDCCD4737}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
