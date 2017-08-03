@@ -51,7 +51,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       var filterRequest = item as FilterRequestFull;
       if (filterRequest != null)
       {
-
         var projectFilter =
           (await filterRepo.GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid).ConfigureAwait(false))
             .SingleOrDefault(f => f.FilterUid == filterRequest.filterUid);
@@ -64,19 +63,15 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         DeleteFilterEvent deleteFilterEvent = null;
         try
         {
-          deleteFilterEvent = AutoMapperUtility.Automapper.Map<DeleteFilterEvent>(filterRequest);
-          deleteFilterEvent.FilterUID = Guid.Parse(filterRequest.filterUid);
-          deleteFilterEvent.ActionUTC = DateTime.UtcNow;
+          deleteFilterEvent = AutoMapperUtility.Automapper.Map<DeleteFilterEvent>(projectFilter);
           var deletedCount = await filterRepo.StoreEvent(deleteFilterEvent).ConfigureAwait(false);
           if (deletedCount == 0)
           {
-            // error trying to delete a persistant filter
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 12);
           }
         }
         catch (Exception e)
         {
-          // exception trying to delete a persistant filter
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 13, e.Message);
         }
 

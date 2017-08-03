@@ -18,11 +18,7 @@ namespace RepositoryTests
   {
     protected IServiceProvider serviceProvider;
     protected IConfigurationStore configStore;
-    protected ILoggerFactory logger;
-    protected IServiceExceptionHandler serviceExceptionHandler;
     protected FilterRepository filterRepo;
-    protected IRaptorProxy raptorProxy;
-    protected IKafka producer;
 
     public void SetupLogging()
     {
@@ -40,18 +36,11 @@ namespace RepositoryTests
         .AddSingleton(loggerFactory)
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
           .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
-          .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-          .AddTransient<IRaptorProxy, RaptorProxy>()
-          .AddSingleton<IKafka, RdKafkaDriver>()
           .AddMemoryCache() 
         .BuildServiceProvider();
 
       configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       filterRepo = serviceProvider.GetRequiredService<IRepository<IFilterEvent>>() as FilterRepository;
-      raptorProxy = serviceProvider.GetRequiredService<IRaptorProxy>();
-      producer = serviceProvider.GetRequiredService<IKafka>();
       Assert.IsNotNull(serviceProvider.GetService<ILoggerFactory>());
   
     }
