@@ -279,10 +279,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NullProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "NullProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void Profile_BadRequest_NullProjectId()
         {
-            this.Profile_BadRequest("NullProjectId", "400", "-2", ((string[])(null)));
+            this.Profile_BadRequest("NullProjectId", "400", "-1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -291,10 +291,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "AlignmentProfileNotSpecifyingStations")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "AlignmentProfileNotSpecifyingStations")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void Profile_BadRequest_AlignmentProfileNotSpecifyingStations()
         {
-            this.Profile_BadRequest("AlignmentProfileNotSpecifyingStations", "400", "-2", ((string[])(null)));
+            this.Profile_BadRequest("AlignmentProfileNotSpecifyingStations", "400", "-1", ((string[])(null)));
         }
     }
 }
