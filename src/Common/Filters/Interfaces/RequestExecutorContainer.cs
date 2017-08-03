@@ -53,6 +53,23 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected List<FileData> fileList;
 
     /// <summary>
+    /// Gets the available contract execution error states.
+    /// </summary>
+    /// <value>
+    /// The contract execution states.
+    /// </value>
+    protected ContractExecutionStatesEnum ContractExecutionStates { get; }
+
+    /// <summary>
+    /// Default constructor which creates all structures necessary for error handling.
+    /// </summary>
+    protected RequestExecutorContainer()
+    {
+      ContractExecutionStates = new ContractExecutionStatesEnum();
+      ProcessErrorCodes();
+    }
+
+    /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
     /// </summary>
     /// <returns>List of errors with corresponding descriptions.</returns>
@@ -73,7 +90,6 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     /// <typeparam name="T">>Generic type which should be</typeparam>
     /// <param name="item">>The item.</param>
-    /// <returns></returns>
     protected abstract ContractExecutionResult ProcessEx<T>(T item);
 
     /// <summary>
@@ -81,7 +97,6 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
-    /// <returns></returns>
     protected virtual Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -93,40 +108,33 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     /// <param name="item"></param>
     /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
     /// <exception cref="ServiceException"></exception>
     public ContractExecutionResult Process<T>(T item)
     {
-      if (item == null)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
+      ValidateTItem(item);
       return ProcessEx(item);
     }
 
     public async Task<ContractExecutionResult> ProcessAsync<T>(T item)
     {
-      if (item == null)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
+      ValidateTItem(item);
       return await ProcessAsyncEx(item);
     }
 
-    /// <summary>
-    /// Gets the available contract execution error states.
-    /// </summary>
-    /// <value>
-    /// The contract execution states.
-    /// </value>
-    protected ContractExecutionStatesEnum ContractExecutionStates { get; }
-
-    /// <summary>
-    /// Default constructor which creates all structures necessary for error handling.
-    /// </summary>
-    protected RequestExecutorContainer()
+    private static void ValidateTItem<T>(T item)
     {
-      ContractExecutionStates = new ContractExecutionStatesEnum();
-      ProcessErrorCodes();
+      if (item == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
+      }
     }
+
+
+
+
+
+
 
     /// <summary>
     /// Dynamically defines new error codes for the executor instance. Don't forget to clean them up after exit.
@@ -137,64 +145,76 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient) : this()
-    {
-      this.raptorClient = raptorClient;
-      if (logger != null)
-        log = logger.CreateLogger<RequestExecutorContainer>();
-    }
+    //protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient) : this()
+    //{
+    //  this.raptorClient = raptorClient;
+    //  if (logger != null)
+    //    log = logger.CreateLogger<RequestExecutorContainer>();
+    //}
 
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor) : this()
-    {
-      this.raptorClient = raptorClient;
-      this.tagProcessor = tagProcessor;
-      if (logger != null)
-        log = logger.CreateLogger<RequestExecutorContainer>();
-    }
+    //protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor) : this()
+    //{
+    //  this.raptorClient = raptorClient;
+    //  this.tagProcessor = tagProcessor;
+    //  if (logger != null)
+    //    log = logger.CreateLogger<RequestExecutorContainer>();
+    //}
 
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore) : this()
-    {
-      this.raptorClient = raptorClient;
-      this.tagProcessor = tagProcessor;
-      if (logger != null)
-        log = logger.CreateLogger<RequestExecutorContainer>();
-      this.configStore = configStore;
-    }
+    //protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore) : this()
+    //{
+    //  this.raptorClient = raptorClient;
+    //  this.tagProcessor = tagProcessor;
+    //  if (logger != null)
+    //    log = logger.CreateLogger<RequestExecutorContainer>();
+    //  this.configStore = configStore;
+    //}
 
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator) : this()
-    {
-      this.raptorClient = raptorClient;
-      this.tagProcessor = tagProcessor;
-      if (logger != null)
-        log = logger.CreateLogger<RequestExecutorContainer>();
-      this.configStore = configStore;
-      this.fileRepo = fileRepo;
-      this.tileGenerator = tileGenerator;
-    }
+    //protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator) : this()
+    //{
+    //  this.raptorClient = raptorClient;
+    //  this.tagProcessor = tagProcessor;
+    //  if (logger != null)
+    //    log = logger.CreateLogger<RequestExecutorContainer>();
+    //  this.configStore = configStore;
+    //  this.fileRepo = fileRepo;
+    //  this.tileGenerator = tileGenerator;
+    //}
 
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList) : this()
+    //protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList) : this()
+    //{
+    //  this.raptorClient = raptorClient;
+    //  this.tagProcessor = tagProcessor;
+    //  if (logger != null)
+    //    log = logger.CreateLogger<RequestExecutorContainer>();
+    //  this.configStore = configStore;
+    //  this.fileRepo = fileRepo;
+    //  this.tileGenerator = tileGenerator;
+    //  this.fileList = fileList;
+    //}
+
+    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList)
     {
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
-      if (logger != null)
-        log = logger.CreateLogger<RequestExecutorContainer>();
+      log = logger;
       this.configStore = configStore;
       this.fileRepo = fileRepo;
       this.tileGenerator = tileGenerator;
       this.fileList = fileList;
     }
+
 
     //TODO: Check if this works
     /// <summary>
@@ -203,18 +223,6 @@ namespace VSS.Productivity3D.Common.Interfaces
     ~RequestExecutorContainer()
     {
       ContractExecutionStates?.ClearDynamic();
-    }
-
-    /// <summary>
-    ///   Builds this instance for specified executor type.
-    /// </summary>
-    /// <typeparam name="TExecutor">The type of the executor.</typeparam>
-    /// <returns></returns>
-    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor = null, IConfigurationStore configStore = null, IFileRepository fileRepo = null, ITileGenerator tileGenerator = null, List<FileData> fileList = null)
-      where TExecutor : RequestExecutorContainer, new()
-    {
-      var executor = new TExecutor() { raptorClient = raptorClient, tagProcessor = tagProcessor, log = logger.CreateLogger<TExecutor>(), configStore = configStore, fileRepo = fileRepo, tileGenerator = tileGenerator, fileList = fileList};
-      return executor;
     }
   }
 }

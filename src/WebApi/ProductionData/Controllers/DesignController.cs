@@ -9,6 +9,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Notification.Controllers;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
@@ -91,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface && f.IsActivated).ToList();
 
-      return RequestExecutorContainer.Build<DesignExecutor>(logger, raptorClient, null, configStore, null, null, fileList).Process(request);
+      return RequestExecutorContainerFactory.Build<DesignExecutor>(logger, raptorClient, null, configStore, null, null, fileList).Process(request);
     }
   }
 }

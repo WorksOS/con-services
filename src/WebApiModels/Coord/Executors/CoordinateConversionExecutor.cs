@@ -1,10 +1,8 @@
 ﻿using System.Linq;
 using System.Net;
-using Microsoft.Extensions.Logging;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
@@ -19,26 +17,18 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
   public class CoordinateConversionExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    /// 
-    public CoordinateConversionExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
-    /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public CoordinateConversionExecutor()
     {
+      ProcessErrorCodes();
     }
 
     /// <summary>
     /// Populates ContractExecutionStates with Production Data Server error messages.
     /// </summary>
     /// 
-    protected override void ProcessErrorCodes()
+    protected sealed override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
@@ -106,7 +96,5 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
 
       return CoordinateConversionResult.CreateCoordinateConversionResult(convertedPoints);
     }
-  
-
   }
 }

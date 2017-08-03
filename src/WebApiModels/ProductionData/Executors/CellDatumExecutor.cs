@@ -1,14 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using SVOICDecls;
+﻿using SVOICDecls;
 using SVOICFilterSettings;
 using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
@@ -16,14 +13,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   public class CellDatumExecutor : RequestExecutorContainer
     {
-        /// <summary>
-        /// This constructor allows us to mock raptorClient
-        /// </summary>
-        /// <param name="raptorClient"></param>
-        public CellDatumExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-        {
-        }
-
         /// <summary>
         /// Default constructor for RequestExecutorContainer.Build
         /// </summary>
@@ -78,12 +67,5 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
                   result.TimeStampUTC);
             
         }
-
-        protected override void ProcessErrorCodes()
-        {
-  
-        }
     }
-    
-    
 }

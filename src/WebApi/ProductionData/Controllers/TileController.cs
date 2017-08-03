@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -61,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public TileResult Post([FromBody] TileRequest request)
     {
       request.Validate();
-      var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
+      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
       return tileResult;
     }
 
@@ -83,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public FileResult PostRaw([FromBody] TileRequest request)
     {
       request.Validate();
-      if (RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient).Process(request) is TileResult tileResult)
+      if (RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient).Process(request) is TileResult tileResult)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 

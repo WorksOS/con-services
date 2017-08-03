@@ -8,7 +8,6 @@ using System.IO;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -20,18 +19,11 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   public class PatchExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock RaptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    public PatchExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
-    /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public PatchExecutor()
     {
+      ProcessErrorCodes();
     }
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -98,21 +90,10 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       return result;
     }
 
-
-
-
-
-
-
-
-
-    protected override void ProcessErrorCodes()
+    protected sealed override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
-
-
-
 
     private PatchResultStructured convertPatchResult(PatchResult patch)
     {

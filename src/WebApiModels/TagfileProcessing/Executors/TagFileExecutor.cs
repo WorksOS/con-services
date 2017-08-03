@@ -1,11 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using TAGProcServiceDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -20,22 +18,14 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors
   public class TagFileExecutor : RequestExecutorContainer
     {
       /// <summary>
-      /// This constructor allows us to mock raptorClient & tagProcessor
-      /// </summary>
-      /// <param name="raptorClient"></param>
-      /// <param name="tagProcessor"></param>
-      public TagFileExecutor(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor) : base(logger, raptorClient, tagProcessor)
-      {
-      }
-
-      /// <summary>
       /// Default constructor for RequestExecutorContainer.Build
       /// </summary>
       public TagFileExecutor()
       {
+      ProcessErrorCodes();
       }
 
-        protected override void ProcessErrorCodes()
+        protected sealed override void ProcessErrorCodes()
         {
           RaptorResult.AddTagProcessorErrorMessages(ContractExecutionStates);
         }
@@ -72,6 +62,5 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors
               ContractExecutionStates.ClearDynamic();
           }          
       }
-
     }
 }

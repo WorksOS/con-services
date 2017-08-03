@@ -1,11 +1,9 @@
-﻿using System;
+﻿using ShineOn.Rtl;
+using System;
 using System.Net;
-using Microsoft.Extensions.Logging;
-using ShineOn.Rtl;
 using TAGProcServiceDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
@@ -16,19 +14,11 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   public class EditDataExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock raptorClient & tagProcessor
-    /// </summary>
-    /// <param name="tagProcessor"></param>
-    /// <param name="raptorClient"></param>
-    public EditDataExecutor(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor) : base(logger, raptorClient, tagProcessor)
-    {
-    }
-
-    /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public EditDataExecutor()
     {
+      ProcessErrorCodes();
     }
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -118,7 +108,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       return result;
     }
 
-        protected override void ProcessErrorCodes()
+        protected sealed override void ProcessErrorCodes()
         {
           RaptorResult.AddTagProcessorErrorMessages(ContractExecutionStates);
         }

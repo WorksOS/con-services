@@ -1,14 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using SVOICOptionsDecls;
+﻿using SVOICOptionsDecls;
 using System;
 using System.IO;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApiModels.ProductionData.Helpers;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
@@ -19,23 +16,14 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   /// <summary>
   /// Get production data profile calculations executor.
   /// </summary>
-  /// 
   public class ProfileProductionDataExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    /// 
-    public ProfileProductionDataExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public ProfileProductionDataExecutor()
     {
+      ProcessErrorCodes();
     }
     private ProfileResult performProductionDataProfilePost(ProfileProductionDataRequest request)
     {
@@ -108,12 +96,5 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
       return result;
     }
-
-    protected override void ProcessErrorCodes()
-    {
-      // Do nothing here...
-    }
-
-
   }
 }

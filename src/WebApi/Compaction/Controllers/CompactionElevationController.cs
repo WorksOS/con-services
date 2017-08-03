@@ -9,10 +9,9 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
@@ -178,7 +177,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var returnResult =
-          RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null)
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient, null)
             .Process(request) as ProjectStatisticsResult;
         log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;

@@ -1,21 +1,18 @@
-﻿using System;
+﻿using ASNodeDecls;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using ASNodeDecls;
-using Microsoft.Extensions.Logging;
 using VSS.Common.ResultsHandling;
-using VSS.ConfigurationStore;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.Productivity3D.WebApiModels.Notification.Helpers;
-using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Point = VSS.Productivity3D.WebApiModels.Notification.Helpers.Point;
 
@@ -26,17 +23,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
   /// </summary>
   public class DxfTileExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// This constructor allows us to mock 
-    /// </summary>
-    /// <param name="logger">Logger</param>
-    /// <param name="configStore">Configuration store</param>
-    /// <param name="fileRepository">Imported file repository</param>
-    public DxfTileExecutor(ILoggerFactory logger, IConfigurationStore configStore, IFileRepository fileRepository) :
-      base(logger, null, null, configStore, fileRepository, null)
-    {
-    }
-
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>

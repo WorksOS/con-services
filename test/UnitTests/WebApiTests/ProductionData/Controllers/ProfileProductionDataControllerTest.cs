@@ -6,11 +6,10 @@ using System;
 using System.IO;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 using VSS.Productivity3D.WebApiModels.ProductionData.Helpers;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
@@ -84,7 +83,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       mockRaptorClient.Setup(prj => prj.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()/*args*/)).Returns(raptorResult);
 
       // Create an executor...
-      ProfileProductionDataExecutor executor = new ProfileProductionDataExecutor(mockLogger.Object, mockRaptorClient.Object);
+      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object);
 
       ContractExecutionResult result = executor.Process(request);
 
@@ -131,7 +130,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       mockRaptorClient.Setup(prj => prj.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()/*args*/)).Returns(raptorResult);
 
       // Create an executor...
-      ProfileProductionDataExecutor executor = new ProfileProductionDataExecutor(mockLogger.Object, mockRaptorClient.Object);
+      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object);
 
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }

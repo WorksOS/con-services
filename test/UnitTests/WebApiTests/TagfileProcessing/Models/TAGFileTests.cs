@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.TagfileProcessing.Models;
 
 namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Models
 {
-    [TestClass]
+  [TestClass]
     public class TAGFileTests
     {
-        [TestMethod]
+      [TestMethod]
         public void CanCreateTagFileTest()
         {
+
             var validator = new DataAnnotationsValidator();
             byte[] data = new byte[] {0x1, 0x2, 0x3};
           List<WGSPoint> points = new List<WGSPoint>

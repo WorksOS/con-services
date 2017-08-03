@@ -6,6 +6,7 @@ using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -77,7 +78,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     public TAGFilePostResult Post([FromBody]TagFileRequest request)
     {
       request.Validate();
-      return RequestExecutorContainer.Build<TagFileExecutor>(logger, raptorClient, tagProcessor).Process(request) as TAGFilePostResult;
+      return RequestExecutorContainerFactory.Build<TagFileExecutor>(logger, raptorClient, tagProcessor).Process(request) as TAGFilePostResult;
     }
 
     /// <summary>
@@ -101,7 +102,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var boundary = WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectDescr.projectGeofenceWKT).ToArray());
       TagFileRequest tfRequest = TagFileRequest.CreateTagFile(request.fileName, request.data, projectDescr.projectId, boundary, -1, false, false);
       tfRequest.Validate();
-      return RequestExecutorContainer.Build<TagFileExecutor>(logger, raptorClient, tagProcessor).Process(tfRequest);
+      return RequestExecutorContainerFactory.Build<TagFileExecutor>(logger, raptorClient, tagProcessor).Process(tfRequest);
     }
   }
 }

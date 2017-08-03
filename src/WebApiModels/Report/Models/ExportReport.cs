@@ -1,20 +1,17 @@
-﻿using System;
-using System.Net;
-using ASNode.ExportProductionDataCSV.RPC;
+﻿using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.UserPreferences;
 using BoundingExtents;
 using Newtonsoft.Json;
+using System;
+using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Common.Contracts;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
-
   public enum ExportTypes
   {
     kSurfaceExport = 1,
@@ -177,37 +174,30 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// <summary>
     /// Create example instance of PassCounts to display in Help documentation.
     /// </summary>
-    public new static ExportReport HelpSample
+    public new static ExportReport HelpSample => new ExportReport
     {
-      get
-      {
-        return new ExportReport
-        {
-                   projectId = 34,
-                   liftBuildSettings = LiftBuildSettings.HelpSample,
-                   filter = Filter.HelpSample,
-                   filterID = 0,
-                   machineList = new TMachine[2] {new TMachine(), new TMachine()},
-                   projectExtents = new T3DBoundingWorldExtent(),
-                   restrictSize = true,
-                   tolerance = 0.1,
-                   includeSurveydSurface = true,
-                   cellSizeRequired = true,
-                   rawData = true,
-                   filename = "GoToSomwhere.csv",
-                   coordType = CoordTypes.ptNORTHEAST,
-                   exportType = ExportTypes.kPassCountExport,
-                   outputType = OutputTypes.etVedaAllPasses,
-                   precheckonly = false,
-                   timeStampRequired = true,
-                   dateToUTC = DateTime.UtcNow,
-                   dateFromUTC = DateTime.MinValue,
-                   callId = new Guid(),
-                   callerId = "Myself"
-               };
-      }
-    }
-
+      projectId = 34,
+      liftBuildSettings = LiftBuildSettings.HelpSample,
+      filter = Filter.HelpSample,
+      filterID = 0,
+      machineList = new TMachine[2] {new TMachine(), new TMachine()},
+      projectExtents = new T3DBoundingWorldExtent(),
+      restrictSize = true,
+      tolerance = 0.1,
+      includeSurveydSurface = true,
+      cellSizeRequired = true,
+      rawData = true,
+      filename = "GoToSomwhere.csv",
+      coordType = CoordTypes.ptNORTHEAST,
+      exportType = ExportTypes.kPassCountExport,
+      outputType = OutputTypes.etVedaAllPasses,
+      precheckonly = false,
+      timeStampRequired = true,
+      dateToUTC = DateTime.UtcNow,
+      dateFromUTC = DateTime.MinValue,
+      callId = new Guid(),
+      callerId = "Myself"
+    };
 
     /// <summary>
     /// Validates all properties
@@ -250,15 +240,19 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       {
         machineList = new TMachine[2];
 
-        machineList[0] = new TMachine();
-        machineList[0].AssetID = 1;
-        machineList[0].MachineName = "Asset 1 Name";
-        machineList[0].SerialNo = "Asset 1 SN";
+        machineList[0] = new TMachine
+        {
+          AssetID = 1,
+          MachineName = "Asset 1 Name",
+          SerialNo = "Asset 1 SN"
+        };
 
-        machineList[1] = new TMachine();
-        machineList[1].AssetID = 3517551388324974;
-        machineList[1].MachineName = "Asset 3517551388324974 Name";
-        machineList[1].SerialNo = "Asset 3517551388324974 SN";
+        machineList[1] = new TMachine
+        {
+          AssetID = 3517551388324974,
+          MachineName = "Asset 3517551388324974 Name",
+          SerialNo = "Asset 3517551388324974 SN"
+        };
       }
 
       translations = new TTranslation[6];

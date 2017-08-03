@@ -4,6 +4,7 @@ using System;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
@@ -67,7 +68,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ContractExecutionResult Post([FromBody] SurveyedSurfaceRequest request)
     {
       request.Validate();
-      return RequestExecutorContainer.Build<SurveyedSurfaceExecutorPost>(logger, raptorClient, null).Process(request);
+      return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorPost>(logger, raptorClient, null).Process(request);
     }
 
     /// <summary>
@@ -92,7 +93,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ssId.Validate();
 
       return
-          RequestExecutorContainer.Build<SurveyedSurfaceExecutorDelete>(logger, raptorClient, null)
+          RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorDelete>(logger, raptorClient, null)
               .Process(new Tuple<ProjectID, DataID>(projId, ssId));
     }
 
@@ -119,7 +120,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ssId.Validate();
 
       return
-          RequestExecutorContainer.Build<SurveyedSurfaceExecutorDelete>(logger, raptorClient, null)
+          RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorDelete>(logger, raptorClient, null)
               .Process(new Tuple<ProjectID, DataID>(projId, ssId));
     }
 
@@ -138,7 +139,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ProjectID request = ProjectID.CreateProjectID(projectId);
 
       request.Validate();
-      return RequestExecutorContainer.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient, null).Process(request) as SurveyedSurfaceResult;
+      return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient, null).Process(request) as SurveyedSurfaceResult;
     }
 
     /// <summary>
@@ -157,7 +158,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ProjectID request = ProjectID.CreateProjectID(projectId, projectUid);
 
       request.Validate();
-      return RequestExecutorContainer.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient, null).Process(request) as SurveyedSurfaceResult;
+      return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient, null).Process(request) as SurveyedSurfaceResult;
     }
 
     /// <summary>
@@ -179,7 +180,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ContractExecutionResult PostPut([FromBody] SurveyedSurfaceRequest request)
     {
       request.Validate();
-      return RequestExecutorContainer.Build<SurveyedSurfaceExecutorPut>(logger, raptorClient, null).Process(request);
+      return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorPut>(logger, raptorClient, null).Process(request);
     }
 
     /// <summary>
@@ -200,9 +201,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ContractExecutionResult PostDelete([FromBody] DesignNameRequest request)
     {
       request.Validate();
-      return RequestExecutorContainer.Build<DesignNameUpdateCacheExecutor>(logger, raptorClient, null).Process(request);
+      return RequestExecutorContainerFactory.Build<DesignNameUpdateCacheExecutor>(logger, raptorClient, null).Process(request);
     }
-
-
   }
 }

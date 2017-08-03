@@ -12,6 +12,7 @@ using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -97,7 +98,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
   
-      var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
+      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
 
       if (tileResult != null)
       {
@@ -149,7 +150,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       log.LogInformation("Get: " + Request.QueryString);
       long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
-      var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
+      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
       if (tileResult != null)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());

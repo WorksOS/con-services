@@ -20,9 +20,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
       CellPassesRequest cpRequest = CellPassesRequest.CreateCellPassRequest(544, null, null, null, null, 0, 0,
           null);
       Assert.IsTrue(validator.TryValidate(cpRequest, out results));
-      
+
       // invalid projectid
-      cpRequest = CellPassesRequest.CreateCellPassRequest(-1, null, null, null, null, 0, 0,null);
+      cpRequest = CellPassesRequest.CreateCellPassRequest(-1, null, null, null, null, 0, 0, null);
       Assert.IsFalse(validator.TryValidate(cpRequest, out results));
 
       // full data
@@ -37,11 +37,11 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
           new List<WGSPoint>(),
           new List<Point>(),
           false,
-          DesignDescriptor.CreateDesignDescriptor(1,FileDescriptor.EmptyFileDescriptor,0),
+          DesignDescriptor.CreateDesignDescriptor(1, FileDescriptor.EmptyFileDescriptor, 0),
           0, 0, 0, 0,
           "", null,
           DesignDescriptor.CreateDesignDescriptor(1, FileDescriptor.EmptyFileDescriptor, 0),
-          0, 0,0,
+          0, 0, 0,
           new List<MachineDetails>(),
           new List<long>(),
           false, GPSAccuracy.Medium, false, null, null, null);
@@ -55,11 +55,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     public void CPR_CellPassesRequestValidateTest()
     {
       // test that all three cell address types are not set
-      CellPassesRequest cpRequest = CellPassesRequest.CreateCellPassRequest(544, null, null, null, null, 0, 0,null);
+      CellPassesRequest cpRequest = CellPassesRequest.CreateCellPassRequest(544, null, null, null, null, 0, 0, null);
       Assert.ThrowsException<ServiceException>(() => cpRequest.Validate());
-
     }
-
-
   }
 }

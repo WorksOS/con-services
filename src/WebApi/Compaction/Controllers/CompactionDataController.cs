@@ -9,6 +9,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
@@ -176,7 +177,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       try
       {
-        var result = RequestExecutorContainer.Build<SummaryMDPExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainerFactory.Build<SummaryMDPExecutor>(logger, raptorClient, null)
           .Process(request) as MDPSummaryResult;
         var returnResult = CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
         log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(returnResult));
@@ -238,7 +239,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainer.Build<SummaryPassCountsExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainerFactory.Build<SummaryPassCountsExecutor>(logger, raptorClient, null)
           .Process(request) as PassCountSummaryResult;
         var returnResult = CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);
         log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(returnResult));
@@ -309,7 +310,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result =
-          RequestExecutorContainer.Build<SummaryTemperatureExecutor>(logger, raptorClient, null)
+          RequestExecutorContainerFactory.Build<SummaryTemperatureExecutor>(logger, raptorClient, null)
             .Process(request) as TemperatureSummaryResult;
         var returnResult = CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(result);
         log.LogInformation("GetTemperatureSummary result: " + JsonConvert.SerializeObject(returnResult));
@@ -379,7 +380,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       try
       {
-        var result = RequestExecutorContainer.Build<SummarySpeedExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(logger, raptorClient, null)
           .Process(request) as SummarySpeedResult;
         var returnResult =
           CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, liftSettings.machineSpeedTarget);
@@ -449,7 +450,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       try
       {
-        var result = RequestExecutorContainer.Build<CMVChangeSummaryExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(logger, raptorClient, null)
           .Process(request) as CMVChangeSummaryResult;
         var returnResult = CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(result);
         log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
@@ -523,7 +524,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainer.Build<DetailedCMVExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(logger, raptorClient, null)
           .Process(request) as CMVDetailedResult;
         var returnResult = CompactionCmvDetailedResult.CreateCmvDetailedResult(result);
 
@@ -587,7 +588,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainer.Build<DetailedPassCountExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainerFactory.Build<DetailedPassCountExecutor>(logger, raptorClient, null)
           .Process(request) as PassCountDetailedResult;
         var returnResult = CompactionPassCountDetailedResult.CreatePassCountDetailedResult(result);
         log.LogInformation("GetPassCountDetails result: " + JsonConvert.SerializeObject(returnResult));

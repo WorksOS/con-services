@@ -22,6 +22,7 @@ using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -327,7 +328,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
       request.Validate();
-      var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
       var result = await executor.ProcessAsync(request) as TileResult;
       return result;
     }
@@ -379,7 +380,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
       request.Validate();
-      var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
       var result = await executor.ProcessAsync(request) as TileResult;
       //AddCacheResponseHeaders();  //done by middleware               
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
@@ -607,7 +608,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         filter == null ? FilterLayerMethod.None : filter.layerType.Value,
         bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, false);
       tileRequest.Validate();
-      var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null)
+      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient, null)
         .Process(tileRequest) as TileResult;
       if (tileResult == null)
       {

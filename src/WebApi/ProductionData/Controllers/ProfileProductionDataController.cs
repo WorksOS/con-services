@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
@@ -54,7 +55,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       request.Validate();
 
-      return RequestExecutorContainer
+      return RequestExecutorContainerFactory
         .Build<ProfileProductionDataExecutor>(logger, raptorClient)
         .Process(request) as ProfileResult;
     }

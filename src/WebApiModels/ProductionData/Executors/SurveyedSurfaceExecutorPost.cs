@@ -1,8 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using VLPDDecls;
+﻿using VLPDDecls;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
@@ -14,17 +11,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   /// 
   public class SurveyedSurfaceExecutorPost : SurveyedSurfaceExecutor
   {
-
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    /// 
-    public SurveyedSurfaceExecutorPost(ILoggerFactory logger, IASNodeClient raptorClient)
-        : base(logger, raptorClient)
-    {
-    }
-
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>

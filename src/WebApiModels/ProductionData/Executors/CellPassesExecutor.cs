@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using SVOICFiltersDecls;
+﻿using SVOICFiltersDecls;
 using SVOICFilterSettings;
 using SVOICGridCell;
 using SVOICProfileCell;
@@ -9,11 +8,9 @@ using System.Linq;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
@@ -22,18 +19,11 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   public class CellPassesExecutor : RequestExecutorContainer
   {
         /// <summary>
-        /// This constructor allows us to mock RaptorClient
-        /// </summary>
-        /// <param name="raptorClient"></param>
-        public CellPassesExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-        {
-        }
-
-        /// <summary>
         /// Default constructor for RequestExecutorContainer.Build
         /// </summary>
         public CellPassesExecutor()
         {
+          ProcessErrorCodes();
         }
         protected override ContractExecutionResult ProcessEx<T>(T item)
         {

@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 using VLPDDecls;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
@@ -13,20 +11,12 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   public class GetEditDataExecutor : RequestExecutorContainer
   {
- 
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    public GetEditDataExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public GetEditDataExecutor()
     {
+      ProcessErrorCodes();
     }
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -92,14 +82,10 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       dataEdits.AddRange(designOnly);
       return dataEdits;
     }
-
-
-
-
-    protected override void ProcessErrorCodes()
+    
+    protected sealed override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
-
   }
 }

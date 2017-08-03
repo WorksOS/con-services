@@ -7,11 +7,10 @@ using TAGProcServiceDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApiModels.TagfileProcessing.Models;
 
@@ -55,7 +54,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
          "")).Returns(raptorResult);
 
       // create submitter
-      TagFileExecutor submitter = new TagFileExecutor(mockLogger.Object, mockRaptorClient.Object, mockTagProcessor.Object);
+      TagFileExecutor submitter = RequestExecutorContainerFactory.Build<TagFileExecutor>(mockLogger.Object, mockRaptorClient.Object, mockTagProcessor.Object);
 
 
       // Act
@@ -91,7 +90,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
          "")).Returns(raptorResult);
 
       // create submitter
-      TagFileExecutor submitter = new TagFileExecutor(mockLogger.Object, mockRaptorClient.Object, mockTagProcessor.Object);
+      TagFileExecutor submitter = RequestExecutorContainerFactory.Build<TagFileExecutor>(mockLogger.Object, mockRaptorClient.Object, mockTagProcessor.Object);
 
       Assert.ThrowsException<ServiceException>(() => submitter.Process(request));
     }

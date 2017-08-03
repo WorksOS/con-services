@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
@@ -58,9 +59,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     public ProjectExtentsResult Post([FromBody] ExtentRequest request)
     {
-      return RequestExecutorContainer.Build<ProjectExtentsSubmitter>(logger, raptorClient, null).Process(request) as ProjectExtentsResult;
+      return RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient, null).Process(request) as ProjectExtentsResult;
     }
-
-
   }
 }

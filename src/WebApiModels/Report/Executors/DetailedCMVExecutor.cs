@@ -1,15 +1,12 @@
 ﻿using ASNodeDecls;
-using Microsoft.Extensions.Logging;
 using SVOICFilterSettings;
 using System;
 using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
@@ -20,14 +17,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
   /// </summary>
   public class DetailedCMVExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    public DetailedCMVExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
@@ -44,39 +33,28 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
        ContractExecutionResult result = null;
-        try
-        {
-          TCMVDetails cmvDetails;
-          CMVRequest request = item as CMVRequest;
-          TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
-              request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
-          bool success = raptorClient.GetCMVDetails(request.projectId ?? -1,
-              ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
-                  TASNodeCancellationDescriptorType.cdtCMVDetailed),
-              ConvertSettings(request.cmvSettings),
-              raptorFilter,
-              RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
-              out cmvDetails);
-          if (success)
-          {
-            result = ConvertResult(cmvDetails);
-          }
-          else
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-                "Failed to get requested CMV details data"));
-          }
-        }
-        finally
-        {
-          //ContractExecutionStates.ClearDynamic();
-        }
-        return result;
-    }
-
-      protected override void ProcessErrorCodes()
+      TCMVDetails cmvDetails;
+      CMVRequest request = item as CMVRequest;
+      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
+        request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
+      bool success = raptorClient.GetCMVDetails(request.projectId ?? -1,
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
+          TASNodeCancellationDescriptorType.cdtCMVDetailed),
+        ConvertSettings(request.cmvSettings),
+        raptorFilter,
+        RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
+        out cmvDetails);
+      if (success)
       {
+        result = ConvertResult(cmvDetails);
       }
+      else
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+          "Failed to get requested CMV details data"));
+      }
+      return result;
+    }
 
     
       private CMVDetailedResult ConvertResult(TCMVDetails details)

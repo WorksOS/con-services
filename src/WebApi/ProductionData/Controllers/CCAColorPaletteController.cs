@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
@@ -69,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       request.Validate();
 
-      return RequestExecutorContainer.Build<CCAColorPaletteExecutor>(logger, raptorClient, null).Process(request) as CCAColorPaletteResult;
+      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger, raptorClient, null).Process(request) as CCAColorPaletteResult;
     }
 
     /// <summary>
@@ -97,7 +98,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId);
       request.Validate();
 
-      return RequestExecutorContainer.Build<CCAColorPaletteExecutor>(logger, raptorClient, null).Process(request) as CCAColorPaletteResult;
+      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger, raptorClient, null).Process(request) as CCAColorPaletteResult;
     }
   }
 }

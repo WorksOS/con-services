@@ -1,12 +1,9 @@
-﻿
+﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
@@ -145,6 +142,5 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     private const short MAX_CMV = 10000;
     private const double MIN_PERCENT_CMV = 0.0;
     private const double MAX_PERCENT_CMV = 250.0;
-
   }
 }

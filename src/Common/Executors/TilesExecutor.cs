@@ -18,21 +18,11 @@ namespace VSS.Productivity3D.Common.Executors
   public class TilesExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="logger">Logger</param>
-    /// <param name="raptorClient">Raptor client</param>
-    public TilesExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-      // ...
-    }
-
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
+    /// Default constructor.
     /// </summary>
     public TilesExecutor()
     {
-      // ...
+      ProcessErrorCodes();
     }
 
     /// <summary>
@@ -123,7 +113,7 @@ namespace VSS.Productivity3D.Common.Executors
       return TileResult.CreateTileResult(tile.ToArray(), raptorResult);
     }
 
-    protected override void ProcessErrorCodes()
+    protected sealed override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }

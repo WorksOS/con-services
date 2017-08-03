@@ -1,25 +1,14 @@
-using System.Net;
 using DesignProfilerDecls;
-using Microsoft.Extensions.Logging;
+using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   public class DesignNameUpdateCacheExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    public DesignNameUpdateCacheExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
@@ -38,11 +27,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,"Failed to update DesignCache"));
 
-    }
-
-    protected override void ProcessErrorCodes()
-    {
-      //TODO Add DesignProfiler error handling here
     }
   }
 }
