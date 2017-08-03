@@ -226,10 +226,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NullProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "NullProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void CellDatum_BadRequest_NullProjectId()
         {
-            this.CellDatum_BadRequest("NullProjectId", "400", "-2", ((string[])(null)));
+            this.CellDatum_BadRequest("NullProjectId", "400", "-1", ((string[])(null)));
         }
     }
 }

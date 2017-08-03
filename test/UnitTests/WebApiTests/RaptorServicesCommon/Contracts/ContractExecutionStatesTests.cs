@@ -12,7 +12,7 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
     [TestMethod]
     public void DynamicAddwithOffsetTest()
     {
-      ContractExecutionStatesEnum contractExecutionStates = new ContractExecutionStatesEnum();
+      var contractExecutionStates = new ContractExecutionStatesEnum();
       contractExecutionStates.DynamicAddwithOffset("Tag processing Successfull", (int)TTAGProcServerProcessResult.tpsprOK);
       contractExecutionStates.DynamicAddwithOffset("Unknown error", (int)TTAGProcServerProcessResult.tpsprUnknown);
       contractExecutionStates.DynamicAddwithOffset(
@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
         contractExecutionStates.FirstNameWithOffset((int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure));
 
       Assert.AreEqual(
-        (int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure,
+        (int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure + 2000,
         contractExecutionStates.GetErrorNumberwithOffset(
           (int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure));
 
@@ -36,10 +36,12 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
     [TestMethod]
     public void DynamicAddTwoSetsTest()
     {
-      ContractExecutionStatesEnum contractExecutionStates = new ContractExecutionStatesEnum();
+      var contractExecutionStates = new ContractExecutionStatesEnum();
       contractExecutionStates.DynamicAddwithOffset("Tag processing Successfull", (int)TTAGProcServerProcessResult.tpsprOK);
       contractExecutionStates.DynamicAddwithOffset("Unknown error", (int)TTAGProcServerProcessResult.tpsprUnknown);
-      contractExecutionStates.DynamicAddwithOffset("OnSubmissionBase. Connection Failure.", (int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure);
+      contractExecutionStates.DynamicAddwithOffset(
+        "OnSubmissionBase. Connection Failure.",
+        (int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure);
 
       contractExecutionStates.DynamicAddwithOffset("OK", (int)TDesignProfilerRequestResult.dppiOK);
       contractExecutionStates.DynamicAddwithOffset("Unknown Error", (int)TDesignProfilerRequestResult.dppiUnknownError);
@@ -47,12 +49,17 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
       contractExecutionStates.DynamicAddwithOffset("Failed To Convert Client WGS Coords", (int)TDesignProfilerRequestResult.dppiFailedToConvertClientWGSCoords);
 
       Assert.AreEqual(7, contractExecutionStates.DynamicCount);
-      Assert.AreEqual("OnSubmissionBase. Connection Failure.", contractExecutionStates.FirstNameWithOffset((int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure));
-      Assert.AreEqual((int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure,
+      Assert.AreEqual(
+        "OnSubmissionBase. Connection Failure.",
+        contractExecutionStates.FirstNameWithOffset((int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure));
+
+      Assert.AreEqual(
+        (int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure + 2000,
         contractExecutionStates.GetErrorNumberwithOffset(
           (int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure));
+
       Assert.AreEqual("Failed To Convert Client WGS Coords", contractExecutionStates.FirstNameWithOffset((int)TDesignProfilerRequestResult.dppiFailedToConvertClientWGSCoords));
-      Assert.AreEqual((int)TDesignProfilerRequestResult.dppiFailedToConvertClientWGSCoords,
+      Assert.AreEqual((int)TDesignProfilerRequestResult.dppiFailedToConvertClientWGSCoords + 2000,
         contractExecutionStates.GetErrorNumberwithOffset(
           (int)TDesignProfilerRequestResult.dppiFailedToConvertClientWGSCoords));
 

@@ -18,5 +18,5 @@ Scenario Outline: SummarySpeed - Bad Request
 	Then the response body should contain Code <ErrorCode> and Message "<ErrorMessage>"
 	Examples:
 	| ParameterName                          | ErrorCode | ErrorMessage                                                |
-	| MissingSpeedTarget                     | -2        | Target speed must be specified for the request.             |
-	| MinSpeedTargetLargerThanMaxSpeedTarget | -2        | Target speed minimum must be less than target speed maximum |
+	| MissingSpeedTarget                     | -1        | Target speed must be specified for the request.             |
+	| MinSpeedTargetLargerThanMaxSpeedTarget | -1        | Target speed minimum must be less than target speed maximum |

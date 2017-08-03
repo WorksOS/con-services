@@ -414,11 +414,11 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:OutputType", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Invalid coordinates type for export report")]
         public virtual void ExportReportMachinePasses_BadRequest_InvalidCoordType()
         {
-            this.ExportReportMachinePasses_BadRequest("InvalidCoordType", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "2", "0", "false", "false", "-2", "Invalid coordinates type for export report", ((string[])(null)));
+            this.ExportReportMachinePasses_BadRequest("InvalidCoordType", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "2", "0", "false", "false", "-1", "Invalid coordinates type for export report", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -433,11 +433,11 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:OutputType", "5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Invalid output type for export report")]
         public virtual void ExportReportMachinePasses_BadRequest_InvalidOutputType()
         {
-            this.ExportReportMachinePasses_BadRequest("InvalidOutputType", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "0", "5", "false", "false", "-2", "Invalid output type for export report", ((string[])(null)));
+            this.ExportReportMachinePasses_BadRequest("InvalidOutputType", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "0", "5", "false", "false", "-1", "Invalid output type for export report", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -452,11 +452,11 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:OutputType", "2")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Invalid output type for machine passes export report")]
         public virtual void ExportReportMachinePasses_BadRequest_InvalidOutputTypeForMachinePasses()
         {
-            this.ExportReportMachinePasses_BadRequest("InvalidOutputTypeForMachinePasses", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "0", "2", "false", "false", "-2", "Invalid output type for machine passes export report", ((string[])(null)));
+            this.ExportReportMachinePasses_BadRequest("InvalidOutputTypeForMachinePasses", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "0", "2", "false", "false", "-1", "Invalid output type for machine passes export report", ((string[])(null)));
         }
     }
 }

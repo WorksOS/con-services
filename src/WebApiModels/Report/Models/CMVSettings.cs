@@ -54,7 +54,12 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     [Required]
     public bool overrideTargetCMV { get; private set; }
 
-   /// <summary>
+    private const short MIN_CMV = 0;
+    private const short MAX_CMV = 10000;
+    private const double MIN_PERCENT_CMV = 0.0;
+    private const double MAX_PERCENT_CMV = 250.0;
+
+    /// <summary>
     /// Private constructor
     /// </summary>
     private CMVSettings()
@@ -87,21 +92,15 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// <summary>
     /// Create example instance of CMVSettings to display in Help documentation.
     /// </summary>
-    public static CMVSettings HelpSample
+    public static CMVSettings HelpSample => new CMVSettings
     {
-      get
-      {
-        return new CMVSettings
-        {
-          cmvTarget = 400,
-          maxCMV = 800,
-          maxCMVPercent = 130.0,
-          minCMV = 0,
-          minCMVPercent = 0.0,
-          overrideTargetCMV = true
-        };
-      }
-    }
+      cmvTarget = 400,
+      maxCMV = 800,
+      maxCMVPercent = 130.0,
+      minCMV = 0,
+      minCMVPercent = 0.0,
+      overrideTargetCMV = true
+    };
 
 
     /// <summary>
@@ -110,7 +109,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     public void Validate()
     {
       if (overrideTargetCMV)
-        if (!(cmvTarget > 0) || !((minCMV >0 && maxCMV > 0) || (minCMVPercent >0) && (maxCMVPercent >0) ))
+        if (!(cmvTarget > 0) || !(minCMV > 0 && maxCMV > 0 || minCMVPercent > 0 && maxCMVPercent > 0))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid CMV settings: if overriding Target, Target and (CMV Percentage or CMV values) shall be specified."));
@@ -119,12 +118,17 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       if (cmvTarget > 0)
       {
         if (minCMVPercent > 0 || maxCMVPercent > 0)
+        {
           ValidateRange(minCMVPercent, maxCMVPercent);
+        }
+
         if (minCMV > 0 || maxCMV > 0)
         {
           ValidateRange(minCMV, maxCMV);
           ValidateRange(minCMV, cmvTarget);
           ValidateRange(cmvTarget, maxCMV);
+
+
         }
       }
     }
@@ -135,12 +139,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid CMV settings values: must have minimum < target < maximum and minimum % < maximum %"));
-      }     
+      }
     }
-
-    private const short MIN_CMV = 0;
-    private const short MAX_CMV = 10000;
-    private const double MIN_PERCENT_CMV = 0.0;
-    private const double MAX_PERCENT_CMV = 250.0;
   }
 }

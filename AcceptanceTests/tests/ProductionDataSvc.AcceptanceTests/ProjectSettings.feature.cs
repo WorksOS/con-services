@@ -188,7 +188,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 77
  testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 78
- testRunner.Then("I should get error code -2 and message \"Both minimum and maximum target pass coun" +
+ testRunner.Then("I should get error code -1 and message \"Both minimum and maximum target pass coun" +
                     "t must be specified\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -213,7 +213,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 84
  testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 85
- testRunner.Then("I should get error code -2 and message \"The field customTargetPassCountMinimum mu" +
+ testRunner.Then("I should get error code -1 and message \"The field customTargetPassCountMinimum mu" +
                     "st be between 1 and 80.\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -238,7 +238,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 91
  testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 92
- testRunner.Then("I should get error code -2 and message \"Cut-fill tolerances must be in order of h" +
+ testRunner.Then("I should get error code -1 and message \"Cut-fill tolerances must be in order of h" +
                     "ighest cut to lowest fill\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

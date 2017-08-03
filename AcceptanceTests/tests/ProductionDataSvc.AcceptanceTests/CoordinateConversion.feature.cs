@@ -200,10 +200,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CoordinateConversion")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "400")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void CoordinateConversion_BadRequestBadLL_400()
         {
-            this.CoordinateConversion_BadRequestBadLL("400", "-2", ((string[])(null)));
+            this.CoordinateConversion_BadRequestBadLL("400", "-1", ((string[])(null)));
         }
     }
 }
