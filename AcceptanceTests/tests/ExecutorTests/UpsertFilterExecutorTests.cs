@@ -58,7 +58,7 @@ namespace ExecutorTests
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, producer, kafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2016", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3016", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Unable to find transient filterUid provided.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
@@ -179,7 +179,7 @@ namespace ExecutorTests
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, producer, kafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2021", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3021", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Unable to find persistant filterUid provided.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
@@ -374,7 +374,7 @@ namespace ExecutorTests
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, producer, kafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2021", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3021", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Unable to find persistant filterUid provided.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
   }

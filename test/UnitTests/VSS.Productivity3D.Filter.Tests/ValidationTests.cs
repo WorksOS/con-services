@@ -30,6 +30,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3027"));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid customerUid.", StringComparison.Ordinal));
     }
 
@@ -48,6 +49,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3028"));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid userUid.", StringComparison.Ordinal));
     }
 
@@ -66,6 +68,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3001"));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid projectUid.", StringComparison.Ordinal));
     }
 
@@ -84,6 +87,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3002"));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid filterUid.", StringComparison.Ordinal));
     }
 
@@ -102,6 +106,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3002"));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid filterUid.", StringComparison.Ordinal));
     }
 
@@ -120,6 +125,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3003"));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid name. Should not be null.", StringComparison.Ordinal));
     }
 
@@ -138,6 +144,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3004"));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid filterJson. Should not be null.", StringComparison.Ordinal));
     }
 
@@ -216,6 +223,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await FilterValidation.ValidateCustomerProject(projectListProxy.Object, log, serviceExceptionHandler,
         customHeaders, custUid, projectUid).ConfigureAwait(false)); 
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3008"));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Validation of Customer/Project failed. Not allowed.", StringComparison.Ordinal));
     }
 

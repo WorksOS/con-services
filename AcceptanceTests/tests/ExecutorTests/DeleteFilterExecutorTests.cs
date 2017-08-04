@@ -32,7 +32,7 @@ namespace ExecutorTests
       var executor =
         RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, producer, kafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>  await executor.ProcessAsync(request)).ConfigureAwait(false);
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2011", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3011", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("DeleteFilter failed. Unable to find filterUid.", StringComparison.Ordinal), "executor threw exception but incorrect message");
     }
 

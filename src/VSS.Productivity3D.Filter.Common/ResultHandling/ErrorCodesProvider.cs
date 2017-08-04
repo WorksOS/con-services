@@ -35,5 +35,7 @@ namespace VSS.Productivity3D.Filter.Common.ResultHandling
       DynamicAddwithOffset("Invalid customerUid.", 27);
       DynamicAddwithOffset("Invalid userUid.", 28);
     }
+
+    protected override int executionResultOffset { get; } = 3000;
   }
 }
