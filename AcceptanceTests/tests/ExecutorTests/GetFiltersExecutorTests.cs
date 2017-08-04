@@ -16,7 +16,7 @@ namespace ExecutorTests
     [TestInitialize]
     public void Init()
     {
-      SetupLogging();
+      SetupDI();
     }
 
     [TestMethod]

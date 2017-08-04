@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 
@@ -73,20 +74,17 @@ namespace VSS.Productivity3D.Filter.Common.Models
 
     public void Validate(IServiceExceptionHandler serviceExceptionHandler)
     {
-      Guid customerUidGuid;
-      if (string.IsNullOrEmpty(customerUid) || Guid.TryParse(customerUid, out customerUidGuid) == false)
+      if (string.IsNullOrEmpty(customerUid) || Guid.TryParse(customerUid, out Guid customerUidGuid) == false)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 27);
 
-      Guid userUidGuid;
-      if (string.IsNullOrEmpty(userUid) || (isApplicationContext == false && Guid.TryParse(userUid, out userUidGuid) == false))
+      if (string.IsNullOrEmpty(userUid) || (isApplicationContext == false && Guid.TryParse(userUid, out Guid userUidGuid) == false))
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 28);
 
-      Guid projectUidGuid;
-      if (string.IsNullOrEmpty(projectUid) || Guid.TryParse(projectUid, out projectUidGuid) == false)
+      if (string.IsNullOrEmpty(projectUid) || Guid.TryParse(projectUid, out Guid projectUidGuid) == false)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
 
-      Guid filterUidGuid;
-      if (!string.IsNullOrEmpty(filterUid) && Guid.TryParse(filterUid, out filterUidGuid) == false)
+      if (filterUid == string.Empty
+          || (filterUid != null && Guid.TryParse(filterUid, out Guid filterUidGuid) == false))
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
 
       if (name == null)

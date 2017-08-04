@@ -88,6 +88,24 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
+    public void FilterRequestValidation_InvalidFilterUid_EmptyString()
+    {
+      string custUid = Guid.NewGuid().ToString();
+      string userUid = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string filterUid = "";
+      string name = "blah";
+      string filterJson = "theJsonString";
+
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      var requestFull =
+        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+      var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid filterUid.", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
     public void FilterRequestValidation_InvalidName()
     {
       string custUid = Guid.NewGuid().ToString();

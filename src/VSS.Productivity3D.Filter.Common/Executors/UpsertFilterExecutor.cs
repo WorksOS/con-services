@@ -51,28 +51,30 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       ContractExecutionResult result = null;
-      try
+      var filterRequest = item as FilterRequestFull;
+      IList<MasterData.Repositories.DBModels.Filter> filters = null;
+      if (filterRequest != null)
       {
-        var filterRequest = item as FilterRequestFull;
-        if (filterRequest != null)
+        try
         {
-          var filters =
-            (await filterRepo
-                .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid).ConfigureAwait(false)).ToList();
-          log.LogDebug($"UpsertFilter retrieved filter count for projectUID {filterRequest.projectUid} of {filters?.Count()}");
-
-          if (string.IsNullOrEmpty(filterRequest.name))
-            result = await ProcessTransient(filterRequest, filters).ConfigureAwait(false);
-          else
-            result = await ProcessPersistant(filterRequest, filters).ConfigureAwait(false);
-
-          return result;
+          filters =
+          (await filterRepo
+            .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid)
+            .ConfigureAwait(false)).ToList();
+          log.LogDebug(
+            $"UpsertFilter retrieved filter count for projectUID {filterRequest.projectUid} of {filters?.Count()}");
+        }
+        catch (Exception e)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 15, e.Message);
         }
       }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 15, e.Message);
-      }
+
+      if (string.IsNullOrEmpty(filterRequest.name))
+        result = await ProcessTransient(filterRequest, filters).ConfigureAwait(false);
+      else
+        result = await ProcessPersistant(filterRequest, filters).ConfigureAwait(false);
+
       return result;
     }
 
@@ -91,7 +93,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       if (!string.IsNullOrEmpty(filterRequest.filterUid))
       {
         filter = projectFilters?.SingleOrDefault(
-          f => string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase) 
+          f => string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase)
                && string.IsNullOrEmpty(f.Name));
         if (filter == null)
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 16);
@@ -109,14 +111,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           filterEvent.ActionUTC = DateTime.UtcNow;
           var updatedCount = await filterRepo.StoreEvent(filterEvent).ConfigureAwait(false);
           if (updatedCount == 0)
-          {
-            // error trying to update a transient filter
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 17);
-          }
         }
         catch (Exception e)
         {
-          // exception trying to update a transient filter
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 18, e.Message);
         }
       }
@@ -129,20 +127,17 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           filterEvent.ActionUTC = DateTime.UtcNow;
           var createdCount = await filterRepo.StoreEvent(filterEvent).ConfigureAwait(false);
           if (createdCount == 0)
-          {
-            // error trying to create a transient filter
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 19);
-          }
         }
         catch (Exception e)
         {
-          // exception trying to create a transient filter
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 20, e.Message);
         }
       }
 
       var retrievedFilter = (await filterRepo
-        .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid).ConfigureAwait(false))
+          .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid)
+          .ConfigureAwait(false))
         .SingleOrDefault(f => string.IsNullOrEmpty(f.Name));
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
     }
@@ -158,7 +153,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       if (!string.IsNullOrEmpty(filterRequest.filterUid))
       {
         filter = projectFilters?.SingleOrDefault(
-          f => string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase) 
+          f => string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase)
                && !string.IsNullOrEmpty(f.Name));
         if (filter == null)
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 21);
@@ -177,18 +172,14 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           deleteFilterEvent.ActionUTC = DateTime.UtcNow;
           var deletedCount = await filterRepo.StoreEvent(deleteFilterEvent).ConfigureAwait(false);
           if (deletedCount == 0)
-          {
-            // error trying to delete a persistant filter
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 22);
-          }
         }
         catch (Exception e)
         {
-          // exception trying to delete a persistant filter
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 23, e.Message);
         }
       }
-      
+
       // Create new filter
       CreateFilterEvent createFilterEvent = null;
       try
@@ -198,19 +189,16 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         createFilterEvent.ActionUTC = DateTime.UtcNow;
         var createdCount = await filterRepo.StoreEvent(createFilterEvent).ConfigureAwait(false);
         if (createdCount == 0)
-        {
-          // error trying to create a persistant filter
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 24);
-        }
       }
       catch (Exception e)
       {
-        // exception trying to create a persistant filter
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 25, e.Message);
       }
 
       var retrievedFilter = (await filterRepo
-        .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid).ConfigureAwait(false))
+          .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid)
+          .ConfigureAwait(false))
         .SingleOrDefault(f => f.Name == filterRequest.name);
       if (retrievedFilter != null)
         WriteToKafka(deleteFilterEvent, createFilterEvent);
@@ -225,7 +213,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         if (deleteFilterEvent != null)
         {
           var messagePayloadDeleteEvent =
-            JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteFilterEvent });
+            JsonConvert.SerializeObject(new {DeleteFilterEvent = deleteFilterEvent});
           producer.Send(kafkaTopicName,
             new List<KeyValuePair<string, string>>
             {
@@ -234,7 +222,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         }
 
         var messagePayloadCreateEvent =
-          JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent });
+          JsonConvert.SerializeObject(new {CreateFilterEvent = createFilterEvent});
         producer.Send(kafkaTopicName,
           new List<KeyValuePair<string, string>>
           {

@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
@@ -15,7 +15,7 @@ namespace ExecutorTests
     [TestInitialize]
     public void Init()
     {
-      SetupLogging();
+      SetupDI();
     }
 
     [TestMethod]
@@ -30,12 +30,10 @@ namespace ExecutorTests
       request.Validate(serviceExceptionHandler);
 
       var executor =
-        RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as ContractExecutionResult;
-      
-      Assert.IsNotNull(result, "executor should always return a result");
-      Assert.AreEqual(0, result.Code, "executor returned incorrect code"); // todo what?
-      Assert.AreEqual("success", result.Message, "executor returned incorrect message"); // todo what?
+        RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, producer, kafkaTopicName);
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>  await executor.ProcessAsync(request)).ConfigureAwait(false);
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2011", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("DeleteFilter failed. Unable to find filterUid.", StringComparison.Ordinal), "executor threw exception but incorrect message");
     }
 
     [TestMethod]
@@ -68,7 +66,7 @@ namespace ExecutorTests
       request.Validate(serviceExceptionHandler);
       
       var executor =
-        RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
+        RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as ContractExecutionResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
