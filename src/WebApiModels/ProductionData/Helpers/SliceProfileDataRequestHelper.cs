@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
@@ -48,11 +49,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
     public ProfileProductionDataRequest CreateSlicerProfileResponse(Guid projectUid,
       double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees,
-      DateTime? startUtc, DateTime? endUtc, Guid? cutfillDesignUid)
+      Guid filterUid,Guid customerUid, IDictionary<string,string> headers, Guid? cutfillDesignUid)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
 
-      var filter = settingsManager.CompactionFilter(startUtc, endUtc, null, null, null, null, null, ExcludedIds);
+      var filter = settingsManager.CompactionFilter(filterUid.ToString(), customerUid.ToString(), projectUid.ToString(),
+        headers);
 
       DesignDescriptor designDescriptor = null;
       if (cutfillDesignUid.HasValue)

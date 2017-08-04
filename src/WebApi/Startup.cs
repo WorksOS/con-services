@@ -112,6 +112,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
+      services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<ITileGenerator, TileGenerator>();
       services.AddSingleton<IElevationExtentsProxy, ElevationExtentsProxy>();
       services.AddScoped<ICompactionSettingsManager, CompactionSettingsManager>();

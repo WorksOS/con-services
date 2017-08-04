@@ -46,42 +46,6 @@ namespace VSS.Productivity3D.Common.Controllers
     }
 
     /// <summary>
-    /// Gets the project settings for the project.
-    /// </summary>
-    /// <param name="controller">The controller which received the request</param>
-    /// <param name="projectSettingsProxy">Proxy client to get project settings for the project</param>
-    /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
-    /// <param name="customHeaders">Http request custom headers</param>
-    /// <param name="log">log for logging</param>
-    /// <returns>The project settings</returns>
-    public static async Task<CompactionProjectSettings> GetProjectSettings(this Controller controller, IProjectSettingsProxy projectSettingsProxy, Guid projectUid, IDictionary<string, string> customHeaders, ILogger log)
-    {
-      CompactionProjectSettings ps;
-      var jsonSettings = await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders);
-      if (!string.IsNullOrEmpty(jsonSettings))
-      {
-        try
-        {
-          ps = JsonConvert.DeserializeObject<CompactionProjectSettings>(jsonSettings);
-          ps.Validate();
-        }
-        catch (Exception ex)
-        {
-          log.LogInformation(
-            $"Project Settings deserialization or validation failure for projectUid {projectUid}. Error is {ex.Message}");
-          ps = CompactionProjectSettings.DefaultSettings;
-        }
-      }
-      else
-      {
-        log.LogDebug($"No Project Settings for projectUid {projectUid}. Using defaults.");
-        ps = CompactionProjectSettings.DefaultSettings;
-      }
-      return ps;
-    }
-
-
-    /// <summary>
     /// Gets the list of contributing machines from the query parameters
     /// </summary>
     /// <param name="controller">The controller which received the reques</param>
@@ -103,20 +67,6 @@ namespace VSS.Productivity3D.Common.Controllers
         machine = MachineDetails.CreateMachineDetails(assetId.Value, machineName, isJohnDoe.Value);
       }
       return machine == null ? null : new List<MachineDetails> { machine };
-    }
-
-    /// <summary>
-    /// Replaces a service exception's BadRequest status code with the NoContent one.
-    /// </summary>
-    /// <param name="controller">The controller which received the request.</param>
-    /// <param name="serviceException">The ServiceException instance.</param>
-    public static void ProcessStatusCode(this Controller controller, ServiceException serviceException)
-    {
-      if (serviceException.Code == HttpStatusCode.BadRequest &&
-          serviceException.GetResult.Code == ContractExecutionStatesEnum.InternalProcessingErrorConst)
-      {
-        //serviceException.Code = HttpStatusCode.NoContent;
-      }
     }
 
     /// <summary>

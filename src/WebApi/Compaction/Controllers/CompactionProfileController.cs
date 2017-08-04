@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -12,6 +13,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.ProductionData.Controllers;
@@ -52,21 +54,26 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProjectSettingsProxy projectSettingsProxy;
 
     /// <summary>
-    /// 
+    /// The request factory
     /// </summary>
     private readonly IProductionDataRequestFactory requestFactory;
 
     /// <summary>
+    /// The service exception handler
+    /// </summary>
+    private readonly IServiceExceptionHandler serviceExceptionHandler;
+    /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="raptorClient"></param>
-    /// <param name="logger"></param>
-    /// <param name="fileListProxy"></param>
-    /// <param name="projectSettingsProxy"></param>
-    /// <param name="requestFactory"></param>
+    /// <param name="raptorClient">The raptor client.</param>
+    /// <param name="logger">The logger.</param>
+    /// <param name="fileListProxy">The file list proxy.</param>
+    /// <param name="projectSettingsProxy">The project settings proxy.</param>
+    /// <param name="requestFactory">The request factory.</param>
+    /// <param name="exceptionHandler">The exception handler.</param>
     public CompactionProfileController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy,
-      IProductionDataRequestFactory requestFactory)
+      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler)
     {
       this.logger = logger;
       log = logger.CreateLogger<ProfileProductionDataController>();
@@ -74,6 +81,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.projectSettingsProxy = projectSettingsProxy;
       this.requestFactory = requestFactory;
       this.raptorClient = raptorClient;
+      this.serviceExceptionHandler = exceptionHandler;
     }
 
     /// <summary>
@@ -100,47 +108,69 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double startLonDegrees,
       [FromQuery] double endLatDegrees,
       [FromQuery] double endLonDegrees,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
+      [FromQuery] Guid filterUid,
       [FromQuery] Guid? cutfillDesignUid
     )
     {
       log.LogInformation("GetProfileProduction: " + Request.QueryString);
 
+      //TODO extract Customer and project from the context properly
+      //TODO let's get rid of the headers here - it looks terrible. WE need to pass context in some different way instead
+      Guid customerUid = new Guid();
       var projectId = ((RaptorPrincipal)User).GetProjectId(projectUid);
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
+      //End TODO
+
 
       var slicerProfileResult = requestFactory.Create<SliceProfileDataRequestHelper>(async r => r
           .ProjectId(projectId)
           .Headers(headers)
-          .ProjectSettings(projectSettings)
+          .ProjectSettings(CompactionProjectSettings.FromString(
+            await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), headers)))
           .ExcludedIds(await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers)))
-        .CreateSlicerProfileResponse(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, startUtc,
-          endUtc, cutfillDesignUid);
+        .CreateSlicerProfileResponse(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
+          filterUid,customerUid,headers, cutfillDesignUid);
 
       slicerProfileResult.Validate();
 
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<ProfileProductionDataExecutor>(logger, raptorClient)
+          .Process(slicerProfileResult) as ProfileResult
+      );
+    }
+
+    /// <summary>
+    /// Withes the service exception try execute.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="action">The action.</param>
+    /// <returns></returns>
+    //TODO make this shared
+    public TResult WithServiceExceptionTryExecute<TResult>(Func<TResult> action) where TResult:ContractExecutionResult
+    {
+      TResult result = default(TResult);
       try
       {
-        var result = RequestExecutorContainerFactory
-          .Build<ProfileProductionDataExecutor>(logger, raptorClient)
-          .Process(slicerProfileResult) as ProfileResult;
+        result = action.Invoke();
+        log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
 
-        log.LogTrace("GetProfileProduction result: " + JsonConvert.SerializeObject(result));
-
-        return result;
       }
       catch (ServiceException se)
       {
-        //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
+        se.OverrideBadRequest(HttpStatusCode.NoContent);
         throw;
+      }
+      catch (Exception ex)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+          ContractExecutionStatesEnum.InternalProcessingError, ex.Message);
       }
       finally
       {
-        log.LogInformation("GetProfileProduction returned: " + Response.StatusCode);
+        log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
       }
+      return result;
     }
 
     [ProjectUidVerifier]
