@@ -27,7 +27,17 @@ namespace VSS.Common.Exceptions
     /// </summary>
     public string GetContent { get; }
 
-    public HttpStatusCode Code { get; }
+    public HttpStatusCode Code { get; private set; }
+
+    public void OverrideBadRequest(HttpStatusCode newStatusCode)
+    {
+      if (Code == HttpStatusCode.BadRequest &&
+          GetResult.Code == ContractExecutionStatesEnum.InternalProcessingErrorConst)
+      {
+        Code = newStatusCode;
+      }
+    }
+
 
     /// <summary>
     /// The result causing the exception
