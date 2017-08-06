@@ -33,9 +33,9 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
     public void GenerateErrorlistTest()
     {
       TestContainer container = new TestContainer();
-      Assert.AreEqual(11, container.GenerateErrorlist().Count);
+      Assert.AreEqual(19, container.GenerateErrorlist().Count);
       container.Process(WGSPoint.CreatePoint(1, 1));
-      Assert.AreEqual(8, container.GenerateErrorlist().Count);
+      Assert.AreEqual(16, container.GenerateErrorlist().Count);
     }
   }
 }
