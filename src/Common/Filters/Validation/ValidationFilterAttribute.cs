@@ -39,9 +39,9 @@ namespace VSS.Productivity3D.Common.Filters.Validation
                 {
                   if (error.Exception != null)
                   {
-                    if (error.Exception is ServiceException)
+                    if (error.Exception is ServiceException ex)
                     {
-                     value += (error.Exception as ServiceException).GetContent;
+                     value += ex.GetContent;
                     }
                     else
                     {

@@ -61,8 +61,7 @@ namespace VSS.Productivity3D.Common.Models
       // Validation rules might be placed in here...
       // throw new NotImplementedException();
       var validator = new DataAnnotationsValidator();
-      ICollection<ValidationResult> results;
-      validator.TryValidate(this, out results);
+      validator.TryValidate(this, out ICollection<ValidationResult> results);
       if (results.Any())
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, results.FirstOrDefault().ErrorMessage));

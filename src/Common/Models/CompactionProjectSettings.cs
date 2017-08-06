@@ -1,16 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 using System.Linq;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
-using Microsoft.AspNetCore.Mvc;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -285,14 +282,14 @@ namespace VSS.Productivity3D.Common.Models
           settings = JsonConvert.DeserializeObject<CompactionProjectSettings>(json);
           settings.Validate();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-          settings = CompactionProjectSettings.DefaultSettings;
+          settings = DefaultSettings;
         }
       }
       else
       {
-        settings = CompactionProjectSettings.DefaultSettings;
+        settings = DefaultSettings;
       }
       return settings;
     }
@@ -303,8 +300,7 @@ namespace VSS.Productivity3D.Common.Models
     public void Validate()
     {
       var validator = new DataAnnotationsValidator();
-      ICollection<ValidationResult> results;
-      validator.TryValidate(this, out results);
+      validator.TryValidate(this, out ICollection<ValidationResult> results);
       if (results.Any())
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, results.FirstOrDefault().ErrorMessage));

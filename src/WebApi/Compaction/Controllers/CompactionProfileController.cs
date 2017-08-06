@@ -92,8 +92,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="startLonDegrees">Start profileLine Lon</param>
     /// <param name="endLatDegrees">End profileLine Lat</param>
     /// <param name="endLonDegrees">End profileLine Lon</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC. </param>
+    /// <param name="filterUid">Filter Id</param>
     /// <param name="cutfillDesignUid">Design UID</param>
     /// <returns>
     /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
@@ -158,8 +157,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException se)
       {
-        se.OverrideBadRequest(HttpStatusCode.NoContent);
-        throw;
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
       }
       catch (Exception ex)
       {

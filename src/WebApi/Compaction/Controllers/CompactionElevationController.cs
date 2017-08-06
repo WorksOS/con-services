@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
@@ -145,8 +146,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        se.OverrideBadRequest(HttpStatusCode.NoContent);
-        throw;
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
       }
       finally
       {
@@ -186,15 +187,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        se.OverrideBadRequest(HttpStatusCode.NoContent);
-        throw;
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
       }
       finally
       {
         log.LogInformation("GetProjectStatistics returned: " + Response.StatusCode);
       }
     }
-    #endregion
 
+    #endregion
   }
 }

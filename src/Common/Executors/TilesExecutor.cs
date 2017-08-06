@@ -38,10 +38,8 @@ namespace VSS.Productivity3D.Common.Executors
 
       try
       {
-        TWGS84Point bl, tr;
-        bool coordsAreGrid;
-        RaptorConverters.convertGridOrLLBoundingBox(request.boundBoxGrid, request.boundBoxLL, out bl, out tr,
-          out coordsAreGrid);
+        RaptorConverters.convertGridOrLLBoundingBox(request.boundBoxGrid, request.boundBoxLL, out TWGS84Point bl, out TWGS84Point tr,
+  out bool coordsAreGrid);
         TICFilterSettings filter1 =
           RaptorConverters.ConvertFilter(request.filterId1, request.filter1, request.projectId);
         TICFilterSettings filter2 =
@@ -52,25 +50,24 @@ namespace VSS.Productivity3D.Common.Executors
 
         RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.mode, request.computeVolType);
 
-        MemoryStream tile;
         TASNodeErrorStatus raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor
-        (request.projectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
-            TASNodeCancellationDescriptorType.cdtWMSTile),
-          RaptorConverters.convertDisplayMode(request.mode),
-          RaptorConverters.convertColorPalettes(request.palettes, request.mode),
-          bl, tr,
-          coordsAreGrid,
-          request.width,
-          request.height,
-          filter1,
-          filter2,
-          RaptorConverters.convertOptions(null, request.liftBuildSettings, request.computeVolNoChangeTolerance,
-            request.filterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
-          RaptorConverters.DesignDescriptor(request.designDescriptor),
-          volType,
-          request.representationalDisplayColor,
-          out tile);
+(request.projectId ?? -1,
+  ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
+    TASNodeCancellationDescriptorType.cdtWMSTile),
+  RaptorConverters.convertDisplayMode(request.mode),
+  RaptorConverters.convertColorPalettes(request.palettes, request.mode),
+  bl, tr,
+  coordsAreGrid,
+  request.width,
+  request.height,
+  filter1,
+  filter2,
+  RaptorConverters.convertOptions(null, request.liftBuildSettings, request.computeVolNoChangeTolerance,
+    request.filterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
+  RaptorConverters.DesignDescriptor(request.designDescriptor),
+  volType,
+  request.representationalDisplayColor,
+  out MemoryStream tile);
 
         log.LogTrace($"Received {raptorResult} as a result of execution and tile is {tile == null}");
 

@@ -127,14 +127,20 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
     }
 
-    public TemperatureSettings CompactionTemperatureSettings(CompactionProjectSettings ps)
+    public TemperatureSettings CompactionTemperatureSettings(CompactionProjectSettings ps, bool nativeValues = true)
     {
-      //Temperature settings are degrees Celcius (but temperature warning levels for override are 10ths)
+      // Temperature settings are degrees Celcius (but temperature warning levels for override are 10ths)
       var overrideRange = ps.useMachineTargetTemperature.HasValue && !ps.useMachineTargetTemperature.Value;
       var tempMin = ps.customTargetTemperatureMinimum.HasValue ? ps.customTargetTemperatureMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMinimum.Value;
       var tempMax = ps.customTargetTemperatureMaximum.HasValue ? ps.customTargetTemperatureMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMaximum.Value;
 
-      return TemperatureSettings.CreateTemperatureSettings((short)(tempMax * 10), (short)(tempMin * 10), overrideRange);
+      if (nativeValues)
+      {
+        tempMin = tempMin * 10;
+        tempMax = tempMax * 10;
+      }
+
+      return TemperatureSettings.CreateTemperatureSettings((short)tempMax, (short)tempMin, overrideRange);
     }
 
     public double[] CompactionCmvPercentChangeSettings(CompactionProjectSettings ps)
