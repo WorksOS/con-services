@@ -66,7 +66,6 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected RequestExecutorContainer()
     {
       ContractExecutionStates = new ContractExecutionStatesEnum();
-      ProcessErrorCodes();
     }
 
     /// <summary>
