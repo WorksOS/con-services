@@ -80,7 +80,6 @@ namespace VSS.Productivity3D.Common.Controllers
       return ps;
     }
 
-
     /// <summary>
     /// Gets the list of contributing machines from the query parameters
     /// </summary>
@@ -103,20 +102,6 @@ namespace VSS.Productivity3D.Common.Controllers
         machine = MachineDetails.CreateMachineDetails(assetId.Value, machineName, isJohnDoe.Value);
       }
       return machine == null ? null : new List<MachineDetails> { machine };
-    }
-
-    /// <summary>
-    /// Replaces a service exception's BadRequest status code with the NoContent one.
-    /// </summary>
-    /// <param name="controller">The controller which received the request.</param>
-    /// <param name="serviceException">The ServiceException instance.</param>
-    public static void ProcessStatusCode(this Controller controller, ServiceException serviceException)
-    {
-      if (serviceException.Code == HttpStatusCode.BadRequest &&
-          serviceException.GetResult.Code == ContractExecutionStatesEnum.InternalProcessingErrorConst)
-      {
-        //serviceException.Code = HttpStatusCode.NoContent;
-      }
     }
 
     /// <summary>

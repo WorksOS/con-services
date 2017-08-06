@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Proxies;
@@ -133,7 +134,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
+        se.OverrideBadRequest(HttpStatusCode.NoContent);
         throw;
       }
       finally
@@ -204,7 +205,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
+        se.OverrideBadRequest(HttpStatusCode.NoContent);
         throw;
       }
       finally
@@ -266,7 +267,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
+        se.OverrideBadRequest(HttpStatusCode.NoContent);
         throw;
       }
       finally
@@ -337,7 +338,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
+        se.OverrideBadRequest(HttpStatusCode.NoContent);
         throw;
       }
       finally
@@ -408,7 +409,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
+        se.OverrideBadRequest(HttpStatusCode.NoContent);
         throw;
       }
       finally
@@ -477,7 +478,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
+        se.OverrideBadRequest(HttpStatusCode.NoContent);
         throw;
       }
       finally
@@ -553,7 +554,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
+        se.OverrideBadRequest(HttpStatusCode.NoContent);
         throw;
       }
       finally
@@ -615,7 +616,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
+        se.OverrideBadRequest(HttpStatusCode.NoContent);
         throw;
       }
       finally

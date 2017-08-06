@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
+using Microsoft.AspNetCore.Mvc;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -265,7 +268,34 @@ namespace VSS.Productivity3D.Common.Models
           useDefaultPassCountTargets = true,
           customPassCountTargets = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 }
         };
-      
+
+
+    /// <summary>
+    /// Restore settings from a string
+    /// </summary>
+    /// <param name="json">The json.</param>
+    /// <returns></returns>
+    public static CompactionProjectSettings FromString(string json)
+    {
+      CompactionProjectSettings settings;
+      if (!string.IsNullOrEmpty(json))
+      {
+        try
+        {
+          settings = JsonConvert.DeserializeObject<CompactionProjectSettings>(json);
+          settings.Validate();
+        }
+        catch (Exception ex)
+        {
+          settings = CompactionProjectSettings.DefaultSettings;
+        }
+      }
+      else
+      {
+        settings = CompactionProjectSettings.DefaultSettings;
+      }
+      return settings;
+    }
 
     /// <summary>
     /// Validates all properties
