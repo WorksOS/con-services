@@ -1,9 +1,11 @@
 ﻿using Apache.Ignite.Core;
+using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Eviction;
 using log4net;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -37,6 +39,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
                         GridName = RaptorGrids.RaptorGridName(),
+                        IgniteInstanceName = RaptorGrids.RaptorGridName(),
                         ClientMode = true,
                         UserAttributes = new Dictionary<string, object>() { { "Role", role }, { "RaptorNodeID", RaptorNodeID } }
                     };
@@ -45,5 +48,15 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                 }
             }
         }
-    }    
+
+        public override ICache<String, MemoryStream> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        {
+            return raptorGrid.GetCache<String, MemoryStream>(CacheCfg.Name);
+        }
+
+        public override ICache<String, MemoryStream> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+        {
+            return raptorGrid.GetCache<String, MemoryStream>(CacheCfg.Name);
+        }       
+    }
 }

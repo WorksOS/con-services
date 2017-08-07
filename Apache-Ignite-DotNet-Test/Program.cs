@@ -157,6 +157,7 @@ namespace Apache_Ignite_DotNet_Test
             IgniteConfiguration cfg = new IgniteConfiguration()
             {
                 GridName = "Raptor",
+                IgniteInstanceName = "Raptor",
 
                 // Register custom class for Ignite serialization
                 BinaryConfiguration = new Apache.Ignite.Core.Binary.BinaryConfiguration(typeof(MyCacheClass))                                    

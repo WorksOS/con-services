@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
+using Apache.Ignite.Core.Cache.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,7 @@ namespace VSS.VisionLink.Raptor.Servers
     /// <summary>
     /// A base class for deriving server and client instances that interact with the Ignite In Memory Data Grid
     /// </summary>
-    public class RaptorIgniteServer
+    public abstract class RaptorIgniteServer
     {
         protected IIgnite raptorGrid = null;
         protected static ICache<String, MemoryStream> NonSpatialMutableCache = null;
@@ -41,5 +42,29 @@ namespace VSS.VisionLink.Raptor.Servers
         {
             SetupServerSpecificConfiguration();
         }
+
+        public virtual void ConfigureRaptorGrid(IgniteConfiguration cfg)
+        {
+        }
+
+        public virtual void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
+        {
+        }
+
+        public virtual void ConfigureNonSpatialImmutableCache(CacheConfiguration cfg)
+        {
+        }
+
+        public abstract ICache<String, MemoryStream> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg);
+
+        public virtual void ConfigureMutableSpatialCache(CacheConfiguration cfg)
+        {
+        }
+
+        public virtual void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
+        {
+        }
+
+        public abstract ICache<String, MemoryStream> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg);
     }
 }
