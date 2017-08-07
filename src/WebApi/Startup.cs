@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApi
   /// </summary>
   public class Startup
   {
-    private readonly string loggerRepoName = "WebApi";
+    private const string loggerRepoName = "WebApi";
     private readonly bool isDevEnv;
     private IServiceCollection serviceCollection;
 
@@ -117,6 +117,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IElevationExtentsProxy, ElevationExtentsProxy>();
       services.AddScoped<ICompactionSettingsManager, CompactionSettingsManager>();
       services.AddScoped<IProductionDataRequestFactory, ProductionDataRequestFactory>();
+      services.AddScoped<IFilterServiceProxy, FilterServiceProxy>();
 
       serviceCollection = services;
     }
