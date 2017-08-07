@@ -168,6 +168,7 @@
     <Compile Include="Rendering\ProductionPVMDisplayerBase.cs" />
     <Compile Include="Rendering\PVMDisplayerBase.cs" />
     <Compile Include="Rendering\PVMDisplayer_Height.cs" />
+    <Compile Include="Servers\Client\ActivatePersistentGridServer.cs" />
     <Compile Include="Servers\Client\RaptorApplicationServiceServer.cs" />
     <Compile Include="Servers\Client\RaptorClientServer.cs" />
     <Compile Include="Servers\Client\TAGFileProcessingServer.cs" />
@@ -184,6 +185,7 @@
     <Compile Include="SiteModels\SiteModelDesign.cs" />
     <Compile Include="SiteModels\SiteModelDesignList.cs" />
     <Compile Include="GridFabric\Caches\RaptorCacheStoreUtilities.cs" />
+    <Compile Include="Storage\Serializers\TestBinarizable.cs" />
     <Compile Include="Storage\StorageProxy.cs" />
     <Compile Include="Storage\StorageProxyFactory.cs" />
     <Compile Include="Storage\StorageProxy_IgniteBase.cs" />
