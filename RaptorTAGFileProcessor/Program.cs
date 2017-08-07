@@ -215,11 +215,12 @@ namespace VSS.VisionLink.Raptor.Client
                     return;
                 }
 
-                // Ensure there is an active and available grid
+/*                // Ensure there is an active and available grid
                 if (!ActivatePersistentGridServer.SetGridActive(RaptorGrids.RaptorGridName()))
                 {
                     Console.WriteLine("Unable to set grid {0} to active", RaptorGrids.RaptorGridName());
                 }
+*/
 
                 // Obtain a TAGFileProcessing client server
                 TAGFileProcessingServer TAGServer = new TAGFileProcessingServer();
