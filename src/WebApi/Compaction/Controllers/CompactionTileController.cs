@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for displaying production data and linework.
   /// </summary>
-  public class CompactionTileController : Controller
+  public class CompactionTileController : BaseController
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger,
       IConfigurationStore configStore, IFileRepository fileRepo, 
       IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler) : base(logger.CreateLogger<BaseController>(), exceptionHandler)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -185,8 +185,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, log);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -270,8 +270,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid,  log);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);

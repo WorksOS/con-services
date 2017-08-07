@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
   /// 
   /// </summary>
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-  public class ReportController : Controller, IReportSvc
+  public class ReportController : BaseController, IReportSvc
   {
     #region privates
     /// <summary>
@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="settingsManager">Compaction settings manager</param>
     public ReportController(IASNodeClient raptorClient, ILoggerFactory logger,
       IConfigurationStore configStore, IFileListProxy fileListProxy, IPreferenceProxy prefProxy,
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler) : base(logger.CreateLogger<BaseController>(), exceptionHandler)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -138,10 +138,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Pass count settings required for detailed pass count report"));
       }
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid,  log);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
 
       // Filter filter = settingsManager.CompactionFilter(startUtc, endUtc, null, null, null, null, this.GetMachines(assetId, machineName, isJohnDoe), null);
       Filter filter = settingsManager.CompactionFilter(null, null, null, null, null, null, null, excludedIds);
