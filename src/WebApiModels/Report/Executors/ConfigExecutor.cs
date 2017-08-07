@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Xml;
@@ -12,24 +11,17 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {
   public class ConfigExecutor : RequestExecutorContainer
     {
-        /// <summary>
-        /// Default constructor for RequestExecutorContainer.Build
-        /// </summary>
-        public ConfigExecutor()
-        {
-        }
-
         protected override ContractExecutionResult ProcessEx<T>(T item)
         {
-            ContractExecutionResult result = null;
-            string config = String.Empty;
+            ContractExecutionResult result;
+            string config = string.Empty;
+
             try
             {
                 raptorClient.RequestConfig(out config);
                 log.LogTrace("Received config {0}", config);
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(config);
-                string jsonText = JsonConvert.SerializeXmlNode(doc);
                 result = ConfigResult.CreateConfigResult(config);
             }
             catch (Exception e)

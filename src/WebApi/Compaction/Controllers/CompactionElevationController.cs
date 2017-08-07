@@ -179,7 +179,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var returnResult =
-          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient, null)
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
             .Process(request) as ProjectStatisticsResult;
         log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;

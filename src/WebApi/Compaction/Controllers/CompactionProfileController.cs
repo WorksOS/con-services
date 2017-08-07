@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectSettings(CompactionProjectSettings.FromString(
             await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), headers)))
           .ExcludedIds(await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers)))
-        .CreateSlicerProfileResponse(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
+        .CreateSlicerProfileRequest(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
           filterUid,customerUid,headers, cutfillDesignUid);
 
       slicerProfileResult.Validate();

@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.Common.Executors
     /// <returns>a xxxResult if successful</returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
       TileRequest request = item as TileRequest;
 
       try
@@ -87,13 +87,11 @@ namespace VSS.Productivity3D.Common.Executors
         else
         {
           log.LogTrace(
-            String.Format("Failed to get requested tile with error: {0}.",
-              ContractExecutionStates.FirstNameWithOffset((int)raptorResult)));
+            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int) raptorResult)}.");
 
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
             ContractExecutionStatesEnum.InternalProcessingError,
-            String.Format("Failed to get requested tile with error: {0}.",
-              ContractExecutionStates.FirstNameWithOffset((int)raptorResult))));
+            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int) raptorResult)}."));
         }
 
       }

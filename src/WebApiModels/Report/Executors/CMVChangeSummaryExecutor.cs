@@ -19,13 +19,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
   /// </summary>
   public class CMVChangeSummaryExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public CMVChangeSummaryExecutor()
-    {
-    }
-
     private CMVChangeSummaryResult ConvertResult(TASNodeCMVChangeResult result)
     {
 

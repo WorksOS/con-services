@@ -608,7 +608,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         filter == null ? FilterLayerMethod.None : filter.layerType.Value,
         bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, false);
       tileRequest.Validate();
-      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient, null)
+      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient)
         .Process(tileRequest) as TileResult;
       if (tileResult == null)
       {

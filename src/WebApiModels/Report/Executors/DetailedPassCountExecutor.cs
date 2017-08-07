@@ -19,14 +19,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
   public class DetailedPassCountExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public DetailedPassCountExecutor()
-    {
-    }
-
-
-    /// <summary>
     /// Processes the detailed pass counts request by passing the request to Raptor and returning the result.
     /// </summary>
     /// <typeparam name="T"></typeparam>

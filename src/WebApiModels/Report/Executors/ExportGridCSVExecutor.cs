@@ -30,13 +30,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         private const float NULL_SINGLE = DTXModelDecls.__Global.NullSingle;
 
         /// <summary>
-        /// Default constructor for RequestExecutorContainer.Build
-        /// </summary>
-        public ExportGridCSVExecutor()
-        {
-        }
-
-        /// <summary>
         /// Processes the summary pass counts request by passing the request to Raptor and returning the result.
         /// </summary>
         /// <typeparam name="T"></typeparam>

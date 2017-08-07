@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <param name="endUtc"></param>
     /// <param name="cutfillDesignUid"></param>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public ProfileProductionDataRequest CreateSlicerProfileResponse(Guid projectUid,
+    public ProfileProductionDataRequest CreateSlicerProfileRequest(Guid projectUid,
       double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees,
       Guid filterUid,Guid customerUid, IDictionary<string,string> headers, Guid? cutfillDesignUid)
     {

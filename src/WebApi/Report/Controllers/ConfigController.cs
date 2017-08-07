@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
     public ConfigResult Get()
     {
-      return RequestExecutorContainerFactory.Build<ConfigExecutor>(logger, raptorClient, null).Process(new object()) as ConfigResult;
+      return RequestExecutorContainerFactory.Build<ConfigExecutor>(logger, raptorClient).Process(new object()) as ConfigResult;
     }
   }
 }

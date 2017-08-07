@@ -20,13 +20,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     private T3DBoundingWorldExtent extents;
     
     /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public ProjectExtentsSubmitter()
-    {
-    }
-
-    /// <summary>
     /// Calls raptor to get project extents
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -37,7 +30,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       ContractExecutionResult result;
       try
       {
-
         // get request parameters
         ExtentRequest request = item as ExtentRequest;
 

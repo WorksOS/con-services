@@ -20,13 +20,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   /// 
   public class DesignExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public DesignExecutor()
-    {
-    }
-
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
@@ -50,7 +43,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
           for (var i = 0; i < fileList.Count; i++)
           {
-            log.LogDebug(string.Format("Getting GeoJson design boundary from Raptor for file: {0}", fileList[i].Name));
+            log.LogDebug($"Getting GeoJson design boundary from Raptor for file: {fileList[i].Name}");
 
             MemoryStream memoryStream;
             TDesignProfilerRequestResult designProfilerResult;
@@ -82,7 +75,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
             {
               throw new ServiceException(HttpStatusCode.InternalServerError,
                 new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                  string.Format("Failed to get design boundary for file: {0}", fileList[i].Name)));
+                  $"Failed to get design boundary for file: {fileList[i].Name}"));
             }
           }
 
@@ -100,12 +93,5 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
         ContractExecutionStates.ClearDynamic();
       }
     }
-
-/*
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the synchronous form of this method");
-    }
-*/
   }
 }

@@ -13,12 +13,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {
   public class ProjectStatisticsExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public ProjectStatisticsExecutor()
-    { }
-
     private static TSurveyedSurfaceID[] convertSurveyedSurfaceExlusionList(long[] exclusions)
     {
       TSurveyedSurfaceID[] result = new TSurveyedSurfaceID[exclusions.Length];

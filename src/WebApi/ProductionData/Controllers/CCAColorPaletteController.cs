@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       request.Validate();
 
-      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger, raptorClient, null).Process(request) as CCAColorPaletteResult;
+      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger, raptorClient).Process(request) as CCAColorPaletteResult;
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId);
       request.Validate();
 
-      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger, raptorClient, null).Process(request) as CCAColorPaletteResult;
+      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger, raptorClient).Process(request) as CCAColorPaletteResult;
     }
   }
 }

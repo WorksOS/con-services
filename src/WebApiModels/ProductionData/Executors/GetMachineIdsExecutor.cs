@@ -15,15 +15,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   public class GetMachineIdsExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public GetMachineIdsExecutor()
-    {
-    }
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
       ProjectID request = item as ProjectID;
       TMachineDetail[] machines = raptorClient.GetMachineIDs(request.projectId ?? -1);
       if (machines != null)
@@ -36,7 +30,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
             "Failed to get requested machines details"));
 
       return result;
-
     }
 
     private IEnumerable<MachineStatus> convertMachineStatus(TMachineDetail[] machines)
@@ -56,7 +49,5 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
             machineDetail.LastKnownY == 0 ? (double?)null : machineDetail.LastKnownY
             );
     }
-
-
   }
 }

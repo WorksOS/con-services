@@ -18,14 +18,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {
   public class SummaryVolumesExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public SummaryVolumesExecutor()
-    {
-    }
-
-
     private BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
       return BoundingBox3DGrid.CreatBoundingBox3DGrid(

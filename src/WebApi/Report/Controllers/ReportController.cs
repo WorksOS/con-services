@@ -400,7 +400,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainerFactory.Build<SummaryPassCountsExecutor>(logger, raptorClient, null).Process(request)
+        RequestExecutorContainerFactory.Build<SummaryPassCountsExecutor>(logger, raptorClient).Process(request)
           as PassCountSummaryResult;
     }
 
@@ -432,7 +432,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             "Pass count settings required for detailed pass count report"));
       }
       return
-        RequestExecutorContainerFactory.Build<DetailedPassCountExecutor>(logger, raptorClient, null).Process(request)
+        RequestExecutorContainerFactory.Build<DetailedPassCountExecutor>(logger, raptorClient).Process(request)
           as PassCountDetailedResult;
     }
 
@@ -459,7 +459,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(logger, raptorClient, null).Process(request) as
+        RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(logger, raptorClient).Process(request) as
           CMVSummaryResult;
 
     }
@@ -483,7 +483,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(logger, raptorClient, null).Process(request) as
+        RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(logger, raptorClient).Process(request) as
           CMVDetailedResult;
 
     }
@@ -509,7 +509,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient, null).Process(request)
+        RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient).Process(request)
           as ProjectStatisticsResult;
     }
 
@@ -551,7 +551,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       parameters.Validate();
       return
-        RequestExecutorContainerFactory.Build<SummaryThicknessExecutor>(logger, raptorClient, null).Process(parameters)
+        RequestExecutorContainerFactory.Build<SummaryThicknessExecutor>(logger, raptorClient).Process(parameters)
           as SummaryThicknessResult;
     }
 
@@ -574,7 +574,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       parameters.Validate();
       return
-        RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(logger, raptorClient, null).Process(parameters) as
+        RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(logger, raptorClient).Process(parameters) as
           SummarySpeedResult;
     }
 
@@ -597,7 +597,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       parameters.Validate();
       return
-        RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(logger, raptorClient, null).Process(parameters)
+        RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(logger, raptorClient).Process(parameters)
           as CMVChangeSummaryResult;
     }
 
@@ -617,7 +617,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient, null).Process(request)
+        RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient).Process(request)
           as ElevationStatisticsResult;
     }
 
@@ -638,7 +638,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainerFactory.Build<SummaryCCAExecutor>(logger, raptorClient, null).Process(request) as
+        RequestExecutorContainerFactory.Build<SummaryCCAExecutor>(logger, raptorClient).Process(request) as
           CCASummaryResult;
 
     }

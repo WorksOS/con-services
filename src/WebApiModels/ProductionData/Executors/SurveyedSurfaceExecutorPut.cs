@@ -12,13 +12,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   public class SurveyedSurfaceExecutorPut : SurveyedSurfaceExecutor
   {
     /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public SurveyedSurfaceExecutorPut()
-    {
-    }
-
-    /// <summary>
     /// Sends a PUT request to Production Data Server (PDS) client.
     /// </summary>
     /// <param name="item">PUT request description.</param>
@@ -46,11 +39,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     /// Returns an instance of the ContractExecutionResult class as PUT method execution result.
     /// </summary>
     /// <returns>An instance of the ContractExecutionResult class.</returns>
-    /// 
     protected override ContractExecutionResult ExecutionResult(SurveyedSurfaceDetails[] surveyedSurfaces)
     {
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Surveyed Surface data successfully updated.");
     }
-
   }
 }

@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public TileResult Post([FromBody] TileRequest request)
     {
       request.Validate();
-      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
+      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient).Process(request) as TileResult;
       return tileResult;
     }
 

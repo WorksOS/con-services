@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     public ProjectExtentsResult Post([FromBody] ExtentRequest request)
     {
-      return RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient, null).Process(request) as ProjectExtentsResult;
+      return RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient).Process(request) as ProjectExtentsResult;
     }
   }
 }

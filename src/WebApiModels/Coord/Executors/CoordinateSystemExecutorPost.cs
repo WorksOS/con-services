@@ -11,16 +11,9 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
   /// </summary>
   /// 
   public class CoordinateSystemExecutorPost : CoordinateSystemExecutor
+  {
+    protected override TASNodeErrorStatus SendRequestToPDSClient(object item)
     {
-      /// <summary>
-      /// Default constructor for RequestExecutorContainer.Build
-      /// </summary>
-      public CoordinateSystemExecutorPost()
-      {
-      }
-
-      protected override TASNodeErrorStatus SendRequestToPDSClient(object item)
-      {
 
       TASNodeErrorStatus code = TASNodeErrorStatus.asneUnknown;
       TCoordinateSystemSettings tempCoordSystemSettings = new TCoordinateSystemSettings();
@@ -37,10 +30,10 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
           CoordinateSystemFileValidationRequest request = item as CoordinateSystemFileValidationRequest;
           code = raptorClient.PassSelectedCoordinateSystemFile(new MemoryStream(request.csFileContent), request.csFileName, -1, out tempCoordSystemSettings);
         };
-      };      
+      };
 
       if (code == TASNodeErrorStatus.asneOK)
-          coordSystemSettings = tempCoordSystemSettings;
+        coordSystemSettings = tempCoordSystemSettings;
 
       return code;
     }
