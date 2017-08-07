@@ -31,8 +31,8 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
     <!-- References are required to support VSS.MasterData.Models.netcore for local unit testing only. -->
     <PackageReference Include="System.Runtime" Version="4.1.0" />
-    <PackageReference Include="System.Reflection" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+    <PackageReference Include="System.Reflection" Version="4.1.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.1.0" />
     <!-- END -->
     
   </ItemGroup>
