@@ -1,12 +1,12 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using VSS.Common.Exceptions;
 using VSS.Common.Filters;
 using VSS.Common.ResultsHandling;
@@ -18,7 +18,6 @@ using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.WebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -31,8 +30,7 @@ namespace VSS.Productivity3D.Filter.WebApi
   public class Startup
   {
     private const string loggerRepoName = "WebApi";
-    private readonly bool isDevEnv;
-    IServiceCollection serviceCollection;
+    private IServiceCollection serviceCollection;
 
     /// <summary>
     /// VSS.Productivity3D.Filter startup
@@ -44,14 +42,8 @@ namespace VSS.Productivity3D.Filter.WebApi
         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
         .AddEnvironmentVariables();
-     
+
       env.ConfigureLog4Net("log4net.xml", loggerRepoName);
-      isDevEnv = env.IsEnvironment("Development");
-      if (isDevEnv)
-      {
-        // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-        builder.AddApplicationInsightsSettings(developerMode: true);
-      }
 
       Configuration = builder.Build();
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
@@ -84,17 +76,16 @@ namespace VSS.Productivity3D.Filter.WebApi
       });
 
       // Add framework services.
-      services.AddApplicationInsightsTelemetry(Configuration);
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddTransient<ICustomerProxy, CustomerProxy>(); // used in TDI auth for customer/user validation
       services.AddTransient<IProjectListProxy, ProjectListProxy>(); // used for customer/project validation
-      services.AddTransient<IRaptorProxy, RaptorProxy>(); 
+      services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
-      services.AddTransient<IErrorCodesProvider,ErrorCodesProvider>();
+      services.AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
       services.AddMemoryCache();
-      
+
       services.AddMvc(
         config =>
         {
@@ -145,7 +136,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.AddSingleton(loggerFactory);
       //new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
       serviceCollection.BuildServiceProvider();
 
@@ -157,9 +148,6 @@ namespace VSS.Productivity3D.Filter.WebApi
       app.UseCors("VSS");
       //Enable TID here
       app.UseTIDAuthentication();
-
-      /*app.UseApplicationInsightsRequestTelemetry();
-      app.UseApplicationInsightsExceptionTelemetry();*/
 
       app.UseMvc();
 
