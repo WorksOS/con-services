@@ -1,10 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
-using  VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
@@ -79,14 +76,14 @@ namespace VSS.Productivity3D.Filter.Common.Models
       if (string.IsNullOrEmpty(customerUid) || Guid.TryParse(customerUid, out Guid customerUidGuid) == false)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 27);
 
-      if (string.IsNullOrEmpty(userUid) || (isApplicationContext == false && Guid.TryParse(userUid, out Guid userUidGuid) == false))
+      if (string.IsNullOrEmpty(userUid) || isApplicationContext == false && Guid.TryParse(userUid, out Guid userUidGuid) == false)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 28);
 
       if (string.IsNullOrEmpty(projectUid) || Guid.TryParse(projectUid, out Guid projectUidGuid) == false)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
 
       if (filterUid == string.Empty
-          || (filterUid != null && Guid.TryParse(filterUid, out Guid filterUidGuid) == false))
+          || filterUid != null && Guid.TryParse(filterUid, out Guid filterUidGuid) == false)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
 
       if (name == null)
@@ -95,10 +92,22 @@ namespace VSS.Productivity3D.Filter.Common.Models
       if (filterJson == null)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 4);
 
-      // Validate filterJson...
-      var filter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
-      filter.Validate(serviceExceptionHandler);
+      if (filterJson == "")
+      {
+        // Newtonsoft.JSON treats emtpy strings as invalid JSON but for our purposes it is valid.
+        return;
+      }
 
+      // Validate filterJson...
+      try
+      {
+        var filter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
+        filter.Validate(serviceExceptionHandler);
+      }
+      catch (JsonReaderException exception)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 4, null, exception.GetBaseException().Message);
+      }
     }
   }
 }
