@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using Filter = VSS.Productivity3D.Common.Models.Filter;
+using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 {
@@ -15,11 +18,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     public void CPR_CanCreateCellPassesRequestTest()
     {
       var validator = new DataAnnotationsValidator();
-      ICollection<ValidationResult> results;
 
       CellPassesRequest cpRequest = CellPassesRequest.CreateCellPassRequest(544, null, null, null, null, 0, 0,
           null);
-      Assert.IsTrue(validator.TryValidate(cpRequest, out results));
+      Assert.IsTrue(validator.TryValidate(cpRequest, out ICollection<ValidationResult> results));
 
       // invalid projectid
       cpRequest = CellPassesRequest.CreateCellPassRequest(-1, null, null, null, null, 0, 0, null);

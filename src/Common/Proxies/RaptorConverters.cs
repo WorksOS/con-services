@@ -11,7 +11,10 @@ using SVOICLiftBuildSettings;
 using SVOICOptionsDecls;
 using SVOICVolumeCalculationsDecls;
 using VLPDDecls;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
+using Filter = VSS.Productivity3D.Common.Models.Filter;
+using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 using __Global = ProductionServer_TLB.__Global;
 
 namespace VSS.Productivity3D.Common.Proxies

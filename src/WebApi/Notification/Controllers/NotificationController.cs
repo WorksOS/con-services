@@ -71,6 +71,11 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private readonly IFileListProxy fileListProxy;
 
     /// <summary>
+    /// For getting filter by Uid. Used here so FilterService can clear an item from cache.
+    /// </summary>
+    private readonly IFilterServiceProxy filterServiceProxy;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -80,9 +85,11 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="prefProxy">Proxy for user preferences</param>
     /// <param name="tileGenerator">DXF tile generator</param>
     /// <param name="fileListProxy">File list proxy</param>
+    /// <param name="filterServiceProxy">Filter service proxy</param>
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
-      IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy)
+      IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy,
+      IFilterServiceProxy filterServiceProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -92,6 +99,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       this.prefProxy = prefProxy;
       this.tileGenerator = tileGenerator;
       this.fileListProxy = fileListProxy;
+      this.filterServiceProxy = filterServiceProxy;
     }
 
     /// <summary>
@@ -195,6 +203,22 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Update files notification successful");
     }
 
+
+    /// <summary>
+    /// Notifies Raptor that a filterUid has been updated/deleted so clear it from the queue
+    /// </summary>
+    /// <param name="filterUid"></param>
+    /// <returns>A code and message to indicate the result</returns>
+    [Route("api/v2/notification/filterchange")]
+    [HttpGet]
+    public ContractExecutionResult GetNotifyFilterChange(
+      [FromQuery] Guid filterUid)
+    {
+      log.LogDebug("GetNotifyFilterChange: " + Request.QueryString);
+      filterServiceProxy.ClearCacheItem<string>(filterUid.ToString());
+      log.LogInformation("GetNotifyFilterChange returned");
+      return new ContractExecutionResult();
+    }
     /// <summary>
     /// Clears the imported files cache in the proxy so that linework tile requests are refreshed appropriately
     /// </summary>
