@@ -88,6 +88,7 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddTransient<ICustomerProxy, CustomerProxy>(); // used in TDI auth for customer/user validation
       services.AddTransient<IProjectListProxy, ProjectListProxy>(); // used for customer/project validation
+      services.AddTransient<IRaptorProxy, RaptorProxy>(); 
       services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
       services.AddTransient<IErrorCodesProvider,ErrorCodesProvider>();
       services.AddMemoryCache();

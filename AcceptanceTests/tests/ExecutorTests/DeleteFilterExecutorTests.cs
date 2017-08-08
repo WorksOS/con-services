@@ -30,7 +30,7 @@ namespace ExecutorTests
       request.Validate(serviceExceptionHandler);
 
       var executor =
-        RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, producer, kafkaTopicName);
+        RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>  await executor.ProcessAsync(request)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("3011", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("DeleteFilter failed. Unable to find filterUid.", StringComparison.Ordinal), "executor threw exception but incorrect message");
@@ -66,7 +66,7 @@ namespace ExecutorTests
       request.Validate(serviceExceptionHandler);
       
       var executor =
-        RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, producer, kafkaTopicName);
+        RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as ContractExecutionResult;
 
       Assert.IsNotNull(result, "executor should always return a result");

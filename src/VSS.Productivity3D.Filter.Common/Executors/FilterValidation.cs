@@ -51,5 +51,32 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         $"ValidateCustomerProject: succeeded: customerUid:{customerUid} projectUid:{projectUid}.");
     }
 
+    /// <summary>
+    /// Notify raptor of an updated/deleted filterUid.
+    ///    Note that it does not notify of a created filterUid.
+    /// </summary>
+    public static async Task NotifyRaptorFilterChange(IRaptorProxy raptorProxy,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, 
+      string filterUid)
+    {
+      BaseDataResult notificationResult = null;
+      try
+      {
+        notificationResult = await raptorProxy.NotifyFilterChange(new Guid(filterUid));
+      }
+      catch (Exception e)
+      {
+        log.LogError(
+          $"NotifyRaptorFilterChange: RaptorServices failed with exception. filterUid:{filterUid}. Exception Thrown: {e.Message}. ");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 30, "raptorProxy.NotifyFilterChange", e.Message);
+      }
+
+      log.LogDebug(
+        $"NotifyRaptorFilterChange: NotifyFilterChange in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+
+      if (notificationResult != null && notificationResult.Code != 0)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 29, notificationResult.Code.ToString(), notificationResult.Message);
+    }
+
   }
 }

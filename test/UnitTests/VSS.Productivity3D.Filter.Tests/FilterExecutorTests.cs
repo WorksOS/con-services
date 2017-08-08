@@ -7,9 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Executors;
@@ -17,6 +18,7 @@ using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using FilterDescriptor = VSS.Productivity3D.Filter.Common.ResultHandling.FilterDescriptor;
 
 namespace VSS.Productivity3D.Filter.Tests
 {
@@ -137,6 +139,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var projectListProxy = new Mock<IProjectListProxy>();
+      var raptorProxy = new Mock<IRaptorProxy>();
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
 
@@ -172,7 +175,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var request =
         FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, projectListProxy.Object, producer.Object, kafkaTopicName);
+        filterRepo.Object, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor failed");
@@ -201,6 +204,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var projectListProxy = new Mock<IProjectListProxy>();
+      var raptorProxy = new Mock<IRaptorProxy>();
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
 
@@ -237,7 +241,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var request =
         FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, projectListProxy.Object, producer.Object, kafkaTopicName);
+        filterRepo.Object, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor failed");
@@ -264,6 +268,9 @@ namespace VSS.Productivity3D.Filter.Tests
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var projectListProxy = new Mock<IProjectListProxy>();
+      var raptorProxy = new Mock<IRaptorProxy>();
+      raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
 
@@ -299,7 +306,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var request =
         FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, projectListProxy.Object, producer.Object, kafkaTopicName);
+        filterRepo.Object, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
       Assert.IsNotNull(result, "executor failed");

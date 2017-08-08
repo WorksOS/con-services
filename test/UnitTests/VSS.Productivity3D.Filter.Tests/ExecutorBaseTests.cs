@@ -43,6 +43,7 @@ namespace VSS.Productivity3D.Filter.Tests
         .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<ICustomerProxy, CustomerProxy>()
         .AddTransient<IProjectListProxy, ProjectListProxy>()
+        .AddTransient<IRaptorProxy, RaptorProxy>()
         .AddTransient<IErrorCodesProvider, ErrorCodesProvider>()
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>();
 

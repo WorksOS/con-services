@@ -34,6 +34,8 @@ namespace VSS.Productivity3D.Filter.Common.ResultHandling
       DynamicAddwithOffset("UpsertFilter failed. Unable to write to Kafka. Exception: {0}.", 26);
       DynamicAddwithOffset("Invalid customerUid.", 27);
       DynamicAddwithOffset("Invalid userUid.", 28);
+      DynamicAddwithOffset("Unable to notify 3dp of filterUid change. Return code {0} message {1}", 29);
+      DynamicAddwithOffset("Unable to notify 3dp of filterUid change. Endpoint: {0} message {1}.", 30);
     }
 
     protected override int executionResultOffset { get; } = 3000;
