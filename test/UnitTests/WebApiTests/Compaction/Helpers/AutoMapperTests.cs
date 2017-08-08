@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
@@ -142,7 +139,5 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(Math.Round(CompactionProjectSettings.DefaultSettings.customTargetSpeedMinimum.Value * ConversionConstants.KM_HR_TO_CM_SEC), lbs.machineSpeedTarget.MinTargetMachineSpeed, "machineSpeedTarget.MinTargetMachineSpeed not mapped correctly");
       Assert.AreEqual(Math.Round(CompactionProjectSettings.DefaultSettings.customTargetSpeedMaximum.Value * ConversionConstants.KM_HR_TO_CM_SEC), lbs.machineSpeedTarget.MaxTargetMachineSpeed, "machineSpeedTarget.MaxTargetMachineSpeed not mapped correctly");
     }
-
-    //**** What about palettes ?
   }
 }

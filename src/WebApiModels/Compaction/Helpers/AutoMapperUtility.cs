@@ -50,6 +50,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         cfg =>
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
+          //Note: CMV raw values are 10ths
           cfg.CreateMap<CompactionProjectSettings, CMVSettings>()
             .ForMember(x => x.overrideTargetCMV,
               opt => opt.MapFrom(ps => ps.useMachineTargetCmv.HasValue && !ps.useMachineTargetCmv.Value))
@@ -64,6 +65,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             .ForMember(x => x.maxCMVPercent,
             opt => opt.MapFrom(ps => ps.customTargetCmvPercentMaximum.HasValue ? ps.customTargetCmvPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum.Value));
 
+          //Note: MDP raw values are 10ths
           cfg.CreateMap<CompactionProjectSettings, MDPSettings>()
             .ForMember(x => x.overrideTargetMDP,
               opt => opt.MapFrom(ps => ps.useMachineTargetMdp.HasValue && !ps.useMachineTargetMdp.Value))
@@ -238,6 +240,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       public MachineSpeedTarget Resolve(CompactionProjectSettings src, LiftBuildSettings dst, MachineSpeedTarget member, ResolutionContext context)
       {
+        //Note: Speed is cm/s for Raptor but km/h in project settings
         var speedOverrideRange = src.useDefaultTargetRangeSpeed.HasValue && !src.useDefaultTargetRangeSpeed.Value;
         var speedMin = (speedOverrideRange && src.customTargetSpeedMinimum.HasValue ? src.customTargetSpeedMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMinimum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
         var speedMax = (speedOverrideRange && src.customTargetSpeedMaximum.HasValue ? src.customTargetSpeedMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMaximum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
