@@ -8,10 +8,11 @@ using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.Filter.Tests

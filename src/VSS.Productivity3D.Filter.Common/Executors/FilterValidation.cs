@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 
