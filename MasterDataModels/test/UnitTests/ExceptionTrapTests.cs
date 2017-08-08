@@ -12,37 +12,13 @@ using Moq;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.UnitTests;
 
 namespace VSS.MasterData.Models.Tests
 {
   [TestClass]
-  public class ExceptionTrapTests
+  public class ExceptionTrapTests : BaseTest
   {
-
-    public IServiceProvider ServiceProvider;
-
-
-    /// <summary>
-    /// Initializes the test.
-    /// </summary>
-    [TestInitialize]
-    public virtual void InitTest()
-    {
-      var serviceCollection = new ServiceCollection();
-
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      ServiceProvider = serviceCollection.BuildServiceProvider();
-    }
-
     [TestMethod]
     public void CanCreateExceptionTrap()
     {

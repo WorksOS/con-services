@@ -1,6 +1,7 @@
 ﻿using System.Net;
+using VSS.Common.Exceptions;
 
-namespace VSS.Common.Exceptions
+namespace VSS.MasterData.Models.Handlers
 {
   /// <summary>
   /// Common controller ServiceException handler.

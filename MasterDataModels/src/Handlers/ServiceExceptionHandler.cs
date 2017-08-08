@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.Handlers;
 
 namespace VSS.Common.Exceptions
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.Interfaces;
 
 namespace VSS.MasterData.Models.Models
 {
