@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;

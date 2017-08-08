@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
