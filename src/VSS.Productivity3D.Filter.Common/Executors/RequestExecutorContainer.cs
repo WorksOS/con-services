@@ -39,6 +39,11 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected IProjectListProxy projectListProxy;
 
     /// <summary>
+    /// Proxy used to clear filterUID from clients cache
+    /// </summary>
+    protected IRaptorProxy raptorProxy;
+
+    /// <summary>
     /// Repository factory used in ProcessEx
     /// </summary>
     protected IFilterRepository filterRepo;
@@ -127,7 +132,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected RequestExecutorContainer(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IFilterRepository filterRepo, 
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IFilterRepository filterRepo, 
       IKafka producer, string kafkaTopicName) : this()
     {
       this.configStore = configStore;
@@ -135,6 +140,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         log = logger.CreateLogger<RequestExecutorContainer>();
       this.serviceExceptionHandler = serviceExceptionHandler;
       this.projectListProxy = projectListProxy;
+      this.raptorProxy = raptorProxy;
       this.filterRepo = filterRepo;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
@@ -155,7 +161,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns></returns>
     public static TExecutor Build<TExecutor>(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IFilterRepository filterRepo, IProjectListProxy projectListProxy = null,  
+      IFilterRepository filterRepo, 
+      IProjectListProxy projectListProxy = null, IRaptorProxy raptorProxy = null,
       IKafka producer = null, string kafkaTopicName = null)
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -165,6 +172,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         log = logger.CreateLogger<TExecutor>(),
         serviceExceptionHandler = serviceExceptionHandler,
         projectListProxy = projectListProxy,
+        raptorProxy = raptorProxy,
         filterRepo = filterRepo,
         producer = producer,
         kafkaTopicName = kafkaTopicName

@@ -8,6 +8,8 @@ using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -24,6 +26,7 @@ namespace ExecutorTests
     protected IServiceExceptionHandler serviceExceptionHandler;
     protected FilterRepository filterRepo;
     protected IProjectListProxy projectListProxy;
+    protected IRaptorProxy raptorProxy;
     protected IKafka producer;
     protected string kafkaTopicName;
 
@@ -45,6 +48,7 @@ namespace ExecutorTests
           .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
           .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
           .AddTransient<IProjectListProxy, ProjectListProxy>()
+          .AddTransient<IRaptorProxy, RaptorProxy>()
           .AddSingleton<IKafka, RdKafkaDriver>()
           .AddTransient<IErrorCodesProvider, ErrorCodesProvider>()
           .AddMemoryCache() 
@@ -55,6 +59,7 @@ namespace ExecutorTests
       serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       filterRepo = serviceProvider.GetRequiredService<IRepository<IFilterEvent>>() as FilterRepository;
       projectListProxy = serviceProvider.GetRequiredService<IProjectListProxy>();
+      raptorProxy = serviceProvider.GetRequiredService<IRaptorProxy>();
       producer = serviceProvider.GetRequiredService<IKafka>();
       if (!producer.IsInitializedProducer)
         producer.InitProducer(configStore);

@@ -24,7 +24,12 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    public DeleteFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IProjectListProxy projectListProxy, IFilterRepository filterRepo, IKafka producer, string kafkaTopicName) : base(configStore, logger, serviceExceptionHandler, projectListProxy, filterRepo, producer, kafkaTopicName)
+    public DeleteFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, 
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, 
+      IFilterRepository filterRepo, IKafka producer, string kafkaTopicName) 
+      : base(configStore, logger, serviceExceptionHandler, 
+          projectListProxy, raptorProxy, 
+          filterRepo, producer, kafkaTopicName)
     {
     }
 
@@ -67,10 +72,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         {
           deleteFilterEvent = AutoMapperUtility.Automapper.Map<DeleteFilterEvent>(projectFilter);
           var deletedCount = await filterRepo.StoreEvent(deleteFilterEvent).ConfigureAwait(false);
-          if (deletedCount == 0)
-          {
+          if (deletedCount > 0)
+            await FilterValidation.NotifyRaptorFilterChange(raptorProxy, log, serviceExceptionHandler, projectFilter?.FilterUid).ConfigureAwait(false);
+          else
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 12);
-          }
         }
         catch (Exception e)
         {

@@ -9,13 +9,14 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using FilterDescriptor = VSS.Productivity3D.Filter.Common.ResultHandling.FilterDescriptor;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -25,9 +26,12 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// This constructor allows us to mock raptorClient
     /// </summary>
     public UpsertFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger,
-      IServiceExceptionHandler serviceExceptionHandler, IProjectListProxy projectListProxy,
-      IFilterRepository filterRepo, IKafka producer, string kafkaTopicName) : base(configStore, logger,
-      serviceExceptionHandler, projectListProxy, filterRepo, producer, kafkaTopicName)
+      IServiceExceptionHandler serviceExceptionHandler, 
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy,
+      IFilterRepository filterRepo, IKafka producer, string kafkaTopicName) 
+      : base(configStore, logger, serviceExceptionHandler, 
+          projectListProxy, raptorProxy, 
+          filterRepo, producer, kafkaTopicName)
     {
     }
 
@@ -140,6 +144,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid)
           .ConfigureAwait(false))
         .SingleOrDefault(f => string.IsNullOrEmpty(f.Name));
+
+      if (filter == null && retrievedFilter != null)
+        await FilterValidation.NotifyRaptorFilterChange(raptorProxy, log, serviceExceptionHandler, retrievedFilter.FilterUid).ConfigureAwait(false);
+
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
     }
 
@@ -172,7 +180,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           deleteFilterEvent.FilterUID = Guid.Parse(filter.FilterUid);
           deleteFilterEvent.ActionUTC = DateTime.UtcNow;
           var deletedCount = await filterRepo.StoreEvent(deleteFilterEvent).ConfigureAwait(false);
-          if (deletedCount == 0)
+          if (deletedCount > 0)
+            await FilterValidation.NotifyRaptorFilterChange(raptorProxy, log, serviceExceptionHandler, filter.FilterUid).ConfigureAwait(false);
+          else
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 22);
         }
         catch (Exception e)

@@ -23,9 +23,12 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// This constructor allows us to mock raptorClient
     /// </summary>
     public GetFiltersExecutor(IConfigurationStore configStore, ILoggerFactory logger,
-      IServiceExceptionHandler serviceExceptionHandler, IProjectListProxy projectListProxy,
-      IFilterRepository filterRepo, IKafka producer, string kafkaTopicName) : base(configStore, logger,
-      serviceExceptionHandler, projectListProxy, filterRepo, producer, kafkaTopicName)
+      IServiceExceptionHandler serviceExceptionHandler, 
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy,
+      IFilterRepository filterRepo, IKafka producer, string kafkaTopicName) 
+      : base(configStore, logger, serviceExceptionHandler, 
+          projectListProxy, raptorProxy,
+          filterRepo, producer, kafkaTopicName)
     {
     }
 

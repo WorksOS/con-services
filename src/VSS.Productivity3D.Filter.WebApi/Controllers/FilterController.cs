@@ -28,6 +28,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
   {
     private readonly FilterRepository filterRepo;
     private readonly IProjectListProxy projectListProxy;
+    private readonly IRaptorProxy raptorProxy;
     private readonly IConfigurationStore configStore;
     private readonly ILoggerFactory logger;
     private readonly ILogger log;
@@ -39,7 +40,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Initializes a new instance of the <see cref="FilterController"/> class.
     /// </summary>
     public FilterController(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, 
-      IProjectListProxy projectListProxy, IRepository<IFilterEvent> filterRepo, IKafka producer)
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IRepository<IFilterEvent> filterRepo, IKafka producer)
     {
       this.configStore = configStore;
       this.logger = logger;
@@ -47,6 +48,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       this.serviceExceptionHandler = serviceExceptionHandler;
 
       this.projectListProxy = projectListProxy;
+      this.raptorProxy = raptorProxy;
       this.filterRepo = filterRepo as FilterRepository;
 
       this.producer = producer;
@@ -131,7 +133,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       await FilterValidation.ValidateCustomerProject(projectListProxy, log, serviceExceptionHandler, Request.Headers.GetCustomHeaders(),
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
-      var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, producer, kafkaTopicName);
+      var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(requestFull) as FilterDescriptorSingleResult;
 
       log.LogInformation($"{ToString()} Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
@@ -155,7 +157,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       await FilterValidation.ValidateCustomerProject(projectListProxy, log, serviceExceptionHandler, Request.Headers.GetCustomHeaders(),
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
-      var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, producer, kafkaTopicName);
+      var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(requestFull);
 
       log.LogInformation($"{ToString()} Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
