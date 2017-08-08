@@ -22,5 +22,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     Task<BaseDataResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders = null);
 
     Task<BaseDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, IDictionary<string, string> customHeaders = null);
+
+    Task<BaseDataResult> NotifyFilterChange(Guid filterUid, IDictionary<string, string> customHeaders = null);
   }
 }
