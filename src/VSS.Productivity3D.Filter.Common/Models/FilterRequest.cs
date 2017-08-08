@@ -3,6 +3,8 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
+using  VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
@@ -93,7 +95,10 @@ namespace VSS.Productivity3D.Filter.Common.Models
       if (filterJson == null)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 4);
 
-      // todo validate filterJson
+      // Validate filterJson...
+      var filter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
+      filter.Validate(serviceExceptionHandler);
+
     }
   }
 }
