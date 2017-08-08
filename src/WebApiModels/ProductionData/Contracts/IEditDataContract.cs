@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Contracts
 {

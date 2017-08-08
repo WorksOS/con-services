@@ -3,10 +3,9 @@ using Newtonsoft.Json;
 using SVOICDecls;
 using SVOSiteVisionDecls;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
   /// <summary>
   /// The collection of information that describe a cell passes profile, as defined by the collection of cell passes that comprise it.

@@ -1,6 +1,6 @@
-﻿using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+﻿using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Helpers
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
   public interface IProfileDesignRequestHandler
   {

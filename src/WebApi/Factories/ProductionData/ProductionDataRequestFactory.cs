@@ -6,7 +6,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.Productivity3D.WebApiModels.ProductionData.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Factories.ProductionData
 {
@@ -62,17 +61,8 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     {
       action(this);
 
-      var obj = new T
-      {
-        log = log,
-        configStore = configStore,
-        fileListProxy = fileListProxy,
-        settingsManager = settingsManager,
-        ProjectId = _projectId,
-        ProjectSettings = _projectSettings,
-        Headers = _headers,
-        ExcludedIds = _excludedIds
-      };
+      var obj = new T();
+      obj.Initialize(log, configStore, fileListProxy, settingsManager, _projectId, _projectSettings, _headers, _excludedIds);
 
       return obj;
     }

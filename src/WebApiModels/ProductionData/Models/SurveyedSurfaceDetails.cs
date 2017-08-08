@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
   /// <summary>
   /// Representation of Surveyed Surface in a Raptor project.

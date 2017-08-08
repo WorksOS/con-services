@@ -1,9 +1,8 @@
 ﻿using System;
 using VLPDDecls;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
     public class LayerIdsExecutionResult : ContractExecutionResult
     {
@@ -16,12 +15,14 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 
             for (int i =0;i<layerlist.Length;i++)
             {
-                LayerIdDetails[i] = new LayerIdDetails();
-                LayerIdDetails[i].AssetId = layerlist[i].FAssetID;
-                LayerIdDetails[i].DesignId = layerlist[i].FDesignID;
-                LayerIdDetails[i].LayerId = layerlist[i].FLayerID;
-                LayerIdDetails[i].StartDate = layerlist[i].FStartTime;
-                LayerIdDetails[i].EndDate = layerlist[i].FEndTime;
+              LayerIdDetails[i] = new LayerIdDetails
+              {
+                AssetId = layerlist[i].FAssetID,
+                DesignId = layerlist[i].FDesignID,
+                LayerId = layerlist[i].FLayerID,
+                StartDate = layerlist[i].FStartTime,
+                EndDate = layerlist[i].FEndTime
+              };
             }
             return new LayerIdsExecutionResult {LayerIdDetailsArray = LayerIdDetails};
 
@@ -30,16 +31,10 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
         /// <summary>
         /// Create example instance of MachineExecutionResult to display in Help documentation.
         /// </summary>
-        public static LayerIdsExecutionResult HelpSample
+        public static LayerIdsExecutionResult HelpSample => new LayerIdsExecutionResult
         {
-            get
-            {
-                return new LayerIdsExecutionResult
-                {
-                    LayerIdDetailsArray = new[] { LayerIdDetails.HelpSample, LayerIdDetails.HelpSample }
-                };
-            }
-        }
+          LayerIdDetailsArray = new[] { LayerIdDetails.HelpSample, LayerIdDetails.HelpSample }
+        };
     }
 
     public class LayerIdDetails
@@ -50,20 +45,13 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        public static LayerIdDetails HelpSample {
-            get
-            {
-                return new LayerIdDetails
-                {
-                         AssetId = 1137642418461469,
-                         DesignId = 1005,
-                         StartDate = DateTime.UtcNow,
-                         EndDate = DateTime.UtcNow.AddDays(1),
-                         LayerId = 42
-                       };
-            } 
-        }
+        public static LayerIdDetails HelpSample => new LayerIdDetails
+        {
+          AssetId = 1137642418461469,
+          DesignId = 1005,
+          StartDate = DateTime.UtcNow,
+          EndDate = DateTime.UtcNow.AddDays(1),
+          LayerId = 42
+        };
     }
-
-
 }
