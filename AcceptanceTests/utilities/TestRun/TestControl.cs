@@ -181,7 +181,7 @@ namespace TestRun
             IPAddress ip = new IPAddress(0x2414188f);
             Regex regex = new Regex("aaa!");
             WebRequest wr = WebRequest.Create("http://www.google.com");
-            BooleanConverter bc = new BooleanConverter();
+            BooleanConverter bc = new BooleanConverter();           
             //CustomerProject cs = new CustomerProject();
         }
 
