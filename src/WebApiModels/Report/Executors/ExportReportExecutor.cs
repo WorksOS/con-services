@@ -19,13 +19,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
   public class ExportReportExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public ExportReportExecutor()
-    {
-    }
-
-    /// <summary>
     /// Processes the summary pass counts request by passing the request to Raptor and returning the result.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -81,8 +74,8 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     private string BuildFilePath(long projectid, string callerid, string filename, bool zipped)
     {
       string prodFolder = configStore.GetValueString("RaptorProductionDataFolder");
-      return String.Format("{0}\\DataModels\\{1}\\Exports\\{2}\\{3}", prodFolder, projectid, callerid,
-          Path.GetFileNameWithoutExtension(filename) + (zipped ? ".zip" : ".csv"));
+      return
+        $"{prodFolder}\\DataModels\\{projectid}\\Exports\\{callerid}\\{Path.GetFileNameWithoutExtension(filename) + (zipped ? ".zip" : ".csv")}";
     }
   }
 }

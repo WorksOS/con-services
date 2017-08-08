@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpPost]
     public CellPassesResult Post([FromBody]CellPassesRequest request)
     {
-        return RequestExecutorContainerFactory.Build<CellPassesExecutor>(logger, raptorClient, null).Process(request) as CellPassesResult;
+        return RequestExecutorContainerFactory.Build<CellPassesExecutor>(logger, raptorClient).Process(request) as CellPassesResult;
     }
 
     // POST: api/Cells
@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public CellDatumResponse Post([FromBody]CellDatumRequest request)
     {
         request.Validate();
-        return RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger, raptorClient, null).Process(request) as CellDatumResponse;
+        return RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger, raptorClient).Process(request) as CellDatumResponse;
     }
 
 
@@ -106,7 +106,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ContractExecutionResult Post([FromBody]PatchRequest request)
     {
         request.Validate();
-        return RequestExecutorContainerFactory.Build<PatchExecutor>(logger, raptorClient, null).Process(request);
+        return RequestExecutorContainerFactory.Build<PatchExecutor>(logger, raptorClient).Process(request);
     }
 
   }

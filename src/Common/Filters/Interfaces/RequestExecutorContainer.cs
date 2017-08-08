@@ -129,79 +129,11 @@ namespace VSS.Productivity3D.Common.Interfaces
       }
     }
 
-
-
-
-
-
-
     /// <summary>
     /// Dynamically defines new error codes for the executor instance. Don't forget to clean them up after exit.
     /// </summary>
     protected virtual void ProcessErrorCodes()
     { }
-
-    /// <summary>
-    /// Injected constructor for mocking.
-    /// </summary>
-    //protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient) : this()
-    //{
-    //  this.raptorClient = raptorClient;
-    //  if (logger != null)
-    //    log = logger.CreateLogger<RequestExecutorContainer>();
-    //}
-
-    /// <summary>
-    /// Injected constructor for mocking.
-    /// </summary>
-    //protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor) : this()
-    //{
-    //  this.raptorClient = raptorClient;
-    //  this.tagProcessor = tagProcessor;
-    //  if (logger != null)
-    //    log = logger.CreateLogger<RequestExecutorContainer>();
-    //}
-
-    /// <summary>
-    /// Injected constructor for mocking.
-    /// </summary>
-    //protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore) : this()
-    //{
-    //  this.raptorClient = raptorClient;
-    //  this.tagProcessor = tagProcessor;
-    //  if (logger != null)
-    //    log = logger.CreateLogger<RequestExecutorContainer>();
-    //  this.configStore = configStore;
-    //}
-
-    /// <summary>
-    /// Injected constructor for mocking.
-    /// </summary>
-    //protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator) : this()
-    //{
-    //  this.raptorClient = raptorClient;
-    //  this.tagProcessor = tagProcessor;
-    //  if (logger != null)
-    //    log = logger.CreateLogger<RequestExecutorContainer>();
-    //  this.configStore = configStore;
-    //  this.fileRepo = fileRepo;
-    //  this.tileGenerator = tileGenerator;
-    //}
-
-    /// <summary>
-    /// Injected constructor for mocking.
-    /// </summary>
-    //protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList) : this()
-    //{
-    //  this.raptorClient = raptorClient;
-    //  this.tagProcessor = tagProcessor;
-    //  if (logger != null)
-    //    log = logger.CreateLogger<RequestExecutorContainer>();
-    //  this.configStore = configStore;
-    //  this.fileRepo = fileRepo;
-    //  this.tileGenerator = tileGenerator;
-    //  this.fileList = fileList;
-    //}
 
     public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList)
     {

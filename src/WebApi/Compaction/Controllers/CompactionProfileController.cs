@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
@@ -26,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionProfileController : Controller
+  public class CompactionProfileController : BaseController
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -58,10 +59,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IProductionDataRequestFactory requestFactory;
 
-    /// <summary>
-    /// The service exception handler
-    /// </summary>
-    private readonly IServiceExceptionHandler serviceExceptionHandler;
+
+    
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="exceptionHandler">The exception handler.</param>
     public CompactionProfileController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler)
+      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler) : base (logger.CreateLogger<BaseController>(),exceptionHandler)
     {
       this.logger = logger;
       log = logger.CreateLogger<ProfileProductionDataController>();
@@ -81,7 +81,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.projectSettingsProxy = projectSettingsProxy;
       this.requestFactory = requestFactory;
       this.raptorClient = raptorClient;
-      this.serviceExceptionHandler = exceptionHandler;
     }
 
     /// <summary>
@@ -112,23 +111,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     )
     {
       log.LogInformation("GetProfileProduction: " + Request.QueryString);
-
-      //TODO extract Customer and project from the context properly
-      //TODO let's get rid of the headers here - it looks terrible. WE need to pass context in some different way instead
-      Guid customerUid = new Guid();
-      var projectId = ((RaptorPrincipal)User).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
-      //End TODO
-
+      var projectId = this.GetProjectId(projectUid);
 
       var slicerProfileResult = requestFactory.Create<SliceProfileDataRequestHelper>(async r => r
           .ProjectId(projectId)
-          .Headers(headers)
+          .Headers(customHeaders)
           .ProjectSettings(CompactionProjectSettings.FromString(
-            await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), headers)))
-          .ExcludedIds(await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers)))
-        .CreateSlicerProfileResponse(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
-          filterUid,customerUid,headers, cutfillDesignUid);
+            await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders)))
+          .ExcludedIds(await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid)))
+        .CreateSlicerProfileRequest(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
+          filterUid,customerUid,customHeaders, cutfillDesignUid);
 
       slicerProfileResult.Validate();
 
@@ -139,38 +131,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       );
     }
 
-    /// <summary>
-    /// Withes the service exception try execute.
-    /// </summary>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns></returns>
-    //TODO make this shared
-    public TResult WithServiceExceptionTryExecute<TResult>(Func<TResult> action) where TResult:ContractExecutionResult
-    {
-      TResult result = default(TResult);
-      try
-      {
-        result = action.Invoke();
-        log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
-
-      }
-      catch (ServiceException se)
-      {
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
-      }
-      catch (Exception ex)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-          ContractExecutionStatesEnum.InternalProcessingError, ex.Message);
-      }
-      finally
-      {
-        log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
-      }
-      return result;
-    }
+   
 
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]

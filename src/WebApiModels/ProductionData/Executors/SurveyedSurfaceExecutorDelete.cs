@@ -9,16 +9,8 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   /// <summary>
   /// Executes DELETE method on Surveyed Surfaces resource.
   /// </summary>
-  /// 
   public class SurveyedSurfaceExecutorDelete : SurveyedSurfaceExecutor
   {
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public SurveyedSurfaceExecutorDelete()
-    {
-    }
-
     /// <summary>
     /// Sends a DELETE request to Production Data Server (PDS) client.
     /// </summary>

@@ -16,51 +16,50 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors
   /// TagFileExecutor for submitting tag files to Raptor
   /// </summary>
   public class TagFileExecutor : RequestExecutorContainer
+  {
+    /// <summary>
+    /// Default constructor for RequestExecutorContainer.Build
+    /// </summary>
+    public TagFileExecutor()
     {
-      /// <summary>
-      /// Default constructor for RequestExecutorContainer.Build
-      /// </summary>
-      public TagFileExecutor()
-      {
       ProcessErrorCodes();
-      }
+    }
 
-        protected sealed override void ProcessErrorCodes()
-        {
-          RaptorResult.AddTagProcessorErrorMessages(ContractExecutionStates);
-        }
+    protected sealed override void ProcessErrorCodes()
+    {
+      RaptorResult.AddTagProcessorErrorMessages(ContractExecutionStates);
+    }
 
 
-      /// <summary>
-      /// ContractExecutionResult
-      /// </summary>
-      /// <typeparam name="T"></typeparam>
-      /// <param name="item"></param>
-      /// <returns></returns>
-      protected override ContractExecutionResult ProcessEx<T>(T item)
+    /// <summary>
+    /// ContractExecutionResult
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      try
       {
-          try
-          {
-            TagFileRequest request = item as TagFileRequest;
+        TagFileRequest request = item as TagFileRequest;
 
-            TTAGProcServerProcessResult returnResult = tagProcessor.ProjectDataServerTAGProcessorClient().SubmitTAGFileToTAGFileProcessor
-                                (request.fileName,
-                                new MemoryStream(request.data),
-                                request.projectId ?? -1, 0, 0, request.machineId ?? -1,
-                                RaptorConverters.convertWGS84Fence(request.boundary));
+        TTAGProcServerProcessResult returnResult = tagProcessor.ProjectDataServerTAGProcessorClient().SubmitTAGFileToTAGFileProcessor
+                            (request.fileName,
+                            new MemoryStream(request.data),
+                            request.projectId ?? -1, 0, 0, request.machineId ?? -1,
+                            RaptorConverters.convertWGS84Fence(request.boundary));
 
-              if (returnResult == TTAGProcServerProcessResult.tpsprOK)
-                  return TAGFilePostResult.CreateTAGFilePostResult();
-              else
-                  throw new ServiceException(HttpStatusCode.BadRequest,
-                          new ContractExecutionResult(ContractExecutionStates.GetErrorNumberwithOffset((int)returnResult),
-                                  String.Format("Failed to process tagfile with error: {0}",
-                                          ContractExecutionStates.FirstNameWithOffset((int) returnResult))));
-          }
-          finally
-          {
-              ContractExecutionStates.ClearDynamic();
-          }          
+        if (returnResult == TTAGProcServerProcessResult.tpsprOK)
+          return TAGFilePostResult.CreateTAGFilePostResult();
+        else
+          throw new ServiceException(HttpStatusCode.BadRequest,
+                  new ContractExecutionResult(ContractExecutionStates.GetErrorNumberwithOffset((int)returnResult),
+                    $"Failed to process tagfile with error: {ContractExecutionStates.FirstNameWithOffset((int)returnResult)}"));
+      }
+      finally
+      {
+        ContractExecutionStates.ClearDynamic();
       }
     }
+  }
 }

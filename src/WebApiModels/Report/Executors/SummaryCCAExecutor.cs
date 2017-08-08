@@ -39,8 +39,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       {
         TCCASummary ccaSummary;
         CCARequest request = item as CCARequest;
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
-            null, null, null);
+        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
 
         bool success = raptorClient.GetCCASummary(request.projectId ?? -1,
                             ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtCCASummary),
@@ -55,7 +54,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         else
         {
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            string.Format("Failed to get requested CCA summary data with error: {0}", ContractExecutionStates.FirstNameWithOffset(ccaSummary.ReturnCode))));
+            $"Failed to get requested CCA summary data with error: {ContractExecutionStates.FirstNameWithOffset(ccaSummary.ReturnCode)}"));
         }
 
       }

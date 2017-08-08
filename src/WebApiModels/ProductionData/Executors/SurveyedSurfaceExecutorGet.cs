@@ -13,12 +13,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   public class SurveyedSurfaceExecutorGet : SurveyedSurfaceExecutor
   {
     /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public SurveyedSurfaceExecutorGet()
-    {
-    }
-    /// <summary>
     /// Sends a GET request to Production Data Server (PDS) client.
     /// </summary>
     /// <param name="item">GET request description.</param>

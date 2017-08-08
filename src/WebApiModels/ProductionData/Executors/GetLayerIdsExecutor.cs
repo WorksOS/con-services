@@ -10,16 +10,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   public class GetLayerIdsExecutor : RequestExecutorContainer
     {
-        /// <summary>
-        /// Default constructor for RequestExecutorContainer.Build
-        /// </summary>
-        public GetLayerIdsExecutor()
-        {
-        }
-
         protected override ContractExecutionResult ProcessEx<T>(T item)
         {
-            ContractExecutionResult result = null;
+          ContractExecutionResult result;
           ProjectID request = item as ProjectID;
           TDesignLayer[] layerlist;
           if (raptorClient.GetOnMachineLayers(request.projectId ?? -1, out layerlist) >= 0 && layerlist != null)

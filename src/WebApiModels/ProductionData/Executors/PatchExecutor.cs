@@ -30,9 +30,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       ContractExecutionResult result = null;
       PatchRequest request = item as PatchRequest;
 
-      MemoryStream patch;
-      int numPatches;
-
       // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
       // in due course once the breaking modifications process is agreed with BC.
       try
@@ -48,6 +45,8 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
         RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.mode, request.computeVolType);
 
+        MemoryStream patch;
+        int numPatches;
         TASNodeErrorStatus raptorResult = raptorClient.RequestDataPatchPage(request.projectId ?? -1,
                 ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
                         TASNodeCancellationDescriptorType.cdtDataPatches),

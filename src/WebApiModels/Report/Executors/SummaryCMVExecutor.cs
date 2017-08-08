@@ -97,6 +97,5 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 
       };
     }
-
   }
 }

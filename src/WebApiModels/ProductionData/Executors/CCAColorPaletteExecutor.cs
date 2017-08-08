@@ -31,9 +31,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     /// 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
 
-      if ((object)item != null)
+      if (item != null)
       {
         try
         {

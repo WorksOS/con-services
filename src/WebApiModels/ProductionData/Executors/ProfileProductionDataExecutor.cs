@@ -18,16 +18,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   /// </summary>
   public class ProfileProductionDataExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public ProfileProductionDataExecutor()
-    {
-      ProcessErrorCodes();
-    }
     private ProfileResult performProductionDataProfilePost(ProfileProductionDataRequest request)
     {
-      MemoryStream ms = null;
+      MemoryStream memoryStream;
 
       if (!RaptorConverters.DesignDescriptor(request.alignmentDesign).IsNull())
       {
@@ -38,12 +31,12 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
               request.startStation ?? ValidationConstants.MIN_STATION,
               request.endStation ?? ValidationConstants.MIN_STATION,
               RaptorConverters.DesignDescriptor(request.alignmentDesign),
-              RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId, null, null),
+              RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
               RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
               RaptorConverters.DesignDescriptor(request.alignmentDesign),
               request.returnAllPassesAndLayers);
 
-        ms = raptorClient.GetAlignmentProfile(args);
+        memoryStream = raptorClient.GetAlignmentProfile(args);
       }
       else
       {
@@ -58,28 +51,26 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
               positionsAreGrid,
               startPt,
               endPt,
-              RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId, null, null),
+              RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
               RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
               RaptorConverters.DesignDescriptor(request.alignmentDesign),
               request.returnAllPassesAndLayers);
 
-        ms = raptorClient.GetProfile(args);
+        memoryStream = raptorClient.GetProfile(args);
       }
 
-      if (ms != null)
+      if (memoryStream != null)
       {
-        return ProfilesHelper.convertProductionDataProfileResult(ms, (Guid)(request.callId ?? Guid.NewGuid()));
+        return ProfilesHelper.convertProductionDataProfileResult(memoryStream, request.callId ?? Guid.NewGuid());
       }
-      else
-      {
-        // TODO: return appropriate result
-        return null;
-      }
+      
+      // TODO: return appropriate result
+      return null;
     }
 
       protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
       try
       {
         ProfileResult profile = performProductionDataProfilePost(item as ProfileProductionDataRequest);

@@ -18,9 +18,10 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     {
       ProcessErrorCodes();
     }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
         try
         {
           TDesignName[] designNames;
@@ -65,13 +66,13 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       //TODO: layer number from Raptor should be an int not a long. Needs fixing in Shims.
       List<ProductionDataEdit> dataEdits =
         (from m in matches select ProductionDataEdit.CreateProductionDataEdit(
-           m.d.FMachineID, m.d.FStartDate.ToDateTime(), m.d.FEndDate.ToDateTime(), m.d.FName, (int)m.l.FLayerID)).ToList();
+           m.d.FMachineID, m.d.FStartDate.ToDateTime(), m.d.FEndDate.ToDateTime(), m.d.FName, m.l.FLayerID)).ToList();
 
       var layerOnly =
         (from l in layers
          where !layerMatches.Contains(l)
          select ProductionDataEdit.CreateProductionDataEdit(
-         l.FAssetID, l.FStartTime.ToDateTime(), l.FEndTime.ToDateTime(), null, (int)l.FLayerID)).ToList();
+         l.FAssetID, l.FStartTime.ToDateTime(), l.FEndTime.ToDateTime(), null, l.FLayerID)).ToList();
 
       var designOnly =
         (from d in designNames

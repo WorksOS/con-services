@@ -19,14 +19,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
   /// </summary>
   public class SummaryThicknessExecutor : RequestExecutorContainer
   {
-
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public SummaryThicknessExecutor()
-    {
-    }
-
     private BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
       return BoundingBox3DGrid.CreatBoundingBox3DGrid(

@@ -17,13 +17,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {
   public class ElevationStatisticsExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public ElevationStatisticsExecutor()
-    {
-    }
-
     private BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
       return BoundingBox3DGrid.CreatBoundingBox3DGrid(

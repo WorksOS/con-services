@@ -18,13 +18,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
   public class DetailedCMVExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public DetailedCMVExecutor()
-    {
-    }
-
-    /// <summary>
     /// Processes the detailed CMV request by passing the request to Raptor and returning the result.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -32,7 +25,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     /// <returns>a CMVDetailedResult if successful</returns>     
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-       ContractExecutionResult result = null;
+       ContractExecutionResult result;
       TCMVDetails cmvDetails;
       CMVRequest request = item as CMVRequest;
       TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,

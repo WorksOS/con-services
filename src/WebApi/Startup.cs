@@ -1,37 +1,26 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Swashbuckle.Swagger.Model;
 using System;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.WebApi.Factories.ProductionData;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.Productivity3D.WebApiModels.Notification.Helpers;
-using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.WebApi
 {
   /// <summary>
   /// 
   /// </summary>
-  public class Startup
+  public partial class Startup
   {
-    private readonly string loggerRepoName = "WebApi";
+    private const string loggerRepoName = "WebApi";
     private readonly bool isDevEnv;
     private IServiceCollection serviceCollection;
 
@@ -96,31 +85,15 @@ namespace VSS.Productivity3D.WebApi
           Description = "API for 3D compaction and volume data",
           TermsOfService = "None"
         });
-        string path = isDevEnv ? "bin/Debug/net47/" : string.Empty;
+
+        var path = isDevEnv ? "bin/Debug/net47/" : string.Empty;
         options.IncludeXmlComments(path + "VSS.Productivity3D.WebApi.xml");
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
       //Swagger documentation can be viewed with http://localhost:5000/swagger/ui/index.html   
 
-      //Configure application services
-      services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>();
-      services.AddScoped<IASNodeClient, ASNodeClient>();
-      services.AddScoped<ITagProcessor, TagProcessor>();
-      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
-      services.AddSingleton<IProjectListProxy, ProjectListProxy>();
-      services.AddSingleton<IFileListProxy, FileListProxy>();
-      services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddTransient<IFileRepository, FileRepository>();
-      services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
-      services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddTransient<ITileGenerator, TileGenerator>();
-      services.AddSingleton<IElevationExtentsProxy, ElevationExtentsProxy>();
-      services.AddScoped<ICompactionSettingsManager, CompactionSettingsManager>();
-      services.AddScoped<IProductionDataRequestFactory, ProductionDataRequestFactory>();
-
-      serviceCollection = services;
+      ConfigureApplicationServices(services);
     }
 
     /// <summary>
@@ -149,7 +122,6 @@ namespace VSS.Productivity3D.WebApi
       app.UseSwagger();
       app.UseSwaggerUi();
 
-
       //Check if the configuration is correct and we are able to connect to Raptor
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
       log.LogInformation("Testing Raptor configuration with sending config request");
@@ -166,7 +138,6 @@ namespace VSS.Productivity3D.WebApi
         log.LogCritical("Can't talk to Raptor for some reason - check configuration");
         Environment.Exit(138);
       }
-
     }
   }
 }

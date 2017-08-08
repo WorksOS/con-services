@@ -1,6 +1,5 @@
 ﻿using ASNode.SpeedSummary.RPC;
 using ASNodeDecls;
-using BoundingExtents;
 using SVOICOptionsDecls;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,6 @@ using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
@@ -20,13 +18,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
   /// </summary>
   public class SummarySpeedExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public SummarySpeedExecutor()
-    {
-    }
-
     private SummarySpeedResult ConvertResult(TASNodeSpeedSummaryResult result)
     {
 
