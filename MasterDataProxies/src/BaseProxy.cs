@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
