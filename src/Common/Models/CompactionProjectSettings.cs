@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 using System.Linq;
-using Newtonsoft.Json;
-using VSS.Productivity3D.Common.Contracts;
+using System.Net;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 
@@ -263,7 +265,34 @@ namespace VSS.Productivity3D.Common.Models
           useDefaultPassCountTargets = true,
           customPassCountTargets = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 }
         };
-      
+
+
+    /// <summary>
+    /// Restore settings from a string
+    /// </summary>
+    /// <param name="json">The json.</param>
+    /// <returns></returns>
+    public static CompactionProjectSettings FromString(string json)
+    {
+      CompactionProjectSettings settings;
+      if (!string.IsNullOrEmpty(json))
+      {
+        try
+        {
+          settings = JsonConvert.DeserializeObject<CompactionProjectSettings>(json);
+          settings.Validate();
+        }
+        catch (Exception)
+        {
+          settings = DefaultSettings;
+        }
+      }
+      else
+      {
+        settings = DefaultSettings;
+      }
+      return settings;
+    }
 
     /// <summary>
     /// Validates all properties
@@ -271,8 +300,7 @@ namespace VSS.Productivity3D.Common.Models
     public void Validate()
     {
       var validator = new DataAnnotationsValidator();
-      ICollection<ValidationResult> results;
-      validator.TryValidate(this, out results);
+      validator.TryValidate(this, out ICollection<ValidationResult> results);
       if (results.Any())
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, results.FirstOrDefault().ErrorMessage));

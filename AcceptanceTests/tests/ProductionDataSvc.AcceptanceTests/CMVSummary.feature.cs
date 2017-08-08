@@ -158,10 +158,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "MinCmvPercentTooSmall")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "MinCmvPercentTooSmall")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void CMVSummary_BadRequest_MinCmvPercentTooSmall()
         {
-            this.CMVSummary_BadRequest("MinCmvPercentTooSmall", "400", "-2", ((string[])(null)));
+            this.CMVSummary_BadRequest("MinCmvPercentTooSmall", "400", "-1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -170,10 +170,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "MaxCmvPercentTooLarge")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "MaxCmvPercentTooLarge")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void CMVSummary_BadRequest_MaxCmvPercentTooLarge()
         {
-            this.CMVSummary_BadRequest("MaxCmvPercentTooLarge", "400", "-2", ((string[])(null)));
+            this.CMVSummary_BadRequest("MaxCmvPercentTooLarge", "400", "-1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -182,10 +182,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "MinCmvPercentLargerThanMaxPercent")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "MinCmvPercentLargerThanMaxPercent")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void CMVSummary_BadRequest_MinCmvPercentLargerThanMaxPercent()
         {
-            this.CMVSummary_BadRequest("MinCmvPercentLargerThanMaxPercent", "400", "-2", ((string[])(null)));
+            this.CMVSummary_BadRequest("MinCmvPercentLargerThanMaxPercent", "400", "-1", ((string[])(null)));
         }
     }
 }

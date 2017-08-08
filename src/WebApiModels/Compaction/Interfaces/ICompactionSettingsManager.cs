@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
@@ -17,6 +14,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Interfaces
       ElevationType? elevationType,
       int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds);
 
+
+    Filter CompactionFilter(string filterUid, string customerUid, string projectUid,
+      IDictionary<string, string> headers);
+
     CMVSettings CompactionCmvSettings(CompactionProjectSettings projectSettings);
 
     MDPSettings CompactionMdpSettings(CompactionProjectSettings projectSettings);
@@ -28,6 +29,5 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Interfaces
 
     List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents,
       CompactionProjectSettings projectSettings);
-
   }
 }

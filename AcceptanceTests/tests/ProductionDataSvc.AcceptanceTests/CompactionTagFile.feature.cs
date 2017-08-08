@@ -90,8 +90,8 @@ this.FeatureBackground();
 #line 8
  testRunner.When("I POST a compaction tag file with code 100 from the repository", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 9
- testRunner.Then("the Tag File Service response should contain Code 108 and Message \"Failed to proc" +
-                    "ess tagfile with error: OnChooseMachine. Machine Subscriptions Invalid.\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the Tag File Service response should contain Code 2008 and Message \"Failed to pro" +
+                    "cess tagfile with error: OnChooseMachine. Machine Subscriptions Invalid.\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

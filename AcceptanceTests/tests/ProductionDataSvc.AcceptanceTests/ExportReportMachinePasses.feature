@@ -74,6 +74,6 @@ Scenario Outline: ExportReportMachinePasses - Bad Request
 	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
 	| RequestName                       | ProjectUID                           | StartDate  | EndDate    | CoordType | OutputType | RestrictOutput | RawDataOutput | ErrorCode | ErrorMessage                                         |
-  | InvalidCoordType                  | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | 2         | 0          | false          | false         | -2        | Invalid coordinates type for export report           |
-  | InvalidOutputType                 | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | 0         | 5          | false          | false         | -2        | Invalid output type for export report                |
-  | InvalidOutputTypeForMachinePasses | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | 0         | 2          | false          | false         | -2        | Invalid output type for machine passes export report |
+  | InvalidCoordType                  | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | 2         | 0          | false          | false         | -1        | Invalid coordinates type for export report           |
+  | InvalidOutputType                 | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | 0         | 5          | false          | false         | -1        | Invalid output type for export report                |
+  | InvalidOutputTypeForMachinePasses | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | 0         | 2          | false          | false         | -1        | Invalid output type for machine passes export report |

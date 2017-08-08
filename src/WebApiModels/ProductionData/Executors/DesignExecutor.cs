@@ -1,22 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using DesignProfilerDecls;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 using System.IO;
 using System.Net;
-using DesignProfilerDecls;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using VSS.Productivity3D.Common.Executors;
-using VSS.Productivity3D.Common.Models;
 using VLPDDecls;
-using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
@@ -27,24 +20,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   /// 
   public class DesignExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="raptorClient"></param>
-    /// <param name="designs"></param>
-    public DesignExecutor(ILoggerFactory logger, IASNodeClient raptorClient, List<FileData> fileList) : 
-      base(logger, raptorClient, null, null, null, null, fileList)
-    {
-    }
-
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public DesignExecutor()
-    {
-    }
-
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
@@ -68,7 +43,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
           for (var i = 0; i < fileList.Count; i++)
           {
-            log.LogDebug(string.Format("Getting GeoJson design boundary from Raptor for file: {0}", fileList[i].Name));
+            log.LogDebug($"Getting GeoJson design boundary from Raptor for file: {fileList[i].Name}");
 
             MemoryStream memoryStream;
             TDesignProfilerRequestResult designProfilerResult;
@@ -100,7 +75,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
             {
               throw new ServiceException(HttpStatusCode.InternalServerError,
                 new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                  string.Format("Failed to get design boundary for file: {0}", fileList[i].Name)));
+                  $"Failed to get design boundary for file: {fileList[i].Name}"));
             }
           }
 
@@ -118,12 +93,5 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
         ContractExecutionStates.ClearDynamic();
       }
     }
-
-/*
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the synchronous form of this method");
-    }
-*/
   }
 }

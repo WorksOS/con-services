@@ -39,7 +39,7 @@ Scenario: Dxf Tile - No FileType
   And a bbox "-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625" and a width "256" and a height "256"
   And a fileType ""
 	When I request a Dxf Tile Expecting BadRequest
-	Then I should get error code -2 and message "Missing file type"
+	Then I should get error code -1 and message "Missing file type"
 
 Scenario: Dxf Tile - Bad FileType 
 	Given the Dxf Tile service URI "/api/v2/compaction/lineworktiles"
@@ -47,7 +47,7 @@ Scenario: Dxf Tile - Bad FileType
   And a bbox "-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625" and a width "256" and a height "256"
   And a fileType "SurveyedSurface"
 	When I request a Dxf Tile Expecting BadRequest
-  Then I should get error code -2 and message "Unsupported file type SurveyedSurface"
+  Then I should get error code -1 and message "Unsupported file type SurveyedSurface"
 
 
  

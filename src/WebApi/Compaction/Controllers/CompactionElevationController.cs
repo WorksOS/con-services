@@ -2,16 +2,18 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
@@ -22,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting elevation data from Raptor
   /// </summary>
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionElevationController : Controller
+  public class CompactionElevationController : BaseController
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -72,7 +74,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="settingsManager">Compaction settings manager</param>
     public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, 
       IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler) : base(logger.CreateLogger<BaseController>(), exceptionHandler)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -127,8 +129,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var headers = Request.Headers.GetCustomHeaders();
-        var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
-        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
+        var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid,  log);
+        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
         Filter filter = settingsManager.CompactionFilter(
           startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
           this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -144,8 +146,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
-        throw;
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
       }
       finally
       {
@@ -170,14 +172,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetProjectStatistics: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid,
-        Request.Headers.GetCustomHeaders());
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
       request.Validate();
       try
       {
         var returnResult =
-          RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null)
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
             .Process(request) as ProjectStatisticsResult;
         log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
@@ -185,15 +186,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
-        throw;
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
       }
       finally
       {
         log.LogInformation("GetProjectStatistics returned: " + Response.StatusCode);
       }
     }
-    #endregion
 
+    #endregion
   }
 }

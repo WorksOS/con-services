@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
@@ -96,7 +97,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         statsRequest.Validate();
 
         result =
-          RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient)
+          RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient)
             .Process(statsRequest) as ElevationStatisticsResult;
 
         //Check for 'No elevation range' result

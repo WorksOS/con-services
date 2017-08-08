@@ -1,6 +1,5 @@
-﻿using System;
-using Newtonsoft.Json;
-using VSS.Productivity3D.Common.Interfaces;
+﻿using Newtonsoft.Json;
+using System;
 using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Models
@@ -8,7 +7,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
   /// <summary>
   /// The request representation used for a summary CCA request.
   /// </summary>
-  public class CCARequest : ProjectID, IValidatable
+  public class CCARequest : ProjectID
   {
     /// <summary>
     /// An identifying string from the caller
@@ -67,20 +66,14 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// <summary>
     /// Create example instance of CCARequest to display in Help documentation.
     /// </summary>
-    public new static CCARequest HelpSample
+    public new static CCARequest HelpSample => new CCARequest
     {
-      get
-      {
-        return new CCARequest
-        {
-          projectId = 735,
-          callId = null,
-          liftBuildSettings = LiftBuildSettings.HelpSample,
-          filter = Filter.HelpSample,
-          filterID = 0
-        };
-      }
-    }
+      projectId = 735,
+      callId = null,
+      liftBuildSettings = LiftBuildSettings.HelpSample,
+      filter = Filter.HelpSample,
+      filterID = 0
+    };
 
     /// <summary>
     /// Validates all properties
@@ -88,10 +81,9 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     public override void Validate()
     {
       base.Validate();
-      if (liftBuildSettings != null)
-        liftBuildSettings.Validate();
-      if (filter != null)
-        filter.Validate();
+
+      liftBuildSettings?.Validate();
+      filter?.Validate();
     }
   }
 }

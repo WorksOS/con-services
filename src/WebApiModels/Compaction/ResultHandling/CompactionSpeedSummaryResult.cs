@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;

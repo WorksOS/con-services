@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
@@ -13,6 +15,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -120,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, coordSystem, userUnits, fileId, fileType);
       request.Validate();
-      var executor = RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
+      var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       //Do we need to validate fileUid ?
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
@@ -153,7 +156,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, UnitsTypeEnum.None, fileId, fileType);
       request.Validate();
-      var executor = RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
+      var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, Request.Headers.GetCustomHeaders());
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);

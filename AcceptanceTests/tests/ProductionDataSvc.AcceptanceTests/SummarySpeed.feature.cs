@@ -146,11 +146,11 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummarySpeed")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "MissingSpeedTarget")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "MissingSpeedTarget")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Target speed must be specified for the request.")]
         public virtual void SummarySpeed_BadRequest_MissingSpeedTarget()
         {
-            this.SummarySpeed_BadRequest("MissingSpeedTarget", "-2", "Target speed must be specified for the request.", ((string[])(null)));
+            this.SummarySpeed_BadRequest("MissingSpeedTarget", "-1", "Target speed must be specified for the request.", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -158,11 +158,11 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummarySpeed")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "MinSpeedTargetLargerThanMaxSpeedTarget")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "MinSpeedTargetLargerThanMaxSpeedTarget")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Target speed minimum must be less than target speed maximum")]
         public virtual void SummarySpeed_BadRequest_MinSpeedTargetLargerThanMaxSpeedTarget()
         {
-            this.SummarySpeed_BadRequest("MinSpeedTargetLargerThanMaxSpeedTarget", "-2", "Target speed minimum must be less than target speed maximum", ((string[])(null)));
+            this.SummarySpeed_BadRequest("MinSpeedTargetLargerThanMaxSpeedTarget", "-1", "Target speed minimum must be less than target speed maximum", ((string[])(null)));
         }
     }
 }

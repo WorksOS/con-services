@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
@@ -50,9 +51,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
     public ConfigResult Get()
     {
-      return RequestExecutorContainer.Build<ConfigExecutor>(logger, raptorClient, null).Process(new object()) as ConfigResult;
+      return RequestExecutorContainerFactory.Build<ConfigExecutor>(logger, raptorClient).Process(new object()) as ConfigResult;
     }
-
-
   }
 }
