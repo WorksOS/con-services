@@ -135,5 +135,20 @@ namespace MockProjectWebApi.Controllers
       Console.WriteLine(message);
       return res;
     }
+
+    /// <summary>
+    /// Dummies the notification that a filterUid has been updated/deleted
+    /// </summary>
+    [Route("api/v2/notification/filterchange")]
+    [HttpGet]
+    public BaseDataResult DummyNotifyFilterChangeGet(
+      [FromQuery] Guid filterUid
+      )
+    {
+      var res = new BaseDataResult();
+      var message = $"DummyNotifyFilterChangeGet: res {res}. filterUid {filterUid}";
+      Console.WriteLine(message);
+      return res;
+    }
   }
 }
