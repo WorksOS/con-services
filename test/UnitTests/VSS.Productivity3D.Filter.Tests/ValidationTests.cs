@@ -16,63 +16,63 @@ namespace VSS.Productivity3D.Filter.Tests
   [TestClass]
   public class ValidationTests : ExecutorBaseTests
   {
-    readonly string _custUid = Guid.NewGuid().ToString();
-    readonly string _userUid = Guid.NewGuid().ToString();
-    readonly string _projectUid = Guid.NewGuid().ToString();
-    readonly string _filterUid = Guid.NewGuid().ToString();
-    readonly string _name = "blah";
-    readonly string _filterJson = "theJsonString";
+    private readonly string _custUid = Guid.NewGuid().ToString();
+    private readonly string _userUid = Guid.NewGuid().ToString();
+    private readonly string _projectUid = Guid.NewGuid().ToString();
+    private readonly string _filterUid = Guid.NewGuid().ToString();
+    private const string Name = "blah";
+    private const string FilterJson = "theJsonString";
 
-    private static IServiceExceptionHandler _serviceExceptionHandler;
+    private IServiceExceptionHandler _serviceExceptionHandler;
 
     [TestInitialize]
     public void Initialize()
     {
       _serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
     }
-    
+
     [TestMethod]
     public void FilterRequestValidation_MissingCustomerUid()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest("sfgsdfsf", false, _userUid, _projectUid, _filterUid, _name, _filterJson);
+        FilterRequestFull.CreateFilterFullRequest("sfgsdfsf", false, _userUid, _projectUid, _filterUid, Name, FilterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2027"));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid customerUid.", StringComparison.Ordinal));
+      StringAssert.Contains(ex.GetContent, "2027");
+      StringAssert.Contains(ex.GetContent, "Invalid customerUid.");
     }
 
     [TestMethod]
     public void FilterRequestValidation_MissingUserUid()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(_custUid, false, "", _projectUid, _filterUid, _name, _filterJson);
+        FilterRequestFull.CreateFilterFullRequest(_custUid, false, "", _projectUid, _filterUid, Name, FilterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2028"));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid userUid.", StringComparison.Ordinal));
+      StringAssert.Contains(ex.GetContent, "2028");
+      StringAssert.Contains(ex.GetContent, "Invalid userUid.");
     }
 
     [TestMethod]
     public void FilterRequestValidation_MissingProjectUid()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, null, _filterUid, _name, _filterJson);
+        FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, null, _filterUid, Name, FilterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2001"));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid projectUid.", StringComparison.Ordinal));
+      StringAssert.Contains(ex.GetContent, "2001");
+      StringAssert.Contains(ex.GetContent, "Invalid projectUid.");
     }
 
     [TestMethod]
     public void FilterRequestValidation_InvalidFilterUid()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, _projectUid, "this is so wrong", _name, _filterJson);
+        FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, _projectUid, "this is so wrong", Name, FilterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2002"));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid filterUid.", StringComparison.Ordinal));
+      StringAssert.Contains(ex.GetContent, "2002");
+      StringAssert.Contains(ex.GetContent, "Invalid filterUid.");
     }
 
     [TestMethod]
@@ -81,33 +81,33 @@ namespace VSS.Productivity3D.Filter.Tests
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, _projectUid, "", _name, _filterJson);
+        FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, _projectUid, "", Name, FilterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2002"));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid filterUid.", StringComparison.Ordinal));
+      StringAssert.Contains(ex.GetContent, "2002");
+      StringAssert.Contains(ex.GetContent, "Invalid filterUid.");
     }
 
     [TestMethod]
     public void FilterRequestValidation_InvalidName()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, _projectUid, _filterUid, null, _filterJson);
+        FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, _projectUid, _filterUid, null, FilterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2003"));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid name. Should not be null.", StringComparison.Ordinal));
+      StringAssert.Contains(ex.GetContent, "2003");
+      StringAssert.Contains(ex.GetContent, "Invalid name. Should not be null.");
     }
 
     [TestMethod]
     public void FilterRequestValidation_InvalidFilterJson()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, _projectUid, _filterUid, _name, null);
+        FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, _projectUid, _filterUid, Name, null);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2004"));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid filterJson. Should not be null.", StringComparison.Ordinal));
+      StringAssert.Contains(ex.GetContent, "2004");
+      StringAssert.Contains(ex.GetContent, "Invalid filterJson. Should not be null.");
     }
 
     [TestMethod]
@@ -123,11 +123,11 @@ namespace VSS.Productivity3D.Filter.Tests
     [TestMethod]
     public void FilterRequestValidation_Should_fail_When_supplied_string_is_invalid_json()
     {
-      var requestFull = FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, _projectUid, _filterUid, _name, "de blah");
+      var requestFull = FilterRequestFull.CreateFilterFullRequest(_custUid, false, _userUid, _projectUid, _filterUid, Name, "de blah");
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2004"));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Invalid filterJson", StringComparison.Ordinal));
+      StringAssert.Contains(ex.GetContent, "2004");
+      StringAssert.Contains(ex.GetContent, "Invalid filterJson");
     }
 
     [TestMethod]
@@ -160,8 +160,8 @@ namespace VSS.Productivity3D.Filter.Tests
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await FilterValidation.ValidateCustomerProject(projectListProxy.Object, log, _serviceExceptionHandler,
         customHeaders, _custUid, _projectUid).ConfigureAwait(false));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2008"));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Validation of Customer/Project failed. Not allowed.", StringComparison.Ordinal));
+      StringAssert.Contains(ex.GetContent, "2008");
+      StringAssert.Contains(ex.GetContent, "Validation of Customer/Project failed. Not allowed.");
     }
   }
 }
