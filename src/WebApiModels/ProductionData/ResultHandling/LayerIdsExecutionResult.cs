@@ -1,5 +1,6 @@
 ﻿using System;
 using VLPDDecls;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling

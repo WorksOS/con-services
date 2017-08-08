@@ -1,25 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ASNode.ExportProductionDataCSV.RPC;
+using BoundingExtents;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Linq;
-using ASNode.ExportProductionDataCSV.RPC;
-using BoundingExtents;
 using VLPDDecls;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Compaction.Controllers;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Contracts;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
@@ -32,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
   /// 
   /// </summary>
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-  public class ReportController : Controller, IReportSvc
+  public class ReportController : BaseController, IReportSvc
   {
     #region privates
     /// <summary>
@@ -87,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="settingsManager">Compaction settings manager</param>
     public ReportController(IASNodeClient raptorClient, ILoggerFactory logger,
       IConfigurationStore configStore, IFileListProxy fileListProxy, IPreferenceProxy prefProxy,
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler) : base(logger.CreateLogger<BaseController>(), exceptionHandler)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -102,10 +103,20 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Creates an instance of the CMVRequest class and populate it with data.
     /// </summary>
-    /// <returns></returns>
+    /// <param name="projectUid">Project unique identifier.</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC.</param>
+    /// <param name="coordType">Either Northing/Easting or Latitude/Longitude.</param>
+    /// <param name="exportType">Export production data a surface .TTM file, machine passes export or machine passes export for an import to VETA.</param>
+    /// <param name="fileName">Output file name.</param>
+    /// <param name="restrictSize">Output .CSV file is restricted to 65535 rows if it is true.</param>
+    /// <param name="rawData">Column headers in an output .CSV file's are in the dBase format.</param>
+    /// <param name="outputType">Either all passes/last for pass machine passes export or all passes/final pass for export for VETA</param>
+    /// <param name="machineNames">Comma-separated list of machine names.</param>
+    /// <param name="tolerance">It is used in export to a surface .TTM file.</param>
+    /// <returns>An instance of the ExportReport class.</returns>
     private async Task<ExportReport> GetExportReportRequest(
-      long? projectId,
-      Guid? projectUid,
+      Guid projectUid,
       DateTime? startUtc,
       DateTime? endUtc,
       CoordTypes coordType,
@@ -115,15 +126,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       bool rawData,
       OutputTypes outputType,
       string machineNames,
-      double tolerance)
+      double tolerance = 0.0)
     {
-      if (!projectId.HasValue)
-      {
-        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      }
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
 
       var headers = Request.Headers.GetCustomHeaders();
-      var userPref = prefProxy.GetUserPreferences(headers);
+      var userPref = await prefProxy.GetUserPreferences(headers);
 
       if (userPref == null)
       {
@@ -131,10 +139,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Pass count settings required for detailed pass count report"));
       }
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid,  log);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
 
       // Filter filter = settingsManager.CompactionFilter(startUtc, endUtc, null, null, null, null, this.GetMachines(assetId, machineName, isJohnDoe), null);
       Filter filter = settingsManager.CompactionFilter(null, null, null, null, null, null, null, excludedIds);
@@ -144,12 +152,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       if (exportType == ExportTypes.kSurfaceExport)
       {
-        raptorClient.GetDataModelExtents(projectId.Value,
+        raptorClient.GetDataModelExtents(projectId,
           RaptorConverters.convertSurveyedSurfaceExlusionList(excludedIds), out projectExtents);
       }
       else
       {
-        TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(projectId.Value);
+        TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(projectId);
 
         if (machineDetails != null)
         {
@@ -168,9 +176,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         }
       }
 
+      // Set User Preferences' time zone to the project's one and retriev ...
+      var projectDescriptor = (User as RaptorPrincipal).GetProject(projectUid);
+      userPref.Timezone = projectDescriptor.projectTimeZone;
 
       return ExportReport.CreateExportReportRequest(
-        projectId.Value,
+        projectId,
         liftSettings,
         filter,
         -1,
@@ -191,7 +202,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         machineList,
         false,
         fileName,
-        exportType);
+        exportType,
+        this.convertUserPreferences(userPref));
     }
     #endregion
 
@@ -225,7 +237,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     public ExportResult PostExportCSVReport([FromBody] ExportGridCSV request)
     {
       request.Validate();
-      return RequestExecutorContainer.Build<ExportGridCSVExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
+      return RequestExecutorContainerFactory.Build<ExportGridCSVExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
     }
     #endregion
 
@@ -236,8 +248,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// 
     /// </summary>
     /// <param name="request"></param>
-    /// <returns></returns>
-    /// 
     [PostRequestVerifier]
     [Route("api/v1/export")]
     [HttpPost]
@@ -246,22 +256,22 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
+        RequestExecutorContainerFactory.Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
           .Process(request) as ExportResult;
     }
 
     /// <summary>
     /// Gets an export of 3D project data in .TTM file format report.
     /// </summary>
-    /// <returns></returns>
-    /// 
-    [ProjectIdVerifier]
+    /// <param name="projectUid">Project unique identifier.</param>
+    /// <param name="fileName">Output file name.</param>
+    /// <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
+    /// <returns>An instance of the ExportResult class.</returns>
     [ProjectUidVerifier]
     [Route("api/v2/export/surface")]
     [HttpGet]
     public async Task<ExportResult> GetExportReportSurface(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] double? tolerance
     )
@@ -271,7 +281,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       tolerance = tolerance ?? SURFACE_EXPORT_TOLLERANCE;
 
       ExportReport request = await GetExportReportRequest(
-        projectId,
         projectUid,
         null, //startUtc,
         null, //endUtc,
@@ -286,21 +295,26 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       request.Validate();
 
-      return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
+      return RequestExecutorContainerFactory.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
     }
 
     /// <summary>
     /// Gets an export of production data in cell grid format report.
     /// </summary>
-    /// <returns></returns>
-    /// 
-    [ProjectIdVerifier]
+    /// <param name="projectUid">Project unique identifier.</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC.</param>
+    /// <param name="coordType">Either Northing/Easting or Latitude/Longitude.</param>
+    /// <param name="outputType">Either all passes/last for pass machine passes export or all passes/final pass for export for VETA</param>
+    /// <param name="restrictOutput">Output .CSV file is restricted to 65535 rows if it is true.</param>
+    /// <param name="rawDataOutput">Column headers in an output .CSV file's are in the dBase format.</param>
+    /// <param name="fileName">Output file name.</param>
+    /// <returns>An instance of the ExportResult class.</returns>
     [ProjectUidVerifier]
     [Route("api/v2/export/machinepasses")]
     [HttpGet]
     public async Task<ExportResult> GetExportReportMachinePasses(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] int coordType,
@@ -313,7 +327,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
       ExportReport request = await GetExportReportRequest(
-        projectId,
         projectUid,
         startUtc,
         endUtc,
@@ -323,26 +336,27 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         restrictOutput,
         rawDataOutput,
         (OutputTypes)outputType,
-        "",
-        0.0);
+        "");
 
       request.Validate();
 
-      return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
+      return RequestExecutorContainerFactory.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
     }
 
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
     /// </summary>
-    /// <returns></returns>
-    /// 
-    [ProjectIdVerifier]
+    /// <param name="projectUid">Project unique identifier.</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC.</param>
+    /// <param name="fileName">Output file name.</param>
+    /// <param name="machineNames">Comma-separated list of machine names.</param>
+    /// <returns>An instance of the ExportResult class.</returns>
     [ProjectUidVerifier]
     [Route("api/v2/export/veta")]
     [HttpGet]
     public async Task<ExportResult> GetExportReportVeta(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] string fileName,
@@ -351,7 +365,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogInformation("GetExportReportVeta: " + Request.QueryString);
 
       ExportReport request = await GetExportReportRequest(
-        projectId,
         projectUid,
         startUtc,
         endUtc,
@@ -361,12 +374,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         false,
         true,
         OutputTypes.etVedaAllPasses,
-        machineNames,
-        0.0);
+        machineNames);
 
       request.Validate();
 
-      return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
+      return RequestExecutorContainerFactory.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
     }
 
     /// <summary>
@@ -389,7 +401,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainer.Build<SummaryPassCountsExecutor>(logger, raptorClient, null).Process(request)
+        RequestExecutorContainerFactory.Build<SummaryPassCountsExecutor>(logger, raptorClient).Process(request)
           as PassCountSummaryResult;
     }
 
@@ -421,7 +433,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             "Pass count settings required for detailed pass count report"));
       }
       return
-        RequestExecutorContainer.Build<DetailedPassCountExecutor>(logger, raptorClient, null).Process(request)
+        RequestExecutorContainerFactory.Build<DetailedPassCountExecutor>(logger, raptorClient).Process(request)
           as PassCountDetailedResult;
     }
 
@@ -448,7 +460,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainer.Build<SummaryCMVExecutor>(logger, raptorClient, null).Process(request) as
+        RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(logger, raptorClient).Process(request) as
           CMVSummaryResult;
 
     }
@@ -472,7 +484,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainer.Build<DetailedCMVExecutor>(logger, raptorClient, null).Process(request) as
+        RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(logger, raptorClient).Process(request) as
           CMVDetailedResult;
 
     }
@@ -498,7 +510,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null).Process(request)
+        RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient).Process(request)
           as ProjectStatisticsResult;
     }
 
@@ -518,7 +530,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainer.Build<SummaryVolumesExecutor>(logger, raptorClient).Process(request) as
+        RequestExecutorContainerFactory.Build<SummaryVolumesExecutor>(logger, raptorClient).Process(request) as
           SummaryVolumesResult;
     }
 
@@ -540,7 +552,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       parameters.Validate();
       return
-        RequestExecutorContainer.Build<SummaryThicknessExecutor>(logger, raptorClient, null).Process(parameters)
+        RequestExecutorContainerFactory.Build<SummaryThicknessExecutor>(logger, raptorClient).Process(parameters)
           as SummaryThicknessResult;
     }
 
@@ -563,7 +575,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       parameters.Validate();
       return
-        RequestExecutorContainer.Build<SummarySpeedExecutor>(logger, raptorClient, null).Process(parameters) as
+        RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(logger, raptorClient).Process(parameters) as
           SummarySpeedResult;
     }
 
@@ -586,7 +598,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       parameters.Validate();
       return
-        RequestExecutorContainer.Build<CMVChangeSummaryExecutor>(logger, raptorClient, null).Process(parameters)
+        RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(logger, raptorClient).Process(parameters)
           as CMVChangeSummaryResult;
     }
 
@@ -606,7 +618,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient, null).Process(request)
+        RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient).Process(request)
           as ElevationStatisticsResult;
     }
 
@@ -627,7 +639,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       request.Validate();
       return
-        RequestExecutorContainer.Build<SummaryCCAExecutor>(logger, raptorClient, null).Process(request) as
+        RequestExecutorContainerFactory.Build<SummaryCCAExecutor>(logger, raptorClient).Process(request) as
           CCASummaryResult;
 
     }

@@ -87,7 +87,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 9
- testRunner.Then("the settings validation result should be", "{\r\n  \"Code\": 0,\r\n  \"Message\": \"Project settings are valid\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the settings validation result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Project settings are valid\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -112,7 +112,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 22
- testRunner.Then("the settings validation result should be", "{\r\n  \"Code\": 0,\r\n  \"Message\": \"Project settings are valid\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the settings validation result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Project settings are valid\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -156,13 +156,15 @@ this.ScenarioSetup(scenarioInfo);
   customCutFillTolerances: [3,2,1,0,-1,-2,-3],
   useDefaultVolumeShrinkageBulking: false,
   customShrinkagePercent: 5,
-  customBulkingPercent: 7.5
+  customBulkingPercent: 7.5,
+  useDefaultPassCountTargets: false,
+  customPassCountTargets: [1,3,5,8,11,16,20,25]
 }", ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 62
+#line 64
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 63
- testRunner.Then("the settings validation result should be", "{\r\n  \"Code\": 0,\r\n  \"Message\": \"Project settings are valid\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 65
+ testRunner.Then("the settings validation result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Project settings are valid\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -173,20 +175,20 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ProjectSettingsValidateInvalidSettingsMissingValues()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Invalid Settings Missing Values", ((string[])(null)));
-#line 71
+#line 73
 this.ScenarioSetup(scenarioInfo);
-#line 72
+#line 74
  testRunner.Given("the Project Settings Validation service URI \"/api/v2/compaction/validatesettings\"" +
                     "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 73
+#line 75
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 74
+#line 76
   testRunner.And("a projectSettings \"{ useMachineTargetPassCount : false, customTargetPassCountMini" +
                     "mum : 5 }\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 75
+#line 77
  testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 76
- testRunner.Then("I should get error code -2 and message \"Both minimum and maximum target pass coun" +
+#line 78
+ testRunner.Then("I should get error code -1 and message \"Both minimum and maximum target pass coun" +
                     "t must be specified\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -198,20 +200,20 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ProjectSettingsValidateInvalidSettingsOutOfRangeValues()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Invalid Settings Out Of Range Values", ((string[])(null)));
-#line 78
+#line 80
  this.ScenarioSetup(scenarioInfo);
-#line 79
+#line 81
  testRunner.Given("the Project Settings Validation service URI \"/api/v2/compaction/validatesettings\"" +
                     "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 80
+#line 82
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 81
+#line 83
   testRunner.And("a projectSettings \"{ useMachineTargetPassCount : false, customTargetPassCountMini" +
                     "mum : 0, customTargetPassCountMaximum : 7 }\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 82
+#line 84
  testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 83
- testRunner.Then("I should get error code -2 and message \"The field customTargetPassCountMinimum mu" +
+#line 85
+ testRunner.Then("I should get error code -1 and message \"The field customTargetPassCountMinimum mu" +
                     "st be between 1 and 80.\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -223,20 +225,20 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ProjectSettingsValidateInvalidSettingsOutOfOrderValues()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Invalid Settings Out Of Order Values", ((string[])(null)));
-#line 85
+#line 87
 this.ScenarioSetup(scenarioInfo);
-#line 86
+#line 88
  testRunner.Given("the Project Settings Validation service URI \"/api/v2/compaction/validatesettings\"" +
                     "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 87
+#line 89
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 88
+#line 90
   testRunner.And("a projectSettings \"{ useDefaultCutFillTolerances : false, customCutFillTolerances" +
                     " : [3,2,1,0,-1,-3,-2] }\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 89
+#line 91
  testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 90
- testRunner.Then("I should get error code -2 and message \"Cut-fill tolerances must be in order of h" +
+#line 92
+ testRunner.Then("I should get error code -1 and message \"Cut-fill tolerances must be in order of h" +
                     "ighest cut to lowest fill\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

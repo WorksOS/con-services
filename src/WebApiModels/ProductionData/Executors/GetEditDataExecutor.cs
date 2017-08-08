@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
@@ -12,24 +11,17 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   public class GetEditDataExecutor : RequestExecutorContainer
   {
- 
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    public GetEditDataExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public GetEditDataExecutor()
     {
+      ProcessErrorCodes();
     }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
         try
         {
           TDesignName[] designNames;
@@ -74,13 +66,13 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       //TODO: layer number from Raptor should be an int not a long. Needs fixing in Shims.
       List<ProductionDataEdit> dataEdits =
         (from m in matches select ProductionDataEdit.CreateProductionDataEdit(
-           m.d.FMachineID, m.d.FStartDate.ToDateTime(), m.d.FEndDate.ToDateTime(), m.d.FName, (int)m.l.FLayerID)).ToList();
+           m.d.FMachineID, m.d.FStartDate.ToDateTime(), m.d.FEndDate.ToDateTime(), m.d.FName, m.l.FLayerID)).ToList();
 
       var layerOnly =
         (from l in layers
          where !layerMatches.Contains(l)
          select ProductionDataEdit.CreateProductionDataEdit(
-         l.FAssetID, l.FStartTime.ToDateTime(), l.FEndTime.ToDateTime(), null, (int)l.FLayerID)).ToList();
+         l.FAssetID, l.FStartTime.ToDateTime(), l.FEndTime.ToDateTime(), null, l.FLayerID)).ToList();
 
       var designOnly =
         (from d in designNames
@@ -91,14 +83,10 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       dataEdits.AddRange(designOnly);
       return dataEdits;
     }
-
-
-
-
-    protected override void ProcessErrorCodes()
+    
+    protected sealed override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
-
   }
 }

@@ -71,30 +71,32 @@ namespace ProductionDataSvc.AcceptanceTests
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("DotOnTheMap - Track a Machine")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "DotOnTheMap")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void DotOnTheMap_TrackAMachine()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("DotOnTheMap - Track a Machine", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("DotOnTheMap - Track a Machine", new string[] {
+                        "ignore"});
 #line 4
 this.ScenarioSetup(scenarioInfo);
 #line 5
- testRunner.Given("the Tag service URI \"/api/v1/tagfiles\", Tag request repo file \"DotOnTheMapRequest" +
+testRunner.Given("the Tag service URI \"/api/v1/tagfiles\", Tag request repo file \"DotOnTheMapRequest" +
                     ".json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
-  testRunner.And("the Machine service URI \"/api/v1/projects/1001210/machines/\", Machine result repo" +
+testRunner.And("the Machine service URI \"/api/v1/projects/1001210/machines/\", Machine result repo" +
                     " file \"DotOnTheMapResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
- testRunner.When("I post Tag file \"FirstDot\" from the Tag request repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I post Tag file \"FirstDot\" from the Tag request repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 8
-  testRunner.And("I get and save the machine detail in one place", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("I get and save the machine detail in one place", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
-  testRunner.And("I post Tag file \"SecondDot\" from the Tag request repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("I post Tag file \"SecondDot\" from the Tag request repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 10
-  testRunner.And("I get and save the machine detail in another place", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("I get and save the machine detail in another place", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 11
- testRunner.Then("the first saved machine detail should match \"FirstDot\" result from the Machine re" +
+testRunner.Then("the first saved machine detail should match \"FirstDot\" result from the Machine re" +
                     "sult repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 12
-  testRunner.And("the second saved machine detail should match \"SecondDot\" result from the Machine " +
+testRunner.And("the second saved machine detail should match \"SecondDot\" result from the Machine " +
                     "result repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();

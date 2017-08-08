@@ -1,10 +1,10 @@
 ﻿using ASNodeDecls;
-using Microsoft.Extensions.Logging;
 using SVOICFilterSettings;
 using System;
 using System.Net;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -19,18 +19,11 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
   public class SummaryTemperatureExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    public SummaryTemperatureExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
-    /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public SummaryTemperatureExecutor()
     {
+      ProcessErrorCodes();
     }
 
     /// <summary>
@@ -73,11 +66,10 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       return result;
     }
 
-    protected override void ProcessErrorCodes()
+    protected sealed override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
-
 
     private TemperatureSummaryResult ConvertResult(TTemperature summary)
     {

@@ -60,14 +60,14 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Models
         /// 
         public static CoordinateSystemFile CreateCoordinateSystemFile(long projectId, byte[] csFileContent, string csFileName)
         {
-            CoordinateSystemFile tempCS = new CoordinateSystemFile();
+          var tempCS = new CoordinateSystemFile
+          {
+            projectId = projectId,
+            csFileName = csFileName,
+            csFileContent = csFileContent
+          };
 
-            tempCS.projectId = projectId;
-            tempCS.csFileName = csFileName;
-
-            tempCS.csFileContent = csFileContent;
-
-            return tempCS;
+          return tempCS;
         }
 
 

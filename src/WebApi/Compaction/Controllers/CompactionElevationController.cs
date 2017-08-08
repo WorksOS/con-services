@@ -2,19 +2,24 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -22,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting elevation data from Raptor
   /// </summary>
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionElevationController : Controller
+  public class CompactionElevationController : BaseController
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -72,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="settingsManager">Compaction settings manager</param>
     public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, 
       IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler) : base(logger.CreateLogger<BaseController>(), exceptionHandler)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -89,7 +94,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get elevation range from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
-    /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
@@ -108,13 +112,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>Elevation statistics</returns>
-    [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/elevationrange")]
     [HttpGet]
     public async Task<ElevationStatisticsResult> GetElevationRange(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -126,19 +128,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetElevationRange: " + Request.QueryString);
-      if (!projectId.HasValue)
-      {
-        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      }
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       try
       {
         var headers = Request.Headers.GetCustomHeaders();
-        var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+        var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid,  log);
+        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
         Filter filter = settingsManager.CompactionFilter(
           startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
           this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-        ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId.Value, filter, projectSettings);
+        ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId, filter, projectSettings);
         if (result == null)
         {
           //Ideally want to return an error code and message only here
@@ -150,8 +149,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
-        throw;
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
       }
       finally
       {
@@ -165,31 +164,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets project statistics from Raptor.
     /// </summary>
-    /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <returns>Project statistics</returns>
     /// <executor>ProjectStatisticsExecutor</executor>
-    [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/projectstatistics")]
     [HttpGet]
     public async Task<ProjectStatisticsResult> GetProjectStatistics(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid)
+      [FromQuery] Guid projectUid)
     {
       log.LogInformation("GetProjectStatistics: " + Request.QueryString);
-      if (!projectId.HasValue)
-      {
-        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      }
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
-      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId.Value, excludedIds.ToArray());
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
       request.Validate();
       try
       {
         var returnResult =
-          RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null)
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
             .Process(request) as ProjectStatisticsResult;
         log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
@@ -197,15 +189,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException se)
       {
         //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
-        throw;
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
       }
       finally
       {
         log.LogInformation("GetProjectStatistics returned: " + Response.StatusCode);
       }
     }
-    #endregion
 
+    #endregion
   }
 }

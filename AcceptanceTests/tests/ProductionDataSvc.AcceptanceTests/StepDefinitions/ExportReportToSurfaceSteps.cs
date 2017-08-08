@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
@@ -50,6 +51,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.DoInvalidRequest(url);
     }
 
+    [When(@"I request an Export Report To Surface expecting Unauthorized")]
+    public void WhenIRequestAnExportReportToSurfaceExpectingUnauthorized()
+    {
+      exportReportRequester.DoInvalidRequest(url, HttpStatusCode.Unauthorized);
+    }
+
+
     [Then(@"the report result should match the ""(.*)"" from the repository")]
     public void ThenTheReportResultShouldMatchTheFromTheRepository(string resultName)
     {
@@ -62,6 +70,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       Assert.IsTrue(exportReportRequester.CurrentResponse.Code == errorCode && (exportReportRequester.CurrentResponse.Message == errorMessage || exportReportRequester.CurrentResponse.Message.Contains(errorMessage)),
         string.Format("Expected to see code {0} and message {1}, but got {2} and {3} instead.",
           errorCode, errorMessage, exportReportRequester.CurrentResponse.Code, exportReportRequester.CurrentResponse.Message));
+    }
+
+    [Then(@"the export result should successful")]
+    public void ThenTheExportResultShouldSuccessful()
+    {
+      Assert.AreEqual(0, exportReportRequester.CurrentResponse.Code, " Code should be 0");
+      Assert.AreEqual("success", exportReportRequester.CurrentResponse.Message, " Message should be success");
+      Assert.IsTrue(exportReportRequester.CurrentResponse.ExportData.Length > 100, " length of response should be > 100");
     }
   }
 }

@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using SVOICOptionsDecls;
+﻿using SVOICOptionsDecls;
 using System;
 using System.IO;
 using System.Net;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApiModels.ProductionData.Helpers;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
@@ -17,27 +16,11 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   /// <summary>
   /// Get production data profile calculations executor.
   /// </summary>
-  /// 
   public class ProfileProductionDataExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    /// 
-    public ProfileProductionDataExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public ProfileProductionDataExecutor()
-    {
-    }
     private ProfileResult performProductionDataProfilePost(ProfileProductionDataRequest request)
     {
-      MemoryStream ms = null;
+      MemoryStream memoryStream;
 
       if (!RaptorConverters.DesignDescriptor(request.alignmentDesign).IsNull())
       {
@@ -48,12 +31,12 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
               request.startStation ?? ValidationConstants.MIN_STATION,
               request.endStation ?? ValidationConstants.MIN_STATION,
               RaptorConverters.DesignDescriptor(request.alignmentDesign),
-              RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId, null, null),
+              RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
               RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
               RaptorConverters.DesignDescriptor(request.alignmentDesign),
               request.returnAllPassesAndLayers);
 
-        ms = raptorClient.GetAlignmentProfile(args);
+        memoryStream = raptorClient.GetAlignmentProfile(args);
       }
       else
       {
@@ -68,28 +51,26 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
               positionsAreGrid,
               startPt,
               endPt,
-              RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId, null, null),
+              RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
               RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
               RaptorConverters.DesignDescriptor(request.alignmentDesign),
               request.returnAllPassesAndLayers);
 
-        ms = raptorClient.GetProfile(args);
+        memoryStream = raptorClient.GetProfile(args);
       }
 
-      if (ms != null)
+      if (memoryStream != null)
       {
-        return ProfilesHelper.convertProductionDataProfileResult(ms, (Guid)(request.callId ?? Guid.NewGuid()));
+        return ProfilesHelper.convertProductionDataProfileResult(memoryStream, request.callId ?? Guid.NewGuid());
       }
-      else
-      {
-        // TODO: return appropriate result
-        return null;
-      }
+      
+      // TODO: return appropriate result
+      return null;
     }
 
       protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
       try
       {
         ProfileResult profile = performProductionDataProfilePost(item as ProfileProductionDataRequest);
@@ -106,12 +87,5 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
       return result;
     }
-
-    protected override void ProcessErrorCodes()
-    {
-      // Do nothing here...
-    }
-
-
   }
 }

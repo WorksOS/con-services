@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
@@ -96,7 +99,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         statsRequest.Validate();
 
         result =
-          RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient)
+          RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient)
             .Process(statsRequest) as ElevationStatisticsResult;
 
         //Check for 'No elevation range' result

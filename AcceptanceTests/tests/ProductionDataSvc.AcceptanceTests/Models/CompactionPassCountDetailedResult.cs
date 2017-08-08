@@ -2,6 +2,7 @@
 using RaptorSvcAcceptTestsCommon.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using System;
+using VSS.Productivity3D.Common.ResultHandling;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
@@ -89,11 +90,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       /// <summary>
       /// The minimum value the measured PassCount may be compared to the passCountTarget from the machine
       /// </summary>
-      public int minTarget { get; set; }
-      /// <summary>
-      /// The maximum value the measured PassCount may be compared to the passCountTarget from the machine
-      /// </summary>
-      public int maxTarget { get; set; }
+      public PassCountTargetData PassCountTarget { get; set; }
 
       public bool Equals(PassCountDetailsData other)
       {
@@ -102,8 +99,8 @@ namespace ProductionDataSvc.AcceptanceTests.Models
 
         return Common.ArraysOfDoublesAreEqual(this.percents, other.percents) &&
                Math.Round(this.totalCoverageArea, 2) == Math.Round(other.totalCoverageArea, 2) &&
-               this.minTarget == other.minTarget &&
-               this.maxTarget == other.maxTarget;
+               this.PassCountTarget.MaxPassCountMachineTarget == other.PassCountTarget.MaxPassCountMachineTarget &&
+               this.PassCountTarget.MinPassCountMachineTarget == other.PassCountTarget.MinPassCountMachineTarget;
       }
     }
   }

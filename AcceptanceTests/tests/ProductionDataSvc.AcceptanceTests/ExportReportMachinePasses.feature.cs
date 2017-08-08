@@ -77,7 +77,7 @@ namespace ProductionDataSvc.AcceptanceTests
 #line hidden
         }
         
-        public virtual void ExportReportMachinePasses_GoodRequest(string requetsName, string projectUID, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string fileName, string resultName, string[] exampleTags)
+        public virtual void ExportReportMachinePasses_GoodRequest(string requestName, string projectUID, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string fileName, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - Good Request", exampleTags);
 #line 7
@@ -110,7 +110,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NELastPassUnrestrictedNotRaw")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "NELastPassUnrestrictedNotRaw")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "NELastPassUnrestrictedNotRaw")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2012-11-05")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2012-11-06")]
@@ -129,7 +129,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "LLLastPassUnrestrictedNotRaw")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "LLLastPassUnrestrictedNotRaw")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "LLLastPassUnrestrictedNotRaw")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2012-11-05")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2012-11-06")]
@@ -148,7 +148,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NEAllPassesUnrestrictedNotRaw")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "NEAllPassesUnrestrictedNotRaw")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "NEAllPassesUnrestrictedNotRaw")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2012-11-05")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2012-11-06")]
@@ -167,7 +167,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "LLAllPassesUnrestrictedNotRaw")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "LLAllPassesUnrestrictedNotRaw")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "LLAllPassesUnrestrictedNotRaw")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2012-11-05")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2012-11-06")]
@@ -186,7 +186,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NELastPassRestrictedNotRaw")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "NELastPassRestrictedNotRaw")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "NELastPassRestrictedNotRaw")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2012-11-05")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2012-11-06")]
@@ -205,7 +205,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NELastPassUnrestrictedRaw")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "NELastPassUnrestrictedRaw")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "NELastPassUnrestrictedRaw")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2012-11-05")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2012-11-06")]
@@ -224,7 +224,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NELastPassRestrictedRaw")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "NELastPassRestrictedRaw")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "NELastPassRestrictedRaw")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2012-11-05")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2012-11-06")]
@@ -239,7 +239,7 @@ this.FeatureBackground();
             this.ExportReportMachinePasses_GoodRequest("NELastPassRestrictedRaw", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2012-11-05", "2012-11-06", "0", "0", "true", "true", "Test", "NELastPassRestrictedRaw", ((string[])(null)));
         }
         
-        public virtual void ExportReportMachinePasses_BadRequest_NoProjectUID(string requetsName, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string fileName, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void ExportReportMachinePasses_BadRequest_NoProjectUID(string requestName, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string fileName, string errorCode, string errorMessage, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - Bad Request - NoProjectUID", exampleTags);
 #line 27
@@ -259,7 +259,7 @@ this.FeatureBackground();
 #line 33
  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 34
- testRunner.When("I request an Export Report Machine Passes expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request an Export Report Machine Passes expecting Unauthorized", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 35
  testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -269,7 +269,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Bad Request - NoProjectUID")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2005-01-01")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2017-06-23")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CoordType", "0")]
@@ -277,14 +277,16 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "Test")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing project UID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing Project or project does not belong to specified customer or don\'t have ac" +
+            "cess to the project")]
         public virtual void ExportReportMachinePasses_BadRequest_NoProjectUID_()
         {
-            this.ExportReportMachinePasses_BadRequest_NoProjectUID("", "2005-01-01", "2017-06-23", "0", "0", "false", "false", "Test", "-2", "Missing project UID", ((string[])(null)));
+            this.ExportReportMachinePasses_BadRequest_NoProjectUID("", "2005-01-01", "2017-06-23", "0", "0", "false", "false", "Test", "-5", "Missing Project or project does not belong to specified customer or don\'t have ac" +
+                    "cess to the project", ((string[])(null)));
         }
         
-        public virtual void ExportReportMachinePasses_BadRequest_NoDateRange(string requetsName, string projectUID, string coordType, string outputType, string restrictOutput, string rawDataOutput, string fileName, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void ExportReportMachinePasses_BadRequest_NoDateRange(string requestName, string projectUID, string coordType, string outputType, string restrictOutput, string rawDataOutput, string fileName, string errorCode, string errorMessage, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - Bad Request - NoDateRange", exampleTags);
 #line 40
@@ -314,7 +316,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Bad Request - NoDateRange")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CoordType", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:OutputType", "0")]
@@ -328,7 +330,7 @@ this.FeatureBackground();
             this.ExportReportMachinePasses_BadRequest_NoDateRange("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "0", "0", "false", "false", "Test", "-4", "Failed to get requested export data", ((string[])(null)));
         }
         
-        public virtual void ExportReportMachinePasses_BadRequest_NoFileName(string requetsName, string projectUID, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void ExportReportMachinePasses_BadRequest_NoFileName(string requestName, string projectUID, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string errorCode, string errorMessage, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - Bad Request - NoFileName", exampleTags);
 #line 53
@@ -358,7 +360,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Bad Request - NoFileName")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2005-01-01")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2017-06-23")]
@@ -373,7 +375,7 @@ this.FeatureBackground();
             this.ExportReportMachinePasses_BadRequest_NoFileName("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "0", "0", "false", "false", "-4", "Failed to get requested export data", ((string[])(null)));
         }
         
-        public virtual void ExportReportMachinePasses_BadRequest(string requetsName, string projectUID, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void ExportReportMachinePasses_BadRequest(string requestName, string projectUID, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string errorCode, string errorMessage, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - Bad Request", exampleTags);
 #line 66
@@ -404,7 +406,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Bad Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "InvalidCoordType")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "InvalidCoordType")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "InvalidCoordType")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2005-01-01")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2017-06-23")]
@@ -412,18 +414,18 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:OutputType", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Invalid coordinates type for export report")]
         public virtual void ExportReportMachinePasses_BadRequest_InvalidCoordType()
         {
-            this.ExportReportMachinePasses_BadRequest("InvalidCoordType", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "2", "0", "false", "false", "-2", "Invalid coordinates type for export report", ((string[])(null)));
+            this.ExportReportMachinePasses_BadRequest("InvalidCoordType", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "2", "0", "false", "false", "-1", "Invalid coordinates type for export report", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Bad Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "InvalidOutputType")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "InvalidOutputType")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "InvalidOutputType")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2005-01-01")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2017-06-23")]
@@ -431,18 +433,18 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:OutputType", "5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Invalid output type for export report")]
         public virtual void ExportReportMachinePasses_BadRequest_InvalidOutputType()
         {
-            this.ExportReportMachinePasses_BadRequest("InvalidOutputType", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "0", "5", "false", "false", "-2", "Invalid output type for export report", ((string[])(null)));
+            this.ExportReportMachinePasses_BadRequest("InvalidOutputType", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "0", "5", "false", "false", "-1", "Invalid output type for export report", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Bad Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "InvalidOutputTypeForMachinePasses")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "InvalidOutputTypeForMachinePasses")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "InvalidOutputTypeForMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2005-01-01")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2017-06-23")]
@@ -450,11 +452,11 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:OutputType", "2")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Invalid output type for machine passes export report")]
         public virtual void ExportReportMachinePasses_BadRequest_InvalidOutputTypeForMachinePasses()
         {
-            this.ExportReportMachinePasses_BadRequest("InvalidOutputTypeForMachinePasses", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "0", "2", "false", "false", "-2", "Invalid output type for machine passes export report", ((string[])(null)));
+            this.ExportReportMachinePasses_BadRequest("InvalidOutputTypeForMachinePasses", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "0", "2", "false", "false", "-1", "Invalid output type for machine passes export report", ((string[])(null)));
         }
     }
 }

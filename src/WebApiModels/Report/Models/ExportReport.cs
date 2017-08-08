@@ -1,18 +1,17 @@
-﻿using System;
-using System.Net;
-using ASNode.ExportProductionDataCSV.RPC;
+﻿using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.UserPreferences;
 using BoundingExtents;
 using Newtonsoft.Json;
+using System;
+using System.Net;
 using VLPDDecls;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Common.Contracts;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
-
   public enum ExportTypes
   {
     kSurfaceExport = 1,
@@ -143,7 +142,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
         Filter filter, long filterID, Guid? callid, bool cellSizeRq, string callerID, CoordTypes coordtype,
         DateTime DateFromUTC, DateTime DateToUTC, bool ZipFile, double Tolerance, bool TimeStampRequired,
         bool RestrictSize, bool RawData, T3DBoundingWorldExtent PrjExtents, bool PrecheckOnly, OutputTypes OutpuType,
-        TMachine[] MachineList, bool IncludeSrvSurface, string FileName, ExportTypes ExportType)
+        TMachine[] MachineList, bool IncludeSrvSurface, string FileName, ExportTypes ExportType, TASNodeUserPreferences UserPrefs)
     {
       return new ExportReport
              {
@@ -168,43 +167,37 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
                  restrictSize = RestrictSize,
                  timeStampRequired = TimeStampRequired,
                  tolerance = Tolerance,
+                 userPrefs = UserPrefs
              };
     }
 
     /// <summary>
     /// Create example instance of PassCounts to display in Help documentation.
     /// </summary>
-    public new static ExportReport HelpSample
+    public new static ExportReport HelpSample => new ExportReport
     {
-      get
-      {
-        return new ExportReport
-        {
-                   projectId = 34,
-                   liftBuildSettings = LiftBuildSettings.HelpSample,
-                   filter = Filter.HelpSample,
-                   filterID = 0,
-                   machineList = new TMachine[2] {new TMachine(), new TMachine()},
-                   projectExtents = new T3DBoundingWorldExtent(),
-                   restrictSize = true,
-                   tolerance = 0.1,
-                   includeSurveydSurface = true,
-                   cellSizeRequired = true,
-                   rawData = true,
-                   filename = "GoToSomwhere.csv",
-                   coordType = CoordTypes.ptNORTHEAST,
-                   exportType = ExportTypes.kPassCountExport,
-                   outputType = OutputTypes.etVedaAllPasses,
-                   precheckonly = false,
-                   timeStampRequired = true,
-                   dateToUTC = DateTime.UtcNow,
-                   dateFromUTC = DateTime.MinValue,
-                   callId = new Guid(),
-                   callerId = "Myself"
-               };
-      }
-    }
-
+      projectId = 34,
+      liftBuildSettings = LiftBuildSettings.HelpSample,
+      filter = Filter.HelpSample,
+      filterID = 0,
+      machineList = new TMachine[2] {new TMachine(), new TMachine()},
+      projectExtents = new T3DBoundingWorldExtent(),
+      restrictSize = true,
+      tolerance = 0.1,
+      includeSurveydSurface = true,
+      cellSizeRequired = true,
+      rawData = true,
+      filename = "GoToSomwhere.csv",
+      coordType = CoordTypes.ptNORTHEAST,
+      exportType = ExportTypes.kPassCountExport,
+      outputType = OutputTypes.etVedaAllPasses,
+      precheckonly = false,
+      timeStampRequired = true,
+      dateToUTC = DateTime.UtcNow,
+      dateFromUTC = DateTime.MinValue,
+      callId = new Guid(),
+      callerId = "Myself"
+    };
 
     /// <summary>
     /// Validates all properties
@@ -227,14 +220,16 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
             "Invalid output type for export report"));
       }
 
-      if (exportType == ExportTypes.kPassCountExport && outputType != OutputTypes.etPassCountLastPass && outputType != OutputTypes.etPassCountAllPasses)
+      if (exportType == ExportTypes.kPassCountExport && outputType != OutputTypes.etPassCountLastPass &&
+          outputType != OutputTypes.etPassCountAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid output type for machine passes export report"));
       }
 
-      if (exportType == ExportTypes.kVedaExport && outputType != OutputTypes.etVedaFinalPass && outputType != OutputTypes.etVedaAllPasses)
+      if (exportType == ExportTypes.kVedaExport && outputType != OutputTypes.etVedaFinalPass &&
+          outputType != OutputTypes.etVedaAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -242,19 +237,23 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       }
 
       if (machineList == null)
+      {
+        machineList = new TMachine[2];
+
+        machineList[0] = new TMachine
         {
-          machineList = new TMachine[2];
+          AssetID = 1,
+          MachineName = "Asset 1 Name",
+          SerialNo = "Asset 1 SN"
+        };
 
-          machineList[0] = new TMachine();
-          machineList[0].AssetID = 1;
-          machineList[0].MachineName = "Asset 1 Name";
-          machineList[0].SerialNo = "Asset 1 SN";
-
-          machineList[1] = new TMachine();
-          machineList[1].AssetID = 3517551388324974;
-          machineList[1].MachineName = "Asset 3517551388324974 Name";
-          machineList[1].SerialNo = "Asset 3517551388324974 SN";
-        }
+        machineList[1] = new TMachine
+        {
+          AssetID = 3517551388324974,
+          MachineName = "Asset 3517551388324974 Name",
+          SerialNo = "Asset 3517551388324974 SN"
+        };
+      }
 
       translations = new TTranslation[6];
       translations[0].ID = 0;
@@ -269,13 +268,23 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       translations[4].Translation = "Request Canceled";
       translations[5].ID = 5;
       translations[5].Translation = "Maxmium records reached";
- 
-      userPrefs = 
-             ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences("NZ", "/", ":", ",", ".", 0.0, 0, 1, 0, 0, 1, 3); 
 
-
+      if (userPrefs.Equals(Preferences.EmptyUserPreferences()))
+      {
+        userPrefs = ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(
+          "NZ",
+          Preferences.DefaultDateSeparator,
+          Preferences.DefaultTimeSeparator,
+          Preferences.DefaultThousandsSeparator,
+          Preferences.DefaultDecimalSeparator,
+          0.0,
+          (int) LanguageEnum.enUS,
+          (int) UnitsTypeEnum.Metric,
+          Preferences.DefaultDateTimeFormat,
+          Preferences.DefaultNumberFormat,
+          Preferences.DefaultTemperatureUnit,
+          Preferences.DefaultAssetLabelTypeId);
+      }
     }
-
-
   }
 }

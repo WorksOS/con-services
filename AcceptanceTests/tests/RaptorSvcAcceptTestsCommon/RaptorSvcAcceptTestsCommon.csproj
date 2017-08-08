@@ -80,6 +80,7 @@
     <Compile Include="Models\MachineDetails.cs" />
     <Compile Include="Models\MachineSpeedTarget.cs" />
     <Compile Include="Models\MDPRangePercentage.cs" />
+    <Compile Include="Models\PassCountTargetData.cs" />
     <Compile Include="Models\Point.cs" />
     <Compile Include="Models\ProductionDataType.cs" />
     <Compile Include="Models\ProjectMonitoringMachine.cs" />

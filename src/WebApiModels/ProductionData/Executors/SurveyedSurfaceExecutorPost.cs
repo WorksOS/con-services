@@ -1,7 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
+﻿using VLPDDecls;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
@@ -13,24 +11,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   /// 
   public class SurveyedSurfaceExecutorPost : SurveyedSurfaceExecutor
   {
-
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    /// 
-    public SurveyedSurfaceExecutorPost(ILoggerFactory logger, IASNodeClient raptorClient)
-        : base(logger, raptorClient)
-    {
-    }
-
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public SurveyedSurfaceExecutorPost()
-    {
-    }
-
     /// <summary>
     /// Sends a POST request to Production Data Server (PDS) client.
     /// </summary>
@@ -59,11 +39,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     /// Returns an instance of the ContractExecutionResult class as POST method execution result.
     /// </summary>
     /// <returns>An instance of the ContractExecutionResult class.</returns>
-    /// 
     protected override ContractExecutionResult ExecutionResult(SurveyedSurfaceDetails[] surveyedSurfaces)
     {
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Surveyed Surface data successfully saved.");
     }
-
   }
 }

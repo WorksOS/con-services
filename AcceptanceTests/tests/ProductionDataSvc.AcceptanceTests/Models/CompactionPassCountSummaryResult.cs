@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using RaptorSvcAcceptTestsCommon.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
@@ -89,14 +90,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       /// The total area covered by non-null cells in the request area
       /// </summary>
       public double totalAreaCoveredSqMeters { get; set; }
-      /// <summary>
-      /// The minimum value the measured PassCount may be compared to the passCountTarget from the machine
-      /// </summary>
-      public int minTarget { get; set; }
-      /// <summary>
-      /// The maximum value the measured PassCount may be compared to the passCountTarget from the machine
-      /// </summary>
-      public int maxTarget { get; set; }
+      public PassCountTargetData PassCountTarget { get; set; }
 
       public bool Equals(PassCountSummaryData other)
       {
@@ -107,8 +101,8 @@ namespace ProductionDataSvc.AcceptanceTests.Models
                Math.Round(this.percentGreaterThanTarget, 2) == Math.Round(other.percentGreaterThanTarget, 2) &&
                Math.Round(this.percentLessThanTarget, 2) == Math.Round(other.percentLessThanTarget, 2) &&
                Math.Round(this.totalAreaCoveredSqMeters, 2) == Math.Round(other.totalAreaCoveredSqMeters, 2) &&
-               this.minTarget == other.minTarget &&
-               this.maxTarget == other.maxTarget;
+               this.PassCountTarget.MinPassCountMachineTarget == other.PassCountTarget.MinPassCountMachineTarget &&
+               this.PassCountTarget.MaxPassCountMachineTarget == other.PassCountTarget.MaxPassCountMachineTarget;
       }
 
     }

@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
-    <AssemblyName>VSS.3DProductivity.WebApiModels</AssemblyName>
+    <AssemblyName>VSS.Productivity3D.WebApiModels</AssemblyName>
     <PackageId>WebApiModels</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <RootNamespace>VSS.Productivity3D.WebApiModels</RootNamespace>
+    <RootNamespace>VSS.Productivity3D.WebApi.Models</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +19,7 @@
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="1.1.2" />
-    <PackageReference Include="System.Net.Security" Version="4.0.0" />
+    <PackageReference Include="System.Net.Security" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.1.0" />
   </ItemGroup>
 

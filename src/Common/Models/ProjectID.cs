@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using Newtonsoft.Json;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -28,23 +29,14 @@ namespace VSS.Productivity3D.Common.Models
     /// A project unique identifier.
     /// </summary>
     [JsonProperty(PropertyName = "projectUid", Required = Required.Default)]
-    [ValidProjectUID]    
+    [ValidProjectUID]
     public Guid? projectUid { get; protected set; }
-
-    /// <summary>
-    /// Private constructor.
-    /// </summary>
-    /// 
-    protected ProjectID()
-    {
-        // ...
-    }
 
     /// <summary>
     /// ProjectID sample instance.
     /// </summary>
     /// 
-    public static ProjectID HelpSample => new ProjectID { projectId = 1, projectUid = new Guid()};
+    public static ProjectID HelpSample => new ProjectID { projectId = 1, projectUid = new Guid() };
 
     /// <summary>
     /// Creates an instance of the ProjectID class.
@@ -68,20 +60,19 @@ namespace VSS.Productivity3D.Common.Models
     {
       // Validation rules might be placed in here...
       // throw new NotImplementedException();
-        var validator = new DataAnnotationsValidator();
-        ICollection<ValidationResult> results;
-        validator.TryValidate(this, out results);
-        if (results.Any())
-        {
-            throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,results.FirstOrDefault().ErrorMessage));
-        }
+      var validator = new DataAnnotationsValidator();
+      validator.TryValidate(this, out ICollection<ValidationResult> results);
+      if (results.Any())
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, results.FirstOrDefault().ErrorMessage));
+      }
 
-        if (!projectId.HasValue && !projectUid.HasValue)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "At least one of the project identifiers must be defined!"));
-        }
+      if (!projectId.HasValue && !projectUid.HasValue)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "At least one of the project identifiers must be defined!"));
+      }
     }
   }
 }

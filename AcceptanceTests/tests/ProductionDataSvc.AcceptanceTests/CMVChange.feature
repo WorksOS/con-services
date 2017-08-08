@@ -22,4 +22,4 @@ Scenario Outline: CMVChange - Bad Request
 	Then the reuslt should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
 	| RequestName             | ErrorCode | ErrorMessage                                         |
-	| DecendingBoundaryValues | -2        | CMVChangeSummaryValues should be in ascending order. |
+	| DecendingBoundaryValues | -1        | CMVChangeSummaryValues should be in ascending order. |
