@@ -13,16 +13,12 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Models
         public void CanCreateCoordinateSystemFileTest()
         {
             var validator = new DataAnnotationsValidator();
-
-            ICollection<ValidationResult> results;
-
             string fileName = "test.dc";
-
-            byte[] fileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+            byte[] fileContent = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
             // Test the CreateCoordinateSystemFile() method with valid parameters... 
             CoordinateSystemFile coordSystemFile = CoordinateSystemFile.CreateCoordinateSystemFile(1, fileContent, "test.dc");
-            Assert.IsTrue(validator.TryValidate(coordSystemFile, out results));
+            Assert.IsTrue(validator.TryValidate(coordSystemFile, out ICollection<ValidationResult> results));
 
             // Test the CreateCoordinateSystemFile() method with an invalid projectID... 
             coordSystemFile = CoordinateSystemFile.CreateCoordinateSystemFile(-1, fileContent, fileName);
@@ -51,16 +47,12 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Models
     public void CoordinateSystemFileValidationRequestTest()
     {
       var validator = new DataAnnotationsValidator();
-
-      ICollection<ValidationResult> results;
-
       string fileName = "test.dc";
-
-      byte[] fileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+      byte[] fileContent = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
       // Test the CreateCoordinateSystemFileValidationRequest() method with valid parameters... 
       CoordinateSystemFileValidationRequest coordSystemFileValidation = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(fileContent, "test.dc");
-      Assert.IsTrue(validator.TryValidate(coordSystemFileValidation, out results));
+      Assert.IsTrue(validator.TryValidate(coordSystemFileValidation, out ICollection<ValidationResult> results));
 
       // Test the CreateCoordinateSystemFileValidationRequest() method with a file name length exceeds 256 characters... 
       string prefix = "overlimit";
@@ -80,6 +72,5 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Models
       coordSystemFileValidation = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(null, fileName);
       Assert.IsFalse(validator.TryValidate(coordSystemFileValidation, out results));
     }
-
   }
 }

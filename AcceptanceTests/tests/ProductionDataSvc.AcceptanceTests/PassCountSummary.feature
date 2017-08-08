@@ -19,6 +19,6 @@ Scenario Outline: PassCountSummary - Bad Request
 	Then the response should contain error code <errorCode>
 	Examples: 
 	| ParameterName                     | httpCode | errorCode |
-	| PassCountSummary_NullProjectId    | 400      | -2        |
-	| PassCountSummary_InvalidProjectId | 400      | -2        |
-	| PassCountSummary_BadRange         | 400      | -2        |
+	| PassCountSummary_NullProjectId    | 400      | -1        |
+	| PassCountSummary_InvalidProjectId | 400      | -1        |
+	| PassCountSummary_BadRange         | 400      | -1        |

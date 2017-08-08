@@ -1,10 +1,9 @@
-﻿using System.Net;
-using BoundingExtents;
-using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Common.Contracts;
+﻿using BoundingExtents;
+using System.Net;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
@@ -19,22 +18,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     /// Project extents returnd by Raptor
     /// </summary>
     private T3DBoundingWorldExtent extents;
-
-    /// <summary>
-    /// this allows us to Mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    public ProjectExtentsSubmitter(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public ProjectExtentsSubmitter()
-    {
-    }
-
+    
     /// <summary>
     /// Calls raptor to get project extents
     /// </summary>
@@ -46,7 +30,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       ContractExecutionResult result;
       try
       {
-
         // get request parameters
         ExtentRequest request = item as ExtentRequest;
 
@@ -67,11 +50,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
         ContractExecutionStates.ClearDynamic(); // clear memory
       }
       return result;
-    }
-
-    protected override void ProcessErrorCodes()
-    {
-   //   throw new NotImplementedException();
     }
   }
 }

@@ -3,6 +3,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
@@ -16,6 +19,7 @@ using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 using ColorValue = VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes.ColorValue;
+using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -23,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting color palettes for displaying Raptor production data
   /// </summary>
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionPaletteController : Controller
+  public class CompactionPaletteController : BaseController
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -72,7 +76,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="settingsManager">Compaction settings manager</param>
     public CompactionPaletteController(IASNodeClient raptorClient, ILoggerFactory logger, 
       IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler) : base(logger.CreateLogger<BaseController>(), exceptionHandler)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -97,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetColorPalettes: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, log);
 
       //Note: elevation palette is a separate call as it requires a filter
       List<DisplayMode> modes = new List<DisplayMode>
@@ -251,9 +255,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetElevationPalette: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, log);
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);

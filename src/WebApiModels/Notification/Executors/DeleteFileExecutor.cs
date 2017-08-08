@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
-using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Notification.Executors
@@ -20,29 +20,18 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
   public class DeleteFileExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="logger">Logger</param>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="fileRepository">Imported file repository</param>
-    /// <param name="tileGenerator">DXF tile generator</param>
-    public DeleteFileExecutor(ILoggerFactory logger, IASNodeClient raptorClient, IFileRepository fileRepository, ITileGenerator tileGenerator) : 
-      base(logger, raptorClient, null, null, fileRepository, tileGenerator)
-    {
-    }
-
-    /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public DeleteFileExecutor()
     {
+      ProcessErrorCodes();
     }
 
     /// <summary>
     /// Populates ContractExecutionStates with Production Data Server error messages.
     /// </summary>
     /// 
-    protected override void ProcessErrorCodes()
+    protected sealed override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }

@@ -24,4 +24,4 @@ Scenario: ProjectStatistics - Including Surveyed Surfaces
 Scenario: ProjectStatistics - Bad Request (Invalid Project)
 	Given a Project Statistics project id 0
 	When I request the project statistics expecting BadRequest
-	Then I should get error code -2
+	Then I should get error code -1

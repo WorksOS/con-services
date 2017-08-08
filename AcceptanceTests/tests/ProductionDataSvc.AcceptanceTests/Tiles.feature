@@ -139,7 +139,7 @@ Scenario Outline: Tiles - Bad Request
 	Then the response should contain error code <errorCode>
 	Examples: 
 	| ParameterName                  | errorCode |
-	| NullProjectId                  | -2        |
-	| CutfillMissingDesign           | -2        |
-	| UnsupportedVolumeType          | -2        |
-	| SpeedSummaryTooManyColorValues | -2        |
+	| NullProjectId                  | -1        |
+	| CutfillMissingDesign           | -1        |
+	| UnsupportedVolumeType          | -1        |
+	| SpeedSummaryTooManyColorValues | -1        |

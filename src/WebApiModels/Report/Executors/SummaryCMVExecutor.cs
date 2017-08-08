@@ -1,10 +1,10 @@
 ﻿using ASNodeDecls;
-using Microsoft.Extensions.Logging;
 using SVOICFilterSettings;
 using System;
 using System.Net;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -18,20 +18,13 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
   /// </summary>
   public class SummaryCMVExecutor : RequestExecutorContainer
   {
-      /// <summary>
-      /// This constructor allows us to mock raptorClient
-      /// </summary>
-      /// <param name="raptorClient"></param>
-      public SummaryCMVExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-      {
-      }
-
-      /// <summary>
-      /// Default constructor for RequestExecutorContainer.Build
-      /// </summary>
-      public SummaryCMVExecutor()
-      {
-      }
+    /// <summary>
+    /// Default constructor for RequestExecutorContainer.Build
+    /// </summary>
+    public SummaryCMVExecutor()
+    {
+      ProcessErrorCodes();
+    }
 
     /// <summary>
     /// Processes the summary CMV request by passing the request to Raptor and returning the result.
@@ -43,7 +36,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     {
       ContractExecutionResult result = null;
       try
-      {      
+      {
         TCMVSummary cmvSummary;
         CMVRequest request = item as CMVRequest;
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
@@ -60,12 +53,12 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         }
         else
         {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, 
+          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             string.Format("Failed to get requested CMV summary data with error: {0}", ContractExecutionStates.FirstNameWithOffset(cmvSummary.ReturnCode))));
         }
-         
+
       }
- 
+
       finally
       {
         ContractExecutionStates.ClearDynamic();
@@ -73,14 +66,13 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       return result;
     }
 
-      protected override void ProcessErrorCodes()
-      {
-        RaptorResult.AddErrorMessages(ContractExecutionStates);
-      }
+    protected sealed override void ProcessErrorCodes()
+    {
+      RaptorResult.AddErrorMessages(ContractExecutionStates);
+    }
 
-    
-      private CMVSummaryResult ConvertResult(TCMVSummary summary)
-      {
+    private CMVSummaryResult ConvertResult(TCMVSummary summary)
+    {
       return CMVSummaryResult.CreateCMVSummaryResult(
                 summary.CompactedPercent,
                 summary.ConstantTargetCMV,
@@ -89,22 +81,21 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
                 summary.ReturnCode,
                 summary.TotalAreaCoveredSqMeters,
                 summary.UnderCompactedPercent);
-      }
+    }
 
-      private TCMVSettings ConvertSettings(CMVSettings settings)
+    private TCMVSettings ConvertSettings(CMVSettings settings)
+    {
+      return new TCMVSettings
       {
-        return new TCMVSettings
-        {
-          CMVTarget = settings.cmvTarget,
-          IsSummary = true,
-          MaxCMV = settings.maxCMV,
-          MaxCMVPercent = settings.maxCMVPercent,
-          MinCMV = settings.minCMV,
-          MinCMVPercent = settings.minCMVPercent,
-          OverrideTargetCMV = settings.overrideTargetCMV
-          
-        };
-      }
-    
+        CMVTarget = settings.cmvTarget,
+        IsSummary = true,
+        MaxCMV = settings.maxCMV,
+        MaxCMVPercent = settings.maxCMVPercent,
+        MinCMV = settings.minCMV,
+        MinCMVPercent = settings.minCMVPercent,
+        OverrideTargetCMV = settings.overrideTargetCMV
+
+      };
+    }
   }
 }

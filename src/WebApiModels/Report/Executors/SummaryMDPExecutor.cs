@@ -1,10 +1,10 @@
 ﻿using ASNodeDecls;
-using Microsoft.Extensions.Logging;
 using SVOICFilterSettings;
 using System;
 using System.Net;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -19,18 +19,11 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
   public class SummaryMDPExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    public SummaryMDPExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
-    /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public SummaryMDPExecutor()
     {
+      ProcessErrorCodes();
     }
 
     /// <summary>
@@ -44,7 +37,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       ContractExecutionResult result = null;
       try
       {
-        TMDPSummary mdpSummary;
         MDPRequest request = item as MDPRequest;
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
             request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
@@ -53,7 +45,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
                             ConvertSettings(request.mdpSettings),
                             raptorFilter,
                             RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
-                            out mdpSummary);
+                            out TMDPSummary mdpSummary);
         if (success)
         {
           result = ConvertResult(mdpSummary);
@@ -61,7 +53,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         else
         {
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            string.Format("Failed to get requested MDP summary data with error: {0}", ContractExecutionStates.FirstNameWithOffset(mdpSummary.ReturnCode))));
+            $"Failed to get requested MDP summary data with error: {ContractExecutionStates.FirstNameWithOffset(mdpSummary.ReturnCode)}"));
         }
 
       }
@@ -73,7 +65,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       return result;
     }
 
-    protected override void ProcessErrorCodes()
+    protected sealed override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
@@ -104,6 +96,5 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         OverrideTargetMDP = settings.overrideTargetMDP
       };
     }
-
   }
 }

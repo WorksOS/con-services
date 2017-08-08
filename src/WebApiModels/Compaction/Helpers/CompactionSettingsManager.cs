@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
-using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
@@ -15,6 +16,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
   /// </summary>
   public class CompactionSettingsManager : ICompactionSettingsManager
   {
+    private IFilterServiceProxy filterService; 
+
+    public CompactionSettingsManager(IFilterServiceProxy filterServiceProxy)
+    {
+      filterService = filterServiceProxy;
+    }
+
     public LiftBuildSettings CompactionLiftBuildSettings(CompactionProjectSettings ps)
     {
       //Note: CMV raw values are 10ths
@@ -35,8 +43,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
       //Note: Speed is cm/s for Raptor but km/h in project settings
       var speedOverrideRange = ps.useDefaultTargetRangeSpeed.HasValue && !ps.useDefaultTargetRangeSpeed.Value;
-      var speedMin = (speedOverrideRange && ps.customTargetSpeedMinimum.HasValue ? ps.customTargetSpeedMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMinimum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
-      var speedMax = (speedOverrideRange && ps.customTargetSpeedMaximum.HasValue ? ps.customTargetSpeedMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMaximum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
+      var speedMin = (speedOverrideRange && ps.customTargetSpeedMinimum.HasValue ? ps.customTargetSpeedMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMinimum.Value) * MasterData.Models.Models.ConversionConstants.KM_HR_TO_CM_SEC;
+      var speedMax = (speedOverrideRange && ps.customTargetSpeedMaximum.HasValue ? ps.customTargetSpeedMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMaximum.Value) * MasterData.Models.Models.ConversionConstants.KM_HR_TO_CM_SEC;
 
       var passCountOverrideRange = ps.useMachineTargetPassCount.HasValue && !ps.useMachineTargetPassCount.Value;
       var passCountMin = ps.customTargetPassCountMinimum.HasValue ? ps.customTargetPassCountMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetPassCountMinimum.Value;
@@ -71,7 +79,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       return liftBuildSettings;
     }
 
-    public Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType,
+    public Common.Models.Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType,
       int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds)
     {
       bool haveFilter =
@@ -81,10 +89,18 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       var layerMethod = layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
       return haveFilter ?
-        Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
+        Common.Models.Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
           null, null, null, null, null, null, null, null, null, layerMethod, null, null, layerNumber, null, machines,
           excludedSurveyedSurfaceIds, null, null, null, null, null, null)
         : null;
+    }
+
+
+    public Common.Models.Filter CompactionFilter(string filterUid, string customerUid, string projectUid, IDictionary<string,string> headers)
+    {
+      filterService.GetFilter(customerUid, projectUid, filterUid, headers);
+      //TODO apply Anatoli's validation and filter creation logic here
+      return null;
     }
 
     public CMVSettings CompactionCmvSettings(CompactionProjectSettings ps)

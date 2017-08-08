@@ -157,10 +157,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountSummary_NullProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "PassCountSummary_NullProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void PassCountSummary_BadRequest_PassCountSummary_NullProjectId()
         {
-            this.PassCountSummary_BadRequest("PassCountSummary_NullProjectId", "400", "-2", ((string[])(null)));
+            this.PassCountSummary_BadRequest("PassCountSummary_NullProjectId", "400", "-1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -169,10 +169,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountSummary_InvalidProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "PassCountSummary_InvalidProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void PassCountSummary_BadRequest_PassCountSummary_InvalidProjectId()
         {
-            this.PassCountSummary_BadRequest("PassCountSummary_InvalidProjectId", "400", "-2", ((string[])(null)));
+            this.PassCountSummary_BadRequest("PassCountSummary_InvalidProjectId", "400", "-1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -181,10 +181,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountSummary_BadRange")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "PassCountSummary_BadRange")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void PassCountSummary_BadRequest_PassCountSummary_BadRange()
         {
-            this.PassCountSummary_BadRequest("PassCountSummary_BadRange", "400", "-2", ((string[])(null)));
+            this.PassCountSummary_BadRequest("PassCountSummary_BadRange", "400", "-1", ((string[])(null)));
         }
     }
 }

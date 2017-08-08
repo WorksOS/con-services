@@ -511,7 +511,7 @@ this.FeatureBackground();
   testRunner.And("I submit data edit with EditId 0 to project 1001285 expecting HttpResponseCode 40" +
                     "0", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 129
- testRunner.Then("I should get Error Code -2 and Message \"Data edit overlaps\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("I should get Error Code -1 and Message \"Data edit overlaps\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

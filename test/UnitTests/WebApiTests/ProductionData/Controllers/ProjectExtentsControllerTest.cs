@@ -3,9 +3,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
@@ -33,7 +34,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       mockRaptorClient.Setup(prj => prj.GetDataModelExtents(544, It.IsAny<TSurveyedSurfaceID[]>(), out extents)).Returns(getExtentsResults);
 
       // create submitter
-      ProjectExtentsSubmitter submitter = new ProjectExtentsSubmitter(mockLogger.Object, mockRaptorClient.Object);
+      ProjectExtentsSubmitter submitter = RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(mockLogger.Object, mockRaptorClient.Object);
       // make request parameters
       ExtentRequest request = ExtentRequest.CreateExtentRequest(544, excludedSsIds);
 
@@ -64,18 +65,13 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       mockRaptorClient.Setup(prj => prj.GetDataModelExtents(544, It.IsAny<TSurveyedSurfaceID[]>(), out extents)).Returns(getExtentsResults);
 
       // create submitter
-      ProjectExtentsSubmitter submitter = new ProjectExtentsSubmitter(mockLogger.Object, mockRaptorClient.Object);
+      ProjectExtentsSubmitter submitter = RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(mockLogger.Object, mockRaptorClient.Object);
       // make request parameters
       ExtentRequest request = ExtentRequest.CreateExtentRequest(544, excludedSsIds);
 
       // Act
       // Call controller
       Assert.ThrowsException<ServiceException>(() => submitter.Process(request));
-
     }
-
-
-
   }
-
 }

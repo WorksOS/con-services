@@ -7,15 +7,14 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Executors;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
-using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Notification.Executors
@@ -27,33 +26,20 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
   public class AddFileExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="logger">Logger</param>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="fileRepository">Imported file repository</param>
-    /// <param name="tileGenerator">DXF tile generator</param>
-    public AddFileExecutor(ILoggerFactory logger, IASNodeClient raptorClient, IFileRepository fileRepository, ITileGenerator tileGenerator) : 
-      base(logger, raptorClient, null, null, fileRepository, tileGenerator)
-    {
-    }
-
-    /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public AddFileExecutor()
     {
+      ProcessErrorCodes();
     }
 
     /// <summary>
     /// Populates ContractExecutionStates with Production Data Server error messages.
     /// </summary>
-    /// 
-    protected override void ProcessErrorCodes()
+    protected sealed override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
-      RaptorResult.AddDesignProfileErrorMessages(ContractExecutionStates,
-        ContractExecutionStates.SecondDynamicOffset);
+      RaptorResult.AddDesignProfileErrorMessages(ContractExecutionStates);
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
@@ -83,7 +69,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
               ContractExecutionStatesEnum.FailedToGetResults,
               string.Format("Failed to update Raptor design cache with error: {0}",
-                ContractExecutionStates.FirstNameWithOffset((int)result1, ContractExecutionStates.SecondDynamicOffset))));
+                ContractExecutionStates.FirstNameWithOffset((int)result1))));
           }
         }
 
@@ -240,7 +226,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
           ContractExecutionStatesEnum.FailedToGetResults,
           string.Format("Failed to create " + FileUtils.DXF_FILE_EXTENSION + " file with error: {0}",
-            ContractExecutionStates.FirstNameWithOffset((int)designProfilerResult, ContractExecutionStates.SecondDynamicOffset))));
+            ContractExecutionStates.FirstNameWithOffset((int)designProfilerResult))));
       }
     }
 

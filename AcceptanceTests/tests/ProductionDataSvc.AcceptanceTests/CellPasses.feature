@@ -21,4 +21,4 @@ Scenario Outline: CellPasses - Bad Request
 	Then the response should contain error code <errorCode>
 	Examples: 
 	| ParameterName			| httpCode | errorCode |
-	| NullProjectId			| 400      | -2        |
+	| NullProjectId			| 400      | -1        |

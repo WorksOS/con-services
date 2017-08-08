@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
@@ -75,7 +76,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       request.Validate();
 
-      return RequestExecutorContainer.Build<GetEditDataExecutor>(logger, raptorClient, tagProcessor).Process(request) as EditDataResult;
+      return RequestExecutorContainerFactory.Build<GetEditDataExecutor>(logger, raptorClient, tagProcessor).Process(request) as EditDataResult;
     }
 
     /// <summary>
@@ -110,7 +111,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         ValidateDates(request.projectId ?? -1, request.dataEdit);
       }
 
-      return RequestExecutorContainer.Build<EditDataExecutor>(logger, raptorClient, tagProcessor).Process(request);
+      return RequestExecutorContainerFactory.Build<EditDataExecutor>(logger, raptorClient, tagProcessor).Process(request);
     }
 
     /// <summary>
@@ -156,7 +157,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, new long[0]);
       request.Validate();
-      dynamic stats = RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, tagProcessor).Process(request) as ProjectStatisticsResult;
+      dynamic stats = RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient, tagProcessor).Process(request) as ProjectStatisticsResult;
       if (stats == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

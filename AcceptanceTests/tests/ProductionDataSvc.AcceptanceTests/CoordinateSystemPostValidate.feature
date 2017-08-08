@@ -18,7 +18,7 @@ Scenario Outline: CoordinateSystemPostValidate - Bad Request
 	Then the response should contain error code <errorCode>
 	Examples: 
 	| ParameterName     | httpCode | errorCode |
-	| NullFileContents  | 400      | -2        |
-	| NullFileName      | 400      | -2        |
-	| FileNameTooLong   | 400      | -2        |
+	| NullFileContents  | 400      | -1        |
+	| NullFileName      | 400      | -1        |
+	| FileNameTooLong   | 400      | -1        |
 	| EmptyFileContents | 400      | -4        |

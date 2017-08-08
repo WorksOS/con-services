@@ -8,13 +8,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Text;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
-using VSS.ConfigurationStore;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {
@@ -29,21 +28,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         private const int NO_TEMPERATURE = SVOICDecls.__Global.kICNullMaterialTempValue;
         private const int NO_PASSCOUNT = SVOICDecls.__Global.kICNullPassCountValue;
         private const float NULL_SINGLE = DTXModelDecls.__Global.NullSingle;
-
-        /// <summary>
-        /// This constructor allows us to mock raptorClient & configStore
-        /// </summary>
-        /// <param name="raptorClient"></param>
-        public ExportGridCSVExecutor(ILoggerFactory logger, IASNodeClient raptorClient, IConfigurationStore configStore) : base(logger, raptorClient, null, configStore)
-        {
-        }
-
-        /// <summary>
-        /// Default constructor for RequestExecutorContainer.Build
-        /// </summary>
-        public ExportGridCSVExecutor()
-        {
-        }
 
         /// <summary>
         /// Processes the summary pass counts request by passing the request to Raptor and returning the result.

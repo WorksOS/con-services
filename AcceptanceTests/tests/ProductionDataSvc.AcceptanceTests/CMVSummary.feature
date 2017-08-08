@@ -19,6 +19,6 @@ Scenario Outline: CMVSummary - Bad Request
 	Then the response should contain error code <errorCode>
 	Examples: 
 	| ParameterName                     | httpCode | errorCode |
-	| MinCmvPercentTooSmall             | 400      | -2        |
-	| MaxCmvPercentTooLarge             | 400      | -2        |
-	| MinCmvPercentLargerThanMaxPercent | 400      | -2        |
+	| MinCmvPercentTooSmall             | 400      | -1        |
+	| MaxCmvPercentTooLarge             | 400      | -1        |
+	| MinCmvPercentLargerThanMaxPercent | 400      | -1        |

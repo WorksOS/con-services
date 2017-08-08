@@ -146,11 +146,11 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryThickness")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NegativeThicknessTarget")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "NegativeThicknessTarget")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Targte thickness settings must be positive.")]
         public virtual void SummaryThickness_BadRequest_NegativeThicknessTarget()
         {
-            this.SummaryThickness_BadRequest("NegativeThicknessTarget", "-2", "Targte thickness settings must be positive.", ((string[])(null)));
+            this.SummaryThickness_BadRequest("NegativeThicknessTarget", "-1", "Targte thickness settings must be positive.", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
