@@ -52,6 +52,8 @@ namespace VSS.Productivity3D.WebApi
   
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
+
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
     /// <summary>

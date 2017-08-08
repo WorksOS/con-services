@@ -15,14 +15,14 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
   public class TemperatureSettings : IValidatable
   {
     /// <summary>
-    /// The maximum Temperature value 
+    /// The maximum Temperature value in degrees Celsius
     /// </summary>
     [Range(MIN_TEMPERATURE, MAX_TEMPERATURE)]
     [JsonProperty(PropertyName = "maxTemperature", Required = Required.Default)]
     public double maxTemperature { get; private set; }
 
     /// <summary>
-    /// The minimum Temperature value 
+    /// The minimum Temperature value in degrees Celsius
     /// </summary>
     [Range(MIN_TEMPERATURE, MAX_TEMPERATURE)]
     [JsonProperty(PropertyName = "minTemperature", Required = Required.Default)]
