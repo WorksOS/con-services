@@ -1,11 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
   /// <summary>
   /// The two end points of a stright line used for a profile calculation, defined in WGS84 latitude longitude coordinates.

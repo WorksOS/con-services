@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
   /// <summary>
   /// A representation of a design boundaries request.

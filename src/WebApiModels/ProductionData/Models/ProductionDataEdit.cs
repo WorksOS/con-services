@@ -4,11 +4,9 @@ using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Validation;
-using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
   /// <summary>
   /// A representation of an edit applied to production data.

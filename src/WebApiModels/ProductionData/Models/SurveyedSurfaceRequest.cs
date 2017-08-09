@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
   /// <summary>
   /// The request representation for managing of the Raptor’s list of ground/surveyed surfaces.

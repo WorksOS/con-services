@@ -6,6 +6,8 @@ using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
@@ -17,6 +19,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {

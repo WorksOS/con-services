@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
@@ -17,6 +19,7 @@ using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 using ColorValue = VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes.ColorValue;
+using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {

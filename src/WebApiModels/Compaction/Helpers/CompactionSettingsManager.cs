@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
@@ -28,7 +29,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       return AutoMapperUtility.Automapper.Map<LiftBuildSettings>(ps);
     }
 
-    public Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType,
+    public Common.Models.Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType,
       int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds)
     {
       bool haveFilter =
@@ -38,14 +39,14 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       var layerMethod = layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
       return haveFilter ?
-        Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
+        Common.Models.Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
           null, null, null, null, null, null, null, null, null, layerMethod, null, null, layerNumber, null, machines,
           excludedSurveyedSurfaceIds, null, null, null, null, null, null)
         : null;
     }
 
 
-    public Filter CompactionFilter(string filterUid, string customerUid, string projectUid, IDictionary<string,string> headers)
+    public Common.Models.Filter CompactionFilter(string filterUid, string customerUid, string projectUid, IDictionary<string,string> headers)
     {
       filterService.GetFilter(customerUid, projectUid, filterUid, headers);
       //TODO apply Anatoli's validation and filter creation logic here

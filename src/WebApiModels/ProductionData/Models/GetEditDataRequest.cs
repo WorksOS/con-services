@@ -2,7 +2,7 @@
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
   /// <summary>
   /// Request to get manually edited production data changes.

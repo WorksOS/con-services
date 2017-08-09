@@ -14,6 +14,7 @@ using Microsoft.Net.Http.Headers;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -187,7 +188,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, log);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
+      Common.Models.Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
       var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
@@ -272,7 +273,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid,  log);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
+      Common.Models.Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
       var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
@@ -583,7 +584,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="height">Height of the tile in pixels</param>
     /// <param name="bbox">Bounding box in radians</param>
     /// <returns>Tile result</returns>
-    private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
+    private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Common.Models.Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
       BoundingBox2DLatLon bbox)
     {
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);

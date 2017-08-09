@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Report.Models;
