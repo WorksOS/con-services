@@ -186,7 +186,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //            }
 
             // Wait until the grid is active
-            ActivatePersistentGridServer.WaitUntilGridActive(RaptorGrids.RaptorGridName());
+            ActivatePersistentGridServer.Instance().WaitUntilGridActive(RaptorGrids.RaptorGridName());
 
             CacheConfiguration CacheCfg = null;
 

@@ -27,9 +27,9 @@ namespace RaptorGridActivator
         {
             try
             {
-                Log.Info("About to call ActivatePersistentGridServer.SetGridActive()");
+                Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive()");
 
-                bool result = ActivatePersistentGridServer.SetGridActive(RaptorGrids.RaptorGridName());
+                bool result = ActivatePersistentGridServer.Instance().SetGridActive(RaptorGrids.RaptorGridName());
 
                 MessageBox.Show($"Activation result: {result}");
             }

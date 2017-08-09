@@ -17,6 +17,8 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private static ActivatePersistentGridServer instance = null;
+
         /// <summary>
         /// Default constructor with role
         /// </summary>
@@ -26,11 +28,17 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         }
 
         /// <summary>
+        /// Returns the singleton instance for the activator, and creates it if necessary
+        /// </summary>
+        /// <returns></returns>
+        public static ActivatePersistentGridServer Instance() => instance ?? (instance = new ActivatePersistentGridServer("Activator"));
+
+        /// <summary>
         /// Set the state of a grid to active. If the grid is available and is already active, or can be set active this returns true
         /// </summary>
         /// <param name="gridName">The name of the grid to be set to active</param>
         /// <returns>True if the grid was successfully set to active, or was already in an active state</returns>
-        public static bool SetGridActive(string gridName)
+        public bool SetGridActive(string gridName)
         {
             try
             {
@@ -65,7 +73,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// </summary>
         /// <param name="gridName">The name of the grid to be set to inactive</param>
         /// <returns>True if the grid was successfully set to inactive, or was already in an inactive state</returns>
-        public static bool SetGridInActive(string gridName)
+        public bool SetGridInActive(string gridName)
         {
             try
             {
@@ -98,7 +106,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// Wait until the grid reports itself as active
         /// </summary>
         /// <param name="gridName">The name of the grid to wait for</param>
-        public static void WaitUntilGridActive(string gridName)
+        public void WaitUntilGridActive(string gridName)
         {
             IIgnite ignite = Ignition.TryGetIgnite(gridName);
 
