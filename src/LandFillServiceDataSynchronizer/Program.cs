@@ -103,7 +103,7 @@ namespace LandFillServiceDataSynchronizer
       {
         DateTime.TryParse(startDate, out startUtc);
       }
-      SyncCCATimer = new Timer(dataSync.RunUpdateCCAFromRaptor, DateTime.UtcNow.Date.AddDays(-30), TimeSpan.FromSeconds(5), TimeSpan.FromHours(hoursToSleep));
+      SyncCCATimer = new Timer(dataSync.RunUpdateCCAFromRaptor, DateTime.UtcNow.Date.AddMonths(-23), TimeSpan.FromSeconds(5), TimeSpan.FromHours(hoursToSleep));
     }
 
     public void Stop()

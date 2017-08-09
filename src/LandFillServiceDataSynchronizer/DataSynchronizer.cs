@@ -97,6 +97,8 @@ namespace LandFillServiceDataSynchronizer
 
       foreach (var project in projects)
       {
+     //   if (project.id != 2712) continue;
+        
         var utcDate = (DateTime)state;
         utcDate = DateTime.SpecifyKind(utcDate, DateTimeKind.Utc);
         Log.InfoFormat("START Processing project {0}", project.id);

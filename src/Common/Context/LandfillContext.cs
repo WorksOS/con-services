@@ -934,6 +934,7 @@ namespace LandfillService.Common.Context
       #endregion
 
       #region Machines
+
       /// <summary>
       /// Get the ID of the machine with the given details. If it doesn't exist then create it.
       /// </summary>
@@ -942,30 +943,33 @@ namespace LandfillService.Common.Context
       /// <returns>ID of the machine</returns>
       public static long GetMachineId(string projectUid, MachineDetails details)
       {
+
         return WithConnection((conn) =>
         {
-          var parms = new List<MySqlParameter>
           {
-            new MySqlParameter("@assetId", details.assetId),
-            new MySqlParameter("@machineName", details.machineName),
-            new MySqlParameter("@isJohnDoe", details.isJohnDoe),
-            new MySqlParameter("@projectUid", projectUid)
-          }.ToArray();
+            var parms = new List<MySqlParameter>
+            {
+              new MySqlParameter("@assetId", details.assetId),
+              new MySqlParameter("@machineName", details.machineName),
+              new MySqlParameter("@isJohnDoe", details.isJohnDoe),
+              new MySqlParameter("@projectUid", projectUid)
+            }.ToArray();
 
-          var existingId = GetMachineId(conn, parms, details.machineName);
-          if (existingId == 0)
-          {
-            Log.DebugFormat("Inserting machine {1} for project {0}", projectUid, details);
+            var existingId = GetMachineId(conn, parms, details.machineName);
+            if (existingId == 0)
+            {
+              Log.DebugFormat("Inserting machine {1} for project {0}", projectUid, details);
 
-            var command =
+              var command =
                 @"INSERT INTO Machine (AssetID, MachineName, IsJohnDoe, ProjectUID)
                   VALUES (@assetId, @machineName, @isJohnDoe, @projectUid)";
 
-            MySqlHelper.ExecuteNonQuery(conn, command, parms);
-            existingId = GetMachineId(conn, parms, details.machineName);
+              MySqlHelper.ExecuteNonQuery(conn, command, parms);
+              existingId = GetMachineId(conn, parms, details.machineName);
+            }
+            Log.DebugFormat("GetMachineId for project {0}, machine {1} is {2}", projectUid, details, existingId);
+            return existingId;
           }
-          Log.DebugFormat("GetMachineId for project {0}, machine {1} is {2}", projectUid, details, existingId);
-          return existingId;
         });
       }
 
@@ -980,7 +984,7 @@ namespace LandfillService.Common.Context
       {
           //Match on AssetID and IsJohnDoe only as MachineName can change.
           var query = @"SELECT ID, MachineName FROM Machine
-                      WHERE AssetID = @assetId AND IsJohnDoe = @isJohnDoe AND ProjectUID = @projectUid";
+                      WHERE AssetID = @assetId AND IsJohnDoe = @isJohnDoe AND ProjectUID = @projectUid and MachineName = @machineName";
 
           long existingId = 0;
           bool updateName = false;
