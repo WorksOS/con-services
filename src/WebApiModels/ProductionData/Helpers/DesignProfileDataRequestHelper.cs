@@ -43,22 +43,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Helpers
       throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// Gets the TCC filespaceId for the vldatastore filespace
-    /// </summary>
-    private string GetFilespaceId()
-    {
-      var filespaceId = configStore.GetValueString("TCCFILESPACEID");
-      if (!string.IsNullOrEmpty(filespaceId))
-      {
-        return filespaceId;
-      }
-
-      const string errorString = "Your application is missing an environment variable TCCFILESPACEID";
-      log.LogError(errorString);
-      throw new InvalidOperationException(errorString);
-    }
-
     public ProfileProductionDataRequest CreateSlicerProfileResponse(Guid projectUid, double startLatDegrees,
       double startLonDegrees, double endLatDegrees, double endLonDegrees, DateTime? startUtc, DateTime? endUtc,
       Guid? cutfillDesignUid)

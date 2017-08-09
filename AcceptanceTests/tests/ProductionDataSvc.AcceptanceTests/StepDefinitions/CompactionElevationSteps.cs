@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
@@ -6,62 +7,74 @@ using TechTalk.SpecFlow;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [Binding, Scope(Feature = "CompactionElevation")]
-  public class CompactionElevationSteps
+  public class CompactionElevationSteps : BaseCompactionSteps
   {
     private Getter<ProjectStatistics> projectStatisticsRequester;
     private Getter<ElevationStatisticsResult> elevationRangeRequester;
-    private string queryParameters = string.Empty;
 
-    private string url;
-    private string projectUid;
-
-    [Given(@"a projectUid ""(.*)""")]
-    public void GivenAProjectUid(string projectUid)
+    [Given(@"startUtc ""(.*)"" and endUtc ""(.*)""")]
+    public void GivenStartUtcAndEndUtc(string startUtc, string endUtc)
     {
-      this.projectUid = projectUid;
+      if (operation == "ElevationRange")
+      {
+        elevationRangeRequester.QueryString.Add("startUtc", startUtc);
+        elevationRangeRequester.QueryString.Add("endUtc", endUtc);
+      }
+      else
+        Assert.Fail(TEST_FAIL_MESSAGE);
     }
 
-    [Given(@"the Compaction Elevation Range service URI ""(.*)""")]
-    public void GivenTheCompactionElevationRangeServiceURI(string url)
+    [Given(@"the result file ""(.*)""")]
+    public void GivenTheResultFile(string resultFileName)
     {
-      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+      switch (operation)
+      {
+        case "ElevationRange": elevationRangeRequester = new Getter<ElevationStatisticsResult>(url, resultFileName); break;
+        case "ProjectStatistics": projectStatisticsRequester = new Getter<ProjectStatistics>(url, resultFileName); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Given(@"a startUtc ""(.*)"" and an EndUtc ""(.*)""")]
-    public void GivenAStartUtcAndAnEndUtc(string startUtc, string endUtc)
+    [Given(@"projectUid ""(.*)""")]
+    public void GivenProjectUid(string projectUid)
     {
-      queryParameters = string.Format("&startUtc={0}&endUtc={1}",
-        startUtc, endUtc);
+      switch (operation)
+      {
+        case "ElevationRange": elevationRangeRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "ProjectStatistics": projectStatisticsRequester.QueryString.Add("ProjectUid", projectUid); break;// statsRequest = new StatisticsParameters { projectUid = projectUid }; break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [When(@"I request Elevation Range")]
-    public void WhenIRequestElevationRange()
+    [Given(@"designUid ""(.*)""")]
+    public void GivenDesignUid(string designUid)
     {
-      elevationRangeRequester = Getter<ElevationStatisticsResult>.GetIt<ElevationStatisticsResult>(this.url, this.projectUid, this.queryParameters);
+      if (operation == "ElevationRange")
+        elevationRangeRequester.QueryString.Add("designUid", designUid);
+      else
+        Assert.Fail(TEST_FAIL_MESSAGE);
     }
 
-    [Then(@"the Elevation Range result should be")]
-    public void ThenTheElevationRangeResultShouldBe(string multilineText)
+    [Then(@"the result should match the ""(.*)"" from the repository")]
+    public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
     {
-      elevationRangeRequester.CompareIt<ElevationStatisticsResult>(multilineText);
+      switch (operation)
+      {
+        case "ElevationRange": Assert.AreEqual(elevationRangeRequester.ResponseRepo[resultName], elevationRangeRequester.CurrentResponse); break;
+        case "ProjectStatistics": Assert.AreEqual(projectStatisticsRequester.ResponseRepo[resultName], projectStatisticsRequester.CurrentResponse); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Given(@"the Compaction Project Statistics service URI ""(.*)""")]
-    public void GivenTheCompactionProjectStatisticsServiceURI(string url)
+    [When(@"I request result")]
+    public void WhenIRequestResult()
     {
-      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
-    }
-
-    [When(@"I request Project Statistics")]
-    public void WhenIRequestProjectStatistics()
-    {
-      projectStatisticsRequester = Getter<ProjectStatistics>.GetIt<ProjectStatistics>(this.url, this.projectUid, this.queryParameters);
-    }
-
-    [Then(@"the Project Statistics result should be")]
-    public void ThenTheProjectStatisticsResultShouldBe(string multilineText)
-    {
-      projectStatisticsRequester.CompareIt<ProjectStatistics>(multilineText);
+      switch (operation)
+      {
+        case "ElevationRange": elevationRangeRequester.DoValidRequest(url); break;
+        case "ProjectStatistics": projectStatisticsRequester.DoValidRequest(url); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
   }
 }

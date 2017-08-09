@@ -347,6 +347,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Profile.feature</DependentUpon>
     </Compile>
+    <Compile Include="StepDefinitions\BaseCompactionSteps.cs" />
     <Compile Include="StepDefinitions\CcaColorPaletteSteps.cs" />
     <Compile Include="StepDefinitions\CCASummarySteps.cs" />
     <Compile Include="StepDefinitions\CMVChangeSteps.cs" />
@@ -658,40 +659,28 @@
     <None Include="TestData\CMVSummaryResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetCMVPercentChangeSummaryResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CompactionGetCMVSummaryResponse.json">
+    <None Include="TestData\CompactionGetCMVDataResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionGetCompactionPalettesResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetElevationPaletteResponse.json">
+    <None Include="TestData\CompactionGetElevationAndProjectStatisticsDataResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetElevationRangeResponse.json">
+    <None Include="TestData\CompactionGetMDPDataResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetMDPSummaryResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CompactionGetPassCountDetailsResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CompactionGetPassCountSummaryResponse.json">
+    <None Include="TestData\CompactionGetPassCountDataResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionGetProductionDataTilesResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetProjectStatisticsResponse.json">
+    <None Include="TestData\CompactionGetSpeedDataResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetSpeedSummaryResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CompactionGetTemperatureSummaryResponse.json">
+    <None Include="TestData\CompactionGetTemperatureDataResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionTagFileRequest.json">

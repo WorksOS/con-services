@@ -15,6 +15,22 @@
     "Code": 0,
     "Message": "success"
   },
+  "NoDesignFilter_PS": {
+    "mdpSummaryData": {
+      "percentEqualsTarget": 31.05422701246211,
+      "percentGreaterThanTarget": 21.129448748175591,
+      "percentLessThanTarget": 47.8163242393623,
+      "totalAreaCoveredSqMeters": 1029.6492000000003,
+      "mdpTarget": {
+        "mdpMachineTarget": 145.0,
+        "targetVaries": false
+      },
+      "minMDPPercent": 90.0,
+      "maxMDPPercent": 100.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
   "DesignOutside": {
     "mdpSummaryData": {
       "percentEqualsTarget": 0,

@@ -129,6 +129,25 @@ namespace VSS.Productivity3D.Common.Controllers
       return results;
     }
 
+    /// <summary>
+    /// Gets a file data by its UID from a list of imported files. 
+    /// This is the deactivated ones.
+    /// </summary>
+    /// <param name="controller"></param>
+    /// <param name="fileListProxy">Proxy client to get list of imported files for the project</param>
+    /// <param name="projectUid">The UID of the project containing the imported files</param>
+    /// <param name="fileUid">File's unique identifier</param>
+    /// <param name="customHeaders">Http request custom headers</param>
+    /// <returns>The requested file data</returns>
+    public static async Task<FileData> GetFile(IFileListProxy fileListProxy, Guid projectUid, Guid fileUid, IDictionary<string, string> customHeaders)
+    {
+      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+      if (fileList == null || fileList.Count == 0)
+        return null;
+
+      //return fileList.Where(f => f.ImportedFileUid == fileUid.ToString() && f.IsActivated).Select(f => f.LegacyFileId).FirstOrDefault();
+      return fileList.FirstOrDefault(f => f.ImportedFileUid == fileUid.ToString() && f.IsActivated);
+    }
 
     /// <summary>
     /// Gets the project settings for the project.

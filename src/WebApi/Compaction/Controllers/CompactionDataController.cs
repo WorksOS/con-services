@@ -202,7 +202,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
 
-      var designFile = await this.GetFile(fileListProxy, projectUid.Value, designUid ?? new Guid(), headers);
+      var designFile = await GetFile(fileListProxy, projectUid, designUid ?? new Guid(), headers);
 
       DesignDescriptor designDescriptor = null;
 

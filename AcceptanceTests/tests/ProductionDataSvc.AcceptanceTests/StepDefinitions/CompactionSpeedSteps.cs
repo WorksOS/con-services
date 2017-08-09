@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
@@ -6,35 +7,63 @@ using TechTalk.SpecFlow;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [Binding, Scope(Feature = "CompactionSpeed")]
-  public class CompactionSpeedSteps
+  public class CompactionSpeedSteps : BaseCompactionSteps
   {
     private Getter<CompactionSpeedSummaryResult> speedSummaryRequester;
 
-    private string url;
-    private string projectUid;
-
-    [Given(@"a projectUid ""(.*)""")]
-    public void GivenAProjectUid(string projectUid)
+    [Given(@"the result file ""(.*)""")]
+    public void GivenTheResultFile(string resultFileName)
     {
-      this.projectUid = projectUid;
+      switch (operation)
+      {
+        case "SpeedSummary": speedSummaryRequester = new Getter<CompactionSpeedSummaryResult>(url, resultFileName); break;
+        case "SpeedDetails": ScenarioContext.Current.Pending(); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Given(@"the Compaction Speed Summary service URI ""(.*)""")]
-    public void GivenTheCompactionSpeedSummaryServiceURI(string url)
+    [Given(@"projectUid ""(.*)""")]
+    public void GivenProjectUid(string projectUid)
     {
-      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+      switch (operation)
+      {
+        case "SpeedSummary": speedSummaryRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "SpeedDetails": ScenarioContext.Current.Pending(); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [When(@"I request Speed summary")]
-    public void WhenIRequestSpeedSummary()
+    [Given(@"designUid ""(.*)""")]
+    public void GivenDesignUid(string designUid)
     {
-      speedSummaryRequester = Getter<CompactionSpeedSummaryResult>.GetIt<CompactionSpeedSummaryResult>(this.url, this.projectUid);
+      switch (operation)
+      {
+        case "SpeedSummary": speedSummaryRequester.QueryString.Add("designUid", designUid); break;
+        case "SpeedDetails": ScenarioContext.Current.Pending(); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Then(@"the Speed result should be")]
-    public void ThenTheSpeedResultShouldBe(string multilineText)
+    [Then(@"the result should match the ""(.*)"" from the repository")]
+    public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
     {
-      speedSummaryRequester.CompareIt<CompactionSpeedSummaryResult>(multilineText);
+      switch (operation)
+      {
+        case "SpeedSummary": Assert.AreEqual(speedSummaryRequester.ResponseRepo[resultName], speedSummaryRequester.CurrentResponse); break;
+        case "SpeedDetails": ScenarioContext.Current.Pending(); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
+    }
+
+    [When(@"I request result")]
+    public void WhenIRequestResult()
+    {
+      switch (operation)
+      {
+        case "SpeedSummary": speedSummaryRequester.DoValidRequest(url); break;
+        case "SpeedDetails": ScenarioContext.Current.Pending(); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
   }
 }

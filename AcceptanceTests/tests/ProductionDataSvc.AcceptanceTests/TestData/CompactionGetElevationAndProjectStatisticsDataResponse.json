@@ -1,5 +1,5 @@
 {
-  "NoDesignFilter": {
+  "NoDesignFilter_ER": {
     "boundingExtents": {
       "maxX": -115.01824137935459,
       "maxY": 36.2077397408003,
@@ -14,12 +14,28 @@
     "Code": 0,
     "Message": "success"
   },
-  "NoData": {
+  "NoData_ER": {
     "boundingExtents": null,
     "minElevation": 0,
     "maxElevation": 0,
     "totalCoverageArea": 0,
     "Code": -4,
     "Message": "No elevation range"
+  },
+  "GoodRequest_PRS": {
+    "startTime": "2012-10-30T00:12:09.109",
+    "endTime": "2012-11-08T01:00:08.756",
+    "cellSize": 0.34,
+    "indexOriginOffset": 536870912,
+    "extents": {
+      "maxX": 2913.2900000000004,
+      "maxY": 1250.69,
+      "maxZ": 624.1365966796875,
+      "minX": 2306.05,
+      "minY": 1125.2300000000002,
+      "minZ": 591.953857421875
+    },
+    "Code": 0,
+    "Message": "success"
   }
 }

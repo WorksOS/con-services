@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
           if (designFile != null)
           {
-            designDescriptor = DesignDescriptor.CreateDesignDescriptor(designFile.LegacyFileId, FileDescriptor.CreateFileDescriptor(GetFilespaceId(), designFile.Path, designFile.Name), 0);
+            designDescriptor = DesignDescriptor.CreateDesignDescriptor(designFile.LegacyFileId, FileDescriptor.CreateFileDescriptor(FileDescriptor.GetFileSpaceId(configStore, log), designFile.Path, designFile.Name), 0);
           }
           else
           {
@@ -94,20 +94,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         designDescriptor, null, llPoints, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false);
     }
 
-    /// <summary>
-    /// Gets the TCC filespaceId for the vldatastore filespace
-    /// </summary>
-    private string GetFilespaceId()
-    {
-      var filespaceId = configStore.GetValueString("TCCFILESPACEID");
-      if (!string.IsNullOrEmpty(filespaceId))
-      {
-        return filespaceId;
-      }
-
-      const string errorString = "Your application is missing an environment variable TCCFILESPACEID";
-      log.LogError(errorString);
-      throw new InvalidOperationException(errorString);
-    }
   }
 }

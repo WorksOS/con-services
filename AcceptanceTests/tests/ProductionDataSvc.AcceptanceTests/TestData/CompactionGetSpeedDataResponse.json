@@ -1,0 +1,26 @@
+{
+  "NoDesignFilter_Summary": {
+    "speedSummaryData": {
+      "percentEqualsTarget": 36.9,
+      "percentGreaterThanTarget": 39.3,
+      "percentLessThanTarget": 23.8,
+      "totalAreaCoveredSqMeters": 10636.7028,
+      "minTarget": 5.0,
+      "maxTarget": 10.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Summary_PS": {
+    "speedSummaryData": {
+      "percentEqualsTarget": 25.0,
+      "percentGreaterThanTarget": 35.0,
+      "percentLessThanTarget": 40.1,
+      "totalAreaCoveredSqMeters": 10636.7028,
+      "minTarget": 7.0,
+      "maxTarget": 11.0
+    },
+    "Code": 0,
+    "Message": "success"
+  }
+}

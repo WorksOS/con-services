@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
@@ -11,30 +12,41 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private Getter<CompactionMdpSummaryResult> mdpSummaryRequester;
 
     private string url;
-    private string projectUid;
 
-    [Given(@"a projectUid ""(.*)""")]
-    public void GivenAProjectUid(string projectUid)
-    {
-      this.projectUid = projectUid;
-    }
-
-    [Given(@"the Compaction MDP Summary service URI ""(.*)""")]
-    public void GivenTheCompactionMDPSummaryServiceURI(string url)
+    [Given(@"the Compaction service URI ""(.*)""")]
+    public void GivenTheCompactionServiceURI(string url)
     {
       this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
     }
 
-    [When(@"I request MDP summary")]
-    public void WhenIRequestMDPSummary()
+    [Given(@"the result file ""(.*)""")]
+    public void GivenTheResultFile(string resultFileName)
     {
-      mdpSummaryRequester = Getter<CompactionMdpSummaryResult>.GetIt<CompactionMdpSummaryResult>(this.url, this.projectUid);
+      mdpSummaryRequester = new Getter<CompactionMdpSummaryResult>(url, resultFileName);
     }
 
-    [Then(@"the MDP result should be")]
-    public void ThenTheMDPResultShouldBe(string multilineText)
+    [Given(@"projectUid ""(.*)""")]
+    public void GivenProjectUid(string projectUid)
     {
-      mdpSummaryRequester.CompareIt<CompactionMdpSummaryResult>(multilineText);
+      mdpSummaryRequester.QueryString.Add("ProjectUid", projectUid);
+    }
+
+    [Given(@"designUid ""(.*)""")]
+    public void GivenDesignUid(string designUid)
+    {
+      mdpSummaryRequester.QueryString.Add("designUid", designUid);
+    }
+
+    [Then(@"the result should match the ""(.*)"" from the repository")]
+    public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
+    {
+      Assert.AreEqual(mdpSummaryRequester.ResponseRepo[resultName], mdpSummaryRequester.CurrentResponse);
+    }
+
+    [When(@"I request result")]
+    public void WhenIRequestResult()
+    {
+      mdpSummaryRequester.DoValidRequest(url);
     }
   }
 }
