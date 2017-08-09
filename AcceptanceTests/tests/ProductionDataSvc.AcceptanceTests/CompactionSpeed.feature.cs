@@ -84,8 +84,8 @@ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string
 testRunner.When("I request Speed summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 8
-testRunner.Then("the Speed result should be", "{\n\"speedSummaryData\": {\n    \"percentEqualsTarget\": 36.9,\n    \"percentGreaterThanT" +
-                    "arget\": 39.3,\n    \"percentLessThanTarget\": 23.8,\n    \"totalAreaCoveredSqMeters\":" +
+testRunner.Then("the Speed result should be", "{\n\"speedSummaryData\": {\n    \"percentEqualsTarget\": 36.8,\n    \"percentGreaterThanT" +
+                    "arget\": 39.1,\n    \"percentLessThanTarget\": 24.1,\n    \"totalAreaCoveredSqMeters\":" +
                     " 10636.7028,\n    \"minTarget\": 5.0,\n    \"maxTarget\": 10.0\n},\n\"Code\": 0,\n\"Message\"" +
                     ": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -110,8 +110,8 @@ testRunner.When("I request Speed summary", ((string)(null)), ((TechTalk.SpecFlow
 #line 28
 testRunner.Then("the Speed result should be", @"{
   ""speedSummaryData"": {
-    ""percentEqualsTarget"": 25.0,
-    ""percentGreaterThanTarget"": 35.0,
+    ""percentEqualsTarget"": 25.1,
+    ""percentGreaterThanTarget"": 34.8,
     ""percentLessThanTarget"": 40.1,
     ""totalAreaCoveredSqMeters"": 10636.7028,
     ""minTarget"": 7.0,

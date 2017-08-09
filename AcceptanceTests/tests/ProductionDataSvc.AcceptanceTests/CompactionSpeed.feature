@@ -9,9 +9,9 @@ Then the Speed result should be
 """
 {
 "speedSummaryData": {
-    "percentEqualsTarget": 36.9,
-    "percentGreaterThanTarget": 39.3,
-    "percentLessThanTarget": 23.8,
+    "percentEqualsTarget": 36.8,
+    "percentGreaterThanTarget": 39.1,
+    "percentLessThanTarget": 24.1,
     "totalAreaCoveredSqMeters": 10636.7028,
     "minTarget": 5.0,
     "maxTarget": 10.0
@@ -29,8 +29,8 @@ Then the Speed result should be
 """
 {
   "speedSummaryData": {
-    "percentEqualsTarget": 25.0,
-    "percentGreaterThanTarget": 35.0,
+    "percentEqualsTarget": 25.1,
+    "percentGreaterThanTarget": 34.8,
     "percentLessThanTarget": 40.1,
     "totalAreaCoveredSqMeters": 10636.7028,
     "minTarget": 7.0,
