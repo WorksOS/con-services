@@ -29,7 +29,6 @@ namespace TestUtility
 
     public TestSupport()
     {
-      CustomerUid = Guid.NewGuid();
       SetEventDate();
     }
     #endregion

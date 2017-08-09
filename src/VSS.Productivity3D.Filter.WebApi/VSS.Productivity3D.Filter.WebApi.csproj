@@ -45,6 +45,11 @@
   <ItemGroup>
     <ProjectReference Include="..\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
