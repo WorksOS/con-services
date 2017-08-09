@@ -7,7 +7,6 @@ namespace VSS.Productivity3D.Common.ResultHandling
 {
     public class RaptorResult : ContractExecutionStatesEnum
   {
-
         public static void AddErrorMessages(ContractExecutionStatesEnum contractExecutionStates)
         {
             contractExecutionStates.DynamicAddwithOffset("OK", (int) TASNodeErrorStatus.asneOK);

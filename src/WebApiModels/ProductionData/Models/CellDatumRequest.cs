@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
     /// <summary>
     /// The request to identify the cell, display information and other configuration information to determine a datum value for the cell.

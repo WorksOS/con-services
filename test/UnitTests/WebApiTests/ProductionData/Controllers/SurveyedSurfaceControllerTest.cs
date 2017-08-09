@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {
@@ -14,7 +14,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     /// Creates an instance of the SurveyedSurfaceRequest class.
     /// </summary>
     /// <returns>The created instance.</returns>
-    /// 
     private SurveyedSurfaceRequest CreateRequest()
     {
       return SurveyedSurfaceRequest.CreateSurveyedSurfaceRequest(
@@ -23,6 +22,5 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         DateTime.UtcNow
         );
     }
-
   }
 }

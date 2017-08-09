@@ -9,10 +9,9 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Extensions;
-using VSS.Productivity3D.WebApiModels.ProductionData.Helpers;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
@@ -26,13 +25,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     public SliceProfileDataRequestHelper()
     { }
 
-    public SliceProfileDataRequestHelper(ILoggerFactory logger, IConfigurationStore configStore,
+    public SliceProfileDataRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
-      log = logger.CreateLogger<SliceProfileDataRequestHelper>();
-      this.configStore = configStore;
-      this.fileListProxy = fileListProxy;
-      this.settingsManager = settingsManager;
+      Log = logger.CreateLogger<SliceProfileDataRequestHelper>();
+      this.ConfigurationStore = configurationStore;
+      this.FileListProxy = fileListProxy;
+      this.SettingsManager = settingsManager;
     }
 
     /// <summary>
@@ -53,13 +52,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
 
-      var filter = settingsManager.CompactionFilter(filterUid.ToString(), customerUid.ToString(), projectUid.ToString(),
+      var filter = SettingsManager.CompactionFilter(filterUid.ToString(), customerUid.ToString(), projectUid.ToString(),
         headers);
 
       DesignDescriptor designDescriptor = null;
       if (cutfillDesignUid.HasValue)
       {
-        var fileList = fileListProxy.GetFiles(projectUid.ToString(), Headers).Result;
+        var fileList = FileListProxy.GetFiles(projectUid.ToString(), Headers).Result;
 
         if (fileList.Count > 0)
         {
@@ -86,7 +85,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         }
       }
 
-      var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(ProjectSettings);
+      var liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
       // callId is set to 'empty' because raptor will create and return a Guid if this is set to empty.
       // this would result in the acceptance tests failing to see the callID == in its equality test
@@ -99,14 +98,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// </summary>
     private string GetFilespaceId()
     {
-      var filespaceId = configStore.GetValueString("TCCFILESPACEID");
+      var filespaceId = ConfigurationStore.GetValueString("TCCFILESPACEID");
       if (!string.IsNullOrEmpty(filespaceId))
       {
         return filespaceId;
       }
 
       const string errorString = "Your application is missing an environment variable TCCFILESPACEID";
-      log.LogError(errorString);
+      Log.LogError(errorString);
       throw new InvalidOperationException(errorString);
     }
   }

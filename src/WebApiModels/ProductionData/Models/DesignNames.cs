@@ -1,5 +1,5 @@
 ﻿
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
     public class DesignNames 
     {

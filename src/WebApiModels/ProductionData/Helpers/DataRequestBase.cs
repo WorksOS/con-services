@@ -5,30 +5,31 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Helpers
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
   public abstract class DataRequestBase
   {
-    public ILogger log;
+    protected ILogger Log;
+    protected IConfigurationStore ConfigurationStore;
+    protected IFileListProxy FileListProxy;
+    protected ICompactionSettingsManager SettingsManager;
 
-    /// <summary>
-    /// Where to get environment variables, connection string etc. from
-    /// </summary>
-    public IConfigurationStore configStore;
+    protected long ProjectId;
+    protected IDictionary<string, string> Headers;
+    protected CompactionProjectSettings ProjectSettings;
+    protected List<long> ExcludedIds;
 
-    /// <summary>
-    /// For getting list of imported files for a project
-    /// </summary>
-    public IFileListProxy fileListProxy;
+    public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, long projectId, CompactionProjectSettings projectSettings, IDictionary<string, string> headers, List<long> excludeIds)
+    {
+      Log = log;
+      ConfigurationStore = configurationStore;
+      FileListProxy = fileListProxy;
+      SettingsManager = settingsManager;
 
-    /// <summary>
-    /// For getting compaction settings for a project
-    /// </summary>
-    public ICompactionSettingsManager settingsManager;
-
-    public long ProjectId;
-    public IDictionary<string, string> Headers;
-    public CompactionProjectSettings ProjectSettings;
-    public List<long> ExcludedIds;
+      ProjectId = projectId;
+      Headers = headers;
+      ProjectSettings = projectSettings;
+      ExcludedIds = excludeIds;
+    }
   }
 }
