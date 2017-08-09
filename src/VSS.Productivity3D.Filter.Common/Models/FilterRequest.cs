@@ -76,8 +76,11 @@ namespace VSS.Productivity3D.Filter.Common.Models
       if (string.IsNullOrEmpty(customerUid) || Guid.TryParse(customerUid, out Guid customerUidGuid) == false)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 27);
 
-      if (string.IsNullOrEmpty(userUid) || isApplicationContext == false && Guid.TryParse(userUid, out Guid userUidGuid) == false)
+      if (string.IsNullOrEmpty(userUid) || 
+          isApplicationContext == false && Guid.TryParse(userUid, out Guid userUidGuid) == false)
+      {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 28);
+      }
 
       if (string.IsNullOrEmpty(projectUid) || Guid.TryParse(projectUid, out Guid projectUidGuid) == false)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
