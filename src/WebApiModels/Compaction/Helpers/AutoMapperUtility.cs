@@ -48,89 +48,50 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         cfg =>
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
-          //Note: CMV raw values are 10ths
           cfg.CreateMap<CompactionProjectSettings, CMVSettings>()
             .ForMember(x => x.overrideTargetCMV,
-              opt => opt.MapFrom(ps => ps.useMachineTargetCmv.HasValue && !ps.useMachineTargetCmv.Value))
+              opt => opt.MapFrom(ps => ps.OverrideMachineTargetCmv))
             .ForMember(x => x.cmvTarget,
-              opt => opt.MapFrom(ps => (ps.customTargetCmv.HasValue ? ps.customTargetCmv.Value : CompactionProjectSettings.DefaultSettings.customTargetCmv) * 10))
+              opt => opt.MapFrom(ps => ps.CustomTargetCmv))
             .ForMember(x => x.minCMV,
             opt => opt.UseValue(MIN_CMV_MDP_VALUE))
             .ForMember(x => x.maxCMV,
             opt => opt.UseValue(MAX_CMV_MDP_VALUE))
             .ForMember(x => x.minCMVPercent,
-            opt => opt.MapFrom(ps => ps.customTargetCmvPercentMinimum.HasValue ? ps.customTargetCmvPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum.Value))
+            opt => opt.MapFrom(ps => ps.CustomTargetCmvPercentMinimum))
             .ForMember(x => x.maxCMVPercent,
-            opt => opt.MapFrom(ps => ps.customTargetCmvPercentMaximum.HasValue ? ps.customTargetCmvPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum.Value));
+            opt => opt.MapFrom(ps => ps.CustomTargetCmvPercentMaximum));
 
-          //Note: MDP raw values are 10ths
           cfg.CreateMap<CompactionProjectSettings, MDPSettings>()
             .ForMember(x => x.overrideTargetMDP,
-              opt => opt.MapFrom(ps => ps.useMachineTargetMdp.HasValue && !ps.useMachineTargetMdp.Value))
+              opt => opt.MapFrom(ps => ps.OverrideMachineTargetMdp))
             .ForMember(x => x.mdpTarget,
-              opt => opt.MapFrom(ps => (ps.customTargetMdp.HasValue ? ps.customTargetMdp.Value : CompactionProjectSettings.DefaultSettings.customTargetMdp) * 10))
+              opt => opt.MapFrom(ps => ps.CustomTargetMdp))
             .ForMember(x => x.minMDP,
               opt => opt.UseValue(MIN_CMV_MDP_VALUE))
             .ForMember(x => x.maxMDP,
               opt => opt.UseValue(MAX_CMV_MDP_VALUE))
             .ForMember(x => x.minMDPPercent,
-              opt => opt.MapFrom(ps => ps.customTargetMdpPercentMinimum.HasValue ? ps.customTargetMdpPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum.Value))
+              opt => opt.MapFrom(ps => ps.CustomTargetMdpPercentMinimum))
             .ForMember(x => x.maxMDPPercent,
-              opt => opt.MapFrom(ps => ps.customTargetMdpPercentMaximum.HasValue ? ps.customTargetMdpPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum.Value));
+              opt => opt.MapFrom(ps => ps.CustomTargetMdpPercentMaximum));
 
-          //Note: TemperatureSettings are °C but TemperatureWarningLevels are 10ths of °C
           cfg.CreateMap<CompactionProjectSettings, TemperatureSettings>()
             .ForMember(x => x.overrideTemperatureRange,
-              opt => opt.MapFrom(ps => ps.useMachineTargetTemperature.HasValue && !ps.useMachineTargetTemperature.Value))
+              opt => opt.MapFrom(ps => ps.OverrideMachineTargetTemperature))
             .ForMember(x => x.minTemperature,
-              opt => opt.MapFrom(ps => ps.customTargetTemperatureMinimum.HasValue ? ps.customTargetTemperatureMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMinimum.Value))
+              opt => opt.MapFrom(ps => ps.CustomTargetTemperatureMinimum))
             .ForMember(x => x.maxTemperature,
-              opt => opt.MapFrom(ps => ps.customTargetTemperatureMaximum.HasValue ? ps.customTargetTemperatureMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMaximum.Value));
+              opt => opt.MapFrom(ps => ps.CustomTargetTemperatureMaximum));
 
           cfg.CreateMap<CompactionProjectSettings, PassCountSettings>()
             .ForMember(x => x.passCounts,
-              opt => opt.MapFrom(ps => ps.useDefaultPassCountTargets.HasValue && !ps.useDefaultPassCountTargets.Value && 
-                                 ps.customPassCountTargets != null && ps.customPassCountTargets.Count > 0
-                ? ps.customPassCountTargets.ToArray() : CompactionProjectSettings.DefaultSettings.customPassCountTargets.ToArray()));
+              opt => opt.MapFrom(ps => ps.CustomPassCounts));
 
           cfg.CreateMap<CompactionProjectSettings, CmvPercentChangeSettings>()
             .ForMember(x => x.percents,
               opt => opt.UseValue(new double[] { 5, 20, 50 }));
 
-          //These are for LiftBuildSettings
-          /*
-          cfg.CreateMap<CompactionProjectSettings, CCVRangePercentage>()
-            .ForMember(x => x.min,
-              opt => opt.MapFrom(ps => ps.customTargetCmvPercentMinimum.HasValue ? ps.customTargetCmvPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum.Value))
-            .ForMember(x => x.max,
-              opt => opt.MapFrom(ps => ps.customTargetCmvPercentMaximum.HasValue ? ps.customTargetCmvPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum.Value));
-
-          cfg.CreateMap<CompactionProjectSettings, MDPRangePercentage>()
-            .ForMember(x => x.min,
-              opt => opt.MapFrom(ps => ps.customTargetMdpPercentMinimum.HasValue ? ps.customTargetMdpPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum.Value))
-            .ForMember(x => x.max,
-              opt => opt.MapFrom(ps => ps.customTargetMdpPercentMaximum.HasValue ? ps.customTargetMdpPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum.Value));
-
-          cfg.CreateMap<CompactionProjectSettings, TargetPassCountRange>()
-            .ForMember(x => x.min,
-              opt => opt.MapFrom(ps => ps.customTargetPassCountMinimum.HasValue ? ps.customTargetPassCountMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetPassCountMinimum.Value))
-            .ForMember(x => x.max,
-            opt => opt.MapFrom(ps => ps.customTargetPassCountMaximum.HasValue ? ps.customTargetPassCountMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetPassCountMaximum.Value));
-
-          cfg.CreateMap<CompactionProjectSettings, TemperatureWarningLevels>()
-            .ForMember(x => x.min,
-              opt => opt.MapFrom(ps => (ps.customTargetTemperatureMinimum.HasValue ? ps.customTargetTemperatureMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMinimum.Value) * 10))
-            .ForMember(x => x.max,
-              opt => opt.MapFrom(ps => (ps.customTargetTemperatureMaximum.HasValue ? ps.customTargetTemperatureMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMaximum.Value) * 10)); 
-
-          cfg.CreateMap<CompactionProjectSettings, MachineSpeedTarget>()
-            .ForMember(x => x.MinTargetMachineSpeed,
-              opt => opt.MapFrom(ps => (ps.useDefaultTargetRangeSpeed.HasValue && !ps.useDefaultTargetRangeSpeed.Value && ps.customTargetSpeedMinimum.HasValue ?
-                                        ps.customTargetSpeedMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMinimum.Value) * ConversionConstants.KM_HR_TO_CM_SEC))
-            .ForMember(x => x.MaxTargetMachineSpeed,
-            opt => opt.MapFrom(ps => (ps.useDefaultTargetRangeSpeed.HasValue && !ps.useDefaultTargetRangeSpeed.Value && ps.customTargetSpeedMaximum.HasValue ? 
-                                      ps.customTargetSpeedMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMaximum.Value) * ConversionConstants.KM_HR_TO_CM_SEC));
-          */
           cfg.CreateMap<CompactionProjectSettings, LiftBuildSettings>()
             .ForMember(x => x.cCVRange,
               opt => opt.ResolveUsing<CustomCCVRangePercentageResolver>())
@@ -155,15 +116,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             .ForMember(x => x.overridingLiftThickness,
               opt => opt.Ignore())
             .ForMember(x => x.overridingMachineCCV,
-              opt => opt.MapFrom(ps => ps.useMachineTargetCmv.HasValue && !ps.useMachineTargetCmv.Value &&
-                                       ps.customTargetCmv.HasValue
-                ? (short) (ps.customTargetCmv.Value * 10)
-                : (short?) null))
+              opt => opt.MapFrom(ps => ps.NullableCustomTargetCmv))
             .ForMember(x => x.overridingMachineMDP,
-              opt => opt.MapFrom(ps => ps.useMachineTargetMdp.HasValue && !ps.useMachineTargetMdp.Value &&
-                                       ps.customTargetMdp.HasValue
-                ? (short) (ps.customTargetMdp.Value * 10)
-                : (short?) null))
+              opt => opt.MapFrom(ps => ps.NullableCustomTargetMdp))
             .ForMember(x => x.overridingTargetPassCountRange,
               opt => opt.ResolveUsing<CustomTargetPassCountRangeResolver>())
             .ForMember(x => x.overridingTemperatureWarningLevels,
@@ -188,11 +143,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       public CCVRangePercentage Resolve(CompactionProjectSettings src, LiftBuildSettings dst, CCVRangePercentage member, ResolutionContext context)
       {
-        var cmvOverrideRange = src.useDefaultTargetRangeCmvPercent.HasValue && !src.useDefaultTargetRangeCmvPercent.Value;
-        var cmvMinPercent = src.customTargetCmvPercentMinimum.HasValue ? src.customTargetCmvPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum.Value;
-        var cmvMaxPercent = src.customTargetCmvPercentMaximum.HasValue ? src.customTargetCmvPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum.Value;
-
-        return cmvOverrideRange ? CCVRangePercentage.CreateCcvRangePercentage(cmvMinPercent, cmvMaxPercent) : null;
+        return src.OverrideDefaultTargetRangeCmvPercent ? 
+          CCVRangePercentage.CreateCcvRangePercentage(src.CustomTargetCmvPercentMinimum, src.CustomTargetCmvPercentMaximum) : null;
       }
     }
 
@@ -200,11 +152,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       public MDPRangePercentage Resolve(CompactionProjectSettings src, LiftBuildSettings dst, MDPRangePercentage member, ResolutionContext context)
       {
-        var mdpOverrideRange = src.useDefaultTargetRangeMdpPercent.HasValue && !src.useDefaultTargetRangeMdpPercent.Value;
-        var mdpMinPercent = src.customTargetMdpPercentMinimum.HasValue ? src.customTargetMdpPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum.Value;
-        var mdpMaxPercent = src.customTargetMdpPercentMaximum.HasValue ? src.customTargetMdpPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum.Value;
-
-        return mdpOverrideRange ? MDPRangePercentage.CreateMdpRangePercentage(mdpMinPercent, mdpMaxPercent) : null;
+        return src.OverrideDefaultTargetRangeMdpPercent ? 
+          MDPRangePercentage.CreateMdpRangePercentage(src.CustomTargetMdpPercentMinimum, src.CustomTargetMdpPercentMaximum) : null;
       }
     }
 
@@ -212,12 +161,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       public TargetPassCountRange Resolve(CompactionProjectSettings src, LiftBuildSettings dst, TargetPassCountRange member, ResolutionContext context)
       {
-        var passCountOverrideRange = src.useMachineTargetPassCount.HasValue && !src.useMachineTargetPassCount.Value;
-        var passCountMin = src.customTargetPassCountMinimum.HasValue ? src.customTargetPassCountMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetPassCountMinimum.Value;
-        var passCountMax = src.customTargetPassCountMaximum.HasValue ? src.customTargetPassCountMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetPassCountMaximum.Value;
-
-        return passCountOverrideRange
-          ? TargetPassCountRange.CreateTargetPassCountRange((ushort) passCountMin, (ushort) passCountMax)
+        return src.OverrideMachineTargetPassCount
+          ? TargetPassCountRange.CreateTargetPassCountRange((ushort) src.customTargetPassCountMinimum, (ushort) src.customTargetPassCountMaximum)
           : null;
       }
     }
@@ -225,12 +170,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       public TemperatureWarningLevels Resolve(CompactionProjectSettings src, LiftBuildSettings dst, TemperatureWarningLevels member, ResolutionContext context)
       {
-        var overrideRange = src.useMachineTargetTemperature.HasValue && !src.useMachineTargetTemperature.Value;
-        var tempMin = (src.customTargetTemperatureMinimum.HasValue ? src.customTargetTemperatureMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMinimum.Value) * 10;
-        var tempMax = (src.customTargetTemperatureMaximum.HasValue ? src.customTargetTemperatureMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMaximum.Value) * 10;
-
-        return overrideRange
-          ? TemperatureWarningLevels.CreateTemperatureWarningLevels((ushort)Math.Round(tempMin), (ushort)Math.Round(tempMax)) : null;
+        //Temperature warning levels are 10ths of °C
+        return src.OverrideMachineTargetTemperature
+          ? TemperatureWarningLevels.CreateTemperatureWarningLevels((ushort)Math.Round(src.CustomTargetTemperatureMinimum*10), (ushort)Math.Round(src.CustomTargetTemperatureMaximum*10)) : null;
       }
     }
 
@@ -238,12 +180,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       public MachineSpeedTarget Resolve(CompactionProjectSettings src, LiftBuildSettings dst, MachineSpeedTarget member, ResolutionContext context)
       {
-        //Note: Speed is cm/s for Raptor but km/h in project settings
-        var speedOverrideRange = src.useDefaultTargetRangeSpeed.HasValue && !src.useDefaultTargetRangeSpeed.Value;
-        var speedMin = (speedOverrideRange && src.customTargetSpeedMinimum.HasValue ? src.customTargetSpeedMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMinimum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
-        var speedMax = (speedOverrideRange && src.customTargetSpeedMaximum.HasValue ? src.customTargetSpeedMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMaximum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
-
-        return MachineSpeedTarget.CreateMachineSpeedTarget((ushort)Math.Round(speedMin), (ushort)Math.Round(speedMax));
+        return MachineSpeedTarget.CreateMachineSpeedTarget((ushort)Math.Round(src.CustomTargetSpeedMinimum), (ushort)Math.Round(src.CustomTargetSpeedMaximum));
       }
     }
 

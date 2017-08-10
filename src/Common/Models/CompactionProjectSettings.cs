@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 
@@ -16,6 +17,7 @@ namespace VSS.Productivity3D.Common.Models
   /// </summary>
   public class CompactionProjectSettings : IValidatable
   {
+    #region Properties
     /// <summary>
     /// Flag to determine if machine target pass count or custom target range is used. Default is true.
     /// </summary>
@@ -162,7 +164,9 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "customPassCountTargets", Required = Required.Default)]
     public List<int> customPassCountTargets { get; private set; }
+    #endregion
 
+    #region Construction
     /// <summary>
     /// Private constructor
     /// </summary>
@@ -265,7 +269,115 @@ namespace VSS.Productivity3D.Common.Models
           useDefaultPassCountTargets = true,
           customPassCountTargets = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 }
         };
+    #endregion
 
+    #region Getters 
+
+    /// <summary>
+    /// Flag to determine if default or custom CMV used
+    /// </summary>
+    public bool OverrideMachineTargetCmv => useMachineTargetCmv.HasValue && !useMachineTargetCmv.Value;
+    /// <summary>
+    /// Flag to determine if default or custom MDP used
+    /// </summary>
+    public bool OverrideMachineTargetMdp => useMachineTargetMdp.HasValue && !useMachineTargetMdp.Value;
+    /// <summary>
+    /// Flag to determine if default or custom temperature used
+    /// </summary>
+    public bool OverrideMachineTargetTemperature => useMachineTargetTemperature.HasValue && !useMachineTargetTemperature.Value;
+    /// <summary>
+    /// Flag to determine if default or custom CMV % used
+    /// </summary>
+    public bool OverrideDefaultTargetRangeCmvPercent => useDefaultTargetRangeCmvPercent.HasValue &&
+                                                        !useDefaultTargetRangeCmvPercent.Value;
+    /// <summary>
+    /// Flag to determine if default or custom MDP % used
+    /// </summary>
+    public bool OverrideDefaultTargetRangeMdpPercent => useDefaultTargetRangeMdpPercent.HasValue &&
+                                                        !useDefaultTargetRangeMdpPercent.Value;
+    /// <summary>
+    /// Flag to determine if default or custom pass count target used for summary
+    /// </summary>
+    public bool OverrideMachineTargetPassCount => useMachineTargetPassCount.HasValue &&
+                                                  !useMachineTargetPassCount.Value;
+    /// <summary>
+    /// Flag to determine if default or custom pass count targets used for details
+    /// </summary>
+    public bool OverrideDefaultPassCountTargets => useDefaultPassCountTargets.HasValue && !useDefaultPassCountTargets.Value;
+    /// <summary>
+    /// Flag to determine if default or custom speed used
+    /// </summary>
+    public bool OverrideDefaultTargetRangeSpeed => useDefaultTargetRangeSpeed.HasValue && !useDefaultTargetRangeSpeed.Value;
+    /// <summary>
+    /// Get CMV target as a value for Raptor (10ths)
+    /// </summary>
+    public double CustomTargetCmv => (double)(customTargetCmv ?? DefaultSettings.customTargetCmv) * 10;
+    /// <summary>
+    /// Get CMV target as a nullable value for Raptor (10ths) for lift buildsettings
+    /// </summary>
+    public short? NullableCustomTargetCmv => OverrideMachineTargetCmv && customTargetCmv.HasValue
+      ? (short)(customTargetCmv.Value * 10)
+      : (short?)null;
+    /// <summary>
+    /// Get the minimum CMV % target as a value for Raptor
+    /// </summary>
+    public double CustomTargetCmvPercentMinimum => customTargetCmvPercentMinimum ?? (double)DefaultSettings.customTargetCmvPercentMinimum;
+    /// <summary>
+    /// Get the maximum CMV % target as a value for Raptor
+    /// </summary>
+    public double CustomTargetCmvPercentMaximum => customTargetCmvPercentMaximum ?? (double)DefaultSettings.customTargetCmvPercentMaximum;
+    /// <summary>
+    /// Get MDP target as a value for Raptor (10ths)
+    /// </summary>
+    public double CustomTargetMdp => (double)(customTargetMdp ?? DefaultSettings.customTargetMdp) * 10;
+    /// <summary>
+    /// Get MDP target as a nullable value for Raptor (10ths) for lift buildsettings
+    /// </summary>
+    public short? NullableCustomTargetMdp => OverrideMachineTargetMdp && customTargetMdp.HasValue
+      ? (short) (customTargetMdp.Value * 10)
+      : (short?) null;
+    /// <summary>
+    /// Get the minimum CMV % target as a value for Raptor
+    /// </summary>
+    public double CustomTargetMdpPercentMinimum => customTargetMdpPercentMinimum ?? (double)DefaultSettings.customTargetMdpPercentMinimum;
+    /// <summary>
+    /// Get the maximum CMV % target as a value for Raptor
+    /// </summary>
+    public double CustomTargetMdpPercentMaximum => customTargetMdpPercentMaximum ?? (double)DefaultSettings.customTargetMdpPercentMaximum;
+    /// <summary>
+    /// Get the minimum temperature target as a value for Raptor in °C
+    /// </summary>
+    public double CustomTargetTemperatureMinimum => customTargetTemperatureMinimum ?? (double)DefaultSettings.customTargetTemperatureMinimum;
+    /// <summary>
+    /// Get the maximum temperature target as a value for Raptor in °C
+    /// </summary>
+    public double CustomTargetTemperatureMaximum => customTargetTemperatureMaximum ?? (double)DefaultSettings.customTargetTemperatureMaximum;
+    /// <summary>
+    /// Get the minimum pass count target as a value for Raptor
+    /// </summary>
+    public int CustomTargetPassCountMinimum => customTargetPassCountMinimum ?? (int) DefaultSettings.customTargetPassCountMinimum;
+    /// <summary>
+    /// Get the maximum pass count target as a value for Raptor
+    /// </summary>
+    public int CustomTargetPassCountMaximum => customTargetPassCountMaximum ?? (int)DefaultSettings.customTargetPassCountMaximum;
+    /// <summary>
+    /// Get the minimum speed target as a value for Raptor in cm/s
+    /// </summary>
+    public double CustomTargetSpeedMinimum => (OverrideDefaultTargetRangeSpeed && customTargetSpeedMinimum.HasValue ? 
+      customTargetSpeedMinimum.Value : (double)DefaultSettings.customTargetSpeedMinimum) * ConversionConstants.KM_HR_TO_CM_SEC;
+    /// <summary>
+    /// Get the maximum speed target as a value for Raptor in cm/s
+    /// </summary>
+    public double CustomTargetSpeedMaximum => (OverrideDefaultTargetRangeSpeed && customTargetSpeedMaximum.HasValue ? 
+      customTargetSpeedMaximum.Value : (double)DefaultSettings.customTargetSpeedMaximum) * ConversionConstants.KM_HR_TO_CM_SEC;
+    /// <summary>
+    /// Get the pass count details targets as a value for Raptor
+    /// </summary>
+    public int[] CustomPassCounts => OverrideDefaultPassCountTargets && 
+      customPassCountTargets != null && customPassCountTargets.Count > 0
+      ? customPassCountTargets.ToArray()
+      : DefaultSettings.customPassCountTargets.ToArray();
+    #endregion
 
     /// <summary>
     /// Restore settings from a string
@@ -294,6 +406,7 @@ namespace VSS.Productivity3D.Common.Models
       return settings;
     }
 
+    #region Validation
     /// <summary>
     /// Validates all properties
     /// </summary>
@@ -451,6 +564,7 @@ namespace VSS.Productivity3D.Common.Models
         }
       }
     }
+    #endregion
 
     private const double MIN_TEMPERATURE = 1.0; //°C
     private const double MAX_TEMPERATURE = 1000.0;
