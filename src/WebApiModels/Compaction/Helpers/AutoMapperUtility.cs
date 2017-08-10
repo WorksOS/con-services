@@ -54,9 +54,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             .ForMember(x => x.cmvTarget,
               opt => opt.MapFrom(ps => ps.CustomTargetCmv))
             .ForMember(x => x.minCMV,
-            opt => opt.UseValue(MIN_CMV_MDP_VALUE))
+            opt => opt.MapFrom(ps => ps.CmvMinimum))
             .ForMember(x => x.maxCMV,
-            opt => opt.UseValue(MAX_CMV_MDP_VALUE))
+            opt => opt.MapFrom(ps => ps.CmvMaximum))
             .ForMember(x => x.minCMVPercent,
             opt => opt.MapFrom(ps => ps.CustomTargetCmvPercentMinimum))
             .ForMember(x => x.maxCMVPercent,
@@ -68,9 +68,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             .ForMember(x => x.mdpTarget,
               opt => opt.MapFrom(ps => ps.CustomTargetMdp))
             .ForMember(x => x.minMDP,
-              opt => opt.UseValue(MIN_CMV_MDP_VALUE))
+              opt => opt.MapFrom(ps => ps.MdpMinimum))
             .ForMember(x => x.maxMDP,
-              opt => opt.UseValue(MAX_CMV_MDP_VALUE))
+              opt => opt.MapFrom(ps => ps.MdpMaximum))
             .ForMember(x => x.minMDPPercent,
               opt => opt.MapFrom(ps => ps.CustomTargetMdpPercentMinimum))
             .ForMember(x => x.maxMDPPercent,
@@ -90,7 +90,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
           cfg.CreateMap<CompactionProjectSettings, CmvPercentChangeSettings>()
             .ForMember(x => x.percents,
-              opt => opt.UseValue(new double[] { 5, 20, 50 }));
+              opt => opt.MapFrom(ps => ps.CmvPercentChange));
 
           cfg.CreateMap<CompactionProjectSettings, LiftBuildSettings>()
             .ForMember(x => x.cCVRange,
@@ -136,9 +136,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
      
     }
 
-    public static short MIN_CMV_MDP_VALUE = 0;
-    public static short MAX_CMV_MDP_VALUE = 2000;
-
+  
     public class CustomCCVRangePercentageResolver : IValueResolver<CompactionProjectSettings, LiftBuildSettings, CCVRangePercentage>
     {
       public CCVRangePercentage Resolve(CompactionProjectSettings src, LiftBuildSettings dst, CCVRangePercentage member, ResolutionContext context)
@@ -170,9 +168,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       public TemperatureWarningLevels Resolve(CompactionProjectSettings src, LiftBuildSettings dst, TemperatureWarningLevels member, ResolutionContext context)
       {
-        //Temperature warning levels are 10ths of °C
         return src.OverrideMachineTargetTemperature
-          ? TemperatureWarningLevels.CreateTemperatureWarningLevels((ushort)Math.Round(src.CustomTargetTemperatureMinimum*10), (ushort)Math.Round(src.CustomTargetTemperatureMaximum*10)) : null;
+          ? TemperatureWarningLevels.CreateTemperatureWarningLevels(src.CustomTargetTemperatureWarningLevelMinimum, src.CustomTargetTemperatureWarningLevelMaximum) : null;
       }
     }
 
@@ -180,7 +177,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       public MachineSpeedTarget Resolve(CompactionProjectSettings src, LiftBuildSettings dst, MachineSpeedTarget member, ResolutionContext context)
       {
-        return MachineSpeedTarget.CreateMachineSpeedTarget((ushort)Math.Round(src.CustomTargetSpeedMinimum), (ushort)Math.Round(src.CustomTargetSpeedMaximum));
+        return MachineSpeedTarget.CreateMachineSpeedTarget(src.CustomTargetSpeedMinimum, src.CustomTargetSpeedMaximum);
       }
     }
 

@@ -363,13 +363,13 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// Get the minimum speed target as a value for Raptor in cm/s
     /// </summary>
-    public double CustomTargetSpeedMinimum => (OverrideDefaultTargetRangeSpeed && customTargetSpeedMinimum.HasValue ? 
-      customTargetSpeedMinimum.Value : (double)DefaultSettings.customTargetSpeedMinimum) * ConversionConstants.KM_HR_TO_CM_SEC;
+    public ushort CustomTargetSpeedMinimum => (ushort)Math.Round((OverrideDefaultTargetRangeSpeed && customTargetSpeedMinimum.HasValue ? 
+      customTargetSpeedMinimum.Value : (double)DefaultSettings.customTargetSpeedMinimum) * ConversionConstants.KM_HR_TO_CM_SEC);
     /// <summary>
     /// Get the maximum speed target as a value for Raptor in cm/s
     /// </summary>
-    public double CustomTargetSpeedMaximum => (OverrideDefaultTargetRangeSpeed && customTargetSpeedMaximum.HasValue ? 
-      customTargetSpeedMaximum.Value : (double)DefaultSettings.customTargetSpeedMaximum) * ConversionConstants.KM_HR_TO_CM_SEC;
+    public ushort CustomTargetSpeedMaximum => (ushort)Math.Round((OverrideDefaultTargetRangeSpeed && customTargetSpeedMaximum.HasValue ? 
+      customTargetSpeedMaximum.Value : (double)DefaultSettings.customTargetSpeedMaximum) * ConversionConstants.KM_HR_TO_CM_SEC);
     /// <summary>
     /// Get the pass count details targets as a value for Raptor
     /// </summary>
@@ -377,6 +377,34 @@ namespace VSS.Productivity3D.Common.Models
       customPassCountTargets != null && customPassCountTargets.Count > 0
       ? customPassCountTargets.ToArray()
       : DefaultSettings.customPassCountTargets.ToArray();
+    /// <summary>
+    /// Get the minimum temperature warning level as a value for Raptor in 10ths of °C
+    /// </summary>
+    public ushort CustomTargetTemperatureWarningLevelMinimum => (ushort)Math.Round(CustomTargetTemperatureMinimum * 10);
+    /// <summary>
+    /// Get the maximum temperature warning level as a value for Raptor in 10ths of °C
+    /// </summary>
+    public ushort CustomTargetTemperatureWarningLevelMaximum => (ushort)Math.Round(CustomTargetTemperatureMaximum * 10);
+    /// <summary>
+    /// The CMV % change settings (no custom ones for now)
+    /// </summary>
+    public double[] CmvPercentChange => new double[] {5, 20, 50};
+    /// <summary>
+    /// Minimum CMV for Raptor (10ths)
+    /// </summary>
+    public short CmvMinimum => MIN_CMV_MDP_VALUE;
+    /// <summary>
+    /// Maximum CMV for Raptor (10ths)
+    /// </summary>
+    public short CmvMaximum => MAX_CMV_MDP_VALUE;
+    /// <summary>
+    /// Minimum MDP for Raptor (10ths)
+    /// </summary>
+    public short MdpMinimum => MIN_CMV_MDP_VALUE;
+    /// <summary>
+    /// Maximum MDP for Raptor (10ths)
+    /// </summary>
+    public short MdpMaximum => MAX_CMV_MDP_VALUE;
     #endregion
 
     /// <summary>
@@ -594,7 +622,11 @@ namespace VSS.Productivity3D.Common.Models
     private const double MAX_BULKING = 100.0;
 
     private const double MIN_CUT_FILL = -400.0; //m
-    private const double MAX_CUT_FILL = 400.0;  
+    private const double MAX_CUT_FILL = 400.0;
+
+    private const short MIN_CMV_MDP_VALUE = 0;
+    private const short MAX_CMV_MDP_VALUE = 2000;
+
 
 
   }
