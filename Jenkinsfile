@@ -41,6 +41,7 @@ node('Ubuntu_Slave') {
     stage 'Prepare Acceptance tests'
     sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
     stage 'Compose containers'
+    sh "bash ./awslogin.sh"
     sh "bash ./start_containers.sh"
     stage 'Wait for containers to finish'
     sh "bash ./wait_container.sh testcontainers"
