@@ -15,6 +15,7 @@ using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 using VSS.TCCFileAccess;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 
 namespace VSS.Productivity3D.WebApi
 {

@@ -1,37 +1,43 @@
 ﻿using System;
 
-namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
+namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
 {
   public class WebMercatorProjection
   {
     //see http://gis.stackexchange.com/questions/66247/what-is-the-formula-for-calculating-world-coordinates-for-a-given-latlng-in-goog/66357#66357
 
     public const int TILE_SIZE = 256;
+    private const int ONE_HALF_CIRCLE = 180;
+    private const int ONE_FULL_CIRCLE = 360;
 
     public static double DegreesToRadians(double deg)
     {
-      return deg * (Math.PI / 180);
+      return deg * (Math.PI / ONE_HALF_CIRCLE);
     }
 
     public static double RadiansToDegrees(double rad)
     {
-      return rad / (Math.PI / 180);
+      return rad / (Math.PI / ONE_HALF_CIRCLE);
     }
 
     public static Point FromLatLngToPoint(Point latLng)
     {
-      Point pt = new Point();
-      pt.x = (latLng.Longitude + 180) / 360 * TILE_SIZE;
+      var pt = new Point {
+        x = (latLng.Longitude + ONE_HALF_CIRCLE) / ONE_FULL_CIRCLE * TILE_SIZE
+      };
+
       double latRad = DegreesToRadians(latLng.Latitude);
       pt.y = ((1 - Math.Log(Math.Tan(latRad) + 1 / Math.Cos(latRad)) / Math.PI) / 2 * Math.Pow(2, 0)) * TILE_SIZE;
+
       return pt;
     }
 
     public static Point FromPointToLatLng(Point point)
     {
-      double lng = point.x / TILE_SIZE * 360 - 180;
+      double lng = point.x / TILE_SIZE * ONE_FULL_CIRCLE - ONE_HALF_CIRCLE;
       double n = Math.PI - 2 * Math.PI * point.y / TILE_SIZE;
       double lat = RadiansToDegrees(Math.Atan(0.5 * (Math.Exp(n) - Math.Exp(-n))));
+
       return new Point(lat, lng);
     }
 
@@ -42,18 +48,20 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
 
     public static Point PixelToTile(Point pixelPt)
     {
-      Point tilePt = new Point();
-      tilePt.x = Math.Round(pixelPt.x / TILE_SIZE);//was Math.Floor
-      tilePt.y = Math.Round(pixelPt.y / TILE_SIZE);//but gave wrong result in some cases
-      return tilePt;
+      return new Point
+      {
+        x = Math.Round(pixelPt.x / TILE_SIZE), //was Math.Floor but gave wrong result in some cases
+        y = Math.Round(pixelPt.y / TILE_SIZE)
+      };
     }
 
     public static Point TileToPixel(Point tilePt)
     {
-      Point pixelPt = new Point();
-      pixelPt.x = tilePt.x * TILE_SIZE;
-      pixelPt.y = tilePt.y * TILE_SIZE;
-      return pixelPt;
+      return new Point
+      {
+        x = tilePt.x * TILE_SIZE,
+        y = tilePt.y * TILE_SIZE
+      };
     }
 
     public static Point LatLngToPixel(Point latLng, int numTiles)
@@ -72,18 +80,20 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
 
     public static Point WorldToPixel(Point worldPt, int numTiles)
     {
-      Point pixelPt = new Point();
-      pixelPt.x = worldPt.x * numTiles;
-      pixelPt.y = worldPt.y * numTiles;
-      return pixelPt;
+      return new Point
+      {
+        x = worldPt.x * numTiles,
+        y = worldPt.y * numTiles
+      };
     }
 
     public static Point PixelToWorld(Point pixelPt, int numTiles)
     {
-      Point worldPt = new Point();
-      worldPt.x = pixelPt.x / numTiles;
-      worldPt.y = pixelPt.y / numTiles;
-      return worldPt;
+      return new Point
+      {
+        x = pixelPt.x / numTiles,
+        y = pixelPt.y / numTiles
+      };
     }
 
     //see http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
@@ -96,7 +106,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
     /// <param name="numTiles">number of tiles (calcuated from zoom level)</param>
     /// <returns>x tile coordinate</returns>
     public static int LongitudeToTile(double longitude, int numTiles)
-    {      
+    {
       var columnIndex = longitude;
       var columnNormalized = (1.0 + columnIndex / Math.PI) / 2.0;
       var column = columnNormalized * numTiles;
@@ -111,7 +121,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
     /// <param name="numTiles">number of tiles (calcuated from zoom level)</param>
     /// <returns>y tile coordinate</returns>
     public static int LatitudeToTile(double latitude, int numTiles)
-    {    
+    {
       var rowIndex = Math.Log(Math.Tan(latitude) + (1.0 / Math.Cos(latitude)));
       var rowNormalized = (1.0 - rowIndex / Math.PI) / 2.0;
       var row = rowNormalized * numTiles;

@@ -4,9 +4,10 @@ using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 using VSS.TCCFileAccess;
 
-namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
+namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
 {
   /// <summary>
   /// Generates tiles for a DXF file using Global Mapper in TCC.
