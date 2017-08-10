@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
+namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
 {
   public class WebMercatorProjection
   {
