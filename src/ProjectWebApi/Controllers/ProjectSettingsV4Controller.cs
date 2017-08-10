@@ -17,10 +17,22 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
+  /// <summary>
+  /// Project Settings controller, version 4.
+  /// </summary>
   public class ProjectSettingsV4Controller : ProjectSettingsBaseController
   {
     private readonly ILogger log;
 
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    /// <param name="projectRepo">The MasterData ProjectRepository persistent storage interface</param>
+    /// <param name="raptorProxy">The Raptor Proxy refernce</param>
+    /// <param name="configStore">ConfigurationStore for module meta data</param>
+    /// <param name="logger">The ILoggerFactory logging implementation</param>
+    /// <param name="serviceExceptionHandler">The service exception handler</param>
+    /// <param name="producer">The Kafka consumer</param>
     public ProjectSettingsV4Controller(IRepository<IProjectEvent> projectRepo, IRaptorProxy raptorProxy,
       IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IKafka producer)
       : base(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, producer)
