@@ -95,7 +95,7 @@ namespace TestUtility
                   method = "GET";
                   break;
               }
-              CallFilterWebApi(routeSuffix, method);
+              CallFilterWebApi(routeSuffix, method, jsonString);
             }
             else
             {
@@ -116,12 +116,12 @@ namespace TestUtility
       }
     }
 
-    public string CallFilterWebApi(string routeSuffix, string method)
+    public string CallFilterWebApi(string routeSuffix, string method, string body = null)
     {
 
       var uri = GetBaseUri() + routeSuffix;  // "http://localhost:20979/"
       var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, null, HttpStatusCode.OK, "application/json", CustomerUid.ToString());
+      var response = restClient.DoHttpRequest(uri, method, body, HttpStatusCode.OK, "application/json", CustomerUid.ToString());
       return response;
     }
 
@@ -157,37 +157,37 @@ namespace TestUtility
       switch (eventType)
       {
         case "CreateFilterEvent":
-          var createFilterEvent = new CreateFilterEvent()
+          var createFilterEvent = new CreateFilterEvent
           {
-            ActionUTC = eventObject.EventDate,
-            FilterUID = eventObject.FilterUID,
-            CustomerUID = eventObject.CustomerUID,
-            ProjectUID = eventObject.ProjectUID,
-            UserUID = eventObject.UserUID,
+            ActionUTC = EventDate,
+            FilterUID = new Guid(eventObject.FilterUID),
+            CustomerUID = new Guid(eventObject.CustomerUID),
+            ProjectUID = new Guid(eventObject.ProjectUID),
+            UserUID = new Guid(eventObject.UserUID),
             FilterJson = eventObject.FilterJson
           };
           jsonString = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent }, jsonSettings);
           break;
         case "UpdateFilterEvent":
-          var updateFilterEvent = new UpdateFilterEvent()
+          var updateFilterEvent = new UpdateFilterEvent
           {
-            ActionUTC = eventObject.EventDate,
-            FilterUID = eventObject.FilterUID,
-            CustomerUID = eventObject.CustomerUID,
-            ProjectUID = eventObject.ProjectUID,
-            UserUID = eventObject.UserUID,
+            ActionUTC = EventDate,
+            FilterUID = new Guid(eventObject.FilterUID),
+            CustomerUID = new Guid(eventObject.CustomerUID),
+            ProjectUID = new Guid(eventObject.ProjectUID),
+            UserUID = new Guid(eventObject.UserUID),
             FilterJson = eventObject.FilterJson            
           };
           jsonString = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent }, jsonSettings);
           break;
         case "DeleteFilterEvent":
-          var deleteFilterEvent = new DeleteFilterEvent()
+          var deleteFilterEvent = new DeleteFilterEvent
           {
-            ActionUTC = eventObject.EventDate,
-            FilterUID = eventObject.FilterUID,
-            CustomerUID = eventObject.CustomerUID,
-            ProjectUID = eventObject.ProjectUID,
-            UserUID = eventObject.UserUID,            
+            ActionUTC = EventDate,
+            FilterUID = new Guid(eventObject.FilterUID),
+            CustomerUID = new Guid(eventObject.CustomerUID),
+            ProjectUID = new Guid(eventObject.ProjectUID),
+            UserUID = new Guid(eventObject.UserUID),            
           };
           jsonString = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteFilterEvent }, jsonSettings);
           break;

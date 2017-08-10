@@ -4,6 +4,8 @@ services:
     build: ./artifacts/VSS.Productivity3D.Filter.WebApi
     env_file:
      - docker-compose.env
+    volumes:
+      - ./artifacts/logs:/app/logs 
     depends_on:
       - schema
   mockprojectwebapi:
