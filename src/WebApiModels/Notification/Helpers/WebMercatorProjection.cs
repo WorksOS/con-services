@@ -46,6 +46,15 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       };
     }
 
+    public static Point TileToPixel(Point tilePt)
+    {
+      return new Point
+      {
+        x = tilePt.x * TILE_SIZE,
+        y = tilePt.y * TILE_SIZE
+      };
+    }
+
     public static Point LatLngToPixel(Point latLng, int numTiles)
     {
       Point worldPt = FromLatLngToPoint(latLng);
