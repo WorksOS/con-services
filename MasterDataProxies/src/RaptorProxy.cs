@@ -119,6 +119,22 @@ namespace VSS.MasterData.Proxies
       return response;
     }
 
+
+    /// <summary>
+    /// Validates that filterUid has changed i.e. updated/deleted but not inserted
+    /// </summary>
+    /// <param name="filterUid"></param>
+       /// <param name="customHeaders">The custom headers.</param>
+    public async Task<BaseDataResult> NotifyFilterChange(Guid filterUid, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.NotifyFilterChange: filterUid: {filterUid}");
+      var queryParams = $"?filterUid={filterUid}";
+      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL", customHeaders, queryParams, "/filterchange");
+      log.LogDebug("RaptorProxy.NotifyFilterChange: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+
+      return response;
+    }
+
     /// <summary>
     ///  Notifies Raptor that a file has been added to or deleted from a project
     /// </summary>
