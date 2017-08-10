@@ -126,11 +126,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Deletes existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
-    [Route("api/v3/project")]
+    [Route("api/v3/project/{projectUid}")]
     [HttpDelete]
-    public async Task DeleteProjectV3([FromBody] DeleteProjectEvent project)
+    public async Task DeleteProjectV3([FromQuery] string projectUid)
     {
-      log.LogInformation("DeleteProjectV3. project: {0}", JsonConvert.SerializeObject(project));
+      log.LogInformation("DeleteProjectV3. project: {0}", projectUid);
+      var project = new DeleteProjectEvent
+      {
+        ProjectUID = Guid.Parse(projectUid),
+        DeletePermanently = false,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
+      ProjectDataValidator.Validate(project, projectService);
 
       await DeleteProject(project);
     }
