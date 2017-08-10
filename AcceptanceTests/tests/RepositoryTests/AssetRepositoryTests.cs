@@ -40,6 +40,7 @@ namespace RepositoryTests
           .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+          .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
           .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
