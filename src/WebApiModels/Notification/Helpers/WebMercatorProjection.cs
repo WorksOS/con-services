@@ -32,6 +32,15 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       return pt;
     }
 
+    public static Point FromPointToLatLng(Point point)
+    {
+      double lng = point.x / TILE_SIZE * ONE_FULL_CIRCLE - ONE_HALF_CIRCLE;
+      double n = Math.PI - 2 * Math.PI * point.y / TILE_SIZE;
+      double lat = RadiansToDegrees(Math.Atan(0.5 * (Math.Exp(n) - Math.Exp(-n))));
+
+      return new Point(lat, lng);
+    }
+
     public static Point LatLngToTile(Point latLng, int numTiles)
     {
       return PixelToTile(LatLngToPixel(latLng, numTiles));
@@ -62,6 +71,13 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       return pixelPt;
     }
 
+    public static Point PixelToLatLng(Point pixelPt, int numTiles)
+    {
+      Point worldPt = PixelToWorld(pixelPt, numTiles);
+      Point latLng = FromPointToLatLng(worldPt);
+      return latLng;
+    }
+
     public static Point WorldToPixel(Point worldPt, int numTiles)
     {
       return new Point
@@ -69,6 +85,48 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
         x = worldPt.x * numTiles,
         y = worldPt.y * numTiles
       };
+    }
+
+    public static Point PixelToWorld(Point pixelPt, int numTiles)
+    {
+      return new Point
+      {
+        x = pixelPt.x / numTiles,
+        y = pixelPt.y / numTiles
+      };
+    }
+
+    //see http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+    //Calculations below are equivalent to above but have the rounding problem also
+
+    /// <summary>
+    /// Calculates x tile coordinate from longitude
+    /// </summary>
+    /// <param name="longitude">longitude in radians</param>
+    /// <param name="numTiles">number of tiles (calcuated from zoom level)</param>
+    /// <returns>x tile coordinate</returns>
+    public static int LongitudeToTile(double longitude, int numTiles)
+    {
+      var columnIndex = longitude;
+      var columnNormalized = (1.0 + columnIndex / Math.PI) / 2.0;
+      var column = columnNormalized * numTiles;
+      var columnInt = Math.Round(column);
+      return (int)columnInt;
+    }
+
+    /// <summary>
+    /// Calculates the y tile coordinate from latitude
+    /// </summary>
+    /// <param name="latitude">latitude in radians</param>
+    /// <param name="numTiles">number of tiles (calcuated from zoom level)</param>
+    /// <returns>y tile coordinate</returns>
+    public static int LatitudeToTile(double latitude, int numTiles)
+    {
+      var rowIndex = Math.Log(Math.Tan(latitude) + (1.0 / Math.Cos(latitude)));
+      var rowNormalized = (1.0 - rowIndex / Math.PI) / 2.0;
+      var row = rowNormalized * numTiles;
+      var rowInt = Math.Round(row);
+      return (int)rowInt;
     }
   }
 }
