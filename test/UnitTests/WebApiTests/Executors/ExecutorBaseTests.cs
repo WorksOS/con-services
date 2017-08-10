@@ -35,6 +35,7 @@ namespace WebApiTests.Executors
                         .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
                         .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
                         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+                        .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
                         .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceProvider = serviceCollection.BuildServiceProvider();
