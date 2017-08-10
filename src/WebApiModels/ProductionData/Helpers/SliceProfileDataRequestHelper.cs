@@ -62,9 +62,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
         if (fileList.Count > 0)
         {
-          var designFile = fileList.SingleOrDefault(f => f.ImportedFileUid == cutfillDesignUid.Value.ToString() &&
-                                                f.IsActivated &&
-                                                f.ImportedFileType == ImportedFileType.DesignSurface);
+          var designFile = fileList.SingleOrDefault(
+            f => f.ImportedFileUid == cutfillDesignUid.Value.ToString() &&
+            f.IsActivated &&
+            f.ImportedFileType == ImportedFileType.DesignSurface);
 
           if (designFile != null)
           {

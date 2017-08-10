@@ -109,31 +109,32 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     public void Validate()
     {
       if (overrideTargetCMV)
+      {
         if (!(cmvTarget > 0) || !(minCMV > 0 && maxCMV > 0 || minCMVPercent > 0 && maxCMVPercent > 0))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-                new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid CMV settings: if overriding Target, Target and (CMV Percentage or CMV values) shall be specified."));
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Invalid CMV settings: if overriding Target, Target and (CMV Percentage or CMV values) shall be specified."));
         }
 
-      if (cmvTarget > 0)
-      {
-        if (minCMVPercent > 0 || maxCMVPercent > 0)
+        if (cmvTarget > 0)
         {
-          ValidateRange(minCMVPercent, maxCMVPercent);
-        }
+          if (minCMVPercent > 0 || maxCMVPercent > 0)
+          {
+            ValidateRange(minCMVPercent, maxCMVPercent);
+          }
 
-        if (minCMV > 0 || maxCMV > 0)
-        {
-          ValidateRange(minCMV, maxCMV);
-          ValidateRange(minCMV, cmvTarget);
-          ValidateRange(cmvTarget, maxCMV);
-
-
+          if (minCMV > 0 || maxCMV > 0)
+          {
+            ValidateRange(minCMV, maxCMV);
+            ValidateRange(minCMV, cmvTarget);
+            ValidateRange(cmvTarget, maxCMV);
+          }
         }
       }
     }
 
-    private void ValidateRange(double lower, double upper)
+    private static void ValidateRange(double lower, double upper)
     {
       if (lower > upper)
       {

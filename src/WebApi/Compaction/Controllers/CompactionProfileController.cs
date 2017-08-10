@@ -4,9 +4,11 @@ using System;
 using System.Threading.Tasks;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -124,21 +126,38 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [NotLandFillProjectWithUIDVerifier] // Is this required?
     [Route("api/v2/profiles/productiondata/design")]
     [HttpGet]
     public async Task<ProfileResult> GetProfileProductionDataDesign(
       [FromQuery] Guid projectUid,
-      [FromQuery] double startLatDegrees,
-      [FromQuery] double startLonDegrees,
-      [FromQuery] double endLatDegrees,
-      [FromQuery] double endLonDegrees,
-      [FromQuery] DateTime startUtc,
-      [FromQuery] DateTime endUtc,
-      [FromQuery] Guid cutfillDesignUid
-    )
+      [FromQuery] double latRadians1,
+      [FromQuery] double latRadians2,
+      [FromQuery] double lngRadians1,
+      [FromQuery] double lngRadians2,
+      [FromQuery] long designId,
+      [FromQuery] string designFilename,
+      [FromQuery] int importedFileTypeId,
+      [FromQuery] bool alignmentProfile,
+      [FromQuery] long alignmentId,
+      [FromQuery] double startStation,
+      [FromQuery] double endStation,
+      [FromQuery] string callId)
     {
       log.LogInformation("GetDesignProduction: " + Request.QueryString);
+
+      var projectId = this.GetProjectId(projectUid);
+
+      var profileResult = requestFactory.Create<DesignProfileDataRequestHelper>(async r => r
+          .ProjectId(projectId)
+          .Headers(customHeaders)
+          .ProjectSettings(CompactionProjectSettings.FromString(
+            await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders)))
+          .ExcludedIds(await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid)))
+        .SetRaptorClient(raptorClient)
+        .CreateDesignProfileResponse(projectUid, latRadians1, lngRadians1, latRadians2, lngRadians2, designId, designFilename, importedFileTypeId, alignmentProfile, alignmentId, startStation, endStation, callId);
+
+     // slicerProfileResult.Validate();
 
       throw new NotImplementedException();
     }
