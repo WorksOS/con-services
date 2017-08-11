@@ -1,7 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using TestUtility;
+using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 
 namespace WebApiTests
@@ -44,13 +47,23 @@ namespace WebApiTests
       var projectUid = Guid.NewGuid();
       var filterRequest = FilterRequest.CreateFilterRequest("", ""); //"Filter test 2","{ designUid: xxx, elevationType: First,layerType: 2,machineDesignName: test,polygonLL: 123 }");
       filterRequest.filterUid = filterUid.ToString();
-      filterRequest.filterJson = "{ designUid: xxx, elevationType: First,layerType: 2,machineDesignName: test,polygonLL: 123 }";
+      //filterRequest.filterJson =  "{ designUid: xxx, elevationType: First,layerType: 2,machineDesignName: test,polygonLL: 123 }";
       filterRequest.name = "Filter test 2";
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
+      var responseCreate = ts.CallFilterWebApi($"api/v4/filter/{projectUid}", "PUT", filter);
       var responseGet = ts.CallFilterWebApi($"api/v1/filter/{projectUid}?filterUid={filterUid}", "GET");
 
-
     }
+
+    //private string CreateFilter()
+    //{
+    //  var startUtc = DateTime.Now.AddMonths(-6).ToUniversalTime();
+    //  var endUtc = DateTime.Now.AddMonths(-6).ToUniversalTime();
+    //  List<MachineDetails> listMachines =
+    //  var filter = VSS.MasterData.Models.Models.Filter.CreateFilter(Guid.NewGuid().ToString(),startUtc,endUtc, 
+    //    Guid.NewGuid().ToString(),,"machineName",ElevationType.First, true,,true,3, FilterLayerMethod.Automatic);
+    //  return filter.ToJsonString();
+    //}
+
   }
 }
