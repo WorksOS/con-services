@@ -3,11 +3,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -15,13 +13,10 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 using ColorValue = VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes.ColorValue;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -86,8 +81,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid)
     {
       log.LogInformation("GetColorPalettes: " + Request.QueryString);
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await GetProjectSettings(projectUid, log);
 
       //Note: elevation palette is a separate call as it requires a filter
@@ -207,6 +200,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get the elevation color palette for a project.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -229,6 +223,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionDetailPaletteResult> GetElevationPalette(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -241,13 +236,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetElevationPalette: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectUid, log);
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
+      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+
       ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(projectId, filter, projectSettings);
       var compactionPalette = settingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettings);
 

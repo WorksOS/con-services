@@ -9,7 +9,6 @@ using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -21,7 +20,6 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -121,12 +119,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var projectSettings = await GetProjectSettings(projectUid,  log);
-        /*
-        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-        Filter filter = settingsManager.CompactionFilter(
-          startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-          this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-        */
 
         var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 

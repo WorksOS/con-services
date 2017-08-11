@@ -4,14 +4,11 @@ using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
-using VLPDDecls;
 using VSS.ConfigurationStore;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -19,12 +16,10 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -182,50 +177,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid, log);
       MDPSettings mdpSettings = settingsManager.CompactionMdpSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-      /*
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-
-      var startTimeUTC = startUtc;
-      var endTimeUTC = endUtc;
-      var onMachineDesignID = onMachineDesignId;
-      var vibrationStateOn = vibeStateOn;
-      var elevationTypeEnum = elevationType;
-      var layerNo = layerNumber;
-      var machines = GetMachines(assetID, machineName, isJohnDoe);
-
-      DesignDescriptor designDescriptor = null;
-
-      var filterData = await GetFilter(filterServiceProxy, customerUid, projectUid, filterUid ?? new Guid(), customHeaders);
-
-      if (filterData != null)
-      {
-        startTimeUTC = filterData.startUTC;
-        endTimeUTC = filterData.endUTC;
-        onMachineDesignID = filterData.onMachineDesignID;
-        vibrationStateOn = filterData.vibeStateOn;
-        elevationTypeEnum = filterData.elevationType;
-        layerNo = filterData.layerNumber;
-        machines = filterData.contributingMachines;
-
-        Guid designUidGuid;
-        if (filterData.designUid != null && Guid.TryParse(filterData.designUid, out designUidGuid))
-        {
-          designDescriptor = await GetDesignDescriptor(configStore, fileListProxy, projectUid, designUidGuid);
-          
-          //var designFile = await GetFile(fileListProxy, projectUid, designUidGuid);
-          //
-          //if (designFile != null)
-          //{
-          //  string fileSpaceId = FileDescriptor.GetFileSpaceId(configStore, log);
-          //  FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, designFile.Path, designFile.Name);
-          //  designDescriptor = DesignDescriptor.CreateDesignDescriptor(designFile.LegacyFileId, fileDescriptor, 0.0);
-          //}
-          
-        }
-      }
-
-      Filter filter = settingsManager.CompactionFilter(startTimeUTC, endTimeUTC, onMachineDesignID, vibrationStateOn, elevationTypeEnum, layerNo, machines, excludedIds, designDescriptor);
-      */
 
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 
@@ -360,12 +311,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid, log);
       TemperatureSettings temperatureSettings = settingsManager.CompactionTemperatureSettings(projectSettings, false);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-      /*
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      */
 
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 
@@ -437,13 +382,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      /*
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      */
-
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 
       SummarySpeedRequest request =
@@ -512,12 +450,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await this.GetProjectSettings(projectUid,  log);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-      /*
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      */
 
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 
@@ -721,39 +653,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       CMVSettings cmvSettings = settingsManager.CompactionCmvSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      /*
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-
-      var startTimeUTC = startUtc;
-      var endTimeUTC = endUtc;
-      var onMachineDesignID = onMachineDesignId;
-      var vibrationStateOn = vibeStateOn;
-      var elevationTypeEnum = elevationType;
-      var layerNo = layerNumber;
-      var machines = GetMachines(assetID, machineName, isJohnDoe);
-
-      DesignDescriptor designDescriptor = null;
-
-      var filterData = await GetFilter(filterServiceProxy, customerUid, projectUid, filterUid ?? new Guid(), customHeaders);
-
-      if (filterData != null)
-      {
-        startTimeUTC = filterData.startUTC;
-        endTimeUTC = filterData.endUTC;
-        onMachineDesignID = filterData.onMachineDesignID;
-        vibrationStateOn = filterData.vibeStateOn;
-        elevationTypeEnum = filterData.elevationType;
-        layerNo = filterData.layerNumber;
-        machines = filterData.contributingMachines;
-
-        Guid designUidGuid;
-        if (filterData.designUid != null && Guid.TryParse(filterData.designUid, out designUidGuid))
-          designDescriptor = await GetDesignDescriptor(configStore, fileListProxy, projectUid, designUidGuid);
-      }
-
-      Filter filter = settingsManager.CompactionFilter(startTimeUTC, endTimeUTC, onMachineDesignID, vibrationStateOn, elevationTypeEnum, layerNo, machines, excludedIds, designDescriptor);
-      */
-
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 
       return CMVRequest.CreateCMVRequest(projectId, null, cmvSettings, liftSettings, filter, -1, null, null, null);
@@ -789,12 +688,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await this.GetProjectSettings(projectUid, log);
       PassCountSettings passCountSettings = isSummary ? null : settingsManager.CompactionPassCountSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-      /*
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      */
+
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 
       return PassCounts.CreatePassCountsRequest(projectId, null, passCountSettings, liftSettings, filter, -1, null, null, null);
