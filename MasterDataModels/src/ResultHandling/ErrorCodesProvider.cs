@@ -16,21 +16,21 @@ namespace VSS.MasterData.Models.ResultHandling
       DynamicAddwithOffset("Validation of Customer/Project failed. Not allowed.", 8);
       DynamicAddwithOffset("GetFilters By projectUid. Invalid parameters.", 9);
       DynamicAddwithOffset("GetFilters By projectUid. Unable to retrieve filters. Exception: {0}.", 10);
-      DynamicAddwithOffset("DeleteFilter failed. Unable to find filterUid.", 11);
+      DynamicAddwithOffset("DeleteFilter failed. The requested filter does exist, or does not belong to the requesting customer; project or user.", 11);
       DynamicAddwithOffset("DeleteFilter failed. Unable to delete filterUid.", 12);
       DynamicAddwithOffset("DeleteFilter failed. Unable to delete filterUid. Exception: {0}.", 13);
       DynamicAddwithOffset("DeleteFilter failed. Unable to write to Kafka. Exception: {0}.", 14);
       DynamicAddwithOffset("UpsertFilter failed. Unable to read filters for project. Exception: {0}.", 15);
-      DynamicAddwithOffset("UpsertFilter failed. Unable to find transient filterUid provided.", 16);
-      DynamicAddwithOffset("UpsertFilter failed. Unable to update transient filter.", 17);
-      DynamicAddwithOffset("UpsertFilter failed. Unable to update transient filter. Exception: {0}.", 18);
+      DynamicAddwithOffset("UpsertFilter failed. Transient filter not updateable, should not have filterUid provided.", 16);
+      DynamicAddwithOffset("UpsertFilter failed. Unable to update persistent filter.", 17);
+      DynamicAddwithOffset("UpsertFilter failed. Unable to update persistent filter. Exception: {0}.", 18);
       DynamicAddwithOffset("UpsertFilter failed. Unable to create transient filter.", 19);
       DynamicAddwithOffset("UpsertFilter failed. Unable to create transient filter. Exception: {0}.", 20);
-      DynamicAddwithOffset("UpsertFilter failed. Unable to find persistant filterUid provided.", 21);
-      DynamicAddwithOffset("UpsertFilter failed. Unable to delete persistant filter.", 22);
-      DynamicAddwithOffset("UpsertFilter failed. Unable to delete persistant filter. Exception: {0}.", 23);
-      DynamicAddwithOffset("UpsertFilter failed. Unable to create persistant filter.", 24);
-      DynamicAddwithOffset("UpsertFilter failed. Unable to create persistant filter. Exception: {0}.", 25);
+      DynamicAddwithOffset("UpsertFilter failed. Unable to find persistent filterUid provided.", 21);
+      DynamicAddwithOffset("UpsertFilter failed. Unable to delete persistent filter.", 22);
+      DynamicAddwithOffset("UpsertFilter failed. Unable to delete persistent filter. Exception: {0}.", 23);
+      DynamicAddwithOffset("UpsertFilter failed. Unable to create persistent filter.", 24);
+      DynamicAddwithOffset("UpsertFilter failed. Unable to create persistent filter. Exception: {0}.", 25);
       DynamicAddwithOffset("UpsertFilter failed. Unable to write to Kafka. Exception: {0}.", 26);
       DynamicAddwithOffset("Invalid customerUid.", 27);
       DynamicAddwithOffset("Invalid userUid.", 28);
@@ -41,6 +41,10 @@ namespace VSS.MasterData.Models.ResultHandling
       DynamicAddwithOffset("Layer type error. If using a tag file layer filter, layer number must be provided", 33);
       DynamicAddwithOffset("Layer number error. To use the layer number filter, layer type must be specified", 34);
       DynamicAddwithOffset("Invalid spatial filter boundary. Too few points for filter polygon", 35);
+      DynamicAddwithOffset("GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user.", 36);
+      DynamicAddwithOffset("DeleteFilter. Invalid parameters.", 37);
+      DynamicAddwithOffset("UpsertFilter. Invalid parameters.", 38);
+      DynamicAddwithOffset("UpsertFilter failed. Unable to add persistent filter as Name already exists.", 39);
     }
   }
 }
