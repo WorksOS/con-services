@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.Local.csproj" />
+    <ProjectReference Include="..\..\utilities\TestUtility\TestUtility.Local.csproj" />
   </ItemGroup>
 
   <ItemGroup>

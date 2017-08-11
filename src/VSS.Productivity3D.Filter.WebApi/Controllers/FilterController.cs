@@ -61,9 +61,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
 
     /// <summary>
-    /// Gets the filters for a project.
-    ///    If the calling context is == Application, then get all !deleted, 
-    ///       else get only those for the calling UserUid
+    /// Gets the active, persistent filters for a customer/project/user.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns>FilterDescriptorListResult</returns>
@@ -114,13 +112,13 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Persistant filter is Created or Deleted/Created
+    /// Persistent filter is Created or Deleted/Created
     /// Transient filter is Upserted
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="request"></param>
     /// <returns>FilterDescriptorSingleResult</returns>
-    [Route("api/v4/filter/{projectUid}")]
+    [Route("api/v1/filter/{projectUid}")]
     [HttpPut]
     public async Task<FilterDescriptorSingleResult> UpsertFilter(string projectUid, [FromBody] FilterRequest request)
     {
@@ -144,7 +142,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Upserts the project settings for a project.
     /// </summary>
     /// <returns>FilterDescriptorSingleResult</returns>
-    [Route("api/v4/filter/{projectUid}")]
+    [Route("api/v1/filter/{projectUid}")]
     [HttpDelete]
     public async Task<ContractExecutionResult> DeleteFilter(string projectUid, [FromUri] string filterUid)
     {

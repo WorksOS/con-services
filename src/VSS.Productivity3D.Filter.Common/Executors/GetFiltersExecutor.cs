@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -53,37 +54,42 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       ContractExecutionResult result = null;
-      try
+
+      var filterRequest = item as FilterRequestFull;
+      if (filterRequest != null)
       {
-        var filterRequest = item as FilterRequestFull;
-        if (filterRequest != null)
+        IEnumerable<MasterData.Repositories.DBModels.Filter> filters = null;
+
+        // get all for projectUid where !deleted 
+        //   must be ok for 
+        //      customer /project
+        //      and UserUid: If the calling context is == Application, then get all 
+        //                     else get only those for the calling UserUid
+        try
         {
-          // get all for projectUid where !deleted 
-          //   must be ok for 
-          //      customer /project
-          //      and UserUid: If the calling context is == Application, then get all 
-          //                     else get only those for the calling UserUid
-          var filters = (await filterRepo
+          filters = (await filterRepo
             .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid)
             .ConfigureAwait(false));
 
-          // may be zero, return success and empty list
-          result = new FilterDescriptorListResult
-          {
-            filterDescriptors = filters.Select(filter =>
-                AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter))
-              .ToImmutableList()
-          };
         }
-        else
+        catch (Exception e)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 9);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 10, e.Message);
         }
+
+        // may be none, return success and empty list
+        result = new FilterDescriptorListResult
+        {
+          filterDescriptors = filters.Select(filter =>
+              AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter))
+            .ToImmutableList()
+        };
       }
-      catch (Exception e)
+      else
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 10, e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 9);
       }
+
       return result;
     }
 

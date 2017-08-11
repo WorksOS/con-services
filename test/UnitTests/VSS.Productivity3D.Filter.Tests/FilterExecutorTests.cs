@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Moq;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -69,6 +70,45 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
+    public async Task GetFilterExecutor_DoesntBelongToUser()
+    {
+      string custUid = Guid.NewGuid().ToString();
+      string requestingUserUid = Guid.NewGuid().ToString();
+      string filterUserUid = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string filterUid = Guid.NewGuid().ToString();
+      string name = "blah";
+      string filterJson = "theJsonString";
+
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      var filterRepo = new Mock<IFilterRepository>();
+      var filter = new MasterData.Repositories.DBModels.Filter()
+      {
+        CustomerUid = custUid,
+        UserUid = filterUserUid,
+        ProjectUid = projectUid,
+        FilterUid = filterUid,
+        Name = name,
+        FilterJson = filterJson,
+        LastActionedUtc = DateTime.UtcNow
+      };
+      filterRepo.Setup(ps => ps.GetFilter(It.IsAny<string>())).ReturnsAsync(filter);
+      var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
+
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, requestingUserUid, projectUid, filterUid);
+      var executor =
+        RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler,
+          filterRepo.Object);
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request).ConfigureAwait(false));
+
+      StringAssert.Contains(ex.GetContent, "2036");
+      StringAssert.Contains(ex.GetContent, "GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user.");
+    }
+
+    [TestMethod]
     public async Task GetFiltersExecutor()
     {
       string custUid = Guid.NewGuid().ToString();
@@ -96,7 +136,7 @@ namespace VSS.Productivity3D.Filter.Tests
           LastActionedUtc = DateTime.UtcNow
         }
       };
-      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(filters);
+      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), false)).ReturnsAsync(filters);
 
       var filterListToTest = new FilterDescriptorListResult
       {
@@ -125,8 +165,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [TestMethod]
     public async Task UpsertFilterExecutor_Transient()
     {
-      // this scenario, the filterUid is supplied, and is provided in request
-      // so this will result in an updated filter
+      // this scenario, the filterUid is supplied, this should throw an exception as update not supported.
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
@@ -167,7 +206,7 @@ namespace VSS.Productivity3D.Filter.Tests
           LastActionedUtc = DateTime.UtcNow
         }
       };
-      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(filters);
+      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), true)).ReturnsAsync(filters);
       filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<UpdateFilterEvent>())).ReturnsAsync(1);
 
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
@@ -176,22 +215,17 @@ namespace VSS.Productivity3D.Filter.Tests
         FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request).ConfigureAwait(false));
 
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(filterToTest.filterDescriptor.FilterUid, result.filterDescriptor.FilterUid,
-        "executor returned incorrect filterDescriptor FilterUid");
-      Assert.AreEqual(filterToTest.filterDescriptor.Name, result.filterDescriptor.Name,
-        "executor returned incorrect filterDescriptor Name");
-      Assert.AreEqual(filterToTest.filterDescriptor.FilterJson, result.filterDescriptor.FilterJson,
-        "executor returned incorrect filterDescriptor FilterJson");
+      StringAssert.Contains(ex.GetContent, "2016");
+      StringAssert.Contains(ex.GetContent, "UpsertFilter failed. Transient filter not updateable, should not have filterUid provided.");
     }
 
     [TestMethod]
-    public async Task UpsertFilterExecutor_Persistant()
+    public async Task UpsertFilterExecutor_Persistent()
     {
       // this scenario, the filterUid is supplied, and is provided in request
-      // so this will result in a deleted then created filter
+      // so this will result in an updated filter
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
@@ -232,8 +266,8 @@ namespace VSS.Productivity3D.Filter.Tests
           LastActionedUtc = DateTime.UtcNow
         }
       };
-      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(filters);
-      filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<DeleteFilterEvent>())).ReturnsAsync(1);
+      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), false)).ReturnsAsync(filters);
+      filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<UpdateFilterEvent>())).ReturnsAsync(1);
       filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<CreateFilterEvent>())).ReturnsAsync(1);
 
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
@@ -298,7 +332,7 @@ namespace VSS.Productivity3D.Filter.Tests
           LastActionedUtc = DateTime.UtcNow
         }
       };
-      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(filters);
+      filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), false)).ReturnsAsync(filters);
       filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<DeleteFilterEvent>())).ReturnsAsync(1);
 
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));

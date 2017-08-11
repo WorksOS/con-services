@@ -51,39 +51,43 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       ContractExecutionResult result = null;
-      try
+
+      var filterRequest = item as FilterRequestFull;
+      if (filterRequest != null)
       {
-        var filterRequest = item as FilterRequestFull;
-        if (filterRequest != null)
+        MasterData.Repositories.DBModels.Filter filter = null;
+        // get filterUid where !deleted 
+        //   must be ok for 
+        //      customer /project
+        //      and UserUid: If the calling context is == Application, then get all 
+        //                     else get only those for the calling UserUid
+        try
         {
-          // get filterUid where !deleted 
-          //   must be ok for 
-          //      customer /project
-          //      and UserUid: If the calling context is == Application, then get all 
-          //                     else get only those for the calling UserUid
-          var filter = await filterRepo.GetFilter(filterRequest.filterUid).ConfigureAwait(false);
-          if (filter == null
-              || filter.CustomerUid != filterRequest.customerUid
-              || filter.ProjectUid != filterRequest.projectUid
-              || filter.UserUid != filterRequest.userUid
-              )
-          {
-            result = new FilterDescriptorSingleResult(new FilterDescriptor());
-          }
-          else
-          {
-            result = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
-          }
+          filter = await filterRepo.GetFilter(filterRequest.filterUid).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 6, e.Message);
+        }
+
+        if (filter == null
+            || filter.CustomerUid != filterRequest.customerUid
+            || filter.ProjectUid != filterRequest.projectUid
+            || filter.UserUid != filterRequest.userUid
+        )
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 36);
         }
         else
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 5);
+          result = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
         }
       }
-      catch (Exception e)
+      else
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 6, e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 5);
       }
+
       return result;
     }
 

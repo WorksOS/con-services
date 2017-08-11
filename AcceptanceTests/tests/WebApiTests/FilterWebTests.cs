@@ -20,7 +20,7 @@ namespace WebApiTests
     {
       msg.Title("Filter test 1", "Insert Filter In Database And Get It From WebApi");
       var ts = new TestSupport();
-      MySqlHelper mysql = new MySqlHelper();
+      TestUtility.MySqlHelper mysql = new TestUtility.MySqlHelper();
       var filterUid = Guid.NewGuid();
       var customerUid = Guid.NewGuid();
       ts.CustomerUid = customerUid;
