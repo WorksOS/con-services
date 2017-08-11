@@ -132,6 +132,17 @@ node ('Jenkins-Win2016-Raptor')
            bat "coverage.bat"
 	   step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
 	   publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
+	   if (result=='SUCCESS')
+	   {
+    	    stage 'Build Windows images'
+            bat "build47.bat"
+            bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:${fullVersion}-${branchName}-win ./Artifacts/FilterWebApiNet47"
+            bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-win ./Artifacts/FilterWebApiNet47"
+     
+            //Publish to AWS Repo
+            stage 'Get ecr login, push image to Repo'
+            bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion ${fullVersion}-${branchName}"
+	   }
 	}
 
 }
