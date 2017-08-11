@@ -13,7 +13,9 @@ services:
   mockprojectwebapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
     env_file:
-     - docker-compose-local.env 
+     - docker-compose-local.env
+    ports:
+     - "5001:5001"
   schema:
     build: ./database 
     env_file:
