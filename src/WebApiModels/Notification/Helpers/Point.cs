@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
     {
       get { return x; }
     }
-
+/*
     public Point(XElement element)
     {
       Parse(element);
@@ -48,6 +48,6 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
       doubleElement = element.GetDoubleElement("Longitude");
       x = doubleElement.HasValue ? doubleElement.Value : double.NaN;
     }
-
+*/
   }
 }

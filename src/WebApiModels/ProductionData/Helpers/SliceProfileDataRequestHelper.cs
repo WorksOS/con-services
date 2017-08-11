@@ -7,6 +7,7 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
@@ -17,13 +18,43 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Common.Interfaces;
 
 namespace VSS.Productivity3D.Common.Controllers
 {
   public abstract class BaseController : Controller
   {
+    /// <summary>
+    /// Logger for logging
+    /// </summary>
     private readonly ILogger log;
+
     private readonly IServiceExceptionHandler serviceExceptionHandler;
+
+    /// <summary>
+    /// Where to get environment variables, connection string etc. from
+    /// </summary>
+    protected IConfigurationStore configStore;
+
+    /// <summary>
+    /// For getting list of imported files for a project
+    /// </summary>
+    protected readonly IFileListProxy fileListProxy;
+
+    /// <summary>
+    /// For getting project settings for a project
+    /// </summary>
+    protected readonly IProjectSettingsProxy projectSettingsProxy;
+
+    /// <summary>
+    /// For getting list of persistent filters for a project
+    /// </summary>
+    protected readonly IFilterServiceProxy filterServiceProxy;
+
+    /// <summary>
+    /// For getting compaction settings for a project
+    /// </summary>
+    protected readonly ICompactionSettingsManager settingsManager;
 
     /// <summary>
     /// Gets the custom headers for the request.
@@ -42,10 +73,16 @@ namespace VSS.Productivity3D.Common.Controllers
     protected Guid customerUid => this.GetCustomerUid();
 
 
-    protected BaseController(ILogger log, IServiceExceptionHandler serviceExceptionHandler)
+    protected BaseController(ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy,
+      IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager)
     {
       this.log = log;
       this.serviceExceptionHandler = serviceExceptionHandler;
+      this.configStore = configStore;
+      this.fileListProxy = fileListProxy;
+      this.projectSettingsProxy = projectSettingsProxy;
+      this.filterServiceProxy = filterServiceProxy;
+      this.settingsManager = settingsManager;
     }
 
     /// <summary>
@@ -133,13 +170,11 @@ namespace VSS.Productivity3D.Common.Controllers
     /// Gets a file data by its UID from a list of imported files. 
     /// This is the deactivated ones.
     /// </summary>
-    /// <param name="controller"></param>
     /// <param name="fileListProxy">Proxy client to get list of imported files for the project</param>
     /// <param name="projectUid">The UID of the project containing the imported files</param>
     /// <param name="fileUid">File's unique identifier</param>
-    /// <param name="customHeaders">Http request custom headers</param>
     /// <returns>The requested file data</returns>
-    public static async Task<FileData> GetFile(IFileListProxy fileListProxy, Guid projectUid, Guid fileUid, IDictionary<string, string> customHeaders)
+    protected async Task<FileData> GetFile(IFileListProxy fileListProxy, Guid projectUid, Guid fileUid)
     {
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
       if (fileList == null || fileList.Count == 0)
@@ -149,17 +184,41 @@ namespace VSS.Productivity3D.Common.Controllers
       return fileList.FirstOrDefault(f => f.ImportedFileUid == fileUid.ToString() && f.IsActivated);
     }
 
+    protected async Task<DesignDescriptor> GetDesignDescriptor(IConfigurationStore configStore, IFileListProxy fileListProxy, Guid projectUid, Guid fileUid)
+    {
+      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+      if (fileList == null || fileList.Count == 0)
+        return null;
+
+      var file = fileList.FirstOrDefault(f => f.ImportedFileUid == fileUid.ToString() && f.IsActivated);
+
+      if (file == null)
+        return null;
+
+      string fileSpaceId = FileDescriptor.GetFileSpaceId(configStore, log);
+      FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, file.Name);
+
+      return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
+     }
+
+    public static async Task<MasterData.Models.Models.Filter> GetFilter(IFilterServiceProxy filterServiceProxy, Guid customerUid, Guid projectUid, Guid filterUid, IDictionary<string, string> customHeaders)
+    {
+      var filterDescriptor = await filterServiceProxy.GetFilter(customerUid.ToString(), projectUid.ToString(), filterUid.ToString(), customHeaders);
+
+      if (filterDescriptor == null)
+        return null;
+
+      return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
+    }
+
     /// <summary>
     /// Gets the project settings for the project.
     /// </summary>
-    /// <param name="controller">The controller which received the request</param>
-    /// <param name="projectSettingsProxy">Proxy client to get project settings for the project</param>
     /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
     /// <param name="log">log for logging</param>
     /// <returns>The project settings</returns>
     [Obsolete]
-    protected async Task<CompactionProjectSettings> GetProjectSettings(IProjectSettingsProxy projectSettingsProxy,
-      Guid projectUid, ILogger log)
+    protected async Task<CompactionProjectSettings> GetProjectSettings(Guid projectUid, ILogger log)
     {
       CompactionProjectSettings ps;
       var jsonSettings = await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders);
@@ -235,6 +294,66 @@ namespace VSS.Productivity3D.Common.Controllers
         Preferences.DefaultNumberFormat,
         Preferences.DefaultTemperatureUnit,
         Preferences.DefaultAssetLabelTypeId);
+    }
+
+    /// <summary>
+    /// Creates an instance of the Filter class and populate it with data.
+    /// </summary>
+    /// <param name="projectUid">Project Uid</param>
+    /// <param name="startUtc">Start date and time in UTC</param>
+    /// <param name="endUtc">End date and time in UTC</param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetID</param>
+    /// <returns>An instance of the Filter class.</returns>
+    protected async Task<Models.Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid, DateTime? startUtc, DateTime? endUtc, bool? vibeStateOn, ElevationType? elevationType,
+      int? layerNumber, long? onMachineDesignId, long? assetID, string machineName, bool? isJohnDoe)
+    {
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+
+      var startTimeUTC = startUtc;
+      var endTimeUTC = endUtc;
+      var onMachineDesignID = onMachineDesignId;
+      var vibrationStateOn = vibeStateOn;
+      var elevationTypeEnum = elevationType;
+      var layerNo = layerNumber;
+      var machines = GetMachines(assetID, machineName, isJohnDoe);
+
+      DesignDescriptor designDescriptor = null;
+
+      if (filterUid.HasValue)
+      {
+        var filterData = await GetFilter(filterServiceProxy, customerUid, projectUid, filterUid.Value,
+          customHeaders);
+
+        if (filterData != null)
+        {
+          startTimeUTC = filterData.startUTC;
+          endTimeUTC = filterData.endUTC;
+          onMachineDesignID = filterData.onMachineDesignID;
+          vibrationStateOn = filterData.vibeStateOn;
+          elevationTypeEnum = filterData.elevationType;
+          layerNo = filterData.layerNumber;
+          machines = filterData.contributingMachines;
+
+          Guid designUidGuid;
+          if (filterData.designUid != null && Guid.TryParse(filterData.designUid, out designUidGuid))
+            designDescriptor = await GetDesignDescriptor(configStore, fileListProxy, projectUid, designUidGuid);
+        }
+      }
+
+      return settingsManager.CompactionFilter(startTimeUTC, endTimeUTC, onMachineDesignID, vibrationStateOn, elevationTypeEnum, layerNo, machines, excludedIds, designDescriptor);
     }
   }
 }

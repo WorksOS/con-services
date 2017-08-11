@@ -5,7 +5,7 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// The parameters for CMV detailed and summary computations

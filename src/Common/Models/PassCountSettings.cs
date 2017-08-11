@@ -6,7 +6,7 @@ using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Setting and configuration values related to processing pass count related queries

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.Common.ResultHandling;
 using Filter = VSS.Productivity3D.Common.Models.Filter;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Interfaces
+namespace VSS.Productivity3D.Common.Interfaces
 {
   public interface ICompactionSettingsManager
   {

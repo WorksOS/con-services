@@ -62,14 +62,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// For getting list of imported files for a project
-    /// </summary>
-    private readonly IFileListProxy fileListProxy;
-    /// <summary>
-    /// Where to get environment variables, connection string etc. from
-    /// </summary>
-    private IConfigurationStore configStore;
-    /// <summary>
     /// Used to talk to TCC
     /// </summary>
     private readonly IFileRepository fileRepo;
@@ -80,40 +72,29 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
-    /// For getting project settings for a project
-    /// </summary>
-    private readonly IProjectSettingsProxy projectSettingsProxy;
-
-    /// <summary>
-    /// For getting compaction settings for a project
-    /// </summary>
-    private readonly ICompactionSettingsManager settingsManager;
-
-    /// <summary>
     /// Constructor with injected raptor client, logger and authenticated projects
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="fileListProxy">File list proxy</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileRepo">Imported file repository</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
+    /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="settingsManager">Compaction settings manager</param>
-    public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IConfigurationStore configStore, IFileRepository fileRepo, 
-      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler) : base(logger.CreateLogger<BaseController>(), exceptionHandler)
+    /// <param name="exceptionHandler">Service exception handler</param>
+    /// <param name="filterServiceProxy">Filter service proxy</param>
+    public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
+      IFileRepository fileRepo, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, 
+      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
+      base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionTileController>();
-      this.fileListProxy = fileListProxy;
-      this.configStore = configStore;
       this.fileRepo = fileRepo;
       this.elevProxy = elevProxy;
-      this.projectSettingsProxy = projectSettingsProxy;
-      this.settingsManager = settingsManager;
     }
 
     /// <summary>
@@ -132,6 +113,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
@@ -168,6 +150,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] int HEIGHT,
       [FromQuery] string BBOX,
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DisplayMode mode,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
@@ -181,14 +164,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
-
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, log);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      var projectSettings = await GetProjectSettings(projectUid, log);
+      /*
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       Common.Models.Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
+      */
+
+      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+
       var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       if (mode==DisplayMode.Height)
         Response.GetTypedHeaders().CacheControl=new CacheControlHeaderValue(){NoCache = true, NoStore = true};
@@ -212,6 +198,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
@@ -253,6 +240,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] int HEIGHT,
       [FromQuery] string BBOX,
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DisplayMode mode,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
@@ -268,12 +256,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid,  log);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      var projectSettings = await GetProjectSettings(projectUid,  log);
+      /*
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       Common.Models.Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
+      */
+
+      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+
       var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
       if (mode == DisplayMode.Height)
@@ -453,9 +445,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Missing file type"));
       }
+      
       //Check file type is valid
-      ImportedFileType importedFileType;
-      if (Enum.TryParse(fileType, true, out importedFileType))
+      if (Enum.TryParse(fileType, true, out ImportedFileType importedFileType))
       {
         if (importedFileType != ImportedFileType.Linework &&
             importedFileType != ImportedFileType.Alignment &&
@@ -517,9 +509,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       int count = 0;
       foreach (string s in bbox.Split(','))
       {
-        double num;
-
-        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out num))
+        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out double num))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
