@@ -370,12 +370,12 @@ namespace TestUtility
     /// <param name="statusCode">expected status code from web api call</param>
     public void DeleteProjectViaWebApi(Guid projectUid, DateTime actionUtc, HttpStatusCode statusCode)
     {
-      DeleteProjectEvt = new DeleteProjectEvent
-      {
-        ProjectUID = projectUid,
-        ActionUTC = actionUtc
-      };
-      CallProjectWebApi(DeleteProjectEvt, "", statusCode, "Delete", HttpMethod.Delete.ToString(), CustomerUid.ToString());
+      //DeleteProjectEvt = new DeleteProjectEvent
+      //{
+      //  ProjectUID = projectUid,
+      //  ActionUTC = actionUtc
+      //};
+      CallProjectWebApi(null, projectUid.ToString(), statusCode, "Delete", HttpMethod.Delete.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>

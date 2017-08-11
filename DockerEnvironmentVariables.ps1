@@ -18,7 +18,7 @@
 [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_ReadVSPDB", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_URI", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_PORT", "9092", "Machine")
-[Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "10.3.17.138 10.3.11.201", "Machine")
+[Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "10.3.19.45", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_PORT", "9092", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "Project-Consumer", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-Project", "Machine")
@@ -28,6 +28,7 @@
 [Environment]::SetEnvironmentVariable("CREATEGEOFENCE_API_URL", "http://mockprojectwebapi:5001/", "Machine")
 [Environment]::SetEnvironmentVariable("COORDSYSVALIDATE_API_URL", "http://mockprojectwebapi:5001/", "Machine")
 [Environment]::SetEnvironmentVariable("COORDSYSPOST_API_URL", "http://mockprojectwebapi:5001/", "Machine")
+[Environment]::SetEnvironmentVariable("PROJECTSERVICE_KAFKA_TOPIC_NAME","VSS.Interfaces.Events.MasterData.IProjectEvent", "Machine")
 #>
 <#  Dev environment#>
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-MasterData-Project", "Machine")
