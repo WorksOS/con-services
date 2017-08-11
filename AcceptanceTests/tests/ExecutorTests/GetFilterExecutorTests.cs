@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Common.Exceptions;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
@@ -30,12 +31,9 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
-      
-      Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsNull(result.filterDescriptor.FilterUid, "executor returned incorrect filterDescriptor FilterUid");
-      Assert.IsNull(result.filterDescriptor.Name, "executor returned incorrect filterDescriptor Name");
-      Assert.IsNull(result.filterDescriptor.FilterJson, "executor returned incorrect filterDescriptor FilterJson");
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2036", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user.", StringComparison.Ordinal), "executor threw exception but incorrect message");
     }
 
     [TestMethod]

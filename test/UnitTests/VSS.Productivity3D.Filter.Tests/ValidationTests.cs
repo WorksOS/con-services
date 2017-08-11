@@ -131,6 +131,20 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
+    public void FilterRequestValidation_PartialFill()
+    {
+      string custUid = Guid.NewGuid().ToString();
+      string userUid = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      var requestFull =
+        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid);
+      requestFull.Validate(serviceExceptionHandler);
+    }
+
+    [TestMethod]
     public async Task CustomerProjectValidation_HappyPath()
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();

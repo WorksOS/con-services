@@ -30,6 +30,102 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
+
+    /// <summary>
+    /// Get Happy path i.e. active, persistent only
+    /// </summary>
+    [TestMethod]
+    public void GetFiltersForProject_PersistentOnly()
+    {
+      var custUid = Guid.NewGuid();
+      var projUid = Guid.NewGuid();
+      var userUid = Guid.NewGuid();
+
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createTransientFilterEvent1 = new CreateFilterEvent()
+      {
+        CustomerUID = custUid,
+        ProjectUID = projUid,
+        UserUID = userUid,
+        FilterUID = Guid.NewGuid(),
+        Name = "",
+        FilterJson = "blah1",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+      var createTransientFilterEvent2 = new CreateFilterEvent()
+      {
+        CustomerUID = custUid,
+        ProjectUID = projUid,
+        UserUID = userUid,
+        FilterUID = Guid.NewGuid(),
+        Name = "",
+        FilterJson = "blah2",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var createPersistentFilterEvent1 = new CreateFilterEvent()
+      {
+        CustomerUID = custUid,
+        ProjectUID = projUid,
+        UserUID = userUid,
+        FilterUID = Guid.NewGuid(),
+        Name = "HasAName1",
+        FilterJson = "blah1",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var createPersistentFilterEvent2 = new CreateFilterEvent()
+      {
+        CustomerUID = custUid,
+        ProjectUID = projUid,
+        UserUID = userUid,
+        FilterUID = Guid.NewGuid(),
+        Name = "HasAName2",
+        FilterJson = "blah2",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      filterRepo.StoreEvent(createTransientFilterEvent1).Wait();
+      filterRepo.StoreEvent(createTransientFilterEvent2).Wait();
+      filterRepo.StoreEvent(createPersistentFilterEvent1).Wait();
+      filterRepo.StoreEvent(createPersistentFilterEvent2).Wait();
+
+      var g = filterRepo.GetFiltersForProject(projUid.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve filters from filterRepo");
+      Assert.AreEqual(2, g.Result.Count(), "retrieved filter count is incorrect");
+
+      g = filterRepo.GetFiltersForProjectUser(custUid.ToString(), projUid.ToString(), userUid.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve filters from filterRepo");
+      Assert.AreEqual(2, g.Result.Count(), "retrieved filter count is incorrect");
+
+      var f = filterRepo.GetFilter(createTransientFilterEvent1.FilterUID.ToString());
+      f.Wait();
+      Assert.IsNotNull(f.Result, "Unable to retrieve filter from filterRepo");
+      Assert.AreEqual(createTransientFilterEvent1.FilterUID.ToString(), f.Result.FilterUid, "retrieved filter UId is incorrect");
+
+      f = filterRepo.GetFilter(createTransientFilterEvent2.FilterUID.ToString());
+      f.Wait();
+      Assert.IsNotNull(f.Result, "Unable to retrieve filter from filterRepo");
+      Assert.AreEqual(createTransientFilterEvent2.FilterUID.ToString(), f.Result.FilterUid, "retrieved filter UId is incorrect");
+
+      f = filterRepo.GetFilter(createPersistentFilterEvent1.FilterUID.ToString());
+      f.Wait();
+      Assert.IsNotNull(f.Result, "Unable to retrieve filter from filterRepo");
+      Assert.AreEqual(createPersistentFilterEvent1.FilterUID.ToString(), f.Result.FilterUid, "retrieved filter UId is incorrect");
+
+      f = filterRepo.GetFilter(createPersistentFilterEvent2.FilterUID.ToString());
+      f.Wait();
+      Assert.IsNotNull(f.Result, "Unable to retrieve filter from filterRepo");
+      Assert.AreEqual(createPersistentFilterEvent2.FilterUID.ToString(), f.Result.FilterUid, "retrieved filter UId is incorrect");
+    }
+
+
     /// <summary>
     /// Create Happy path i.e. filter doesn't exist
     /// </summary>
@@ -72,16 +168,104 @@ namespace RepositoryTests
       var f = filterRepo.GetFiltersForProject(createFilterEvent.ProjectUID.ToString());
       f.Wait();
       Assert.IsNotNull(f.Result, "Unable to retrieve filters from filterRepo");
-      Assert.AreEqual(1, f.Result.Count(), "retrieved filter count is incorrect");
-      Assert.AreEqual(filter, f.Result.AsList()[0], "retrieved filter is incorrect");
+      Assert.AreEqual(0, f.Result.Count(), "retrieved filter count is incorrect");
 
       f = filterRepo.GetFiltersForProjectUser(createFilterEvent.CustomerUID.ToString(), createFilterEvent.ProjectUID.ToString(), createFilterEvent.UserUID.ToString());
       f.Wait();
       Assert.IsNotNull(f.Result, "Unable to retrieve user filters from filterRepo");
-      Assert.AreEqual(1, f.Result.Count(), "retrieved user filter count is incorrect");
-      Assert.AreEqual(filter, f.Result.AsList()[0], "retrieved user filter is incorrect");
+      Assert.AreEqual(0, f.Result.Count(), "retrieved user filter count is incorrect");
     }
 
+    /// <summary>
+    /// Create Transient should allow duplicate blank Names
+    /// </summary>
+    [TestMethod]
+    public void CreateTranientFilter_DuplicateBlankNamesareValid()
+    {
+      var custUid = Guid.NewGuid();
+      var projUid = Guid.NewGuid();
+      var userUid = Guid.NewGuid();
+
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createTransientFilterEvent1 = new CreateFilterEvent()
+      {
+        CustomerUID = custUid,
+        ProjectUID = projUid,
+        UserUID = userUid,
+        FilterUID = Guid.NewGuid(),
+        Name = "",
+        FilterJson = "blah1",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var createTransientFilterEvent2 = new CreateFilterEvent()
+      {
+        CustomerUID = custUid,
+        ProjectUID = projUid,
+        UserUID = userUid,
+        FilterUID = Guid.NewGuid(),
+        Name = "",
+        FilterJson = "blah2",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var s = filterRepo.StoreEvent(createTransientFilterEvent1);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Filter event not written");
+
+      s = filterRepo.StoreEvent(createTransientFilterEvent2);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Filter event should have been written");
+    }
+    
+    /// <summary>
+    /// Create Persistent should not occur for duplicate Name.
+    /// However, this is a business rule which should  be handled in the executor.
+    /// </summary>
+    [TestMethod]
+    public void CreatePeristantFilter_DuplicateNamesNotValid()
+    {
+      var custUid = Guid.NewGuid();
+      var projUid = Guid.NewGuid();
+      var userUid = Guid.NewGuid();
+
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createPersistentFilterEvent1 = new CreateFilterEvent()
+      {
+        CustomerUID = custUid,
+        ProjectUID = projUid,
+        UserUID = userUid,
+        FilterUID = Guid.NewGuid(),
+        Name = "HasAName",
+        FilterJson = "blah1",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var createPersistentFilterEvent2 = new CreateFilterEvent()
+      {
+        CustomerUID = custUid,
+        ProjectUID = projUid,
+        UserUID = userUid,
+        FilterUID = Guid.NewGuid(),
+        Name = "HasAName",
+        FilterJson = "blah2",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var s = filterRepo.StoreEvent(createPersistentFilterEvent1);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Filter event not written");
+
+      s = filterRepo.StoreEvent(createPersistentFilterEvent2);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Filter event should have been written");
+    }
+ 
+    
     /// <summary>
     /// Update Happy path i.e. filter exists
     /// </summary>
@@ -120,27 +304,27 @@ namespace RepositoryTests
         UserUid = createFilterEvent.UserUID.ToString(),
         FilterUid = createFilterEvent.FilterUID.ToString(),
         Name = createFilterEvent.Name,
-        FilterJson = updateFilterEvent.FilterJson,
-        LastActionedUtc = updateFilterEvent.ActionUTC
+        FilterJson = createFilterEvent.FilterJson,
+        LastActionedUtc = createFilterEvent.ActionUTC
       };
 
       filterRepo.StoreEvent(createFilterEvent).Wait();
 
       var s = filterRepo.StoreEvent(updateFilterEvent);
       s.Wait();
-      Assert.AreEqual(1, s.Result, "Filter event not updated");
+      Assert.AreEqual(0, s.Result, "Filter event not updateable");
 
       var g = filterRepo.GetFilter(createFilterEvent.FilterUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve filter from filterRepo");
       Assert.AreEqual(filter, g.Result, "retrieved filter is incorrect");
     }
-
+    
     /// <summary>
-    /// Delete Happy path i.e. filter exists
+    /// Update Transient unHappy path i.e. not allowed to update transient
     /// </summary>
     [TestMethod]
-    public void DeleteTransientFilter_HappyPath()
+    public void UpdateTransientFilter_UnhappyPath()
     {
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent()
@@ -155,53 +339,13 @@ namespace RepositoryTests
         ReceivedUTC = firstCreatedUtc
       };
 
-      var deleteFilterEvent = new DeleteFilterEvent()
-      {
-        CustomerUID = createFilterEvent.CustomerUID,
-        ProjectUID = createFilterEvent.ProjectUID,
-        UserUID = createFilterEvent.UserUID,
-        FilterUID = createFilterEvent.FilterUID,
-        ActionUTC = firstCreatedUtc.AddMinutes(2),
-        ReceivedUTC = firstCreatedUtc
-      };
-
-      filterRepo.StoreEvent(createFilterEvent).Wait();
-
-      var s = filterRepo.StoreEvent(deleteFilterEvent);
-      s.Wait();
-      Assert.AreEqual(1, s.Result, "Filter event not deleted");
-
-      var g = filterRepo.GetFilter(createFilterEvent.FilterUID.ToString());
-      g.Wait();
-      Assert.IsNull(g.Result, "Should not be able to retrieve filter from filterRepo");
-    }
-
-    /// <summary>
-    /// Update Persistant unHappy path i.e. not allowed to update persistant
-    /// </summary>
-    [TestMethod]
-    public void UpdatePersistantFilter_UnhappyPath()
-    {
-      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var createFilterEvent = new CreateFilterEvent()
-      {
-        CustomerUID = Guid.NewGuid(),
-        ProjectUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
-        FilterUID = Guid.NewGuid(),
-        Name = "persistant",
-        FilterJson = "blah",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
-      };
-
       var updateFilterEvent = new UpdateFilterEvent()
       {
         CustomerUID = createFilterEvent.CustomerUID,
         ProjectUID = createFilterEvent.ProjectUID,
         UserUID = createFilterEvent.UserUID,
         FilterUID = createFilterEvent.FilterUID,
-        Name = "changed",
+        Name = "",
         FilterJson = "blahDeBlah",
         ActionUTC = firstCreatedUtc.AddMinutes(2),
         ReceivedUTC = firstCreatedUtc
@@ -231,10 +375,10 @@ namespace RepositoryTests
     }
 
     /// <summary>
-    /// Update Persistant unHappy path i.e. update received before create
+    /// Update Persistent Happy path i.e. allowed to update persistent
     /// </summary>
     [TestMethod]
-    public void UpdatePersistantFilter_OutOfOrder()
+    public void UpdatePersistentFilter_HappyPath()
     {
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent()
@@ -243,7 +387,61 @@ namespace RepositoryTests
         ProjectUID = Guid.NewGuid(),
         UserUID = Guid.NewGuid(),
         FilterUID = Guid.NewGuid(),
-        Name = "persistant",
+        Name = "persistent",
+        FilterJson = "blah",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var updateFilterEvent = new UpdateFilterEvent()
+      {
+        CustomerUID = createFilterEvent.CustomerUID,
+        ProjectUID = createFilterEvent.ProjectUID,
+        UserUID = createFilterEvent.UserUID,
+        FilterUID = createFilterEvent.FilterUID,
+        Name = "changed",
+        FilterJson = "blahDeBlah",
+        ActionUTC = firstCreatedUtc.AddMinutes(2),
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var filter = new Filter
+      {
+        CustomerUid = updateFilterEvent.CustomerUID.ToString(),
+        ProjectUid = updateFilterEvent.ProjectUID.ToString(),
+        UserUid = updateFilterEvent.UserUID.ToString(),
+        FilterUid = updateFilterEvent.FilterUID.ToString(),
+        Name = updateFilterEvent.Name,
+        FilterJson = updateFilterEvent.FilterJson,
+        LastActionedUtc = updateFilterEvent.ActionUTC
+      };
+
+      filterRepo.StoreEvent(createFilterEvent).Wait();
+
+      var s = filterRepo.StoreEvent(updateFilterEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Filter event should have been updated");
+
+      var g = filterRepo.GetFilter(createFilterEvent.FilterUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve filter from filterRepo");
+      Assert.AreEqual(filter, g.Result, "retrieved filter is incorrect");
+    }
+
+    /// <summary>
+    /// Update Persistent unHappy path i.e. update received before create
+    /// </summary>
+    [TestMethod]
+    public void UpdatePersistentFilter_OutOfOrder()
+    {
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createFilterEvent = new CreateFilterEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        ProjectUID = Guid.NewGuid(),
+        UserUID = Guid.NewGuid(),
+        FilterUID = Guid.NewGuid(),
+        Name = "persistent",
         FilterJson = "blah",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
@@ -286,6 +484,48 @@ namespace RepositoryTests
       Assert.AreEqual(filter, g.Result, "retrieved filter is incorrect");
     }
 
+
+
+    /// <summary>
+    /// Delete Happy path i.e. filter exists
+    /// </summary>
+    [TestMethod]
+    public void DeleteTransientFilter_HappyPath()
+    {
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createFilterEvent = new CreateFilterEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        ProjectUID = Guid.NewGuid(),
+        UserUID = Guid.NewGuid(),
+        FilterUID = Guid.NewGuid(),
+        Name = "",
+        FilterJson = "blah",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var deleteFilterEvent = new DeleteFilterEvent()
+      {
+        CustomerUID = createFilterEvent.CustomerUID,
+        ProjectUID = createFilterEvent.ProjectUID,
+        UserUID = createFilterEvent.UserUID,
+        FilterUID = createFilterEvent.FilterUID,
+        ActionUTC = firstCreatedUtc.AddMinutes(2),
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      filterRepo.StoreEvent(createFilterEvent).Wait();
+
+      var s = filterRepo.StoreEvent(deleteFilterEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Filter event not deleted");
+
+      var g = filterRepo.GetFilter(createFilterEvent.FilterUID.ToString());
+      g.Wait();
+      Assert.IsNull(g.Result, "Should not be able to retrieve filter from filterRepo");
+    }
+
     /// <summary>
     /// Delete unHappy path i.e. filter doesn't exist
     ///   actually a deleted filter is created in case of out-of-order i.e. delete received before create.
@@ -318,6 +558,47 @@ namespace RepositoryTests
       g.Wait();
       Assert.IsNotNull(g.Result, "Should be able to retrieve deleted filter from filterRepo");
     }
+
+    /// <summary>
+    /// Delete Happy path i.e. filter exists
+    /// </summary>
+    [TestMethod]
+    public void DeletePersistentFilter_HappyPath()
+    {
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createFilterEvent = new CreateFilterEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        ProjectUID = Guid.NewGuid(),
+        UserUID = Guid.NewGuid(),
+        FilterUID = Guid.NewGuid(),
+        Name = "hasOne",
+        FilterJson = "blah",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var deleteFilterEvent = new DeleteFilterEvent()
+      {
+        CustomerUID = createFilterEvent.CustomerUID,
+        ProjectUID = createFilterEvent.ProjectUID,
+        UserUID = createFilterEvent.UserUID,
+        FilterUID = createFilterEvent.FilterUID,
+        ActionUTC = firstCreatedUtc.AddMinutes(2),
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      filterRepo.StoreEvent(createFilterEvent).Wait();
+
+      var s = filterRepo.StoreEvent(deleteFilterEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Filter event not deleted");
+
+      var g = filterRepo.GetFilter(createFilterEvent.FilterUID.ToString());
+      g.Wait();
+      Assert.IsNull(g.Result, "Should not be able to retrieve filter from filterRepo");
+    }
+
 
     #region privates
 

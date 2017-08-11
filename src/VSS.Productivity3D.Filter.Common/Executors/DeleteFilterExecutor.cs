@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -59,27 +58,44 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       if (filterRequest != null)
       {
         var projectFilter =
-          (await filterRepo.GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid).ConfigureAwait(false))
-            .SingleOrDefault(f => f.FilterUid == filterRequest.filterUid);
-        log.LogDebug($"DeleteFilter retrieved filter {JsonConvert.SerializeObject(projectFilter)}");
+          (await filterRepo.GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid,
+            filterRequest.userUid).ConfigureAwait(false))
+          .SingleOrDefault(f => f.FilterUid == filterRequest.filterUid);
+        
         if (projectFilter == null)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 11);
         }
+        log.LogDebug($"DeleteFilter retrieved filter {JsonConvert.SerializeObject(projectFilter)}");
 
         DeleteFilterEvent deleteFilterEvent = null;
+        int deletedCount = 0;
         try
         {
           deleteFilterEvent = AutoMapperUtility.Automapper.Map<DeleteFilterEvent>(projectFilter);
-          var deletedCount = await filterRepo.StoreEvent(deleteFilterEvent).ConfigureAwait(false);
-          if (deletedCount > 0)
-            await FilterValidation.NotifyRaptorFilterChange(raptorProxy, log, serviceExceptionHandler, projectFilter?.FilterUid).ConfigureAwait(false);
-          else
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 12);
+          deletedCount = await filterRepo.StoreEvent(deleteFilterEvent).ConfigureAwait(false);
         }
         catch (Exception e)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 13, e.Message);
+        }
+
+        if (deletedCount == 0)
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 12);
+
+        // this just clears the cache, do we care i.e. fail and rollback?
+        try
+        {
+          if (deletedCount > 0)
+            await FilterValidation
+              .NotifyRaptorFilterChange(raptorProxy, log, serviceExceptionHandler, projectFilter?.FilterUid)
+              .ConfigureAwait(false);
+
+        }
+        catch (Exception e)
+        {
+          log.LogError(
+            $"DeleteFilter failed to clear 3dp cache for {JsonConvert.SerializeObject(projectFilter)}. Exception: {e.Message}");
         }
 
         try
@@ -101,6 +117,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         }
 
         return new ContractExecutionResult();
+      }
+      else
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 37);
       }
 
       return result;
