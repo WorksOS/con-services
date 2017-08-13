@@ -10,9 +10,9 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
-using VSS.Productivity3D.WebApiModels.ProductionData.Helpers;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {

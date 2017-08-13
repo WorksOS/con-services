@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Interfaces;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
   /// <summary>
   /// The two end points of a stright line used for a profile calculation, defined in the cartesian grid coordinate system of the project

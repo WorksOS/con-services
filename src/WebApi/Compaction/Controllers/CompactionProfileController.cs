@@ -13,9 +13,9 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApi.ProductionData.Controllers;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
-using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -115,8 +115,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(slicerProfileResult) as ProfileResult
       );
     }
-
-   
 
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
