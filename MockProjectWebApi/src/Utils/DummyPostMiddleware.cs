@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Utils;
+using System.Threading.Tasks;
 
 namespace src.Utils
 {
-    public class ExceptionDummyPostMiddleware
+  public class ExceptionDummyPostMiddleware
     {
         private readonly ILogger log;
         private readonly RequestDelegate _next;
@@ -23,12 +19,14 @@ namespace src.Utils
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.GetUri().AbsolutePath.Contains("dummy"))
+            if (context.Request.Path.Value.Contains("dummy"))
             {
                 context.Response.StatusCode = 200;
             }
             else
-                await _next.Invoke(context);
+            {
+              await _next.Invoke(context);
+            }
         }
     }
 
