@@ -28,11 +28,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
 
       env.ConfigureLog4Net("log4net.xml", _loggerRepoName);
       _isDevEnv = env.IsEnvironment("Development");
-      if (_isDevEnv)
-      {
-        // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-        builder.AddApplicationInsightsSettings(developerMode: true);
-      }
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -40,7 +35,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
 
     public IConfigurationRoot Configuration { get; }
 
-    // This method gets called by the runtime. Use this method to add services to the container
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to add services to the container
+    /// </summary>
+    /// <param name="services"></param>
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddLogging();
@@ -54,7 +52,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       });
 
       // Add framework services.
-      services.AddApplicationInsightsTelemetry(Configuration);
       services.AddTransient<IRepositoryFactory, RepositoryFactory>()
           .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
@@ -92,7 +89,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      _serviceCollection.AddSingleton(loggerFactory);
       //new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
       _serviceCollection.BuildServiceProvider();
 
@@ -103,11 +100,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       //Enable TID here
       //app.UseTIDAuthentication();
       app.UseCors("VSS");
-  
-
-      //For now don't use application insights as it clogs the log with lots of stuff.
-      //app.UseApplicationInsightsRequestTelemetry();
-      //app.UseApplicationInsightsExceptionTelemetry();
 
       app.UseMvc();
 

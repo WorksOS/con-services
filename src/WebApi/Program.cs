@@ -24,7 +24,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .UseContentRoot(pathToContentRoot)
         .UseIISIntegration()
         .UseStartup<Startup>()
-        .UseApplicationInsights()
         .Build();
 
       host.RunAsService();
