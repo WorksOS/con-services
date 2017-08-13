@@ -106,11 +106,13 @@ node ('Jenkins-Win2016-Raptor')
 	if (branch.contains("master")) {
         if (result=='SUCCESS') {
             currentBuild.displayName = versionNumber + suffix  
-            stage 'Checkout'
-            checkout scm
+            stage ('Checkout') {
+                checkout scm
+            }
 
-            stage 'Build'
-            bat "build47.bat"
+            stage ('Build') {
+                bat "build47.bat"
+            }
           
             archiveArtifacts artifacts: 'ProjectWebApiNet47.zip', fingerprint: true
         }
