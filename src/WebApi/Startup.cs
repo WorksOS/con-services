@@ -28,11 +28,6 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
       env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
 
       _isDevEnv = env.IsEnvironment("Development");
-      if (_isDevEnv)
-      {
-        // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-        builder.AddApplicationInsightsSettings(developerMode: true);
-      }
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -53,9 +48,7 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
                       "X-VisionLink-CustomerUid", "X-VisionLink-UserUid", "Cache-Control")
                   .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
       });
-      // Add framework services.
-      services.AddApplicationInsightsTelemetry(Configuration);
-      //Configure swagger
+
       services.AddSwaggerGen();
 
       services.ConfigureSwaggerGen(options =>
@@ -99,10 +92,6 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
       app.UseExceptionTrap();
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
-
-      //For now don't use application insights as it clogs the log with lots of stuff.
-      //app.UseApplicationInsightsRequestTelemetry();
-      //app.UseApplicationInsightsExceptionTelemetry();
 
       //app.UseResponseCaching();//Disable for now
       app.UseMvc();
