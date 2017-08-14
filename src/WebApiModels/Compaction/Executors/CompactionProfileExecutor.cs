@@ -79,7 +79,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           var profileResult = ConvertProfileResult(memoryStream, request.liftBuildSettings);
           AddMidPoints(profileResult);
           InterpolateEdges(profileResult);
-          AddNullsForGaps(profileResult);
           result = profileResult;
         }
         else
@@ -105,7 +104,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     private CompactionProfileResult ConvertProfileResult(MemoryStream ms, LiftBuildSettings liftBuildSettings)
     {
       log.LogDebug("Converting profile result");
-      List<StationLLPoint> points = null;
 
       CompactionProfileResult profile = new CompactionProfileResult();
  
@@ -150,7 +148,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
         var speed = 0;//TODO: *****
 
-        profile.cells.Add(new CompactionProfileCell()
+        profile.cells.Add(new CompactionProfileCell
         {
           cellType = prevCell == null ? CompactionProfileCell.ProfileCellType.MidPoint : CompactionProfileCell.ProfileCellType.Edge,
 
@@ -240,31 +238,35 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     private void AddMidPoints(CompactionProfileResult profileResult)
     {
       log.LogDebug("Adding midpoints");
-      //No mid point for first and last segments since only partial across the cell.
-      //We have already added them as mid points.
-      List<CompactionProfileCell> cells = new List<CompactionProfileCell>();
-      cells.Add(profileResult.cells[0]);
-      for (int i = 1; i < profileResult.cells.Count-2; i++)
+      if (profileResult.cells.Count > 3)
       {
-        cells.Add(profileResult.cells[i]);
-        if (profileResult.cells[i].cellType != CompactionProfileCell.ProfileCellType.Gap)
+        //No mid point for first and last segments since only partial across the cell.
+        //We have already added them as mid points.
+        List<CompactionProfileCell> cells = new List<CompactionProfileCell>();
+        cells.Add(profileResult.cells[0]);
+        for (int i = 1; i < profileResult.cells.Count - 2; i++)
         {
-          var midPoint = new CompactionProfileCell(profileResult.cells[i]);
-          midPoint.cellType = CompactionProfileCell.ProfileCellType.MidPoint;
-          midPoint.station = profileResult.cells[i].station + (profileResult.cells[i + 1].station - profileResult.cells[i].station) / 2;
-          cells.Add(midPoint);
+          cells.Add(profileResult.cells[i]);
+          if (profileResult.cells[i].cellType != CompactionProfileCell.ProfileCellType.Gap)
+          {
+            var midPoint = new CompactionProfileCell(profileResult.cells[i]);
+            midPoint.cellType = CompactionProfileCell.ProfileCellType.MidPoint;
+            midPoint.station = profileResult.cells[i].station +
+                               (profileResult.cells[i + 1].station - profileResult.cells[i].station) / 2;
+            cells.Add(midPoint);
+          }
         }
+        cells.Add(profileResult.cells[profileResult.cells.Count - 2]);
+        cells.Add(profileResult.cells[profileResult.cells.Count - 1]);
+        profileResult.cells = cells;
       }
-      cells.Add(profileResult.cells[profileResult.cells.Count - 2]);
-      cells.Add(profileResult.cells[profileResult.cells.Count - 1]);
-      profileResult.cells = cells;
 
       string message = string.Empty;
-      foreach (var cell in cells)
+      foreach (var cell in profileResult.cells)
       {
         message = $"{message},{cell.cellType}";
       }
-      log.LogDebug($"After adding midpoints: {cells.Count}{message}");
+      log.LogDebug($"After adding midpoints: {profileResult.cells.Count}{message}");
     }
 
     /// <summary>
@@ -274,22 +276,27 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     private void InterpolateEdges(CompactionProfileResult profileResult)
     {
       log.LogDebug("Interpolating edges");
-      //First and last points are not gaps or edges. They're always the start and end of the profile line.
-      for (int i = 1; i < profileResult.cells.Count-1; i++)
+      if (profileResult.cells.Count > 3)
       {
-        if (profileResult.cells[i].cellType == CompactionProfileCell.ProfileCellType.Edge)
+        //First and last points are not gaps or edges. They're always the start and end of the profile line.
+        for (int i = 1; i < profileResult.cells.Count - 1; i++)
         {
-          //Interpolate i edge for line between mid points at i-1 and i+1
-          var startIndex = i - 1;
-          var endIndex = i + 1;
-          //Gap is between i-1 and i. Interpolate i edge for line between mid points at i-2 and i+1
-          if (profileResult.cells[i - 1].cellType == CompactionProfileCell.ProfileCellType.Gap)
+          if (profileResult.cells[i].cellType == CompactionProfileCell.ProfileCellType.Edge)
           {
-            startIndex--;
-            //Also adjust the gap point
-            InterpolateElevations(profileResult.cells[i - 1], profileResult.cells[startIndex], profileResult.cells[endIndex]);
+            //Interpolate i edge for line between mid points at i-1 and i+1
+            var startIndex = i - 1;
+            var endIndex = i + 1;
+            //Gap is between i-1 and i. Interpolate i edge for line between mid points at i-2 and i+1
+            if (profileResult.cells[i - 1].cellType == CompactionProfileCell.ProfileCellType.Gap)
+            {
+              startIndex--;
+              //Also adjust the gap point
+              InterpolateElevations(profileResult.cells[i - 1], profileResult.cells[startIndex],
+                profileResult.cells[endIndex]);
+            }
+            InterpolateElevations(profileResult.cells[i], profileResult.cells[startIndex],
+              profileResult.cells[endIndex]);
           }
-          InterpolateElevations(profileResult.cells[i], profileResult.cells[startIndex], profileResult.cells[endIndex]);
         }
       }
       log.LogDebug("After interpolation");
@@ -305,15 +312,15 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     {
       var proportion = (cell.station - startCell.station) / (endCell.station - startCell.station);
 
-      cell.firstPassHeight = InterpolateElevation(cell.firstPassHeight, proportion, startCell.firstPassHeight, endCell.firstPassHeight);
-      cell.highestPassHeight = InterpolateElevation(cell.highestPassHeight, proportion, startCell.highestPassHeight, endCell.highestPassHeight);
-      cell.lastPassHeight = InterpolateElevation(cell.lastPassHeight, proportion, startCell.lastPassHeight, endCell.lastPassHeight);
-      cell.lowestPassHeight = InterpolateElevation(cell.lowestPassHeight, proportion, startCell.lowestPassHeight, endCell.lowestPassHeight);
-      cell.lastCompositeHeight = InterpolateElevation(cell.lastCompositeHeight, proportion, startCell.lastCompositeHeight, endCell.lastCompositeHeight);
-      cell.designHeight = InterpolateElevation(cell.designHeight, proportion, startCell.designHeight, endCell.designHeight); //TODO: Should this be interpolated?
-      cell.cmvHeight = InterpolateElevation(cell.cmvHeight, proportion, startCell.cmvHeight, endCell.cmvHeight);
-      cell.mdpHeight = InterpolateElevation(cell.mdpHeight, proportion, startCell.mdpHeight, endCell.mdpHeight);
-      cell.temperatureHeight = InterpolateElevation(cell.temperatureHeight, proportion, startCell.temperatureHeight, endCell.temperatureHeight);
+      cell.firstPassHeight = InterpolateElevation(proportion, startCell.firstPassHeight, endCell.firstPassHeight);
+      cell.highestPassHeight = InterpolateElevation(proportion, startCell.highestPassHeight, endCell.highestPassHeight);
+      cell.lastPassHeight = InterpolateElevation(proportion, startCell.lastPassHeight, endCell.lastPassHeight);
+      cell.lowestPassHeight = InterpolateElevation(proportion, startCell.lowestPassHeight, endCell.lowestPassHeight);
+      cell.lastCompositeHeight = InterpolateElevation(proportion, startCell.lastCompositeHeight, endCell.lastCompositeHeight);
+      cell.designHeight = InterpolateElevation(proportion, startCell.designHeight, endCell.designHeight); //TODO: Should this be interpolated?
+      cell.cmvHeight = InterpolateElevation(proportion, startCell.cmvHeight, endCell.cmvHeight);
+      cell.mdpHeight = InterpolateElevation(proportion, startCell.mdpHeight, endCell.mdpHeight);
+      cell.temperatureHeight = InterpolateElevation(proportion, startCell.temperatureHeight, endCell.temperatureHeight);
       //TODO: Speed ?
       log.LogDebug($"Interpolated point {cell.station} of type {cell.cellType}");
     }
@@ -321,39 +328,15 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// <summary>
     /// Interpolate an elevation
     /// </summary>
-    /// <param name="elevation">The current elevation for this cell edge</param>
     /// <param name="proportion">The proportion of the elevation to use</param>
     /// <param name="startElevation">The elevation at the start of the line segment to be used for interpolation</param>
     /// <param name="endElevation">The elevation at the end of the line segment to be used for interpolation</param>
     /// <returns></returns>
-    private float InterpolateElevation(float elevation, double proportion, float startElevation, float endElevation)
+    private float InterpolateElevation(double proportion, float startElevation, float endElevation)
     {
       //Check for no elevation data before trying to interpolate
-      return float.IsNaN(elevation) || float.IsNaN(startElevation) || float.IsNaN(endElevation) ? float.NaN : 
+      return float.IsNaN(startElevation) || float.IsNaN(endElevation) ? float.NaN : 
         startElevation + (float)proportion * (endElevation - startElevation);
-    }
-
-    /// <summary>
-    /// Add a null item for each gap which is needed by d3 chart in UI to plot gaps.
-    /// </summary>
-    /// <param name="profileResult">The profile containing the list of line segment points: edges, mid points and gaps.</param>
-    private void AddNullsForGaps(CompactionProfileResult profileResult)
-    {
-      log.LogDebug($"Adding nulls for gaps: {profileResult.cells.Count} cells");
-      if (profileResult.cells.Any(c => c.cellType == CompactionProfileCell.ProfileCellType.Gap))
-      {
-        List<CompactionProfileCell> cells = new List<CompactionProfileCell>();
-        for (int i = 0; i < profileResult.cells.Count; i++)
-        {
-          cells.Add(profileResult.cells[i]);
-          if (profileResult.cells[i].cellType == CompactionProfileCell.ProfileCellType.Gap)
-          {
-            cells.Add(null); 
-          }
-        }
-        profileResult.cells = cells;
-      }
-      log.LogDebug($"After adding nulls for gaps: {profileResult.cells.Count} cells");
     }
 
     /// <summary>
