@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using ASNode.CMVChange.RPC;
+﻿using ASNode.CMVChange.RPC;
 using ASNode.ElevationStatistics.RPC;
 using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.SpeedSummary.RPC;
@@ -12,6 +9,7 @@ using ASNodeDecls;
 using ASNodeRPC;
 using BoundingExtents;
 using DesignProfiler.ComputeDesignBoundary.RPC;
+using DesignProfiler.ComputeProfile.RPC;
 using DesignProfilerDecls;
 using ShineOn.Rtl;
 using SubGridTreesDecls;
@@ -22,6 +20,9 @@ using SVOICOptionsDecls;
 using SVOICProfileCell;
 using SVOICStatistics;
 using SVOICVolumeCalculationsDecls;
+using System;
+using System.IO;
+using System.Linq;
 using VLPDDecls;
 using VSS.Productivity3D.Common.Interfaces;
 
@@ -134,9 +135,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public TMachineDetail[] GetMachineIDs(long projectId)
     {
-      TMachineDetail[] machineIDs = null;
-
-      return client.GetMachineIDs(projectId, out machineIDs) == 1/*icsrrNoError*/ ? machineIDs : null;
+      return client.GetMachineIDs(projectId, out TMachineDetail[] machineIDs) == 1/*icsrrNoError*/ ? machineIDs : null;
     }
 
     public void RequestConfig(out string xml)
@@ -181,23 +180,22 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public MemoryStream GetAlignmentProfile(ASNode.RequestAlignmentProfile.RPC.TASNodeServiceRPCVerb_RequestAlignmentProfile_Args Args)
     {
-      MemoryStream profile = null;
-
-      return client.GetAlignmentProfile(Args, out profile) == 1/*icsrrNoError*/ ? profile : null;
+      return client.GetAlignmentProfile(Args, out MemoryStream profile) == 1/*icsrrNoError*/ ? profile : null;
     }
 
     public MemoryStream GetProfile(ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args Args)
     {
-      MemoryStream profile = null;
+      return client.GetProfile(Args, out MemoryStream profile) == 1/*icsrrNoError*/ ? profile : null;
+    }
 
-      return client.GetProfile(Args, out profile) == 1/*icsrrNoError*/ ? profile : null;
+    public MemoryStream GetDesignProfile(TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args Args)
+    {
+      return client.GetDesignProfile(Args, out MemoryStream profile) == 1 ? profile : null;
     }
 
     public TDesignName[] GetOnMachineDesigns(long DataModelID)
     {
-      TDesignName[] designNames = null;
-
-      return client.GetOnMachineDesigns(DataModelID, out designNames) == 1/*icsrrNoError*/ ? designNames : null;
+      return client.GetOnMachineDesigns(DataModelID, out TDesignName[] designNames) == 1/*icsrrNoError*/ ? designNames : null;
     }
 
 
@@ -209,15 +207,13 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public TDesignName[] GetOverriddenDesigns(long projectId, long assetId)
     {
-      TDesignName[] designNames;
-      client.GetOverriddenDesigns(projectId, assetId, out designNames);
+      client.GetOverriddenDesigns(projectId, assetId, out TDesignName[] designNames);
       return designNames;
     }
 
     public TDesignLayer[] GetOverriddenLayers(long projectId, long assetId)
     {
-      TDesignLayer[] layers;
-      client.GetOverriddenLayers(projectId, assetId, out layers);
+      client.GetOverriddenLayers(projectId, assetId, out TDesignLayer[] layers);
       return layers;
     }
 
@@ -270,9 +266,7 @@ namespace VSS.Productivity3D.Common.Proxies
     /// 
     public bool StoreGroundSurfaceFile(ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args)
     {
-      TSurveyedSurfaceDetails[] groundSurfaces;
-
-      bool result = client.GetGroundSurfaceFileDetails(args.DataModelID, out groundSurfaces) == 1;/*icsrrNoError*/
+      bool result = client.GetGroundSurfaceFileDetails(args.DataModelID, out TSurveyedSurfaceDetails[] groundSurfaces) == 1;/*icsrrNoError*/
 
       if (!result) return false;
 
@@ -315,9 +309,7 @@ namespace VSS.Productivity3D.Common.Proxies
     /// 
     public bool UpdateGroundSurfaceFile(ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args)
     {
-      TSurveyedSurfaceDetails[] groundSurfaces;
-
-      bool result = client.GetGroundSurfaceFileDetails(args.DataModelID, out groundSurfaces) == 1;/*icsrrNoError*/
+      bool result = client.GetGroundSurfaceFileDetails(args.DataModelID, out TSurveyedSurfaceDetails[] groundSurfaces) == 1;/*icsrrNoError*/
 
       if (!result) return false;
 

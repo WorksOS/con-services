@@ -1,41 +1,40 @@
-﻿using System;
+﻿using SVOICProfileCell;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SVOICProfileCell;
 using VLPDDecls;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Velociraptor.PDSInterface;
+using VSS.Productivity3D.WebApi.Models.Common;
 using ProfileCell = VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling.ProfileCell;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
   public class ProfilesHelper
   {
-    private const double NO_HEIGHT = 1E9;
-    private const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
-    private const int NO_MDP = SVOICDecls.__Global.kICNullMDPValue;
-    private const int NO_TEMPERATURE = SVOICDecls.__Global.kICNullMaterialTempValue;
-    private const int NO_PASSCOUNT = SVOICDecls.__Global.kICNullPassCountValue;
-    private const float NULL_SINGLE = DTXModelDecls.__Global.NullSingle;
-
     public static ProfileResult convertProductionDataProfileResult(MemoryStream ms, Guid callID)
     {
       List<StationLLPoint> points = null;
 
-      ProfileResult profile = new ProfileResult();
-      profile.callId = callID;
-      profile.cells = null;
-      profile.success = ms != null;
+      var profile = new ProfileResult()
+      {
+        callId = callID,
+        cells = null,
+        success = ms != null
+      };
 
       if (profile.success)
       {
         PDSProfile pdsiProfile = new PDSProfile();
 
-        TICProfileCellListPackager packager = new TICProfileCellListPackager();
-        packager.CellList = new TICProfileCellList();
+        var packager = new TICProfileCellListPackager()
+        {
+          CellList = new TICProfileCellList()
+        };
+
         packager.ReadFromStream(ms);
 
         pdsiProfile.Assign(packager.CellList);
@@ -46,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         {
           //points = packager.LatLongList.ToList().ConvertAll<Flex.StationLLPoint>(delegate(TWGS84StationPoint p) { return new Flex.StationLLPoint {lat = p.Lat * 180 / Math.PI, lng = p.Lon * 180 / Math.PI }; });
           points = packager.LatLongList.ToList().ConvertAll<StationLLPoint>
-            (delegate(TWGS84StationPoint p)
+            (delegate (TWGS84StationPoint p)
             {
               return new StationLLPoint { station = p.Station, lat = p.Lat * 180 / Math.PI, lng = p.Lon * 180 / Math.PI };
             }
@@ -55,9 +54,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
         profile.cells = new List<ProfileCell>();
         VSS.Velociraptor.PDSInterface.ProfileCell prevCell = null;
-        foreach (VSS.Velociraptor.PDSInterface.ProfileCell currCell in pdsiProfile.cells)
+        foreach (Velociraptor.PDSInterface.ProfileCell currCell in pdsiProfile.cells)
         {
-          double prevStationIntercept = prevCell == null ? 0.0 : prevCell.station + prevCell.interceptLength;
+          double prevStationIntercept = prevCell?.station + prevCell.interceptLength ?? 0.0;
           bool gap = prevCell == null
                        ? false
                        : Math.Abs(currCell.station - prevStationIntercept) > 0.001;
@@ -84,41 +83,40 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
               temperatureHeight = float.NaN,
               temperatureLevel = -1,
               topLayerPassCount = -1,
-              topLayerPassCountTargetRange = TargetPassCountRange.CreateTargetPassCountRange(NO_PASSCOUNT, NO_PASSCOUNT),
+              topLayerPassCountTargetRange = TargetPassCountRange.CreateTargetPassCountRange(VelociraptorConstants.NO_PASSCOUNT, VelociraptorConstants.NO_PASSCOUNT),
               passCountIndex = -1,
               topLayerThickness = float.NaN
             });
           }
 
-          bool noCCVValue = currCell.TargetCCV == 0 || currCell.TargetCCV == NO_CCV || currCell.CCV == NO_CCV;
-          bool noCCElevation = currCell.CCVElev == NULL_SINGLE || noCCVValue;
-          bool noMDPValue = currCell.TargetMDP == 0 || currCell.TargetMDP == NO_MDP || currCell.MDP == NO_MDP;
-          bool noMDPElevation = currCell.MDPElev == NULL_SINGLE || noMDPValue;
-          bool noTemperatureValue = currCell.materialTemperature == NO_TEMPERATURE;
-          bool noTemperatureElevation = currCell.materialTemperatureElev == NULL_SINGLE || noTemperatureValue;
-          bool noPassCountValue = currCell.topLayerPassCount == NO_PASSCOUNT;
-          //bool noPassCountTargetValue = currCell.topLayerPassCountTargetRange.Min == NO_PASSCOUNT || currCell.topLayerPassCountTargetRange.Max == NO_PASSCOUNT;
+          bool noCCVValue = currCell.TargetCCV == 0 || currCell.TargetCCV == VelociraptorConstants.NO_CCV || currCell.CCV == VelociraptorConstants.NO_CCV;
+          bool noCCElevation = currCell.CCVElev == VelociraptorConstants.NULL_SINGLE || noCCVValue;
+          bool noMDPValue = currCell.TargetMDP == 0 || currCell.TargetMDP == VelociraptorConstants.NO_MDP || currCell.MDP == VelociraptorConstants.NO_MDP;
+          bool noMDPElevation = currCell.MDPElev == VelociraptorConstants.NULL_SINGLE || noMDPValue;
+          bool noTemperatureValue = currCell.materialTemperature == VelociraptorConstants.NO_TEMPERATURE;
+          bool noTemperatureElevation = currCell.materialTemperatureElev == VelociraptorConstants.NULL_SINGLE || noTemperatureValue;
+          bool noPassCountValue = currCell.topLayerPassCount == VelociraptorConstants.NO_PASSCOUNT;
 
-          profile.cells.Add(new ProfileCell()
+          profile.cells.Add(new ProfileCell
           {
             station = currCell.station,
 
-            firstPassHeight = currCell.firstPassHeight == NULL_SINGLE ? float.NaN : currCell.firstPassHeight,
-            highestPassHeight = currCell.highestPassHeight == NULL_SINGLE ? float.NaN : currCell.highestPassHeight,
-            lastPassHeight = currCell.lastPassHeight == NULL_SINGLE ? float.NaN : currCell.lastPassHeight,
-            lowestPassHeight = currCell.lowestPassHeight == NULL_SINGLE ? float.NaN : currCell.lowestPassHeight,
+            firstPassHeight = currCell.firstPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.firstPassHeight,
+            highestPassHeight = currCell.highestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.highestPassHeight,
+            lastPassHeight = currCell.lastPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.lastPassHeight,
+            lowestPassHeight = currCell.lowestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.lowestPassHeight,
 
-            firstCompositeHeight = currCell.compositeFirstPassHeight == NULL_SINGLE ? float.NaN : currCell.compositeFirstPassHeight,
-            highestCompositeHeight = currCell.compositeHighestPassHeight == NULL_SINGLE ? float.NaN : currCell.compositeHighestPassHeight,
-            lastCompositeHeight = currCell.compositeLastPassHeight == NULL_SINGLE ? float.NaN : currCell.compositeLastPassHeight,
-            lowestCompositeHeight = currCell.compositeLowestPassHeight == NULL_SINGLE ? float.NaN : currCell.compositeLowestPassHeight,
-            designHeight = currCell.designHeight == NULL_SINGLE ? float.NaN : currCell.designHeight,
+            firstCompositeHeight = currCell.compositeFirstPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.compositeFirstPassHeight,
+            highestCompositeHeight = currCell.compositeHighestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.compositeHighestPassHeight,
+            lastCompositeHeight = currCell.compositeLastPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.compositeLastPassHeight,
+            lowestCompositeHeight = currCell.compositeLowestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.compositeLowestPassHeight,
+            designHeight = currCell.designHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.designHeight,
 
             cmvPercent = noCCVValue
               ? float.NaN : (float)currCell.CCV / (float)currCell.TargetCCV * 100.0F,
             cmvHeight = noCCElevation ? float.NaN : currCell.CCVElev,
             previousCmvPercent = noCCVValue
-              ? float.NaN : (float)currCell.PrevCCV / (float)currCell.PrevTargetCCV * 100.0F,   
+              ? float.NaN : (float)currCell.PrevCCV / (float)currCell.PrevTargetCCV * 100.0F,
 
             mdpPercent = noMDPValue
               ? float.NaN : (float)currCell.MDP / (float)currCell.TargetMDP * 100.0F,
@@ -137,7 +135,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
                 (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? 2 :
                 (currCell.topLayerPassCount > currCell.topLayerPassCountTargetRange.Max ? 0 : 1)),
 
-            topLayerThickness = currCell.topLayerThickness == NULL_SINGLE ? float.NaN : currCell.topLayerThickness
+            topLayerThickness = currCell.topLayerThickness == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.topLayerThickness
           });
 
           prevCell = currCell;
@@ -212,20 +210,20 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       }
       else
         if (lLPoints != null)
-        {
-          positionsAreGrid = false;
-          startPt = new VLPDDecls.TWGS84Point() { Lat = lLPoints.lat1, Lon = lLPoints.lon1 };
-          endPt = new VLPDDecls.TWGS84Point() { Lat = lLPoints.lat2, Lon = lLPoints.lon2 };
-        }
-        else
-        {
+      {
+        positionsAreGrid = false;
+        startPt = new VLPDDecls.TWGS84Point() { Lat = lLPoints.lat1, Lon = lLPoints.lon1 };
+        endPt = new VLPDDecls.TWGS84Point() { Lat = lLPoints.lat2, Lon = lLPoints.lon2 };
+      }
+      else
+      {
 
-          startPt = new VLPDDecls.TWGS84Point();
-          endPt = new VLPDDecls.TWGS84Point();
-          positionsAreGrid = false;
+        startPt = new VLPDDecls.TWGS84Point();
+        endPt = new VLPDDecls.TWGS84Point();
+        positionsAreGrid = false;
 
-          // TODO throw an exception
-        }
+        // TODO throw an exception
+      }
     }
   }
 }

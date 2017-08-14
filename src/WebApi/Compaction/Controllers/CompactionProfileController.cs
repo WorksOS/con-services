@@ -4,11 +4,9 @@ using System;
 using System.Threading.Tasks;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
-using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -135,14 +133,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double latRadians2,
       [FromQuery] double lngRadians1,
       [FromQuery] double lngRadians2,
-      [FromQuery] long designId,
       [FromQuery] string designFilename,
+      [FromQuery] Guid importedFileUid,
       [FromQuery] int importedFileTypeId,
-      [FromQuery] bool alignmentProfile,
       [FromQuery] long alignmentId,
-      [FromQuery] double startStation,
-      [FromQuery] double endStation,
-      [FromQuery] string callId)
+      [FromQuery] Guid callId)
     {
       log.LogInformation("GetDesignProduction: " + Request.QueryString);
 
@@ -155,7 +150,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders)))
           .ExcludedIds(await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid)))
         .SetRaptorClient(raptorClient)
-        .CreateDesignProfileResponse(projectUid, latRadians1, lngRadians1, latRadians2, lngRadians2, designId, designFilename, importedFileTypeId, alignmentProfile, alignmentId, startStation, endStation, callId);
+        .CreateDesignProfileResponse(projectUid, latRadians1, lngRadians1, latRadians2, lngRadians2, designFilename, importedFileUid, importedFileTypeId, alignmentId, callId);
 
      // slicerProfileResult.Validate();
 

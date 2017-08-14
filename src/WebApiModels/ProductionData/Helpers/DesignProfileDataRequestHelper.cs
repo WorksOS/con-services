@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
-using System.IO;
 using System.Linq;
 using System.Net;
-using SVOICFilterSettings;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -12,10 +9,11 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using DesignProfile = VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling.DesignProfile;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
@@ -34,9 +32,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
       Log = logger.CreateLogger<SliceProfileDataRequestHelper>();
-      this.ConfigurationStore = configurationStore;
-      this.FileListProxy = fileListProxy;
-      this.SettingsManager = settingsManager;
+      ConfigurationStore = configurationStore;
+      FileListProxy = fileListProxy;
+      SettingsManager = settingsManager;
     }
     public DesignProfileDataRequestHelper SetRaptorClient(IASNodeClient raptorClient)
     {
@@ -47,132 +45,70 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <summary>
     /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a Slicer profile.   
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="startLatDegrees"></param>
-    /// <param name="startLonDegrees"></param>
-    /// <param name="endLatDegrees"></param>
-    /// <param name="endLonDegrees"></param>
-    /// <param name="startUtc"></param>
-    /// <param name="endUtc"></param>
-    /// <param name="cutfillDesignUid"></param>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public ProfileResult CreateDesignProfileResponse(Guid projectUid, double latRadians1, double lngRadians1, double latRadians2, double lngRadians2, long designId, string designFilename, int importedFileTypeid, bool alignmentProfile, long alignmentId, double startStation, double endStation, string callId)
+    public ProfileResult CreateDesignProfileResponse(Guid projectUid, double latRadians1, double lngRadians1, double latRadians2, double lngRadians2, string designFilename, Guid importedFileUid, int importedFileTypeid, long alignmentId, Guid callId)
     {
-      TVLPDDesignDescriptor alignmentDescriptor;
+      var designDescriptor = GetDescriptor(projectUid, importedFileUid, designFilename);
 
-      if (alignmentProfile)
+      var memoryStream = _raptorClient.GetDesignProfile(
+        DesignProfiler.ComputeProfile.RPC.__Global.Construct_CalculateDesignProfile_Args(
+          ProjectId,
+          false,
+          TWGS84Point.Point(lngRadians1, latRadians1),
+          TWGS84Point.Point(lngRadians2, latRadians2),
+          ValidationConstants.MIN_STATION,
+          ValidationConstants.MAX_STATION,
+          designDescriptor,
+          RaptorConverters.EmptyDesignDescriptor,
+          null,
+          false));
+
+      var profile = new DesignProfile
       {
-        lngRadians1 = 0;
-        latRadians1 = 0;
-        lngRadians2 = 0;
-        latRadians2 = 0;
+        callId = callId,
+        importedFileTypeID = importedFileTypeid,
+        vertices = null,
+        success = memoryStream != null
+      };
 
-        alignmentDescriptor = GetAlignmentDescriptor(importedFileTypeid, designId, designFilename);
-      }
-      else
+      if (profile.success)
       {
-        alignmentDescriptor = RaptorConverters.EmptyDesignDescriptor;
-      }
+        var pdsiProfile = new DesignProfile();
 
-      TVLPDDesignDescriptor designDescriptor;
+        memoryStream.Close();
 
-      if (importedFileTypeid == (int)ImportedFileType.ReferenceSurface)
-      {
-        designDescriptor = RaptorConverters.DesignDescriptor(designId, ProjectId.ToString(), null, null, 0); // Returns parent file plus offset.
-      }
-      else
-      {
-      
-        // TCCHelper.TCCData data = TCCHelper.LoginToBusinessCenterAsVL(session, projectID);
-
-        //designDescriptor = RaptorConverters.DesignDescriptor(
-        //  designID,
-        //  null, // shoudln't be null.
-        //  data.filePath,
-        //  designFilename,
-        //  0);
       }
 
-      MemoryStream ms = null;
-      //int code = _raptorClient.GetDesignProfile(DesignProfiler.ComputeProfile.RPC.__Global.Construct_CalculateDesignProfile_Args
-      //  (ProjectId, alignmentProfile,
-      //    VLPDDecls.TWGS84Point.Point(lngRadians1, latRadians1),
-      //    VLPDDecls.TWGS84Point.Point(lngRadians2, latRadians2),
-      //    startStation, endStation,
-      //    designDescriptor,
-      //    alignmentDescriptor,
-      //    null, // no filter yet.
-      //    false),
-      //  out MS);
-
-
-      //VLPDDecls.TWGS84Point startPt, endPt;
-      //bool positionsAreGrid;
-      //ProfilesHelper.convertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt, out positionsAreGrid);
-
-
-      //ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args(ProjectId,
-      //  -1,
-      //  true,
-      //  startPt,
-      //  endPt,
-      //  null,
-      //   null,
-      //  RaptorConverters.DesignDescriptor(alignmentDescriptor.DesignID, alignmentDescriptor.FileSpaceID, alignmentDescriptor.FullPath(), alignmentDescriptor.FileName, 0),
-      //  true);
-
-      //var ms = _raptorClient.GetProfile(args);
-
-      //int code = _raptorClient.GetDesignProfile(DesignProfiler.ComputeProfile.RPC.__Global.Construct_CalculateDesignProfile_Args
-      //  (ProjectId, alignmentProfile,
-      //    TWGS84Point.Point(lngRadians1, latRadians1),
-      //    TWGS84Point.Point(lngRadians2, latRadians2),
-      //    startStation,
-      //    endStation,
-      //    designDescriptor,
-      //    alignmentDescriptor,
-      //    null, // no filterget
-      //    false),
-      //  out MemoryStream memoryStream);
-
-      //if (memoryStream != null)
-      //{
-      //  var result = ProfilesHelper.convertProductionDataProfileResult(memoryStream, (Guid)(callId ?? Guid.NewGuid()));
-      //  log.LogInformation("GetProfileProduction result: " + JsonConvert.SerializeObject(result));
-
-      //  return result;
-      //}
 
       return null;
     }
 
-    private TVLPDDesignDescriptor GetAlignmentDescriptor(int importedFileTypeid, long designId, string designFilename)
+    private TVLPDDesignDescriptor GetDescriptor(Guid projectUid, Guid importedFileUid, string designFilename)
     {
-      var fileList = FileListProxy.GetFiles(ProjectId.ToString(), Headers).Result;
+      var fileList = FileListProxy.GetFiles(projectUid.ToString(), Headers).Result;
 
       if (fileList.Count <= 0)
       {
-        //throw new ServiceException(HttpStatusCode.BadRequest,
-        //  new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
-        //    "Project has no appropriate design files."));
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Project has no appropriate design files."));
       }
 
-      // Is this query correct?
       var designFile = fileList.SingleOrDefault(
         f => f.ImportedFileUid ==
-             importedFileTypeid.ToString() &&
+             importedFileUid.ToString() &&
              f.IsActivated &&
              f.ImportedFileType == ImportedFileType.DesignSurface);
 
       if (designFile == null)
       {
-        //throw new ServiceException(HttpStatusCode.BadRequest,
-        //  new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
-        //    "Unable to access design file."));
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Unable to access design file."));
       }
 
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(
-        designId,
+        designFile.LegacyFileId,
         designFile.ImportedFileUid,
         designFile.Path,
         designFilename,

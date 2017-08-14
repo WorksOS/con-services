@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using ASNode.CMVChange.RPC;
+﻿using ASNode.CMVChange.RPC;
 using ASNode.ElevationStatistics.RPC;
 using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.SpeedSummary.RPC;
@@ -11,6 +9,7 @@ using ASNodeDecls;
 using ASNodeRPC;
 using BoundingExtents;
 using DesignProfiler.ComputeDesignBoundary.RPC;
+using DesignProfiler.ComputeProfile.RPC;
 using DesignProfilerDecls;
 using ShineOn.Rtl;
 using SVOICDecls;
@@ -19,6 +18,8 @@ using SVOICLiftBuildSettings;
 using SVOICOptionsDecls;
 using SVOICStatistics;
 using SVOICVolumeCalculationsDecls;
+using System;
+using System.IO;
 using VLPDDecls;
 
 namespace VSS.Productivity3D.Common.Interfaces
@@ -128,6 +129,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     MemoryStream GetProfile(ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args Args);
 
+    MemoryStream GetDesignProfile(TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args Args);
 
     /// <summary>
     /// Gets the onmachine designs.
@@ -231,27 +233,27 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     bool GetMachineCCAColourPalettes(long dataModelId, long machineId, DateTime? startUtc, DateTime? endUtc, int? liftId, out TColourPalettes palettes);
 
-        int GetGriddedOrAlignmentCSVExport(long DataModelID,
-                                           int ReportType,
-                                           TASNodeRequestDescriptor ExternalDescriptor,
-                                           TVLPDDesignDescriptor DesignFile, // cutfill profile
-                                           double Interval,
-                                           bool ElevationReport,
-                                           bool CutFillReport,
-                                           bool CMVReport,
-                                           bool MDPReport,
-                                           bool PassCountReport,
-                                           bool TemperatureReport,
-                                           int ReportOption,
-                                           double StartNorthing,
-                                           double StartEasting,
-                                           double EndNorthing,
-                                           double EndEasting,
-                                           double Direction,
-                                           TICFilterSettings Filter,
-                                           TICLiftBuildSettings LiftBuildSettings,
-                                           TSVOICOptions ICOptions,
-                                           out MemoryStream DataExport);
- 
-    }
+    int GetGriddedOrAlignmentCSVExport(long DataModelID,
+                                       int ReportType,
+                                       TASNodeRequestDescriptor ExternalDescriptor,
+                                       TVLPDDesignDescriptor DesignFile, // cutfill profile
+                                       double Interval,
+                                       bool ElevationReport,
+                                       bool CutFillReport,
+                                       bool CMVReport,
+                                       bool MDPReport,
+                                       bool PassCountReport,
+                                       bool TemperatureReport,
+                                       int ReportOption,
+                                       double StartNorthing,
+                                       double StartEasting,
+                                       double EndNorthing,
+                                       double EndEasting,
+                                       double Direction,
+                                       TICFilterSettings Filter,
+                                       TICLiftBuildSettings LiftBuildSettings,
+                                       TSVOICOptions ICOptions,
+                                       out MemoryStream DataExport);
+
+  }
 }
