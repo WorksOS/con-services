@@ -11,9 +11,11 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApi.ProductionData.Controllers;
+using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -83,7 +85,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="startLonDegrees">Start profileLine Lon</param>
     /// <param name="endLatDegrees">End profileLine Lat</param>
     /// <param name="endLonDegrees">End profileLine Lon</param>
-    /// <param name="filterUid">Filter Id</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="cutfillDesignUid">Design UID</param>
     /// <returns>
     /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
@@ -92,13 +94,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [NotLandFillProjectWithUIDVerifier]
     [Route("api/v2/profiles/productiondata/slicer")]
     [HttpGet]
-    public async Task<ProfileResult> GetProfileProductionDataSlicer(
+    public async Task<CompactionProfileResult> GetProfileProductionDataSlicer(
       [FromQuery] Guid projectUid,
       [FromQuery] double startLatDegrees,
       [FromQuery] double startLonDegrees,
       [FromQuery] double endLatDegrees,
       [FromQuery] double endLonDegrees,
-      [FromQuery] Guid filterUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutfillDesignUid
     )
     {
@@ -118,8 +120,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<ProfileProductionDataExecutor>(logger, raptorClient)
-          .Process(slicerProfileResult) as ProfileResult
+          .Build<CompactionProfileExecutor>(logger, raptorClient)
+          .Process(slicerProfileResult) as CompactionProfileResult
       );
     }
 

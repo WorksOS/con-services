@@ -48,11 +48,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
     public ProfileProductionDataRequest CreateSlicerProfileRequest(Guid projectUid,
       double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees,
-      Guid filterUid,Guid customerUid, IDictionary<string,string> headers, Guid? cutfillDesignUid)
+      Guid? filterUid,Guid customerUid, IDictionary<string,string> headers, Guid? cutfillDesignUid)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
 
-      var filter = SettingsManager.CompactionFilter(filterUid.ToString(), customerUid.ToString(), projectUid.ToString(),
+      var filterUidStr = filterUid.HasValue ? filterUid.ToString() : null;
+      var filter = SettingsManager.CompactionFilter(filterUidStr, customerUid.ToString(), projectUid.ToString(),
         headers);
 
       DesignDescriptor designDescriptor = null;
