@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [HttpPut]
     public async Task<FilterDescriptorSingleResult> UpsertFilter(string projectUid, [FromBody] FilterRequest request)
     {
-      log.LogInformation($"{ToString()}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} request: {JsonConvert.SerializeObject(request)} FilterRequest: {JsonConvert.SerializeObject(request)}");
+      log.LogInformation($"{ToString()}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} FilterRequest: {JsonConvert.SerializeObject(request)}");
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
