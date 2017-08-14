@@ -82,8 +82,8 @@ namespace VSS.Productivity3D.Filter.Common.Models
       if (string.IsNullOrEmpty(projectUid) || Guid.TryParse(projectUid, out Guid projectUidGuid) == false)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
 
-      if (filterUid == string.Empty
-          || filterUid != null && Guid.TryParse(filterUid, out Guid filterUidGuid) == false)
+      if (filterUid == null
+        || ( filterUid != string.Empty && Guid.TryParse(filterUid, out Guid filterUidGuid) == false))
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
 
       if (name == null)
