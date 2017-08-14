@@ -46,12 +46,12 @@ namespace VSS.MasterData.Models.Tests
     public void CanCreateFilterTest()
     {
       // Empty filter...
-      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null);
+      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null);
       ICollection<ValidationResult> results;
       Assert.IsTrue(_validator.TryValidate(filter, out results));
 
       // Complete filter...
-      filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       Assert.IsTrue(_validator.TryValidate(filter, out results));
     }
 
@@ -59,87 +59,79 @@ namespace VSS.MasterData.Models.Tests
     public void ValidateSuccessTest()
     {
       // All properties' values are valid...
-      Filter filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      Filter filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       filter.Validate(_serviceExceptionHandler);
 
       // Date range is not provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), null, null, new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(null, null, new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       filter.Validate(_serviceExceptionHandler);
 
       // Design UID is not provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), null, _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), null, _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       filter.Validate(_serviceExceptionHandler);
 
       // Machines' list is not provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), new Guid().ToString(), null, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), null, 123, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       filter.Validate(_serviceExceptionHandler);
 
       // Machine's design name is not provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, null, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, null, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       filter.Validate(_serviceExceptionHandler);
 
       // Elevation type is not provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       filter.Validate(_serviceExceptionHandler);
 
       // Vibration state is not provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, null, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, null, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       filter.Validate(_serviceExceptionHandler);
 
       // Polygon is not provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, null, true, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, null, true, 1, FilterLayerMethod.MapReset);
       filter.Validate(_serviceExceptionHandler);
 
       // Forward direction flag is not provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, null, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, null, 1, FilterLayerMethod.MapReset);
       filter.Validate(_serviceExceptionHandler);
 
       // Layer number is not provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, null, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, null, FilterLayerMethod.MapReset);
       filter.Validate(_serviceExceptionHandler);
     }
 
     [TestMethod]
     public void ValidateFailureTest()
     {
-      // Filter UID is not provided...
-      var filter = Filter.CreateFilter(null, _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
-      Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
-
-      // Invalid Filter UID's Guid is provided...
-      filter = Filter.CreateFilter(INVALID_GUID, _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
-      Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
-
       // Start UTC date is not provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), null, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      var filter = Filter.CreateFilter(null, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
 
       // End UTC date is not provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, null, new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, null, new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
 
       // Invalid design UID's Guid is provided...
-      filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), INVALID_GUID, _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), INVALID_GUID, _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
 
       // No layer type is provided for a layer filter...
-      filter = Filter.CreateFilter(null, _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, null);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
 
       // No layer number is provided for a layer filter...
-      filter = Filter.CreateFilter(null, _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, null, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, null, FilterLayerMethod.TagfileLayerNumber);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
 
       // The provided polygon's boundary has less than 3 points...
       _polygonLL.RemoveAt(_polygonLL.Count - 1);
-      filter = Filter.CreateFilter(null, _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
     }
 
     [TestMethod]
     public void ValidateJsonStringTest()
     {
-      var filter = Filter.CreateFilter(new Guid().ToString(), _utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, "Fred", ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
+      var filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1, FilterLayerMethod.MapReset);
       var jsonString = filter.ToJsonString();
 
       Assert.IsTrue(jsonString != String.Empty);

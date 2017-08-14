@@ -19,12 +19,6 @@ namespace VSS.MasterData.Models.Models
   public class Filter : IValidatable
   {
     /// <summary>
-    /// The unique identifier for a filter stored in the filters service. Always required.
-    /// </summary>
-    [JsonProperty(PropertyName = "filterUid", Required = Required.Always)]
-    public string filterUid { get; protected set; }
-
-    /// <summary>
     /// The 'start' time for a time based filter. Data recorded earlier to this time is not considered.
     /// Optional. If not present then there is no start time bound.
     /// </summary>
@@ -52,10 +46,11 @@ namespace VSS.MasterData.Models.Models
     public List<MachineDetails> contributingMachines { get; private set; }
 
     /// <summary>
-    /// Only consider cell passes recorded when the machine had the named design loaded.
+    /// A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction. 
     /// </summary>
-    [JsonProperty(PropertyName = "machineDesignName", Required = Required.Default)]
-    public string machineDesignName { get; private set; }
+    [JsonProperty(PropertyName = "onMachineDesignID", Required = Required.Default)]
+    public long? onMachineDesignID { get; private set; } //PDS not VL ID
 
     /// <summary>
     /// Controls the cell pass from which to determine data based on its elevation.
@@ -103,12 +98,11 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     public static Filter CreateFilter
       (
-        string filterUid,
         DateTime? startUtc,
         DateTime? endUtc,
         string designUid,
         List<MachineDetails> contributingMachines,
-        string machineDesignName,
+        long? onMachineDesignID,
         ElevationType? elevationType,
         bool? vibeStateOn,
         List<WGSPoint> polygonLL,
@@ -119,12 +113,11 @@ namespace VSS.MasterData.Models.Models
     {
       return new Filter()
       {
-        filterUid = filterUid,
         startUTC = startUtc,
         endUTC = endUtc,
         designUid = designUid,
         contributingMachines = contributingMachines,
-        machineDesignName = machineDesignName,
+        onMachineDesignID = onMachineDesignID,
         elevationType = elevationType,
         vibeStateOn = vibeStateOn,
         polygonLL = polygonLL,
@@ -136,17 +129,13 @@ namespace VSS.MasterData.Models.Models
     
     public string ToJsonString()
     {
-      var filter = CreateFilter(filterUid, startUTC, endUTC, designUid, contributingMachines, machineDesignName, elevationType, vibeStateOn, polygonLL, forwardDirection, layerNumber, layerType);
+      var filter = CreateFilter(startUTC, endUTC, designUid, contributingMachines, onMachineDesignID, elevationType, vibeStateOn, polygonLL, forwardDirection, layerNumber, layerType);
 
       return JsonConvert.SerializeObject(filter);
     }
 
     public void Validate([FromServices] IServiceExceptionHandler serviceExceptionHandler)
     {
-      Guid filterUidGuid;
-      if (filterUid == null || Guid.TryParse(filterUid, out filterUidGuid) == false)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
-
       //Check date range properties
       if (startUTC.HasValue || endUTC.HasValue)
       {
@@ -191,7 +180,6 @@ namespace VSS.MasterData.Models.Models
       //Raptor handles any weird boundary you give it and automatically closes it if not closed already therefore we just need to check we have at least 3 points
       if (polygonLL != null && polygonLL.Count < 3)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 35);
-
     }
 
   }

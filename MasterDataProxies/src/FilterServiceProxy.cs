@@ -24,11 +24,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="filterUid">The filter uid.</param>
     /// <param name="customHeaders">The custom headers including JWT and customer context.</param>
     /// <returns></returns>
-    public async Task<FilterDescriptor> GetFilter(string customerUid, string projectUid, string filterUid,
+    public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid,
       IDictionary<string, string> customHeaders = null)
     {
       var result = await GetContainedMasterDataList<FilterData>(filterUid, "FILTER_CACHE_LIFE", "FILTER_API_URL",
-        customHeaders, $"?filterUid={filterUid}", projectUid);
+        customHeaders, $"/{projectUid}/{filterUid}");
       if (result.Code == 0)
       {
         return result.filterDescriptor;

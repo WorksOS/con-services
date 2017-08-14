@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace MockProjectWebApi.Utils
+{
+    public static class ConstantsUtil
+    {
+      public const int DIMENSIONS_PROJECT_ID = 1001158;
+      public const string DIMENSIONS_PROJECT_UID = "ff91dd40-1569-4765-a2bc-014321f76ace";
+      public const int CUSTOM_SETTINGS_DIMENSIONS_PROJECT_ID = 1001160;
+      public const string CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID = "3335311a-f0e2-4dbe-8acd-f21135bafee4";
+
+    //These are used for imported files and surveyed surfaces tests
+      public const int GOLDEN_DATA_DIMENSIONS_PROJECT_ID_1 = 1007777;
+      public const string GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1 = "7925f179-013d-4aaf-aff4-7b9833bb06d6";
+      public const int GOLDEN_DATA_DIMENSIONS_PROJECT_ID_2 = 1007778;
+      public const string GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2 = "86a42bbf-9d0e-4079-850f-835496d715c5";
+    }
+}
