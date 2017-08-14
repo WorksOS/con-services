@@ -44,13 +44,13 @@ namespace WebApiTests
       var filterUid = Guid.NewGuid();
       var customerUid = Guid.NewGuid();
       ts.CustomerUid = customerUid;
-      var projectUid = Guid.NewGuid();
-      var filterRequest = FilterRequest.CreateFilterRequest("", ""); //"Filter test 2","{ designUid: xxx, elevationType: First,layerType: 2,machineDesignName: test,polygonLL: 123 }");
+      var projectUid = new Guid("dd8a1375-e07c-4c4e-9a2d-1ac7b451d99c");
+      var filterRequest = FilterRequest.CreateFilterRequest("Filter test 2","{ designUid: xxx, elevationType: First,layerType: 2,machineDesignName: test,polygonLL: 123 }");
       filterRequest.filterUid = filterUid.ToString();
-      //filterRequest.filterJson =  "{ designUid: xxx, elevationType: First,layerType: 2,machineDesignName: test,polygonLL: 123 }";
+      filterRequest.filterJson =  "{ designUid: xxx, elevationType: First,layerType: 2,machineDesignName: test,polygonLL: 123 }";
       filterRequest.name = "Filter test 2";
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var responseCreate = ts.CallFilterWebApi($"api/v4/filter/{projectUid}", "PUT", filter);
+      var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
       var responseGet = ts.CallFilterWebApi($"api/v1/filter/{projectUid}?filterUid={filterUid}", "GET");
 
     }
