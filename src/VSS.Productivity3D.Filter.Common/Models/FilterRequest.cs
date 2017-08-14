@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
     /// <summary>
     /// The filter containing the Json string. May be empty if all defaults
     /// </summary>
-    [JsonProperty(PropertyName = "FilterJson", Required = Required.Always)]
+    [JsonProperty(PropertyName = "filterJson", Required = Required.Always)]
     public string filterJson { get; set; } = string.Empty;
 
     /// <summary>
