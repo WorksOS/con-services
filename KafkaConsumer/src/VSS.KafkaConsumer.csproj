@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.KafkaConsumer.netcore</Product>
     <Description>Shared across Merino apps kafka consumer based on RD Kafka</Description>
-    <VersionPrefix>2.0.2</VersionPrefix>
+    <VersionPrefix>2.1.1</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>VSS.KafkaConsumer</AssemblyName>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
@@ -23,7 +23,7 @@
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.*" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.1.*" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
