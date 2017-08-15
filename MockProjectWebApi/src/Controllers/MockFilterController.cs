@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
-using VSS.MasterData.Models.Local.ResultHandling;
 using VSS.MasterData.Models.Models;
 
 namespace MockProjectWebApi.Controllers
