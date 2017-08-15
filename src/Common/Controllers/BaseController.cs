@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.Common.Controllers
     /// <value>
     /// The customer uid.
     /// </value>
-    protected Guid customerUid => this.GetCustomerUid();
+    protected Guid customerUid => GetCustomerUid();
 
 
     protected BaseController(ILogger log, IServiceExceptionHandler serviceExceptionHandler)
@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.Common.Controllers
     }
 
     /// <summary>
-    /// Withes the service exception try execute.
+    /// With the service exception try execute.
     /// </summary>
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="action">The action.</param>
@@ -82,12 +82,11 @@ namespace VSS.Productivity3D.Common.Controllers
     /// <summary>
     /// Gets the customer uid form the context.
     /// </summary>
-    /// <param name="controller">The controller.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentException">Incorrect customer uid value.</exception>
     private Guid GetCustomerUid()
     {
-      if (base.User is RaptorPrincipal principal)
+      if (User is RaptorPrincipal principal)
         return Guid.Parse(principal.CustomerUid);
       throw new ArgumentException("Incorrect request context principal.");
     }
@@ -100,7 +99,7 @@ namespace VSS.Productivity3D.Common.Controllers
     /// <exception cref="ArgumentException">Incorrect request context principal.</exception>
     protected long GetProjectId(Guid projectUid)
     {
-      if (base.User is RaptorPrincipal principal)
+      if (User is RaptorPrincipal principal)
         return (principal.GetProjectId(projectUid));
       throw new ArgumentException("Incorrect request context principal.");
     }
@@ -109,7 +108,6 @@ namespace VSS.Productivity3D.Common.Controllers
     /// Gets the ids of the surveyed surfaces to exclude from Raptor calculations. 
     /// This is the deactivated ones.
     /// </summary>
-    /// <param name="controller">The controller which received the request</param>
     /// <param name="fileListProxy">Proxy client to get list of imported files for the project</param>
     /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
     /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
@@ -132,7 +130,6 @@ namespace VSS.Productivity3D.Common.Controllers
     /// <summary>
     /// Gets the project settings for the project.
     /// </summary>
-    /// <param name="controller">The controller which received the request</param>
     /// <param name="projectSettingsProxy">Proxy client to get project settings for the project</param>
     /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
     /// <param name="log">log for logging</param>
@@ -169,7 +166,6 @@ namespace VSS.Productivity3D.Common.Controllers
     /// <summary>
     /// Gets the list of contributing machines from the query parameters
     /// </summary>
-    /// <param name="controller">The controller which received the reques</param>
     /// <param name="assetId">The asset ID</param>
     /// <param name="machineName">The machine name</param>
     /// <param name="isJohnDoe">The john doe flag</param>
@@ -187,14 +183,13 @@ namespace VSS.Productivity3D.Common.Controllers
         }
         machine = MachineDetails.CreateMachineDetails(assetId.Value, machineName, isJohnDoe.Value);
       }
-      return machine == null ? null : new List<MachineDetails> {machine};
+      return machine == null ? null : new List<MachineDetails> { machine };
     }
 
     /// <summary>
     /// Converts a set user preferences in the format understood by the Raptor for.
     /// It is solely used by production data export WebAPIs.
     /// </summary>
-    /// <param name="controller">The controller which received the request.</param>
     /// <param name="userPref">The set of user preferences.</param>
     /// <returns>The set of user preferences in Raptor's format</returns>
     protected TASNodeUserPreferences convertUserPreferences(UserPreferenceData userPref)
@@ -210,7 +205,7 @@ namespace VSS.Productivity3D.Common.Controllers
         userPref.DecimalSeparator,
         projectTimeZoneOffset,
         Array.IndexOf(LanguageLocales.LanguageLocaleStrings, userPref.Language),
-        (int) UnitsTypeEnum.Metric,
+        (int)UnitsTypeEnum.Metric,
         Preferences.DefaultDateTimeFormat,
         Preferences.DefaultNumberFormat,
         Preferences.DefaultTemperatureUnit,

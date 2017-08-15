@@ -342,7 +342,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case TICDisplayMode.icdmTargetSpeedSummary: return DisplayMode.TargetSpeedSummary;
         case TICDisplayMode.icdmCCA: return DisplayMode.CCA;
         case TICDisplayMode.icdmCCASummary: return DisplayMode.CCASummary;
-        default: throw new Exception(string.Format("Unknown TICDisplayMode {0}", Convert.ToInt16(mode)));
+        default: throw new Exception($"Unknown TICDisplayMode {Convert.ToInt16(mode)}");
       }
     }
 
@@ -380,7 +380,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case DisplayMode.CMVChange: return TICDisplayMode.icdmCCVChange;
         case DisplayMode.CCA: return TICDisplayMode.icdmCCA;
         case DisplayMode.CCASummary: return TICDisplayMode.icdmCCASummary;
-        default: throw new Exception(string.Format("Unknown DisplayMode {0}", Convert.ToInt16(mode)));
+        default: throw new Exception($"Unknown DisplayMode {Convert.ToInt16(mode)}");
       }
     }
 
@@ -721,7 +721,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case LiftDetectionType.MapReset: return TICLiftDetectionType.icldtMapReset;
         case LiftDetectionType.AutoMapReset: return TICLiftDetectionType.icldtAutoMapReset;
         case LiftDetectionType.Tagfile: return TICLiftDetectionType.icldtTagfile;
-        default: throw new Exception(string.Format("Unknown lift detection type: {0}", Convert.ToInt32(type)));
+        default: throw new Exception($"Unknown lift detection type: {Convert.ToInt32(type)}");
       }
     }
 
@@ -731,7 +731,7 @@ namespace VSS.Productivity3D.Common.Proxies
       {
         case LiftThicknessType.Compacted: return __Global.lttCompacted;
         case LiftThicknessType.Uncompacted: return __Global.lttUncompacted;
-        default: throw new Exception(string.Format("Unknown lift thickness type: {0}", Convert.ToInt32(type)));
+        default: throw new Exception($"Unknown lift thickness type: {Convert.ToInt32(type)}");
       }
     }
 
@@ -748,7 +748,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case ElevationType.Last: return TICElevationType.etLast;
         case ElevationType.Highest: return TICElevationType.etHighest;
         case ElevationType.Lowest: return TICElevationType.etLowest;
-        default: throw new Exception(string.Format("Unknown elevation type: {0}", Convert.ToInt32(type)));
+        default: throw new Exception($"Unknown elevation type: {Convert.ToInt32(type)}");
       }
     }
 
@@ -765,10 +765,9 @@ namespace VSS.Productivity3D.Common.Proxies
         case FilterLayerMethod.OffsetFromDesign: return TFilterLayerMethod.flmOffsetFromDesign;
         case FilterLayerMethod.OffsetFromProfile: return TFilterLayerMethod.flmOffsetFromProfile;
         case FilterLayerMethod.TagfileLayerNumber: return TFilterLayerMethod.flmTagfileLayerNumber;
-        default: throw new Exception(string.Format("Unknown layer method: {0}", Convert.ToInt32(method)));
+        default: throw new Exception($"Unknown layer method: {Convert.ToInt32(method)}");
       }
     }
-
 
     public static TVLPDDesignDescriptor DesignDescriptor(long designID, string filespaceId, string path, string fileName, double offset)
     {
@@ -787,8 +786,7 @@ namespace VSS.Productivity3D.Common.Proxies
       return dd.file == null
         ? DesignDescriptor(dd.id, string.Empty, string.Empty, string.Empty, dd.offset) : DesignDescriptor(dd.id, dd.file.filespaceId, dd.file.path, dd.file.fileName, dd.offset);
     }
-
-
+    
     /// <summary>
     /// The different volume computation types available
     /// </summary>
@@ -846,7 +844,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case VolumesType.Between2Filters: return TComputeICVolumesType.ic_cvtBetween2Filters;
         case VolumesType.BetweenFilterAndDesign: return TComputeICVolumesType.ic_cvtBetweenFilterAndDesign;
         case VolumesType.BetweenDesignAndFilter: return TComputeICVolumesType.ic_cvtBetweenDesignAndFilter;
-        default: throw new Exception(string.Format("Unknown VolumesType {0}", Convert.ToInt16(volumesType)));
+        default: throw new Exception($"Unknown VolumesType {Convert.ToInt16(volumesType)}");
       }
     }
     /// <summary>

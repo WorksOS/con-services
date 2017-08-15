@@ -189,7 +189,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
                 "Either a linear or alignment based profile must be provided."));
       }
 
-      if (alignmentDesign != null && (gridPoints != null || wgs84Points != null))
+      if (alignmentDesign != null && (gridPoints != null && wgs84Points != null))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

@@ -147,7 +147,6 @@ namespace VSS.Productivity3D.Common.Interfaces
     }
 
 
-    //TODO: Check if this works
     /// <summary>
     /// Default destructor which destroys all structures necessary for error handling.
     /// </summary>

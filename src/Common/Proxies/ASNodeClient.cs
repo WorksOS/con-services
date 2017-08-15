@@ -190,6 +190,8 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public MemoryStream GetDesignProfile(TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args Args)
     {
+      var tmp = client.GetDesignProfile(Args, out MemoryStream tmpStream);
+
       return client.GetDesignProfile(Args, out MemoryStream profile) == 1 ? profile : null;
     }
 
@@ -198,12 +200,10 @@ namespace VSS.Productivity3D.Common.Proxies
       return client.GetOnMachineDesigns(DataModelID, out TDesignName[] designNames) == 1/*icsrrNoError*/ ? designNames : null;
     }
 
-
     public int GetOnMachineLayers(long DataModelID, out TDesignLayer[] LayerList)
     {
       return client.GetLayerIDs(DataModelID, out LayerList);
     }
-
 
     public TDesignName[] GetOverriddenDesigns(long projectId, long assetId)
     {

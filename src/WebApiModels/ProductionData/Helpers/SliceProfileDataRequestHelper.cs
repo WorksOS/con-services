@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Net;
-using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -29,9 +28,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
       Log = logger.CreateLogger<SliceProfileDataRequestHelper>();
-      this.ConfigurationStore = configurationStore;
-      this.FileListProxy = fileListProxy;
-      this.SettingsManager = settingsManager;
+      ConfigurationStore = configurationStore;
+      FileListProxy = fileListProxy;
+      SettingsManager = settingsManager;
     }
 
     /// <summary>
@@ -42,18 +41,18 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <param name="startLonDegrees"></param>
     /// <param name="endLatDegrees"></param>
     /// <param name="endLonDegrees"></param>
-    /// <param name="startUtc"></param>
-    /// <param name="endUtc"></param>
+    /// <param name="customerUid"></param>
     /// <param name="cutfillDesignUid"></param>
+    /// <param name="filterUid"></param>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
     public ProfileProductionDataRequest CreateSlicerProfileRequest(Guid projectUid,
       double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees,
-      Guid filterUid,Guid customerUid, IDictionary<string,string> headers, Guid? cutfillDesignUid)
+      Guid filterUid, Guid customerUid, Guid? cutfillDesignUid)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
 
       var filter = SettingsManager.CompactionFilter(filterUid.ToString(), customerUid.ToString(), projectUid.ToString(),
-        headers);
+        Headers);
 
       DesignDescriptor designDescriptor = null;
       if (cutfillDesignUid.HasValue)

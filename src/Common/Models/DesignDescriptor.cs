@@ -1,9 +1,7 @@
-﻿using System.Net;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Models
 {
