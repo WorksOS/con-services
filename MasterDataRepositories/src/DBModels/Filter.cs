@@ -7,8 +7,9 @@ namespace VSS.MasterData.Repositories.DBModels
     public string FilterUid { get; set; }
     public string CustomerUid { get; set; }
     public string ProjectUid { get; set; }
-    public string UserUid { get; set; }
-    
+
+    // UserId will contain either UserUID (Guid) or ApplicationID (string)
+    public string UserId { get; set; }
     public string Name { get; set; }
     public string FilterJson { get; set; }
     public bool IsDeleted { get; set; } 
@@ -21,7 +22,7 @@ namespace VSS.MasterData.Repositories.DBModels
       return otherFilter.FilterUid == FilterUid
              && otherFilter.CustomerUid == CustomerUid
              && otherFilter.ProjectUid == ProjectUid
-             && otherFilter.UserUid == UserUid
+             && otherFilter.UserId == UserId
              && otherFilter.Name == Name
              && otherFilter.FilterJson == FilterJson
              && otherFilter.IsDeleted == IsDeleted
