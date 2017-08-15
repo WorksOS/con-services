@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.FIlters;
 
 namespace VSS.MasterData.Models.Models
 {
@@ -13,22 +14,20 @@ namespace VSS.MasterData.Models.Models
     /// The ID of the machine/asset. This is the unique identifier, used by Raptor.
     /// </summary>
     [JsonProperty(PropertyName = "assetID", Required = Required.Always)]
-    [Required]
     public long assetID { get; protected set; }
 
     /// <summary>
     /// The textual name of the machine. This is the human readable machine name from the machine control display, and written in tagfiles.
     /// </summary>
-    [MaxLength(MAX_MACHINE_NAME)] 
+    [MaxLength(MAX_MACHINE_NAME)]
+    [NameValidation]
     [JsonProperty(PropertyName = "machineName", Required = Required.Always)]
-    [Required]
     public string machineName { get; protected set; }
 
     /// <summary>
     /// Is the machine not represented by a telematics device (PLxxx, SNMxxx etc)
     /// </summary>
     [JsonProperty(PropertyName = "isJohnDoe", Required = Required.Always)]
-    [Required]
     public bool isJohnDoe { get; protected set; }
 
     /// <summary>

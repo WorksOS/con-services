@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 
-namespace VSS.Common.Exceptions
+namespace VSS.MasterData.Models.FIlters
 {
   public class ExceptionsTrap
   {
