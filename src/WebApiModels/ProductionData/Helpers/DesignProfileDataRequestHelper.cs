@@ -49,9 +49,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
     public ProfileProductionDataRequest CreateDesignProfileResponse(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid filterUid, Guid customerUid, Guid importedFileUid, int importedFileTypeid, long alignmentId)
     {
-      var filter = SettingsManager.CompactionFilter(filterUid.ToString(), customerUid.ToString(), projectUid.ToString(), Headers);
+      var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
+
+      var filter = SettingsManager.CompactionFilter(filterUid.ToString(), customerUid.ToString(), projectUid.ToString(),
+        Headers);
 
       var designDescriptor = GetDescriptor(projectUid, importedFileUid);
+
+      var liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
       // callId is set to 'empty' because raptor will create and return a Guid if this is set to empty.
       // this would result in the acceptance tests failing to see the callID == in its equality test
