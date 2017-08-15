@@ -25,7 +25,7 @@ namespace WebApiTests
         var mysql = new MySqlHelper();
         var filterUid = Guid.NewGuid();
         ts.CustomerUid = customerUid;
-        var filterJson = CreateTestFilter(filterUid.ToString());
+        var filterJson = CreateTestFilter();
         var eventsArray = new[] {
           "| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
           $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -47,7 +47,7 @@ namespace WebApiTests
         var mysql = new MySqlHelper();
         var filterUid = Guid.NewGuid();
         ts.CustomerUid = customerUid;
-        var filterJson = CreateTestFilter(filterUid.ToString(), ElevationType.Last);
+        var filterJson = CreateTestFilter( ElevationType.Last);
         var eventsArray = new[] {
           $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
           $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -69,7 +69,7 @@ namespace WebApiTests
         var mysql = new MySqlHelper();
         var filterUid = Guid.NewGuid();
         ts.CustomerUid = customerUid;
-        var filterJson = CreateTestFilter(filterUid.ToString(), null, true);
+        var filterJson = CreateTestFilter( null, true);
         var eventsArray = new[] {
           $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
           $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -91,7 +91,7 @@ namespace WebApiTests
         var mysql = new MySqlHelper();
         var filterUid = Guid.NewGuid();
         ts.CustomerUid = customerUid;
-        var filterJson = CreateTestFilter(filterUid.ToString(), null, null, true);
+        var filterJson = CreateTestFilter( null, null, true);
         var eventsArray = new[] {
           $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
           $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -113,7 +113,7 @@ namespace WebApiTests
         var mysql = new MySqlHelper();
         var filterUid = Guid.NewGuid();
         ts.CustomerUid = customerUid;
-        var filterJson = CreateTestFilter(filterUid.ToString(), null, null, null, 2);
+        var filterJson = CreateTestFilter( null, null, null, 2);
         var eventsArray = new[] {
           $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
           $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -135,7 +135,7 @@ namespace WebApiTests
         var mysql = new MySqlHelper();
         var filterUid = Guid.NewGuid();
         ts.CustomerUid = customerUid;
-        var filterJson = CreateTestFilter(filterUid.ToString(), null, null, null, null, FilterLayerMethod.None);
+        var filterJson = CreateTestFilter( null, null, null, null, FilterLayerMethod.None);
         var eventsArray = new[] {
           $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
           $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -157,7 +157,7 @@ namespace WebApiTests
         var mysql = new MySqlHelper();
         var filterUid = Guid.NewGuid();
         ts.CustomerUid = customerUid;
-        var filterJson = CreateTestFilter(filterUid.ToString(), null, null, null, null, FilterLayerMethod.MapReset);
+        var filterJson = CreateTestFilter( null, null, null, null, FilterLayerMethod.MapReset);
         var eventsArray = new[] {
           $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
           $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId}  | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -179,7 +179,7 @@ namespace WebApiTests
         var mysql = new MySqlHelper();
         var filterUid = Guid.NewGuid();
         ts.CustomerUid = customerUid;
-        var filterJson = CreateTestFilter(filterUid.ToString(), null, null, null, null, FilterLayerMethod.TagfileLayerNumber);
+        var filterJson = CreateTestFilter( null, null, null, null, FilterLayerMethod.TagfileLayerNumber);
         var eventsArray = new[] {
           $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
           $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -201,7 +201,7 @@ namespace WebApiTests
         var mysql = new MySqlHelper();
         var filterUid = Guid.NewGuid();
         ts.CustomerUid = customerUid;
-        var filterJson = CreateTestFilter(filterUid.ToString(), ElevationType.Highest, true, true, 1, FilterLayerMethod.None);
+        var filterJson = CreateTestFilter( ElevationType.Highest, true, true, 1, FilterLayerMethod.None);
         var eventsArray = new[] {
           $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
           $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -227,9 +227,9 @@ namespace WebApiTests
         var filterUid2 = Guid.NewGuid();
         var filterUid3 = Guid.NewGuid();
         ts.CustomerUid = customerUid;
-        var filterJson1 = CreateTestFilter(filterUid1.ToString(), ElevationType.Highest, true, true, 1, FilterLayerMethod.None);
-        var filterJson2 = CreateTestFilter(filterUid2.ToString(), ElevationType.Last, true, true, 1, FilterLayerMethod.MapReset);
-        var filterJson3 = CreateTestFilter(filterUid3.ToString(), ElevationType.Lowest, true, true, 1, FilterLayerMethod.None);
+        var filterJson1 = CreateTestFilter( ElevationType.Highest, true, true, 1, FilterLayerMethod.None);
+        var filterJson2 = CreateTestFilter( ElevationType.Last, true, true, 1, FilterLayerMethod.MapReset);
+        var filterJson3 = CreateTestFilter( ElevationType.Lowest, true, true, 1, FilterLayerMethod.None);
         var eventsArray = new[] {
           $"| TableName | FilterUID    | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
           $"| Filter    | {filterUid1} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson1}  | 0         | {ts.EventDate:yyyy-MM-dd} |",
@@ -275,7 +275,7 @@ namespace WebApiTests
       /// <param name="layerNo">layer number</param>
       /// <param name="fltlayer">FilterLayerMethod</param>
       /// <returns>complete filter in json format</returns>
-      private string CreateTestFilter(string filterUid, ElevationType? elevation = null, bool? vibestate = null, bool? forward = null,
+      private string CreateTestFilter(ElevationType? elevation = null, bool? vibestate = null, bool? forward = null,
         int? layerNo = null, FilterLayerMethod? fltlayer = null)
       {
         var startUtc = DateTime.Now.AddMonths(-6).ToUniversalTime();
@@ -290,8 +290,8 @@ namespace WebApiTests
           WGSPoint.CreatePoint(38.8387897637231, -121.347275197506),
           WGSPoint.CreatePoint(38.8387145521594, -121.347189366818)
         };
-        var filter = Filter.CreateFilter(filterUid, startUtc, endUtc, Guid.NewGuid().ToString(), listMachines,
-          "machine Design Name", elevation, vibestate, listPoints, forward, layerNo, fltlayer);
+        var filter = Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), listMachines,123,
+                                          elevation, vibestate, listPoints, forward, layerNo, fltlayer);
         return filter.ToJsonString();
       }
   }
