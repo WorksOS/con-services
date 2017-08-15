@@ -163,7 +163,7 @@ namespace TestUtility
             FilterUID = new Guid(eventObject.FilterUID),
             CustomerUID = new Guid(eventObject.CustomerUID),
             ProjectUID = new Guid(eventObject.ProjectUID),
-            UserUID = new Guid(eventObject.UserUID),
+            UserID = eventObject.UserID,
             FilterJson = eventObject.FilterJson
           };
           jsonString = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent }, jsonSettings);
@@ -175,7 +175,7 @@ namespace TestUtility
             FilterUID = new Guid(eventObject.FilterUID),
             CustomerUID = new Guid(eventObject.CustomerUID),
             ProjectUID = new Guid(eventObject.ProjectUID),
-            UserUID = new Guid(eventObject.UserUID),
+            UserID = eventObject.UserID,
             FilterJson = eventObject.FilterJson            
           };
           jsonString = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent }, jsonSettings);
@@ -187,7 +187,7 @@ namespace TestUtility
             FilterUID = new Guid(eventObject.FilterUID),
             CustomerUID = new Guid(eventObject.CustomerUID),
             ProjectUID = new Guid(eventObject.ProjectUID),
-            UserUID = new Guid(eventObject.UserUID),            
+            UserID = eventObject.UserID,
           };
           jsonString = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteFilterEvent }, jsonSettings);
           break;
@@ -207,13 +207,20 @@ namespace TestUtility
       switch (dbTable)
       {
         case "Filter":
-          sqlCmd += $@"(FilterUID,fk_CustomerUID,fk_ProjectUID,fk_UserUID,Name,FilterJson,IsDeleted,LastActionedUTC) VALUES 
-                ('{eventObject.FilterUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}','{eventObject.fk_UserUID}','{eventObject.Name}','{eventObject.FilterJson}',{eventObject.IsDeleted},'{eventObject.LastActionedUTC}');";
+          sqlCmd += $@"(FilterUID,fk_CustomerUID,fk_ProjectUID,UserID,Name,FilterJson,IsDeleted,LastActionedUTC) VALUES 
+                ('{eventObject.FilterUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}','{eventObject.UserID}','{eventObject.Name}','{eventObject.FilterJson}',{eventObject.IsDeleted},'{eventObject.LastActionedUTC}');";
           break;
       }
       mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
     }
 
+
+    public void DeleteAllFiltersForProject(string projectUid)
+    {
+      var mysqlHelper = new MySqlHelper();
+      var sqlCmd = $@"DELETE FROM `{tsCfg.dbSchema}`.Filter WHERE fk_ProjectUID = '{projectUid}' ";
+      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
+    }
 
     /// <summary>
     /// Check that a property exists in the dynamic object
