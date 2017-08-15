@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
 
     public static FilterRequestFull CreateFilterFullRequest(string customerUid, 
       bool isApplicationContext, string userUid, 
-      string projectUid, string filterUid = null,
+      string projectUid, string filterUid = "",
       string name = "", string filterJson = "")
     {
       return new FilterRequestFull

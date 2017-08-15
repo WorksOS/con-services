@@ -11,7 +11,6 @@ using Newtonsoft.Json;
 using VSS.Productivity3D.Filter.Common.Executors;
 using System.Threading.Tasks;
 using System.Web.Http;
-using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
@@ -69,7 +68,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [HttpGet]
     public async Task<FilterDescriptorListResult> GetProjectFilters(string projectUid)
     {
-      log.LogInformation($"{ToString()}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} isApplication={(User as TIDCustomPrincipal)?.isApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid}");
+      log.LogInformation($"{ToString()}.GetProjectFilters: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} isApplication={(User as TIDCustomPrincipal)?.isApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid}");
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
@@ -80,7 +79,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
       var result = await executor.ProcessAsync(requestFull) as FilterDescriptorListResult;
 
-      log.LogInformation($"{ToString()} Completed: resultCode: {result?.Code} filterCount={result?.filterDescriptors.Count}");
+      log.LogInformation($"{ToString()}.GetProjectFilters Completed: resultCode: {result?.Code} filterCount={result?.filterDescriptors.Count}");
       return result;
     }
 
@@ -96,7 +95,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [HttpGet]
     public async Task<FilterDescriptorSingleResult> GetProjectFilter(string projectUid, [FromUri] string filterUid)
     {
-      log.LogInformation($"{ToString()}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} isApplication={(User as TIDCustomPrincipal)?.isApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid} filterUid: {filterUid}");
+      log.LogInformation($"{ToString()}.GetProjectFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} isApplication={(User as TIDCustomPrincipal)?.isApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid} filterUid: {filterUid}");
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
@@ -107,7 +106,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
       var result = (await executor.ProcessAsync(requestFull)) as FilterDescriptorSingleResult;
       
-      log.LogInformation($"{ToString()} Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
+      log.LogInformation($"{ToString()}.GetProjectFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result;
     }
 
@@ -122,7 +121,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [HttpPut]
     public async Task<FilterDescriptorSingleResult> UpsertFilter(string projectUid, [FromBody] FilterRequest request)
     {
-      log.LogInformation($"{ToString()}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} FilterRequest: {JsonConvert.SerializeObject(request)}");
+      log.LogInformation($"{ToString()}.UpsertFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} FilterRequest: {JsonConvert.SerializeObject(request)}");
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
@@ -134,7 +133,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(requestFull) as FilterDescriptorSingleResult;
 
-      log.LogInformation($"{ToString()} Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
+      log.LogInformation($"{ToString()}.UpsertFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result;
     }
 
@@ -146,7 +145,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [HttpDelete]
     public async Task<ContractExecutionResult> DeleteFilter(string projectUid, [FromUri] string filterUid)
     {
-      log.LogInformation($"{ToString()}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} projectUid: {projectUid} filterUid: {filterUid}");
+      log.LogInformation($"{ToString()}.DeleteFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} projectUid: {projectUid} filterUid: {filterUid}");
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
@@ -158,7 +157,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(requestFull);
 
-      log.LogInformation($"{ToString()} Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
+      log.LogInformation($"{ToString()}.DeleteFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result;
     }
   }
