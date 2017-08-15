@@ -29,7 +29,7 @@ namespace WebApiTests
       var filterJson = CreateTestFilter(filterUid.ToString());
       
       var filterRequest = FilterRequest.CreateFilterRequest(filterName, filterJson);
-      filterRequest.filterUid = filterUid.ToString();
+     // filterRequest.filterUid = filterUid.ToString();
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
