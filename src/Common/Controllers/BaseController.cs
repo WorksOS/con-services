@@ -201,9 +201,9 @@ namespace VSS.Productivity3D.Common.Controllers
       return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
      }
 
-    public static async Task<MasterData.Models.Models.Filter> GetFilter(IFilterServiceProxy filterServiceProxy, Guid customerUid, Guid projectUid, Guid filterUid, IDictionary<string, string> customHeaders)
+    public static async Task<MasterData.Models.Models.Filter> GetFilter(IFilterServiceProxy filterServiceProxy, Guid projectUid, Guid filterUid, IDictionary<string, string> customHeaders)
     {
-      var filterDescriptor = await filterServiceProxy.GetFilter(customerUid.ToString(), projectUid.ToString(), filterUid.ToString(), customHeaders);
+      var filterDescriptor = await filterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), customHeaders);
 
       if (filterDescriptor == null)
         return null;
@@ -334,7 +334,7 @@ namespace VSS.Productivity3D.Common.Controllers
 
       if (filterUid.HasValue)
       {
-        var filterData = await GetFilter(filterServiceProxy, customerUid, projectUid, filterUid.Value,
+        var filterData = await GetFilter(filterServiceProxy, projectUid, filterUid.Value,
           customHeaders);
 
         if (filterData != null)

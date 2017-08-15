@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
 
-      var filter = SettingsManager.CompactionFilter(filterUid.ToString(), customerUid.ToString(), projectUid.ToString(),
+      var filter = SettingsManager.CompactionFilter(filterUid.ToString(), projectUid.ToString(),
         headers);
 
       DesignDescriptor designDescriptor = null;
@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
           if (designFile != null)
           {
-            designDescriptor = DesignDescriptor.CreateDesignDescriptor(designFile.LegacyFileId, FileDescriptor.CreateFileDescriptor(FileDescriptor.GetFileSpaceId(configStore, log), designFile.Path, designFile.Name), 0);
+            designDescriptor = DesignDescriptor.CreateDesignDescriptor(designFile.LegacyFileId, FileDescriptor.CreateFileDescriptor(FileDescriptor.GetFileSpaceId(ConfigurationStore, Log), designFile.Path, designFile.Name), 0);
           }
           else
           {

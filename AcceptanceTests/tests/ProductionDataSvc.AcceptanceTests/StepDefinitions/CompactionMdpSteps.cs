@@ -30,11 +30,18 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       mdpSummaryRequester.QueryString.Add("ProjectUid", projectUid);
     }
-
+    /*
     [Given(@"designUid ""(.*)""")]
     public void GivenDesignUid(string designUid)
     {
       mdpSummaryRequester.QueryString.Add("designUid", designUid);
+    }
+    */
+
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenDesignUid(string filterUid)
+    {
+      mdpSummaryRequester.QueryString.Add("filterUid", filterUid);
     }
 
     [Then(@"the result should match the ""(.*)"" from the repository")]

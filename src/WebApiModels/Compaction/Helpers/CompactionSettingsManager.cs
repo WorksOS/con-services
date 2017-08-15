@@ -49,10 +49,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     }
 
 
-    public Common.Models.Filter CompactionFilter(string filterUid, string customerUid, string projectUid, IDictionary<string,string> headers)
+    public Common.Models.Filter CompactionFilter(string filterUid, string projectUid, IDictionary<string,string> headers)
     {
-      filterService.GetFilter(customerUid, projectUid, filterUid, headers);
+      filterService.GetFilter(projectUid, filterUid, headers);
       //TODO apply Anatoli's validation and filter creation logic here
+
       return null;
     }
 

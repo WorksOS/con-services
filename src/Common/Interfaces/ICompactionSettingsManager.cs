@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds, DesignDescriptor designDescriptor = null);
 
 
-    Filter CompactionFilter(string filterUid, string customerUid, string projectUid,
+    Filter CompactionFilter(string filterUid, string projectUid,
       IDictionary<string, string> headers);
 
     CMVSettings CompactionCmvSettings(CompactionProjectSettings projectSettings);
