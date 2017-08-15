@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var filter = new MasterData.Repositories.DBModels.Filter()
       {
         CustomerUid = custUid,
-        UserUid = userUid,
+        UserId = userUid,
         ProjectUid = projectUid,
         FilterUid = filterUid,
         Name = name,
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var filter = new MasterData.Repositories.DBModels.Filter()
       {
         CustomerUid = custUid,
-        UserUid = filterUserUid,
+        UserId = filterUserUid,
         ProjectUid = projectUid,
         FilterUid = filterUid,
         Name = name,
@@ -128,7 +128,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new MasterData.Repositories.DBModels.Filter()
         {
           CustomerUid = custUid,
-          UserUid = userUid,
+          UserId = userUid,
           ProjectUid = projectUid,
           FilterUid = filterUid,
           Name = name,
@@ -186,7 +186,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var filter = new MasterData.Repositories.DBModels.Filter()
       {
         CustomerUid = custUid,
-        UserUid = userUid,
+        UserId = userUid,
         ProjectUid = projectUid,
         FilterUid = filterUid,
         Name = name,
@@ -198,7 +198,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new MasterData.Repositories.DBModels.Filter()
         {
           CustomerUid = custUid,
-          UserUid = userUid,
+          UserId = userUid,
           ProjectUid = projectUid,
           FilterUid = filterUid,
           Name = name,
@@ -246,7 +246,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var filter = new MasterData.Repositories.DBModels.Filter()
       {
         CustomerUid = custUid,
-        UserUid = userUid,
+        UserId = userUid,
         ProjectUid = projectUid,
         FilterUid = filterUid,
         Name = name,
@@ -258,7 +258,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new MasterData.Repositories.DBModels.Filter()
         {
           CustomerUid = custUid,
-          UserUid = userUid,
+          UserId = userUid,
           ProjectUid = projectUid,
           FilterUid = filterUid,
           Name = name,
@@ -312,7 +312,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var filter = new MasterData.Repositories.DBModels.Filter()
       {
         CustomerUid = custUid,
-        UserUid = userUid,
+        UserId = userUid,
         ProjectUid = projectUid,
         FilterUid = filterUid,
         Name = name,
@@ -324,7 +324,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new MasterData.Repositories.DBModels.Filter()
         {
           CustomerUid = custUid,
-          UserUid = userUid,
+          UserId = userUid,
           ProjectUid = projectUid,
           FilterUid = filterUid,
           Name = name,

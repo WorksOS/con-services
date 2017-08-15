@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS Filter (
   FilterUID varchar(36) NOT NULL,  
   fk_CustomerUID varchar(36) NOT NULL,  
   fk_ProjectUID varchar(36) NOT NULL,  
-  fk_UserUID varchar(36) NOT NULL,    
+  UserID varchar(36) NOT NULL,    
   Name varchar(200) DEFAULT NULL,
   FilterJson text NOT NULL,
   IsDeleted tinyint(4) DEFAULT 0,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Filter (
   UpdateUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (ID),
   UNIQUE KEY UIX_Filter_FilterUID (FilterUID),
-  KEY UIX_Filter_CustomerUID (fk_CustomerUID, fk_ProjectUID, fk_UserUID),
+  KEY UIX_Filter_CustomerUID (fk_CustomerUID, fk_ProjectUID, UserID),
   KEY IX_Filter_ProjectUID (fk_ProjectUID),
   KEY IX_Filter_FilterUID (FilterUID)
 ) ENGINE=InnoDB CHARSET = DEFAULT COLLATE = DEFAULT;

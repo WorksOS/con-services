@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
   {
     public string customerUid { get; set; }
 
-    public string userUid { get; set; }
+    public string userId { get; set; }
     public string projectUid { get; set; }
 
     public bool isApplicationContext { get; set; }
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
         filterJson = filterJson,
         customerUid = customerUid,
         isApplicationContext = isApplicationContext,
-        userUid = userUid
+        userId = userUid
       };
     }
 
@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
       if (string.IsNullOrEmpty(customerUid) || Guid.TryParse(customerUid, out Guid customerUidGuid) == false)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 27);
 
-      if (string.IsNullOrEmpty(userUid) || (isApplicationContext == false && Guid.TryParse(userUid, out Guid userUidGuid) == false))
+      if (string.IsNullOrEmpty(userId) || (isApplicationContext == false && Guid.TryParse(userId, out Guid userUidGuid) == false))
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 28);
 
       if (string.IsNullOrEmpty(projectUid) || Guid.TryParse(projectUid, out Guid projectUidGuid) == false)

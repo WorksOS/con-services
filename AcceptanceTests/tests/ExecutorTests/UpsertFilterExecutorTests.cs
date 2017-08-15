@@ -67,7 +67,7 @@ namespace ExecutorTests
     public async System.Threading.Tasks.Task UpsertFilterExecutor_Transient_Existing_FilterUidNotSupported()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "";
@@ -77,7 +77,7 @@ namespace ExecutorTests
       var createFilterEvent = new CreateFilterEvent()
       {
         CustomerUID = Guid.Parse(custUid),
-        UserUID = Guid.Parse(userUid),
+        UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid),
         Name = name,
@@ -89,7 +89,7 @@ namespace ExecutorTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Filter event not written");
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJsonUpdated);
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
       
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -136,7 +136,7 @@ namespace ExecutorTests
     public async System.Threading.Tasks.Task UpsertFilterExecutor_Transient_Existing_NoFilterUidProvided()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "";
@@ -146,7 +146,7 @@ namespace ExecutorTests
       var createFilterEvent = new CreateFilterEvent()
       {
         CustomerUID = Guid.Parse(custUid),
-        UserUID = Guid.Parse(userUid),
+        UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid),
         Name = name,
@@ -158,7 +158,7 @@ namespace ExecutorTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Filter event not written");
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, null, name, filterJsonUpdated);
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, null, name, filterJsonUpdated);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -218,7 +218,7 @@ namespace ExecutorTests
     public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_Existing_ChangeJson()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
@@ -228,7 +228,7 @@ namespace ExecutorTests
       var createFilterEvent = new CreateFilterEvent()
       {
         CustomerUID = Guid.Parse(custUid),
-        UserUID = Guid.Parse(userUid),
+        UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid),
         Name = name,
@@ -238,7 +238,7 @@ namespace ExecutorTests
       };
       filterRepo.StoreEvent(createFilterEvent).Wait();
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJsonUpdated);
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -250,7 +250,7 @@ namespace ExecutorTests
       Assert.AreEqual(name, result.filterDescriptor.Name, "executor returned incorrect filter Name");
       Assert.AreEqual(filterJsonUpdated, result.filterDescriptor.FilterJson, "executor returned incorrect FilterJson");
 
-      var fr = filterRepo.GetFiltersForProjectUser(custUid, projectUid, userUid);
+      var fr = filterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
       fr.Wait();
       Assert.IsNotNull(fr, "should return the updated filter");
       Assert.AreEqual(1, fr.Result.Count(), "should return 1 updatedw filterUid");
@@ -263,7 +263,7 @@ namespace ExecutorTests
     public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonAndName()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
@@ -274,7 +274,7 @@ namespace ExecutorTests
       var createFilterEvent = new CreateFilterEvent()
       {
         CustomerUID = Guid.Parse(custUid),
-        UserUID = Guid.Parse(userUid),
+        UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid),
         Name = name,
@@ -284,7 +284,7 @@ namespace ExecutorTests
       };
       filterRepo.StoreEvent(createFilterEvent).Wait();
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, nameUpdated, filterJsonUpdated);
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid, nameUpdated, filterJsonUpdated);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -296,7 +296,7 @@ namespace ExecutorTests
       Assert.AreEqual(nameUpdated, result.filterDescriptor.Name, "executor returned incorrect filter Name");
       Assert.AreEqual(filterJsonUpdated, result.filterDescriptor.FilterJson, "executor returned incorrect FilterJson");
       
-      var fr = filterRepo.GetFiltersForProjectUser(custUid, projectUid, userUid);
+      var fr = filterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
       fr.Wait();
       Assert.IsNotNull(fr, "should return the updated filter");
       Assert.AreEqual(1, fr.Result.Count(), "should return 1 filter");
@@ -309,7 +309,7 @@ namespace ExecutorTests
     public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_ExistingName_NoFilterUidProvided_ChangeJson()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
@@ -319,7 +319,7 @@ namespace ExecutorTests
       var createFilterEvent = new CreateFilterEvent()
       {
         CustomerUID = Guid.Parse(custUid),
-        UserUID = Guid.Parse(userUid),
+        UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid),
         Name = name,
@@ -329,7 +329,7 @@ namespace ExecutorTests
       };
       filterRepo.StoreEvent(createFilterEvent).Wait();
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, null, name, filterJsonUpdated);
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, null, name, filterJsonUpdated);
  
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -342,7 +342,7 @@ namespace ExecutorTests
     public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_ExistingName_FilterUidProvided_ChangeJson()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid1 = Guid.NewGuid().ToString();
       string filterUid2 = Guid.NewGuid().ToString();
@@ -353,7 +353,7 @@ namespace ExecutorTests
       var createFilterEvent = new CreateFilterEvent()
       {
         CustomerUID = Guid.Parse(custUid),
-        UserUID = Guid.Parse(userUid),
+        UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid1),
         Name = name,
@@ -368,7 +368,7 @@ namespace ExecutorTests
       filterRepo.StoreEvent(createFilterEvent).Wait();
 
       // now try to change the 2nd filter to the name of the first
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid2, name, filterJsonUpdated);
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid2, name, filterJsonUpdated);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -381,7 +381,7 @@ namespace ExecutorTests
     public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_Existing_FilterUidProvidedBelongsToTransient()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
@@ -391,7 +391,7 @@ namespace ExecutorTests
       var createTransientFilterEvent = new CreateFilterEvent()
       {
         CustomerUID = Guid.Parse(custUid),
-        UserUID = Guid.Parse(userUid),
+        UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid),
         Name = "",
@@ -401,7 +401,7 @@ namespace ExecutorTests
       };
       filterRepo.StoreEvent(createTransientFilterEvent).Wait();
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJsonUpdated);
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);

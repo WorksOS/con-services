@@ -42,7 +42,7 @@ namespace ExecutorTests
     public async System.Threading.Tasks.Task GetFiltersExecutor_ExistingFilter()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "blah";
@@ -51,7 +51,7 @@ namespace ExecutorTests
       var createFilterEvent = new CreateFilterEvent()
       {
         CustomerUID = Guid.Parse(custUid),
-        UserUID = Guid.Parse(userUid),
+        UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid),
         Name = name,
@@ -64,7 +64,7 @@ namespace ExecutorTests
       Assert.AreEqual(1, s.Result, "Filter event not written");
       
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid);
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid);
       request.Validate(serviceExceptionHandler);
       
       var executor =
@@ -92,7 +92,7 @@ namespace ExecutorTests
     public async System.Threading.Tasks.Task GetFiltersExecutor_ExistingFilters2()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid1 = Guid.NewGuid().ToString();
       string filterUid2 = Guid.NewGuid().ToString();
@@ -104,7 +104,7 @@ namespace ExecutorTests
       var createFilterEvent1 = new CreateFilterEvent()
       {
         CustomerUID = Guid.Parse(custUid),
-        UserUID = Guid.Parse(userUid),
+        UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid1),
         Name = name1,
@@ -115,7 +115,7 @@ namespace ExecutorTests
       var createFilterEvent2 = new CreateFilterEvent()
       {
         CustomerUID = Guid.Parse(custUid),
-        UserUID = Guid.Parse(userUid),
+        UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid2),
         Name = name2,
@@ -127,7 +127,7 @@ namespace ExecutorTests
       filterRepo.StoreEvent(createFilterEvent2).Wait();
 
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid);
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid);
       request.Validate(serviceExceptionHandler);
 
       var executor =

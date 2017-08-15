@@ -40,7 +40,7 @@ namespace ExecutorTests
     public async System.Threading.Tasks.Task DeleteFilterExecutor_ExistingFilter()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "blah";
@@ -49,7 +49,7 @@ namespace ExecutorTests
       var createFilterEvent = new CreateFilterEvent()
       {
         CustomerUID = Guid.Parse(custUid),
-        UserUID = Guid.Parse(userUid),
+        UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid),
         Name = name,
@@ -62,7 +62,7 @@ namespace ExecutorTests
       Assert.AreEqual(1, s.Result, "Filter event not written");
       
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid);
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid);
       request.Validate(serviceExceptionHandler);
       
       var executor =

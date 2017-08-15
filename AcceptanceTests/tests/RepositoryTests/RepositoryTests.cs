@@ -25,7 +25,7 @@ namespace RepositoryTests
       const string tableName = "Filter";
       List<string> columnNames = new List<string>
       {
-        "ID", "FilterUID", "fk_CustomerUID", "fk_ProjectUID", "fk_UserUID" , "Name" , "FilterJson", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+        "ID", "FilterUID", "fk_CustomerUID", "fk_ProjectUID", "UserID" , "Name" , "FilterJson", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
       };
       CheckSchema(tableName, columnNames);
     }
@@ -39,14 +39,14 @@ namespace RepositoryTests
     {
       var custUid = Guid.NewGuid();
       var projUid = Guid.NewGuid();
-      var userUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createTransientFilterEvent1 = new CreateFilterEvent()
       {
         CustomerUID = custUid,
         ProjectUID = projUid,
-        UserUID = userUid,
+        UserID = userId.ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "",
         FilterJson = "blah1",
@@ -57,7 +57,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         ProjectUID = projUid,
-        UserUID = userUid,
+        UserID = userId.ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "",
         FilterJson = "blah2",
@@ -69,7 +69,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         ProjectUID = projUid,
-        UserUID = userUid,
+        UserID = userId.ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "HasAName1",
         FilterJson = "blah1",
@@ -81,7 +81,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         ProjectUID = projUid,
-        UserUID = userUid,
+        UserID = userId.ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "HasAName2",
         FilterJson = "blah2",
@@ -99,7 +99,7 @@ namespace RepositoryTests
       Assert.IsNotNull(g.Result, "Unable to retrieve filters from filterRepo");
       Assert.AreEqual(2, g.Result.Count(), "retrieved filter count is incorrect");
 
-      g = filterRepo.GetFiltersForProjectUser(custUid.ToString(), projUid.ToString(), userUid.ToString());
+      g = filterRepo.GetFiltersForProjectUser(custUid.ToString(), projUid.ToString(), userId.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve filters from filterRepo");
       Assert.AreEqual(2, g.Result.Count(), "retrieved filter count is incorrect");
@@ -136,7 +136,7 @@ namespace RepositoryTests
       var createFilterEvent = new CreateFilterEvent()
       {
         CustomerUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
+        UserID = Guid.NewGuid().ToString(),
         ProjectUID = Guid.NewGuid(),
         FilterUID = Guid.NewGuid(),
         Name = "",
@@ -149,7 +149,7 @@ namespace RepositoryTests
       {
         CustomerUid = createFilterEvent.CustomerUID.ToString(),
         ProjectUid = createFilterEvent.ProjectUID.ToString(),
-        UserUid = createFilterEvent.UserUID.ToString(),
+        UserId = createFilterEvent.UserID,
         FilterUid = createFilterEvent.FilterUID.ToString(),
         Name = createFilterEvent.Name,
         FilterJson = createFilterEvent.FilterJson,
@@ -170,7 +170,7 @@ namespace RepositoryTests
       Assert.IsNotNull(f.Result, "Unable to retrieve filters from filterRepo");
       Assert.AreEqual(0, f.Result.Count(), "retrieved filter count is incorrect");
 
-      f = filterRepo.GetFiltersForProjectUser(createFilterEvent.CustomerUID.ToString(), createFilterEvent.ProjectUID.ToString(), createFilterEvent.UserUID.ToString());
+      f = filterRepo.GetFiltersForProjectUser(createFilterEvent.CustomerUID.ToString(), createFilterEvent.ProjectUID.ToString(), createFilterEvent.UserID);
       f.Wait();
       Assert.IsNotNull(f.Result, "Unable to retrieve user filters from filterRepo");
       Assert.AreEqual(0, f.Result.Count(), "retrieved user filter count is incorrect");
@@ -191,7 +191,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         ProjectUID = projUid,
-        UserUID = userUid,
+        UserID = userUid.ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "",
         FilterJson = "blah1",
@@ -203,7 +203,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         ProjectUID = projUid,
-        UserUID = userUid,
+        UserID = userUid.ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "",
         FilterJson = "blah2",
@@ -236,7 +236,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         ProjectUID = projUid,
-        UserUID = userUid,
+        UserID = userUid.ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "HasAName",
         FilterJson = "blah1",
@@ -248,7 +248,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         ProjectUID = projUid,
-        UserUID = userUid,
+        UserID = userUid.ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "HasAName",
         FilterJson = "blah2",
@@ -277,7 +277,7 @@ namespace RepositoryTests
       {
         CustomerUID = Guid.NewGuid(),
         ProjectUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
+        UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "",
         FilterJson = "blah",
@@ -289,7 +289,7 @@ namespace RepositoryTests
       {
         CustomerUID = createFilterEvent.CustomerUID,
         ProjectUID = createFilterEvent.ProjectUID,
-        UserUID = createFilterEvent.UserUID,
+        UserID = createFilterEvent.UserID,
         FilterUID = createFilterEvent.FilterUID,
         Name = "",
         FilterJson = "blahDeBlah",
@@ -301,7 +301,7 @@ namespace RepositoryTests
       {
         CustomerUid = createFilterEvent.CustomerUID.ToString(),
         ProjectUid = createFilterEvent.ProjectUID.ToString(),
-        UserUid = createFilterEvent.UserUID.ToString(),
+        UserId = createFilterEvent.UserID,
         FilterUid = createFilterEvent.FilterUID.ToString(),
         Name = createFilterEvent.Name,
         FilterJson = createFilterEvent.FilterJson,
@@ -331,7 +331,7 @@ namespace RepositoryTests
       {
         CustomerUID = Guid.NewGuid(),
         ProjectUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
+        UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "",
         FilterJson = "blah",
@@ -343,7 +343,7 @@ namespace RepositoryTests
       {
         CustomerUID = createFilterEvent.CustomerUID,
         ProjectUID = createFilterEvent.ProjectUID,
-        UserUID = createFilterEvent.UserUID,
+        UserID = createFilterEvent.UserID.ToString(),
         FilterUID = createFilterEvent.FilterUID,
         Name = "",
         FilterJson = "blahDeBlah",
@@ -355,7 +355,7 @@ namespace RepositoryTests
       {
         CustomerUid = createFilterEvent.CustomerUID.ToString(),
         ProjectUid = createFilterEvent.ProjectUID.ToString(),
-        UserUid = createFilterEvent.UserUID.ToString(),
+        UserId = createFilterEvent.UserID,
         FilterUid = createFilterEvent.FilterUID.ToString(),
         Name = createFilterEvent.Name,
         FilterJson = createFilterEvent.FilterJson,
@@ -385,7 +385,7 @@ namespace RepositoryTests
       {
         CustomerUID = Guid.NewGuid(),
         ProjectUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
+        UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "persistent",
         FilterJson = "blah",
@@ -397,7 +397,7 @@ namespace RepositoryTests
       {
         CustomerUID = createFilterEvent.CustomerUID,
         ProjectUID = createFilterEvent.ProjectUID,
-        UserUID = createFilterEvent.UserUID,
+        UserID = createFilterEvent.UserID,
         FilterUID = createFilterEvent.FilterUID,
         Name = "changed",
         FilterJson = "blahDeBlah",
@@ -409,7 +409,7 @@ namespace RepositoryTests
       {
         CustomerUid = updateFilterEvent.CustomerUID.ToString(),
         ProjectUid = updateFilterEvent.ProjectUID.ToString(),
-        UserUid = updateFilterEvent.UserUID.ToString(),
+        UserId = updateFilterEvent.UserID,
         FilterUid = updateFilterEvent.FilterUID.ToString(),
         Name = updateFilterEvent.Name,
         FilterJson = updateFilterEvent.FilterJson,
@@ -439,7 +439,7 @@ namespace RepositoryTests
       {
         CustomerUID = Guid.NewGuid(),
         ProjectUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
+        UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "persistent",
         FilterJson = "blah",
@@ -451,7 +451,7 @@ namespace RepositoryTests
       {
         CustomerUID = createFilterEvent.CustomerUID,
         ProjectUID = createFilterEvent.ProjectUID,
-        UserUID = createFilterEvent.UserUID,
+        UserID = createFilterEvent.UserID,
         FilterUID = createFilterEvent.FilterUID,
         Name = "changed",
         FilterJson = "blahDeBlah",
@@ -463,7 +463,7 @@ namespace RepositoryTests
       {
         CustomerUid = createFilterEvent.CustomerUID.ToString(),
         ProjectUid = createFilterEvent.ProjectUID.ToString(),
-        UserUid = createFilterEvent.UserUID.ToString(),
+        UserId = createFilterEvent.UserID,
         FilterUid = createFilterEvent.FilterUID.ToString(),
         Name = updateFilterEvent.Name,
         FilterJson = updateFilterEvent.FilterJson,
@@ -497,7 +497,7 @@ namespace RepositoryTests
       {
         CustomerUID = Guid.NewGuid(),
         ProjectUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
+        UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "",
         FilterJson = "blah",
@@ -509,7 +509,7 @@ namespace RepositoryTests
       {
         CustomerUID = createFilterEvent.CustomerUID,
         ProjectUID = createFilterEvent.ProjectUID,
-        UserUID = createFilterEvent.UserUID,
+        UserID = createFilterEvent.UserID,
         FilterUID = createFilterEvent.FilterUID,
         ActionUTC = firstCreatedUtc.AddMinutes(2),
         ReceivedUTC = firstCreatedUtc
@@ -540,7 +540,7 @@ namespace RepositoryTests
       {
         CustomerUID = Guid.NewGuid(),
         ProjectUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
+        UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
         ActionUTC = firstCreatedUtc.AddMinutes(2),
         ReceivedUTC = firstCreatedUtc
@@ -570,7 +570,7 @@ namespace RepositoryTests
       {
         CustomerUID = Guid.NewGuid(),
         ProjectUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
+        UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "hasOne",
         FilterJson = "blah",
@@ -582,7 +582,7 @@ namespace RepositoryTests
       {
         CustomerUID = createFilterEvent.CustomerUID,
         ProjectUID = createFilterEvent.ProjectUID,
-        UserUID = createFilterEvent.UserUID,
+        UserID = createFilterEvent.UserID,
         FilterUID = createFilterEvent.FilterUID,
         ActionUTC = firstCreatedUtc.AddMinutes(2),
         ReceivedUTC = firstCreatedUtc

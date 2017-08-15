@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void FilterRequestValidation_MissingUserUid()
+    public void FilterRequestValidation_MissingUserId()
     {
       var requestFull =
         FilterRequestFull.CreateFilterFullRequest(custUid, false, "", projectUid, filterUid, Name, FilterJson);
@@ -76,12 +76,12 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void FilterRequestValidation_InvalidFilterUid_EmptyString()
+    public void FilterRequestValidation_InvalidFilterUid_Null()
     {
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, "", Name, FilterJson);
+        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, null, Name, FilterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2002");
@@ -140,7 +140,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid);
+        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, "");
       requestFull.Validate(serviceExceptionHandler);
     }
 

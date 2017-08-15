@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         if (filter == null
             || filter.CustomerUid != filterRequest.customerUid
             || filter.ProjectUid != filterRequest.projectUid
-            || filter.UserUid != filterRequest.userUid
+            || filter.UserId != filterRequest.userId
         )
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 36);

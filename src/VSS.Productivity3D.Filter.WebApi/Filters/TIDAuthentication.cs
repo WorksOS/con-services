@@ -134,7 +134,7 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
           }
         }
 
-        log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,
+        log.LogInformation("Authorization: for Customer: {0} userId: {1} userEmail: {2} allowed", customerUid, userUid,
           userEmail);
       }
 

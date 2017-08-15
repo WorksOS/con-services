@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
 
       var retrievedFilter = (await filterRepo
-          .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid, true)
+          .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userId, true)
           .ConfigureAwait(false))
         .OrderByDescending(f => f.LastActionedUtc)
         .FirstOrDefault(f => string.IsNullOrEmpty(f.Name));
@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         existingPersistentFilters =
         (await filterRepo
-          .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid)
+          .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userId)
           .ConfigureAwait(false)).ToList();
         log.LogDebug(
           $"ProcessPersistent retrieved filter count for projectUID {filterRequest.projectUid} of {existingPersistentFilters?.Count()}");
@@ -213,7 +213,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
 
       var retrievedFilter = (await filterRepo
-          .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid)
+          .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userId)
           .ConfigureAwait(false))
           .FirstOrDefault(f => f.Name == filterRequest.name);
 

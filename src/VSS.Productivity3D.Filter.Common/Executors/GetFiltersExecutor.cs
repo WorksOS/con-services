@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         try
         {
           filters = (await filterRepo
-            .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userUid)
+            .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userId)
             .ConfigureAwait(false));
 
         }
