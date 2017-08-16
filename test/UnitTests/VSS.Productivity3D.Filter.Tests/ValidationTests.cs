@@ -35,7 +35,16 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_MissingCustomerUid()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest("sfgsdfsf", false, userUid, projectUid, filterUid, Name, FilterJson);
+        FilterRequestFull.CreateFilterFullRequest
+        (
+          "sfgsdfsf",
+          false,
+          userUid,
+          projectUid,
+          filterUid,
+          Name,
+          FilterJson
+        );
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2027");
@@ -46,7 +55,16 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_MissingUserId()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, "", projectUid, filterUid, Name, FilterJson);
+        FilterRequestFull.CreateFilterFullRequest
+        (
+          custUid, 
+          false, 
+          "", 
+          projectUid, 
+          filterUid, 
+          Name, 
+          FilterJson
+        );
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2028");

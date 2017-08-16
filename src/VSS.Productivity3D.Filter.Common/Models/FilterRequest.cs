@@ -35,10 +35,11 @@ namespace VSS.Productivity3D.Filter.Common.Models
     /// <summary>
     /// Create instance of FilterRequest
     /// </summary>
-    public static FilterRequest CreateFilterRequest(string name, string filterJson)
+    public static FilterRequest CreateFilterRequest(string filterUid, string name, string filterJson)
     {
       return new FilterRequest
       {
+        filterUid = filterUid,
         name = name,
         filterJson = filterJson
       };
@@ -49,25 +50,27 @@ namespace VSS.Productivity3D.Filter.Common.Models
   {
     public string customerUid { get; set; }
 
-    public string userId { get; set; }
-    public string projectUid { get; set; }
-
     public bool isApplicationContext { get; set; }
 
+    public string userId { get; set; }
+
+    public string projectUid { get; set; }
+
+
     public static FilterRequestFull CreateFilterFullRequest(string customerUid, 
-      bool isApplicationContext, string userUid, 
+      bool isApplicationContext, string userId, 
       string projectUid, string filterUid = "",
       string name = "", string filterJson = "")
     {
       return new FilterRequestFull
       {
-        projectUid = projectUid,
         filterUid = filterUid,
         name = name,
         filterJson = filterJson,
         customerUid = customerUid,
         isApplicationContext = isApplicationContext,
-        userId = userUid
+        userId = userId,
+        projectUid = projectUid
       };
     }
 

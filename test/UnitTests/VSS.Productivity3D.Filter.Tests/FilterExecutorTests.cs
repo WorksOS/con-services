@@ -54,7 +54,15 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.Setup(ps => ps.GetFilter(It.IsAny<string>())).ReturnsAsync(filter);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid);
+      var request = FilterRequestFull.CreateFilterFullRequest
+      (
+        customerUid: custUid, 
+        isApplicationContext: false,
+        userId: userUid, 
+        projectUid: projectUid,
+        
+        filterUid: filterUid
+      );
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler,
           filterRepo.Object);
@@ -98,7 +106,15 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.Setup(ps => ps.GetFilter(It.IsAny<string>())).ReturnsAsync(filter);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, requestingUserUid, projectUid, filterUid);
+      var request = FilterRequestFull.CreateFilterFullRequest
+      (
+        customerUid: custUid,
+        isApplicationContext: false,
+        userId: requestingUserUid,
+        projectUid: projectUid,
+
+        filterUid: filterUid
+      );
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler,
           filterRepo.Object);
@@ -145,7 +161,13 @@ namespace VSS.Productivity3D.Filter.Tests
           .ToImmutableList()
       };
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid);
+      var request = FilterRequestFull.CreateFilterFullRequest
+      (
+        customerUid: custUid,
+        isApplicationContext: false,
+        userId: userUid,
+        projectUid: projectUid
+      );
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler,
           filterRepo.Object);
@@ -212,7 +234,16 @@ namespace VSS.Productivity3D.Filter.Tests
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
 
       var request =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+        FilterRequestFull.CreateFilterFullRequest
+        (
+          customerUid: custUid,
+          isApplicationContext: false,
+          userId: userUid,
+          projectUid: projectUid,
+          filterUid: filterUid,
+          name: name,
+          filterJson: filterJson
+        );
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request).ConfigureAwait(false));

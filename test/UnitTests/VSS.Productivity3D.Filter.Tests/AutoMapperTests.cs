@@ -49,7 +49,6 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-
         "the Name",
         "the Json"
       );
@@ -70,14 +69,13 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterRequest = FilterRequestFull.CreateFilterFullRequest
       (
-        customerUid: Guid.NewGuid().ToString(),
-        isApplicationContext: false,
-        userUid: "ApplicationName",
-        projectUid: Guid.NewGuid().ToString(),
-        filterUid: Guid.NewGuid().ToString(),
-
-        name: "the Name",
-        filterJson: "the Json"
+        Guid.NewGuid().ToString(),
+        false,
+        "ApplicationName",
+        Guid.NewGuid().ToString(),
+        Guid.NewGuid().ToString(),
+        "the Name",
+        "the Json"
       );
 
       var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
@@ -101,7 +99,6 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-
         "the Name",
         "the Json"
       );
@@ -127,7 +124,6 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-
         "the Name",
         "the Json"
       );

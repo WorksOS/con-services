@@ -275,7 +275,7 @@ namespace WebApiTests
       ts.CustomerUid = customerUid;
       var filterJson = CreateTestFilter(filterUid.ToString());
       
-      var filterRequest = FilterRequest.CreateFilterRequest(filterName, filterJson);
+      var filterRequest = FilterRequest.CreateFilterRequest(filterUid.ToString(), filterName, filterJson);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
       try
