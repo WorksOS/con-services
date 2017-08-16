@@ -5,7 +5,7 @@ services:
     env_file:
      - docker-compose-dev.env
     ports:
-     - "3001:80"
+     - "3010:80"
     depends_on:
       - schema
   schema:
