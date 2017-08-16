@@ -6,6 +6,7 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -68,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
           if (designFile != null)
           {
-            designDescriptor = DesignDescriptor.CreateDesignDescriptor(designFile.LegacyFileId, FileDescriptor.CreateFileDescriptor(GetFilespaceId(), designFile.Path, designFile.Name), 0);
+            designDescriptor = DesignDescriptor.CreateDesignDescriptor(designFile.LegacyFileId, FileDescriptor.CreateFileDescriptor(FileDescriptor.GetFileSpaceId(ConfigurationStore, Log), designFile.Path, designFile.Name), 0);
           }
           else
           {

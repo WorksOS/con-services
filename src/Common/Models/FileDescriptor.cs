@@ -9,6 +9,7 @@ using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.TCCFileAccess.Models;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -108,12 +109,45 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// Creates a Raptor design file descriptor
     /// </summary>
-    /// <param name="configStore">Where to get environment variables, connection string etc. frome</param>
+    /// <param name="configStore">Where to get environment variables, connection string etc. from</param>
     /// <param name="log">The Logger for logging</param>
     /// <param name="designId">The id of the design file</param>
     /// <param name="offset">The offset if the file is a reference surface</param>
-    /// <returns></returns>
+    /// <returns>The Raptor design file descriptor</returns>
     public TVLPDDesignDescriptor DesignDescriptor(IConfigurationStore configStore, ILogger log, long designId, double offset)
+    {
+      string filespaceName = GetFileSpaceName(configStore, log);
+
+      return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designId, filespaceName, filespaceId, path, fileName, offset);
+    }
+
+    /// <summary>
+    /// Gets the TCC filespaceId for the vldatastore filespace. The ID is stored in an environment variable.
+    /// </summary>
+    /// <param name="configStore">Where to get environment variables, connection string etc. from</param>
+    /// <param name="log">The Logger for logging</param>
+    /// <returns>The TCC's file space identifier</returns>
+    public static string GetFileSpaceId(IConfigurationStore configStore, ILogger log)
+    {
+      string fileSpaceIdStr = configStore.GetValueString("TCCFILESPACEID");
+
+      if (string.IsNullOrEmpty(fileSpaceIdStr))
+      {
+        var errorString = "Your application is missing an environment variable TCCFILESPACEID";
+        log.LogError(errorString);
+        throw new InvalidOperationException(errorString);
+      }
+
+      return fileSpaceIdStr;
+    }
+
+    /// <summary>
+    /// Gets the TCC filespace name. The name is stored in an environment variable.
+    /// </summary>
+    /// <param name="configStore">Where to get environment variables, connection string etc. from</param>
+    /// <param name="log">The Logger for logging</param>
+    /// <returns>The TCC's file space name</returns>
+    public static string GetFileSpaceName(IConfigurationStore configStore, ILogger log)
     {
       string filespaceName = configStore.GetValueString("TCCFILESPACENAME");
 
@@ -123,7 +157,8 @@ namespace VSS.Productivity3D.Common.Models
         log.LogError(errorString);
         throw new InvalidOperationException(errorString);
       }
-      return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designId, filespaceName, filespaceId, path, fileName, offset);
+
+      return filespaceName;
     }
 
     private const int MAX_FILE_NAME = 1024;

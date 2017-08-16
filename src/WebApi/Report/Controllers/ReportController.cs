@@ -20,6 +20,7 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Contracts;
@@ -52,29 +53,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// For getting list of imported files for a project
-    /// </summary>
-    private readonly IFileListProxy fileListProxy;
-
-    /// <summary>
-    /// Where to get environment variables, connection string etc. from
-    /// </summary>
-    private readonly IConfigurationStore configStore;
-
-    /// <summary>
     /// For retrieving user preferences
     /// </summary>
     private IPreferenceProxy prefProxy;
-
-    /// <summary>
-    /// For getting project settings for a project
-    /// </summary>
-    private readonly IProjectSettingsProxy projectSettingsProxy;
-
-    /// <summary>
-    /// For getting compaction settings for a project
-    /// </summary>
-    private readonly ICompactionSettingsManager settingsManager;
 
     /// <summary>
     /// Constructor with injection
@@ -86,18 +67,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="prefProxy">User preferences proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="settingsManager">Compaction settings manager</param>
-    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IConfigurationStore configStore, IFileListProxy fileListProxy, IPreferenceProxy prefProxy,
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler) : base(logger.CreateLogger<BaseController>(), exceptionHandler)
+    /// <param name="exceptionHandler">Service exception handler</param>
+    /// <param name="filterServiceProxy">Filter service proxy</param>
+    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
+      IFileListProxy fileListProxy, IPreferenceProxy prefProxy,IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, 
+      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
+      base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionTileController>();
-      this.fileListProxy = fileListProxy;
       this.prefProxy = prefProxy;
-      this.configStore = configStore;
-      this.projectSettingsProxy = projectSettingsProxy;
-      this.settingsManager = settingsManager;
     }
 
     /// <summary>
@@ -139,7 +119,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Pass count settings required for detailed pass count report"));
       }
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid,  log);
+      var projectSettings = await GetProjectSettings(projectUid,  log);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);

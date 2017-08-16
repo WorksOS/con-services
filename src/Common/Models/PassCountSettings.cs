@@ -4,7 +4,7 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Setting and configuration values related to processing pass count related queries

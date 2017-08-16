@@ -4,11 +4,11 @@ using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.ConfigurationStore;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -16,12 +16,10 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -48,38 +46,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// For getting imported files for a project
-    /// </summary>
-    private readonly IFileListProxy fileListProxy;
-
-
-    /// <summary>
-    /// For getting project settings for a project
-    /// </summary>
-    private readonly IProjectSettingsProxy projectSettingsProxy;
-
-    /// <summary>
-    /// For getting compaction settings for a project
-    /// </summary>
-    private readonly ICompactionSettingsManager settingsManager;
-
-    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
+    /// <param name="configStore">Configuration store</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="settingsManager">Compaction settings manager</param>
-    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy,
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler) : base(logger.CreateLogger<BaseController>(), exceptionHandler)
+    /// <param name="exceptionHandler">Service exception handler</param>
+    /// <param name="filterServiceProxy">Filter service proxy</param>
+    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
+      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, 
+      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) 
+      : base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionDataController>();
-      this.fileListProxy = fileListProxy;
-      this.projectSettingsProxy = projectSettingsProxy;
-      this.settingsManager = settingsManager;
     }
 
 
@@ -89,6 +73,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get CMV summary from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -111,6 +96,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionCmvSummaryResult> GetCmvSummary(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -122,7 +108,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetCmvSummary: " + Request.QueryString);
-      CMVRequest request = await GetCMVRequest(projectUid, startUtc, endUtc, vibeStateOn, elevationType,
+      CMVRequest request = await GetCMVRequest(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType,
         layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
       request.Validate();
       log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
@@ -151,6 +137,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get MDP summary from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -166,13 +153,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
+    /// when the filter layer method is OffsetFromDesign or OffsetFromProfile.</param>
     /// <returns>MDP summary</returns>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/mdp/summary")]
     [HttpGet]
     public async Task<CompactionMdpSummaryResult> GetMdpSummary(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -185,21 +174,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, log);
+      var projectSettings = await GetProjectSettings(projectUid, log);
       MDPSettings mdpSettings = settingsManager.CompactionMdpSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
+
+      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+
       MDPRequest request = MDPRequest.CreateMDPRequest(projectId, null, mdpSettings, liftSettings, filter,
         -1,
         null, null, null);
       request.Validate();
       try
       {
-        var result = RequestExecutorContainerFactory.Build<SummaryMDPExecutor>(logger, raptorClient)
+        var result = RequestExecutorContainerFactory.Build<SummaryMDPExecutor>(logger, raptorClient, null, configStore)
           .Process(request) as MDPSummaryResult;
         var returnResult = CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
         log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(returnResult));
@@ -221,6 +208,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get pass count summary from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -243,6 +231,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionPassCountSummaryResult> GetPassCountSummary(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -255,7 +244,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetPassCountSummary: " + Request.QueryString);
 
-      PassCounts request = await GetPassCountRequest(projectUid, startUtc, endUtc, vibeStateOn,
+      PassCounts request = await GetPassCountRequest(projectUid, filterUid, startUtc, endUtc, vibeStateOn,
         elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, true);
       request.Validate();
 
@@ -283,6 +272,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get Temperature summary from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -305,6 +295,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionTemperatureSummaryResult> GetTemperatureSummary(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -317,14 +308,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, log);
+      var projectSettings = await GetProjectSettings(projectUid, log);
       TemperatureSettings temperatureSettings = settingsManager.CompactionTemperatureSettings(projectSettings, false);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
+
+      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 
       TemperatureRequest request = TemperatureRequest.CreateTemperatureRequest(projectId, null,
         temperatureSettings, liftSettings, filter, -1, null, null, null);
@@ -354,6 +342,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get Speed summary from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -376,6 +365,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionSpeedSummaryResult> GetSpeedSummary(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -388,14 +378,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetSpeedSummary: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, log);
+      var projectSettings = await GetProjectSettings(projectUid, log);
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
+
+      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 
       SummarySpeedRequest request =
         SummarySpeedRequest.CreateSummarySpeedRequestt(projectId, null, liftSettings, filter, -1);
@@ -425,6 +412,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get CMV % change from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -447,6 +435,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionCmvPercentChangeResult> GetCmvPercentChange(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -459,13 +448,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid,  log);
+      var projectSettings = await this.GetProjectSettings(projectUid,  log);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
+
+      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+
       double[] cmvChangeSummarySettings = settingsManager.CompactionCmvPercentChangeSettings(projectSettings);
       CMVChangeSummaryRequest request = CMVChangeSummaryRequest.CreateCMVChangeSummaryRequest(
         projectId, null, liftSettings, filter, -1, cmvChangeSummarySettings);
@@ -498,6 +485,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get CMV details from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -520,6 +508,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionCmvDetailedResult> GetCmvDetails(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -540,7 +529,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
-      CMVRequest request = await GetCMVRequest(projectUid, startUtc, endUtc, vibeStateOn, elevationType,
+      CMVRequest request = await GetCMVRequest(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType,
         layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
       request.Validate();
 
@@ -570,6 +559,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get pass count details from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -592,6 +582,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionPassCountDetailedResult> GetPassCountDetails(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -604,7 +595,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetPassCountDetails: " + Request.QueryString);
 
-      PassCounts request = await GetPassCountRequest(projectUid, startUtc, endUtc, vibeStateOn,
+      PassCounts request = await GetPassCountRequest(projectUid, filterUid, startUtc, endUtc, vibeStateOn,
         elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, false);
       request.Validate();
 
@@ -635,6 +626,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Creates an instance of the CMVRequest class and populate it with data.
     /// </summary>
     /// <param name="projectUid">Project Uid</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="startUtc">Start date and time in UTC</param>
     /// <param name="endUtc">End date and time in UTC</param>
     /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -652,22 +644,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetID</param>
     /// <returns>An instance of the CMVRequest class.</returns>
-    private async Task<CMVRequest> GetCMVRequest(Guid projectUid, DateTime? startUtc, DateTime? endUtc,
+    private async Task<CMVRequest> GetCMVRequest(Guid projectUid, Guid? filterUid, DateTime? startUtc, DateTime? endUtc,
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
       string machineName, bool? isJohnDoe)
     {
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, log);
+      var projectSettings = await GetProjectSettings(projectUid, log);
       CMVSettings cmvSettings = settingsManager.CompactionCmvSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
 
-      return CMVRequest.CreateCMVRequest(projectId, null, cmvSettings, liftSettings, filter, -1, null, null,
-        null);
+      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+
+      return CMVRequest.CreateCMVRequest(projectId, null, cmvSettings, liftSettings, filter, -1, null, null, null);
     }
 
     /// <summary>
@@ -692,22 +680,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="isJohnDoe">See assetID</param>
     /// <param name="isSummary">True for summary request, false for details request</param>
     /// <returns>An instance of the PassCounts class.</returns>
-    private async Task<PassCounts> GetPassCountRequest(Guid projectUid, DateTime? startUtc, DateTime? endUtc,
+    private async Task<PassCounts> GetPassCountRequest(Guid projectUid, Guid? filterUid, DateTime? startUtc, DateTime? endUtc,
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
       string machineName, bool? isJohnDoe, bool isSummary)
     {
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, log);
+      var projectSettings = await this.GetProjectSettings(projectUid, log);
       PassCountSettings passCountSettings = isSummary ? null : settingsManager.CompactionPassCountSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
 
-      return PassCounts.CreatePassCountsRequest(projectId, null, passCountSettings, liftSettings, filter,
-        -1, null, null, null);
+      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+
+      return PassCounts.CreatePassCountsRequest(projectId, null, passCountSettings, liftSettings, filter, -1, null, null, null);
     }
 
     #endregion

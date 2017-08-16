@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using VSS.Common.ResultsHandling;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
@@ -40,16 +41,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// For getting list of imported files for a project
-    /// </summary>
-    private readonly IFileListProxy fileListProxy;
-
-    /// <summary>
-    /// For getting project settings for a project
-    /// </summary>
-    private readonly IProjectSettingsProxy projectSettingsProxy;
-
-    /// <summary>
     /// The request factory
     /// </summary>
     private readonly IProductionDataRequestFactory requestFactory;
@@ -59,20 +50,22 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="raptorClient">The raptor client.</param>
     /// <param name="logger">The logger.</param>
+    /// <param name="configStore">Configuration store</param>/// 
     /// <param name="fileListProxy">The file list proxy.</param>
     /// <param name="projectSettingsProxy">The project settings proxy.</param>
+    /// <param name="settingsManager">Compaction settings manager</param>
     /// <param name="requestFactory">The request factory.</param>
     /// <param name="exceptionHandler">The exception handler.</param>
-    public CompactionProfileController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler) : base(logger.CreateLogger<BaseController>(), exceptionHandler)
+    /// <param name="filterServiceProxy">Filter service proxy</param>
+    public CompactionProfileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
+      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
+      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
+      base (logger.CreateLogger<BaseController>(),exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
+      this.raptorClient = raptorClient;
       this.logger = logger;
       log = logger.CreateLogger<ProfileProductionDataController>();
-      this.fileListProxy = fileListProxy;
-      this.projectSettingsProxy = projectSettingsProxy;
       this.requestFactory = requestFactory;
-      this.raptorClient = raptorClient;
     }
 
     /// <summary>

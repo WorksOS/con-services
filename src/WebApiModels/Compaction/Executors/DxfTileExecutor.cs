@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     {
       DxfTileRequest request = item as DxfTileRequest;
 
-      string filespaceId = GetFilespaceId();
+      string filespaceId = FileDescriptor.GetFileSpaceId(configStore, log);
 
       //Calculate zoom level
       int zoomLevel = CalculateZoomLevel(request.bbox);
@@ -102,22 +102,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       }      
 
       return TileResult.CreateTileResult(overlayData, TASNodeErrorStatus.asneOK);
-    }
-
-    /// <summary>
-    /// Gets the TCC filespaceId for the vldatastore filespace
-    /// </summary>
-    /// <returns>The filespace ID</returns>
-    private string GetFilespaceId()
-    {
-      string filespaceId = configStore.GetValueString("TCCFILESPACEID");
-      if (string.IsNullOrEmpty(filespaceId))
-      {
-        var errorString = "Your application is missing an environment variable TCCFILESPACEID";
-        log.LogError(errorString);
-        throw new InvalidOperationException(errorString);
-      }
-      return filespaceId;
     }
 
     /// <summary>
