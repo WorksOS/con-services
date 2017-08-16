@@ -15,7 +15,6 @@ namespace VSS.Productivity3D.Common.Interfaces
       ElevationType? elevationType,
       int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds, DesignDescriptor designDescriptor = null);
 
-
     Filter CompactionFilter(string filterUid, string projectUid,
       IDictionary<string, string> headers);
 
