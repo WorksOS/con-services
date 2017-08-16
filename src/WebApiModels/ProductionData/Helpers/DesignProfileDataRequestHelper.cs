@@ -60,31 +60,42 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
       // callId is set to 'empty' because raptor will create and return a Guid if this is set to empty.
       // this would result in the acceptance tests failing to see the callID == in its equality test
-      //return DesignProfileProductionDataRequest.CreateProfileProductionData(ProjectId, Guid.Empty, ProductionDataType.Height, filter, -1,
-      //  designDescriptor, null, llPoints, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false);
-
-
-      ProfilesHelper.convertProfileEndPositions(null, llPoints, out TWGS84Point startPt, out TWGS84Point endPt, out bool positionsAreGrid);
-
-
-      var designProfile = DesignProfiler.ComputeProfile.RPC.__Global.Construct_CalculateDesignProfile_Args(
-        ProjectId,
-        false,
-        //TWGS84Point.Point(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians()),
-        //TWGS84Point.Point(endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians()),
-        startPt,
-        endPt,
-        ValidationConstants.MIN_STATION,
-        ValidationConstants.MAX_STATION,
+      return ProfileProductionDataRequest.CreateProfileProductionData(
+        ProjectId, 
+        Guid.Empty, 
+        ProductionDataType.Height, 
+        filter, 
+        -1,
         designDescriptor,
-        RaptorConverters.EmptyDesignDescriptor,
-        null,
-        false);
+        null, 
+        llPoints,
+        ValidationConstants.MIN_STATION,
+        ValidationConstants.MIN_STATION, 
+        liftBuildSettings,
+        true);
 
 
-      var memoryStream = _raptorClient.GetDesignProfile(designProfile);
+      //ProfilesHelper.convertProfileEndPositions(null, llPoints, out TWGS84Point startPt, out TWGS84Point endPt, out bool positionsAreGrid);
 
-      return null;
+
+      //var designProfile = DesignProfiler.ComputeProfile.RPC.__Global.Construct_CalculateDesignProfile_Args(
+      //  ProjectId,
+      //  false,
+      //  //TWGS84Point.Point(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians()),
+      //  //TWGS84Point.Point(endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians()),
+      //  startPt,
+      //  endPt,
+      //  ValidationConstants.MIN_STATION,
+      //  ValidationConstants.MAX_STATION,
+      //  designDescriptor,
+      //  RaptorConverters.EmptyDesignDescriptor,
+      //  null,
+      //  false);
+
+
+      //var memoryStream = _raptorClient.GetDesignProfile(designProfile);
+
+      //return null;
 
       //var profile = new DesignProfile
       //{
@@ -125,7 +136,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       //return profile;
     }
 
-    private TVLPDDesignDescriptor GetDescriptor(Guid projectUid, Guid importedFileUid)
+    private DesignDescriptor GetDescriptor(Guid projectUid, Guid importedFileUid)
     {
       var fileList = FileListProxy.GetFiles(projectUid.ToString(), Headers).Result;
 
@@ -149,14 +160,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
             "Unable to access design file."));
       }
 
-      //var designDescriptor = DesignDescriptor.CreateDesignDescriptor(designFile.LegacyFileId, FileDescriptor.CreateFileDescriptor(GetFilespaceId(), designFile.Path, designFile.Name), 0);
+      var designDescriptor = DesignDescriptor.CreateDesignDescriptor(designFile.LegacyFileId, FileDescriptor.CreateFileDescriptor(GetFilespaceId(), designFile.Path, designFile.Name), 0);
 
-      var designDescriptor = RaptorConverters.DesignDescriptor(
-        designFile.LegacyFileId,
-        designFile.ImportedFileUid,
-        designFile.Path,
-        designFile.Name,
-        0);
+      //var designDescriptor = RaptorConverters.DesignDescriptor(
+      //  designFile.LegacyFileId,
+      //  designFile.ImportedFileUid,
+      //  designFile.Path,
+      //  designFile.Name,
+      //  0);
 
       return designDescriptor;
     }

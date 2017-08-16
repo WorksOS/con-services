@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.Common.Controllers
       catch (Exception ex)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-          ContractExecutionStatesEnum.InternalProcessingError, ex.Message);
+          ContractExecutionStatesEnum.InternalProcessingError - 2000, ex.Message);
       }
       finally
       {
