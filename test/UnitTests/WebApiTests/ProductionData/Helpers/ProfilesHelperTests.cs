@@ -18,9 +18,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Helpers
 
     [TestMethod]
     [DataRow(0.0, 0.0, 0.0, false, 0)]
-    [DataRow(0.001, 0.0, 0.01, false, 0.001)]
-    [DataRow(0.002, 0.001, 0.001, false, 0.003)]
-    [DataRow(0.001, 0.001, 0.001, true, 0.002)]
+    [DataRow(0.001, 0.0, 0.001, false, 0.001)]
+    [DataRow(0.002, 0.001, 0.001, true, 0.003)]
+    [DataRow(0.001, 0.001, 0.001, false, 0.002)]
     [DataRow(0.003, 0.001, 0.001, true, 0.004)]
     public void CellGapExists(double prevStation, double prevInterceptLength, double currStation, bool expectedResult, double expectedPrevStationIntercept)
     {
