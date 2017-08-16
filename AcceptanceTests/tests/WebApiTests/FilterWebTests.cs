@@ -30,7 +30,7 @@ namespace WebApiTests
       };
       var filterJson = CreateTestFilter();
       
-      var filterRequest = FilterRequest.CreateFilterRequest(filterName, filterJson);
+      var filterRequest = FilterRequest.CreateFilterRequest("", filterName, filterJson);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -54,14 +54,13 @@ namespace WebApiTests
         CustomerUid = customerUid
       };
       var filterJson = CreateTestFilter();     
-      var filterRequest = FilterRequest.CreateFilterRequest(filterName, filterJson);
+      var filterRequest = FilterRequest.CreateFilterRequest("", filterName, filterJson);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var filterUid = filterResponse.filterDescriptor.FilterUid;
       var filterJson2 = CreateTestFilter(ElevationType.Lowest,true,false);
-      var filterRequest2 = FilterRequest.CreateFilterRequest(filterName, filterJson2);
-      filterRequest2.filterUid = filterUid;
+      var filterRequest2 = FilterRequest.CreateFilterRequest(filterUid, filterName, filterJson2);
       var filter2 = JsonConvert.SerializeObject(filterRequest2, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter2);
 
@@ -83,14 +82,13 @@ namespace WebApiTests
         CustomerUid = customerUid
       };
       var filterJson = CreateTestFilter(ElevationType.Lowest, true, false);
-      var filterRequest = FilterRequest.CreateFilterRequest(filterUid.ToString(), filterName, filterJson);
+      var filterRequest = FilterRequest.CreateFilterRequest("", filterName, filterJson);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var filterUid = filterResponse.filterDescriptor.FilterUid;
       var filterJson2 = CreateTestFilter(null, null, null);
-      var filterRequest2 = FilterRequest.CreateFilterRequest(filterName, filterJson2);
-      filterRequest2.filterUid = filterUid;
+      var filterRequest2 = FilterRequest.CreateFilterRequest(filterUid, filterName, filterJson2);
       var filter2 = JsonConvert.SerializeObject(filterRequest2, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter2);
 
