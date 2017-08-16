@@ -219,7 +219,7 @@ namespace MockProjectWebApi.Controllers
         ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "DesignSurfaceAcceptanceTest",
         ImportedFileType = ImportedFileType.DesignSurface,
-        ImportedFileUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = "ea97efb9-c0c4-4a7f-9eee-e2b0ef0b0916",
         LegacyFileId = 15174,
         IsActivated = true
       },
