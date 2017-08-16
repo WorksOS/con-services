@@ -28,6 +28,7 @@ namespace WebApiTests
         IsPublishToWebApi = true,
         CustomerUid = customerUid
       };
+      ts.DeleteAllFiltersForProject(projectUid.ToString());
       var filterJson = CreateTestFilter();
       
       var filterRequest = FilterRequest.CreateFilterRequest("", filterName, filterJson);
@@ -35,7 +36,7 @@ namespace WebApiTests
       var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterResponse.filterDescriptor.FilterJson, filterJson, "JSON Filter doesn't match for PUT request");
-      Assert.AreEqual(filterResponse.filterDescriptor,filterName, "Filter name doesn't match for PUT request");
+      Assert.AreEqual(filterResponse.filterDescriptor.Name,filterName, "Filter name doesn't match for PUT request");
       var filterUid = filterResponse.filterDescriptor.FilterUid;
       var responseGet = ts.CallFilterWebApi($"api/v1/filter/{projectUid}?filterUid={filterUid}", "GET");
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -53,6 +54,7 @@ namespace WebApiTests
         IsPublishToWebApi = true,
         CustomerUid = customerUid
       };
+      ts.DeleteAllFiltersForProject(projectUid.ToString());
       var filterJson = CreateTestFilter();     
       var filterRequest = FilterRequest.CreateFilterRequest("", filterName, filterJson);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -81,6 +83,7 @@ namespace WebApiTests
         IsPublishToWebApi = true,
         CustomerUid = customerUid
       };
+      ts.DeleteAllFiltersForProject(projectUid.ToString());
       var filterJson = CreateTestFilter(ElevationType.Lowest, true, false);
       var filterRequest = FilterRequest.CreateFilterRequest("", filterName, filterJson);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
