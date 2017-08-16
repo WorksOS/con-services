@@ -116,20 +116,20 @@ namespace VSS.Productivity3D.Common.Models
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Invalid CMV settings: if overriding Target, Target and (CMV Percentage or CMV values) shall be specified."));
         }
+      }
 
-        if (cmvTarget > 0)
+      if (cmvTarget > 0)
+      {
+        if (minCMVPercent > 0 || maxCMVPercent > 0)
         {
-          if (minCMVPercent > 0 || maxCMVPercent > 0)
-          {
-            ValidateRange(minCMVPercent, maxCMVPercent);
-          }
+          ValidateRange(minCMVPercent, maxCMVPercent);
+        }
 
-          if (minCMV > 0 || maxCMV > 0)
-          {
-            ValidateRange(minCMV, maxCMV);
-            ValidateRange(minCMV, cmvTarget);
-            ValidateRange(cmvTarget, maxCMV);
-          }
+        if (minCMV > 0 || maxCMV > 0)
+        {
+          ValidateRange(minCMV, maxCMV);
+          ValidateRange(minCMV, cmvTarget);
+          ValidateRange(cmvTarget, maxCMV);
         }
       }
     }

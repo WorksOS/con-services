@@ -34,41 +34,54 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     }
 
     [TestMethod]
-    [DataRow((short)-1, (short)1, 1.0, (short)1, 1.0)]
-    [DataRow((short)0, (short)1, 1.0, (short)1, 1.0)]
-    public void Validate_Should_return_When_cmvTarget_fails_validation_and_override_is_false(short cmvTarget, short minCmv, double maxCmv, short minCmvPercent, double maxCmvPercent)
+    [DataRow((short)-1, (short)0, (short)0, (short)0, 0)]
+    [DataRow((short)0, (short)0, (short)0, (short)0, 0)]
+    [DataRow((short)1, (short)0, (short)0, (short)0, 0)]
+    public void Validate_Should_return_When_cmvTarget_fails_validation_and_override_is_false(short cmvTarget, short minCmv, short maxCmv, short minCmvPercent, double maxCmvPercent)
     {
-      CMVSettings.CreateCMVSettings(cmvTarget, minCmv, maxCmv, minCmvPercent, maxCmvPercent, false).Validate();
+      CMVSettings.CreateCMVSettings(cmvTarget, maxCmv, maxCmvPercent, minCmv, minCmvPercent, false).Validate();
     }
 
     [TestMethod]
-    public void Validate_Should_succeed_When_inputs_are_valid_and_override_is_true()
+    [DataRow((short)1, (short)1, (short)1, (short)1, 1.0)]
+    [DataRow((short)1, (short)1, (short)1, (short)0, 0)]
+    [DataRow((short)1, (short)0, (short)0, (short)1, 1)]
+    public void Validate_Should_succeed_When_inputs_are_valid_and_override_is_true(short cmvTarget, short minCmv, short maxCmv, short minCmvPercent, double maxCmvPercent)
     {
-      CMVSettings.CreateCMVSettings(1, 1, 1.0, 1, 1.0, true).Validate();
+      CMVSettings.CreateCMVSettings(cmvTarget, maxCmv, maxCmvPercent, minCmv, minCmvPercent, true).Validate();
     }
 
     [TestMethod]
-    [DataRow((short)1, (short)0, 0.0, (short)0, 0.0)]
-    [DataRow((short)1, (short)1, 1.0, (short)0, 0.0)]
-    [DataRow((short)0, (short)0, 0.0, (short)1, 1.0)]
-    [DataRow((short)-1, (short)0, 0.0, (short)1, 1.0)]
-    [DataRow((short)-1, (short)1, 1.0, (short)1, 1.0)]
-    [DataRow((short)1, (short)0, 0.0, (short)1, 1.0)]
-    [DataRow((short)1, (short)1, 1.0, (short)2, 1.0)]
-    public void Validate_Should_throw_When_input_settings_fail_to_validate_and_override_is_true(short cmvTarget, short minCmv, double maxCmv, short minCmvPercent, double maxCmvPercent)
+    [DataRow((short)-1, (short)0, (short)0, (short)0, 0)]
+    [DataRow((short)0, (short)0, (short)0, (short)0, 0)]
+    [DataRow((short)0, (short)1, (short)1, (short)0, 0)]
+    [DataRow((short)0, (short)0, (short)0, (short)1, 1)]
+    public void Validate_Should_throw_When_input_settings_fail_to_validate_and_override_is_true(short cmvTarget, short minCmv, short maxCmv, short minCmvPercent, double maxCmvPercent)
     {
       Assert.ThrowsException<ServiceException>(
-        () => CMVSettings.CreateCMVSettings(cmvTarget, minCmv, maxCmv, minCmvPercent, maxCmvPercent, true)
+        () => CMVSettings.CreateCMVSettings(cmvTarget, maxCmv, maxCmvPercent, minCmv, minCmvPercent, true)
         .Validate());
     }
 
     [TestMethod]
-    [DataRow((short)1, (short)0, 0.0, (short)1, 0.0)]
-    [DataRow((short)1, (short)0, 0.0, (short)2, 1.0)]
-    public void ValidateRange_Should_throw_When_minCMVPercent_greater_than_maxCMVPercent(short cmvTarget, short minCmv, double maxCmv, short minCmvPercent, double maxCmvPercent)
+    [DataRow((short)1, (short)0, (short)0, (short)1, 0.0)]
+    [DataRow((short)1, (short)0, (short)0, (short)1.1, 0.1)]
+    public void ValidateRange_Should_throw_When_minCMVPercent_greater_than_maxCMVPercent(short cmvTarget, short minCmv, short maxCmv, short minCmvPercent, double maxCmvPercent)
     {
       Assert.ThrowsException<ServiceException>(
-        () => CMVSettings.CreateCMVSettings(cmvTarget, minCmv, maxCmv, minCmvPercent, maxCmvPercent, true)
+        () => CMVSettings.CreateCMVSettings(cmvTarget, maxCmv, maxCmvPercent, minCmv, minCmvPercent, false)
+          .Validate());
+    }
+
+    [TestMethod]
+    [DataRow((short)1, (short)1, (short)0, (short)-1, -1)]
+    [DataRow((short)1, (short)2, (short)1, (short)-1, -1)]
+    [DataRow((short)1, (short)2, (short)2, (short)-1, -1)]
+    [DataRow((short)2, (short)1, (short)1, (short)-1, -1)]
+    public void ValidateRange_Should_throw_When_minCMV_greater_than_maxCMV(short cmvTarget, short minCmv, short maxCmv, short minCmvPercent, double maxCmvPercent)
+    {
+      Assert.ThrowsException<ServiceException>(
+        () => CMVSettings.CreateCMVSettings(cmvTarget, maxCmv, maxCmvPercent, minCmv, minCmvPercent, false)
           .Validate());
     }
   }
