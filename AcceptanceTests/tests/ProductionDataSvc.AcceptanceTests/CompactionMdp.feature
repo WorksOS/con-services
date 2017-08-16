@@ -22,9 +22,6 @@ Scenario Outline: Compaction Get MDP Summary
 	When I request result
 	Then the result should match the "<ResultName>" from the repository
 	Examples: 
-#	| RequetsName      | ProjectUID                           | DesignUID                            | ResultName       |
-#	| DesignOutside    | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 220e12e5-ce92-4645-8f01-1942a2d5a57f | DesignOutside    |
-# | DesignIntersepts | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | DesignIntersepts |
 	| RequetsName      | ProjectUID                           | FilterUID                            | ResultName       |
 	| DesignOutside    | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 3d9086f2-3c04-4d92-9141-5134932b1523 | DesignOutside    |
   | DesignIntersepts | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 81422acc-9b0c-401c-9987-0aedbf153f1d | DesignIntersepts |

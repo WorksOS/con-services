@@ -37,14 +37,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
     }
 
-    [Given(@"designUid ""(.*)""")]
-    public void GivenDesignUid(string designUid)
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
     {
       switch (operation)
       {
-        case "CMVSummary": cmvSummaryRequester.QueryString.Add("designUid", designUid); break;
-        case "CMVDetails": cmvDetailsRequester.QueryString.Add("designUid", designUid); break;
-        case "CMVPercentChangeSummary": cmvPercentChangeRequester.QueryString.Add("designUid", designUid); break;
+        case "CMVSummary": cmvSummaryRequester.QueryString.Add("filterUid", filterUid); break;
+        case "CMVDetails": cmvDetailsRequester.QueryString.Add("filterUid", filterUid); break;
+        case "CMVPercentChangeSummary": cmvPercentChangeRequester.QueryString.Add("filterUid", filterUid); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
     }
