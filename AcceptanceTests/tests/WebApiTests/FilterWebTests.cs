@@ -16,7 +16,6 @@ namespace WebApiTests
     private readonly Msg msg = new Msg();
     private readonly Guid projectUid  = new Guid("7925f179-013d-4aaf-aff4-7b9833bb06d6");
     private readonly Guid customerUid = new Guid("48003241-851d-4145-8c2a-7b099bbfd117");
-    private readonly string userId = new Guid("98cdb619-b06b-4084-b7c5-5dcccc82af3b").ToString();
 
     [TestMethod]
     public void CreateSimpleFilter()
@@ -90,7 +89,7 @@ namespace WebApiTests
       var response = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var filterUid = filterResponse.filterDescriptor.FilterUid;
-      var filterJson2 = CreateTestFilter(null, null, null);
+      var filterJson2 = CreateTestFilter();
       var filterRequest2 = FilterRequest.CreateFilterRequest(filterUid, filterName, filterJson2);
       var filter2 = JsonConvert.SerializeObject(filterRequest2, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter2);
@@ -101,6 +100,191 @@ namespace WebApiTests
       Assert.AreEqual(filterResponseGet.filterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
     }
 
+
+    [TestMethod]
+    public void CreateThenUpdateFilterToDifferentValues()
+    {
+      const string filterName = "Filter Web test 4";
+      msg.Title(filterName, "Create and update filter to different values");
+      var ts = new TestSupport
+      {
+        IsPublishToWebApi = true,
+        CustomerUid = customerUid
+      };
+      ts.DeleteAllFiltersForProject(projectUid.ToString());
+      var filterJson = CreateTestFilter(ElevationType.Lowest, true, false);
+      var filterRequest = FilterRequest.CreateFilterRequest("", filterName, filterJson);
+      var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var response = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
+      var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var filterUid = filterResponse.filterDescriptor.FilterUid;
+
+      var listWgsPoints = new List<WGSPoint>
+      {
+        WGSPoint.CreatePoint(-43.499, -172.545),
+        WGSPoint.CreatePoint(-43.479, -172.535),
+        WGSPoint.CreatePoint(-43.459, -172.525),
+        WGSPoint.CreatePoint(-43.439, -172.515),
+        WGSPoint.CreatePoint(-43.499, -172.545)
+      };
+      var filterJson2 = CreateTestFilter(ElevationType.Last, null, null, 1, FilterLayerMethod.MapReset, listWgsPoints);
+      var filterRequest2 = FilterRequest.CreateFilterRequest(filterUid, filterName, filterJson2);
+      var filter2 = JsonConvert.SerializeObject(filterRequest2, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter2);
+
+      var responseGet = ts.CallFilterWebApi($"api/v1/filter/{projectUid}?filterUid={filterUid}", "GET");
+      var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.AreEqual(filterResponseGet.filterDescriptor.FilterJson, filterJson2, "JSON Filter doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.filterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+    }
+
+
+    [TestMethod]
+    public void CreateThenUpdateFilterWgsPointsValues()
+    {
+      const string filterName = "Filter Web test 5";
+      msg.Title(filterName, "Create and update filter with WGSPoints and dates");
+      var ts = new TestSupport
+      {
+        IsPublishToWebApi = true,
+        CustomerUid = customerUid
+      };
+      ts.DeleteAllFiltersForProject(projectUid.ToString());
+      var filterJson = CreateTestFilter(ElevationType.Lowest, true, false);
+      var filterRequest = FilterRequest.CreateFilterRequest("", filterName, filterJson);
+      var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var response = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
+      var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var filterUid = filterResponse.filterDescriptor.FilterUid;
+
+      var listWgsPoints = new List<WGSPoint>
+      {
+        WGSPoint.CreatePoint(38.8361907402694, -121.349260032177),
+        WGSPoint.CreatePoint(38.8361656688414, -121.349217116833),
+        WGSPoint.CreatePoint(38.8387897637231, -121.347275197506),
+        WGSPoint.CreatePoint(38.8387145521594, -121.347189366818)
+      };
+      var filterJson2 = CreateTestFilter(ElevationType.Last, null, null, 1, FilterLayerMethod.MapReset, listWgsPoints,null,DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
+      var filterRequest2 = FilterRequest.CreateFilterRequest(filterUid, filterName, filterJson2);
+      var filter2 = JsonConvert.SerializeObject(filterRequest2, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter2);
+
+      var responseGet = ts.CallFilterWebApi($"api/v1/filter/{projectUid}?filterUid={filterUid}", "GET");
+      var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.AreEqual(filterResponseGet.filterDescriptor.FilterJson, filterJson2, "JSON Filter doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.filterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+    }
+
+    [TestMethod]
+    public void CreateThenUpdateSomeValuesToNulls()
+    {
+      const string filterName = "Filter Web test 6";
+      msg.Title(filterName, "Create and update filter with null feilds");
+      var ts = new TestSupport
+      {
+        IsPublishToWebApi = true,
+        CustomerUid = customerUid
+      };
+      ts.DeleteAllFiltersForProject(projectUid.ToString());
+      var listWgsPoints = new List<WGSPoint>
+      {
+        WGSPoint.CreatePoint(38.8361907402694, -121.349260032177),
+        WGSPoint.CreatePoint(38.8361656688414, -121.349217116833),
+        WGSPoint.CreatePoint(38.8387897637231, -121.347275197506),
+        WGSPoint.CreatePoint(38.8387145521594, -121.347189366818)
+      };
+      var filterJson = CreateTestFilter(ElevationType.Last, null, null, 1, FilterLayerMethod.MapReset, listWgsPoints, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
+      var filterRequest = FilterRequest.CreateFilterRequest("", filterName, filterJson);
+      var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var response = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
+      var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var filterUid = filterResponse.filterDescriptor.FilterUid;
+
+      var filterJson2 = CreateTestFilter();
+      var filterRequest2 = FilterRequest.CreateFilterRequest(filterUid, filterName, filterJson2);
+      var filter2 = JsonConvert.SerializeObject(filterRequest2, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter2);
+
+      var responseGet = ts.CallFilterWebApi($"api/v1/filter/{projectUid}?filterUid={filterUid}", "GET");
+      var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.AreEqual(filterResponseGet.filterDescriptor.FilterJson, filterJson2, "JSON Filter doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.filterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+    }
+
+    [TestMethod]
+    public void CreateFilterWithValidJsonString()
+    {
+      const string filterName = "Filter Web test 7";
+      msg.Title(filterName, "Create filter with json string");
+      var ts = new TestSupport
+      {
+        IsPublishToWebApi = true,
+        CustomerUid = customerUid
+      };
+      ts.DeleteAllFiltersForProject(projectUid.ToString());
+      var filterRequest = FilterRequest.CreateFilterRequest("", filterName, "");
+      filterRequest.filterJson = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}],\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true,\"polygonLL\":[{\"Lat\":38.8361907402694,\"Lon\":-121.349260032177},{\"Lat\":38.8361656688414,\"Lon\":-121.349217116833},{\"Lat\":38.8387897637231,\"Lon\":-121.347275197506},{\"Lat\":38.8387145521594,\"Lon\":-121.347189366818}],\"forwardDirection\":false,\"layerNumber\":null,\"layerType\":null}";
+      var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
+      var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.AreEqual(filterResponse.filterDescriptor.FilterJson, filterRequest.filterJson, "JSON Filter doesn't match for PUT request");
+      Assert.AreEqual(filterResponse.filterDescriptor.Name, filterRequest.name, "Filter name doesn't match for PUT request");
+      var filterUid = filterResponse.filterDescriptor.FilterUid;
+      var responseGet = ts.CallFilterWebApi($"api/v1/filter/{projectUid}?filterUid={filterUid}", "GET");
+      var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.AreEqual(filterResponseGet.filterDescriptor.FilterJson, filterRequest.filterJson, "JSON Filter doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.filterDescriptor.Name, filterRequest.name, "Filter name doesn't match for GET request");
+    }
+
+    [TestMethod]
+    public void CreateFilterWithInValidDesignId()
+    {
+      const string filterName = "Filter Web test 8";
+      msg.Title(filterName, "Create filter with invalid DesignId");
+      var ts = new TestSupport
+      {
+        IsPublishToWebApi = true,
+        CustomerUid = customerUid
+      };
+      ts.DeleteAllFiltersForProject(projectUid.ToString());
+      var filterRequest = FilterRequest.CreateFilterRequest("", filterName, "");
+      filterRequest.filterJson =
+        "{\"startUTC\":null,\"designUid\":\"xxx\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}],\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true,\"forwardDirection\":false,\"layerNumber\":null,\"layerType\":null}";
+      var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
+      var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.AreEqual(filterResponse.Message, "Invalid designUid.", "Expecting a Invalid designUid.");
+    }
+
+
+    [TestMethod]
+    public void CreateThenDeleteFilter()
+    {
+      const string filterName = "Filter Web test 9";
+      msg.Title(filterName, "Create then delete filter");
+      var ts = new TestSupport
+      {
+        IsPublishToWebApi = true,
+        CustomerUid = customerUid
+      };
+      ts.DeleteAllFiltersForProject(projectUid.ToString());
+      var filterJson = CreateTestFilter(ElevationType.Lowest, true, false);
+      var filterRequest = FilterRequest.CreateFilterRequest("", filterName, filterJson);
+      var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var response = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
+      var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var filterUid = filterResponse.filterDescriptor.FilterUid;
+      var responseDelete = ts.CallFilterWebApi($"api/v1/filter/{projectUid}?filterUid={filterUid}", "DELETE");
+      var responseDel = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseDelete, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.AreEqual(responseDel.Message, "success", " delete call to wep api expects success" );
+
+      var responseGet = ts.CallFilterWebApi($"api/v1/filter/{projectUid}?filterUid={filterUid}", "GET");
+      var respGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.AreEqual(respGet.Message, "GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user.",
+                      "Expecting an error message to say the filter does not exist.");
+    }
+
+
     /// <summary>
     /// Create the filter and convert it to json 
     /// </summary>
@@ -109,24 +293,20 @@ namespace WebApiTests
     /// <param name="forward">true or false</param>
     /// <param name="layerNo">layer number</param>
     /// <param name="fltlayer">FilterLayerMethod</param>
+    /// <param name="listWgsPoints"></param>
+    /// <param name="onMachineDesignId"></param>
+    /// <param name="startUtc"></param>
+    /// <param name="endUtc"></param>
     /// <returns>complete filter in json format</returns>
     private string CreateTestFilter(ElevationType? elevation = null,bool? vibestate = null, bool? forward = null,
-                                    int? layerNo = null, FilterLayerMethod? fltlayer = null)
+                                    int? layerNo = null, FilterLayerMethod? fltlayer = null, List<WGSPoint> listWgsPoints = null , int? onMachineDesignId = null,
+                                    DateTime? startUtc = null, DateTime? endUtc = null)
     {
-      var startUtc = DateTime.Now.AddMonths(-6).ToUniversalTime();
-      var endUtc = DateTime.Now.AddMonths(+6).ToUniversalTime();
       var listMachines = new List<MachineDetails>();
       var machine = MachineDetails.CreateMachineDetails(123456789,"TheMachineName", false);
       listMachines.Add(machine);
-      var listPoints = new List<WGSPoint>
-      {
-        WGSPoint.CreatePoint(38.8361907402694, -121.349260032177),
-        WGSPoint.CreatePoint(38.8361656688414, -121.349217116833),
-        WGSPoint.CreatePoint(38.8387897637231, -121.347275197506),
-        WGSPoint.CreatePoint(38.8387145521594, -121.347189366818)
-      };
-      var filter = Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), listMachines, 123,
-                                       elevation, vibestate, listPoints, forward, layerNo, fltlayer);
+      var filter = Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), listMachines, onMachineDesignId,
+                                       elevation, vibestate, listWgsPoints, forward, layerNo, fltlayer);
       return filter.ToJsonString();
     }
   }
