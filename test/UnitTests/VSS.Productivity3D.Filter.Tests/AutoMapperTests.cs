@@ -44,14 +44,40 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterRequest = FilterRequestFull.CreateFilterFullRequest
       (
-        Guid.NewGuid().ToString(),
-        false,
-        Guid.NewGuid().ToString(),
-        Guid.NewGuid().ToString(),
-        Guid.NewGuid().ToString(),
-        "the Name",
-        "the Json"
+        customerUid: Guid.NewGuid().ToString(),
+        isApplicationContext: false,
+        userId: Guid.NewGuid().ToString(),
+        projectUid: Guid.NewGuid().ToString(),
+        filterUid: Guid.NewGuid().ToString(),
+        name: "the Name",
+        filterJson: "the Json"
       );
+
+      var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
+      Assert.AreEqual(filterRequest.customerUid, result.CustomerUID.ToString(),
+        "customerUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.userId, result.UserID, "UserId has not been mapped correctly");
+      Assert.AreEqual(filterRequest.projectUid, result.ProjectUID.ToString(),
+        "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.name, result.Name, "Name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+    }
+
+    [TestMethod]
+    public void MapFilterRequestToCreateKafkaEvent_UserContext_NoFilterUID()
+    {
+      var filterRequest = FilterRequestFull.CreateFilterFullRequest
+      (
+        customerUid: Guid.NewGuid().ToString(),
+        isApplicationContext: false,
+        userId: Guid.NewGuid().ToString(),
+        projectUid: Guid.NewGuid().ToString(),
+        filterUid: "",
+        name: "the Name",
+        filterJson: "the Json"
+      );
+      filterRequest.filterUid = Guid.NewGuid().ToString();
 
       var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
       Assert.AreEqual(filterRequest.customerUid, result.CustomerUID.ToString(),
@@ -77,6 +103,32 @@ namespace VSS.Productivity3D.Filter.Tests
         "the Name",
         "the Json"
       );
+
+      var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
+      Assert.AreEqual(filterRequest.customerUid, result.CustomerUID.ToString(),
+        "customerUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.userId, result.UserID, "UserId has not been mapped correctly");
+      Assert.AreEqual(filterRequest.projectUid, result.ProjectUID.ToString(),
+        "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.name, result.Name, "Name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+    }
+
+    [TestMethod]
+    public void MapFilterRequestToCreateKafkaEvent_ApplicationContext_NoFilterUID()
+    {
+      var filterRequest = FilterRequestFull.CreateFilterFullRequest
+      (
+        customerUid: Guid.NewGuid().ToString(),
+        isApplicationContext: false,
+        userId: "ApplicationName",
+        projectUid: Guid.NewGuid().ToString(),
+        filterUid: "",
+        name: "the Name",
+        filterJson: "the Json"
+      );
+      filterRequest.filterUid = Guid.NewGuid().ToString();
 
       var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
       Assert.AreEqual(filterRequest.customerUid, result.CustomerUID.ToString(),
