@@ -133,10 +133,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double startLonDegrees,
       [FromQuery] double endLatDegrees,
       [FromQuery] double endLonDegrees,
-      [FromQuery] Guid filterUid,
       [FromQuery] Guid importedFileUid,
       [FromQuery] int importedFileTypeId,
-      [FromQuery] long alignmentId)
+      [FromQuery] Guid filterUid,
+      [FromQuery] Guid? cutfillDesignUid)
     {
       log.LogInformation("GetDesignProduction: " + Request.QueryString);
 
@@ -149,7 +149,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders)))
           .ExcludedIds(await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid)))
         .SetRaptorClient(raptorClient)
-        .CreateDesignProfileResponse(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, filterUid, customerUid, importedFileUid, importedFileTypeId, alignmentId);
+        .CreateDesignProfileResponse(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, importedFileUid, importedFileTypeId, filterUid, cutfillDesignUid);
 
       profileResult.Validate();
 

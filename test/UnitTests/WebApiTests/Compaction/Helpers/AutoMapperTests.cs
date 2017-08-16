@@ -15,8 +15,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
-
-
+    
     [TestMethod]
     public void MapProjectSettingsToCMVSettings()
     {

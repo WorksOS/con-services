@@ -2,14 +2,12 @@
 using System;
 using System.Linq;
 using System.Net;
-using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
@@ -24,8 +22,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
   /// </summary>
   public class DesignProfileDataRequestHelper : DataRequestBase, IProfileDesignRequestHandler
   {
-    private IASNodeClient _raptorClient;
-
     public DesignProfileDataRequestHelper()
     { }
 
@@ -39,7 +35,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     }
     public DesignProfileDataRequestHelper SetRaptorClient(IASNodeClient raptorClient)
     {
-      _raptorClient = raptorClient;
       return this;
     }
 
@@ -47,17 +42,23 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a Slicer profile.   
     /// </summary>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public ProfileProductionDataRequest CreateDesignProfileResponse(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid filterUid, Guid customerUid, Guid importedFileUid, int importedFileTypeid, long alignmentId)
+    public ProfileProductionDataRequest CreateDesignProfileResponse(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid importedFileUid, int importedFileTypeid, Guid filterUid, Guid? cutfillDesignUid)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
 
       var filter = SettingsManager.CompactionFilter(filterUid.ToString(), customerUid.ToString(), projectUid.ToString(),
         Headers);
 
-      var designDescriptor = GetDescriptor(projectUid, importedFileUid);
+      DesignDescriptor designDescriptor = null;
+      if (cutfillDesignUid.HasValue)
+      {
+        designDescriptor = GetDescriptor(projectUid, importedFileUid);
+      }
 
       var liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
+
+     // designDescriptor = null;
       // callId is set to 'empty' because raptor will create and return a Guid if this is set to empty.
       // this would result in the acceptance tests failing to see the callID == in its equality test
       return ProfileProductionDataRequest.CreateProfileProductionData(
@@ -72,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         ValidationConstants.MIN_STATION,
         ValidationConstants.MIN_STATION, 
         liftBuildSettings,
-        true);
+        false);
 
 
       //ProfilesHelper.convertProfileEndPositions(null, llPoints, out TWGS84Point startPt, out TWGS84Point endPt, out bool positionsAreGrid);
