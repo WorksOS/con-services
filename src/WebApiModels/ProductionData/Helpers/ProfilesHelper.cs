@@ -5,10 +5,10 @@ using System.IO;
 using System.Linq;
 using VLPDDecls;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Velociraptor.PDSInterface;
-using VSS.Productivity3D.WebApi.Models.Common;
 using ProfileCell = VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling.ProfileCell;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
@@ -39,28 +39,23 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
         pdsiProfile.Assign(packager.CellList);
         pdsiProfile.GridDistanceBetweenProfilePoints = packager.GridDistanceBetweenProfilePoints;
-
-
+        
         if (packager.LatLongList != null) // For an alignment profile we return the lat long list to draw the profile line. slicer tool will just be a zero count
         {
           //points = packager.LatLongList.ToList().ConvertAll<Flex.StationLLPoint>(delegate(TWGS84StationPoint p) { return new Flex.StationLLPoint {lat = p.Lat * 180 / Math.PI, lng = p.Lon * 180 / Math.PI }; });
-          points = packager.LatLongList.ToList().ConvertAll<StationLLPoint>
-            (delegate (TWGS84StationPoint p)
-            {
-              return new StationLLPoint { station = p.Station, lat = p.Lat * 180 / Math.PI, lng = p.Lon * 180 / Math.PI };
-            }
-            );
+          points = packager.LatLongList.ToList().ConvertAll(delegate (TWGS84StationPoint p)
+          {
+            return new StationLLPoint { station = p.Station, lat = p.Lat * 180 / Math.PI, lng = p.Lon * 180 / Math.PI };
+          });
         }
 
         profile.cells = new List<ProfileCell>();
         VSS.Velociraptor.PDSInterface.ProfileCell prevCell = null;
         foreach (Velociraptor.PDSInterface.ProfileCell currCell in pdsiProfile.cells)
         {
-          double prevStationIntercept = prevCell?.station + prevCell.interceptLength ?? 0.0;
-          bool gap = prevCell == null
-                       ? false
-                       : Math.Abs(currCell.station - prevStationIntercept) > 0.001;
-          if (gap)
+          var gapExists = CellGapExists(prevCell, currCell, out double prevStationIntercept);
+
+          if (gapExists)
           {
             profile.cells.Add(new ProfileCell()
             {
@@ -224,6 +219,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
         // TODO throw an exception
       }
+    }
+
+    public static bool CellGapExists(Velociraptor.PDSInterface.ProfileCell prevCell, Velociraptor.PDSInterface.ProfileCell currCell, out double prevStationIntercept)
+    {
+      prevStationIntercept = prevCell == null
+        ? 0.0
+        : prevCell.station + prevCell.interceptLength;
+
+      return prevCell != null && Math.Abs(currCell.station - prevStationIntercept) > 0.001;
     }
   }
 }
