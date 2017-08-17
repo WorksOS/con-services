@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,7 +9,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         f => f.ImportedFileUid ==
              importedFileUid.ToString() &&
              f.IsActivated &&
-             f.ImportedFileType == ImportedFileType.DesignSurface);
+             f.IsSupportedFileType());
 
       if (designFile == null)
       {
@@ -67,10 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         FileDescriptor.CreateFileDescriptor(GetFilespaceId(), designFile.Path, designFile.Name),
         0);
     }
-
-    /// <summary>
-    /// Gets the TCC filespaceId for the vldatastore filespace
-    /// </summary>
+    
     private string GetFilespaceId()
     {
       var filespaceId = ConfigurationStore.GetValueString("TCCFILESPACEID");

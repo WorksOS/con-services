@@ -15,7 +15,6 @@ using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
-using VSS.Productivity3D.WebApi.ProductionData.Controllers;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -23,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionProfileController : BaseController
+  public class ProfileController : BaseController
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -57,14 +56,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="requestFactory">The request factory.</param>
     /// <param name="exceptionHandler">The exception handler.</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
-    public CompactionProfileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
+    public ProfileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
       base (logger.CreateLogger<BaseController>(),exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      log = logger.CreateLogger<ProfileProductionDataController>();
+      log = logger.CreateLogger<ProfileController>();
       this.requestFactory = requestFactory;
     }
 
@@ -95,7 +94,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? cutfillDesignUid
     )
     {
-      log.LogInformation("GetProfileProduction: " + Request.QueryString);
+      log.LogInformation("GetProductionDataSlice: " + Request.QueryString);
       var projectId = GetProjectId(projectUid);
 
       var slicerProfileResult = requestFactory.Create<SliceProfileDataRequestHelper>(async r => r
@@ -117,8 +116,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier] // Is this required?
-    [Route("api/v2/profiles/productiondata/design")]
+    [NotLandFillProjectWithUIDVerifier]
+    [Route("api/v2/profiles/design")]
     [HttpGet]
     public async Task<ProfileResult> GetProfileProductionDataDesign(
       [FromQuery] Guid projectUid,
@@ -128,10 +127,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double endLonDegrees,
       [FromQuery] Guid importedFileUid,
       [FromQuery] int importedFileTypeId,
-      [FromQuery] Guid filterUid,
-      [FromQuery] Guid? cutfillDesignUid)
+      [FromQuery] Guid filterUid)
     {
-      log.LogInformation("GetDesignProduction: " + Request.QueryString);
+      log.LogInformation("GetDesignProfileSlice: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
 
@@ -142,7 +140,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders)))
           .ExcludedIds(await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid)))
         .SetRaptorClient(raptorClient)
-        .CreateDesignProfileResponse(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, importedFileUid, importedFileTypeId, filterUid, cutfillDesignUid);
+        .CreateDesignProfileResponse(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, importedFileUid, filterUid);
 
       profileResult.Validate();
 
