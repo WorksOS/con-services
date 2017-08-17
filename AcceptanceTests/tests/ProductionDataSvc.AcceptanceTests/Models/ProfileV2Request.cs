@@ -5,55 +5,6 @@ using System.Collections.Generic;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
-  #region Request
-  /// <summary>
-  /// The request representation for a linear based profile request for design and surveyed surface types.
-  /// </summary>
-  public class ProfileV2Request
-  {
-    /// <summary>
-    /// The project to perform the request against
-    /// </summary>
-    public long? projectUid { get; set; }
-
-    /// <summary>
-    /// The start latitude degrees
-    /// </summary>
-    public double startLatDegrees { get; set; }
-
-    /// <summary>
-    /// The end latitude degrees
-    /// </summary>
-    public double endLatDegrees { get; set; }
-
-    /// <summary>
-    /// The start longitude degrees
-    /// </summary>
-    public double startLonDegrees { get; set; }
-
-    /// <summary>
-    /// The end longitude degrees
-    /// </summary>
-    public double endLonDegrees { get; set; }
-
-    /// <summary>
-    /// The imported file's Uid to run this request against
-    /// </summary>
-    public Guid importedFileUid { get; set; }
-
-    /// <summary>
-    /// The Id of the imported file to run this request against
-    /// </summary>
-    public int importedFileId { get; set; }
-
-    /// <summary>
-    /// The Filter Uid to include in this request
-    /// Value may be null.
-    /// </summary>
-    public Guid filterUid { get; set; }
-  }
-  #endregion
-
   #region Result
   /// <summary>
   /// Base class containing common information relevant to linear and alignment based profile calculations

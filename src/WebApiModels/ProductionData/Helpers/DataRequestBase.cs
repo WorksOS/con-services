@@ -38,8 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       ExcludedIds = excludeIds;
     }
 
-    protected DesignDescriptor 
-      GetDescriptor(Guid projectUid, Guid importedFileUid)
+    protected DesignDescriptor GetDescriptor(Guid projectUid, Guid importedFileUid)
     {
       var fileList = FileListProxy.GetFiles(projectUid.ToString(), Headers).Result;
 
@@ -68,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         FileDescriptor.CreateFileDescriptor(GetFilespaceId(), designFile.Path, designFile.Name),
         0);
     }
-    
+
     private string GetFilespaceId()
     {
       var filespaceId = ConfigurationStore.GetValueString("TCCFILESPACEID");

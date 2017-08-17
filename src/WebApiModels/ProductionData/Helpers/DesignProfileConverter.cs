@@ -13,9 +13,9 @@ using ProfileCell = VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandli
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
-  public class ProfilesHelper : ProfileConverterBase
+  public class DesignProfileConverter : ProfileConverterBase
   {
-    public static ProfileResult convertProductionDataProfileResult(MemoryStream ms, Guid callID)
+    public static ProfileResult ConvertDesignProfileResult(MemoryStream ms, Guid callID, Guid importedFileTypeId, TVLPDDesignDescriptor designDescriptor)
     {
       List<StationLLPoint> points = null;
 
@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         }
 
         profile.cells = new List<ProfileCell>();
-        VSS.Velociraptor.PDSInterface.ProfileCell prevCell = null;
+        Velociraptor.PDSInterface.ProfileCell prevCell = null;
         foreach (Velociraptor.PDSInterface.ProfileCell currCell in pdsiProfile.cells)
         {
           var gapExists = CellGapExists(prevCell, currCell, out double prevStationIntercept);
@@ -119,14 +119,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
             temperature = noTemperatureValue ? float.NaN : currCell.materialTemperature / 10.0F,// As temperature is reported in 10th...
             temperatureHeight = noTemperatureElevation ? float.NaN : currCell.materialTemperatureElev,
             temperatureLevel = noTemperatureValue ? -1 :
-                (currCell.materialTemperature < currCell.materialTemperatureWarnMin ? 2 :
+              (currCell.materialTemperature < currCell.materialTemperatureWarnMin ? 2 :
                 (currCell.materialTemperature > currCell.materialTemperatureWarnMax ? 0 : 1)),
 
             topLayerPassCount = noPassCountValue ? -1 : currCell.topLayerPassCount,
             topLayerPassCountTargetRange = TargetPassCountRange.CreateTargetPassCountRange(currCell.topLayerPassCountTargetRange.Min, currCell.topLayerPassCountTargetRange.Max),
 
             passCountIndex = noPassCountValue ? -1 :
-                (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? 2 :
+              (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? 2 :
                 (currCell.topLayerPassCount > currCell.topLayerPassCountTargetRange.Max ? 0 : 1)),
 
             topLayerThickness = currCell.topLayerThickness == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.topLayerThickness
@@ -190,34 +190,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       }
 
       return profile;
-    }
-
-    public static void convertProfileEndPositions(ProfileGridPoints gridPoints, ProfileLLPoints lLPoints,
-                                                 out TWGS84Point startPt, out TWGS84Point endPt,
-                                                 out bool positionsAreGrid)
-    {
-      if (gridPoints != null)
-      {
-        positionsAreGrid = true;
-        startPt = new TWGS84Point() { Lat = gridPoints.y1, Lon = gridPoints.x1 };
-        endPt = new TWGS84Point() { Lat = gridPoints.y2, Lon = gridPoints.x2 };
-      }
-      else
-        if (lLPoints != null)
-      {
-        positionsAreGrid = false;
-        startPt = new TWGS84Point() { Lat = lLPoints.lat1, Lon = lLPoints.lon1 };
-        endPt = new TWGS84Point() { Lat = lLPoints.lat2, Lon = lLPoints.lon2 };
-      }
-      else
-      {
-
-        startPt = new TWGS84Point();
-        endPt = new TWGS84Point();
-        positionsAreGrid = false;
-
-        // TODO throw an exception
-      }
     }
   }
 }

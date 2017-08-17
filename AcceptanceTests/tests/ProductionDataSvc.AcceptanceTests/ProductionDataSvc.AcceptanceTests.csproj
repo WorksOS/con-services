@@ -296,6 +296,7 @@
     <Compile Include="Models\ProfileGridPoints.cs" />
     <Compile Include="Models\ProfileLLPoints.cs" />
     <Compile Include="Models\ProfileRequest.cs" />
+    <Compile Include="Models\ProfileV2Request.cs" />
     <Compile Include="Models\ProjectExtentRequest.cs" />
     <Compile Include="Models\GetMachinesResult.cs" />
     <Compile Include="Models\ProjectStatistics.cs" />
