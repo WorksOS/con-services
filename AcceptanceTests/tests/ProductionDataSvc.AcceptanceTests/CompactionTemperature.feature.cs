@@ -68,76 +68,47 @@ namespace ProductionDataSvc.AcceptanceTests
             testRunner.CollectScenarioErrors();
         }
         
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Temperature Summary")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTemperature")]
-        public virtual void CompactionGetTemperatureSummary()
+        public virtual void CompactionGetTemperatureSummary_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Temperature Summary", ((string[])(null)));
-#line 4
-this.ScenarioSetup(scenarioInfo);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Temperature Summary - No Design Filter", exampleTags);
 #line 5
-testRunner.Given("the Compaction Temperature Summary service URI \"/api/v2/compaction/temperature/su" +
-                    "mmary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 6
-testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/temperature/summary\" for operation" +
+                    " \"TemperatureSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
-testRunner.When("I request Temperature summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+  testRunner.And("the result file \"CompactionGetTemperatureDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
-testRunner.Then("the Temperature result should be", @"{
-""temperatureSummaryData"": {
-    ""percentEqualsTarget"": 0,
-    ""percentGreaterThanTarget"": 0,
-    ""percentLessThanTarget"": 100,
-    ""totalAreaCoveredSqMeters"": 953.93120000000022,
-    ""temperatureTarget"": {
-    ""minTemperatureMachineTarget"": 90.0,
-    ""maxTemperatureMachineTarget"": 143.0,
-    ""targetVaries"": false
-    }
-},
-""Code"": 0,
-""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 9
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 10
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Temperature Summary with project settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Temperature Summary - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTemperature")]
-        public virtual void CompactionGetTemperatureSummaryWithProjectSettings()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_Summary")]
+        public virtual void CompactionGetTemperatureSummary_NoDesignFilter_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Temperature Summary with project settings", ((string[])(null)));
-#line 27
-this.ScenarioSetup(scenarioInfo);
-#line 28
-testRunner.Given("the Compaction Temperature Summary service URI \"/api/v2/compaction/temperature/su" +
-                    "mmary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 29
-testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 30
-testRunner.When("I request Temperature summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 31
-testRunner.Then("the Temperature result should be", @"{
-  ""temperatureSummaryData"": {
-    ""percentEqualsTarget"": 0.0,
-    ""percentGreaterThanTarget"": 0.0,
-    ""percentLessThanTarget"": 100.0,
-    ""totalAreaCoveredSqMeters"": 953.93120000000022,
-    ""temperatureTarget"": {
-      ""minTemperatureMachineTarget"": 75.0,
-      ""maxTemperatureMachineTarget"": 130.0,
-      ""targetVaries"": false
-    }
-  },
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
+            this.CompactionGetTemperatureSummary_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter_Summary", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Temperature Summary - No Design Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTemperature")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ProjectSettings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "ProjectSettings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "3335311a-f0e2-4dbe-8acd-f21135bafee4")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_Summary_PS")]
+        public virtual void CompactionGetTemperatureSummary_NoDesignFilter_ProjectSettings()
+        {
+            this.CompactionGetTemperatureSummary_NoDesignFilter("ProjectSettings", "3335311a-f0e2-4dbe-8acd-f21135bafee4", "NoDesignFilter_Summary_PS", ((string[])(null)));
         }
     }
 }

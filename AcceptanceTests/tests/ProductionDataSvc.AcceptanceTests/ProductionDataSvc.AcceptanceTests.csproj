@@ -353,6 +353,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Profile.feature</DependentUpon>
     </Compile>
+    <Compile Include="StepDefinitions\BaseCompactionSteps.cs" />
     <Compile Include="StepDefinitions\CcaColorPaletteSteps.cs" />
     <Compile Include="StepDefinitions\CCASummarySteps.cs" />
     <Compile Include="StepDefinitions\CMVChangeSteps.cs" />
@@ -667,6 +668,30 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CMVSummaryResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetCMVDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetCompactionPalettesResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetElevationAndProjectStatisticsDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetMDPDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetPassCountDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetProductionDataTilesResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetSpeedDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetTemperatureDataResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionTagFileRequest.json">

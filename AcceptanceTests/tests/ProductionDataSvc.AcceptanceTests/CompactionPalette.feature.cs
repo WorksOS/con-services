@@ -68,80 +68,88 @@ namespace ProductionDataSvc.AcceptanceTests
             testRunner.CollectScenarioErrors();
         }
         
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Palette When No Elevation Data")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPalette")]
-        public virtual void CompactionGetElevationPaletteWhenNoElevationData()
+        public virtual void CompactionGetElevationPalette_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette When No Elevation Data", ((string[])(null)));
-#line 4
- this.ScenarioSetup(scenarioInfo);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette - No Design Filter", exampleTags);
 #line 5
- testRunner.Given("the Compaction Elevation Palette service URI \"/api/v2/compaction/elevationpalette" +
-                    "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 6
-  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationpalette\" for operation \"E" +
+                    "levationPalette\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
-  testRunner.And("a startUtc \"2017-01-01\" and an EndUtc \"2017-01-01\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("the result file \"CompactionGetCompactionPalettesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
- testRunner.When("I request Elevation Palette", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
- testRunner.Then("the Elevation Palette result should be", "{\n  \"palette\": null,\n   \"Code\": -4,\n  \"Message\": \"No elevation range\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 10
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Palette")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Palette - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPalette")]
-        public virtual void CompactionGetElevationPalette()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_EP")]
+        public virtual void CompactionGetElevationPalette_NoDesignFilter_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette", ((string[])(null)));
+            this.CompactionGetElevationPalette_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter_EP", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetElevationPalette_NoData(string requetsName, string projectUID, string startUTC, string endUTC, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette - No Data", exampleTags);
+#line 15
+this.ScenarioSetup(scenarioInfo);
+#line 16
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationpalette\" for operation \"E" +
+                    "levationPalette\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 17
+  testRunner.And("the result file \"CompactionGetCompactionPalettesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 18
-  this.ScenarioSetup(scenarioInfo);
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 19
- testRunner.Given("the Compaction Elevation Palette service URI \"/api/v2/compaction/elevationpalette" +
-                    "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+  testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startUTC, endUTC), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 20
-  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 21
- testRunner.When("I request Elevation Palette", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 22
- testRunner.Then("the Elevation Palette result should be", "{\n  \"palette\": {\n    \"colorValues\": [\n      {\n        \"color\": 13107200,\n        " +
-                    "\"value\": 591.9539794921875\n      },\n      {\n        \"color\": 16711680,\n        \"" +
-                    "value\": 593.02544759114585\n      },\n      {\n        \"color\": 14760960,\n        \"" +
-                    "value\": 594.0969156901042\n      },\n      {\n        \"color\": 16734720,\n        \"v" +
-                    "alue\": 595.16838378906255\n      },\n      {\n        \"color\": 16744960,\n        \"v" +
-                    "alue\": 596.23985188802078\n      },\n      {\n        \"color\": 16755200,\n        \"v" +
-                    "alue\": 597.31131998697913\n      },\n      {\n        \"color\": 16762880,\n        \"v" +
-                    "alue\": 598.38278808593748\n      },\n      {\n        \"color\": 16768000,\n        \"v" +
-                    "alue\": 599.45425618489583\n      },\n      {\n        \"color\": 16442880,\n        \"v" +
-                    "alue\": 600.52572428385417\n      },\n      {\n        \"color\": 14476800,\n        \"v" +
-                    "alue\": 601.59719238281252\n      },\n      {\n        \"color\": 13821440,\n        \"v" +
-                    "alue\": 602.66866048177087\n      },\n      {\n        \"color\": 13166080,\n        \"v" +
-                    "alue\": 603.74012858072922\n      },\n      {\n        \"color\": 11855360,\n        \"v" +
-                    "alue\": 604.81159667968745\n      },\n      {\n        \"color\": 9889280,\n        \"va" +
-                    "lue\": 605.8830647786458\n      },\n      {\n        \"color\": 8578560,\n        \"valu" +
-                    "e\": 606.95453287760415\n      },\n      {\n        \"color\": 6615040,\n        \"value" +
-                    "\": 608.0260009765625\n      },\n      {\n        \"color\": 65280,\n        \"value\": 6" +
-                    "09.09746907552085\n      },\n      {\n        \"color\": 61540,\n        \"value\": 610." +
-                    "1689371744792\n      },\n      {\n        \"color\": 59010,\n        \"value\": 611.2404" +
-                    "0527343755\n      },\n      {\n        \"color\": 59030,\n        \"value\": 612.3118733" +
-                    "7239578\n      },\n      {\n        \"color\": 59060,\n        \"value\": 613.3833414713" +
-                    "5413\n      },\n      {\n        \"color\": 59080,\n        \"value\": 614.4548095703124" +
-                    "8\n      },\n      {\n        \"color\": 59090,\n        \"value\": 615.52627766927083\n " +
-                    "     },\n      {\n        \"color\": 56540,\n        \"value\": 616.59774576822917\n    " +
-                    "  },\n      {\n        \"color\": 51430,\n        \"value\": 617.66921386718752\n      }" +
-                    ",\n      {\n        \"color\": 46320,\n        \"value\": 618.74068196614587\n      },\n " +
-                    "     {\n        \"color\": 38645,\n        \"value\": 619.81215006510422\n      },\n    " +
-                    "  {\n        \"color\": 30970,\n        \"value\": 620.88361816406245\n      },\n      {" +
-                    "\n        \"color\": 23295,\n        \"value\": 621.9550862630208\n      },\n      {\n   " +
-                    "     \"color\": 18175,\n        \"value\": 623.02655436197915\n      },\n      {\n      " +
-                    "  \"color\": 255,\n        \"value\": 624.0980224609375\n      }\n    ],\n    \"aboveLast" +
-                    "Color\": 8388736,\n    \"belowFirstColor\": 16711935\n  },\n  \"Code\": 0,\n  \"Message\": " +
-                    "\"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Palette - No Data")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPalette")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartUTC", "2017-01-01")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndUTC", "2017-01-01")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoData_EP")]
+        public virtual void CompactionGetElevationPalette_NoData_()
+        {
+            this.CompactionGetElevationPalette_NoData("", "ff91dd40-1569-4765-a2bc-014321f76ace", "2017-01-01", "2017-01-01", "NoData_EP", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetPalettes(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Palettes", exampleTags);
+#line 27
+this.ScenarioSetup(scenarioInfo);
+#line 28
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/colorpalettes\" for operation \"Comp" +
+                    "actionPalettes\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 29
+  testRunner.And("the result file \"CompactionGetCompactionPalettesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 30
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 31
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 32
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -149,70 +157,12 @@ namespace ProductionDataSvc.AcceptanceTests
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Palettes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPalette")]
-        public virtual void CompactionGetPalettes()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GoodRequest_Palettes")]
+        public virtual void CompactionGetPalettes_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Palettes", ((string[])(null)));
-#line 160
-  this.ScenarioSetup(scenarioInfo);
-#line 161
- testRunner.Given("the Compaction Palettes service URI \"/api/v2/compaction/colorpalettes\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 162
-  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 163
- testRunner.When("I request Palettes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 164
- testRunner.Then("the Palettes result should be", "{\n  \"cmvDetailPalette\": {\n    \"colorValues\": [\n      {\n      \"color\": 2971523,\n  " +
-                    "    \"value\": 0.0\n\t\t},\n\t\t{\n\t\t\t\"color\": 4430812,\n\t\t\t\"value\": 100.0\n\t\t},\n\t\t{\n\t\t\t\"co" +
-                    "lor\": 12509169,\n\t\t\t\"value\": 200.0\n\t\t},\n\t\t{\n\t\t\t\"color\": 10341991,\n\t\t\t\"value\": 300" +
-                    ".0\n\t\t},\n\t\t{\n\t\t\t\"color\": 7053374,\n\t\t\t\"value\": 400.0\n\t\t},\n\t\t{\n\t\t\t\"color\": 3828517," +
-                    "\n\t\t\t\"value\": 500.0\n\t\t},\n\t\t{\n\t\t\t\"color\": 16174803,\n\t\t\t\"value\": 600.0\n\t\t},\n\t\t{\n\t\t\t" +
-                    "\"color\": 13990524,\n\t\t\t\"value\": 700.0\n\t\t},\n\t\t{\n\t\t\t\"color\": 12660791,\n\t\t\t\"value\": " +
-                    "800.0\n\t\t},\n\t\t{\n\t\t\t\"color\": 15105570,\n\t\t\t\"value\": 900.0\n\t\t},\n\t\t{\n\t\t\t\"color\": 1478" +
-                    "5888,\n\t\t\t\"value\": 1000.0\n\t\t},\n\t\t{\n\t\t\t\"color\": 15190446,\n\t\t\t\"value\": 1100.0\n\t\t},\n" +
-                    "\t\t{\n\t\t\t\"color\": 5182823,\n\t\t\t\"value\": 1200.0\n\t\t},\n\t\t{\n\t\t\t\"color\": 9259433,\n\t\t\t\"va" +
-                    "lue\": 1300.0\n\t\t},\n\t\t{\n\t\t\t\"color\": 13740258,\n\t\t\t\"value\": 1400.0\n\t\t},\n\t\t{\n\t\t\t\"colo" +
-                    "r\": 1971179,\n\t\t\t\"value\": 1500.0\n\t\t}\n    ],\n    \"aboveLastColor\": null,\n    \"belo" +
-                    "wFirstColor\": null\n  },\n  \"passCountDetailPalette\": {\n    \"colorValues\": [\n     " +
-                    " {\n        \"color\": 2971523,\n        \"value\": 1\n      },\n      {\n        \"color\"" +
-                    ": 4430812,\n        \"value\": 2\n      },\n      {\n        \"color\": 12509169,\n      " +
-                    "  \"value\": 3\n      },\n      {\n        \"color\": 10341991,\n        \"value\": 4\n    " +
-                    "  },\n      {\n        \"color\": 7053374,\n        \"value\": 5\n      },\n      {\n     " +
-                    "   \"color\": 3828517,\n        \"value\": 6\n      },\n      {\n        \"color\": 161748" +
-                    "03,\n        \"value\": 7\n      },\n      {\n        \"color\": 13990524,\n        \"valu" +
-                    "e\": 8\n      }\n    ],\n    \"aboveLastColor\": 12660791,\n    \"belowFirstColor\": null" +
-                    "\n  },\n  \"passCountSummaryPalette\": {\n    \"aboveTargetColor\": 13959168,\n    \"onTa" +
-                    "rgetColor\": 9159498,\n    \"belowTargetColor\": 87963\n  },\n  \"cutFillPalette\": {\n  " +
-                    "  \"colorValues\": [\n      {\n        \"color\": 11789820,\n        \"value\": -0.2\n    " +
-                    "  },\n      {\n        \"color\": 236517,\n        \"value\": -0.1\n      },\n      {\n   " +
-                    "     \"color\": 87963,\n        \"value\": -0.05\n      },\n      {\n        \"color\": 91" +
-                    "59498,\n        \"value\": 0\n      },\n      {\n        \"color\": 16764370,\n        \"v" +
-                    "alue\": 0.05\n      },\n      {\n        \"color\": 15037299,\n        \"value\": 0.1\n   " +
-                    "   },\n      {\n        \"color\": 13959168,\n        \"value\": 0.2\n      }\n    ],\n   " +
-                    " \"aboveLastColor\": null,\n    \"belowFirstColor\": null\n  },\n  \"temperatureSummaryP" +
-                    "alette\": {\n    \"aboveTargetColor\": 13959168,\n    \"onTargetColor\": 9159498,\n    \"" +
-                    "belowTargetColor\": 87963\n  },\n  \"cmvSummaryPalette\": {\n    \"aboveTargetColor\": 1" +
-                    "3959168,\n    \"onTargetColor\": 9159498,\n    \"belowTargetColor\": 87963\n  },\n  \"mdp" +
-                    "SummaryPalette\": {\n    \"aboveTargetColor\": 13959168,\n    \"onTargetColor\": 915949" +
-                    "8,\n    \"belowTargetColor\": 87963\n  },\n  \"cmvPercentChangePalette\": {\n    \"colorV" +
-                    "alues\": [\n      {\n        \"color\": 9159498,\n        \"value\": 5\n      },\n      {\n" +
-                    "        \"color\": 16764370,\n        \"value\": 20\n      },\n      {\n        \"color\":" +
-                    " 15037299,\n        \"value\": 50\n      }\n    ],\n    \"aboveLastColor\": 13959168,\n  " +
-                    "  \"belowFirstColor\": 33554431\n  },\n  \"speedSummaryPalette\": {\n    \"aboveTargetCo" +
-                    "lor\": 13959168,\n    \"onTargetColor\": 9159498,\n    \"belowTargetColor\": 87963\n  }," +
-                    "\n  \"temperatureDetailPalette\": {\n    \"colorValues\": [\n      {\n        \"color\": 2" +
-                    "971523,\n        \"value\": 70\n      },\n      {\n        \"color\": 4430812,\n        \"" +
-                    "value\": 80\n      },\n      {\n        \"color\": 12509169,\n        \"value\": 90\n     " +
-                    " },\n      {\n        \"color\": 14479047,\n        \"value\": 100\n      },\n      {\n   " +
-                    "     \"color\": 10341991,\n        \"value\": 110\n      },\n      {\n        \"color\": 7" +
-                    "053374,\n        \"value\": 120\n      },\n      {\n        \"color\": 3828517,\n        " +
-                    "\"value\": 130\n      },\n      {\n        \"color\": 16174803,\n        \"value\": 140\n  " +
-                    "    },\n      {\n        \"color\": 13990524,\n        \"value\": 150\n      },\n      {\n" +
-                    "        \"color\": 12660791,\n        \"value\": 160\n      }\n    ],\n    \"aboveLastCol" +
-                    "or\": null,\n    \"belowFirstColor\": null\n  },\n  \"Code\": 0,\n  \"Message\": \"success\"\n" +
-                    "}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
+            this.CompactionGetPalettes("", "ff91dd40-1569-4765-a2bc-014321f76ace", "GoodRequest_Palettes", ((string[])(null)));
         }
     }
 }

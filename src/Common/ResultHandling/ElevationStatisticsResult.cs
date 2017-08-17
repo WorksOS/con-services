@@ -2,7 +2,7 @@
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
   /// <summary>
   /// Represents result returned by levation Statistics request

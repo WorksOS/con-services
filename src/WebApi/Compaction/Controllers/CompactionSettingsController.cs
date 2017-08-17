@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {

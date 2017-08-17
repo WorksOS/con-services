@@ -153,8 +153,8 @@ namespace VSS.Productivity3D.Common.Models
     [JsonProperty(PropertyName = "layerType", Required = Required.Default)]
     public FilterLayerMethod? layerType { get; private set; }
 
-    /// <summary>
-    /// The design or alignment file in the project that is to be used as a spatial filter when the filter layer method is OffsetFromDesign or OffsetFromProfile.
+    /// <summary>The design or alignment file in the project that is to be used as a spatial filter when the filter layer method is OffsetFromDesign or OffsetFromProfile.
+    /// 
     /// </summary>
     [JsonProperty(PropertyName = "designOrAlignmentFile", Required = Required.Default)]
     public DesignDescriptor designOrAlignmentFile { get; private set; }

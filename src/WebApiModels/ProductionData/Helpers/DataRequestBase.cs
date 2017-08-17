@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 

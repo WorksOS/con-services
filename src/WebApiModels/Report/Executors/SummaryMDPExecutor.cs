@@ -3,9 +3,11 @@ using SVOICFilterSettings;
 using System;
 using System.Net;
 using VLPDDecls;
+using VSS.ConfigurationStore;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
@@ -38,8 +40,18 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       try
       {
         MDPRequest request = item as MDPRequest;
+
+        if (request == null)
+        {
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+              "Undefined requested data MDPRequest"));
+        }
+
+        string fileSpaceName = FileDescriptor.GetFileSpaceId(configStore, log);
+
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
-            request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
+            request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds, fileSpaceName);
         bool success = raptorClient.GetMDPSummary(request.projectId ?? -1,
                             ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtMDPSummary),
                             ConvertSettings(request.mdpSettings),

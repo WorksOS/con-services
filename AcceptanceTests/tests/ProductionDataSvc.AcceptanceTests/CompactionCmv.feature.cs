@@ -68,169 +68,133 @@ namespace ProductionDataSvc.AcceptanceTests
             testRunner.CollectScenarioErrors();
         }
         
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        public virtual void CompactionGetCMVSummary()
+        public virtual void CompactionGetCMVSummary_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Summary", ((string[])(null)));
-#line 4
-this.ScenarioSetup(scenarioInfo);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Summary - No Design Filter", exampleTags);
 #line 5
-testRunner.Given("the Compaction CMV Summary service URI \"/api/v2/compaction/cmv/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 6
-testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/cmv/summary\" for operation \"CMVSum" +
+                    "mary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
-testRunner.When("I request CMV summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+  testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
-testRunner.Then("the CMV summary result should be", @"{
-""cmvSummaryData"": {
-""percentEqualsTarget"": 0.12620950778291964,
-""percentGreaterThanTarget"": 0,
-""percentLessThanTarget"": 99.873790492217083,
-""totalAreaCoveredSqMeters"": 549.56240000000014,
-""cmvTarget"": {
-    ""cmvMachineTarget"": 70.0,
-    ""targetVaries"": false
-},
-""minCMVPercent"": 80,
-""maxCMVPercent"": 130
-},
-""Code"": 0,
-""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 9
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 10
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Details")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        public virtual void CompactionGetCMVDetails()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_Summary")]
+        public virtual void CompactionGetCMVSummary_NoDesignFilter_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Details", ((string[])(null)));
-#line 28
+            this.CompactionGetCMVSummary_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter_Summary", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary - No Design Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ProjectSettings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "ProjectSettings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "3335311a-f0e2-4dbe-8acd-f21135bafee4")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_Summary_PS")]
+        public virtual void CompactionGetCMVSummary_NoDesignFilter_ProjectSettings()
+        {
+            this.CompactionGetCMVSummary_NoDesignFilter("ProjectSettings", "3335311a-f0e2-4dbe-8acd-f21135bafee4", "NoDesignFilter_Summary_PS", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetCMVDetails_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Details - No Design Filter", exampleTags);
+#line 17
 this.ScenarioSetup(scenarioInfo);
+#line 18
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/cmv/details\" for operation \"CMVDet" +
+                    "ails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 19
+  testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 20
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 21
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 22
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Details - No Design Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_Details")]
+        public virtual void CompactionGetCMVDetails_NoDesignFilter_()
+        {
+            this.CompactionGetCMVDetails_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter_Details", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Details - No Design Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ProjectSettings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "ProjectSettings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "3335311a-f0e2-4dbe-8acd-f21135bafee4")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_Details_PS")]
+        public virtual void CompactionGetCMVDetails_NoDesignFilter_ProjectSettings()
+        {
+            this.CompactionGetCMVDetails_NoDesignFilter("ProjectSettings", "3335311a-f0e2-4dbe-8acd-f21135bafee4", "NoDesignFilter_Details_PS", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetCMVChangeSummary_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV % Change Summary - No Design Filter", exampleTags);
 #line 29
-testRunner.Given("the Compaction CMV Details service URI \"/api/v2/compaction/cmv/details\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 30
-testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/cmv/percentchange\" for operation \"" +
+                    "CMVPercentChangeSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 31
-testRunner.When("I request CMV details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+  testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 32
-testRunner.Then("the CMV details result should be", "{\r\n\t\"percents\": [\r\n0.0,\r\n100.0,\r\n0.0,\r\n0.0,\r\n0.0\r\n],\r\n\t\"Code\": 0,\r\n\t\"Message\": \"s" +
-                    "uccess\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 33
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 34
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        public virtual void CompactionGetCMVChangeSummary()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_PercentChange")]
+        public virtual void CompactionGetCMVChangeSummary_NoDesignFilter_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV % Change Summary", ((string[])(null)));
-#line 47
-this.ScenarioSetup(scenarioInfo);
-#line 48
-testRunner.Given("the Compaction CMV % Change Summary service URI \"/api/v2/compaction/cmv/percentch" +
-                    "ange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 49
-testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 50
-testRunner.When("I request CMV % change", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 51
-testRunner.Then("the CMV % Change result should be", "{\r\n\"cmvChangeData\": {\r\n    \"percents\": [\r\n    4.9875827814569531,\r\n    12.6034768" +
-                    "21192054,\r\n    20.695364238410598,\r\n    61.7135761589404\r\n    ],\r\n    \"totalArea" +
-                    "CoveredSqMeters\": 558.57920000000013\r\n},\r\n\"Code\": 0,\r\n\"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
+            this.CompactionGetCMVChangeSummary_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter_PercentChange", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary with project settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        public virtual void CompactionGetCMVSummaryWithProjectSettings()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ProjectSettings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "ProjectSettings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "3335311a-f0e2-4dbe-8acd-f21135bafee4")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_PercentChange_PS")]
+        public virtual void CompactionGetCMVChangeSummary_NoDesignFilter_ProjectSettings()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Summary with project settings", ((string[])(null)));
-#line 68
-this.ScenarioSetup(scenarioInfo);
-#line 69
-testRunner.Given("the Compaction CMV Summary service URI \"/api/v2/compaction/cmv/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 70
-testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 71
-testRunner.When("I request CMV summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 72
-testRunner.Then("the CMV summary result should be", @"{
-  ""cmvSummaryData"": {
-    ""percentEqualsTarget"": 23.264619267984855,
-    ""percentGreaterThanTarget"": 30.374421539755996,
-    ""percentLessThanTarget"": 46.360959192259152,
-    ""totalAreaCoveredSqMeters"": 549.56240000000014,
-    ""cmvTarget"": {
-      ""cmvMachineTarget"": 10.0,
-      ""targetVaries"": false
-    },
-    ""minCMVPercent"": 75.0,
-    ""maxCMVPercent"": 100.0
-  },
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Details with project settings")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        public virtual void CompactionGetCMVDetailsWithProjectSettings()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Details with project settings", ((string[])(null)));
-#line 92
-this.ScenarioSetup(scenarioInfo);
-#line 93
-testRunner.Given("the Compaction CMV Details service URI \"/api/v2/compaction/cmv/details\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 94
-testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 95
-testRunner.When("I request CMV details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 96
-testRunner.Then("the CMV details result should be", "{\r\n  \"Percents\": [\r\n    0.0,\r\n    68.321413546487165,\r\n    1.3041649137568363,\r\n " +
-                    "   30.374421539755996,\r\n    0.0\r\n  ],\r\n  \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary with project settings")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        public virtual void CompactionGetCMVChangeSummaryWithProjectSettings()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV % Change Summary with project settings", ((string[])(null)));
-#line 111
-this.ScenarioSetup(scenarioInfo);
-#line 112
-testRunner.Given("the Compaction CMV % Change Summary service URI \"/api/v2/compaction/cmv/percentch" +
-                    "ange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 113
-testRunner.And("a projectUid \"3335311a-f0e2-4dbe-8acd-f21135bafee4\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 114
-testRunner.When("I request CMV % change", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 115
-testRunner.Then("the CMV % Change result should be", "{\r\n  \"cmvChangeData\": {\r\n    \"percents\": [\r\n      4.9875827814569531,\r\n      12.6" +
-                    "03476821192054,\r\n      20.695364238410598,\r\n      61.7135761589404\r\n    ],\r\n    " +
-                    "\"totalAreaCoveredSqMeters\": 558.57920000000013\r\n  },\r\n  \"Code\": 0,\r\n  \"Message\":" +
-                    " \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
+            this.CompactionGetCMVChangeSummary_NoDesignFilter("ProjectSettings", "3335311a-f0e2-4dbe-8acd-f21135bafee4", "NoDesignFilter_PercentChange_PS", ((string[])(null)));
         }
     }
 }

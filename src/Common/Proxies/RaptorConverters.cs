@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BoundingExtents;
 using Fences;
+using ShineOn.Rtl;
 using SubGridTreesDecls;
 using SVOICDecls;
 using SVOICFiltersDecls;
@@ -411,11 +412,11 @@ namespace VSS.Productivity3D.Common.Proxies
     }
 
     public static TICFilterSettings ConvertFilter(long? filterID, Filter filter, long? projectid, DateTime? overrideStartUTC = null,
-        DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null)
+        DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null)
     {
       if (filter != null)
       {
-        return ConvertFilter(filter, overrideStartUTC, overrideEndUTC, overrideAssetIds);
+        return ConvertFilter(filter, overrideStartUTC, overrideEndUTC, overrideAssetIds, fileSpaceName);
       }
 
       if (filterID > 0)
@@ -440,7 +441,7 @@ namespace VSS.Productivity3D.Common.Proxies
     //TODO split this method
     //TODO think that this method coul be common as will be consumed by others
     //TODO test this
-    public static TICFilterSettings ConvertFilter(Filter pdf, DateTime? overrideStartUTC = null, DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null)
+    public static TICFilterSettings ConvertFilter(Filter pdf, DateTime? overrideStartUTC = null, DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null)
     {
       const double RADIANS_TO_DEGREES = 180.0 / Math.PI;
 
@@ -640,6 +641,17 @@ namespace VSS.Productivity3D.Common.Proxies
         {
           filter.SetPassTypeState(true);
           filter.PassTypeSelections = filter.PassTypeSelections.Set(TICPassType.ptWheel);
+        }
+
+        if (pdf.designOrAlignmentFile != null)
+        {
+          filter.DesignFilter = VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(
+            pdf.designOrAlignmentFile.id,
+            fileSpaceName,
+            pdf.designOrAlignmentFile.file.filespaceId,
+            pdf.designOrAlignmentFile.file.path,
+            pdf.designOrAlignmentFile.file.fileName,
+            pdf.designOrAlignmentFile.offset);
         }
       }
 

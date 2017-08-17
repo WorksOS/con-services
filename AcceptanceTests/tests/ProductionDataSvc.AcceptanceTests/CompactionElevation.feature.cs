@@ -31,7 +31,7 @@ namespace ProductionDataSvc.AcceptanceTests
         public static void FeatureSetup(Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContext)
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "CompactionElevation", "I should be able to request compaction elevation", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "CompactionElevation", "I should be able to request compaction elevation and project statistics", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -68,100 +68,101 @@ namespace ProductionDataSvc.AcceptanceTests
             testRunner.CollectScenarioErrors();
         }
         
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Range")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionElevation")]
-        public virtual void CompactionGetElevationRange()
+        public virtual void CompactionGetElevationRange_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Range", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Range - No Design Filter", exampleTags);
 #line 5
- this.ScenarioSetup(scenarioInfo);
+this.ScenarioSetup(scenarioInfo);
 #line 6
- testRunner.Given("the Compaction Elevation Range service URI \"/api/v2/compaction/elevationrange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationrange\" for operation \"Ele" +
+                    "vationRange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("the result file \"CompactionGetElevationAndProjectStatisticsDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
- testRunner.When("I request Elevation Range", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
- testRunner.Then("the Elevation Range result should be", @"{
-  ""boundingExtents"": {
-    ""maxX"": -115.01824137935459,
-    ""maxY"": 36.2077397408003,
-    ""maxZ"": 1e+308,
-    ""minX"": -115.02513694938636,
-    ""minY"": 36.206563325785218,
-    ""minZ"": 1e+308
-  },
-  ""minElevation"": 591.9539794921875,
-  ""maxElevation"": 624.0980224609375,
-  ""totalCoverageArea"": 10637.396400000001,
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 10
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Range With No Data")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Range - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionElevation")]
-        public virtual void CompactionGetElevationRangeWithNoData()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_ER")]
+        public virtual void CompactionGetElevationRange_NoDesignFilter_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Range With No Data", ((string[])(null)));
+            this.CompactionGetElevationRange_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter_ER", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetElevationRange_NoData(string requetsName, string projectUID, string startUTC, string endUTC, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Range - No Data", exampleTags);
+#line 15
+this.ScenarioSetup(scenarioInfo);
+#line 16
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationrange\" for operation \"Ele" +
+                    "vationRange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 17
+  testRunner.And("the result file \"CompactionGetElevationAndProjectStatisticsDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 18
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 19
+  testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startUTC, endUTC), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 20
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 21
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Range - No Data")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionElevation")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartUTC", "2017-01-01")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndUTC", "2017-01-01")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoData_ER")]
+        public virtual void CompactionGetElevationRange_NoData_()
+        {
+            this.CompactionGetElevationRange_NoData("", "ff91dd40-1569-4765-a2bc-014321f76ace", "2017-01-01", "2017-01-01", "NoData_ER", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetProjectStatistics_GoodRequest(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Project Statistics - Good Request", exampleTags);
+#line 27
+this.ScenarioSetup(scenarioInfo);
 #line 28
-  this.ScenarioSetup(scenarioInfo);
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/projectstatistics\" for operation \"" +
+                    "ProjectStatistics\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 29
- testRunner.Given("the Compaction Elevation Range service URI \"/api/v2/compaction/elevationrange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+  testRunner.And("the result file \"CompactionGetElevationAndProjectStatisticsDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 30
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 31
- testRunner.And("a startUtc \"2017-01-01\" and an EndUtc \"2017-01-01\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 32
- testRunner.When("I request Elevation Range", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 33
- testRunner.Then("the Elevation Range result should be", "{\r\n  \"boundingExtents\": null,\r\n  \"minElevation\": 0,\r\n  \"maxElevation\": 0,\r\n  \"tot" +
-                    "alCoverageArea\": 0,\r\n  \"Code\": -4,\r\n  \"Message\": \"No elevation range\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Project Statistics")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Project Statistics - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionElevation")]
-        public virtual void CompactionGetProjectStatistics()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GoodRequest_PRS")]
+        public virtual void CompactionGetProjectStatistics_GoodRequest_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Project Statistics", ((string[])(null)));
-#line 45
-  this.ScenarioSetup(scenarioInfo);
-#line 46
- testRunner.Given("the Compaction Project Statistics service URI \"/api/v2/compaction/projectstatisti" +
-                    "cs\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 47
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 48
- testRunner.When("I request Project Statistics", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 49
- testRunner.Then("the Project Statistics result should be", @"{
-  ""startTime"": ""2012-10-30T00:12:09.109"",
-  ""endTime"": ""2012-11-08T01:00:08.756"",
-  ""cellSize"": 0.34,
-  ""indexOriginOffset"": 536870912,
-  ""extents"": {
-    ""maxX"": 2913.2900000000004,
-    ""maxY"": 1250.69,
-    ""maxZ"": 624.1365966796875,
-    ""minX"": 2306.05,
-    ""minY"": 1125.2300000000002,
-    ""minZ"": 591.953857421875
-  },
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
+            this.CompactionGetProjectStatistics_GoodRequest("", "ff91dd40-1569-4765-a2bc-014321f76ace", "GoodRequest_PRS", ((string[])(null)));
         }
     }
 }
