@@ -40,7 +40,7 @@ To run tests from within Visual Studio against Raptor Services running in local 
 <#
 Here's the values for running tests from within Visual Studio against Raptor Services running locally (no containers)
 
-[Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../../tests/ProductionDataSvc.AcceptanceTests/TestData/", "Machine")
+[Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../../ProductionDataSvc.AcceptanceTests/TestData/", "Machine")
 [Environment]::SetEnvironmentVariable("COMPACTION_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI", ":5000", "Machine")
 [Environment]::SetEnvironmentVariable("REPORT_SVC_BASE_URI", ":5000", "Machine")
