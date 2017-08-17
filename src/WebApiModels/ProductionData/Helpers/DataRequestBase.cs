@@ -1,9 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
@@ -30,6 +36,52 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       Headers = headers;
       ProjectSettings = projectSettings;
       ExcludedIds = excludeIds;
+    }
+
+    protected DesignDescriptor GetDescriptor(Guid projectUid, Guid importedFileUid)
+    {
+      var fileList = FileListProxy.GetFiles(projectUid.ToString(), Headers).Result;
+
+      if (fileList.Count <= 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Project has no appropriate design files."));
+      }
+
+      var designFile = fileList.SingleOrDefault(
+        f => f.ImportedFileUid ==
+             importedFileUid.ToString() &&
+             f.IsActivated &&
+             f.ImportedFileType == ImportedFileType.DesignSurface);
+
+      if (designFile == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Unable to access design file."));
+      }
+
+      return DesignDescriptor.CreateDesignDescriptor(
+        designFile.LegacyFileId,
+        FileDescriptor.CreateFileDescriptor(GetFilespaceId(), designFile.Path, designFile.Name),
+        0);
+    }
+
+    /// <summary>
+    /// Gets the TCC filespaceId for the vldatastore filespace
+    /// </summary>
+    private string GetFilespaceId()
+    {
+      var filespaceId = ConfigurationStore.GetValueString("TCCFILESPACEID");
+      if (!string.IsNullOrEmpty(filespaceId))
+      {
+        return filespaceId;
+      }
+
+      const string errorString = "Your application is missing an environment variable TCCFILESPACEID";
+      Log.LogError(errorString);
+      throw new InvalidOperationException(errorString);
     }
   }
 }

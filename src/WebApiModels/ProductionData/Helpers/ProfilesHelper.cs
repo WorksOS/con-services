@@ -42,7 +42,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         
         if (packager.LatLongList != null) // For an alignment profile we return the lat long list to draw the profile line. slicer tool will just be a zero count
         {
-          //points = packager.LatLongList.ToList().ConvertAll<Flex.StationLLPoint>(delegate(TWGS84StationPoint p) { return new Flex.StationLLPoint {lat = p.Lat * 180 / Math.PI, lng = p.Lon * 180 / Math.PI }; });
           points = packager.LatLongList.ToList().ConvertAll(delegate (TWGS84StationPoint p)
           {
             return new StationLLPoint { station = p.Station, lat = p.Lat * 180 / Math.PI, lng = p.Lon * 180 / Math.PI };

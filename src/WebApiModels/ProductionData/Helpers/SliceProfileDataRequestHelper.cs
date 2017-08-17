@@ -1,9 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
-using System.Net;
-using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
@@ -11,7 +7,6 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Extensions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
@@ -56,56 +51,26 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       DesignDescriptor designDescriptor = null;
       if (cutfillDesignUid.HasValue)
       {
-        var fileList = FileListProxy.GetFiles(projectUid.ToString(), Headers).Result;
-
-        if (fileList.Count > 0)
-        {
-          var designFile = fileList.SingleOrDefault(
-            f => f.ImportedFileUid == cutfillDesignUid.Value.ToString() &&
-            f.IsActivated &&
-            f.ImportedFileType == ImportedFileType.DesignSurface);
-
-          if (designFile != null)
-          {
-            designDescriptor = DesignDescriptor.CreateDesignDescriptor(designFile.LegacyFileId, FileDescriptor.CreateFileDescriptor(FileDescriptor.GetFileSpaceId(ConfigurationStore, Log), designFile.Path, designFile.Name), 0);
-          }
-          else
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                "Unable to access design file."));
-          }
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              "Project has no appropriate design files."));
-        }
+        designDescriptor = GetDescriptor(projectUid, cutfillDesignUid.Value);
       }
 
       var liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
       // callId is set to 'empty' because raptor will create and return a Guid if this is set to empty.
       // this would result in the acceptance tests failing to see the callID == in its equality test
-      return ProfileProductionDataRequest.CreateProfileProductionData(ProjectId, Guid.Empty, ProductionDataType.Height, filter, -1,
-        designDescriptor, null, llPoints, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false);
-    }
-
-    /// <summary>
-    /// Gets the TCC filespaceId for the vldatastore filespace
-    /// </summary>
-    private string GetFilespaceId()
-    {
-      var filespaceId = ConfigurationStore.GetValueString("TCCFILESPACEID");
-      if (!string.IsNullOrEmpty(filespaceId))
-      {
-        return filespaceId;
-      }
-
-      const string errorString = "Your application is missing an environment variable TCCFILESPACEID";
-      Log.LogError(errorString);
-      throw new InvalidOperationException(errorString);
+      return ProfileProductionDataRequest.CreateProfileProductionData(
+        ProjectId,
+        Guid.Empty,
+        ProductionDataType.Height,
+        filter,
+        -1,
+        designDescriptor,
+        null,
+        llPoints,
+        ValidationConstants.MIN_STATION,
+        ValidationConstants.MIN_STATION,
+        liftBuildSettings,
+        false);
     }
   }
 }

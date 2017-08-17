@@ -190,8 +190,6 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public MemoryStream GetDesignProfile(TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args Args)
     {
-      var tmp = client.GetDesignProfile(Args, out MemoryStream tmpStream);
-
       return client.GetDesignProfile(Args, out MemoryStream profile) == 1 ? profile : null;
     }
 

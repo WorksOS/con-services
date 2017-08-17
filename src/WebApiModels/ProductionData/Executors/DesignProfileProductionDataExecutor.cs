@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Net;
-using SVOICOptionsDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -32,15 +30,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         ValidationConstants.MAX_STATION,
         RaptorConverters.DesignDescriptor(request.alignmentDesign),
         RaptorConverters.EmptyDesignDescriptor,
-        null,
+        RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
         positionsAreGrid);
 
       var memoryStream = raptorClient.GetDesignProfile(designProfile);
 
-
       return memoryStream != null
         ? ProfilesHelper.convertProductionDataProfileResult(memoryStream, request.callId ?? Guid.NewGuid())
-        : null; // TODO: return appropriate result
+        : null;
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
