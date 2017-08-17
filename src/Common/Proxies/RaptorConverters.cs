@@ -652,6 +652,8 @@ namespace VSS.Productivity3D.Common.Proxies
             pdf.designOrAlignmentFile.file.path,
             pdf.designOrAlignmentFile.file.fileName,
             pdf.designOrAlignmentFile.offset);
+          
+          filter.SetDesignFilterMaskCellSelectionState(true);
         }
       }
 

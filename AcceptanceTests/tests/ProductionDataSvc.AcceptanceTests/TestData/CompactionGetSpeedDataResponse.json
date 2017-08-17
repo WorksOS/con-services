@@ -22,5 +22,29 @@
     },
     "Code": 0,
     "Message": "success"
+  },
+  "DesignOutside_Summary": {
+    "speedSummaryData": {
+      "percentEqualsTarget": 0,
+      "percentGreaterThanTarget": 0,
+      "percentLessThanTarget": 0,
+      "totalAreaCoveredSqMeters": 0,
+      "minTarget": 5,
+      "maxTarget": 10
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersepts_Summary": {
+    "speedSummaryData": {
+      "percentEqualsTarget": 1.7,
+      "percentGreaterThanTarget": 1.4,
+      "percentLessThanTarget": 96.8,
+      "totalAreaCoveredSqMeters": 72.9436,
+      "minTarget": 5,
+      "maxTarget": 10
+    },
+    "Code": 0,
+    "Message": "success"
   }
 }

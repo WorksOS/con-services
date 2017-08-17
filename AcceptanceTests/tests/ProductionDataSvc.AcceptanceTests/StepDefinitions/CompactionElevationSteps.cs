@@ -46,11 +46,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
     }
 
-    [Given(@"designUid ""(.*)""")]
-    public void GivenDesignUid(string designUid)
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
     {
       if (operation == "ElevationRange")
-        elevationRangeRequester.QueryString.Add("designUid", designUid);
+        elevationRangeRequester.QueryString.Add("filterUid", filterUid);
       else
         Assert.Fail(TEST_FAIL_MESSAGE);
     }

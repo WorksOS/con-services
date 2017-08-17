@@ -580,7 +580,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode,
         palette,
-        liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0,
+        liftSettings, RaptorConverters.VolumesType.None, 0, filter?.designOrAlignmentFile, filter, 0, null, 0,
         filter == null ? FilterLayerMethod.None : filter.layerType.Value,
         bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, false);
       tileRequest.Validate();

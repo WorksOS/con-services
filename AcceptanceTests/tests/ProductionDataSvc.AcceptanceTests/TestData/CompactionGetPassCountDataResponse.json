@@ -74,5 +74,81 @@
     },
     "Code": 0,
     "Message": "success"
+  },
+  "DesignOutside_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 0,
+      "percentGreaterThanTarget": 0,
+      "percentLessThanTarget": 0,
+      "totalAreaCoveredSqMeters": 0,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 0,
+        "maxPassCountMachineTarget": 0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersepts_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 1.5847860538827259,
+      "percentGreaterThanTarget": 3.8034865293185418,
+      "percentLessThanTarget": 94.611727416798729,
+      "totalAreaCoveredSqMeters": 72.9436,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 5,
+        "maxPassCountMachineTarget": 5,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside_Details": {
+    "passCountDetailsData": {
+      "percents": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "totalCoverageArea": 0,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 0,
+        "maxPassCountMachineTarget": 0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersepts_Details": {
+    "passCountDetailsData": {
+      "percents": [
+        10.45958795562599,
+        12.836767036450079,
+        44.849445324881138,
+        26.465927099841522,
+        1.5847860538827259,
+        3.3280507131537242,
+        0.47543581616481773,
+        0,
+        0
+      ],
+      "totalCoverageArea": 72.9436,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 5,
+        "maxPassCountMachineTarget": 5,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
   }
 }

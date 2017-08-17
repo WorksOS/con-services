@@ -33,12 +33,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
     }
 
-    [Given(@"designUid ""(.*)""")]
-    public void GivenDesignUid(string designUid)
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
     {
       switch (operation)
       {
-        case "SpeedSummary": speedSummaryRequester.QueryString.Add("designUid", designUid); break;
+        case "SpeedSummary": speedSummaryRequester.QueryString.Add("filterUid", filterUid); break;
         case "SpeedDetails": ScenarioContext.Current.Pending(); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
