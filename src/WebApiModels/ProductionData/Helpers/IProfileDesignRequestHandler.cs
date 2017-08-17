@@ -3,8 +3,8 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
-  public interface IProfileDesignRequestHandler
+  public interface IDesignProfileRequestHandler
   {
-    ProfileProductionDataRequest CreateDesignProfileResponse(Guid projectUid, double latRadians1, double lngRadians1, double latRadians2, double lngRadians2, Guid customerUid, Guid importedFileUid, Guid filterUid);
+    ProfileProductionDataRequest CreateDesignProfileRequest(Guid projectUid, double latRadians1, double lngRadians1, double latRadians2, double lngRadians2, Guid customerUid, Guid importedFileUid, Guid? filterUid);
   }
 }

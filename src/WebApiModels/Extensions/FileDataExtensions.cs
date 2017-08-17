@@ -13,7 +13,7 @@ namespace VSS.Productivity3D.WebApi.Models.Extensions
     /// </summary>
     /// <param name="fileData">The reciever object to validate <see cref="FileData.ImportedFileType"/> against.</param>
     /// <returns>Boolean value reflecting whether the input <see cref="ImportedFileType"/> is supported or not.</returns>
-    public static bool IsSupportedFileType(this FileData fileData)
+    public static bool IsProfileSupportedFileType(this FileData fileData)
     {
       switch (fileData.ImportedFileType)
       {

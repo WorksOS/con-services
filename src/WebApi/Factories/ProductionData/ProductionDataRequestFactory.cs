@@ -6,7 +6,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Factories.ProductionData
 {
@@ -34,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     public ProductionDataRequestFactory(ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
-      log = logger.CreateLogger<SliceProfileDataRequestHelper>();
+      log = logger.CreateLogger<CompositeCompositeProfileDataRequestHelper>();
       this.configStore = configStore;
       this.fileListProxy = fileListProxy;
       this.settingsManager = settingsManager;

@@ -38,7 +38,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       ExcludedIds = excludeIds;
     }
 
-    protected DesignDescriptor GetDescriptor(Guid projectUid, Guid importedFileUid)
+    protected DesignDescriptor 
+      GetDescriptor(Guid projectUid, Guid importedFileUid)
     {
       var fileList = FileListProxy.GetFiles(projectUid.ToString(), Headers).Result;
 
@@ -53,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         f => f.ImportedFileUid ==
              importedFileUid.ToString() &&
              f.IsActivated &&
-             f.IsSupportedFileType());
+             f.IsProfileSupportedFileType());
 
       if (designFile == null)
       {

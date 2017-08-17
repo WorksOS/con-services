@@ -14,22 +14,22 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
   /// The request representation for a linear or alignment based profile request for all thematic types other than summary volumes.
   /// Model represents a production data profile
   /// </summary>
-  public class SliceProfileDataRequestHelper : DataRequestBase, IProfileSliceRequestHandler
+  public class CompositeCompositeProfileDataRequestHelper : DataRequestBase, ICompositeProfileRequestHandler
   {
-    public SliceProfileDataRequestHelper()
+    public CompositeCompositeProfileDataRequestHelper()
     { }
 
-    public SliceProfileDataRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
+    public CompositeCompositeProfileDataRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
-      Log = logger.CreateLogger<SliceProfileDataRequestHelper>();
+      Log = logger.CreateLogger<CompositeCompositeProfileDataRequestHelper>();
       ConfigurationStore = configurationStore;
       FileListProxy = fileListProxy;
       SettingsManager = settingsManager;
     }
 
     /// <summary>
-    /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a Slicer profile.   
+    /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a composite slice profile.   
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="startLatDegrees"></param>
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <param name="cutfillDesignUid"></param>
     /// <param name="filterUid"></param>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public ProfileProductionDataRequest CreateSlicerProfileRequest(Guid projectUid,
+    public ProfileProductionDataRequest CreateCompositeProfileRequest(Guid projectUid,
       double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees,
       Guid? filterUid,Guid customerUid, Guid? cutfillDesignUid)
     {

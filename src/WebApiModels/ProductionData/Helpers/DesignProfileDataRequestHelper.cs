@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
   /// The request representation for a linear or alignment based profile request for all thematic types other than summary volumes.
   /// Model represents a production data profile
   /// </summary>
-  public class DesignProfileDataRequestHelper : DataRequestBase, IProfileDesignRequestHandler
+  public class DesignProfileDataRequestHelper : DataRequestBase, IDesignProfileRequestHandler
   {
     public DesignProfileDataRequestHelper()
     { }
@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     public DesignProfileDataRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
-      Log = logger.CreateLogger<SliceProfileDataRequestHelper>();
+      Log = logger.CreateLogger<CompositeCompositeProfileDataRequestHelper>();
       ConfigurationStore = configurationStore;
       FileListProxy = fileListProxy;
       SettingsManager = settingsManager;
@@ -33,10 +33,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     }
 
     /// <summary>
-    /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a Slicer profile.   
+    /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a design profile.   
     /// </summary>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public ProfileProductionDataRequest CreateDesignProfileResponse(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid importedFileUid, Guid filterUid)
+    public ProfileProductionDataRequest CreateDesignProfileRequest(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid importedFileUid, Guid? filterUid)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
 

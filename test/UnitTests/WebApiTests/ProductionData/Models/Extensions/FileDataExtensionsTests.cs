@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models.Extensions
     {
       var fileData = new FileData { ImportedFileType = importedFileType };
 
-      Assert.AreEqual(expectedResult, fileData.IsSupportedFileType());
+      Assert.AreEqual(expectedResult, fileData.IsProfileSupportedFileType());
     }
   }
 }
