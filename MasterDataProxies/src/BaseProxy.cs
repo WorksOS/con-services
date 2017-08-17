@@ -205,11 +205,16 @@ namespace VSS.MasterData.Proxies
       T cacheData;
       if (!cache.TryGetValue(cacheKey, out cacheData))
       {
+        log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
         var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
         cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, null, route);
         cache.Set(cacheKey, cacheData, opts);
         
+      }
+      else
+      {
+        log.LogDebug($"Found item for key {cacheKey} in cache");
       }
       return cacheData;
     }
@@ -336,6 +341,7 @@ namespace VSS.MasterData.Proxies
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
       }
       var cacheKey = GetCacheKey<T>(uid);
+      log.LogDebug($"Clearing item from cache: {cacheKey}");
       cache.Remove(cacheKey);
     }
   }
