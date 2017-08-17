@@ -134,7 +134,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles")]
     [HttpGet]
-    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+    //Turn off caching until settings caching problem resolved
+    //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetProductionDataTile(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -218,7 +219,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles/png")]
     [HttpGet]
-    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+    //Turn off caching until settings caching problem resolved
+    //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public async Task<FileResult> GetProductionDataTileRaw(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,

@@ -23,7 +23,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting color palettes for displaying Raptor production data
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  //Turn off caching until settings caching problem resolved
+  //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class CompactionPaletteController : BaseController
   {
     /// <summary>

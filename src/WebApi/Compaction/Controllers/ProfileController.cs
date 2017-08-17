@@ -12,16 +12,19 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
   /// <summary>
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  //Turn off caching until settings caching problem resolved
+  //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class ProfileController : BaseController
   {
     /// <summary>
@@ -75,7 +78,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="startLonDegrees">Start profileLine Lon</param>
     /// <param name="endLatDegrees">End profileLine Lat</param>
     /// <param name="endLonDegrees">End profileLine Lon</param>
-    /// <param name="filterUid">Filter Id</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="cutfillDesignUid">Design UID</param>
     /// <returns>
     /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
@@ -84,13 +87,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [NotLandFillProjectWithUIDVerifier]
     [Route("api/v2/profiles/productiondata/slicer")]
     [HttpGet]
-    public async Task<ProfileResult> GetProfileProductionDataSlicer(
+    public async Task<CompactionProfileResult> GetProfileProductionDataSlicer(
       [FromQuery] Guid projectUid,
       [FromQuery] double startLatDegrees,
       [FromQuery] double startLonDegrees,
       [FromQuery] double endLatDegrees,
       [FromQuery] double endLonDegrees,
-      [FromQuery] Guid filterUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutfillDesignUid
     )
     {
@@ -110,8 +113,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<ProfileProductionDataExecutor>(logger, raptorClient)
-          .Process(slicerProfileResult) as ProfileResult
+          .Build<CompactionProfileExecutor>(logger, raptorClient)
+          .Process(slicerProfileResult) as CompactionProfileResult
       );
     }
 
