@@ -1,17 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Dapper;
 using Hangfire;
+using Hangfire.Client;
 using Hangfire.MySql;
+using Hangfire.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
-using VSS.Productivity3D.Scheduler.WebAPI;
-using VSS.Productivity3D.Scheduler.WebAPI.Utilities;
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {
@@ -20,9 +24,13 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   /// </summary>
   public class Startup
   {
-    private const string loggerRepoName = "WebApi";
-    IServiceCollection serviceCollection;
-    private MySqlStorage storage = null;
+    private const string _loggerRepoName = "Scheduler";
+    private const int _schedulerFilterAgeDefaultDays = 28;
+    IServiceCollection _serviceCollection;
+    private MySqlStorage _storage = null;
+
+    private IConfigurationStore _configStore;
+    private ILogger _log;
 
     /// <summary>
     /// VSS.Productivity3D.Scheduler startup
@@ -35,7 +43,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
         .AddEnvironmentVariables();
      
-      env.ConfigureLog4Net("log4net.xml", loggerRepoName);
+      env.ConfigureLog4Net("log4net.xml", _loggerRepoName);
 
       Configuration = builder.Build();
     }
@@ -55,21 +63,25 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddMvc(); // for DI?
       services.AddLogging();
-
-      //Configure CORS
+      
+      //Configure CORS   todo needed?
       services.AddCors(options =>
       {
         options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
           .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
-            "X-VisionLink-CustomerUID", "X-VisionLink-UserUid", "X-Jwt-Assertion", "X-VisionLink-ClearCache")
+            "X-Jwt-Assertion", "X-VisionLink-ClearCache")
           .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
       });
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
 
-      var hangfireConnectionString = ConnectionUtils.GetConnectionString("Scheduler");
-      storage = new MySqlStorage(hangfireConnectionString,
+      /*** try here ***/
+      var hangfireConnectionString =
+        "server=localhost;port=3306;database=VSS-Productivity3D-Scheduler;userid=root;password=abc123;Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
+      //GetConnectionString(_configStore, _log, "_SCHEDULER");
+      _storage = new MySqlStorage(hangfireConnectionString,
         new MySqlStorageOptions
         {
           QueuePollInterval = TimeSpan.FromSeconds(15),
@@ -77,11 +89,13 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           CountersAggregateInterval = TimeSpan.FromMinutes(5),
           PrepareSchemaIfNecessary = true,
           DashboardJobListLimit = 50000,
-          TransactionTimeout = TimeSpan.FromMinutes(1),
+          TransactionTimeout = TimeSpan.FromMinutes(1)
         });
 
-      services.AddHangfire(x => x.UseStorage(storage));
-      serviceCollection = services;
+      services.AddHangfire(x => x.UseStorage(_storage));
+      /***/
+
+      _serviceCollection = services;
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -93,67 +107,160 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      serviceCollection.BuildServiceProvider();
-
+      _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
+      loggerFactory.AddLog4Net(_loggerRepoName);
 
-      app.UseHangfireDashboard();
+      _serviceCollection.BuildServiceProvider(); // serviceCollection must be built BEFORE HangfireServer is added to the appBuilder
+
+      //app.UseHangfireDashboard();
       app.UseHangfireServer();
+      
+      var build = _serviceCollection.BuildServiceProvider();
+      _configStore = build.GetRequiredService<IConfigurationStore>();
+      _log = (build.GetRequiredService<ILoggerFactory>()).CreateLogger<Startup>();
 
-      RecurringJob.AddOrUpdate(() => SomeJob(), Cron.Minutely);
-      RecurringJob.AddOrUpdate(() => DatabaseCleanupJob(), Cron.Minutely);
-
-
-      using (var server = new BackgroundJobServer(storage))
+      var ageInDaysToDelete = _schedulerFilterAgeDefaultDays;
+      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_FILTER_AGE_DAYS"), out ageInDaysToDelete))
       {
-        Console.WriteLine("Hangfire Server started. Press any key to exit...");
+        ageInDaysToDelete = _schedulerFilterAgeDefaultDays;
+        _log.LogDebug($"{ToString()}: SCHEDULER_FILTER_AGE_DAYS environment variable not available. Using default: {ageInDaysToDelete}.");
       }
 
-      //app.UseExceptionTrap();
-      app.UseCors("VSS");
-      app.UseMvc();
+      List<RecurringJobDto> recurringJobs = Hangfire.JobStorage.Current.GetConnection().GetRecurringJobs();
+      _log.LogDebug($"{DateTime.Now} {this.ToString()}. PreJobsetup count of existing recurring jobs {recurringJobs.Count()}");
+      //recurringJobs.ForEach(delegate(RecurringJobDto job) 
+      //{
+      //  RecurringJob.RemoveIfExists(job.Id);
+      //});
 
+      var LoggingTestJob = "LoggingTestJob";
+      var FilterCleanupJob = "FilterCleanupJob";
+
+      // the Filter DB environment variables will come with the 3dp/FilterService configuration
+      string filterDbConnectionString = GetConnectionString(_configStore, _log, "");
+      try
+      {
+        RecurringJob.RemoveIfExists(LoggingTestJob);
+        RecurringJob.AddOrUpdate(LoggingTestJob, () => SomeJob(/*_log,*/), Cron.Minutely);
+      }
+      catch (Exception ex)
+      {
+        //todo serviceException?
+        _log.LogError($"{DateTime.Now} {this.ToString()}. Unable to schedule recurring job SomeJob {ex.Message}");
+        throw;
+      }
+
+      try
+      {
+        // todo should we remove old, or just not Upsert new? (thinking something may be wrong with old job)
+        RecurringJob.RemoveIfExists(FilterCleanupJob);
+        RecurringJob.AddOrUpdate(FilterCleanupJob, () => DatabaseCleanupJob(/*_log,*/ filterDbConnectionString, ageInDaysToDelete), Cron.Minutely);
+      }
+      catch (Exception ex)
+      {
+        //todo serviceException?
+        _log.LogError($"{DateTime.Now} {this.ToString()}. Unable to schedule recurring job DatabaseCleanup {ex.Message}");
+        throw;
+      }
+
+      recurringJobs = Hangfire.JobStorage.Current.GetConnection().GetRecurringJobs();
+      _log.LogDebug($"{DateTime.Now} {this.ToString()}. PostJobSetup count of existing recurring jobs {recurringJobs.Count()}");
+
+      if (recurringJobs == null || recurringJobs.Count < 2)
+      {
+        _log.LogError($"{DateTime.Now} {this.ToString()}. Incomplete list of recurring jobs {recurringJobs.Count}");
+        throw new Exception("Incorrect # jobs");
+      }
     }
 
-
-    public void SomeJob()
+    public void SomeJob(/*[FromServices] ILogger log,*/ )
     {
+      //_log.LogError($"{DateTime.Now} {this.ToString()}: Recurring SomeJob completed successfully!");
       Console.WriteLine($"{DateTime.Now} {this.ToString()}: Recurring SomeJob completed successfully!");
     }
 
-    public void DatabaseCleanupJob()
+    public void DatabaseCleanupJob(/*[FromServices] ILogger log,*/ string filterDbConnectionString, int ageInDaysToDelete)
     {
+      var cutoffActionUtcToDelete = DateTime.UtcNow.AddDays(-ageInDaysToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
+      Console.WriteLine($"{DateTime.Now} {this.ToString()}.DatabaseCleanupJob(): cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
 
-      var dbConnection = ConnectionUtils.CreateFilterConnection();
-      var filter = new Filter()
+      MySqlConnection dbConnection;
+      try
       {
-        CustomerUid = Guid.NewGuid().ToString(),
-        UserUid = Guid.NewGuid().ToString(),
-        ProjectUid = Guid.NewGuid().ToString(),
-        FilterUid = Guid.NewGuid().ToString(),
-        Name = "shouldBeEmpty",
-        FilterJson = "theJsonString",
-        LastActionedUtc = DateTime.UtcNow
-      };
+        dbConnection =new MySqlConnection(filterDbConnectionString);
+        dbConnection.Open();
+      }
+      catch (Exception ex)
+      {
+        //todo serviceException?
+        Console.WriteLine($"{DateTime.Now} {this.ToString()}.DatabaseCleanupJob(): open filter DB exeception {ex.Message}");
+        throw;
+      }
 
-      const string insert =
-        @"INSERT Filter
-                 (fk_CustomerUid, fk_UserUID, fk_ProjectUID, FilterUID,
-                  Name, FilterJson, 
-                  IsDeleted, LastActionedUTC)
-            VALUES
-              (@CustomerUid, @UserUID, @ProjectUID, @FilterUID,  
-                  @Name, @FilterJson, 
-                  @IsDeleted, @LastActionedUTC)";
+      // todo create and use  Repo.DeleteFilterEvents(permanent)
+      var empty = "\"";
+      string delete = $"DELETE FROM Filter WHERE Name = {empty}{empty} AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
 
-      Console.WriteLine($"{DateTime.Now} {this.ToString()}: InsertString: {insert} filter: {JsonConvert.SerializeObject(filter)}");
+      int deletedCount = 0;
+      try
+      {
+        deletedCount = dbConnection.Execute(delete, cutoffActionUtcToDelete);
+      }
+      catch (Exception ex)
+      {
+        //todo serviceException?
+        Console.WriteLine($"{DateTime.Now} {this.ToString()}.DatabaseCleanupJob(): execute exeception {ex.Message}");
+        throw;
+      }
+      finally
+      {
+        dbConnection.Close(); // todo exception?
+      }
 
-      var insertedCount = dbConnection.Execute(insert, filter);
-
-      Console.WriteLine($"{DateTime.Now} {this.ToString()}: insertedCount: {insertedCount}");
+      Console.WriteLine($"{DateTime.Now} {this.ToString()}: cutoffActionUtcToDelete: {cutoffActionUtcToDelete} deletedCount: {deletedCount}");
     }
 
+    #region private
+    private string GetConnectionString([FromServices] IConfigurationStore configStore, [FromServices] ILogger log, string connectionType)
+    {
+      string serverName = configStore.GetValueString("MYSQL_SERVER_NAME" + connectionType);
+      string serverPort = configStore.GetValueString("MYSQL_PORT" + connectionType);
+      string serverDatabaseName = configStore.GetValueString("MYSQL_DATABASE_NAME" + connectionType);
+      string serverUserName = configStore.GetValueString("MYSQL_USERNAME" + connectionType);
+      string serverPassword = configStore.GetValueString("MYSQL_ROOT_PASSWORD" + connectionType);
+
+      if (serverName == null || serverPort == null || serverDatabaseName == null || serverUserName == null ||
+          serverPassword == null)
+      {
+        var errorString =
+          $"Your application is attempting to use the {connectionType} connectionType but is missing an environment variable. serverName {serverName} serverPort {serverPort} serverDatabaseName {serverDatabaseName} serverUserName {serverUserName} serverPassword {serverPassword}";
+        log.LogError(errorString);
+
+        throw new InvalidOperationException(errorString);
+      }
+
+      var connString =
+        "server=" + serverName +
+        ";port=" + serverPort +
+        ";database=" + serverDatabaseName +
+        ";userid=" + serverUserName +
+        ";password=" + serverPassword +
+        ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
+      log.LogTrace($"Connection string {connString} for connectionType: {connectionType}");
+
+      return connString;
+    }
+
+    //private MySqlConnection OpenDatabaseConnection([FromServices] IConfigurationStore configStore, [FromServices] ILogger<Startup> log, string connectionType)
+    //{
+    //  // todo exception?
+    //  var connection = new MySqlConnection(GetConnectionString(configStore, log, connectionType));
+    //  connection.Open();
+
+    //  return connection;
+    //}
+
+    #endregion private
   }
 }

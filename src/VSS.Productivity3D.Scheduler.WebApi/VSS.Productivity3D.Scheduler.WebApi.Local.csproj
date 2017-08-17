@@ -36,7 +36,7 @@
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
   </ItemGroup>
   
-  <ItemGroup>
+ <ItemGroup>
     <ProjectReference Include="..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
   </ItemGroup>
@@ -50,7 +50,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  
+
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">  
+    <ItemGroup>
+	  <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
+  </Target>
+
+  <!--doesn't seem to be required for background hangfire service - maybe fore dashboard?
   <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
     <PackageReference Include="Microsoft.Owin.Host.SystemWeb">
       <Version>3.1.0</Version>
@@ -62,12 +70,5 @@
       <Version>0.8.5</Version>
     </PackageReference>
   </ItemGroup>
-
-  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">  
-    <ItemGroup>
-	  <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
-    </ItemGroup>
-    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
-  </Target>
-  
+  -->
 </Project>

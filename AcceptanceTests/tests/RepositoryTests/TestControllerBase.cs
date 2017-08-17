@@ -4,12 +4,7 @@ using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace RepositoryTests
 {
@@ -17,7 +12,7 @@ namespace RepositoryTests
   {
     protected IServiceProvider serviceProvider;
     protected IConfigurationStore configStore;
-    protected FilterRepository filterRepo;
+    //protected FilterRepository filterRepo;
 
     public void SetupLogging()
     {
@@ -34,12 +29,12 @@ namespace RepositoryTests
         .AddLogging()
         .AddSingleton(loggerFactory)
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
-          .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
+          //.AddTransient<IRepository<IFilterEvent>, FilterRepository>()
           .AddMemoryCache() 
         .BuildServiceProvider();
 
       configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      filterRepo = serviceProvider.GetRequiredService<IRepository<IFilterEvent>>() as FilterRepository;
+      //filterRepo = serviceProvider.GetRequiredService<IRepository<IFilterEvent>>() as FilterRepository;
       Assert.IsNotNull(serviceProvider.GetService<ILoggerFactory>());
   
     }
