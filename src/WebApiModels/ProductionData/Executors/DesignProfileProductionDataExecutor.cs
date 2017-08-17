@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       var memoryStream = raptorClient.GetDesignProfile(designProfile);
 
       return memoryStream != null
-        ? ProfilesHelper.convertProductionDataProfileResult(memoryStream, request.callId ?? Guid.NewGuid())
+        ? ProfilesHelper.convertDesignProfileResult(memoryStream, request.callId ?? Guid.NewGuid())
         : null;
     }
 

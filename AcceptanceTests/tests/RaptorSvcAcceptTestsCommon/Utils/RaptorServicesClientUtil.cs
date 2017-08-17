@@ -418,7 +418,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
     #region Methods
     /// <summary>
-    /// Do an HTTP POST request - expecting success e.g. 200 OK.
+    /// Do an HTTP GET request - expecting success e.g. 200 OK.
     /// </summary>
     /// <param name="uri">URI of the service.</param>
     /// <param name="expectedHttpCode">Expected response HttpStatusCode - default to 200 OK.</param>
@@ -429,7 +429,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     }
 
     /// <summary>
-    /// Do an HTTP POST request - expecting success e.g. 200 OK.
+    /// Do an HTTP GET request - expecting success e.g. 200 OK.
     /// </summary>
     /// <param name="expectedHttpCode">Expected response HttpStatusCode.</param>
     /// <returns>Request response.</returns>
@@ -450,7 +450,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     }
 
     /// <summary>
-    /// Do an HTTP POST request - expecting failure e.g. 400 BadRequest.
+    /// Do an HTTP GET request - expecting failure e.g. 400 BadRequest.
     /// </summary>
     /// <param name="expectedHttpCode">Expected response HttpStatusCode.</param>
     /// <returns>Request response.</returns>

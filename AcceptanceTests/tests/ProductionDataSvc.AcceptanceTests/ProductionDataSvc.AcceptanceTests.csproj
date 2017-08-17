@@ -132,6 +132,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CompactionPassCount.feature</DependentUpon>
     </Compile>
+    <Compile Include="Models\ProfileV2Request.cs" />
     <Compile Include="CompactionSpeed.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -378,6 +379,7 @@
     <Compile Include="StepDefinitions\NotificationSteps.cs" />
     <Compile Include="StepDefinitions\PassCountDetailSteps.cs" />
     <Compile Include="StepDefinitions\PassCountSummarySteps.cs" />
+    <Compile Include="StepDefinitions\ProfileV2Steps.cs" />
     <Compile Include="StepDefinitions\ProjectSettingsSteps.cs" />
     <Compile Include="StepDefinitions\ProjectStatisticsSteps.cs" />
     <Compile Include="StepDefinitions\RaptorConfigSteps.cs" />
@@ -749,6 +751,7 @@
     <None Include="TestData\PassCountSummaryResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\Profiles\DesignProfileSummaryResponse.json" />
     <None Include="TestData\SummarySpeedRequest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
