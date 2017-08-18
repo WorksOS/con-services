@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "projectId", Required = Required.Default)]
-    [ValidProjectID]
+    [ValidProjectId]
     public long? projectId { get; set; }
 
     /// <summary>

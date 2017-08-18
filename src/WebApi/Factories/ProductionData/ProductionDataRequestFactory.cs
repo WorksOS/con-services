@@ -6,7 +6,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Factories.ProductionData
 {
@@ -16,25 +15,12 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
   public class ProductionDataRequestFactory : IProductionDataRequestFactory
   {
     private readonly ILogger log;
-
-    /// <summary>
-    /// Where to get environment variables, connection string etc. from
-    /// </summary>
     private readonly IConfigurationStore configStore;
-
-    /// <summary>
-    /// For getting list of imported files for a project
-    /// </summary>
     private readonly IFileListProxy fileListProxy;
-
-    /// <summary>
-    /// For getting compaction settings for a project
-    /// </summary>
     private readonly ICompactionSettingsManager settingsManager;
-
     private long _projectId;
-    private IDictionary<string, string> _headers;
-    private CompactionProjectSettings _projectSettings;
+    private IDictionary<string, string> headers;
+    private CompactionProjectSettings projectSettings;
     private List<long> _excludedIds;
 
     /// <summary>
@@ -47,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     public ProductionDataRequestFactory(ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
-      log = logger.CreateLogger<SliceProfileDataRequestHelper>();
+      log = logger.CreateLogger<CompositeCompositeProfileDataRequestHelper>();
       this.configStore = configStore;
       this.fileListProxy = fileListProxy;
       this.settingsManager = settingsManager;
@@ -63,13 +49,13 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, fileListProxy, settingsManager, _projectId, _projectSettings, _headers, _excludedIds);
+      obj.Initialize(log, configStore, fileListProxy, settingsManager, _projectId, projectSettings, headers, _excludedIds);
 
       return obj;
     }
 
     /// <summary>
-    /// 
+    /// Sets the ProjectID
     /// </summary>
     /// <param name="projectId"></param>
     public ProductionDataRequestFactory ProjectId(long projectId)
@@ -79,30 +65,29 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     }
 
     /// <summary>
-    /// 
+    /// Sets the collection of custom headers used on the service request.
     /// </summary>
     /// <param name="headers"></param>
     public ProductionDataRequestFactory Headers(IDictionary<string, string> headers)
     {
-      _headers = headers;
+      this.headers = headers;
       return this;
     }
 
     /// <summary>
-    /// 
+    /// Sets the compaction settings used for the project.
     /// </summary>
     /// <param name="projectSettings"></param>
     public ProductionDataRequestFactory ProjectSettings(CompactionProjectSettings projectSettings)
     {
-      _projectSettings = projectSettings;
+      this.projectSettings = projectSettings;
       return this;
     }
 
     /// <summary>
-    /// 
+    /// Sets the collection of excluded imported file IDs.
     /// </summary>
     /// <param name="excludedIds"></param>
-    /// <returns></returns>
     public ProductionDataRequestFactory ExcludedIds(List<long> excludedIds)
     {
       _excludedIds = excludedIds;

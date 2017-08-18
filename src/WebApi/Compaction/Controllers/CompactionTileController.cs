@@ -1,6 +1,8 @@
 ﻿using ASNodeDecls;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -9,8 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Net.Http.Headers;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -32,7 +32,6 @@ using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
-using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -135,7 +134,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles")]
     [HttpGet]
-    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+    //Turn off caching until settings caching problem resolved
+    //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetProductionDataTile(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -219,7 +219,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles/png")]
     [HttpGet]
-    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+    //Turn off caching until settings caching problem resolved
+    //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public async Task<FileResult> GetProductionDataTileRaw(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,

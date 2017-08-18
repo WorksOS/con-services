@@ -19,14 +19,14 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
   /// <summary>
   /// Controller for getting elevation data from Raptor
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+//Turn off caching until settings caching problem resolved
+//[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class CompactionElevationController : BaseController
   {
     /// <summary>

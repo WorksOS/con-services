@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
