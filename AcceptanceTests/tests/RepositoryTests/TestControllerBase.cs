@@ -14,7 +14,7 @@ namespace RepositoryTests
     protected IConfigurationStore configStore;
     //protected FilterRepository filterRepo;
 
-    public void SetupLogging()
+    public void SetupDI()
     {
       const string loggerRepoName = "UnitTestLogTest";
       var logPath = Directory.GetCurrentDirectory();

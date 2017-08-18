@@ -41,6 +41,10 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.Productivity3D.Scheduler.Common\VSS.Productivity3D.Scheduler.Common.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="Dockerfile;log4net.xml">

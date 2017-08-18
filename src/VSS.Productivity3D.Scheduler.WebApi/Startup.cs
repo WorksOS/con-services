@@ -16,6 +16,7 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {
@@ -129,16 +130,16 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       List<RecurringJobDto> recurringJobs = Hangfire.JobStorage.Current.GetConnection().GetRecurringJobs();
       _log.LogDebug($"{DateTime.Now} {this.ToString()}. PreJobsetup count of existing recurring jobs {recurringJobs.Count()}");
-      //recurringJobs.ForEach(delegate(RecurringJobDto job) 
-      //{
-      //  RecurringJob.RemoveIfExists(job.Id);
-      //});
+      recurringJobs.ForEach(delegate (RecurringJobDto job)
+      {
+        RecurringJob.RemoveIfExists(job.Id);
+      });
 
       var LoggingTestJob = "LoggingTestJob";
       var FilterCleanupJob = "FilterCleanupJob";
 
       // the Filter DB environment variables will come with the 3dp/FilterService configuration
-      string filterDbConnectionString = GetConnectionString(_configStore, _log, "");
+      string filterDbConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "");
       try
       {
         RecurringJob.RemoveIfExists(LoggingTestJob);
@@ -220,47 +221,5 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       Console.WriteLine($"{DateTime.Now} {this.ToString()}: cutoffActionUtcToDelete: {cutoffActionUtcToDelete} deletedCount: {deletedCount}");
     }
-
-    #region private
-    private string GetConnectionString([FromServices] IConfigurationStore configStore, [FromServices] ILogger log, string connectionType)
-    {
-      string serverName = configStore.GetValueString("MYSQL_SERVER_NAME" + connectionType);
-      string serverPort = configStore.GetValueString("MYSQL_PORT" + connectionType);
-      string serverDatabaseName = configStore.GetValueString("MYSQL_DATABASE_NAME" + connectionType);
-      string serverUserName = configStore.GetValueString("MYSQL_USERNAME" + connectionType);
-      string serverPassword = configStore.GetValueString("MYSQL_ROOT_PASSWORD" + connectionType);
-
-      if (serverName == null || serverPort == null || serverDatabaseName == null || serverUserName == null ||
-          serverPassword == null)
-      {
-        var errorString =
-          $"Your application is attempting to use the {connectionType} connectionType but is missing an environment variable. serverName {serverName} serverPort {serverPort} serverDatabaseName {serverDatabaseName} serverUserName {serverUserName} serverPassword {serverPassword}";
-        log.LogError(errorString);
-
-        throw new InvalidOperationException(errorString);
-      }
-
-      var connString =
-        "server=" + serverName +
-        ";port=" + serverPort +
-        ";database=" + serverDatabaseName +
-        ";userid=" + serverUserName +
-        ";password=" + serverPassword +
-        ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
-      log.LogTrace($"Connection string {connString} for connectionType: {connectionType}");
-
-      return connString;
-    }
-
-    //private MySqlConnection OpenDatabaseConnection([FromServices] IConfigurationStore configStore, [FromServices] ILogger<Startup> log, string connectionType)
-    //{
-    //  // todo exception?
-    //  var connection = new MySqlConnection(GetConnectionString(configStore, log, connectionType));
-    //  connection.Open();
-
-    //  return connection;
-    //}
-
-    #endregion private
   }
 }
