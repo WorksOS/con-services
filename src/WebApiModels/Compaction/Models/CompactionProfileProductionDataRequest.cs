@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     public DesignDescriptor cutFillDesignDescriptor { get; private set; }
 
 
-    public static CompactionProfileProductionDataRequest CreateProfileProductionData(
+    public static CompactionProfileProductionDataRequest CreateCompactionProfileProductionDataRequest(
       long? projectID,
       Guid? callId,
       ProductionDataType profileType,

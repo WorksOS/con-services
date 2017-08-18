@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
       // callId is set to 'empty' because raptor will create and return a Guid if this is set to empty.
       // this would result in the acceptance tests failing to see the callID == in its equality test
-      return CompactionProfileProductionDataRequest.CreateProfileProductionData(ProjectId, Guid.Empty, ProductionDataType.Height, filter, -1,
+      return CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(ProjectId, Guid.Empty, ProductionDataType.Height, filter, -1,
         designDescriptor, null, llPoints, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false, designDescriptor);
     }
 

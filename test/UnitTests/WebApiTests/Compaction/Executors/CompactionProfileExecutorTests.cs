@@ -18,6 +18,7 @@ using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -53,8 +54,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Setup(x => x.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()))
         .Returns((MemoryStream)null);
 
-      var request = ProfileProductionDataRequest.CreateProfileProductionData(1234, Guid.Empty, ProductionDataType.Height, null, -1,
-        null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, null, false);
+      var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty, ProductionDataType.Height, null, -1,
+        null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, null, false, null);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionProfileExecutor>(logger, raptorClient.Object);
@@ -561,9 +562,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           .Setup(x => x.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()))
           .Returns(ms);
 
-        var request = ProfileProductionDataRequest.CreateProfileProductionData(1234, Guid.Empty,
+        var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty,
           ProductionDataType.Height, null, -1,
-          null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, null, false);
+          null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, null, false, null);
 
         var executor = RequestExecutorContainerFactory
           .Build<CompactionProfileExecutor>(logger, raptorClient.Object);
