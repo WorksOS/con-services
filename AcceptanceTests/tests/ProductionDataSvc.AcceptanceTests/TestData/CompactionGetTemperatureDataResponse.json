@@ -44,7 +44,7 @@
     "Code": 0,
     "Message": "success"
   },
-  "DesignIntersepts_Summary": {
+  "DesignIntersects_Summary": {
     "temperatureSummaryData": {
       "percentEqualsTarget": 0,
       "percentGreaterThanTarget": 0,

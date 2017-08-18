@@ -9,7 +9,7 @@ Scenario Outline: Compaction Get MDP Summary - No Design Filter
 	When I request result
   Then the result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequetsName     | ProjectUID                           | ResultName        |
+	| RequestName     | ProjectUID                           | ResultName        |
 	|                 | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter    |
   | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_PS |
 
@@ -22,6 +22,6 @@ Scenario Outline: Compaction Get MDP Summary
 	When I request result
 	Then the result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequetsName      | ProjectUID                           | FilterUID                            | ResultName       |
+	| RequestName      | ProjectUID                           | FilterUID                            | ResultName       |
 	| DesignOutside    | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 3d9086f2-3c04-4d92-9141-5134932b1523 | DesignOutside    |
-  | DesignIntersepts | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 81422acc-9b0c-401c-9987-0aedbf153f1d | DesignIntersepts |
+  | DesignIntersects | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 81422acc-9b0c-401c-9987-0aedbf153f1d | DesignIntersects |

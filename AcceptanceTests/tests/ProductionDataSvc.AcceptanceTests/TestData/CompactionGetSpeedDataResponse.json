@@ -35,7 +35,7 @@
     "Code": 0,
     "Message": "success"
   },
-  "DesignIntersepts_Summary": {
+  "DesignIntersects_Summary": {
     "speedSummaryData": {
       "percentEqualsTarget": 1.7,
       "percentGreaterThanTarget": 1.4,

@@ -90,7 +90,7 @@
     "Code": 0,
     "Message": "success"
   },
-  "DesignIntersepts_Summary": {
+  "DesignIntersects_Summary": {
     "passCountSummaryData": {
       "percentEqualsTarget": 1.5847860538827259,
       "percentGreaterThanTarget": 3.8034865293185418,
@@ -128,7 +128,7 @@
     "Code": 0,
     "Message": "success"
   },
-  "DesignIntersepts_Details": {
+  "DesignIntersects_Details": {
     "passCountDetailsData": {
       "percents": [
         10.45958795562599,

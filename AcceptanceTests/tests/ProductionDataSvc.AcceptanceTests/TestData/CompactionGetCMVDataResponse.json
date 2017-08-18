@@ -52,7 +52,7 @@
     "Code": 0,
     "Message": "success"
   },
-  "DesignIntersepts_PercentChangeSummary": {
+  "DesignIntersects_PercentChangeSummary": {
     "cmvChangeData": {
       "percents": [
         8.8235294117647065,
@@ -76,7 +76,7 @@
     "Code": 0,
     "Message": "success"
   },
-  "DesignIntersepts_Details": {
+  "DesignIntersects_Details": {
     "percents": [
       0,
       100,
@@ -119,7 +119,7 @@
     "Code": 0,
     "Message": "success"
   },
-  "DesignIntersepts_Summary": {
+  "DesignIntersects_Summary": {
     "cmvSummaryData": {
       "percentEqualsTarget": 0,
       "percentGreaterThanTarget": 0,

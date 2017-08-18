@@ -9,7 +9,7 @@ Scenario Outline: Compaction Get Elevation Palette - No Design Filter
 	When I request result
   Then the result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequetsName | ProjectUID                           | ResultName        |
+	| RequestName | ProjectUID                           | ResultName        |
 	|             | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_EP |
 
 Scenario Outline: Compaction Get Elevation Palette - No Data
@@ -20,7 +20,7 @@ Scenario Outline: Compaction Get Elevation Palette - No Data
 	When I request result
   Then the result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequetsName | ProjectUID                           | StartUTC   | EndUTC     | ResultName |
+	| RequestName | ProjectUID                           | StartUTC   | EndUTC     | ResultName |
 	|             | ff91dd40-1569-4765-a2bc-014321f76ace | 2017-01-01 | 2017-01-01 | NoData_EP  |
 
 ####################################################### Compaction Palettes #####################################################
@@ -31,7 +31,7 @@ Scenario Outline: Compaction Get Palettes
 	When I request result
   Then the result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequetsName | ProjectUID                           | ResultName           |
+	| RequestName | ProjectUID                           | ResultName           |
 	|             | ff91dd40-1569-4765-a2bc-014321f76ace | GoodRequest_Palettes |
 
 
