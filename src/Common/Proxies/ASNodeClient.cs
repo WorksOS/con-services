@@ -195,11 +195,6 @@ namespace VSS.Productivity3D.Common.Proxies
       return client.GetDesignProfile(Args, out MemoryStream profile) == 1 ? profile : null;
     }
 
-    public MemoryStream GetDesignProfile(TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args Args)
-    {
-      return client.GetDesignProfile(Args, out MemoryStream profile) == 1 ? profile : null;
-    }
-
     public MemoryStream GetSummaryVolumesProfile(TASNodeServiceRPCVerb_RequestSummaryVolumesProfile_Args Args)
     {
       return client.GetSummaryVolumesProfile(Args, out MemoryStream profile) == 1 ? profile : null;

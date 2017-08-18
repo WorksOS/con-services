@@ -137,8 +137,6 @@ namespace VSS.Productivity3D.Common.Interfaces
     MemoryStream GetSummaryVolumesAlignmentProfile(
       TASNodeServiceRPCVerb_RequestSummaryVolumesAlignmentProfile_Args Args);
 
-    MemoryStream GetDesignProfile(TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args Args);
-
     /// <summary>
     /// Gets the onmachine designs.
     /// </summary>

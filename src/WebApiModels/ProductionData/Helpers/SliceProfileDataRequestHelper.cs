@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <param name="cutfillDesignUid"></param>
     /// <param name="filterUid"></param>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public ProfileProductionDataRequest CreateCompositeProfileRequest(Guid projectUid,
+    public CompactionProfileProductionDataRequest CreateCompositeProfileRequest(Guid projectUid,
       double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees,
       Guid? filterUid,Guid customerUid, Guid? cutfillDesignUid)
     {
@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
       // callId is set to 'empty' because raptor will create and return a Guid if this is set to empty.
       // this would result in the acceptance tests failing to see the callID == in its equality test
-      return ProfileProductionDataRequest.CreateProfileProductionData(
+      return CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(
         ProjectId,
         Guid.Empty,
         ProductionDataType.Height,
@@ -72,7 +72,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         ValidationConstants.MIN_STATION,
         ValidationConstants.MIN_STATION,
         liftBuildSettings,
-        false);
+        false,
+        designDescriptor);
     }
   }
 }
