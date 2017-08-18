@@ -1,10 +1,10 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICProfileCell;
+using System;
+using System.IO;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;

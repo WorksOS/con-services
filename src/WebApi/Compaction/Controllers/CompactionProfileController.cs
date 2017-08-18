@@ -15,7 +15,6 @@ using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
-using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -122,7 +121,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [NotLandFillProjectWithUIDVerifier]
     [Route("api/v2/profiles/design")]
     [HttpGet]
-    public async Task<ProfileResult> GetProfileProductionDataDesign(
+    public async Task<CompactionProfileResult> GetProfileProductionDataDesign(
       [FromQuery] Guid projectUid,
       [FromQuery] double startLatDegrees,
       [FromQuery] double startLonDegrees,
@@ -149,7 +148,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<DesignProfileProductionDataExecutor>(logger, raptorClient)
-          .Process(profileResult) as ProfileResult
+          .Process(profileResult) as CompactionProfileResult
       );
     }
   }
