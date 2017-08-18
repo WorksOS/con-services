@@ -12,6 +12,7 @@ using VSS.MasterData.Models.Utilities;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -32,11 +33,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       {
         MemoryStream memoryStream;
 
-        ProfileProductionDataRequest request = item as ProfileProductionDataRequest;
+        CompactionProfileProductionDataRequest request = item as CompactionProfileProductionDataRequest;
         var filter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
-        var designDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
-        var liftBuildSettings =
-          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic);
+        var designDescriptor = RaptorConverters.DesignDescriptor(request.cutFillDesignDescriptor);
+        var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
+        var liftBuildSettings = RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic);
         if (!RaptorConverters.DesignDescriptor(request.alignmentDesign).IsNull())
         {
           ASNode.RequestAlignmentProfile.RPC.TASNodeServiceRPCVerb_RequestAlignmentProfile_Args args
@@ -45,7 +46,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
               -1, // don't care
               request.startStation ?? ValidationConstants.MIN_STATION,
               request.endStation ?? ValidationConstants.MIN_STATION,
-              designDescriptor,
+              alignmentDescriptor,
               filter,
               liftBuildSettings,
               designDescriptor,
@@ -136,7 +137,16 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         bool noTemperatureValue = currCell.materialTemperature == NO_TEMPERATURE;
         bool noTemperatureElevation = currCell.materialTemperatureElev == NULL_SINGLE || noTemperatureValue;
         bool noPassCountValue = currCell.topLayerPassCount == NO_PASSCOUNT;
-        bool noSpeedValue = true;//TODO: *****
+
+        //TODO: ***** noSpeedValue, noSpeedElevation, speed
+        bool noSpeedValue = true;//currCell.speed == NO_SPEED;
+        bool noSpeedElevation = true; //currCell.speedElev == NULL_SINGLE || noSpeedValue;
+        var speed = 0;//noSpeedValue ? float.NaN : currCell.speed
+
+        var lastCompositeHeight = currCell.compositeLastPassHeight == NULL_SINGLE
+          ? float.NaN
+          : currCell.compositeLastPassHeight;
+        var designHeight = currCell.designHeight == NULL_SINGLE ? float.NaN : currCell.designHeight;
 
         var cmvPercent = noCCVValue
           ? float.NaN
@@ -145,8 +155,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         var mdpPercent = noMDPValue
           ? float.NaN
           : (float) currCell.MDP / (float) currCell.TargetMDP * 100.0F;
-
-        var speed = 0;//TODO: *****
 
         profile.cells.Add(new CompactionProfileCell
         {
@@ -159,8 +167,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           lastPassHeight = currCell.lastPassHeight == NULL_SINGLE ? float.NaN : currCell.lastPassHeight,
           lowestPassHeight = currCell.lowestPassHeight == NULL_SINGLE ? float.NaN : currCell.lowestPassHeight,
 
-          lastCompositeHeight = currCell.compositeLastPassHeight == NULL_SINGLE ? float.NaN : currCell.compositeLastPassHeight,
-          designHeight = currCell.designHeight == NULL_SINGLE ? float.NaN : currCell.designHeight,
+          lastCompositeHeight = lastCompositeHeight,
+          designHeight = designHeight,
+
+          cutFill = float.IsNaN(lastCompositeHeight) || float.IsNaN(designHeight) ? float.NaN : lastCompositeHeight - designHeight,
+          cutFillHeight = float.NaN,//will be set later using the cut-fill design
 
           cmvPercent = cmvPercent,
           cmvHeight = noCCElevation ? float.NaN : currCell.CCVElev,
@@ -177,8 +188,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
             (currCell.PrevCCV == NO_CCV ? 100.0f :
               (float)Math.Abs(currCell.CCV - currCell.PrevCCV) / (float)currCell.PrevCCV * 100.0f),
 
+          //TODO: ***** speed , speedHeight
           speed = speed,
-          //TODO: Do we need speedHeight ???
+          speedHeight = 0,//noSpeedElevation ? float.NaN : currCell.speedElev,
 
           passCountIndex = noPassCountValue ? CompactionProfileCell.ValueTargetType.NoData :
             (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? CompactionProfileCell.ValueTargetType.BelowTarget :

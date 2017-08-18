@@ -3,6 +3,8 @@ using System.IO;
 using ASNode.CMVChange.RPC;
 using ASNode.ElevationStatistics.RPC;
 using ASNode.ExportProductionDataCSV.RPC;
+using ASNode.RequestSummaryVolumesAlignmentProfile.RPC;
+using ASNode.RequestSummaryVolumesProfile.RPC;
 using ASNode.SpeedSummary.RPC;
 using ASNode.ThicknessSummary.RPC;
 using ASNode.UserPreferences;
@@ -11,6 +13,7 @@ using ASNodeDecls;
 using ASNodeRPC;
 using BoundingExtents;
 using DesignProfiler.ComputeDesignBoundary.RPC;
+using DesignProfiler.ComputeProfile.RPC;
 using DesignProfilerDecls;
 using ShineOn.Rtl;
 using SVOICDecls;
@@ -127,6 +130,12 @@ namespace VSS.Productivity3D.Common.Interfaces
     MemoryStream GetAlignmentProfile(ASNode.RequestAlignmentProfile.RPC.TASNodeServiceRPCVerb_RequestAlignmentProfile_Args Args);
 
     MemoryStream GetProfile(ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args Args);
+    MemoryStream GetDesignProfile(TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args Args);
+
+    MemoryStream GetSummaryVolumesProfile(TASNodeServiceRPCVerb_RequestSummaryVolumesProfile_Args Args);
+
+    MemoryStream GetSummaryVolumesAlignmentProfile(
+      TASNodeServiceRPCVerb_RequestSummaryVolumesAlignmentProfile_Args Args);
 
 
     /// <summary>

@@ -115,6 +115,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     public float speed;
 
     /// <summary>
+    /// Elevation of the cell pass that contributed the speed value.
+    /// </summary>
+    public float speedHeight;
+
+    /// <summary>
+    /// Cut-fill value in meters. Cut values are positive, fill values are negative, zero is on grade.
+    /// </summary>
+    public float cutFill;
+
+    /// <summary>
+    /// Elevation of the cell pass that contributed the cut-fill value.
+    /// </summary>
+    public float cutFillHeight;
+
+    /// <summary>
     /// The value in the pass count summary color palette to use for this cell. 
     /// </summary>
     public ValueTargetType passCountIndex;
@@ -164,6 +179,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       topLayerPassCount = cell.topLayerPassCount;
       cmvPercentChange = cell.cmvPercentChange;
       speed = cell.speed;
+      speedHeight = cell.speedHeight;
+      cutFill = cell.cutFill;
+      cutFillHeight = cell.cutFillHeight;
       passCountIndex = cell.passCountIndex;
       temperatureIndex = cell.temperatureIndex;
       cmvIndex = cell.cmvIndex;

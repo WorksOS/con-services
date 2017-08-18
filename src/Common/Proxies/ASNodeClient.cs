@@ -4,6 +4,8 @@ using System.Linq;
 using ASNode.CMVChange.RPC;
 using ASNode.ElevationStatistics.RPC;
 using ASNode.ExportProductionDataCSV.RPC;
+using ASNode.RequestSummaryVolumesAlignmentProfile.RPC;
+using ASNode.RequestSummaryVolumesProfile.RPC;
 using ASNode.SpeedSummary.RPC;
 using ASNode.ThicknessSummary.RPC;
 using ASNode.UserPreferences;
@@ -12,6 +14,7 @@ using ASNodeDecls;
 using ASNodeRPC;
 using BoundingExtents;
 using DesignProfiler.ComputeDesignBoundary.RPC;
+using DesignProfiler.ComputeProfile.RPC;
 using DesignProfilerDecls;
 using ShineOn.Rtl;
 using SubGridTreesDecls;
@@ -191,6 +194,21 @@ namespace VSS.Productivity3D.Common.Proxies
       MemoryStream profile = null;
 
       return client.GetProfile(Args, out profile) == 1/*icsrrNoError*/ ? profile : null;
+    }
+
+    public MemoryStream GetDesignProfile(TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args Args)
+    {
+      return client.GetDesignProfile(Args, out MemoryStream profile) == 1 ? profile : null;
+    }
+
+    public MemoryStream GetSummaryVolumesProfile(TASNodeServiceRPCVerb_RequestSummaryVolumesProfile_Args Args)
+    {
+      return client.GetSummaryVolumesProfile(Args, out MemoryStream profile) == 1 ? profile : null;
+    }
+
+    public MemoryStream GetSummaryVolumesAlignmentProfile(TASNodeServiceRPCVerb_RequestSummaryVolumesAlignmentProfile_Args Args)
+    {
+      return client.GetSummaryVolumesAlignmentProfile(Args, out MemoryStream profile) == 1 ? profile : null;
     }
 
     public TDesignName[] GetOnMachineDesigns(long DataModelID)
