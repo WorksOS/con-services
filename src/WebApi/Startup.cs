@@ -68,7 +68,8 @@ namespace VSS.Productivity3D.WebApi
       });
       // Add framework services.
       services.AddMemoryCache();
-      services.AddCustomResponseCaching();
+      //Turn off caching until settings caching problem resolved
+      //services.AddCustomResponseCaching();
       services.AddMvc(
           config =>
           {
