@@ -136,6 +136,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     //Turn off caching until settings caching problem resolved
     //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<TileResult> GetProductionDataTile(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -221,6 +222,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     //Turn off caching until settings caching problem resolved
     //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<FileResult> GetProductionDataTileRaw(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
