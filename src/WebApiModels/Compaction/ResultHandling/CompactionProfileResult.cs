@@ -6,7 +6,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
   /// <summary>
   /// Represents result returned by Profile slicer request for compaction.
   /// </summary>
-  public class CompactionProfileResult : ContractExecutionResult
+  public class CompactionProfileResult<T> : ContractExecutionResult where T : ProfileResultBase
   {
     /// <summary>
     /// The grid distance between the two profile end points. For straight line profiles this is the geomtric plane distance between the points. 
@@ -15,8 +15,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     public double gridDistanceBetweenProfilePoints;
 
     /// <summary>
-    /// The collection of cells produced by the query. Cells are ordered by increasing station value along the line or alignment.
+    /// The collection of vertices produced by the query. Cells are ordered by increasing station value along the line or alignment.
     /// </summary>
-    public List<CompactionProfileCell> cells;
+    public List<T> cells;
   }
 }

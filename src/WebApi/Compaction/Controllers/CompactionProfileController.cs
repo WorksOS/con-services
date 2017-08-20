@@ -87,15 +87,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [NotLandFillProjectWithUIDVerifier]
     [Route("api/v2/profiles/productiondata/slicer")]
     [HttpGet]
-    public async Task<CompactionProfileResult> GetProfileProductionDataSlicer(
+    public async Task<CompactionProfileResult<CompactionProfileCell>> GetProfileProductionDataSlicer(
       [FromQuery] Guid projectUid,
       [FromQuery] double startLatDegrees,
       [FromQuery] double startLonDegrees,
       [FromQuery] double endLatDegrees,
       [FromQuery] double endLonDegrees,
       [FromQuery] Guid? filterUid,
-      [FromQuery] Guid? cutfillDesignUid
-    )
+      [FromQuery] Guid? cutfillDesignUid)
     {
       log.LogInformation("GetProductionDataSlice: " + Request.QueryString);
       var projectId = GetProjectId(projectUid);
@@ -113,8 +112,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(logger, raptorClient)
-          .Process(slicerProfileResult) as CompactionProfileResult
+          .Build<CompactionProfileExecutor<CompactionProfileCell>>(logger, raptorClient)
+          .Process(slicerProfileResult) as CompactionProfileResult<CompactionProfileCell>
       );
     }
 
@@ -122,7 +121,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [NotLandFillProjectWithUIDVerifier]
     [Route("api/v2/profiles/design")]
     [HttpGet]
-    public async Task<CompactionDesignProfileResult> GetProfileProductionDataDesign(
+    public async Task<CompactionProfileResult<CompactionProfileVertex>> GetProfileProductionDataDesign(
       [FromQuery] Guid projectUid,
       [FromQuery] double startLatDegrees,
       [FromQuery] double startLonDegrees,
@@ -148,8 +147,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionDesignProfileExecutor>(logger, raptorClient)
-          .Process(profileResult) as CompactionDesignProfileResult
+          .Build<CompactionDesignProfileExecutor<CompactionProfileVertex>>(logger, raptorClient)
+          .Process(profileResult) as CompactionProfileResult<CompactionProfileVertex>
       );
     }
   }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net;
-using SVOICProfileCell;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -14,7 +11,6 @@ using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Velociraptor.PDSInterface;
 using VSS.Velociraptor.PDSInterface.DesignProfile;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
@@ -22,11 +18,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   /// <summary>
   /// Get production data profile calculations executor.
   /// </summary>
-  public class CompactionDesignProfileExecutor : RequestExecutorContainer
+  public class CompactionDesignProfileExecutor<T> : RequestExecutorContainer where T : ProfileResultBase
   {
-    private CompactionDesignProfileResult PerformProductionDataProfilePost(ProfileProductionDataRequest request)
+    private CompactionProfileResult<T> PerformProductionDataProfilePost(ProfileProductionDataRequest request)
     {
-      CompactionDesignProfileResult result;
+      CompactionProfileResult<T> result;
 
       try
       {
@@ -90,11 +86,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       return result;
     }
 
-    private CompactionDesignProfileResult ConvertProfileResult(MemoryStream ms)
+    private CompactionProfileResult<T> ConvertProfileResult(MemoryStream ms)
     {
       log.LogDebug("Converting profile result");
 
-      var profile = new CompactionDesignProfileResult();
+      var profile = new CompactionProfileResult<T>();
       var pdsiProfile = new DesignProfile();
       pdsiProfile.ReadFromStream(ms);
 

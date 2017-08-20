@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
   /// <summary>
   /// Get production data profile calculations executor.
   /// </summary>
-  public class CompactionProfileExecutor : RequestExecutorContainer
+  public class CompactionProfileExecutor<T> : RequestExecutorContainer where T : CompactionProfileCell
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -102,11 +102,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// <param name="ms">Memory stream of data from Raptor</param>
     /// <param name="liftBuildSettings">Lift build settings from project settings used in the Raptor profile calculations</param>
     /// <returns>The profile data</returns>
-    private CompactionProfileResult ConvertProfileResult(MemoryStream ms, LiftBuildSettings liftBuildSettings)
+    private CompactionProfileResult<CompactionProfileCell> ConvertProfileResult(MemoryStream ms, LiftBuildSettings liftBuildSettings)
     {
       log.LogDebug("Converting profile result");
 
-      var profile = new CompactionProfileResult();
+      var profile = new CompactionProfileResult<CompactionProfileCell>();
  
       PDSProfile pdsiProfile = new PDSProfile();
       TICProfileCellListPackager packager = new TICProfileCellListPackager();
@@ -151,7 +151,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
         profile.cells.Add(new CompactionProfileCell
         {
-          cellType = prevCell == null ? CompactionProfileCell.ProfileCellType.MidPoint : CompactionProfileCell.ProfileCellType.Edge,
+          cellType = prevCell == null ? ProfileCellType.MidPoint : ProfileCellType.Edge,
 
           station = currCell.station,
 
@@ -181,30 +181,30 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           speed = speed,
           //TODO: Do we need speedHeight ???
 
-          passCountIndex = noPassCountValue ? CompactionProfileCell.ValueTargetType.NoData :
-            (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? CompactionProfileCell.ValueTargetType.BelowTarget :
-              (currCell.topLayerPassCount > currCell.topLayerPassCountTargetRange.Max ? CompactionProfileCell.ValueTargetType.AboveTarget : 
-              CompactionProfileCell.ValueTargetType.OnTarget)),
+          passCountIndex = noPassCountValue ? ValueTargetType.NoData :
+            (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? ValueTargetType.BelowTarget :
+              (currCell.topLayerPassCount > currCell.topLayerPassCountTargetRange.Max ? ValueTargetType.AboveTarget : 
+              ValueTargetType.OnTarget)),
 
-          temperatureIndex = noTemperatureValue ? CompactionProfileCell.ValueTargetType.NoData :
-            (currCell.materialTemperature < currCell.materialTemperatureWarnMin ? CompactionProfileCell.ValueTargetType.BelowTarget :
-              (currCell.materialTemperature > currCell.materialTemperatureWarnMax ? CompactionProfileCell.ValueTargetType.AboveTarget : 
-              CompactionProfileCell.ValueTargetType.OnTarget)),
+          temperatureIndex = noTemperatureValue ? ValueTargetType.NoData :
+            (currCell.materialTemperature < currCell.materialTemperatureWarnMin ? ValueTargetType.BelowTarget :
+              (currCell.materialTemperature > currCell.materialTemperatureWarnMax ? ValueTargetType.AboveTarget : 
+              ValueTargetType.OnTarget)),
 
-          cmvIndex = noCCVValue ? CompactionProfileCell.ValueTargetType.NoData :
-            (cmvPercent < liftBuildSettings.cCVRange.min ? CompactionProfileCell.ValueTargetType.BelowTarget :
-              (cmvPercent > liftBuildSettings.cCVRange.max ? CompactionProfileCell.ValueTargetType.AboveTarget :
-                CompactionProfileCell.ValueTargetType.OnTarget)),
+          cmvIndex = noCCVValue ? ValueTargetType.NoData :
+            (cmvPercent < liftBuildSettings.cCVRange.min ? ValueTargetType.BelowTarget :
+              (cmvPercent > liftBuildSettings.cCVRange.max ? ValueTargetType.AboveTarget :
+                ValueTargetType.OnTarget)),
 
-          mdpIndex = noMDPValue ? CompactionProfileCell.ValueTargetType.NoData :
-            (mdpPercent < liftBuildSettings.mDPRange.min ? CompactionProfileCell.ValueTargetType.BelowTarget :
-              (mdpPercent > liftBuildSettings.mDPRange.max ? CompactionProfileCell.ValueTargetType.AboveTarget :
-                CompactionProfileCell.ValueTargetType.OnTarget)),
+          mdpIndex = noMDPValue ? ValueTargetType.NoData :
+            (mdpPercent < liftBuildSettings.mDPRange.min ? ValueTargetType.BelowTarget :
+              (mdpPercent > liftBuildSettings.mDPRange.max ? ValueTargetType.AboveTarget :
+                ValueTargetType.OnTarget)),
 
-          speedIndex = noSpeedValue ? CompactionProfileCell.ValueTargetType.NoData :
-            (speed < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? CompactionProfileCell.ValueTargetType.BelowTarget :
-              (speed > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? CompactionProfileCell.ValueTargetType.AboveTarget :
-                CompactionProfileCell.ValueTargetType.OnTarget)),
+          speedIndex = noSpeedValue ? ValueTargetType.NoData :
+            (speed < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
+              (speed > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
+                ValueTargetType.OnTarget)),
         });
 
         prevCell = currCell;
@@ -215,7 +215,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       {
         var lastCell = new CompactionProfileCell(profile.cells[profile.cells.Count - 1])
         {
-          cellType = CompactionProfileCell.ProfileCellType.MidPoint,
+          cellType = ProfileCellType.MidPoint,
           station = prevCell.station + prevCell.interceptLength
         };
 
@@ -241,22 +241,23 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// </summary>
     /// <param name="profileResult">The profile containing the list of cell edge points from Raptor</param>
     /// <returns>The complete list of interspersed edges and  mid points.</returns>
-    private void AddMidPoints(CompactionProfileResult profileResult)
+    private void AddMidPoints(CompactionProfileResult<CompactionProfileCell> profileResult)
     {
       log.LogDebug("Adding midpoints");
       if (profileResult.cells.Count > 3)
       {
         //No mid point for first and last segments since only partial across the cell.
         //We have already added them as mid points.
-        List<CompactionProfileCell> cells = new List<CompactionProfileCell>();
+        var cells = new List<CompactionProfileCell>();
+
         cells.Add(profileResult.cells[0]);
         for (int i = 1; i < profileResult.cells.Count - 2; i++)
         {
           cells.Add(profileResult.cells[i]);
-          if (profileResult.cells[i].cellType != CompactionProfileCell.ProfileCellType.Gap)
+          if (profileResult.cells[i].cellType != ProfileCellType.Gap)
           {
             var midPoint = new CompactionProfileCell(profileResult.cells[i]);
-            midPoint.cellType = CompactionProfileCell.ProfileCellType.MidPoint;
+            midPoint.cellType = ProfileCellType.MidPoint;
             midPoint.station = profileResult.cells[i].station +
                                (profileResult.cells[i + 1].station - profileResult.cells[i].station) / 2;
             cells.Add(midPoint);
@@ -279,7 +280,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// Since the profile line will be drawn between line segment mid points we need to interpolate the cell edge points to lie on these line segments.
     /// </summary>
     /// <param name="profileResult">The profile containing the list of line segment points, both edges and mid points.</param>
-    private void InterpolateEdges(CompactionProfileResult profileResult)
+    private void InterpolateEdges(CompactionProfileResult<CompactionProfileCell> profileResult)
     {
       log.LogDebug("Interpolating edges");
       if (profileResult.cells.Count > 3)
@@ -287,13 +288,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         //First and last points are not gaps or edges. They're always the start and end of the profile line.
         for (int i = 1; i < profileResult.cells.Count - 1; i++)
         {
-          if (profileResult.cells[i].cellType == CompactionProfileCell.ProfileCellType.Edge)
+          if (profileResult.cells[i].cellType == ProfileCellType.Edge)
           {
             //Interpolate i edge for line between mid points at i-1 and i+1
             var startIndex = i - 1;
             var endIndex = i + 1;
             //Gap is between i-1 and i. Interpolate i edge for line between mid points at i-2 and i+1
-            if (profileResult.cells[i - 1].cellType == CompactionProfileCell.ProfileCellType.Gap)
+            if (profileResult.cells[i - 1].cellType == ProfileCellType.Gap)
             {
               startIndex--;
               //Also adjust the gap point
@@ -350,7 +351,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// </summary>
     private readonly CompactionProfileCell GapCell = new CompactionProfileCell
     {
-      cellType = CompactionProfileCell.ProfileCellType.Gap,
+      cellType = ProfileCellType.Gap,
       station = 0,//Will be set for individual gap vertices
       firstPassHeight = float.NaN,
       highestPassHeight = float.NaN,
@@ -367,11 +368,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       topLayerPassCount = -1,
       cmvPercentChange = float.NaN,
       speed = float.NaN,
-      passCountIndex = CompactionProfileCell.ValueTargetType.NoData,
-      temperatureIndex = CompactionProfileCell.ValueTargetType.NoData,
-      cmvIndex = CompactionProfileCell.ValueTargetType.NoData,
-      mdpIndex = CompactionProfileCell.ValueTargetType.NoData,
-      speedIndex = CompactionProfileCell.ValueTargetType.NoData,
+      passCountIndex = ValueTargetType.NoData,
+      temperatureIndex = ValueTargetType.NoData,
+      cmvIndex = ValueTargetType.NoData,
+      mdpIndex = ValueTargetType.NoData,
+      speedIndex = ValueTargetType.NoData,
     };
 
     private const double NO_HEIGHT = 1E9;
