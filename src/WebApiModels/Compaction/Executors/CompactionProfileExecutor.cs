@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Utilities;
@@ -107,7 +108,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     {
       log.LogDebug("Converting profile result");
 
-      CompactionProfileResult profile = new CompactionProfileResult();
+      var profile = new CompactionProfileResult();
  
       PDSProfile pdsiProfile = new PDSProfile();
       TICProfileCellListPackager packager = new TICProfileCellListPackager();
@@ -274,12 +275,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         profileResult.cells = cells;
       }
 
-      string message = string.Empty;
+      StringBuilder sb = new StringBuilder();
+      sb.Append($"After adding midpoints: {profileResult.cells.Count}");
       foreach (var cell in profileResult.cells)
       {
-        message = $"{message},{cell.cellType}";
+        sb.Append($",{cell.cellType}");
       }
-      log.LogDebug($"After adding midpoints: {profileResult.cells.Count}{message}");
+      log.LogDebug(sb.ToString());
     }
 
     /// <summary>
