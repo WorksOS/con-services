@@ -1,15 +1,21 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net;
+using SVOICProfileCell;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Velociraptor.PDSInterface;
+using VSS.Velociraptor.PDSInterface.DesignProfile;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
@@ -88,12 +94,20 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       log.LogDebug("Converting profile result");
 
-      
       var profile = new CompactionDesignProfileResult();
+      var pdsiProfile = new DesignProfile();
+      pdsiProfile.ReadFromStream(ms);
 
+      pdsiProfile.vertices = pdsiProfile.vertices.ConvertAll(dpv => new DesignProfileVertex
+      {
+        elevation = dpv.elevation >= VelociraptorConstants.NO_HEIGHT ? float.NaN : dpv.elevation,
+        station = dpv.station
+      });
 
+      ms.Close();
+
+      profile.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
       
-
       return profile;
     }
   }

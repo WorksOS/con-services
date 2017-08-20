@@ -209,14 +209,19 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
         prevCell = currCell;
       }
+
       //Add a last point at the intercept length of the last cell so profiles are drawn correctly
       if (prevCell != null)
       {
-        var lastCell = new CompactionProfileCell(profile.cells[profile.cells.Count - 1]);
-        lastCell.cellType = CompactionProfileCell.ProfileCellType.MidPoint;
-        lastCell.station = prevCell.station + prevCell.interceptLength;
-        profile.cells.Add((lastCell));
+        var lastCell = new CompactionProfileCell(profile.cells[profile.cells.Count - 1])
+        {
+          cellType = CompactionProfileCell.ProfileCellType.MidPoint,
+          station = prevCell.station + prevCell.interceptLength
+        };
+
+        profile.cells.Add(lastCell);
       }
+
       ms.Close();
 
       profile.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
@@ -346,7 +351,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     private readonly CompactionProfileCell GapCell = new CompactionProfileCell
     {
       cellType = CompactionProfileCell.ProfileCellType.Gap,
-      station = 0,//Will be set for individual gap cells
+      station = 0,//Will be set for individual gap vertices
       firstPassHeight = float.NaN,
       highestPassHeight = float.NaN,
       lastPassHeight = float.NaN,

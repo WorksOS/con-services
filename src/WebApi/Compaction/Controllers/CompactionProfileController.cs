@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [NotLandFillProjectWithUIDVerifier]
     [Route("api/v2/profiles/design")]
     [HttpGet]
-    public async Task<CompactionProfileResult> GetProfileProductionDataDesign(
+    public async Task<CompactionDesignProfileResult> GetProfileProductionDataDesign(
       [FromQuery] Guid projectUid,
       [FromQuery] double startLatDegrees,
       [FromQuery] double startLonDegrees,
@@ -149,7 +149,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionDesignProfileExecutor>(logger, raptorClient)
-          .Process(profileResult) as CompactionProfileResult
+          .Process(profileResult) as CompactionDesignProfileResult
       );
     }
   }

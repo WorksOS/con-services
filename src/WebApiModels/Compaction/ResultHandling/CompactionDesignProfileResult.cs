@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using VSS.Common.ResultsHandling;
-using VSS.Velociraptor.PDSInterface.DesignProfile;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
@@ -16,8 +15,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     public double gridDistanceBetweenProfilePoints;
 
     /// <summary>
-    /// The collection of cells produced by the query. Cells are ordered by increasing station value along the line or alignment.
+    /// The collection of vertices produced by the query. Cells are ordered by increasing station value along the line or alignment.
     /// </summary>
-    public List<DesignProfileVertex> cells;
+    public List<CompactionProfileVertex> vertices;
   }
 }
