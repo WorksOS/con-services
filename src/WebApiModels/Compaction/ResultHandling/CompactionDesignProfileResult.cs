@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using VSS.Common.ResultsHandling;
+using VSS.Velociraptor.PDSInterface.DesignProfile;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Profile slicer request for compaction.
   /// </summary>
-  public class CompactionDesignProfileResult<T> : ContractExecutionResult 
+  public class CompactionDesignProfileResult : ContractExecutionResult
   {
     /// <summary>
     /// The grid distance between the two profile end points. For straight line profiles this is the geomtric plane distance between the points. 
@@ -17,6 +18,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     /// <summary>
     /// The collection of cells produced by the query. Cells are ordered by increasing station value along the line or alignment.
     /// </summary>
-    public List<T> cells;
+    public List<DesignProfileVertex> cells;
   }
 }

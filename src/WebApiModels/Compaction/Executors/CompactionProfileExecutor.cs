@@ -106,7 +106,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     {
       log.LogDebug("Converting profile result");
 
-      CompactionProfileResult profile = new CompactionProfileResult();
+      var profile = new CompactionProfileResult();
  
       PDSProfile pdsiProfile = new PDSProfile();
       TICProfileCellListPackager packager = new TICProfileCellListPackager();

@@ -147,7 +147,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<DesignProfileProductionDataExecutor>(logger, raptorClient)
+          .Build<CompactionDesignProfileExecutor>(logger, raptorClient)
           .Process(profileResult) as CompactionProfileResult
       );
     }
