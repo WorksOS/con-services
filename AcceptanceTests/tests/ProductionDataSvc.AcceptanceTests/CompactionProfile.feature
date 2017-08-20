@@ -1,6 +1,7 @@
 ﻿Feature: CompactionProfile
 	I should be able to request Compaction Profile data.
 
+@ignore
 Scenario: Compaction Get Slicer Profile
 	Given the Compaction Profile service URI "/api/v2/profiles/productiondata/slicer"
   And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
