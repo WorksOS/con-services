@@ -37,12 +37,12 @@
   },
   "DesignIntersects_Summary": {
     "speedSummaryData": {
-      "percentEqualsTarget": 1.7,
-      "percentGreaterThanTarget": 1.4,
-      "percentLessThanTarget": 96.8,
+      "percentEqualsTarget": 28.7,
+      "percentGreaterThanTarget": 11.9,
+      "percentLessThanTarget": 59.4,
       "totalAreaCoveredSqMeters": 72.9436,
-      "minTarget": 5,
-      "maxTarget": 10
+      "minTarget": 5.0,
+      "maxTarget": 10.0
     },
     "Code": 0,
     "Message": "success"
