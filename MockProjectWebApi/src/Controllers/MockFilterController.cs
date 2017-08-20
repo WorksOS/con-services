@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
 using VSS.MasterData.Models.Models;
@@ -50,13 +48,22 @@ namespace MockProjectWebApi.Controllers
       },
       new FilterData
       {
-      filterDescriptor = new FilterDescriptor()
+        filterDescriptor = new FilterDescriptor()
+        {
+          FilterUid = "81422acc-9b0c-401c-9987-0aedbf153f1d",
+          Name = "Filter 2",
+          FilterJson = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\",\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
+        }
+      },
+      new FilterData
       {
-      FilterUid = "81422acc-9b0c-401c-9987-0aedbf153f1d",
-      Name = "Filter 1",
-      FilterJson = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\",\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
-    }
-  }
+        filterDescriptor = new FilterDescriptor()
+        {
+          FilterUid = "1cf81668-1739-42d5-b068-ea025588796a",
+          Name = "Filter 3",
+          FilterJson = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"ea97efb9-c0c4-4a7f-9eee-e2b0ef0b0916\",\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
+        }
+      }
     };
-  }
+ }
 }
