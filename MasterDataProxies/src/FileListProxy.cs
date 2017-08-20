@@ -30,5 +30,16 @@ namespace VSS.MasterData.Proxies
           return null;
         }
       }
+
+    /// <summary>
+    /// Clears an item from the cache
+    /// </summary>
+    /// <param name="projectUid">The projectUid of the item to remove from the cache</param>
+    public void ClearCacheItem(string projectUid)
+    {
+      ClearCacheItem<FileDataResult>(projectUid);
+    }
   }
+
+
 }

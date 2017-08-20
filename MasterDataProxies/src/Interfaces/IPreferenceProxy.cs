@@ -4,7 +4,7 @@ using VSS.MasterData.Models.Models;
 
 namespace VSS.MasterData.Proxies.Interfaces
 {
-  public interface IPreferenceProxy : ICacheProxy
+  public interface IPreferenceProxy 
   {
     Task<UserPreferenceData> GetUserPreferences(IDictionary<string, string> customHeaders = null);
   }

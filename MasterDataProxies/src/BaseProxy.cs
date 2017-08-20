@@ -13,7 +13,7 @@ namespace VSS.MasterData.Proxies
   /// <summary>
   /// Base class for proxies getting master data from services.
   /// </summary>
-  public class BaseProxy : ICacheProxy
+  public class BaseProxy 
   {
     protected readonly ILogger log;
     private readonly ILoggerFactory logger;
@@ -334,7 +334,7 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <typeparam name="T">The type of item being cached</typeparam>
     /// <param name="uid">The uid of the item to remove from the cache</param>
-    public void ClearCacheItem<T>(string uid)
+    protected void ClearCacheItem<T>(string uid)
     {
       if (cache == null)
       {
