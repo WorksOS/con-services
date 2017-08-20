@@ -25,6 +25,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   //Turn off caching until settings caching problem resolved
   //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CompactionPaletteController : BaseController
   {
     /// <summary>

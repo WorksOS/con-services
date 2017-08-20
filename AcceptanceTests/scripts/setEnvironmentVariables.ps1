@@ -25,7 +25,7 @@
 <#
 To run tests from within Visual Studio against Raptor Services running in local containers)
 
-[Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../../tests/ProductionDataSvc.AcceptanceTests/TestData/", "Machine")
+[Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../../ProductionDataSvc.AcceptanceTests/TestData/", "Machine")
 [Environment]::SetEnvironmentVariable("COMPACTION_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("REPORT_SVC_BASE_URI", ":80", "Machine")
@@ -33,7 +33,7 @@ To run tests from within Visual Studio against Raptor Services running in local 
 [Environment]::SetEnvironmentVariable("COORD_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("PROD_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("FILE_ACCESS_SVC_BASE_URI", ":80", "Machine")
-[Environment]::SetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST", "172.17.180.238", "Machine")
+[Environment]::SetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST", "172.17.179.243", "Machine")
 #>
 
 
