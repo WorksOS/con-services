@@ -4,19 +4,16 @@ using SVOICProfileCell;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Utilities;
 using VSS.Productivity3D.Common.Filters.Interfaces;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Velociraptor.PDSInterface;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
@@ -38,12 +35,12 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         var designDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
         var liftBuildSettings =
           RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic);
-        if (!RaptorConverters.DesignDescriptor(request.alignmentDesign).IsNull())
+        if (request.IsAlignmentDesign)
         {
           ASNode.RequestAlignmentProfile.RPC.TASNodeServiceRPCVerb_RequestAlignmentProfile_Args args
             = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args
             (request.projectId ?? -1,
-              -1, // don't care
+              ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
               request.startStation ?? ValidationConstants.MIN_STATION,
               request.endStation ?? ValidationConstants.MIN_STATION,
               designDescriptor,
@@ -63,7 +60,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args
             = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args
             (request.projectId ?? -1,
-              -1, // don't care
+              ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
               positionsAreGrid,
               startPt,
               endPt,

@@ -6,6 +6,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
   public class ProfilesHelper
   {
+    public const int PROFILE_TYPE_NOT_REQUIRED = -1;
+
     public static bool CellGapExists(Velociraptor.PDSInterface.ProfileCell prevCell, Velociraptor.PDSInterface.ProfileCell currCell, out double prevStationIntercept)
     {
       prevStationIntercept = prevCell == null

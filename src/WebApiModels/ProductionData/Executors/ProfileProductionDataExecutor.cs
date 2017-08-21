@@ -26,17 +26,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   /// </summary>
   public class ProfileProductionDataExecutor : RequestExecutorContainer
   {
-    private const int PROFILE_TYPE_NOT_REQUIRED = -1;
-
     private ProfileResult PerformProductionDataProfilePost(ProfileProductionDataRequest request)
     {
       MemoryStream memoryStream;
 
-      if (!RaptorConverters.DesignDescriptor(request.alignmentDesign).IsNull())
+      if (request.IsAlignmentDesign)
       {
         var args = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args(
           request.projectId ?? -1,
-          PROFILE_TYPE_NOT_REQUIRED,
+          ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
           request.startStation ?? ValidationConstants.MIN_STATION,
           request.endStation ?? ValidationConstants.MIN_STATION,
           RaptorConverters.DesignDescriptor(request.alignmentDesign),
@@ -58,7 +56,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
         var args = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args(
           request.projectId ?? -1,
-          PROFILE_TYPE_NOT_REQUIRED,
+          ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
           positionsAreGrid,
           startPt,
           endPt,

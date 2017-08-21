@@ -29,28 +29,23 @@ namespace VSS.Productivity3D.Common.Models
     [JsonProperty(PropertyName = "offset", Required = Required.Default)]
     public double offset { get; private set; }
 
-      /// <summary>
+    /// <summary>
     /// Private constructor
     /// </summary>
     private DesignDescriptor()
-    {}
+    { }
 
     /// <summary>
     /// Create instance of FileDescriptor
     /// </summary>
-    public static DesignDescriptor CreateDesignDescriptor
-        (
-          long id,
-          FileDescriptor file,
-          double offset
-        )
+    public static DesignDescriptor CreateDesignDescriptor(long id, FileDescriptor file, double offset)
     {
       return new DesignDescriptor
-             {
-               id = id,
-               file = file,
-               offset = offset
-             };
+      {
+        id = id,
+        file = file,
+        offset = offset
+      };
     }
 
     /// <summary>
@@ -72,7 +67,7 @@ namespace VSS.Productivity3D.Common.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                 "Either the design id or file location is required"));        
+                 "Either the design id or file location is required"));
       }
 
       file?.Validate();
