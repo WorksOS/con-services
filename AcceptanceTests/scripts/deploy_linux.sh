@@ -7,7 +7,6 @@ cp scripts/wait-for-it.sh deploy/
 cp scripts/rm_cr.sh deploy/
 mkdir deploy/testresults
 
-dotnet migrate
 dotnet restore --no-cache
 
 cd tests
