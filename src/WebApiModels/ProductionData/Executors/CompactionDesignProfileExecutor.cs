@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   /// <summary>
   /// Get production data profile calculations executor.
   /// </summary>
-  public class CompactionDesignProfileExecutor<T> : RequestExecutorContainer where T : ProfileResultBase
+  public class CompactionDesignProfileExecutor<T> : RequestExecutorContainer where T : CompactionProfileVertex, new()
   {
     private CompactionProfileResult<T> PerformProductionDataProfilePost(ProfileProductionDataRequest request)
     {
@@ -44,8 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
         if (memoryStream != null)
         {
-          var profileResult = ConvertProfileResult(memoryStream);
-          result = profileResult;
+          result = ConvertProfileResult(memoryStream);
         }
         else
         {
@@ -90,11 +89,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       log.LogDebug("Converting profile result");
 
-      var profile = new CompactionProfileResult<T>();
+      var profileResult = new CompactionProfileResult<T>();
       var pdsiProfile = new DesignProfile();
       pdsiProfile.ReadFromStream(ms);
 
-      pdsiProfile.vertices = pdsiProfile.vertices.ConvertAll(dpv => new DesignProfileVertex
+      profileResult.points = pdsiProfile.vertices.ConvertAll(dpv => new T
       {
         elevation = dpv.elevation >= VelociraptorConstants.NO_HEIGHT ? float.NaN : dpv.elevation,
         station = dpv.station
@@ -102,9 +101,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
       ms.Close();
 
-      profile.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
-      
-      return profile;
+      profileResult.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
+
+      return profileResult;
     }
   }
 }

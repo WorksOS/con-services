@@ -4,8 +4,19 @@
   /// The data for a compaction profile. The cellType flag determines the type of cell. The cell edges or intersections are used for changing color.
   /// The midpoints are used for plotting or graphing the results as a profile line. 
   /// </summary>
-  public class CompactionProfileCell : ProfileResultBase
+  public class CompactionProfileCell
   {
+    /// <summary>
+    /// The type of cell, either a cell edge intersection or the mid point of a segment cutting the cell. A edge can also be the start of a gap in the data.
+    /// </summary>
+    public ProfileCellType cellType;
+
+    /// <summary>
+    /// The station value, or distance from start of the profile line at which the profile line intersects this cell for cell edges 
+    /// or the mid point of the line segment cutting through the cell for mid point type points.
+    /// </summary>
+    public double station;
+
     /// <summary>
     /// Elevation of first cell pass in the profile cell.
     /// </summary>
@@ -108,8 +119,8 @@
     /// Default constructor
     /// </summary>
     public CompactionProfileCell()
-    {
-    }
+    { }
+
     /// <summary>
     /// Copy constructor
     /// </summary>
