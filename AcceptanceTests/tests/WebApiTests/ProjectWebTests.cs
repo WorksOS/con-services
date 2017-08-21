@@ -346,7 +346,7 @@ namespace WebApiTests
       ts.PublishEventCollection(deviceEventArray);
 
       var actualResult = CallWebApiGetProjectId(ts, -2, 38.837, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
-      Assert.AreEqual(-1, actualResult.projectId, " Legacy project id's do not match");
+      Assert.AreEqual(-3, actualResult.projectId, " Legacy project id's do not match");
       Assert.AreEqual(false, actualResult.Result, " result of request doesn't match expected");
     }
 

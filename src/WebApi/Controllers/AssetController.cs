@@ -9,15 +9,23 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
+  /// <summary>
+  /// Asset controller.
+  /// </summary>
   public class AssetController : Controller
   {
     private readonly IRepositoryFactory factory;
     private readonly ILogger log;
 
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    /// <param name="factory">Repository factory</param>
+    /// <param name="logger">Service implementation of ILogger</param>
     public AssetController(IRepositoryFactory factory, ILogger<AssetController> logger)
     {
       this.factory = factory;
-      this.log = logger;
+      log = logger;
     }
 
     /// <summary>
@@ -40,7 +48,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, log).Process(request) as GetAssetIdResult;
 
-      log.LogResult(this.ToString(), request, result);
+      log.LogResult(ToString(), request, result);
       return result;
     }
   }
