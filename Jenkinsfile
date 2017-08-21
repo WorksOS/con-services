@@ -85,6 +85,16 @@ node('Ubuntu_Slave') {
                 sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion}"
                 sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion}"
             }
+	    stage ('Tag repository') {
+                bat 'git rev-parse HEAD > GIT_COMMIT'
+                def gitCommit=readFile('GIT_COMMIT').trim()
+                def tagParameters = [
+                  new StringParameterValue("REPO_NAME", "VSS.VisionLink.Project"),
+                  new StringParameterValue("COMMIT_ISH", gitCommit),
+                  new StringParameterValue("TAG", fullVersion)
+                ]
+                build job: "tag-vso-commit", parameters: tagParameters
+	    }
         }
 	    else {
 	        if (branch.contains("Dev")) {
