@@ -26,4 +26,4 @@ Scenario Outline: Compaction Get Tiles
 	Examples: 
   | RequestName      | ProjectUID                           | FilterUID                            | BBox                                           | Width | Height | ResultName       |
   | DesignOutside    | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | 36.207022, -115.020854, 36.207563, -115.018414 | 256   | 64     | DesignOutside    |
-  | DesignIntersects | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 81422acc-9b0c-401c-9987-0aedbf153f1d | 36.207022, -115.020854, 36.207563, -115.018414 | 256   | 64     | DesignIntersects |
+#  | DesignIntersects | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 81422acc-9b0c-401c-9987-0aedbf153f1d | 36.207022, -115.020854, 36.207563, -115.018414 | 256   | 64     | DesignIntersects |
