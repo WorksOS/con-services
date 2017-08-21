@@ -143,6 +143,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         try
         {
           updateFilterEvent = AutoMapperUtility.Automapper.Map<UpdateFilterEvent>(filterRequest);
+          // only Name can be updated, NOT filterJson. Do this here as well as in AutoMapper, just to be sure!
+          updateFilterEvent.FilterJson = existingFilter.FilterJson;
           updateFilterEvent.ActionUTC = DateTime.UtcNow;
           var updatedCount = await filterRepo.StoreEvent(updateFilterEvent).ConfigureAwait(false);
           if (updatedCount == 0)

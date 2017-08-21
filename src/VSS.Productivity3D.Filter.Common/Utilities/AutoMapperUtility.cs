@@ -55,6 +55,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
           cfg.CreateMap<FilterRequestFull, UpdateFilterEvent>()
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
             .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
+            .ForMember(x => x.FilterJson, opt => opt.Ignore())
 #pragma warning disable CS0612 // Type or member is obsolete
             .ForMember(x => x.UserUID, opt => opt.Ignore());
 #pragma warning restore CS0612 // Type or member is obsolete

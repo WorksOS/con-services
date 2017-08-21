@@ -142,7 +142,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapFilterRequestToUpdateKafkaEvent()
+    public void MapFilterRequestToUpdateKafkaEvent_OnlyNameUpdateable()
     {
       var filterRequest = FilterRequestFull.CreateFilterFullRequest
       (
@@ -163,7 +163,7 @@ namespace VSS.Productivity3D.Filter.Tests
         "ProjectUid has not been mapped correctly");
       Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
       Assert.AreEqual(filterRequest.name, result.Name, "Name has not been mapped correctly");
-      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+      Assert.IsNull(result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
     [TestMethod]

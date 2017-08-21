@@ -15,10 +15,6 @@ echo "WebApiTests starting...."
 dotnet TestRun/TestRun.dll results=/testresults/WebApiTestsResults project=WebApiTests messages=false
 echo "WebApiTests finished"
 
-echo "Run Integration tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/IntegrationTestResults project=IntegrationTests messages=false
-echo "Integration tests finished"
-
 echo "Run Executor tests starting...."
 dotnet TestRun/TestRun.dll results=/testresults/ExecutorTestResults project=ExecutorTests messages=false
 echo "Executor tests finished"
