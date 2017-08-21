@@ -173,6 +173,22 @@ this.ScenarioSetup(scenarioInfo);
         {
             this.CompactionGetTiles("DesignOutside", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "1cf81668-1739-42d5-b068-ea025588796a", "36.207022, -115.020854, 36.207563, -115.018414", "256", "64", "DesignOutside", ((string[])(null)));
         }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignIntersects")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignIntersects")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "81422acc-9b0c-401c-9987-0aedbf153f1d")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BBox", "36.207400, -115.020000, 36.207430, -115.020030")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Width", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignIntersects")]
+        public virtual void CompactionGetTiles_DesignIntersects()
+        {
+            this.CompactionGetTiles("DesignIntersects", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "81422acc-9b0c-401c-9987-0aedbf153f1d", "36.207400, -115.020000, 36.207430, -115.020030", "256", "256", "DesignIntersects", ((string[])(null)));
+        }
     }
 }
 #pragma warning restore
