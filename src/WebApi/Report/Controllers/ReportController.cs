@@ -161,8 +161,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       var projectDescriptor = (User as RaptorPrincipal).GetProject(projectUid);
       userPref.Timezone = projectDescriptor.projectTimeZone;
 
-      // Strip invalid characters from the file name...
-      fileName = StripInvalidCharacters(fileName);
+      if (!String.IsNullOrEmpty(fileName))
+      {
+        // Strip invalid characters from the file name...
+        fileName = StripInvalidCharacters(fileName);
+      }
 
       return ExportReport.CreateExportReportRequest(
         projectId,
