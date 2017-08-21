@@ -13,7 +13,7 @@
 
     /// <summary>
     /// The station value, or distance from start of the profile line at which the profile line intersects this cell for cell edges 
-    /// or the mid point of the line segment cutting through the cell for mid point type cells.
+    /// or the mid point of the line segment cutting through the cell for mid point type points.
     /// </summary>
     public double station;
 
@@ -134,8 +134,8 @@
     /// Default constructor
     /// </summary>
     public CompactionProfileCell()
-    {
-    }
+    { }
+
     /// <summary>
     /// Copy constructor
     /// </summary>
@@ -167,49 +167,6 @@
       cmvIndex = cell.cmvIndex;
       mdpIndex = cell.mdpIndex;
       speedIndex = cell.speedIndex;
-    }
-
-    /// <summary>
-    /// Specifies the type of profile cell 
-    /// </summary>
-    public enum ProfileCellType
-    {
-      /// <summary>
-      /// Station intersects the cell edge and has data
-      /// </summary>
-      Edge,
-
-      /// <summary>
-      /// Station is the midpoint of the line segment that cuts through the cell
-      /// </summary>
-      MidPoint,
-      /// <summary>
-      /// Station intersects the cell edge and has no data; the start of a gap
-      /// </summary>
-      Gap,
-    }
-
-    /// <summary>
-    /// Specifies what the summary value represents in terms of the target
-    /// </summary>
-    public enum ValueTargetType
-    {
-      /// <summary>
-      /// No value for this type of data for this cell
-      /// </summary>
-      NoData = -1,
-      /// <summary>
-      /// Value is above target
-      /// </summary>
-      AboveTarget = 0,
-      /// <summary>
-      /// Value is on target
-      /// </summary>
-      OnTarget = 1,
-      /// <summary>
-      /// Value is below target
-      /// </summary>
-      BelowTarget = 2
     }
   }
 }

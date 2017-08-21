@@ -23,8 +23,30 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
   [TestClass]
-  public class CompactionProfileExecutorTests
+  public class CompactionProfileExecutorTests : ExecutorTestsBase
   {
+    private const string WrongCellType1 = "wrong cellType 1";
+    private const string WrongCellType2 = "wrong cellType 2";
+    private const string WrongCellType3 = "wrong cellType 3";
+    private const string WrongCellType4 = "wrong cellType 4";
+    private const string WrongCellType5 = "wrong cellType 5";
+    private const string WrongCellType6 = "wrong cellType 6";
+    private const string WrongCellType7 = "wrong cellType 7";
+    private const string WrongStation1 = "wrong station 1";
+    private const string WrongStation2 = "wrong station 2";
+    private const string WrongStation3 = "wrong station 3";
+    private const string WrongStation4 = "wrong station 4";
+    private const string WrongStation5 = "wrong station 5";
+    private const string WrongStation6 = "wrong station 6";
+    private const string WrongStation7 = "wrong station 7";
+    private const string WrongLastPassHeight1 = "wrong lastPassHeight 1";
+    private const string WrongLastPassHeight2 = "wrong lastPassHeight 2";
+    private const string WrongLastPassHeight3 = "wrong lastPassHeight 3";
+    private const string WrongLastPassHeight4 = "wrong lastPassHeight 4";
+    private const string WrongLastPassHeight5 = "wrong lastPassHeight 5";
+    private const string WrongLastPassHeight6 = "wrong lastPassHeight 6";
+    private const string WrongLastPassHeight7 = "wrong lastPassHeight 7";
+
     public IServiceProvider serviceProvider;
 
     [TestInitialize]
@@ -58,7 +80,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, null, false, null);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionProfileExecutor>(logger, raptorClient.Object);
+        .Build<CompactionProfileExecutor<CompactionProfileCell>>(logger, raptorClient.Object);
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
       
     }
@@ -90,17 +112,17 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var result = MockGetProfile(packager);
 
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, "wrong gridDistanceBetweenProfilePoints");
-      Assert.AreEqual(2, result.cells.Count, "wrong number of cells");
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
+      Assert.AreEqual(2, result.points.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[0].cellType, "wrong cellType 1");
-      Assert.AreEqual(packager.CellList[0].Station, result.cells[0].station, "wrong station 1");
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.cells[0].lastPassHeight, "wrong lastPassHeight 1");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result.points[0].station, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result.points[0].lastPassHeight, WrongLastPassHeight1);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[1].cellType, "wrong cellType 2");
-      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.cells[1].station, "wrong station 2");
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.cells[1].lastPassHeight, "wrong lastPassHeight 2");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.points[1].station, WrongStation2);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result.points[1].lastPassHeight, WrongLastPassHeight2);
       
     }
 
@@ -142,21 +164,21 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var result = MockGetProfile(packager);
       
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, "wrong gridDistanceBetweenProfilePoints");
-      Assert.AreEqual(3, result.cells.Count, "wrong number of cells");
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
+      Assert.AreEqual(3, result.points.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[0].cellType, "wrong cellType 1");
-      Assert.AreEqual(packager.CellList[0].Station, result.cells[0].station, "wrong station 1");
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.cells[0].lastPassHeight, "wrong lastPassHeight 1");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result.points[0].station, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result.points[0].lastPassHeight, WrongLastPassHeight1);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Edge, result.cells[1].cellType, "wrong cellType 2");
-      Assert.AreEqual(packager.CellList[1].Station, result.cells[1].station, "wrong station 2");
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.cells[1].lastPassHeight, "wrong lastPassHeight 2");
+      Assert.AreEqual(ProfileCellType.Edge, result.points[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[1].Station, result.points[1].station, WrongStation2);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result.points[1].lastPassHeight, WrongLastPassHeight2);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[2].cellType, "wrong cellType 3");
-      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result.cells[2].station, "wrong station 3");
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.cells[2].lastPassHeight, "wrong lastPassHeight 3");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[2].cellType, WrongCellType3);
+      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result.points[2].station, WrongStation3);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result.points[2].lastPassHeight, WrongLastPassHeight3);
     }
 
     [TestMethod]
@@ -206,31 +228,31 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var result = MockGetProfile(packager);
 
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, "wrong gridDistanceBetweenProfilePoints");
-      Assert.AreEqual(5, result.cells.Count, "wrong number of cells");
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
+      Assert.AreEqual(5, result.points.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[0].cellType, "wrong cellType 1");
-      Assert.AreEqual(packager.CellList[0].Station, result.cells[0].station, "wrong station 1");
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.cells[0].lastPassHeight, "wrong lastPassHeight 1");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result.points[0].station, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result.points[0].lastPassHeight, WrongLastPassHeight1);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Edge, result.cells[1].cellType, "wrong cellType 2");
-      Assert.AreEqual(packager.CellList[1].Station, result.cells[1].station, "wrong station 2");
-      Assert.AreEqual(200, result.cells[1].lastPassHeight, "wrong lastPassHeight 2");
+      Assert.AreEqual(ProfileCellType.Edge, result.points[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[1].Station, result.points[1].station, WrongStation2);
+      Assert.AreEqual(200, result.points[1].lastPassHeight, WrongLastPassHeight2);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[2].cellType, "wrong cellType 3");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[2].cellType, WrongCellType3);
       var expectedStation = packager.CellList[1].Station +
                              (packager.CellList[2].Station - packager.CellList[1].Station) / 2;
-      Assert.AreEqual(expectedStation, result.cells[2].station, "wrong station 3");
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.cells[2].lastPassHeight, "wrong lastPassHeight 3");
+      Assert.AreEqual(expectedStation, result.points[2].station, WrongStation3);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result.points[2].lastPassHeight, WrongLastPassHeight3);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Edge, result.cells[3].cellType, "wrong cellType 4");
-      Assert.AreEqual(packager.CellList[2].Station, result.cells[3].station, "wrong station 4");
-      Assert.AreEqual(230, result.cells[3].lastPassHeight, "wrong lastPassHeight 4");
+      Assert.AreEqual(ProfileCellType.Edge, result.points[3].cellType, WrongCellType4);
+      Assert.AreEqual(packager.CellList[2].Station, result.points[3].station, WrongStation4);
+      Assert.AreEqual(230, result.points[3].lastPassHeight, WrongLastPassHeight4);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[4].cellType, "wrong cellType 5");
-      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result.cells[4].station, "wrong station 5");
-      Assert.AreEqual(packager.CellList[2].CellLastElev, result.cells[4].lastPassHeight, "wrong lastPassHeight 5");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[4].cellType, WrongCellType5);
+      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result.points[4].station, WrongStation5);
+      Assert.AreEqual(packager.CellList[2].CellLastElev, result.points[4].lastPassHeight, WrongLastPassHeight5);
     }
 
 
@@ -291,41 +313,41 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var result = MockGetProfile(packager);
 
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, "wrong gridDistanceBetweenProfilePoints");
-      Assert.AreEqual(7, result.cells.Count, "wrong number of cells");
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
+      Assert.AreEqual(7, result.points.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[0].cellType, "wrong cellType 1");
-      Assert.AreEqual(packager.CellList[0].Station, result.cells[0].station, "wrong station 1");
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.cells[0].lastPassHeight, "wrong lastPassHeight 1");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result.points[0].station, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result.points[0].lastPassHeight, WrongLastPassHeight1);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Edge, result.cells[1].cellType, "wrong cellType 2");
-      Assert.AreEqual(packager.CellList[1].Station, result.cells[1].station, "wrong station 2");
-      Assert.AreEqual(200, result.cells[1].lastPassHeight, "wrong lastPassHeight 2");
+      Assert.AreEqual(ProfileCellType.Edge, result.points[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[1].Station, result.points[1].station, WrongStation2);
+      Assert.AreEqual(200, result.points[1].lastPassHeight, WrongLastPassHeight2);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[2].cellType, "wrong cellType 3");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[2].cellType, WrongCellType3);
       var expectedStation = packager.CellList[1].Station +
                             (packager.CellList[2].Station - packager.CellList[1].Station) / 2;
-      Assert.AreEqual(expectedStation, result.cells[2].station, "wrong station 3");
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.cells[2].lastPassHeight, "wrong lastPassHeight 3");
+      Assert.AreEqual(expectedStation, result.points[2].station, WrongStation3);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result.points[2].lastPassHeight, WrongLastPassHeight3);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Edge, result.cells[3].cellType, "wrong cellType 4");
-      Assert.AreEqual(packager.CellList[2].Station, result.cells[3].station, "wrong station 4");
-      Assert.AreEqual(220, result.cells[3].lastPassHeight, "wrong lastPassHeight 4");
+      Assert.AreEqual(ProfileCellType.Edge, result.points[3].cellType, WrongCellType4);
+      Assert.AreEqual(packager.CellList[2].Station, result.points[3].station, WrongStation4);
+      Assert.AreEqual(220, result.points[3].lastPassHeight, WrongLastPassHeight4);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[4].cellType, "wrong cellType 5");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[4].cellType, WrongCellType5);
       expectedStation = packager.CellList[2].Station +
                         (packager.CellList[3].Station - packager.CellList[2].Station) / 2;
-      Assert.AreEqual(expectedStation, result.cells[4].station, "wrong station 5");
-      Assert.AreEqual(packager.CellList[2].CellLastElev, result.cells[4].lastPassHeight, "wrong lastPassHeight 5");
+      Assert.AreEqual(expectedStation, result.points[4].station, WrongStation5);
+      Assert.AreEqual(packager.CellList[2].CellLastElev, result.points[4].lastPassHeight, WrongLastPassHeight5);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Edge, result.cells[5].cellType, "wrong cellType 6");
-      Assert.AreEqual(packager.CellList[3].Station, result.cells[5].station, "wrong station 6");
-      Assert.AreEqual(205, result.cells[5].lastPassHeight, "wrong lastPassHeight 6");
+      Assert.AreEqual(ProfileCellType.Edge, result.points[5].cellType, WrongCellType6);
+      Assert.AreEqual(packager.CellList[3].Station, result.points[5].station, WrongStation6);
+      Assert.AreEqual(205, result.points[5].lastPassHeight, WrongLastPassHeight6);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[6].cellType, "wrong cellType 7");
-      Assert.AreEqual(packager.CellList[3].Station + packager.CellList[3].InterceptLength, result.cells[6].station, "wrong station 7");
-      Assert.AreEqual(packager.CellList[3].CellLastElev, result.cells[6].lastPassHeight, "wrong lastPassHeight 7");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[6].cellType, WrongCellType7);
+      Assert.AreEqual(packager.CellList[3].Station + packager.CellList[3].InterceptLength, result.points[6].station, WrongStation7);
+      Assert.AreEqual(packager.CellList[3].CellLastElev, result.points[6].lastPassHeight, WrongLastPassHeight7);
     }
 
 
@@ -377,35 +399,35 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var result = MockGetProfile(packager);
 
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, "wrong gridDistanceBetweenProfilePoints");
-      Assert.AreEqual(6, result.cells.Count, "wrong number of cells");
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
+      Assert.AreEqual(6, result.points.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[0].cellType, "wrong cellType 1");
-      Assert.AreEqual(packager.CellList[0].Station, result.cells[0].station, "wrong station 1");
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.cells[0].lastPassHeight, "wrong lastPassHeight 1");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result.points[0].station, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result.points[0].lastPassHeight, WrongLastPassHeight1);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Gap, result.cells[1].cellType, "wrong cellType 2");
-      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.cells[1].station, "wrong station 2");
-      Assert.AreEqual(136, result.cells[1].lastPassHeight, "wrong lastPassHeight 2");
+      Assert.AreEqual(ProfileCellType.Gap, result.points[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.points[1].station, WrongStation2);
+      Assert.AreEqual(136, result.points[1].lastPassHeight, WrongLastPassHeight2);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Edge, result.cells[2].cellType, "wrong cellType 3");
-      Assert.AreEqual(packager.CellList[1].Station, result.cells[2].station, "wrong station 3");
-      Assert.AreEqual(172, result.cells[2].lastPassHeight, "wrong lastPassHeight 3");
+      Assert.AreEqual(ProfileCellType.Edge, result.points[2].cellType, WrongCellType3);
+      Assert.AreEqual(packager.CellList[1].Station, result.points[2].station, WrongStation3);
+      Assert.AreEqual(172, result.points[2].lastPassHeight, WrongLastPassHeight3);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[3].cellType, "wrong cellType 4");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[3].cellType, WrongCellType4);
       var expectedStation = packager.CellList[1].Station +
                         (packager.CellList[2].Station - packager.CellList[1].Station) / 2;
-      Assert.AreEqual(expectedStation, result.cells[3].station, "wrong station 4");
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.cells[3].lastPassHeight, "wrong lastPassHeight 4");
+      Assert.AreEqual(expectedStation, result.points[3].station, WrongStation4);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result.points[3].lastPassHeight, WrongLastPassHeight4);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Edge, result.cells[4].cellType, "wrong cellType 5");
-      Assert.AreEqual(packager.CellList[2].Station, result.cells[4].station, "wrong station 5");
-      Assert.AreEqual(205, result.cells[4].lastPassHeight, "wrong lastPassHeight 5");
+      Assert.AreEqual(ProfileCellType.Edge, result.points[4].cellType, WrongCellType5);
+      Assert.AreEqual(packager.CellList[2].Station, result.points[4].station, WrongStation5);
+      Assert.AreEqual(205, result.points[4].lastPassHeight, WrongLastPassHeight5);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[5].cellType, "wrong cellType 6");
-      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result.cells[5].station, "wrong station 6");
-      Assert.AreEqual(packager.CellList[2].CellLastElev, result.cells[5].lastPassHeight, "wrong lastPassHeight 6");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[5].cellType, WrongCellType6);
+      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result.points[5].station, WrongStation6);
+      Assert.AreEqual(packager.CellList[2].CellLastElev, result.points[5].lastPassHeight, WrongLastPassHeight6);
     }
 
     [TestMethod]
@@ -446,25 +468,25 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var result = MockGetProfile(packager);
 
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, "wrong gridDistanceBetweenProfilePoints");
-      Assert.AreEqual(4, result.cells.Count, "wrong number of cells");
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
+      Assert.AreEqual(4, result.points.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[0].cellType, "wrong cellType 1");
-      Assert.AreEqual(packager.CellList[0].Station, result.cells[0].station, "wrong station 1");
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.cells[0].lastPassHeight, "wrong lastPassHeight 1");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result.points[0].station, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result.points[0].lastPassHeight, WrongLastPassHeight1);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Gap, result.cells[1].cellType, "wrong cellType 2");
-      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.cells[1].station, "wrong station 2");
-      Assert.AreEqual(130, result.cells[1].lastPassHeight, "wrong lastPassHeight 2");
+      Assert.AreEqual(ProfileCellType.Gap, result.points[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.points[1].station, WrongStation2);
+      Assert.AreEqual(130, result.points[1].lastPassHeight, WrongLastPassHeight2);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Edge, result.cells[2].cellType, "wrong cellType 3");
-      Assert.AreEqual(packager.CellList[1].Station, result.cells[2].station, "wrong station 3");
-      Assert.AreEqual(160, result.cells[2].lastPassHeight, "wrong lastPassHeight 3");
+      Assert.AreEqual(ProfileCellType.Edge, result.points[2].cellType, WrongCellType3);
+      Assert.AreEqual(packager.CellList[1].Station, result.points[2].station, WrongStation3);
+      Assert.AreEqual(160, result.points[2].lastPassHeight, WrongLastPassHeight3);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[3].cellType, "wrong cellType 4");
-      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result.cells[3].station, "wrong station 4");
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.cells[3].lastPassHeight, "wrong lastPassHeight 4");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[3].cellType, WrongCellType4);
+      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result.points[3].station, WrongStation4);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result.points[3].lastPassHeight, WrongLastPassHeight4);
     }
 
     [TestMethod]
@@ -516,40 +538,40 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var result = MockGetProfile(packager);
 
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, "wrong gridDistanceBetweenProfilePoints");
-      Assert.AreEqual(7, result.cells.Count, "wrong number of cells");
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
+      Assert.AreEqual(7, result.points.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[0].cellType, "wrong cellType 1");
-      Assert.AreEqual(packager.CellList[0].Station, result.cells[0].station, "wrong station 1");
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.cells[0].lastPassHeight, "wrong lastPassHeight 1");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result.points[0].station, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result.points[0].lastPassHeight, WrongLastPassHeight1);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Gap, result.cells[1].cellType, "wrong cellType 2");
-      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.cells[1].station, "wrong station 2");
-      Assert.AreEqual(136, result.cells[1].lastPassHeight, "wrong lastPassHeight 2");
+      Assert.AreEqual(ProfileCellType.Gap, result.points[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.points[1].station, WrongStation2);
+      Assert.AreEqual(136, result.points[1].lastPassHeight, WrongLastPassHeight2);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Edge, result.cells[2].cellType, "wrong cellType 3");
-      Assert.AreEqual(packager.CellList[1].Station, result.cells[2].station, "wrong station 3");
-      Assert.AreEqual(172, result.cells[2].lastPassHeight, "wrong lastPassHeight 3");
+      Assert.AreEqual(ProfileCellType.Edge, result.points[2].cellType, WrongCellType3);
+      Assert.AreEqual(packager.CellList[1].Station, result.points[2].station, WrongStation3);
+      Assert.AreEqual(172, result.points[2].lastPassHeight, WrongLastPassHeight3);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[3].cellType, "wrong cellType 4");
-      Assert.AreEqual(1.25, result.cells[3].station, "wrong station 4");
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.cells[3].lastPassHeight, "wrong lastPassHeight 4");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[3].cellType, WrongCellType4);
+      Assert.AreEqual(1.25, result.points[3].station, WrongStation4);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result.points[3].lastPassHeight, WrongLastPassHeight4);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Gap, result.cells[4].cellType, "wrong cellType 5");
-      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result.cells[4].station, "wrong station 5");
-      Assert.AreEqual(199, result.cells[4].lastPassHeight, "wrong lastPassHeight 5");
+      Assert.AreEqual(ProfileCellType.Gap, result.points[4].cellType, WrongCellType5);
+      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result.points[4].station, WrongStation5);
+      Assert.AreEqual(199, result.points[4].lastPassHeight, WrongLastPassHeight5);
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.Edge, result.cells[5].cellType, "wrong cellType 6");
-      Assert.AreEqual(packager.CellList[2].Station, result.cells[5].station, "wrong station 6");
-      Assert.AreEqual(217, result.cells[5].lastPassHeight, "wrong lastPassHeight 6"); 
+      Assert.AreEqual(ProfileCellType.Edge, result.points[5].cellType, WrongCellType6);
+      Assert.AreEqual(packager.CellList[2].Station, result.points[5].station, WrongStation6);
+      Assert.AreEqual(217, result.points[5].lastPassHeight, WrongLastPassHeight6); 
 
-      Assert.AreEqual(CompactionProfileCell.ProfileCellType.MidPoint, result.cells[6].cellType, "wrong cellType 7");
-      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result.cells[6].station, "wrong station 7");
-      Assert.AreEqual(packager.CellList[2].CellLastElev, result.cells[6].lastPassHeight, "wrong lastPassHeight 7");
+      Assert.AreEqual(ProfileCellType.MidPoint, result.points[6].cellType, WrongCellType7);
+      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result.points[6].station, WrongStation7);
+      Assert.AreEqual(packager.CellList[2].CellLastElev, result.points[6].lastPassHeight, WrongLastPassHeight7);
     }
 
-    private CompactionProfileResult MockGetProfile(TICProfileCellListPackager packager)
+    private CompactionProfileResult<CompactionProfileCell> MockGetProfile(TICProfileCellListPackager packager)
     {
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
@@ -567,11 +589,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, null, false, null);
 
         var executor = RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(logger, raptorClient.Object);
-        var result = executor.Process(request) as CompactionProfileResult;
+          .Build<CompactionProfileExecutor<CompactionProfileCell>>(logger, raptorClient.Object);
+        var result = executor.Process(request) as CompactionProfileResult<CompactionProfileCell>;
         return result;
       }
     }
-
   }
 }

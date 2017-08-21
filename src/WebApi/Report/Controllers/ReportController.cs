@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using AutoMapper.QueryableExtensions.Impl;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -159,6 +160,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       var projectDescriptor = (User as RaptorPrincipal).GetProject(projectUid);
       userPref.Timezone = projectDescriptor.projectTimeZone;
 
+      if (!String.IsNullOrEmpty(fileName))
+      {
+        // Strip invalid characters from the file name...
+        fileName = StripInvalidCharacters(fileName);
+      }
+
       return ExportReport.CreateExportReportRequest(
         projectId,
         liftSettings,
@@ -184,6 +191,21 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         exportType,
         this.convertUserPreferences(userPref));
     }
+
+    private string StripInvalidCharacters(string str)
+    {
+      // Remove all invalid characters except of the underscore...
+      str = System.Text.RegularExpressions.Regex.Replace(str, @"[^A-Za-z0-9\s-\w\/_]", "");
+
+      // Convert multiple spaces into one space...
+      str = System.Text.RegularExpressions.Regex.Replace(str, @"\s+", " ").Trim();
+
+      // Replace spaces with undescore characters...
+      str = System.Text.RegularExpressions.Regex.Replace(str, @"\s", "_");
+
+      return str;
+    }
+
     #endregion
 
     #region ExportPing

@@ -1,6 +1,5 @@
 ﻿using BoundingExtents;
 using Fences;
-using ShineOn.Rtl;
 using SubGridTreesDecls;
 using SVOICDecls;
 using SVOICFiltersDecls;
@@ -652,6 +651,8 @@ namespace VSS.Productivity3D.Common.Proxies
             pdf.designOrAlignmentFile.file.path,
             pdf.designOrAlignmentFile.file.fileName,
             pdf.designOrAlignmentFile.offset);
+          
+          filter.SetDesignFilterMaskCellSelectionState(true);
         }
       }
 
@@ -796,9 +797,10 @@ namespace VSS.Productivity3D.Common.Proxies
       }
 
       return dd.file == null
-        ? DesignDescriptor(dd.id, string.Empty, string.Empty, string.Empty, dd.offset) : DesignDescriptor(dd.id, dd.file.filespaceId, dd.file.path, dd.file.fileName, dd.offset);
+        ? DesignDescriptor(dd.id, string.Empty, string.Empty, string.Empty, dd.offset)
+        : DesignDescriptor(dd.id, dd.file.filespaceId, dd.file.path, dd.file.fileName, dd.offset);
     }
-    
+
     /// <summary>
     /// The different volume computation types available
     /// </summary>

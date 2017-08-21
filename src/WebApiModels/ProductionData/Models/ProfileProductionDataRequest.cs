@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
@@ -154,6 +155,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       liftBuildSettings = LiftBuildSettings.HelpSample,
       returnAllPassesAndLayers = true
     };
+
+    /// <summary>
+    /// Returns whether this request is for an alignment design profile.
+    /// </summary>
+    public bool IsAlignmentDesign => alignmentDesign != null;
 
     /// <summary>
     /// Validates the request and throws if validation fails.

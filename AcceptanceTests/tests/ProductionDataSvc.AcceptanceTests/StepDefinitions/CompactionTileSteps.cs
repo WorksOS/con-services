@@ -31,10 +31,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       tileRequester.QueryString.Add("ProjectUid", projectUid);
     }
 
-    [Given(@"designUid ""(.*)""")]
-    public void GivenDesignUid(string designUid)
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
     {
-      tileRequester.QueryString.Add("designUid", designUid);
+      tileRequester.QueryString.Add("filterUid", filterUid);
     }
 
     [Then(@"the result should match the ""(.*)"" from the repository")]
