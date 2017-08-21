@@ -156,11 +156,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
 
         //projectId
-        //If zero found then returns -1
+        //If zero found then If manualAsset returns -3 else returns -1
         //If one found then returns its id
         //If > 1 found then returns -2
-        if (potentialProjects == null || potentialProjects.Count() == 0)
-          projectId = -1;
+        if (potentialProjects == null || !potentialProjects.Any())
+          switch (request.assetId)
+          {
+            case -2:
+              projectId = -3;
+              break;
+            default:
+              projectId = -1;
+              break;
+          }
         else if (potentialProjects.Distinct().Count() > 1)
           projectId = -2;
         else
