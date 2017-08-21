@@ -32,12 +32,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
     }
 
-    [Given(@"designUid ""(.*)""")]
-    public void GivenDesignUid(string designUid)
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
     {
       switch (operation)
       {
-        case "TemperatureSummary": temperatureSummaryRequester.QueryString.Add("designUid", designUid); break;
+        case "TemperatureSummary": temperatureSummaryRequester.QueryString.Add("filterUid", filterUid); break;
         case "TemperatureDetails": ScenarioContext.Current.Pending(); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }

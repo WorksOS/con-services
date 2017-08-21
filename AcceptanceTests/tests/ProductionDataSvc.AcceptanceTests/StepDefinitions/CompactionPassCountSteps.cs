@@ -34,13 +34,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
     }
 
-    [Given(@"designUid ""(.*)""")]
-    public void GivenDesignUid(string designUid)
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
     {
       switch (operation)
       {
-        case "PassCountSummary": passCountSummaryRequester.QueryString.Add("designUid", designUid); break;
-        case "PassCountDetails": passCountDetailsRequester.QueryString.Add("designUid", designUid); break;
+        case "PassCountSummary": passCountSummaryRequester.QueryString.Add("filterUid", filterUid); break;
+        case "PassCountDetails": passCountDetailsRequester.QueryString.Add("filterUid", filterUid); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
     }

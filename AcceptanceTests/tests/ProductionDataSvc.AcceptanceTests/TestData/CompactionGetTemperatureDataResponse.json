@@ -28,5 +28,35 @@
     },
     "Code": 0,
     "Message": "success"
+  },
+  "DesignOutside_Summary": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0,
+      "percentGreaterThanTarget": 0,
+      "percentLessThanTarget": 0,
+      "totalAreaCoveredSqMeters": 0,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 409.6,
+        "maxTemperatureMachineTarget": 409.6,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersects_Summary": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0,
+      "percentGreaterThanTarget": 0,
+      "percentLessThanTarget": 100,
+      "totalAreaCoveredSqMeters": 72.9436,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 90,
+        "maxTemperatureMachineTarget": 143,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
   }
 }

@@ -47,7 +47,7 @@
     "Code": 0,
     "Message": "success"
   },
-  "DesignIntersepts": {
+  "DesignIntersects": {
     "mdpSummaryData": {
       "percentEqualsTarget": 100,
       "percentGreaterThanTarget": 0,
