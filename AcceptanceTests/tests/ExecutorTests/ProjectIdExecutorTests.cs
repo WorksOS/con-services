@@ -241,7 +241,7 @@ namespace ExecutorTests
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(Factory, Logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
-      Assert.AreEqual(-1, result.projectId, "executor returned incorrect LegacyProjectId");
+      Assert.AreEqual(-3, result.projectId, "executor returned incorrect LegacyProjectId");
     }
 
     [TestMethod]
