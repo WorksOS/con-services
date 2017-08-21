@@ -31,7 +31,6 @@ namespace VSS.MasterData.Project.WebAPI
         .UseContentRoot(pathToContentRoot)
         .UseIISIntegration()
         .UseStartup<Startup>()
-        .UseApplicationInsights()
         .Build();
 
       host.RunAsService();

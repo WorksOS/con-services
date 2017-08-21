@@ -14,14 +14,42 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class ProjectSettingsBaseController : Controller
   {
+    /// <summary>
+    /// The MasterData ProjectRepository persistent storage interface.
+    /// </summary>
     protected ProjectRepository projectRepo;
+
+    /// <summary>
+    /// The Raptor Proxy interface.
+    /// </summary>
     protected IRaptorProxy raptorProxy;
+
+    /// <summary>
+    /// The configuration store for module meta data.
+    /// </summary>
     protected IConfigurationStore configStore;
+
+    /// <summary>
+    /// The logging system type for ILogger implementation instances.
+    /// </summary>
     protected ILoggerFactory logger;
-    private readonly ILogger log;
+
+    /// <summary>
+    /// The service exception handler.
+    /// </summary>
     protected IServiceExceptionHandler serviceExceptionHandler;
+
+    /// <summary>
+    /// The Kafka consumer.
+    /// </summary>
     protected IKafka producer;
+
+    /// <summary>
+    /// The Kafka topic name used by the service.
+    /// </summary>
     protected string kafkaTopicName;
+
+    private readonly ILogger log;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectSettingsBaseController"/> class.

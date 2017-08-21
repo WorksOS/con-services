@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -122,15 +123,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Delete Project
     /// </summary>
-    /// <param name="project">DeleteProjectEvent model</param>
+    /// <param name="projectUid">Project unique identifier</param>
     /// <remarks>Deletes existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
-    [Route("api/v3/project")]
+    [Route("api/v3/project/{projectUid}")]
     [HttpDelete]
-    public async Task DeleteProjectV3([FromBody] DeleteProjectEvent project)
+    public async Task DeleteProjectV3([FromUri] Guid projectUid)
     {
-      log.LogInformation("DeleteProjectV3. project: {0}", JsonConvert.SerializeObject(project));
+      log.LogInformation("DeleteProjectV3. project: {0}", projectUid);
+      var project = new DeleteProjectEvent
+      {
+        ProjectUID = projectUid,
+        DeletePermanently = false,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
+      ProjectDataValidator.Validate(project, projectService);
 
       await DeleteProject(project);
     }

@@ -31,7 +31,6 @@
   <ItemGroup>
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.0.*" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.2" />

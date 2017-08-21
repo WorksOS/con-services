@@ -147,9 +147,6 @@ namespace WebApiTests
       var ts = new TestSupport();
       var projectId = ts.SetLegacyProjectId();
       CreateProject(ts, mysql, projectId, "project 9", ProjectType.Standard);
-
-      //No action UTC
-      ts.DeleteProjectViaWebApi(ts.ProjectUid, DateTime.MinValue, HttpStatusCode.BadRequest);
       //No project UID
       ts.DeleteProjectViaWebApi(Guid.Empty, DateTime.UtcNow, HttpStatusCode.BadRequest);
     }

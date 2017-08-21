@@ -28,7 +28,6 @@ namespace VSS.MasterData.Project.WebAPI
   public class Startup
   {
     private const string loggerRepoName = "WebApi";
-    private readonly bool isDevEnv;
     IServiceCollection serviceCollection;
 
     /// <summary>
@@ -43,12 +42,6 @@ namespace VSS.MasterData.Project.WebAPI
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
       env.ConfigureLog4Net("log4net.xml", loggerRepoName);
-      isDevEnv = env.IsEnvironment("Development");
-      if (isDevEnv)
-      {
-        // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-        builder.AddApplicationInsightsSettings(developerMode: true);
-      }
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -83,7 +76,6 @@ namespace VSS.MasterData.Project.WebAPI
       });
 
       // Add framework services.
-      services.AddApplicationInsightsTelemetry(Configuration);
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
       services.AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       services.AddSingleton<IKafka, RdKafkaDriver>();
@@ -93,7 +85,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddMemoryCache(); 
+      services.AddMemoryCache();
 
       var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
       var useMock = string.IsNullOrEmpty(tccUrl) || tccUrl == "mock";
@@ -163,9 +155,6 @@ namespace VSS.MasterData.Project.WebAPI
       app.UseCors("VSS");
       //Enable TID here
       app.UseTIDAuthentication();
-
-      /*app.UseApplicationInsightsRequestTelemetry();
-      app.UseApplicationInsightsExceptionTelemetry();*/
 
       app.UseMvc();
 
