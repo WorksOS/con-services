@@ -1,8 +1,6 @@
-options {
-    disableConcurrentBuilds()
-}
-
 node('Jenkins-Win2016-Raptor') {
+      // This limits build concurrency to 1 per branch
+    properties([disableConcurrentBuilds()])
     //Apply version number
     //We will later use it to tag images
 
