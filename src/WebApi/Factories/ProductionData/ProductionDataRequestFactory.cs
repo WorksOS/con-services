@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     public ProductionDataRequestFactory(ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
-      log = logger.CreateLogger<CompositeCompositeProfileDataRequestHelper>();
+      log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
       this.configStore = configStore;
       this.fileListProxy = fileListProxy;
       this.settingsManager = settingsManager;

@@ -3,7 +3,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
-  public interface ICompositeProfileRequestHandler
+  public interface IProductionDataProfileRequestHelper
   {
     CompactionProfileProductionDataRequest CreateCompositeProfileRequest(Guid projectUid,
       double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees,

@@ -15,15 +15,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
   /// The request representation for a linear or alignment based profile request for all thematic types other than summary volumes.
   /// Model represents a production data profile
   /// </summary>
-  public class CompositeCompositeProfileDataRequestHelper : DataRequestBase, ICompositeProfileRequestHandler
+  public class ProductionDataProfileRequestHelper : DataRequestBase, IProductionDataProfileRequestHelper
   {
-    public CompositeCompositeProfileDataRequestHelper()
+    public ProductionDataProfileRequestHelper()
     { }
 
-    public CompositeCompositeProfileDataRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
+    public ProductionDataProfileRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
-      Log = logger.CreateLogger<CompositeCompositeProfileDataRequestHelper>();
+      Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
       ConfigurationStore = configurationStore;
       FileListProxy = fileListProxy;
       SettingsManager = settingsManager;
