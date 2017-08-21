@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         {
           VLPDDecls.TWGS84Point startPt, endPt;
           bool positionsAreGrid;
-          ProfilesHelper.convertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt, out positionsAreGrid);
+          ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt, out positionsAreGrid);
 
           ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args
             = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args
@@ -108,7 +108,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
       var profile = new CompactionProfileResult<CompactionProfileCell>();
  
-
       PDSProfile pdsiProfile = new PDSProfile();
       TICProfileCellListPackager packager = new TICProfileCellListPackager();
       packager.CellList = new TICProfileCellList();
@@ -121,11 +120,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       VSS.Velociraptor.PDSInterface.ProfileCell prevCell = null;
       foreach (VSS.Velociraptor.PDSInterface.ProfileCell currCell in pdsiProfile.cells)
       {
-        double prevStationIntercept = prevCell == null ? 0.0 : prevCell.station + prevCell.interceptLength;
-        bool gap = prevCell == null
-          ? false
-          : Math.Abs(currCell.station - prevStationIntercept) > 0.001;
-        if (gap)
+        var gapExists = ProfilesHelper.CellGapExists(prevCell, currCell, out double prevStationIntercept);
+
+        if (gapExists)
         {
           var gapCell = new CompactionProfileCell(GapCell);
           gapCell.station = prevStationIntercept;

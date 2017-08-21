@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
       try
       {
-        ProfilesHelper.convertProfileEndPositions(request.gridPoints, request.wgs84Points, out TWGS84Point startPt, out TWGS84Point endPt, out bool positionsAreGrid);
+        ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out TWGS84Point startPt, out TWGS84Point endPt, out bool positionsAreGrid);
 
         var designProfile = DesignProfiler.ComputeProfile.RPC.__Global.Construct_CalculateDesignProfile_Args(
           request.projectId ?? -1,
