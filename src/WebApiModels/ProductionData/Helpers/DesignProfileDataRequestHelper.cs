@@ -17,7 +17,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
   public class DesignProfileDataRequestHelper : DataRequestBase, IDesignProfileRequestHandler
   {
     public DesignProfileDataRequestHelper()
-    { }
+    {
+      // Required for abstract factory.
+    }
 
     public DesignProfileDataRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
@@ -27,6 +29,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       FileListProxy = fileListProxy;
       SettingsManager = settingsManager;
     }
+
     public DesignProfileDataRequestHelper SetRaptorClient(IASNodeClient raptorClient)
     {
       return this;
@@ -36,19 +39,16 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a design profile.   
     /// </summary>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public ProfileProductionDataRequest CreateDesignProfileRequest(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid importedFileUid, Guid? filterUid)
+    public DesignProfileProductionDataRequest CreateDesignProfileRequest(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid importedFileUid, Guid? filterUid)
     {
-      var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
+      var llPoints = ProfileLLPoints.CreateProfileLLPoints(
+        startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
 
       var filter = SettingsManager.CompactionFilter(filterUid.ToString(), projectUid.ToString(), Headers);
       var designDescriptor = GetDescriptor(projectUid, importedFileUid);
-      var liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
-      // callId is set to 'empty' because raptor will create and return a Guid if this is set to empty.
-      // this would result in the acceptance tests failing to see the callID == in its equality test
-      return ProfileProductionDataRequest.CreateProfileProductionData(
+      return DesignProfileProductionDataRequest.CreateProfileProductionData(
         ProjectId,
-        Guid.Empty,
         ProductionDataType.Height,
         filter,
         -1,
@@ -56,9 +56,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         null,
         llPoints,
         ValidationConstants.MIN_STATION,
-        ValidationConstants.MIN_STATION,
-        liftBuildSettings,
-        false);
+        ValidationConstants.MIN_STATION);
     }
   }
 }

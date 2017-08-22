@@ -99,7 +99,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetProductionDataSlice: " + Request.QueryString);
       var projectId = GetProjectId(projectUid);
 
-      var slicerProfileResult = requestFactory.Create<CompositeCompositeProfileDataRequestHelper>(async r => r
+      var productionDataRequest = requestFactory.Create<CompositeCompositeProfileDataRequestHelper>(async r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
           .ProjectSettings(CompactionProjectSettings.FromString(
@@ -108,12 +108,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .CreateCompositeProfileRequest(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
           filterUid, customerUid, cutfillDesignUid);
 
-      slicerProfileResult.Validate();
+      productionDataRequest.Validate();
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionProfileExecutor<CompactionProfileCell>>(logger, raptorClient)
-          .Process(slicerProfileResult) as CompactionProfileResult<CompactionProfileCell>
+          .Process(productionDataRequest) as CompactionProfileResult<CompactionProfileCell>
       );
     }
 
@@ -134,7 +134,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = GetProjectId(projectUid);
 
-      var profileResult = requestFactory.Create<DesignProfileDataRequestHelper>(async r => r
+      var designProfileRequest = requestFactory.Create<DesignProfileDataRequestHelper>(async r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
           .ProjectSettings(CompactionProjectSettings.FromString(
@@ -143,12 +143,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetRaptorClient(raptorClient)
         .CreateDesignProfileRequest(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, importedFileUid, filterUid);
 
-      profileResult.Validate();
+      designProfileRequest.Validate();
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionDesignProfileExecutor<CompactionProfileVertex>>(logger, raptorClient)
-          .Process(profileResult) as CompactionProfileResult<CompactionProfileVertex>
+          .Process(designProfileRequest) as CompactionProfileResult<CompactionProfileVertex>
       );
     }
   }

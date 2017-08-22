@@ -18,16 +18,16 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   /// <summary>
   /// Get production data profile calculations executor.
   /// </summary>
-  public class CompactionDesignProfileExecutor<T> : RequestExecutorContainer where T : CompactionProfileVertex, new()
+  public class CompactionDesignProfileExecutor<U> : RequestExecutorContainer where U : CompactionProfileVertex, new()
   {
-    private CompactionProfileResult<T> PerformProductionDataProfilePost(ProfileProductionDataRequest request)
+    private CompactionProfileResult<U> PerformProductionDataProfilePost(DesignProfileProductionDataRequest request)
     {
-      CompactionProfileResult<T> result;
+      CompactionProfileResult<U> result;
 
       try
       {
         ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out TWGS84Point startPt, out TWGS84Point endPt, out bool positionsAreGrid);
-
+        
         var designProfile = DesignProfiler.ComputeProfile.RPC.__Global.Construct_CalculateDesignProfile_Args(
           request.projectId ?? -1,
           false,
@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           endPt,
           ValidationConstants.MIN_STATION,
           ValidationConstants.MAX_STATION,
-          RaptorConverters.DesignDescriptor(request.alignmentDesign),
+          RaptorConverters.DesignDescriptor(request.designDescriptor),
           RaptorConverters.EmptyDesignDescriptor,
           RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
           positionsAreGrid);
@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       ContractExecutionResult result;
       try
       {
-        var profile = PerformProductionDataProfilePost(item as ProfileProductionDataRequest);
+        var profile = PerformProductionDataProfilePost(item as DesignProfileProductionDataRequest);
 
         if (profile != null)
         {
@@ -85,15 +85,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       return result;
     }
 
-    private CompactionProfileResult<T> ConvertProfileResult(MemoryStream ms)
+    private CompactionProfileResult<U> ConvertProfileResult(MemoryStream ms)
     {
       log.LogDebug("Converting profile result");
 
-      var profileResult = new CompactionProfileResult<T>();
+      var profileResult = new CompactionProfileResult<U>();
       var pdsiProfile = new DesignProfile();
       pdsiProfile.ReadFromStream(ms);
 
-      profileResult.points = pdsiProfile.vertices.ConvertAll(dpv => new T
+      profileResult.points = pdsiProfile.vertices.ConvertAll(dpv => new U
       {
         elevation = dpv.elevation >= VelociraptorConstants.NO_HEIGHT ? float.NaN : dpv.elevation,
         station = dpv.station
