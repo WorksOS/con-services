@@ -7,7 +7,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
 {
   public static class ConnectionUtils
   {
-    public static string GetConnectionString([FromServices] IConfigurationStore configStore, [FromServices] ILogger log, string dbNameExtension)
+    public static string GetConnectionString(IConfigurationStore configStore, ILogger log, string dbNameExtension)
     {
       string serverName = configStore.GetValueString("MYSQL_SERVER_NAME_VSPDB" + dbNameExtension);
       string serverPort = configStore.GetValueString("MYSQL_PORT" + dbNameExtension);
@@ -32,19 +32,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
         ";userid=" + serverUserName +
         ";password=" + serverPassword +
         ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
-      log.LogTrace($"Connection string {connString} for dbNameExtension: {dbNameExtension}");
-
+   
       return connString;
     }
 
-    //public static MySqlConnection OpenDatabaseConnection([FromServices] IConfigurationStore configStore, [FromServices] ILogger<Startup> log, string dbNameExtension)
-    //{
-    //  // todo exception?
-    //  var connection = new MySqlConnection(GetConnectionString(configStore, log, dbNameExtension));
-    //  connection.Open();
-
-    //  return connection;
-    //}
-
+ 
   }
 }

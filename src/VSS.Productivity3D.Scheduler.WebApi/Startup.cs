@@ -58,8 +58,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     {
       services.AddMvc(); // needed?
 
-      var hangfireConnectionString =
-        "server=localhost;port=3306;database=VSS-Productivity3D-Scheduler;userid=root;password=abc123;Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
+      var hangfireConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "_Scheduler");
+       // "server=localhost;port=3306;database=VSS-Productivity3D-Scheduler;userid=root;password=abc123;Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
       _log.LogDebug($".ConfigureServices: Scheduler database string: {hangfireConnectionString}.");
       _storage = new MySqlStorage(hangfireConnectionString,
         new MySqlStorageOptions
@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       try
       {
         // todo after testing setup interval e.g. hourly
-        RecurringJob.AddOrUpdate(FilterCleanupJob, () => DatabaseCleanupJob(filterDbConnectionString, ageInDaysToDelete), Cron.MinuteInterval(5));
+        RecurringJob.AddOrUpdate(FilterCleanupJob, () => DatabaseCleanupJob(filterDbConnectionString, ageInDaysToDelete), Cron.Minutely);
       }
       catch (Exception ex)
       {
