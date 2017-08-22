@@ -17,7 +17,7 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
-using VSS.Productivity3D.Scheduler.Common.Utilities;
+
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {
