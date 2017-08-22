@@ -26,6 +26,10 @@
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Utilities\" />
+  </ItemGroup>
+
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>

@@ -112,7 +112,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var FilterCleanupJob = "FilterCleanupJob";
 
       // the Filter DB environment variables will come with the 3dp/FilterService configuration
-      string filterDbConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "");
+      string filterDbConnectionString = _configStore.GetConnectionString("VSPDB"); 
       try
       {
         // todo after testing setup interval e.g. hourly
