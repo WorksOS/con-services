@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
-using VSS.Productivity3D.Scheduler.Common.Utilities;
+
 
 namespace RepositoryTests
 {
@@ -222,7 +222,7 @@ namespace RepositoryTests
     private void CheckSchema(string dbNameExtension, string tableName, List<string> columnNames)
     {
       // using (var connection = new MySqlConnection(configStore.GetConnectionString(dbNameExtension)))
-      using (var connection = new MySqlConnection(ConnectionUtils.GetConnectionString(configStore, log, dbNameExtension)))
+      using (var connection = new MySqlConnection(configStore.GetConnectionString("VSPDB")))
       {
         try
         {
