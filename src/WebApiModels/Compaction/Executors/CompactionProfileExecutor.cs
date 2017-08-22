@@ -140,7 +140,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         //TODO: ***** noSpeedValue, noSpeedElevation, speed
         bool noSpeedValue = true;//currCell.speed == NO_SPEED;
         bool noSpeedElevation = true; //currCell.speedElev == NULL_SINGLE || noSpeedValue;
-        var speed = 0;//noSpeedValue ? float.NaN : currCell.speed
+        var speed = 0;//noSpeedValue ? float.NaN : currCell.speed (convert from cm/s to km/h)
 
         var lastCompositeHeight = currCell.compositeLastPassHeight == NULL_SINGLE
           ? float.NaN
