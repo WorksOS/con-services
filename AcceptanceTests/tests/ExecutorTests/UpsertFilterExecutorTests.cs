@@ -215,7 +215,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_Existing_ChangeJson()
+    public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonIgnored()
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
@@ -248,7 +248,7 @@ namespace ExecutorTests
       Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
       Assert.AreEqual(filterUid, result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
       Assert.AreEqual(name, result.filterDescriptor.Name, "executor returned incorrect filter Name");
-      Assert.AreEqual(filterJsonUpdated, result.filterDescriptor.FilterJson, "executor returned incorrect FilterJson");
+      Assert.AreEqual(filterJson, result.filterDescriptor.FilterJson, "executor returned incorrect FilterJson, should be the original");
 
       var fr = filterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
       fr.Wait();
@@ -256,7 +256,7 @@ namespace ExecutorTests
       Assert.AreEqual(1, fr.Result.Count(), "should return 1 updatedw filterUid");
       Assert.AreEqual(filterUid, fr.Result.ToList()[0].FilterUid, "should return same filterUid");
       Assert.AreEqual(name, fr.Result.ToList()[0].Name, "should return same name");
-      Assert.AreEqual(filterJsonUpdated, fr.Result.ToList()[0].FilterJson, "should return a new FilterJson");
+      Assert.AreEqual(filterJson, fr.Result.ToList()[0].FilterJson, "should return a original FilterJson");
     }
 
     [TestMethod]
@@ -294,7 +294,7 @@ namespace ExecutorTests
       Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
       Assert.AreEqual(filterUid, result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
       Assert.AreEqual(nameUpdated, result.filterDescriptor.Name, "executor returned incorrect filter Name");
-      Assert.AreEqual(filterJsonUpdated, result.filterDescriptor.FilterJson, "executor returned incorrect FilterJson");
+      Assert.AreEqual(filterJson, result.filterDescriptor.FilterJson, "executor returned incorrect FilterJson, should return original");
       
       var fr = filterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
       fr.Wait();
@@ -302,7 +302,49 @@ namespace ExecutorTests
       Assert.AreEqual(1, fr.Result.Count(), "should return 1 filter");
       Assert.AreEqual(filterUid, fr.Result.ToList()[0].FilterUid, "should return same filterUid");
       Assert.AreEqual(nameUpdated, fr.Result.ToList()[0].Name, "should return new name");
-      Assert.AreEqual(filterJsonUpdated, fr.Result.ToList()[0].FilterJson, "should return a new FilterJson");
+      Assert.AreEqual(filterJson, fr.Result.ToList()[0].FilterJson, "should return original FilterJson");
+    }
+
+    [TestMethod]
+    public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_ExistingName_AddNew_CaseInsensitive()
+    {
+      string custUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string filterUid = Guid.NewGuid().ToString();
+      string name = "theName";
+      string filterJson = "theJsonString";
+      string filterJsonNew = "theJsonString updated"; // should be ignored
+
+      var createFilterEvent = new CreateFilterEvent()
+      {
+        CustomerUID = Guid.Parse(custUid),
+        UserID = userId,
+        ProjectUID = Guid.Parse(projectUid),
+        FilterUID = Guid.Parse(filterUid),
+        Name = name,
+        FilterJson = filterJson,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
+      filterRepo.StoreEvent(createFilterEvent).Wait();
+
+      // try to add a new filterUid with same name but upper case
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, null, name.ToUpper(), filterJsonNew);
+
+      var executor =
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2039", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Unable to add persistent filter as Name already exists.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
+      
+      var fr = filterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
+      fr.Wait();
+      Assert.IsNotNull(fr, "should return the updated filter");
+      Assert.AreEqual(1, fr.Result.Count(), "should return 1 filter");
+      Assert.AreEqual(filterUid, fr.Result.ToList()[0].FilterUid, "should return same filterUid");
+      Assert.AreEqual(name, fr.Result.ToList()[0].Name, "should return new name");
+      Assert.AreEqual(filterJson, fr.Result.ToList()[0].FilterJson, "should return a new FilterJson");
     }
 
     [TestMethod]

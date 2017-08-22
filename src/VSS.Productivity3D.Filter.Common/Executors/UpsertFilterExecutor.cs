@@ -132,8 +132,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         if (existingFilter == null)
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 21);
 
-        // don't allow update Name to one which already exists
-        var filterOfSameName = existingPersistentFilters.FirstOrDefault(f => f.Name == filterRequest.name && f.FilterUid != filterRequest.filterUid);
+        // don't allow update to Name to a Name which already exists (for a different filterUid)
+        var filterOfSameName = existingPersistentFilters
+          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.name, StringComparison.OrdinalIgnoreCase) 
+               && !string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase));
         if (filterOfSameName != null)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
@@ -175,7 +177,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
       else // create
       {
-        var filterOfSameName = existingPersistentFilters.FirstOrDefault(f => f.Name == filterRequest.name);
+        var filterOfSameName = existingPersistentFilters
+          .FirstOrDefault(f => (string.Equals(f.Name, filterRequest.name, StringComparison.OrdinalIgnoreCase)));
         if (filterOfSameName != null)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
@@ -217,7 +220,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       var retrievedFilter = (await filterRepo
           .GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid, filterRequest.userId)
           .ConfigureAwait(false))
-          .FirstOrDefault(f => f.Name == filterRequest.name);
+          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.name, StringComparison.OrdinalIgnoreCase));
 
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
     }

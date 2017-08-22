@@ -117,7 +117,7 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
               await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
             if (customerResult.status != 200 || customerResult.customer == null ||
                 customerResult.customer.Count < 1 ||
-                !customerResult.customer.Exists(x => x.uid == customerUid))
+                !customerResult.customer.Exists(x => string.Equals(x.uid, customerUid, StringComparison.OrdinalIgnoreCase)))
             {
               var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
               log.LogWarning(error);

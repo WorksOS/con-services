@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         var projectFilter =
           (await filterRepo.GetFiltersForProjectUser(filterRequest.customerUid, filterRequest.projectUid,
             filterRequest.userId).ConfigureAwait(false))
-          .SingleOrDefault(f => f.FilterUid == filterRequest.filterUid);
+          .SingleOrDefault(f => string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase));
         
         if (projectFilter == null)
         {

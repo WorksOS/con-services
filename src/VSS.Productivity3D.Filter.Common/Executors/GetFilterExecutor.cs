@@ -71,10 +71,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         }
 
         if (filter == null
-            || filter.CustomerUid != filterRequest.customerUid
-            || filter.ProjectUid != filterRequest.projectUid
-            || filter.UserId != filterRequest.userId
-        )
+            || !string.Equals(filter.CustomerUid, filterRequest.customerUid, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(filter.ProjectUid, filterRequest.projectUid, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(filter.UserId, filterRequest.userId, StringComparison.OrdinalIgnoreCase)
+          )
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 36);
         }

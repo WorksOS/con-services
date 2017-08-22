@@ -86,5 +86,43 @@ namespace ExecutorTests
       Assert.AreEqual(filterToTest.filterDescriptor.FilterJson, result.filterDescriptor.FilterJson,
         "executor returned incorrect filterDescriptor FilterJson");
     }
+
+    [TestMethod]
+    public async System.Threading.Tasks.Task GetFilterExecutor_ExistingFilter_CaseInsensitive()
+    {
+      string custUid = Guid.NewGuid().ToString().ToLower(); // actually Guid.Parse converts to lower anyway
+      string userId = Guid.NewGuid().ToString().ToLower();
+      string projectUid = Guid.NewGuid().ToString().ToLower();
+      string filterUid = Guid.NewGuid().ToString().ToLower();
+      string name = "blah";
+      string filterJson = "theJsonString";
+
+      var createFilterEvent = new CreateFilterEvent()
+      {
+        CustomerUID = Guid.Parse(custUid),
+        UserID = userId,
+        ProjectUID = Guid.Parse(projectUid),
+        FilterUID = Guid.Parse(filterUid),
+        Name = name,
+        FilterJson = filterJson,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
+      var s = filterRepo.StoreEvent(createFilterEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Filter event not written");
+
+      var request = FilterRequestFull.CreateFilterFullRequest(custUid.ToUpper(), false, userId.ToUpper(), projectUid.ToUpper(), filterUid.ToUpper());
+      request.Validate(serviceExceptionHandler);
+
+      var executor =
+        RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
+      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.AreEqual(filterUid, result.filterDescriptor.FilterUid,"executor returned incorrect filterDescriptor FilterUid");
+      Assert.AreEqual(name, result.filterDescriptor.Name,"executor returned incorrect filterDescriptor Name");
+      Assert.AreEqual(filterJson, result.filterDescriptor.FilterJson,"executor returned incorrect filterDescriptor FilterJson");
+    }
   }
 }
