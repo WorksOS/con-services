@@ -28,7 +28,7 @@ namespace VSS.MasterData.Proxies
       IDictionary<string, string> customHeaders = null)
     {
       var result = await GetContainedMasterDataList<FilterData>(filterUid, "FILTER_CACHE_LIFE", "FILTER_API_URL",
-        customHeaders, $"/{projectUid}/{filterUid}");
+        customHeaders, $"/{projectUid}?filterUid={filterUid}");
       if (result.Code == 0)
       {
         return result.filterDescriptor;
