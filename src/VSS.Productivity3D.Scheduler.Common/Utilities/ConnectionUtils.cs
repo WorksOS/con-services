@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.AspNetCore.Mvc;
 using VSS.ConfigurationStore;
 using Microsoft.Extensions.Logging;
 

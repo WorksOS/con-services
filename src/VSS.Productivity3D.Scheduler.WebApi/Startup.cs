@@ -17,6 +17,7 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 
 namespace VSS.Productivity3D.Scheduler.WebApi
@@ -59,7 +60,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddMvc(); // needed?
 
       var hangfireConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "_Scheduler");
-       // "server=localhost;port=3306;database=VSS-Productivity3D-Scheduler;userid=root;password=abc123;Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
       _log.LogDebug($".ConfigureServices: Scheduler database string: {hangfireConnectionString}.");
       _storage = new MySqlStorage(hangfireConnectionString,
         new MySqlStorageOptions
