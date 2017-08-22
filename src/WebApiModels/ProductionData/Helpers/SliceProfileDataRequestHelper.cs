@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     }
 
     /// <summary>
-    /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a composite slice profile.   
+    /// Creates an instance of the CompactionProfileProductionDataRequest class and populate it with data needed for a production data slice profile.   
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="startLatDegrees"></param>
@@ -40,8 +40,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <param name="customerUid"></param>
     /// <param name="cutfillDesignUid"></param>
     /// <param name="filterUid"></param>
-    /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public CompactionProfileProductionDataRequest CreateCompositeProfileRequest(Guid projectUid,
+    /// <returns>An instance of the CompactionProfileProductionDataRequest class.</returns>
+    public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(Guid projectUid,
       double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees,
       Guid? filterUid,Guid customerUid, Guid? cutfillDesignUid)
     {
@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         ProductionDataType.Height,
         filter,
         -1,
-        designDescriptor,
+        null,
         null,
         llPoints,
         ValidationConstants.MIN_STATION,
