@@ -112,7 +112,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Headers(customHeaders)
           .ProjectSettings(settings)
           .ExcludedIds(exludedIds))
-          .CreateCompositeProfileRequest(
+          .CreateProductionDataProfileRequest(
             projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, filterUid, customerUid, cutfillDesignUid);
 
       slicerProductionDataProfileRequest.Validate();

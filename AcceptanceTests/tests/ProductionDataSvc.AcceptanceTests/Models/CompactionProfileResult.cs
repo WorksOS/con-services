@@ -17,7 +17,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     /// <summary>
     /// The collection of cells produced by the query. Cells are ordered by increasing station value along the line or alignment.
     /// </summary>
-    public List<CompactionProfileCell> cells;
+    public List<CompactionProfileCell> points;
     #endregion
 
     #region constructors
@@ -35,12 +35,12 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
-      if (this.cells.Count != other.cells.Count)
+      if (this.points.Count != other.points.Count)
         return false;
 
-      for (int i = 0; i < this.cells.Count; i++)
+      for (int i = 0; i < this.points.Count; i++)
       {
-        if (!this.cells[i].Equals(other.cells[i]))
+        if (!this.points[i].Equals(other.points[i]))
           return false;
       }
 
@@ -133,6 +133,11 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public float designHeight;
 
     /// <summary>
+    /// Raw CMV value.
+    /// </summary>
+    public float cmv;
+
+    /// <summary>
     ///  CMV value expressed as a percentage of the Target CMV applicable at the time the cell pass that contributed the CMV value was recorded.
     /// </summary>
     public float cmvPercent;
@@ -176,6 +181,21 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     /// Speed value in cm/s
     /// </summary>
     public float speed;
+
+    /// <summary>
+    /// Elevation of the cell pass that contributed the speed value.
+    /// </summary>
+    public float speedHeight;
+
+    /// <summary>
+    /// Cut-fill value in meters. Cut values are positive, fill values are negative, zero is on grade.
+    /// </summary>
+    public float cutFill;
+
+    /// <summary>
+    /// Elevation of the cell pass that contributed the cut-fill value.
+    /// </summary>
+    public float cutFillHeight;
 
     /// <summary>
     /// The value in the pass count summary color palette to use for this cell. 
@@ -226,6 +246,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
              FloatEquals(this.lowestPassHeight, other.lowestPassHeight) &&
              FloatEquals(this.lastCompositeHeight, other.lastCompositeHeight) &&
              FloatEquals(this.designHeight, other.designHeight) &&
+             FloatEquals(this.cmv, other.cmv) &&
              FloatEquals(this.cmvPercent, other.cmvPercent) &&
              FloatEquals(this.cmvHeight, other.cmvHeight) &&
              FloatEquals(this.mdpPercent, other.mdpPercent) &&
@@ -235,6 +256,9 @@ namespace ProductionDataSvc.AcceptanceTests.Models
              this.topLayerPassCount == other.topLayerPassCount &&
              FloatEquals(this.cmvPercentChange, other.cmvPercentChange) &&
              FloatEquals(this.speed, other.speed) &&
+             FloatEquals(this.speedHeight, other.speedHeight) &&
+             FloatEquals(this.cutFill, other.cutFill) &&
+             FloatEquals(this.cutFillHeight, other.cutFillHeight) &&
              this.passCountIndex == other.passCountIndex &&
              this.temperatureIndex == other.temperatureIndex &&
              this.cmvIndex == other.cmvIndex &&

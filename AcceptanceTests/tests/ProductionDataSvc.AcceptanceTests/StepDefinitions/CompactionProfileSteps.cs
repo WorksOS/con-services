@@ -32,6 +32,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
     }
 
+    [Given(@"a cutfillDesignUid ""(.*)""")]
+    public void GivenACutfillDesignUid(string cutfillDesignUid)
+    {
+      queryParameters += string.Format("&cutfillDesignUid={0}", cutfillDesignUid);
+    }
+
     [When(@"I request a Compaction Profile")]
     public void WhenIRequestACompactionProfile()
     {
