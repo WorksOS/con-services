@@ -112,6 +112,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CompactionCmv.feature</DependentUpon>
     </Compile>
+    <Compile Include="CompactionDesignProfile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionDesignProfile.feature</DependentUpon>
+    </Compile>
     <Compile Include="CompactionElevation.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -296,7 +301,6 @@
     <Compile Include="Models\ProfileGridPoints.cs" />
     <Compile Include="Models\ProfileLLPoints.cs" />
     <Compile Include="Models\ProfileRequest.cs" />
-    <Compile Include="Models\ProfileV2Request.cs" />
     <Compile Include="Models\ProjectExtentRequest.cs" />
     <Compile Include="Models\GetMachinesResult.cs" />
     <Compile Include="Models\ProjectStatistics.cs" />
@@ -365,6 +369,7 @@
     <Compile Include="StepDefinitions\CompactionMdpSteps.cs" />
     <Compile Include="StepDefinitions\CompactionPaletteSteps.cs" />
     <Compile Include="StepDefinitions\CompactionPassCountSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionDesignProfileSteps.cs" />
     <Compile Include="StepDefinitions\CompactionProfileSteps.cs" />
     <Compile Include="StepDefinitions\CompactionSpeedSteps.cs" />
     <Compile Include="StepDefinitions\CompactionTagFileSteps.cs" />
@@ -480,6 +485,10 @@
     <None Include="CompactionPassCount.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CompactionPassCount.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionDesignProfile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionDesignProfile.feature.cs</LastGenOutput>
     </None>
     <None Include="CompactionProfile.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
