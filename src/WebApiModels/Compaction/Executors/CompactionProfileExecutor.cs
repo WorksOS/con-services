@@ -172,6 +172,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           cutFill = float.IsNaN(lastCompositeHeight) || float.IsNaN(designHeight) ? float.NaN : lastCompositeHeight - designHeight,
           cutFillHeight = float.NaN,//will be set later using the cut-fill design
 
+          cmv = noCCVValue ? float.NaN : currCell.CCV / 10.0F,
           cmvPercent = cmvPercent,
           cmvHeight = noCCElevation ? float.NaN : currCell.CCVElev,
 
@@ -372,6 +373,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       lowestPassHeight = float.NaN,
       lastCompositeHeight = float.NaN,
       designHeight = float.NaN,
+      cmv = float.NaN,
       cmvPercent = float.NaN,
       cmvHeight = float.NaN,
       mdpPercent = float.NaN,

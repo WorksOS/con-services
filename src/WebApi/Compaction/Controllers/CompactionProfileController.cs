@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -12,6 +13,7 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.Compaction.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
@@ -88,6 +90,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [Route("api/v2/profiles/productiondata/slicer")]
     [HttpGet]
     public async Task<CompactionProfileResult<CompactionProfileCell>> GetProfileProductionDataSlicer(
+      [FromServices] ICompactionProfileResultHelper profileResultHelper,
       [FromQuery] Guid projectUid,
       [FromQuery] double startLatDegrees,
       [FromQuery] double startLonDegrees,
@@ -103,6 +106,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders));
       var exludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
 
+      //Get production data profile
       var slicerProductionDataProfileRequest = requestFactory.Create<ProductionDataProfileRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
@@ -140,16 +144,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         );
 
         //Find the cut-fill elevations for the cell stations from the design vertex elevations
+        profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult);
       }
       return slicerProductionDataResult;
-    }
-
-    private void FindCutFillElevations(CompactionProfileResult<CompactionProfileCell> slicerProfileResult, CompactionProfileResult<CompactionProfileVertex> slicerDesignResult)
-    {
-      foreach (var cell in slicerProfileResult.points)
-      {
-        
-      }
     }
 
     [ProjectUidVerifier]
@@ -186,5 +183,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(profileRequest) as CompactionProfileResult<CompactionProfileVertex>
       );
     }
+
+ 
   }
 }

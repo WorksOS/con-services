@@ -50,6 +50,11 @@
     public float designHeight;
 
     /// <summary>
+    /// Raw CMV value.
+    /// </summary>
+    public float cmv;
+
+    /// <summary>
     ///  CMV value expressed as a percentage of the Target CMV applicable at the time the cell pass that contributed the CMV value was recorded.
     /// </summary>
     public float cmvPercent;
@@ -150,6 +155,7 @@
       lowestPassHeight = cell.lowestPassHeight;
       lastCompositeHeight = cell.lastCompositeHeight;
       designHeight = cell.designHeight;
+      cmv = cell.cmv;
       cmvPercent = cell.cmvPercent;
       cmvHeight = cell.cmvHeight;
       mdpPercent = cell.mdpPercent;
