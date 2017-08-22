@@ -90,6 +90,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
 #line 11
  testRunner.Then("the Compaction Design Profile should be", @"{
+    ""designFileUid"": ""dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"",
     ""gridDistanceBetweenProfilePoints"": 1.6069349835347946,
     ""points"": [
         {

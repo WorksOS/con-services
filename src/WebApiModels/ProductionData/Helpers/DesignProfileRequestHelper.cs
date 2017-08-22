@@ -46,6 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
       return DesignProfileProductionDataRequest.CreateProfileProductionData(
         ProjectId,
+        importedFileUid,
         ProductionDataType.Height,
         filter,
         -1,
