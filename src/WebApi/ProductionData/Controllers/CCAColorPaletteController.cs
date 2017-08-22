@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// Controller for CCA data colour palettes resource.
   /// </summary>
   /// 
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CCAColorPaletteController : Controller, ICCAColorPaletteContract
   {
     /// <summary>

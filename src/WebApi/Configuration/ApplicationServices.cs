@@ -33,6 +33,7 @@ namespace VSS.Productivity3D.WebApi
     /// <returns>IServiceCollection collection of services for controller DI.</returns>
     public void ConfigureApplicationServices(IServiceCollection services)
     {
+      //TODO We may switch over to IOptions as it is safer - proactive config validation vs lazy and strongly typed config values
       services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>();
       services.AddScoped<IASNodeClient, ASNodeClient>();
       services.AddScoped<ITagProcessor, TagProcessor>();

@@ -41,6 +41,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for displaying production data and linework.
   /// </summary>
+  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class CompactionTileController : BaseController
   {
     /// <summary>
