@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
     }
-    
+
     [TestMethod]
     public void Should_throw_ServiceException_When_no_result_returned_from_Raptor()
     {
@@ -55,8 +55,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Setup(x => x.GetDesignProfile(It.IsAny<TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args>()))
         .Returns((MemoryStream)null);
 
-      var request = ProfileProductionDataRequest.CreateProfileProductionData(1234, Guid.Empty, ProductionDataType.Height, null, -1,
-        null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, null, false);
+      var request = DesignProfileProductionDataRequest.CreateProfileProductionData(1234, ProductionDataType.Height, null, -1,
+        null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionDesignProfileExecutor<CompactionProfileVertex>>(logger, raptorClient.Object);
@@ -107,9 +107,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           .Setup(x => x.GetDesignProfile(It.IsAny<TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args>()))
           .Returns(ms);
 
-        var request = ProfileProductionDataRequest.CreateProfileProductionData(1234, Guid.Empty,
-          ProductionDataType.Height, null, -1,
-          null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, null, false);
+        var request = DesignProfileProductionDataRequest.CreateProfileProductionData(1234, ProductionDataType.Height, null, -1,
+          null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION);
 
         var executor = RequestExecutorContainerFactory
           .Build<CompactionDesignProfileExecutor<CompactionProfileVertex>>(logger, raptorClient.Object);

@@ -50,6 +50,11 @@
     public float designHeight;
 
     /// <summary>
+    /// Raw CMV value.
+    /// </summary>
+    public float cmv;
+
+    /// <summary>
     ///  CMV value expressed as a percentage of the Target CMV applicable at the time the cell pass that contributed the CMV value was recorded.
     /// </summary>
     public float cmvPercent;
@@ -95,6 +100,21 @@
     public float speed;
 
     /// <summary>
+    /// Elevation of the cell pass that contributed the speed value.
+    /// </summary>
+    public float speedHeight;
+
+    /// <summary>
+    /// Cut-fill value in meters. Cut values are positive, fill values are negative, zero is on grade.
+    /// </summary>
+    public float cutFill;
+
+    /// <summary>
+    /// Elevation of the cell pass that contributed the cut-fill value.
+    /// </summary>
+    public float cutFillHeight;
+
+    /// <summary>
     /// The value in the pass count summary color palette to use for this cell. 
     /// </summary>
     public ValueTargetType passCountIndex;
@@ -135,6 +155,7 @@
       lowestPassHeight = cell.lowestPassHeight;
       lastCompositeHeight = cell.lastCompositeHeight;
       designHeight = cell.designHeight;
+      cmv = cell.cmv;
       cmvPercent = cell.cmvPercent;
       cmvHeight = cell.cmvHeight;
       mdpPercent = cell.mdpPercent;
@@ -144,6 +165,9 @@
       topLayerPassCount = cell.topLayerPassCount;
       cmvPercentChange = cell.cmvPercentChange;
       speed = cell.speed;
+      speedHeight = cell.speedHeight;
+      cutFill = cell.cutFill;
+      cutFillHeight = cell.cutFillHeight;
       passCountIndex = cell.passCountIndex;
       temperatureIndex = cell.temperatureIndex;
       cmvIndex = cell.cmvIndex;
