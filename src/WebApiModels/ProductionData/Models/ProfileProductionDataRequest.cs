@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
@@ -21,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "callId", Required = Required.Default)]
-    public Guid? callId { get; private set; }
+    public Guid? callId { get; protected set; }
 
     /// <summary>
     /// The type of profile to be generated.
@@ -29,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// 
     [JsonProperty(PropertyName = "profileType", Required = Required.Always)]
     [Required]
-    public ProductionDataType profileType { get; private set; }
+    public ProductionDataType profileType { get; protected set; }
 
     /// <summary>
     /// The filter instance to use in the request
@@ -37,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public Filter filter { get; private set; }
+    public Filter filter { get; protected set; }
 
     /// <summary>
     /// The filter ID to used in the request.
@@ -45,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "filterID", Required = Required.Default)]
-    public long? filterID { get; private set; }
+    public long? filterID { get; protected set; }
 
     /// <summary>
     /// The descriptor for an alignment centerline design to be used as the geometry along which the profile is generated
@@ -53,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "alignmentDesign", Required = Required.Default)]
-    public DesignDescriptor alignmentDesign { get; private set; }
+    public DesignDescriptor alignmentDesign { get; protected set; }
 
     /// <summary>
     /// A series of points along which to generate the profile. Coordinates are expressed in terms of the grid coordinate system used by the project. Values are expressed in meters.
@@ -61,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "gridPoints", Required = Required.Default)]
-    public ProfileGridPoints gridPoints { get; private set; }
+    public ProfileGridPoints gridPoints { get; protected set; }
 
     /// <summary>
     /// A series of points along which to generate the profile. Coordinates are expressed in terms of the WGS84 lat/lon coordinates. Values are expressed in radians.
@@ -69,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "wgs84Points", Required = Required.Default)]
-    public ProfileLLPoints wgs84Points { get; private set; }
+    public ProfileLLPoints wgs84Points { get; protected set; }
 
     /// <summary>
     /// The station on an alignment centerline design (if one is provided) to start computing the profile from. Values are expressed in meters.
@@ -77,7 +78,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// 
     [Range(ValidationConstants.MIN_STATION, ValidationConstants.MAX_STATION)]
     [JsonProperty(PropertyName = "startStation", Required = Required.Default)]
-    public double? startStation { get; private set; }
+    public double? startStation { get; protected set; }
 
     /// <summary>
     /// The station on an alignment centerline design (if one is provided) to finish computing the profile at. Values are expressed in meters.
@@ -85,14 +86,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// 
     [Range(ValidationConstants.MIN_STATION, ValidationConstants.MAX_STATION)]
     [JsonProperty(PropertyName = "endStation", Required = Required.Default)]
-    public double? endStation { get; private set; }
+    public double? endStation { get; protected set; }
 
     /// <summary>
     /// The set of parameters and configuration information relevant to analysis of compaction material layers information for related profile queries.
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
-    public LiftBuildSettings liftBuildSettings { get; private set; }
+    public LiftBuildSettings liftBuildSettings { get; protected set; }
 
     /// <summary>
     /// Return all analysed layers and cell passes along with the summary cell based results of the profile query
@@ -100,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// 
     [JsonProperty(PropertyName = "returnAllPassesAndLayers", Required = Required.Always)]
     [Required]
-    public bool returnAllPassesAndLayers { get; private set; }
+    public bool returnAllPassesAndLayers { get; protected set; }
 
     public static ProfileProductionDataRequest CreateProfileProductionData(
       long? projectID,
@@ -156,6 +157,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     };
 
     /// <summary>
+    /// Returns whether this request is for an alignment design profile.
+    /// </summary>
+    public bool IsAlignmentDesign => alignmentDesign != null;
+
+    /// <summary>
     /// Validates the request and throws if validation fails.
     /// </summary>
     public override void Validate()
@@ -171,7 +177,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 
       if (filter != null)
       {
-        // Validate filter...
         filter.Validate();
 
         if (filterID.HasValue && filterID.Value <= 0)
@@ -193,7 +198,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Only one type, either a linear or alignment based, of profile must be provided."));
+                "Only one type, either a linear or alignment based profile must be provided."));
       }
 
       if (alignmentDesign != null)

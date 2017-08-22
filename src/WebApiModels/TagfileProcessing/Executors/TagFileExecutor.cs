@@ -1,10 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using TAGProcServiceDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.TagfileProcessing.Models;

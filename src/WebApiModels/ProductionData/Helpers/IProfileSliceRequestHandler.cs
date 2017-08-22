@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
-  public interface IProfileSliceRequestHandler
+  public interface IProductionDataProfileRequestHelper
   {
-    ProfileProductionDataRequest CreateSlicerProfileRequest(Guid projectUid,
+    CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(Guid projectUid,
       double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees,
-      Guid? filterUid, Guid customerUid, IDictionary<string, string> headers, Guid? cutfillDesignUid);
+      Guid? filterUid, Guid customerUid, Guid? cutfillDesignUid);
   }
 }

@@ -71,175 +71,200 @@ namespace ProductionDataSvc.AcceptanceTests
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Slicer Profile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionProfile")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void CompactionGetSlicerProfile()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Profile", new string[] {
-                        "ignore"});
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Profile", ((string[])(null)));
 #line 5
 this.ScenarioSetup(scenarioInfo);
 #line 6
  testRunner.Given("the Compaction Profile service URI \"/api/v2/profiles/productiondata/slicer\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
-  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("a projectUid \"7925f179-013d-4aaf-aff4-7b9833bb06d6\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
   testRunner.And("a startLatDegrees \"36.207310\" and a startLonDegrees \"-115.019584\" and an endLatDe" +
                     "grees \"36.207322\" And an endLonDegrees \"-115.019574\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
+  testRunner.And("a cutfillDesignUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 10
  testRunner.When("I request a Compaction Profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 10
- testRunner.Then("the Compaction Profile should be", "{\n    \"gridDistanceBetweenProfilePoints\": 1.6069349832172868,\n    \"cells\": [\n    " +
-                    "    {\n            \"cellType\": 1,\n            \"station\": 0,\n            \"firstPas" +
-                    "sHeight\": 597.294,\n            \"highestPassHeight\": 597.629,\n            \"lastPa" +
-                    "ssHeight\": 597.367,\n            \"lowestPassHeight\": 597.292,\n            \"lastCo" +
-                    "mpositeHeight\": 597.367,\n            \"designHeight\": \"NaN\",\n            \"cmvPerc" +
-                    "ent\": \"NaN\",\n            \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n  " +
-                    "          \"mdpHeight\": \"NaN\",\n            \"temperature\": \"NaN\",\n            \"tem" +
-                    "peratureHeight\": \"NaN\",\n            \"topLayerPassCount\": 272,\n            \"cmvPe" +
-                    "rcentChange\": \"NaN\",\n            \"speed\": 0,\n            \"passCountIndex\": 0,\n  " +
-                    "          \"temperatureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"mdpIn" +
-                    "dex\": -1,\n            \"speedIndex\": -1\n        },\n        {\n            \"cellTyp" +
-                    "e\": 0,\n            \"station\": 0.0852058030756496,\n            \"firstPassHeight\":" +
-                    " 597.301636,\n            \"highestPassHeight\": 597.603455,\n            \"lastPassH" +
-                    "eight\": 597.3687,\n            \"lowestPassHeight\": 597.297058,\n            \"lastC" +
-                    "ompositeHeight\": 597.3687,\n            \"designHeight\": \"NaN\",\n            \"cmvPe" +
-                    "rcent\": \"NaN\",\n            \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n" +
-                    "            \"mdpHeight\": \"NaN\",\n            \"temperature\": \"NaN\",\n            \"t" +
-                    "emperatureHeight\": \"NaN\",\n            \"topLayerPassCount\": 284,\n            \"cmv" +
-                    "PercentChange\": \"NaN\",\n            \"speed\": 0,\n            \"passCountIndex\": 0,\n" +
-                    "            \"temperatureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"mdp" +
-                    "Index\": -1,\n            \"speedIndex\": -1\n        },\n        {\n            \"cellT" +
-                    "ype\": 1,\n            \"station\": 0.10001382506285361,\n            \"firstPassHeigh" +
-                    "t\": 597.303,\n            \"highestPassHeight\": 597.599,\n            \"lastPassHeig" +
-                    "ht\": 597.369,\n            \"lowestPassHeight\": 597.298,\n            \"lastComposit" +
-                    "eHeight\": 597.369,\n            \"designHeight\": \"NaN\",\n            \"cmvPercent\": " +
-                    "\"NaN\",\n            \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n        " +
-                    "    \"mdpHeight\": \"NaN\",\n            \"temperature\": \"NaN\",\n            \"temperatu" +
-                    "reHeight\": \"NaN\",\n            \"topLayerPassCount\": 284,\n            \"cmvPercentC" +
-                    "hange\": \"NaN\",\n            \"speed\": 0,\n            \"passCountIndex\": 0,\n        " +
+#line 11
+ testRunner.Then("the Compaction Profile should be", "{\n    \"gridDistanceBetweenProfilePoints\": 1.6069349835347946,\n    \"points\": [\n   " +
+                    "     {\n            \"cellType\": 1,\n            \"station\": 0,\n            \"firstPa" +
+                    "ssHeight\": 597.353,\n            \"highestPassHeight\": 597.396,\n            \"lastP" +
+                    "assHeight\": 597.396,\n            \"lowestPassHeight\": 597.353,\n            \"lastC" +
+                    "ompositeHeight\": 597.1041,\n            \"designHeight\": 597.438,\n            \"cmv" +
+                    "\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"cmvHeight\": \"NaN\",\n     " +
+                    "       \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n            \"tempera" +
+                    "ture\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n            \"topLayerPassC" +
+                    "ount\": 3,\n            \"cmvPercentChange\": \"NaN\",\n            \"speed\": 0,\n       " +
+                    "     \"speedHeight\": 0,\n            \"cutFill\": -0.3338623,\n            \"cutFillHe" +
+                    "ight\": 597.4387,\n            \"passCountIndex\": 0,\n            \"temperatureIndex\"" +
+                    ": -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n            \"speed" +
+                    "Index\": -1\n        },\n        {\n            \"cellType\": 0,\n            \"station\"" +
+                    ": 0.085205803092608473,\n            \"firstPassHeight\": 597.3581,\n            \"hi" +
+                    "ghestPassHeight\": 597.388367,\n            \"lastPassHeight\": 597.388367,\n        " +
+                    "    \"lowestPassHeight\": 597.3581,\n            \"lastCompositeHeight\": 597.1135,\n " +
+                    "           \"designHeight\": 597.4414,\n            \"cmv\": \"NaN\",\n            \"cmvP" +
+                    "ercent\": \"NaN\",\n            \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\"," +
+                    "\n            \"mdpHeight\": \"NaN\",\n            \"temperature\": \"NaN\",\n            \"" +
+                    "temperatureHeight\": \"NaN\",\n            \"topLayerPassCount\": 2,\n            \"cmvP" +
+                    "ercentChange\": \"NaN\",\n            \"speed\": 0,\n            \"speedHeight\": 0,\n    " +
+                    "        \"cutFill\": -0.326843262,\n            \"cutFillHeight\": 597.4384,\n        " +
+                    "    \"passCountIndex\": 0,\n            \"temperatureIndex\": -1,\n            \"cmvInd" +
+                    "ex\": -1,\n            \"mdpIndex\": -1,\n            \"speedIndex\": -1\n        },\n   " +
+                    "     {\n            \"cellType\": 1,\n            \"station\": 0.10001382414230234,\n  " +
+                    "          \"firstPassHeight\": 597.359,\n            \"highestPassHeight\": 597.387,\n" +
+                    "            \"lastPassHeight\": 597.387,\n            \"lowestPassHeight\": 597.359,\n" +
+                    "            \"lastCompositeHeight\": 597.1152,\n            \"designHeight\": 597.442" +
+                    ",\n            \"cmv\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"cmvHei" +
+                    "ght\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n  " +
+                    "          \"temperature\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n        " +
+                    "    \"topLayerPassCount\": 2,\n            \"cmvPercentChange\": \"NaN\",\n            \"" +
+                    "speed\": 0,\n            \"speedHeight\": 0,\n            \"cutFill\": -0.326843262,\n  " +
+                    "          \"cutFillHeight\": 597.438354,\n            \"passCountIndex\": 0,\n        " +
                     "    \"temperatureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": " +
                     "-1,\n            \"speedIndex\": -1\n        },\n        {\n            \"cellType\": 0," +
-                    "\n            \"station\": 0.11482184705005764,\n            \"firstPassHeight\": 597." +
-                    "302368,\n            \"highestPassHeight\": 597.5917,\n            \"lastPassHeight\":" +
-                    " 597.3689,\n            \"lowestPassHeight\": 597.2965,\n            \"lastCompositeH" +
-                    "eight\": 597.3689,\n            \"designHeight\": \"NaN\",\n            \"cmvPercent\": \"" +
-                    "NaN\",\n            \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n         " +
-                    "   \"mdpHeight\": \"NaN\",\n            \"temperature\": \"NaN\",\n            \"temperatur" +
-                    "eHeight\": \"NaN\",\n            \"topLayerPassCount\": 275,\n            \"cmvPercentCh" +
-                    "ange\": \"NaN\",\n            \"speed\": 0,\n            \"passCountIndex\": 0,\n         " +
-                    "   \"temperatureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -" +
-                    "1,\n            \"speedIndex\": -1\n        },\n        {\n            \"cellType\": 1,\n" +
-                    "            \"station\": 0.31995441222371812,\n            \"firstPassHeight\": 597.2" +
-                    "94,\n            \"highestPassHeight\": 597.49,\n            \"lastPassHeight\": 597.3" +
-                    "67,\n            \"lowestPassHeight\": 597.276,\n            \"lastCompositeHeight\": " +
-                    "597.367,\n            \"designHeight\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n   " +
-                    "         \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHe" +
-                    "ight\": \"NaN\",\n            \"temperature\": \"NaN\",\n            \"temperatureHeight\":" +
-                    " \"NaN\",\n            \"topLayerPassCount\": 275,\n            \"cmvPercentChange\": \"N" +
-                    "aN\",\n            \"speed\": 0,\n            \"passCountIndex\": 0,\n            \"tempe" +
-                    "ratureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n      " +
-                    "      \"speedIndex\": -1\n        },\n        {\n            \"cellType\": 0,\n         " +
-                    "   \"station\": 0.52508697739737864,\n            \"firstPassHeight\": 597.2947,\n    " +
-                    "        \"highestPassHeight\": 597.4872,\n            \"lastPassHeight\": 597.364868," +
-                    "\n            \"lowestPassHeight\": 597.2852,\n            \"lastCompositeHeight\": 59" +
-                    "7.364868,\n            \"designHeight\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n  " +
-                    "          \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpH" +
-                    "eight\": \"NaN\",\n            \"temperature\": \"NaN\",\n            \"temperatureHeight\"" +
-                    ": \"NaN\",\n            \"topLayerPassCount\": 263,\n            \"cmvPercentChange\": \"" +
-                    "NaN\",\n            \"speed\": 0,\n            \"passCountIndex\": 0,\n            \"temp" +
-                    "eratureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n     " +
-                    "       \"speedIndex\": -1\n        },\n        {\n            \"cellType\": 1,\n        " +
-                    "    \"station\": 0.60891033118360127,\n            \"firstPassHeight\": 597.295,\n    " +
-                    "        \"highestPassHeight\": 597.486,\n            \"lastPassHeight\": 597.364,\n   " +
-                    "         \"lowestPassHeight\": 597.289,\n            \"lastCompositeHeight\": 597.364" +
-                    ",\n            \"designHeight\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n          " +
-                    "  \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": " +
-                    "\"NaN\",\n            \"temperature\": \"NaN\",\n            \"temperatureHeight\": \"NaN\"," +
-                    "\n            \"topLayerPassCount\": 263,\n            \"cmvPercentChange\": \"NaN\",\n  " +
-                    "          \"speed\": 0,\n            \"passCountIndex\": 0,\n            \"temperatureI" +
-                    "ndex\": -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n            \"" +
-                    "speedIndex\": -1\n        },\n        {\n            \"cellType\": 0,\n            \"sta" +
-                    "tion\": 0.6927336849698239,\n            \"firstPassHeight\": 597.294556,\n          " +
-                    "  \"highestPassHeight\": 597.488464,\n            \"lastPassHeight\": 597.364441,\n   " +
-                    "         \"lowestPassHeight\": 597.2878,\n            \"lastCompositeHeight\": 597.36" +
-                    "4441,\n            \"designHeight\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n      " +
-                    "      \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeigh" +
-                    "t\": \"NaN\",\n            \"temperature\": \"NaN\",\n            \"temperatureHeight\": \"N" +
-                    "aN\",\n            \"topLayerPassCount\": 261,\n            \"cmvPercentChange\": \"NaN\"" +
-                    ",\n            \"speed\": 0,\n            \"passCountIndex\": 0,\n            \"temperat" +
-                    "ureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n         " +
-                    "   \"speedIndex\": -1\n        },\n        {\n            \"cellType\": 1,\n            " +
-                    "\"station\": 0.81404289635761051,\n            \"firstPassHeight\": 597.294,\n        " +
-                    "    \"highestPassHeight\": 597.492,\n            \"lastPassHeight\": 597.365,\n       " +
-                    "     \"lowestPassHeight\": 597.286,\n            \"lastCompositeHeight\": 597.365,\n  " +
-                    "          \"designHeight\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"c" +
-                    "mvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN" +
-                    "\",\n            \"temperature\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n   " +
-                    "         \"topLayerPassCount\": 261,\n            \"cmvPercentChange\": \"NaN\",\n      " +
-                    "      \"speed\": 0,\n            \"passCountIndex\": 0,\n            \"temperatureIndex" +
-                    "\": -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n            \"spee" +
-                    "dIndex\": -1\n        },\n        {\n            \"cellType\": 0,\n            \"station" +
-                    "\": 0.93535210774539712,\n            \"firstPassHeight\": 597.29364,\n            \"h" +
-                    "ighestPassHeight\": 597.5072,\n            \"lastPassHeight\": 597.3698,\n           " +
-                    " \"lowestPassHeight\": 597.284,\n            \"lastCompositeHeight\": 597.3698,\n     " +
-                    "       \"designHeight\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"cmvH" +
-                    "eight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n" +
-                    "            \"temperature\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n      " +
-                    "      \"topLayerPassCount\": 269,\n            \"cmvPercentChange\": \"NaN\",\n         " +
-                    "   \"speed\": 0,\n            \"passCountIndex\": 0,\n            \"temperatureIndex\": " +
-                    "-1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n            \"speedIn" +
-                    "dex\": -1\n        },\n        {\n            \"cellType\": 1,\n            \"station\": " +
-                    "1.1178068373052017,\n            \"firstPassHeight\": 597.293,\n            \"highest" +
-                    "PassHeight\": 597.53,\n            \"lastPassHeight\": 597.377,\n            \"lowestP" +
-                    "assHeight\": 597.281,\n            \"lastCompositeHeight\": 597.377,\n            \"de" +
-                    "signHeight\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"cmvHeight\": \"N" +
-                    "aN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n          " +
-                    "  \"temperature\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n            \"top" +
-                    "LayerPassCount\": 269,\n            \"cmvPercentChange\": \"NaN\",\n            \"speed\"" +
-                    ": 0,\n            \"passCountIndex\": 0,\n            \"temperatureIndex\": -1,\n      " +
-                    "      \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n            \"speedIndex\": -1\n " +
-                    "       },\n        {\n            \"cellType\": 0,\n            \"station\": 1.30026156" +
-                    "68650064,\n            \"firstPassHeight\": 597.294739,\n            \"highestPassHei" +
-                    "ght\": 597.494446,\n            \"lastPassHeight\": 597.377,\n            \"lowestPass" +
-                    "Height\": 597.2863,\n            \"lastCompositeHeight\": 597.377,\n            \"desi" +
-                    "gnHeight\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"cmvHeight\": \"NaN" +
-                    "\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n            " +
-                    "\"temperature\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n            \"topLa" +
-                    "yerPassCount\": 266,\n            \"cmvPercentChange\": \"NaN\",\n            \"speed\": " +
-                    "0,\n            \"passCountIndex\": 0,\n            \"temperatureIndex\": -1,\n        " +
-                    "    \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n            \"speedIndex\": -1\n   " +
-                    "     },\n        {\n            \"cellType\": 1,\n            \"station\": 1.3229394024" +
-                    "788621,\n            \"firstPassHeight\": 597.295,\n            \"highestPassHeight\":" +
-                    " 597.49,\n            \"lastPassHeight\": 597.377,\n            \"lowestPassHeight\": " +
-                    "597.287,\n            \"lastCompositeHeight\": 597.377,\n            \"designHeight\":" +
+                    "\n            \"station\": 0.11482184519199619,\n            \"firstPassHeight\": 597." +
+                    "36084,\n            \"highestPassHeight\": 597.386963,\n            \"lastPassHeight\"" +
+                    ": 597.386963,\n            \"lowestPassHeight\": 597.36084,\n            \"lastCompos" +
+                    "iteHeight\": 597.115234,\n            \"designHeight\": 597.4418,\n            \"cmv\":" +
                     " \"NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"cmvHeight\": \"NaN\",\n       " +
                     "     \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n            \"temperatu" +
                     "re\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n            \"topLayerPassCou" +
-                    "nt\": 266,\n            \"cmvPercentChange\": \"NaN\",\n            \"speed\": 0,\n       " +
-                    "     \"passCountIndex\": 0,\n            \"temperatureIndex\": -1,\n            \"cmvIn" +
-                    "dex\": -1,\n            \"mdpIndex\": -1,\n            \"speedIndex\": -1\n        },\n  " +
-                    "      {\n            \"cellType\": 0,\n            \"station\": 1.3456172380927181,\n  " +
-                    "          \"firstPassHeight\": 597.2948,\n            \"highestPassHeight\": 597.49,\n" +
-                    "            \"lastPassHeight\": 597.376953,\n            \"lowestPassHeight\": 597.28" +
-                    "65,\n            \"lastCompositeHeight\": 597.376953,\n            \"designHeight\": \"" +
-                    "NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"cmvHeight\": \"NaN\",\n         " +
-                    "   \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n            \"temperature" +
-                    "\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n            \"topLayerPassCount" +
-                    "\": 259,\n            \"cmvPercentChange\": \"NaN\",\n            \"speed\": 0,\n         " +
-                    "   \"passCountIndex\": 0,\n            \"temperatureIndex\": -1,\n            \"cmvInde" +
-                    "x\": -1,\n            \"mdpIndex\": -1,\n            \"speedIndex\": -1\n        },\n    " +
-                    "    {\n            \"cellType\": 1,\n            \"station\": 1.6069349832172868,\n    " +
-                    "        \"firstPassHeight\": 597.293,\n            \"highestPassHeight\": 597.49,\n   " +
-                    "         \"lastPassHeight\": 597.376,\n            \"lowestPassHeight\": 597.281,\n   " +
-                    "         \"lastCompositeHeight\": 597.376,\n            \"designHeight\": \"NaN\",\n    " +
-                    "        \"cmvPercent\": \"NaN\",\n            \"cmvHeight\": \"NaN\",\n            \"mdpPer" +
-                    "cent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n            \"temperature\": \"NaN\",\n" +
-                    "            \"temperatureHeight\": \"NaN\",\n            \"topLayerPassCount\": 259,\n  " +
-                    "          \"cmvPercentChange\": \"NaN\",\n            \"speed\": 0,\n            \"passCo" +
-                    "untIndex\": 0,\n            \"temperatureIndex\": -1,\n            \"cmvIndex\": -1,\n  " +
-                    "          \"mdpIndex\": -1,\n            \"speedIndex\": -1\n        }\n    ],\n    \"Cod" +
-                    "e\": 0,\n    \"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+                    "nt\": 1,\n            \"cmvPercentChange\": \"NaN\",\n            \"speed\": 0,\n         " +
+                    "   \"speedHeight\": 0,\n            \"cutFill\": -0.3222046,\n            \"cutFillHeig" +
+                    "ht\": 597.4383,\n            \"passCountIndex\": 0,\n            \"temperatureIndex\": " +
+                    "-1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n            \"speedIn" +
+                    "dex\": -1\n        },\n        {\n            \"cellType\": 1,\n            \"station\": " +
+                    "0.31995441034733291,\n            \"firstPassHeight\": 597.386,\n            \"highes" +
+                    "tPassHeight\": 597.386,\n            \"lastPassHeight\": 597.386,\n            \"lowes" +
+                    "tPassHeight\": 597.386,\n            \"lastCompositeHeight\": 597.1158,\n            " +
+                    "\"designHeight\": 597.438,\n            \"cmv\": \"NaN\",\n            \"cmvPercent\": \"Na" +
+                    "N\",\n            \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n           " +
+                    " \"mdpHeight\": \"NaN\",\n            \"temperature\": \"NaN\",\n            \"temperatureH" +
+                    "eight\": \"NaN\",\n            \"topLayerPassCount\": 1,\n            \"cmvPercentChange" +
+                    "\": \"NaN\",\n            \"speed\": 0,\n            \"speedHeight\": 0,\n            \"cut" +
+                    "Fill\": -0.3222046,\n            \"cutFillHeight\": 597.4375,\n            \"passCount" +
+                    "Index\": 0,\n            \"temperatureIndex\": -1,\n            \"cmvIndex\": -1,\n     " +
+                    "       \"mdpIndex\": -1,\n            \"speedIndex\": -1\n        },\n        {\n       " +
+                    "     \"cellType\": 0,\n            \"station\": 0.52508697550266958,\n            \"fir" +
+                    "stPassHeight\": 597.3832,\n            \"highestPassHeight\": 597.3832,\n            " +
+                    "\"lastPassHeight\": 597.3832,\n            \"lowestPassHeight\": 597.3832,\n          " +
+                    "  \"lastCompositeHeight\": 597.11676,\n            \"designHeight\": 597.435852,\n    " +
+                    "        \"cmv\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"cmvHeight\": " +
+                    "\"NaN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n        " +
+                    "    \"temperature\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n            \"t" +
+                    "opLayerPassCount\": 1,\n            \"cmvPercentChange\": \"NaN\",\n            \"speed\"" +
+                    ": 0,\n            \"speedHeight\": 0,\n            \"cutFill\": -0.317810059,\n        " +
+                    "    \"cutFillHeight\": 597.4367,\n            \"passCountIndex\": 0,\n            \"tem" +
+                    "peratureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n    " +
+                    "        \"speedIndex\": -1\n        },\n        {\n            \"cellType\": 1,\n       " +
+                    "     \"station\": 0.60891033030474173,\n            \"firstPassHeight\": 597.382,\n   " +
+                    "         \"highestPassHeight\": 597.382,\n            \"lastPassHeight\": 597.382,\n  " +
+                    "          \"lowestPassHeight\": 597.382,\n            \"lastCompositeHeight\": 597.11" +
+                    "72,\n            \"designHeight\": 597.435,\n            \"cmv\": \"NaN\",\n            \"" +
+                    "cmvPercent\": \"NaN\",\n            \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"N" +
+                    "aN\",\n            \"mdpHeight\": \"NaN\",\n            \"temperature\": \"NaN\",\n         " +
+                    "   \"temperatureHeight\": \"NaN\",\n            \"topLayerPassCount\": 1,\n            \"" +
+                    "cmvPercentChange\": \"NaN\",\n            \"speed\": 0,\n            \"speedHeight\": 0,\n" +
+                    "            \"cutFill\": -0.317810059,\n            \"cutFillHeight\": 597.43634,\n   " +
+                    "         \"passCountIndex\": 0,\n            \"temperatureIndex\": -1,\n            \"c" +
+                    "mvIndex\": -1,\n            \"mdpIndex\": -1,\n            \"speedIndex\": -1\n        }" +
+                    ",\n        {\n            \"cellType\": 0,\n            \"station\": 0.6927336851068138" +
+                    "8,\n            \"firstPassHeight\": 597.3828,\n            \"highestPassHeight\": 597" +
+                    ".3828,\n            \"lastPassHeight\": 597.3828,\n            \"lowestPassHeight\": 5" +
+                    "97.3828,\n            \"lastCompositeHeight\": 597.1214,\n            \"designHeight\"" +
+                    ": 597.4362,\n            \"cmv\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n         " +
+                    "   \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeight\":" +
+                    " \"NaN\",\n            \"temperature\": \"NaN\",\n            \"temperatureHeight\": \"NaN\"" +
+                    ",\n            \"topLayerPassCount\": 1,\n            \"cmvPercentChange\": \"NaN\",\n   " +
+                    "         \"speed\": 0,\n            \"speedHeight\": 0,\n            \"cutFill\": -0.310" +
+                    "546875,\n            \"cutFillHeight\": 597.436035,\n            \"passCountIndex\": 0" +
+                    ",\n            \"temperatureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"m" +
+                    "dpIndex\": -1,\n            \"speedIndex\": -1\n        },\n        {\n            \"cel" +
+                    "lType\": 1,\n            \"station\": 0.81404289546017272,\n            \"firstPassHei" +
+                    "ght\": 597.384,\n            \"highestPassHeight\": 597.384,\n            \"lastPassHe" +
+                    "ight\": 597.384,\n            \"lowestPassHeight\": 597.384,\n            \"lastCompos" +
+                    "iteHeight\": 597.127441,\n            \"designHeight\": 597.438,\n            \"cmv\": " +
+                    "\"NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"cmvHeight\": \"NaN\",\n        " +
+                    "    \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n            \"temperatur" +
+                    "e\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n            \"topLayerPassCoun" +
+                    "t\": 1,\n            \"cmvPercentChange\": \"NaN\",\n            \"speed\": 0,\n          " +
+                    "  \"speedHeight\": 0,\n            \"cutFill\": -0.310546875,\n            \"cutFillHei" +
+                    "ght\": 597.4356,\n            \"passCountIndex\": 0,\n            \"temperatureIndex\":" +
+                    " -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n            \"speedI" +
+                    "ndex\": -1\n        },\n        {\n            \"cellType\": 0,\n            \"station\":" +
+                    " 0.93535210581353156,\n            \"firstPassHeight\": 597.3836,\n            \"high" +
+                    "estPassHeight\": 597.3836,\n            \"lastPassHeight\": 597.376,\n            \"lo" +
+                    "westPassHeight\": 597.376,\n            \"lastCompositeHeight\": 597.128,\n          " +
+                    "  \"designHeight\": 597.4364,\n            \"cmv\": \"NaN\",\n            \"cmvPercent\": " +
+                    "\"NaN\",\n            \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n        " +
+                    "    \"mdpHeight\": \"NaN\",\n            \"temperature\": \"NaN\",\n            \"temperatu" +
+                    "reHeight\": \"NaN\",\n            \"topLayerPassCount\": 2,\n            \"cmvPercentCha" +
+                    "nge\": \"NaN\",\n            \"speed\": 0,\n            \"speedHeight\": 0,\n            \"" +
+                    "cutFill\": -0.305175781,\n            \"cutFillHeight\": 597.435364,\n            \"pa" +
+                    "ssCountIndex\": 0,\n            \"temperatureIndex\": -1,\n            \"cmvIndex\": -1" +
+                    ",\n            \"mdpIndex\": -1,\n            \"speedIndex\": -1\n        },\n        {\n" +
+                    "            \"cellType\": 1,\n            \"station\": 1.1178068364676852,\n          " +
+                    "  \"firstPassHeight\": 597.383,\n            \"highestPassHeight\": 597.383,\n        " +
+                    "    \"lastPassHeight\": 597.364,\n            \"lowestPassHeight\": 597.364,\n        " +
+                    "    \"lastCompositeHeight\": 597.128845,\n            \"designHeight\": 597.434,\n    " +
+                    "        \"cmv\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"cmvHeight\": " +
+                    "\"NaN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n        " +
+                    "    \"temperature\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n            \"t" +
+                    "opLayerPassCount\": 2,\n            \"cmvPercentChange\": \"NaN\",\n            \"speed\"" +
+                    ": 0,\n            \"speedHeight\": 0,\n            \"cutFill\": -0.305175781,\n        " +
+                    "    \"cutFillHeight\": 597.435059,\n            \"passCountIndex\": 0,\n            \"t" +
+                    "emperatureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n  " +
+                    "          \"speedIndex\": -1\n        },\n        {\n            \"cellType\": 0,\n     " +
+                    "       \"station\": 1.3002615671218389,\n            \"firstPassHeight\": 597.383,\n  " +
+                    "          \"highestPassHeight\": 597.383,\n            \"lastPassHeight\": 597.374634" +
+                    ",\n            \"lowestPassHeight\": 597.374634,\n            \"lastCompositeHeight\":" +
+                    " 597.138062,\n            \"designHeight\": 597.4385,\n            \"cmv\": \"NaN\",\n   " +
+                    "         \"cmvPercent\": \"NaN\",\n            \"cmvHeight\": \"NaN\",\n            \"mdpPe" +
+                    "rcent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n            \"temperature\": \"NaN\"," +
+                    "\n            \"temperatureHeight\": \"NaN\",\n            \"topLayerPassCount\": 2,\n   " +
+                    "         \"cmvPercentChange\": \"NaN\",\n            \"speed\": 0,\n            \"speedHe" +
+                    "ight\": 0,\n            \"cutFill\": -0.2998047,\n            \"cutFillHeight\": 597.43" +
+                    "4753,\n            \"passCountIndex\": 0,\n            \"temperatureIndex\": -1,\n     " +
+                    "       \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n            \"speedIndex\": -1\n" +
+                    "        },\n        {\n            \"cellType\": 1,\n            \"station\": 1.3229394" +
+                    "016228948,\n            \"firstPassHeight\": 597.383,\n            \"highestPassHeigh" +
+                    "t\": 597.383,\n            \"lastPassHeight\": 597.376,\n            \"lowestPassHeigh" +
+                    "t\": 597.376,\n            \"lastCompositeHeight\": 597.1392,\n            \"designHei" +
+                    "ght\": 597.439,\n            \"cmv\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n      " +
+                    "      \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeigh" +
+                    "t\": \"NaN\",\n            \"temperature\": \"NaN\",\n            \"temperatureHeight\": \"N" +
+                    "aN\",\n            \"topLayerPassCount\": 2,\n            \"cmvPercentChange\": \"NaN\",\n" +
+                    "            \"speed\": 0,\n            \"speedHeight\": 0,\n            \"cutFill\": -0." +
+                    "2998047,\n            \"cutFillHeight\": 597.434753,\n            \"passCountIndex\": " +
+                    "0,\n            \"temperatureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"" +
+                    "mdpIndex\": -1,\n            \"speedIndex\": -1\n        },\n        {\n            \"ce" +
+                    "llType\": 0,\n            \"station\": 1.3456172361239505,\n            \"firstPassHei" +
+                    "ght\": 597.382935,\n            \"highestPassHeight\": 597.382935,\n            \"last" +
+                    "PassHeight\": 597.375549,\n            \"lowestPassHeight\": 597.375549,\n           " +
+                    " \"lastCompositeHeight\": 597.139343,\n            \"designHeight\": 597.4387,\n      " +
+                    "      \"cmv\": \"NaN\",\n            \"cmvPercent\": \"NaN\",\n            \"cmvHeight\": \"N" +
+                    "aN\",\n            \"mdpPercent\": \"NaN\",\n            \"mdpHeight\": \"NaN\",\n          " +
+                    "  \"temperature\": \"NaN\",\n            \"temperatureHeight\": \"NaN\",\n            \"top" +
+                    "LayerPassCount\": 2,\n            \"cmvPercentChange\": \"NaN\",\n            \"speed\": " +
+                    "0,\n            \"speedHeight\": 0,\n            \"cutFill\": -0.294494629,\n          " +
+                    "  \"cutFillHeight\": 597.4347,\n            \"passCountIndex\": 0,\n            \"tempe" +
+                    "ratureIndex\": -1,\n            \"cmvIndex\": -1,\n            \"mdpIndex\": -1,\n      " +
+                    "      \"speedIndex\": -1\n        },\n        {\n            \"cellType\": 1,\n         " +
+                    "   \"station\": 1.6069349835347946,\n            \"firstPassHeight\": 597.382,\n      " +
+                    "      \"highestPassHeight\": 597.382,\n            \"lastPassHeight\": 597.371,\n     " +
+                    "       \"lowestPassHeight\": 597.371,\n            \"lastCompositeHeight\": 597.1405," +
+                    "\n            \"designHeight\": 597.435,\n            \"cmv\": \"NaN\",\n            \"cmv" +
+                    "Percent\": \"NaN\",\n            \"cmvHeight\": \"NaN\",\n            \"mdpPercent\": \"NaN\"" +
+                    ",\n            \"mdpHeight\": \"NaN\",\n            \"temperature\": \"NaN\",\n            " +
+                    "\"temperatureHeight\": \"NaN\",\n            \"topLayerPassCount\": 2,\n            \"cmv" +
+                    "PercentChange\": \"NaN\",\n            \"speed\": 0,\n            \"speedHeight\": 0,\n   " +
+                    "         \"cutFill\": -0.294494629,\n            \"cutFillHeight\": 597.434265,\n     " +
+                    "       \"passCountIndex\": 0,\n            \"temperatureIndex\": -1,\n            \"cmv" +
+                    "Index\": -1,\n            \"mdpIndex\": -1,\n            \"speedIndex\": -1\n        }\n " +
+                    "   ],\n    \"Code\": 0,\n    \"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

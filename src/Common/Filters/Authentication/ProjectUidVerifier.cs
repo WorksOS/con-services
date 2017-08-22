@@ -5,12 +5,12 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 namespace VSS.Productivity3D.Common.Filters.Authentication
 {
   /// <summary>
-  /// 
+  /// Validation filter attribute for the Project UID.
   /// </summary>
   public class ProjectUidVerifier : ActionFilterAttribute
   {
     /// <summary>
-    ///   Occurs before the action method is invoked. Used for the request logging.
+    /// Occurs before the action method is invoked. Used for the request logging.
     /// </summary>
     /// <param name="actionContext">The action context.</param>
     public override void OnActionExecuting(ActionExecutingContext actionContext)

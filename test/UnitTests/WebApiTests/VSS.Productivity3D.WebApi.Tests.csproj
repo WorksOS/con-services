@@ -9,6 +9,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.WebApiTests</RootNamespace>
+    <DependsOnNETStandard>netstandard1.6</DependsOnNETStandard>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,6 +34,7 @@
     <PackageReference Include="System.Runtime" Version="4.1.0" />
     <PackageReference Include="System.Reflection" Version="4.1.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.1.0" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.3.0" />
     <!-- END -->
     
   </ItemGroup>
@@ -40,6 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
+    <WarningsAsErrors />
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' ">

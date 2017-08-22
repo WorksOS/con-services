@@ -7,9 +7,10 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.TCCFileAccess;
 
-namespace VSS.Productivity3D.Common.Interfaces
+namespace VSS.Productivity3D.Common.Filters.Interfaces
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
@@ -108,7 +109,8 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// <param name="item"></param>
     /// <typeparam name="T"></typeparam>
     /// <exception cref="ServiceException"></exception>
-    public ContractExecutionResult Process<T>(T item)
+    public ContractExecutionResult 
+      Process<T>(T item)
     {
       ValidateTItem(item);
       return ProcessEx(item);
@@ -146,8 +148,6 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.fileList = fileList;
     }
 
-
-    //TODO: Check if this works
     /// <summary>
     /// Default destructor which destroys all structures necessary for error handling.
     /// </summary>

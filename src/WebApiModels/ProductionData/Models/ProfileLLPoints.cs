@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
@@ -50,16 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     [Required]
     public double lon2 { get; private set; }
 
-    /// <summary>
-    /// Private constructor.
-    /// </summary>
-    /// 
-    public ProfileLLPoints()
-    {
-      // ...
-    }
-
-    /// <summary>
+ /// <summary>
     /// Creates an instance of the ProfileLLPoints class.
     /// </summary>
     /// <param name="lat1">The first latitude value.</param>
@@ -76,20 +66,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// <summary>
     /// Creates a sample instance of ProfileLLPoints to be displayed in Help documentation.
     /// </summary>
-    /// 
-    public static ProfileLLPoints HelpSample
+    public static ProfileLLPoints HelpSample => new ProfileLLPoints
     {
-      get
-      {
-        return new ProfileLLPoints
-        {
-          lat1 = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
-          lon1 = -106.6040765 * ConversionConstants.DEGREES_TO_RADIANS,
-          lat2 = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
-          lon2 = -104.28745 * ConversionConstants.DEGREES_TO_RADIANS
-        };
-      }
-    }
+      lat1 = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
+      lon1 = -106.6040765 * ConversionConstants.DEGREES_TO_RADIANS,
+      lat2 = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
+      lon2 = -104.28745 * ConversionConstants.DEGREES_TO_RADIANS
+    };
 
     /// <summary>
     /// Validates all properties
@@ -98,7 +81,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       // Nothing else to validate...
     }
-
   }
-
 }
