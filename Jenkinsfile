@@ -1,9 +1,5 @@
 properties([disableConcurrentBuilds(), pipelineTriggers([])])
 
-node('Ubuntu_Slave') {
-    //Apply version number
-    //We will later use it to tag images
-
     def branch = env.BRANCH_NAME
     def buildNumber = env.BUILD_NUMBER
     def versionPrefix = ""
@@ -13,9 +9,12 @@ node('Ubuntu_Slave') {
     if (branch.contains("release")) {
        versionPrefix = "1.0."
        branchName = "Release"
-    } else if (branch.contains("Dev")) {
+    } else if (branch.contains("dev")) {
        versionPrefix = "0.99."
-       branchName = "Dev"
+       branchName = "dev"
+    } else if (branch.contains("master")) {
+       versionPrefix = "1.0."
+       branchName = "master"
     } else {
        branchName = branch.substring(branch.lastIndexOf("/") + 1)
        suffix = "-" + branchName
@@ -25,6 +24,12 @@ node('Ubuntu_Slave') {
     def versionNumber = versionPrefix + buildNumber
     def fullVersion = versionNumber + suffix
     def workspacePath =""
+
+
+node('Ubuntu_Slave') {
+    //Apply version number
+    //We will later use it to tag images
+
     currentBuild.displayName = versionNumber + suffix
 
     stage ('Checkout') {
