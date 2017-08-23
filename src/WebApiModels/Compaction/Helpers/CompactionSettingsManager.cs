@@ -146,7 +146,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           //Note: cut-fill also requires a design for tile requests (make cut-fill compaction settings ?)
           var cutFillTolerances = projectSettings.useDefaultCutFillTolerances.HasValue && !projectSettings.useDefaultCutFillTolerances.Value ?
             projectSettings.customCutFillTolerances : CompactionProjectSettings.DefaultSettings.customCutFillTolerances;
-          List<uint> cutFillColors = new List<uint> { 0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0x01579B, 0x039BE5, 0xB3E5FC };
+          List<uint> cutFillColors = new List<uint> { 0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x039BE5,  0x01579B };
           for (int i = 0; i < cutFillColors.Count; i++)
           {
             palette.Add(ColorPalette.CreateColorPalette(cutFillColors[i], cutFillTolerances[i]));
