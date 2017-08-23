@@ -36,5 +36,14 @@ namespace VSS.MasterData.Proxies
       log.LogDebug(message);
       return response;
     }
+
+    /// <summary>
+    /// Clears an item from the cache
+    /// </summary>
+    /// <param name="userUid">The userUid of the item to remove from the cache</param>
+    public void ClearCacheItem(string userUid)
+    {
+      ClearCacheItem<CustomerDataResult>(userUid);
+    }
   }
 }

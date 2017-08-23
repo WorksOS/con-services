@@ -25,7 +25,7 @@ namespace VSS.MasterData.Repositories
 
     public async Task<int> StoreEvent(IFilterEvent evt)
     {
-      // following are immutable: FilterUID, fk_CustomerUid, fk_ProjectUID, fk_UserUID
+      // following are immutable: FilterUID, fk_CustomerUid, fk_ProjectUID, UserID
       // filterJson is only updateable if transient i.e empty name
       var upsertedCount = 0;
       if (evt == null)
@@ -41,7 +41,7 @@ namespace VSS.MasterData.Repositories
         var filter = new Filter()
         {
           CustomerUid = filterEvent.CustomerUID.ToString(),
-          UserUid = filterEvent.UserUID.ToString(),
+          UserId = filterEvent.UserID,
           ProjectUid = filterEvent.ProjectUID.ToString(),
           FilterUid = filterEvent.FilterUID.ToString(),
           Name = filterEvent.Name,
@@ -57,7 +57,7 @@ namespace VSS.MasterData.Repositories
         var filter = new Filter()
         {
           CustomerUid = filterEvent.CustomerUID.ToString(),
-          UserUid = filterEvent.UserUID.ToString(),
+          UserId = filterEvent.UserID,
           ProjectUid = filterEvent.ProjectUID.ToString(),
           FilterUid = filterEvent.FilterUID.ToString(),
           Name = filterEvent.Name,
@@ -72,7 +72,7 @@ namespace VSS.MasterData.Repositories
         var filter = new Filter()
         {
           CustomerUid = filterEvent.CustomerUID.ToString(),
-          UserUid = filterEvent.UserUID.ToString(),
+          UserId = filterEvent.UserID,
           ProjectUid = filterEvent.ProjectUID.ToString(),
           FilterUid = filterEvent.FilterUID.ToString(),
           LastActionedUtc = filterEvent.ActionUTC
@@ -97,7 +97,7 @@ namespace VSS.MasterData.Repositories
       var upsertedCount = 0;
       var existing = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
                 f.FilterUID, f.fk_CustomerUid AS CustomerUID, 
-                f.fk_ProjectUID AS ProjectUID, f.fk_UserUID AS UserUID,                                  
+                f.fk_ProjectUID AS ProjectUID, f.UserID,                                  
                 f.Name, f.FilterJson, 
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
@@ -125,11 +125,11 @@ namespace VSS.MasterData.Repositories
       {
         const string insert =
           @"INSERT Filter
-                 (fk_CustomerUid, fk_UserUID, fk_ProjectUID, FilterUID,
+                 (fk_CustomerUid, UserID, fk_ProjectUID, FilterUID,
                   Name, FilterJson, 
                   IsDeleted, LastActionedUTC)
             VALUES
-              (@CustomerUid, @UserUID, @ProjectUID, @FilterUID,  
+              (@CustomerUid, @UserID, @ProjectUID, @FilterUID,  
                   @Name, @FilterJson, 
                   @IsDeleted, @LastActionedUTC)";
 
@@ -167,9 +167,9 @@ namespace VSS.MasterData.Repositories
       log.LogDebug($"FilterRepository/UpdateFilter: filter={JsonConvert.SerializeObject(filter)}))')");
       int upsertedCount = 0;
 
-      // following are immutable: FilterUID, fk_CustomerUid, fk_ProjectUID, fk_UserUID
+      // following are immutable: FilterUID, fk_CustomerUid, fk_ProjectUID, UserID
       // only updateable if transient i.e empty name
-      if (existing != null && !string.IsNullOrEmpty(existing.Name))
+      if (existing != null && string.IsNullOrEmpty(existing.Name))
         return upsertedCount;
 
       if (existing != null)
@@ -191,11 +191,11 @@ namespace VSS.MasterData.Repositories
       {
         const string insert =
           @"INSERT Filter
-                 (fk_CustomerUid, fk_UserUID, fk_ProjectUID, FilterUID,
+                 (fk_CustomerUid, UserID, fk_ProjectUID, FilterUID,
                   Name, FilterJson, 
                   IsDeleted, LastActionedUTC)
             VALUES
-              (@CustomerUid, @UserUID, @ProjectUID, @FilterUID,  
+              (@CustomerUid, @UserID, @ProjectUID, @FilterUID,  
                @Name, @FilterJson, 
                @IsDeleted, @LastActionedUTC)";
 
@@ -239,11 +239,11 @@ namespace VSS.MasterData.Repositories
 
         const string delete =
           @"INSERT Filter
-                 (fk_CustomerUid, fk_UserUID, fk_ProjectUID, FilterUID,
+                 (fk_CustomerUid, UserID, fk_ProjectUID, FilterUID,
                   Name, FilterJson, 
                   IsDeleted, LastActionedUTC)
             VALUES
-              (@CustomerUid, @UserUID, @ProjectUID, @FilterUID,  
+              (@CustomerUid, @UserID, @ProjectUID, @FilterUID,  
                @Name, @FilterUid, 
                1, @LastActionedUTC)";
 
@@ -265,21 +265,39 @@ namespace VSS.MasterData.Repositories
     /// </summary>
     /// <param name="customerUid"></param>
     /// <param name="projectUid"></param>
-    /// <param name="userUid"></param>
+    /// <param name="userId"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Filter>> GetFiltersForProjectUser(string customerUid, string projectUid, string userUid)
+    public async Task<IEnumerable<Filter>> GetFiltersForProjectUser(string customerUid, string projectUid, string userId, bool includeTransient = false)
     {
-      var filters = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
-                f.fk_CustomerUid AS CustomerUID, f.fk_UserUID AS UserUID, 
+      string queryString = null;
+      
+      if (includeTransient)
+        queryString = @"SELECT 
+                f.fk_CustomerUid AS CustomerUID, f.UserID, 
                 f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
                 f.Name, f.FilterJson, 
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
               WHERE f.fk_CustomerUID = @customerUid 
                 AND f.fk_ProjectUID = @projectUid 
-                AND f.fk_UserUID = @userUid 
-                AND f.IsDeleted = 0",
-        new { customerUid, projectUid, userUid }));
+                AND f.UserID = @userId 
+                AND f.IsDeleted = 0";
+      else
+        queryString = @"SELECT 
+                f.fk_CustomerUid AS CustomerUID, f.UserID, 
+                f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
+                f.Name, f.FilterJson, 
+                f.IsDeleted, f.LastActionedUTC
+              FROM Filter f
+              WHERE f.fk_CustomerUID = @customerUid 
+                AND f.fk_ProjectUID = @projectUid 
+                AND f.UserID = @userId 
+                AND f.IsDeleted = 0
+                AND f.Name > ''
+                AND f.Name IS NOT NULL";
+
+      var filters = (await QueryWithAsyncPolicy<Filter>(queryString,
+        new { customerUid, projectUid, userId }));
       return filters;
     }
 
@@ -291,12 +309,15 @@ namespace VSS.MasterData.Repositories
     public async Task<IEnumerable<Filter>> GetFiltersForProject(string projectUid)
     {
       var filters = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
-                f.fk_CustomerUid AS CustomerUID, f.fk_UserUID AS UserUID, 
+                f.fk_CustomerUid AS CustomerUID, f.UserID, 
                 f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
                 f.Name, f.FilterJson, 
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
-              WHERE f.fk_ProjectUID = @projectUid AND f.IsDeleted = 0",
+              WHERE f.fk_ProjectUID = @projectUid 
+                AND f.IsDeleted = 0
+                AND f.Name > ''
+                AND f.Name IS NOT NULL",
         new { projectUid }));
       return filters;
     }
@@ -309,12 +330,13 @@ namespace VSS.MasterData.Repositories
     public async Task<Filter> GetFilter(string filterUid)
     {
       var filter = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
-                f.fk_CustomerUid AS CustomerUID, f.fk_UserUID AS UserUID, 
+                f.fk_CustomerUid AS CustomerUID, f.UserID, 
                 f.fk_ProjectUID AS ProjectUID, f.FilterUID,                  
                 f.Name, f.FilterJson, 
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
-              WHERE f.FilterUID = @filterUid AND f.IsDeleted = 0",
+              WHERE f.FilterUID = @filterUid 
+                AND f.IsDeleted = 0",
         new {filterUid})).FirstOrDefault();
       return filter;
     }
@@ -327,7 +349,7 @@ namespace VSS.MasterData.Repositories
     public async Task<Filter> GetFilterForUnitTest(string filterUid)
     {
       var filter = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
-                f.fk_CustomerUid AS CustomerUID, f.fk_UserUID AS UserUID, 
+                f.fk_CustomerUid AS CustomerUID, f.UserID, 
                 f.fk_ProjectUID AS ProjectUID, f.FilterUID,                  
                 f.Name, f.FilterJson, 
                 f.IsDeleted, f.LastActionedUTC

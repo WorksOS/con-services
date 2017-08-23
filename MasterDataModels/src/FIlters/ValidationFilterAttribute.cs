@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 
-namespace VSS.Common.Filters
+namespace VSS.MasterData.Models.FIlters
 {
   /// <summary>
   /// Attribute enabling obligatory validation of domain objects upon reception.

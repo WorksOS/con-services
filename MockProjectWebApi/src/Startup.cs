@@ -17,12 +17,6 @@ namespace MockProjectWebApi
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-            if (env.IsEnvironment("Development"))
-            {
-                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                builder.AddApplicationInsightsSettings(developerMode: true);
-            }
-
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -34,15 +28,12 @@ namespace MockProjectWebApi
         {
             services.AddLogging();
 
-            //Configure CORS
             services.AddCors(options =>
             {
               options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
                       .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization", "X-VisionLink-CustomerUid", "X-VisionLink-UserUid")
                       .WithMethods("OPTIONS", "TRACE", "GET", "HEAD"));
             });
-            // Add framework services.
-            services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddMvc();
           }
@@ -55,10 +46,7 @@ namespace MockProjectWebApi
 
             app.UseExceptionTrap();
             app.UseCors("VSS");
-            //app.UseTIDAuthentication();
             app.UseExceptionDummyPostMiddleware();
-//            app.UseApplicationInsightsRequestTelemetry();
-//            app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseMvc();
         }

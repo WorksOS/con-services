@@ -7,6 +7,7 @@
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
+    <DependsOnNETStandard>netstandard1.6</DependsOnNETStandard>
   </PropertyGroup>
 
   <ItemGroup>

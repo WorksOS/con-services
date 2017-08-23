@@ -30,6 +30,5 @@ namespace VSS.MasterData.Proxies
 
       return response == null ? null : JsonConvert.DeserializeObject<UserPreferenceData>(response.PreferenceJson);
     }
-
   }
 }

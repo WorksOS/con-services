@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
@@ -13,7 +13,7 @@ namespace VSS.MasterData.Proxies
   /// <summary>
   /// Base class for proxies getting master data from services.
   /// </summary>
-  public class BaseProxy : ICacheProxy
+  public class BaseProxy 
   {
     protected readonly ILogger log;
     private readonly ILoggerFactory logger;
@@ -205,11 +205,16 @@ namespace VSS.MasterData.Proxies
       T cacheData;
       if (!cache.TryGetValue(cacheKey, out cacheData))
       {
+        log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
         var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
         cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, null, route);
         cache.Set(cacheKey, cacheData, opts);
         
+      }
+      else
+      {
+        log.LogDebug($"Found item for key {cacheKey} in cache");
       }
       return cacheData;
     }
@@ -329,13 +334,14 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <typeparam name="T">The type of item being cached</typeparam>
     /// <param name="uid">The uid of the item to remove from the cache</param>
-    public void ClearCacheItem<T>(string uid)
+    protected void ClearCacheItem<T>(string uid)
     {
       if (cache == null)
       {
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
       }
       var cacheKey = GetCacheKey<T>(uid);
+      log.LogDebug($"Clearing item from cache: {cacheKey}");
       cache.Remove(cacheKey);
     }
   }

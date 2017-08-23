@@ -55,6 +55,15 @@ namespace VSS.MasterData.Proxies
                 customHeaders);
             return geofenceGuid;
         }
-    }
+
+    /// <summary>
+    /// Clears an item from the cache
+    /// </summary>
+    /// <param name="geofenceUid">The geofenceUid of the item to remove from the cache</param>
+    public void ClearCacheItem(string geofenceUid)
+      {
+        ClearCacheItem<GeofenceData>(geofenceUid);
+      }
+  }
 }
 

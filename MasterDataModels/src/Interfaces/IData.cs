@@ -1,6 +1,5 @@
 ﻿
-
-namespace VSS.MasterData.Models.Models
+namespace VSS.MasterData.Models.Interfaces
 {
   /// <summary>
   /// Used by master data caching.

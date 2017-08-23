@@ -6,7 +6,7 @@ namespace VSS.MasterData.Proxies.Interfaces
 {
   public interface IFilterServiceProxy : ICacheProxy
   {
-    Task<FilterDescriptor> GetFilter(string customerUid, string projectUid, string filterUid,
+    Task<FilterDescriptor> GetFilter(string projectUid, string filterUid,
       IDictionary<string, string> customHeaders = null);
   }
 }
