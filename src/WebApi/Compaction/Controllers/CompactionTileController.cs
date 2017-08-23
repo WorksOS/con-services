@@ -168,8 +168,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 
       var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
-      if (mode==DisplayMode.Height)
-        Response.GetTypedHeaders().CacheControl=new CacheControlHeaderValue(){NoCache = true, NoStore = true};
       return tileResult;
     }
 
@@ -253,8 +251,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-      if (mode == DisplayMode.Height)
-        Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue() { NoCache = true, NoStore = true };
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
 
@@ -356,7 +352,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
       var result = await executor.ProcessAsync(request) as TileResult;
-      //AddCacheResponseHeaders();  //done by middleware               
+            
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
     }
 
@@ -459,23 +455,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("Found {0} files of type {1} from a total of {2}", filesOfType.Count, fileType, fileList.Count);
       return filesOfType;
     }
-
-    /*
-      /// <summary>
-      /// Adds caching headers to the http response
-      /// </summary>
-      private void AddCacheResponseHeaders()
-      {
-        if (!Response.Headers.ContainsKey("Cache-Control"))
-        {
-          Response.Headers.Add("Cache-Control", "public");
-        }
-        Response.Headers.Add("Expires",
-          DateTime.Now.AddMinutes(15).ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
-      }
-      */
-
-   
 
     /// <summary>
     /// Get the bounding box values from the query parameter
