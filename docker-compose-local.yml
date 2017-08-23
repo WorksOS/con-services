@@ -4,27 +4,30 @@ services:
     build: ./artifacts/VSS.Productivity3D.Scheduler.WebApi
     env_file:
      - docker-compose-local.env
+    volumes:
+      - ./artifacts/logs:/app/logs
+    ports:
+     - "3001:80"
     depends_on:
       - schema
-    ports:
-     - "3001:80" 
- filterschema:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3dfilter-db:latest    
+  filterschema:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3dfilter-db:latest
     env_file:
-     - docker-compose.env
+     - docker-compose-local.env
     environment:
-     - MYSQL_DATABASE_NAME=VSS.Productivity3D.Filter     
+     - MYSQL_DATABASE_NAME=VSS.Productivity3D.Filter
     depends_on:
-      - db      
+      - db
   schema:
-    build: ./database 
+    build: ./database
     env_file:
      - docker-compose-local.env
     depends_on:
-     - db  
+     - filterschema
+     - db
   db:
     image: mysql/mysql-server:5.7.15 
-    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci]
     env_file:
      - docker-compose-local.env
     ports:
