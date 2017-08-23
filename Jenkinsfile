@@ -89,7 +89,7 @@ node('Jenkins-Win2016-Raptor') {
                 stage ('Get ecr login, push image to Repo') {
                     bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion latest-release-${fullVersion}"
 				}
-        } else if (branch.contains("master") {
+        } else if (branch.contains("master")) {
 		bat "7z a 3DPMWebApiNet47.zip -r ./artifacts/3DPMWebApiNet47/"
                 archiveArtifacts artifacts: '3DPMWebApiNet47.zip', fingerprint: true
          	    stage ('Tag repository') {
@@ -102,7 +102,7 @@ node('Jenkins-Win2016-Raptor') {
                       ]
                       build job: "tag-vso-commit", parameters: tagParameters
 	             }
-	    } else if (branch.contains("Dev") {
+	    } else if (branch.contains("Dev")) {
                 //Rebuild Image, tag & push to AWS Docker Repo
                 stage ('Build Development Images') {
                     bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}-${branchName} ./Artifacts/WebApi"
