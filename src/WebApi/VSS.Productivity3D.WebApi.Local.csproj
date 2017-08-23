@@ -9,6 +9,12 @@
     <OutputType>Exe</OutputType>
     <PackageId>WebApi</PackageId>
     <RootNamespace>VSS.Productivity3D.WebApi</RootNamespace>
+    <DependsOnNETStandard>netstandard1.6</DependsOnNETStandard>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
 
   <ItemGroup>

@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// <summary>
   /// Controller for the ProfileProductionData resource.
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class ProfileProductionDataController : Controller, IProfileProductionDataContract
   {
     /// <summary>

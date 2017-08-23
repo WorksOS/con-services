@@ -13,7 +13,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// <summary>
   /// 
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class ProjectExtentsController : Controller, IProjectExtentsContract
   {
     /// <summary>

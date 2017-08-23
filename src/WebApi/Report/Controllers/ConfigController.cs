@@ -10,7 +10,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
   /// <summary>
   /// 
   /// </summary>
-  [ResponseCache(NoStore = true)]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class ConfigController : Controller
   {
     /// <summary>

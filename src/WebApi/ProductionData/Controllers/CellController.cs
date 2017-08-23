@@ -13,8 +13,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// <summary>
   /// CellController
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-    public class CellController : Controller
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+  public class CellController : Controller
     {
       /// <summary>
       /// Raptor client for use by executor

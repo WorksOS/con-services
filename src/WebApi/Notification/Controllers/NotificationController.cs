@@ -14,6 +14,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -27,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
   /// <summary>
   /// 
   /// </summary>
-  [ResponseCache(NoStore = true)]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class NotificationController : Controller
   {
     /// <summary>
@@ -73,6 +74,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// </summary>
     private readonly IFilterServiceProxy filterServiceProxy;
 
+    private readonly IMemoryCacheBuilder<Guid> cacheBuilder;
+
     /// <summary>
     /// Constructor with injection
     /// </summary>
@@ -87,7 +90,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
       IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy,
-      IFilterServiceProxy filterServiceProxy)
+      IFilterServiceProxy filterServiceProxy, IMemoryCacheBuilder<Guid> cacheBuilder)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -98,6 +101,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       this.tileGenerator = tileGenerator;
       this.fileListProxy = fileListProxy;
       this.filterServiceProxy = filterServiceProxy;
+      this.cacheBuilder = cacheBuilder;
     }
 
     /// <summary>
@@ -133,6 +137,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var result = await executor.ProcessAsync(request);
       //Do we need to validate fileUid ?
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
+      cacheBuilder.ClearMemoryCache(projectUid);
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
       return result;
     }
@@ -165,6 +170,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, Request.Headers.GetCustomHeaders());
+      cacheBuilder.ClearMemoryCache(projectUid);
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
     }
@@ -197,6 +203,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       }
       var customHeaders = Request.Headers.GetCustomHeaders();
       await ClearFilesCaches(projectUid, fileUids, customHeaders);
+      cacheBuilder.ClearMemoryCache(projectUid);
       log.LogInformation("GetUpdateFiles returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Update files notification successful");
     }

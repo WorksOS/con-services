@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
   /// <summary>
   /// 
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class ReportController : BaseController, IReportSvc
   {
     #region privates

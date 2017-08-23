@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
@@ -8,6 +9,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
   /// </summary>
   public class CompactionProfileResult<T> : ContractExecutionResult
   {
+    /// <summary>
+    /// The design file UID the response data is collected from.
+    /// </summary>
+    public Guid designFileUid;
+
     /// <summary>
     /// The grid distance between the two profile end points. For straight line profiles this is the geomtric plane distance between the points. 
     /// For alignment profiles this is the station distance between start and end locations on the alignment the profile is computed between.

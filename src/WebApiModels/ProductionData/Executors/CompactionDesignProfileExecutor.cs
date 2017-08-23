@@ -45,6 +45,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         if (memoryStream != null)
         {
           result = ConvertProfileResult(memoryStream);
+
+          result.designFileUid = request.importedFileUid;
         }
         else
         {

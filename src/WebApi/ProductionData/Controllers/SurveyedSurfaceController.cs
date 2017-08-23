@@ -18,8 +18,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// Controller for Surveyed Surfaces resource.
   /// </summary>
   /// 
-  [ResponseCache(NoStore = true)]
-    public class SurveyedSurfaceController : Controller, ISurveyedSurfaceContract
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+  public class SurveyedSurfaceController : Controller, ISurveyedSurfaceContract
   {
     /// <summary>
     /// Raptor client for use by executor

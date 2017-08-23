@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// <summary>
   /// 
   /// </summary>
-  [ResponseCache(NoStore = true)]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class EditDataController : Controller, IEditDataContract
   {
     /// <summary>

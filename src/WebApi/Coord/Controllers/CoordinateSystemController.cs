@@ -13,12 +13,12 @@ using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Coord.Controllers
 {
-    /// <summary>
-    /// Controller for the CoordinateSystemFile resource.
-    /// </summary>
-    /// 
-    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-    public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
+  /// <summary>
+  /// Controller for the CoordinateSystemFile resource.
+  /// </summary>
+  /// 
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+  public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
   {
     /// <summary>
     /// Raptor client for use by executor

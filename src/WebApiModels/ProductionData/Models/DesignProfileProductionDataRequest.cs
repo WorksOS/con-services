@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
@@ -79,11 +80,19 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     [Required]
     public bool returnAllPassesAndLayers { get; private set; }
 
-    public static DesignProfileProductionDataRequest CreateProfileProductionData(long? projectID, ProductionDataType profileType, Filter filter, long? filterId, DesignDescriptor designDescriptor, ProfileGridPoints gridPoints, ProfileLLPoints wgs84Points, double startStation, double endStation)
+    /// <summary>
+    /// Imported file UID for the design profile.
+    /// </summary>
+    [JsonProperty(PropertyName = "importedFileUid", Required = Required.Always)]
+    [Required]
+    public Guid importedFileUid { get; private set; }
+
+    public static DesignProfileProductionDataRequest CreateProfileProductionData(long? projectID, Guid importedFileUid, ProductionDataType profileType, Filter filter, long? filterId, DesignDescriptor designDescriptor, ProfileGridPoints gridPoints, ProfileLLPoints wgs84Points, double startStation, double endStation)
     {
       return new DesignProfileProductionDataRequest
       {
         projectId = projectID,
+        importedFileUid = importedFileUid,
         profileType = profileType,
         filter = filter,
         filterID = filterId,

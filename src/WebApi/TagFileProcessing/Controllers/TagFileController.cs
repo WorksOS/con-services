@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
   /// <summary>
   /// 
   /// </summary>
-  [ResponseCache(NoStore = true)]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class TagFileController : Controller, ITagFileContract
   {
     /// <summary>

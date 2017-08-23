@@ -882,6 +882,7 @@ namespace VSS.Productivity3D.Common.Proxies
     /// <returns></returns>
     public static TSurveyedSurfaceID[] convertSurveyedSurfaceExlusionList(List<long> exclusions)
     {
+      if (exclusions == null) return new TSurveyedSurfaceID[0];
       TSurveyedSurfaceID[] result = new TSurveyedSurfaceID[exclusions.Count];
       for (int i = 0; i < exclusions.Count; i++)
         result[i].SurveyedSurfaceID = exclusions[i];

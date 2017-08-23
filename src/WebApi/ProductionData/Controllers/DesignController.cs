@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// Controller for Designs resource.
   /// </summary>
   /// 
-  [ResponseCache(NoStore = true)]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class DesignController : Controller, IDesignContract
   {
     #region privates

@@ -8,6 +8,7 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -15,7 +16,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for validating 3D project settings
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+
   public class CompactionSettingsController : Controller
   {
     /// <summary>
@@ -33,16 +35,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IProjectSettingsProxy projectSettingsProxy;
 
+    private readonly IMemoryCacheBuilder<Guid> cacheBuilder;
+
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="logger">Logger</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
-    public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy)
+    public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy, IMemoryCacheBuilder<Guid> cacheBuilder)
     {
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionSettingsController>();
       this.projectSettingsProxy = projectSettingsProxy;
+      this.cacheBuilder = cacheBuilder;
     }
 
     /// <summary>
@@ -68,6 +73,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
         log.LogDebug($"About to clear settings for project {projectUid}");
         projectSettingsProxy.ClearCacheItem(projectUid.ToString());
+        cacheBuilder.ClearMemoryCache(projectUid);
       }
 
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);

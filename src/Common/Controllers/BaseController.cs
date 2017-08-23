@@ -214,7 +214,6 @@ namespace VSS.Productivity3D.Common.Controllers
     /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
     /// <param name="log">log for logging</param>
     /// <returns>The project settings</returns>
-    [Obsolete]
     protected async Task<CompactionProjectSettings> GetProjectSettings(Guid projectUid, ILogger log)
     {
       CompactionProjectSettings ps;
@@ -312,6 +311,7 @@ namespace VSS.Productivity3D.Common.Controllers
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetID</param>
     /// <returns>An instance of the Filter class.</returns>
+    [Obsolete]
     protected async Task<Models.Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid, DateTime? startUtc, DateTime? endUtc, bool? vibeStateOn, ElevationType? elevationType,
       int? layerNumber, long? onMachineDesignId, long? assetID, string machineName, bool? isJohnDoe)
     {

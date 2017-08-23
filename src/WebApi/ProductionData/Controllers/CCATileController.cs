@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// Controller for supplying CCA data tiles.
   /// </summary>
   /// 
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CCATileController : Controller, ICCATileContract
   {
     /// <summary>

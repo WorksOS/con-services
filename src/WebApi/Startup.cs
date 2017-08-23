@@ -66,11 +66,12 @@ namespace VSS.Productivity3D.WebApi
                       "X-VisionLink-CustomerUid", "X-VisionLink-UserUid", "Cache-Control", "X-VisionLink-ClearCache")
                   .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
       });
+      services.AddResponseCompression();
       // Add framework services.
       services.AddMemoryCache();
-      //Turn off custom caching until settings caching problem resolved
-      //services.AddCustomResponseCaching();
-      services.AddResponseCaching();
+
+      services.AddCustomResponseCaching();
+
       services.AddMvc(
           config =>
           {
@@ -115,10 +116,15 @@ namespace VSS.Productivity3D.WebApi
       serviceCollection.AddSingleton(loggerFactory);
       var serviceProvider = serviceCollection.BuildServiceProvider();
       app.UseFilterMiddleware<ExceptionsTrap>();
+
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
       //Enable TID here
+
       app.UseFilterMiddleware<TIDAuthentication>();
+
+      //Enable response compression
+      app.UseResponseCompression();
 
       app.UseResponseCaching();
       app.UseMvc();
