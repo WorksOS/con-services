@@ -3,13 +3,15 @@
   <PropertyGroup>
     <Authors>Merino</Authors>
     <Company>VSS</Company>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFrameworks>net47;netcoreapp1.1</TargetFrameworks>
     <DebugType>portable</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>VSS.Productivity3D.FileAccess.Service.WebAPI</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>VSS.Productivity3D.FileAccess.Service.WebAPI</PackageId>
+    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
     <RootNamespace>VSS.Productivity3D.FileAccess.Service.WebAPI</RootNamespace>
   </PropertyGroup>
 
@@ -39,10 +41,13 @@
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="1.1.2" />
+    <PackageReference Include="System.Net.Security" Version="4.3.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.1.0" />
+  </ItemGroup>  
 
   <ItemGroup>
     <Content Update="appsettings.json">
@@ -50,8 +55,8 @@
     </Content>
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5</DefineConstants>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
   </PropertyGroup>
 
 <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">  

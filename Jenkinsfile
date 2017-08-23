@@ -71,17 +71,65 @@ node('Ubuntu_Slave') {
                     sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest-release-${fullVersion}"
                     sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest-release-${fullVersion}"
                 }		   
+	    stage ('Tag repository') {
+                sh 'git rev-parse HEAD > GIT_COMMIT'
+                def gitCommit=readFile('GIT_COMMIT').trim()
+                def tagParameters = [
+                  new StringParameterValue("REPO_NAME", "VSS.Productivity3D.FileAccess.Service"),
+                  new StringParameterValue("COMMIT_ISH", gitCommit),
+                  new StringParameterValue("TAG", fullVersion)
+                ]
+                build job: "tag-vso-commit", parameters: tagParameters
+	    }
+
             } else {
                 stage ('Build Development Images') {	   
-                    sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:${fullVersion}-${branch} ./artifacts/WebApi" 
                     sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest ./artifacts/WebApi" 
-                    sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:${fullVersion}-${branch}"
                     sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess"
-                    sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:${fullVersion}-${branch}"
                     sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest"
                 }	   
             }
         }
     }
 
+}
+
+node ('Jenkins-Win2016-Raptor')
+{
+	if (branch.contains("master")) {
+        if (result=='SUCCESS') {
+            currentBuild.displayName = versionNumber + suffix  
+            stage ('Checkout') {
+                checkout scm
+            }
+
+            stage ('Build') {
+                bat "build47.bat"
+            }
+          
+            archiveArtifacts artifacts: 'FileAccessWebApiNet47.zip', fingerprint: true
+
+	    stage ('Tag repository') {
+                bat 'git rev-parse HEAD > GIT_COMMIT'
+                def gitCommit=readFile('GIT_COMMIT').trim()
+                def tagParameters = [
+                  new StringParameterValue("REPO_NAME", "VSS.Productivity3D.FileAccess.Service"),
+                  new StringParameterValue("COMMIT_ISH", gitCommit),
+                  new StringParameterValue("TAG", fullVersion+"-master")
+                ]
+                build job: "tag-vso-commit", parameters: tagParameters
+	    }
+        }
+    } else {
+//        currentBuild.displayName = versionNumber + suffix
+//        stage ('Checkout') {
+//            checkout scm
+//        }
+//        stage ('Coverage') {
+//            bat "coverage.bat"
+//        }
+//
+//	    step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
+//	    publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
+	}
 }
