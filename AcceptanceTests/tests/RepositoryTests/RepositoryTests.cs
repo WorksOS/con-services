@@ -28,7 +28,7 @@ namespace RepositoryTests
         "InsertUTC",
         "UpdateUTC"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema("_FILTER", tableName, columnNames);
     }
 
     [TestMethod]
@@ -45,7 +45,7 @@ namespace RepositoryTests
         "CreatedAt",
         "ExpireAt"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
 
     [TestMethod]
@@ -59,7 +59,7 @@ namespace RepositoryTests
         "Value",
         "ExpireAt"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
 
     [TestMethod]
@@ -73,7 +73,7 @@ namespace RepositoryTests
         "Value",
         "ExpireAt"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
 
     [TestMethod]
@@ -85,7 +85,7 @@ namespace RepositoryTests
         "Resource",
         "CreatedAt"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
     
     [TestMethod]
@@ -100,7 +100,7 @@ namespace RepositoryTests
         "Value",
         "ExpireAt"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
 
     [TestMethod]
@@ -114,7 +114,7 @@ namespace RepositoryTests
         "Name",
         "Value"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
 
     [TestMethod]
@@ -129,7 +129,7 @@ namespace RepositoryTests
         "FetchedAt",
         "FetchToken"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
     
     [TestMethod]
@@ -145,7 +145,7 @@ namespace RepositoryTests
         "CreatedAt",
         "Data"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
 
     [TestMethod]
@@ -158,7 +158,7 @@ namespace RepositoryTests
         "Data",
         "LastHeartbeat"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
     
     [TestMethod]
@@ -173,7 +173,7 @@ namespace RepositoryTests
         "Score",
         "ExpireAt"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
 
     [TestMethod]
@@ -189,7 +189,7 @@ namespace RepositoryTests
         "CreatedAt",
         "Data"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
 
     [TestMethod]
@@ -203,7 +203,7 @@ namespace RepositoryTests
         "Value",
         "ExpireAt"
       };
-      CheckSchema("_Scheduler", tableName, columnNames);
+      CheckSchema("", tableName, columnNames);
     }
 
     #region privates

@@ -8,6 +8,14 @@ services:
       - schema
     ports:
      - "3001:80" 
+ filterschema:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3dfilter-db:latest    
+    env_file:
+     - docker-compose.env
+    environment:
+     - MYSQL_DATABASE_NAME=VSS.Productivity3D.Filter     
+    depends_on:
+      - db      
   schema:
     build: ./database 
     env_file:

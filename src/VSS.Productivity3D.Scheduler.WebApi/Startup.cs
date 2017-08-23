@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   public class Startup
   {
     private const string _loggerRepoName = "Scheduler";
-    private const int _schedulerFilterAgeDefaultDays = 28;
+    private const int _schedulerFilterAgeDefaultHours = 4;
     private MySqlStorage _storage = null;
     private ILogger _log = null;
     private IConfigurationStore _configStore = null;
@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       services.AddMvc();
 
-      var hangfireConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "_Scheduler");
+      var hangfireConnectionString = _configStore.GetConnectionString("VSPDB");
       _log.LogDebug($"ConfigureServices: Scheduler database string: {hangfireConnectionString}.");
       _storage = new MySqlStorage(hangfireConnectionString,
         new MySqlStorageOptions
@@ -124,12 +124,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         throw new Exception($"Configure: UseHangfireServer failed: {ex.Message}");
       }
 
-      var ageInDaysToDelete = _schedulerFilterAgeDefaultDays;
-      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_FILTER_AGE_DAYS"), out ageInDaysToDelete))
+      var ageInHoursToDelete = _schedulerFilterAgeDefaultHours;
+      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_FILTER_AGE_HOURS"), out ageInHoursToDelete))
       {
-        ageInDaysToDelete = _schedulerFilterAgeDefaultDays;
+        ageInHoursToDelete = _schedulerFilterAgeDefaultHours;
         _log.LogDebug(
-          $"Configure: SCHEDULER_FILTER_AGE_DAYS environment variable not available. Using default: {ageInDaysToDelete}.");
+          $"Configure: SCHEDULER_FILTER_AGE_HOURS environment variable not available. Using default hours: {ageInHoursToDelete}.");
       }
 
       try
@@ -147,27 +147,13 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         throw new Exception("Configure: Unable to cleanup existing jobs");
       }
 
-      var LoggingTestJob = "LoggingTestJob";
       var FilterCleanupJob = "FilterCleanupJob";
-
-      // the Filter DB environment variables will come with the 3dp/FilterService configuration
-      string filterDbConnectionString = _configStore.GetConnectionString("VSPDB");
-      try
-      {
-        // todo after testing setup interval e.g. hourly
-        RecurringJob.AddOrUpdate(LoggingTestJob, () => SomeJob(), Cron.MinuteInterval(2));
-      }
-      catch (Exception ex)
-      {
-        _log.LogError($"Configure: Unable to schedule recurring job: SomeJob {ex.Message}");
-        throw new Exception("Configure: Unable to schedule recurring job: SomeJob");
-      }
-
+      string filterDbConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "_FILTER");
       try
       {
         // todo after testing setup interval e.g. hourly
         RecurringJob.AddOrUpdate(FilterCleanupJob,
-          () => DatabaseCleanupJob(filterDbConnectionString, ageInDaysToDelete), Cron.Minutely);
+          () => DatabaseCleanupJob(filterDbConnectionString, ageInHoursToDelete), Cron.MinuteInterval(5));
       }
       catch (Exception ex)
       {
@@ -178,7 +164,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var recurringJobsPost = Hangfire.JobStorage.Current.GetConnection().GetRecurringJobs();
       _log.LogInformation($"Configure: PostJobSetup count of existing recurring jobs {recurringJobsPost.Count()}");
 
-      if (recurringJobsPost == null || recurringJobsPost.Count < 2)
+      if (recurringJobsPost == null || recurringJobsPost.Count < 1)
       {
         if (recurringJobsPost == null)
           _log.LogError($"Configure: Unable to get list of recurring jobs");
@@ -189,16 +175,10 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
     }
 
-    public void SomeJob()
+    public void DatabaseCleanupJob(string filterDbConnectionString, int ageInHoursToDelete)
     {
       var log = GetLogger();
-      log.LogInformation("SomeJob: completed successfully");
-    }
-
-    public void DatabaseCleanupJob(string filterDbConnectionString, int ageInDaysToDelete)
-    {
-      var log = GetLogger();
-      var cutoffActionUtcToDelete = DateTime.UtcNow.AddDays(-ageInDaysToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
+      var cutoffActionUtcToDelete = DateTime.UtcNow.AddHours(-ageInHoursToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
       log.LogInformation($"DatabaseCleanupJob: cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
 
       MySqlConnection dbConnection;

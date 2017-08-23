@@ -7,7 +7,7 @@ copy scripts\wait-for-it.sh deploy\
 copy scripts\rm_cr.sh deploy\
 mkdir deploy\testresults
 
-dotnet restore VSS.Visionlink.FiSchedulerlter.AcceptanceTests.sln --no-cache
+dotnet restore VSS.Visionlink.Scheduler.AcceptanceTests.sln --no-cache
 
 cd tests
 dotnet publish RepositoryTests/RepositoryTests.csproj -o ..\..\deploy\RepositoryTests -f netcoreapp1.1

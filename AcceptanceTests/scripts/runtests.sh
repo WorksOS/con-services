@@ -24,7 +24,7 @@ echo "Run the component tests"
 #echo "Executor tests finished"
 
 echo "Run Repository tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestResults project=RepositoryTests
+dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestResults project=RepositoryTests messages=false
 echo "Repository tests finished"
 
 echo " "
