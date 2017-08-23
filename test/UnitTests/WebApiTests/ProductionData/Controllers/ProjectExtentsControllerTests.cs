@@ -13,7 +13,7 @@ using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {
   [TestClass]
-  public class ProjectExtentsControllerTest
+  public class ProjectExtentsControllerTests
   {
 
     [TestMethod]

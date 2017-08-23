@@ -15,7 +15,7 @@ using VSS.Productivity3D.WebApiModels.Coord.Models;
 namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
 {
   [TestClass]
-    public class CoordinateSystemControllerTest
+    public class CoordinateSystemControllerTests
     {
         private const long PD_MODEL_ID = 544; // Dimensions 2012 project...
 

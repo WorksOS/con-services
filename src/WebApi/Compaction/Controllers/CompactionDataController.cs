@@ -174,7 +174,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid, log);
+      var projectSettings = await GetProjectSettings(projectUid);
       MDPSettings mdpSettings = settingsManager.CompactionMdpSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
@@ -308,7 +308,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid, log);
+      var projectSettings = await GetProjectSettings(projectUid);
       TemperatureSettings temperatureSettings = settingsManager.CompactionTemperatureSettings(projectSettings, false);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
@@ -378,7 +378,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetSpeedSummary: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid, log);
+      var projectSettings = await GetProjectSettings(projectUid);
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
@@ -448,7 +448,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await this.GetProjectSettings(projectUid,  log);
+      var projectSettings = await this.GetProjectSettings(projectUid);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
@@ -649,7 +649,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       string machineName, bool? isJohnDoe)
     {
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid, log);
+      var projectSettings = await GetProjectSettings(projectUid);
       CMVSettings cmvSettings = settingsManager.CompactionCmvSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
@@ -685,7 +685,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       string machineName, bool? isJohnDoe, bool isSummary)
     {
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await this.GetProjectSettings(projectUid, log);
+      var projectSettings = await this.GetProjectSettings(projectUid);
       PassCountSettings passCountSettings = isSummary ? null : settingsManager.CompactionPassCountSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 

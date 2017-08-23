@@ -163,7 +163,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid, log);
+      var projectSettings = await GetProjectSettings(projectUid);
 
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 
@@ -245,7 +245,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid,  log);
+      var projectSettings = await GetProjectSettings(projectUid);
 
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 

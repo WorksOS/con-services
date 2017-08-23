@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid)
     {
       log.LogInformation("GetColorPalettes: " + Request.QueryString);
-      var projectSettings = await GetProjectSettings(projectUid, log);
+      var projectSettings = await GetProjectSettings(projectUid);
 
       //Note: elevation palette is a separate call as it requires a filter
       List<DisplayMode> modes = new List<DisplayMode>
@@ -238,7 +238,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetElevationPalette: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await this.GetProjectSettings(projectUid, log);
+      var projectSettings = await this.GetProjectSettings(projectUid);
 
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 

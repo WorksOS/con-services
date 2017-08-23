@@ -7,7 +7,7 @@ using VSS.Productivity3D.WebApiModels.Coord.Models;
 namespace VSS.Productivity3D.WebApiTests.Coord.Models
 {
     [TestClass]
-    public class CoordinateSystemFileTest
+    public class CoordinateSystemFileTests
     {
         [TestMethod]
         public void CanCreateCoordinateSystemFileTest()
