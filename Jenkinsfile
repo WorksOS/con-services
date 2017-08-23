@@ -86,7 +86,7 @@ node('Ubuntu_Slave') {
                 sh 'git rev-parse HEAD > GIT_COMMIT'
                 def gitCommit=readFile('GIT_COMMIT').trim()
                 def tagParameters = [
-                  new StringParameterValue("REPO_NAME", "VSS.TagFileAuth.Service"),
+                  new StringParameterValue("REPO_NAME", "VSS.Productivity3D.TagFileAuth.Service"),
                   new StringParameterValue("COMMIT_ISH", gitCommit),
                   new StringParameterValue("TAG", fullVersion)
                 ]
@@ -128,7 +128,7 @@ node('Ubuntu_Slave') {
                 bat 'git rev-parse HEAD > GIT_COMMIT'
                 def gitCommit=readFile('GIT_COMMIT').trim()
                 def tagParameters = [
-                  new StringParameterValue("REPO_NAME", "VSS.TagFileAuth.Service"),
+                  new StringParameterValue("REPO_NAME", "VSS.Productivity3D.TagFileAuth.Service"),
                   new StringParameterValue("COMMIT_ISH", gitCommit),
                   new StringParameterValue("TAG", fullVersion+"-master")
                 ]
