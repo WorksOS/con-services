@@ -115,5 +115,5 @@ node('Jenkins-Win2016-Raptor') {
 //					bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion ${fullVersion}-${branchName}"
 //				}
 //			}
-//  }
+  }
 }
