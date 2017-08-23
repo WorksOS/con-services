@@ -29,6 +29,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private MySqlStorage _storage = null;
     private ILogger _log = null;
     private IConfigurationStore _configStore = null;
+    IServiceCollection serviceCollection;
 
     /// <summary>
     /// VSS.Productivity3D.Scheduler startup
@@ -92,6 +93,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         throw new Exception($"ConfigureServices: AddHangfire failed: {ex.Message}");
       }
 
+      serviceCollection = services;
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -104,7 +106,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       _log.LogDebug("Configure:");
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+
+      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.BuildServiceProvider();
+
+      //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(_loggerRepoName);
 

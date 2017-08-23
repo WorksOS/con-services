@@ -1,25 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Dapper;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
-
+using System.Linq;
+using Dapper;
 
 namespace RepositoryTests
 {
   [TestClass]
   public class RepositoryTests : TestControllerBase
   {
-    private ILogger log;
-
-    [TestInitialize]
-    public void Init()
-    {
-      SetupDI();
-      log = (serviceProvider.GetService<ILoggerFactory>()).CreateLogger<RepositoryTests>();
-    }
 
     [TestMethod]
     public void FilterSchemaExists_FilterTable()
@@ -221,7 +210,6 @@ namespace RepositoryTests
 
     private void CheckSchema(string dbNameExtension, string tableName, List<string> columnNames)
     {
-      // using (var connection = new MySqlConnection(configStore.GetConnectionString(dbNameExtension)))
       using (var connection = new MySqlConnection(configStore.GetConnectionString("VSPDB")))
       {
         try
