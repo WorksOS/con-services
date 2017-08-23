@@ -99,7 +99,7 @@ node('Ubuntu_Slave') {
             stage ('Build development Images') {           
                 sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest ./artifacts/WebApi"
                 sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi"
-                sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest"
+                sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi"
                 }
             }
         }
