@@ -135,9 +135,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles")]
     [HttpGet]
-    //Turn off caching until settings caching problem resolved
-    //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<TileResult> GetProductionDataTile(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -221,9 +218,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles/png")]
     [HttpGet]
-    //Turn off caching until settings caching problem resolved
-    //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<FileResult> GetProductionDataTileRaw(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -286,7 +280,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<TileResult> GetLineworkTile(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -338,7 +331,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles/png")]
     [HttpGet]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<FileResult> GetLineworkTileRaw(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
