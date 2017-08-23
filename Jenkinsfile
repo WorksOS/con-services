@@ -14,6 +14,9 @@ properties([disableConcurrentBuilds(), pipelineTriggers([])])
     } else if (branch.contains("Dev")) {
         versionPrefix = "0.99."
         branchName = "Dev"
+    } else if (branch.contains("master")) {
+       versionPrefix = "1.0."
+       branchName = "master"
     } else {
         branchName = branch.substring(branch.lastIndexOf("/") + 1)
         suffix = "-" + branchName
@@ -130,7 +133,7 @@ node('Ubuntu_Slave') {
                 def tagParameters = [
                   new StringParameterValue("REPO_NAME", "VSS.Productivity3D.TagFileAuth.Service"),
                   new StringParameterValue("COMMIT_ISH", gitCommit),
-                  new StringParameterValue("TAG", fullVersion+"-master")
+                  new StringParameterValue("TAG", fullVersion)
                 ]
                 build job: "tag-vso-commit", parameters: tagParameters
 	    }
