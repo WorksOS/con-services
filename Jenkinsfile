@@ -82,15 +82,23 @@ node('Ubuntu_Slave') {
                     sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-${fullVersion}"
                     sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-${fullVersion}"
                 }
+	    stage ('Tag repository') {
+                sh 'git rev-parse HEAD > GIT_COMMIT'
+                def gitCommit=readFile('GIT_COMMIT').trim()
+                def tagParameters = [
+                  new StringParameterValue("REPO_NAME", "VSS.TagFileAuth.Service"),
+                  new StringParameterValue("COMMIT_ISH", gitCommit),
+                  new StringParameterValue("TAG", fullVersion)
+                ]
+                build job: "tag-vso-commit", parameters: tagParameters
+	    }
+
             }
             else
             {
             stage ('Build development Images') {           
-                sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:${fullVersion}-${branch} ./artifacts/WebApi"
                 sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest ./artifacts/WebApi"
-                sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:${fullVersion}-${branch}"
                 sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi"
-                sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:${fullVersion}-${branch}"
                 sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest"
                 }
             }
@@ -115,6 +123,18 @@ node('Ubuntu_Slave') {
             }
             
             archiveArtifacts artifacts: 'TagFileAuthWebApiNet47.zip', fingerprint: true 
+
+	    stage ('Tag repository') {
+                bat 'git rev-parse HEAD > GIT_COMMIT'
+                def gitCommit=readFile('GIT_COMMIT').trim()
+                def tagParameters = [
+                  new StringParameterValue("REPO_NAME", "VSS.TagFileAuth.Service"),
+                  new StringParameterValue("COMMIT_ISH", gitCommit),
+                  new StringParameterValue("TAG", fullVersion+"-master")
+                ]
+                build job: "tag-vso-commit", parameters: tagParameters
+	    }
+
 
             }
             }
