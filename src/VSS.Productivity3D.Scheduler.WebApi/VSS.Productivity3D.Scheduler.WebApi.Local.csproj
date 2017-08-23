@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp1.1;net47</TargetFrameworks>
-      <GenerateDocumentationFile>true</GenerateDocumentationFile>
-      <PreserveCompilationContext>true</PreserveCompilationContext>
-      <AssemblyName>VSS.Productivity3D.Scheduler.WebAPI</AssemblyName>
-      <OutputType>exe</OutputType>
-      <PackageId>SchedulerWebApi</PackageId>
-      <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
-      <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
-      <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
-      <RootNamespace>VSS.Productivity3D.Scheduler.WebAPI</RootNamespace>
-      <ApplicationIcon />
-      <OutputTypeEx>exe</OutputTypeEx>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AssemblyName>VSS.Productivity3D.Scheduler.WebAPI</AssemblyName>
+    <OutputType>exe</OutputType>
+    <PackageId>SchedulerWebApi</PackageId>
+    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
+    <RootNamespace>VSS.Productivity3D.Scheduler.WebAPI</RootNamespace>
+    <ApplicationIcon />
+    <OutputTypeEx>exe</OutputTypeEx>
     <StartupObject />
   </PropertyGroup>
 
@@ -35,41 +35,28 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
   </ItemGroup>
-  
- <ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
     <ProjectReference Include="..\VSS.Productivity3D.Scheduler.Common\VSS.Productivity3D.Scheduler.Common.Local.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Content Update="web.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
-  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">  
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
     <ItemGroup>
-	  <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
+      <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
     </ItemGroup>
     <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
   </Target>
 
-  <!--doesn't seem to be required for background hangfire service - maybe fore dashboard?
-  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
-    <PackageReference Include="Microsoft.Owin.Host.SystemWeb">
-      <Version>3.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="MySql.Data">
-      <Version>6.9.9</Version>
-    </PackageReference>
-    <PackageReference Include="Owin.Builder">
-      <Version>0.8.5</Version>
-    </PackageReference>
-  </ItemGroup>
-  -->
 </Project>

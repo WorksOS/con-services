@@ -18,9 +18,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
           serverPassword == null)
       {
         var errorString =
-          $"Your application is attempting to use the {dbNameExtension} dbNameExtension but is missing an environment variable. serverName {serverName} serverPort {serverPort} serverDatabaseName {serverDatabaseName} serverUserName {serverUserName} serverPassword {serverPassword}";
+          $"GetConnectionString: Your application is attempting to use the {dbNameExtension} dbNameExtension but is missing an environment variable. serverName {serverName} serverPort {serverPort} serverDatabaseName {serverDatabaseName} serverUserName {serverUserName} serverPassword {serverPassword}";
         log.LogError(errorString);
-
         throw new InvalidOperationException(errorString);
       }
 

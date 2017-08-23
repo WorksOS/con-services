@@ -4,17 +4,14 @@ using System.IO;
 using System.Linq;
 using Dapper;
 using Hangfire;
-using Hangfire.Client;
 using Hangfire.MySql;
 using Hangfire.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
-using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
@@ -38,6 +35,17 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     public Startup(IHostingEnvironment env)
     {
+      Console.WriteLine("Startup");
+
+      var builder = new ConfigurationBuilder()
+        .SetBasePath(env.ContentRootPath)
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+        .AddEnvironmentVariables();
+      Configuration = builder.Build();
+
+      env.ConfigureLog4Net("log4net.xml", _loggerRepoName);
+
       _log = GetLogger();
       _configStore = new GenericConfiguration(GetLoggerFactory());
     }
@@ -57,10 +65,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddMvc(); // needed?
+      _log.LogDebug("ConfigureServices:");
+
+      services.AddMvc();
 
       var hangfireConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "_Scheduler");
-      _log.LogDebug($".ConfigureServices: Scheduler database string: {hangfireConnectionString}.");
+      _log.LogDebug($"ConfigureServices: Scheduler database string: {hangfireConnectionString}.");
       _storage = new MySqlStorage(hangfireConnectionString,
         new MySqlStorageOptions
         {
@@ -72,7 +82,16 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           TransactionTimeout = TimeSpan.FromMinutes(1)
         });
 
-      services.AddHangfire(x => x.UseStorage(_storage));
+      try
+      {
+        services.AddHangfire(x => x.UseStorage(_storage));
+      }
+      catch (Exception ex)
+      {
+        _log.LogError($"ConfigureServices: AddHangfire failed: {ex.Message}");
+        throw new Exception($"ConfigureServices: AddHangfire failed: {ex.Message}");
+      }
+
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -84,19 +103,33 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      app.UseHangfireServer();
-    
+      _log.LogDebug("Configure:");
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(_loggerRepoName);
+
+      try
+      {
+        app.UseHangfireServer();
+      }
+      catch (Exception ex)
+      {
+        _log.LogError($"Configure: UseHangfireServer failed: {ex.Message}");
+        throw new Exception($"Configure: UseHangfireServer failed: {ex.Message}");
+      }
+
       var ageInDaysToDelete = _schedulerFilterAgeDefaultDays;
       if (!int.TryParse(_configStore.GetValueString("SCHEDULER_FILTER_AGE_DAYS"), out ageInDaysToDelete))
       {
         ageInDaysToDelete = _schedulerFilterAgeDefaultDays;
-        _log.LogDebug($".Configure: SCHEDULER_FILTER_AGE_DAYS environment variable not available. Using default: {ageInDaysToDelete}.");
+        _log.LogDebug(
+          $"Configure: SCHEDULER_FILTER_AGE_DAYS environment variable not available. Using default: {ageInDaysToDelete}.");
       }
 
       try
       {
         List<RecurringJobDto> recurringJobs = Hangfire.JobStorage.Current.GetConnection().GetRecurringJobs();
-        _log.LogDebug($".Configure: PreJobsetup count of existing recurring jobs {recurringJobs.Count()}");
+        _log.LogDebug($"Configure: PreJobsetup count of existing recurring jobs to be deleted {recurringJobs.Count()}");
         recurringJobs.ForEach(delegate(RecurringJobDto job)
         {
           RecurringJob.RemoveIfExists(job.Id);
@@ -104,58 +137,63 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        _log.LogError($".Configure: Unable to cleanup existing jobs: {ex.Message}");
-        throw new Exception(".Configure: Unable to cleanup existing jobs");
+        _log.LogError($"Configure: Unable to cleanup existing jobs: {ex.Message}");
+        throw new Exception("Configure: Unable to cleanup existing jobs");
       }
 
       var LoggingTestJob = "LoggingTestJob";
       var FilterCleanupJob = "FilterCleanupJob";
 
       // the Filter DB environment variables will come with the 3dp/FilterService configuration
-      string filterDbConnectionString = _configStore.GetConnectionString("VSPDB"); 
+      string filterDbConnectionString = _configStore.GetConnectionString("VSPDB");
       try
       {
         // todo after testing setup interval e.g. hourly
-        RecurringJob.AddOrUpdate(LoggingTestJob, () => SomeJob(), Cron.MinuteInterval(5));
+        RecurringJob.AddOrUpdate(LoggingTestJob, () => SomeJob(), Cron.MinuteInterval(2));
       }
       catch (Exception ex)
       {
-        _log.LogError($".Configure: Unable to schedule recurring job: SomeJob {ex.Message}");
-        throw new Exception(".Configure: Unable to schedule recurring job: SomeJob");
+        _log.LogError($"Configure: Unable to schedule recurring job: SomeJob {ex.Message}");
+        throw new Exception("Configure: Unable to schedule recurring job: SomeJob");
       }
 
       try
       {
         // todo after testing setup interval e.g. hourly
-        RecurringJob.AddOrUpdate(FilterCleanupJob, () => DatabaseCleanupJob(filterDbConnectionString, ageInDaysToDelete), Cron.Minutely);
+        RecurringJob.AddOrUpdate(FilterCleanupJob,
+          () => DatabaseCleanupJob(filterDbConnectionString, ageInDaysToDelete), Cron.Minutely);
       }
       catch (Exception ex)
       {
-        _log.LogError($".Configure: Unable to schedule recurring job: DatabaseCleanup {ex.Message}");
-        throw new Exception(".Configure: Unable to schedule recurring job: DatabaseCleanup");
+        _log.LogError($"Configure: Unable to schedule recurring job: DatabaseCleanup {ex.Message}");
+        throw new Exception("Configure: Unable to schedule recurring job: DatabaseCleanup");
       }
 
       var recurringJobsPost = Hangfire.JobStorage.Current.GetConnection().GetRecurringJobs();
-      _log.LogInformation($".Configure: PostJobSetup count of existing recurring jobs {recurringJobsPost.Count()}");
+      _log.LogInformation($"Configure: PostJobSetup count of existing recurring jobs {recurringJobsPost.Count()}");
 
       if (recurringJobsPost == null || recurringJobsPost.Count < 2)
       {
-        _log.LogError($".Configure: Incomplete list of recurring jobs {recurringJobsPost.Count}");
-        throw new Exception(".Configure: Incorrect # jobs");
+        if (recurringJobsPost == null)
+          _log.LogError($"Configure: Unable to get list of recurring jobs");
+        else
+        _log.LogError($"Configure: Incomplete list of recurring jobs {recurringJobsPost.Count}");
+          
+        throw new Exception("Configure: Incorrect # jobs");
       }
     }
 
     public void SomeJob()
     {
       var log = GetLogger();
-      log.LogInformation($".SomeJob(): Recurring SomeJob completed successfully!");
+      log.LogInformation("SomeJob: completed successfully");
     }
 
     public void DatabaseCleanupJob(string filterDbConnectionString, int ageInDaysToDelete)
     {
       var log = GetLogger();
       var cutoffActionUtcToDelete = DateTime.UtcNow.AddDays(-ageInDaysToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
-      log.LogInformation($"DatabaseCleanupJob(): cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
+      log.LogInformation($"DatabaseCleanupJob: cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
 
       MySqlConnection dbConnection;
       try
@@ -165,8 +203,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        log.LogError($"DatabaseCleanupJob(): open filter DB exeception {ex.Message}");
-        throw new Exception(".DatabaseCleanupJob: open database exception");
+        log.LogError($"DatabaseCleanupJob: open filter DB exeception {ex.Message}");
+        throw new Exception("DatabaseCleanupJob: open database exception");
       }
 
       var empty = "\"";
@@ -179,15 +217,15 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        log.LogError($".DatabaseCleanupJob(): execute exeception {ex.Message}");
-        throw new Exception(".DatabaseCleanupJob: delete from database exception");
+        log.LogError($"DatabaseCleanupJob: execute exeception {ex.Message}");
+        throw new Exception("DatabaseCleanupJob: delete from database exception");
       }
       finally
       {
         dbConnection.Close(); 
       }
 
-      log.LogInformation($".DatabaseCleanupJob: deletedCount: {deletedCount}");
+      log.LogInformation($"DatabaseCleanupJob: completed successfully. CutoffActionUtcToDelete: {cutoffActionUtcToDelete} deletedCount: {deletedCount}");
     }
 
     private ILogger GetLogger()
@@ -198,7 +236,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
     private ILoggerFactory GetLoggerFactory()
     {
-      const string loggerRepoName = "Scheduler"; // _loggerRepoName;
+      const string loggerRepoName = _loggerRepoName;
       var logPath = Directory.GetCurrentDirectory();
 
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
