@@ -133,7 +133,7 @@ node('Ubuntu_Slave') {
                 def tagParameters = [
                   new StringParameterValue("REPO_NAME", "VSS.Productivity3D.TagFileAuth.Service"),
                   new StringParameterValue("COMMIT_ISH", gitCommit),
-                  new StringParameterValue("TAG", fullVersion)
+                  new StringParameterValue("TAG", fullVersion+"-master")
                 ]
                 build job: "tag-vso-commit", parameters: tagParameters
 	    }
