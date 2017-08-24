@@ -115,12 +115,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
                     select new CompactionDataPoint
                     {
+                      type = "firstPass",
                       cellType = p.cellType,
                       x = p.station,
                       y = p.firstPassHeight,
-                      value = p.firstPassHeight,
-                      valueType = ValueTargetType.NoData,
-                      y2 = float.NaN
+                      value = p.firstPassHeight                     
                     }).ToList()
           },
           new CompactionProfileData
@@ -129,12 +128,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "highestPass",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.highestPassHeight,
-                value = p.highestPassHeight,
-                valueType = ValueTargetType.NoData,
-                y2 = float.NaN
+                value = p.highestPassHeight
               }).ToList()
           },
           new CompactionProfileData
@@ -143,12 +141,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "lastPass",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lastPassHeight,
-                value = p.lastPassHeight,
-                valueType = ValueTargetType.NoData,
-                y2 = float.NaN
+                value = p.lastPassHeight
               }).ToList()
           },
           new CompactionProfileData
@@ -157,12 +154,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "lowestPass",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lowestPassHeight,
-                value = p.lowestPassHeight,
-                valueType = ValueTargetType.NoData,
-                y2 = float.NaN
+                value = p.lowestPassHeight
               }).ToList()
           },
           new CompactionProfileData
@@ -171,12 +167,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "lastComposite",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lastCompositeHeight,
-                value = p.lastCompositeHeight,
-                valueType = ValueTargetType.NoData,
-                y2 = float.NaN
+                value = p.lastCompositeHeight
               }).ToList()
           },
           new CompactionProfileData
@@ -185,12 +180,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "cmvSummary",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.cmvHeight,
                 value = p.cmvPercent,
-                valueType = p.cmvIndex,
-                y2 = float.NaN
+                valueType = p.cmvIndex
               }).ToList()
           },
           new CompactionProfileData
@@ -199,12 +194,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "cmvDetail",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.cmvHeight,
-                value = p.cmv,
-                valueType = ValueTargetType.NoData,
-                y2 = float.NaN
+                value = p.cmv
               }).ToList()
           },
           new CompactionProfileData
@@ -213,12 +207,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "cmvPercentChange",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.cmvHeight,
-                value = p.cmvPercentChange,
-                valueType = ValueTargetType.NoData,
-                y2 = float.NaN
+                value = p.cmvPercentChange
               }).ToList()
           },
           new CompactionProfileData
@@ -227,12 +220,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "mdpSummary",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.mdpHeight,
                 value = p.mdpPercent,
-                valueType = p.mdpIndex,
-                y2 = float.NaN
+                valueType = p.mdpIndex
               }).ToList()
           },
           new CompactionProfileData
@@ -241,12 +234,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "temperatureSummary",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.temperatureHeight,
                 value = p.temperature,
-                valueType = p.temperatureIndex,
-                y2 = float.NaN
+                valueType = p.temperatureIndex
               }).ToList()
           },
           new CompactionProfileData
@@ -255,12 +248,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "speedSummary",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.speedHeight,
-                value = p.speed,
-                valueType = p.speedIndex,
-                y2 = float.NaN
+                value = p.minSpeed,
+                value2 = p.maxSpeed,
+                valueType = p.speedIndex
               }).ToList()
           },
           new CompactionProfileData
@@ -269,12 +263,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "passCountSummary",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lastPassHeight,
                 value = p.topLayerPassCount,
-                valueType = p.passCountIndex,
-                y2 = float.NaN
+                valueType = p.passCountIndex
               }).ToList()
           },
           new CompactionProfileData
@@ -283,12 +277,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "passCountDetail",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lastPassHeight,
-                value = p.topLayerPassCount,
-                valueType = ValueTargetType.NoData,
-                y2 = float.NaN
+                value = p.topLayerPassCount
               }).ToList()
           },
           new CompactionProfileData
@@ -297,11 +290,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = (from p in slicerProfileResult.points
               select new CompactionDataPoint
               {
+                type = "cutFill",
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lastCompositeHeight,
                 value = p.cutFill,
-                valueType = ValueTargetType.NoData,
                 y2 = p.cutFillHeight
               }).ToList()
           }

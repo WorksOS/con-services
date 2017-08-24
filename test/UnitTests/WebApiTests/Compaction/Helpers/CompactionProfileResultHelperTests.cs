@@ -205,7 +205,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               temperatureHeight = 0.77F,
               topLayerPassCount = 5,
               cmvPercentChange = 4.5F,
-              speed = 5.9F,
+              minSpeed = 5.9F,
+              maxSpeed = 6.5F,
               speedHeight = 0.56F,
               cutFill = 0.06F,
               cutFillHeight = 0.8F,
@@ -234,7 +235,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               temperatureHeight = 0.78F,
               topLayerPassCount = 6,
               cmvPercentChange = 3.9F,
-              speed = 8.1F,
+              minSpeed = 8.1F,
+              maxSpeed = 9.2F,
               speedHeight = 0.7F,
               cutFill = 0.15F,
               cutFillHeight = 0.9F,
@@ -263,7 +265,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               temperatureHeight = 0.67F,
               topLayerPassCount = 8,
               cmvPercentChange = 2.1F,
-              speed = float.NaN,
+              minSpeed = float.NaN,
+              maxSpeed = float.NaN,
               speedHeight = 0.65F,
               cutFill = float.NaN,
               cutFillHeight = float.NaN,
@@ -299,8 +302,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(expectedType, actualList[i].type, $"{i}: Wrong type");
       Assert.AreEqual(expectedList.Count, actualList[i].data.Count, $"{i}: Wrong number of points");
 
-      ValueTargetType expectedValueType = ValueTargetType.NoData;
-      float expectedY2 = float.NaN;
+      ValueTargetType? expectedValueType = null;
+      float? expectedY2 = null;
+      float? expectedValue2 = null;
 
       for (int j = 0; j < expectedList.Count; j++)
       {
@@ -353,7 +357,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             break;
           case 10://speedSummary
             expectedHeight = expectedList[j].speedHeight;
-            expectedValue = expectedList[j].speed;
+            expectedValue = expectedList[j].minSpeed;
+            expectedValue2 = expectedList[j].maxSpeed;
             expectedValueType = expectedList[j].speedIndex;
             break;
           case 11://passCountSummary
@@ -371,18 +376,19 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             expectedY2 = expectedList[j].cutFillHeight;
             break;
         }
-        ValidatePoint(expectedType, j, expectedList[j], actualList[i].data[j], expectedHeight, expectedValue, expectedValueType, expectedY2);
+        ValidatePoint(expectedType, j, expectedList[j], actualList[i].data[j], expectedHeight, expectedValue, expectedValueType, expectedY2, expectedValue2);
       }
     }
 
-    private void ValidatePoint(string expectedType, int j, CompactionProfileCell expectedCell, CompactionDataPoint actualResult, float expectedY, float expectedValue, ValueTargetType expectedValueType, float expectedY2)
+    private void ValidatePoint(string expectedType, int j, CompactionProfileCell expectedCell, CompactionDataPoint actualResult, float expectedY, float expectedValue, ValueTargetType? expectedValueType, float? expectedY2, float? expectedValue2)
     {
       Assert.AreEqual(expectedCell.cellType, actualResult.cellType, $"{j}: {expectedType} Wrong cellType");
       Assert.AreEqual(expectedCell.station, actualResult.x, $"{j}: {expectedType} Wrong x");
       Assert.AreEqual(expectedY, actualResult.y, $"{j}: {expectedType} Wrong y");
       Assert.AreEqual(expectedValue, actualResult.value, $"{j}: {expectedType} Wrong value");
-      Assert.AreEqual(expectedValueType, actualResult.valueType, $"{j}: {expectedType} Wrong valueType");
+      Assert.AreEqual(expectedValueType, actualResult.valueType, $"{j}: {expectedType} Wrong valueType"); 
       Assert.AreEqual(expectedY2, actualResult.y2, $"{j}: {expectedType} Wrong y2");
+      Assert.AreEqual(expectedValue2, actualResult.value2, $"{j}: {expectedType} Wrong value2");
     }
 
   }

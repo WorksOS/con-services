@@ -147,12 +147,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           : currCell.compositeLastPassHeight;
         var designHeight = currCell.designHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.designHeight;
 
-        //TODO: ***** noSpeedValue, noSpeedElevation, speed
-        bool noSpeedValue = true;//currCell.speed == VelociraptorConstants.NO_SPEED;
-        bool noSpeedElevation = true;//float.IsNaN(lastPassHeight) || noSpeedValue;
-        var speed = 0;
-        var speedMin = 0;//noSpeedValue ? float.NaN : currCell.speed / ConversionConstants.KM_HR_TO_CM_SEC;
-        var speedMax = 0;//noSpeedValue ? float.NaN : currCell.speed / ConversionConstants.KM_HR_TO_CM_SEC;
+        //Either have none or both speed values
+        var noSpeedValue = currCell.cellMaxSpeed == VelociraptorConstants.NO_SPEED;
+        var speedMin = noSpeedValue ? float.NaN : (float)(currCell.cellMinSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
+        var speedMax = noSpeedValue ? float.NaN : (float)(currCell.cellMaxSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
 
         var cmvPercent = noCCVValue
           ? float.NaN
@@ -195,8 +193,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
             (currCell.PrevCCV == VelociraptorConstants.NO_CCV ? 100.0f :
               (float)Math.Abs(currCell.CCV - currCell.PrevCCV) / (float)currCell.PrevCCV * 100.0f),
 
-          //TODO: ***** speed
-          speed = 0,//speed,
+          minSpeed = speedMin,
+          maxSpeed = speedMax,
           speedHeight = lastPassHeight,
 
           passCountIndex = noPassCountValue ? ValueTargetType.NoData :
@@ -220,9 +218,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
                 ValueTargetType.OnTarget)),
 
           speedIndex = noSpeedValue ? ValueTargetType.NoData :
-            (speed < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
-              (speed > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
-                ValueTargetType.OnTarget)),
+            (speedMax > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
+              (speedMin < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed && 
+               speedMax < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
+                ValueTargetType.OnTarget))
         });
 
         prevCell = currCell;
@@ -389,7 +388,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       temperatureHeight = float.NaN,
       topLayerPassCount = -1,
       cmvPercentChange = float.NaN,
-      speed = float.NaN,
+      minSpeed = float.NaN,
+      maxSpeed = float.NaN,
       passCountIndex = ValueTargetType.NoData,
       temperatureIndex = ValueTargetType.NoData,
       cmvIndex = ValueTargetType.NoData,

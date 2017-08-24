@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
@@ -28,18 +29,53 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     public float y;
 
     /// <summary>
-    /// The value of the profile data for the type of data e.g. cut-fill, CMV, temperature etc.
+    /// The value of the profile data for the type of data e.g. cut-fill, CMV, temperature etc. For speed it is the minimum speed value.
     /// </summary>
     public float value;
 
     /// <summary>
     /// For summary profile types, what the value represents with respect to the target. Used to select the color for the profile line segment.
     /// </summary>
-    public ValueTargetType valueType;
+    public ValueTargetType? valueType;
 
     /// <summary>
     /// For cut-fill profiles only, the design elevation of the cell.
     /// </summary>
-    public float y2;
+    public float? y2;
+
+    /// <summary>
+    /// For speed summary profiles only, the maximum speed value.
+    /// </summary>
+    public float? value2;
+
+    /// <summary>
+    /// The type of profile this cell belongs to. Used to determine which properties to serialize.
+    /// </summary>
+    [JsonIgnore]
+    public string type;
+
+    /// <summary>
+    /// Tell JSON serializer when to serialize property y2
+    /// </summary>
+    public bool ShouldSerializey2()
+    {
+      return type == "cutFill";
+    }
+
+    /// <summary>
+    /// Tell JSON serializer when to serialize property value2
+    /// </summary>
+    public bool ShouldSerializevalue2()
+    {
+      return type == "speedSummary";
+    }
+
+    /// <summary>
+    /// Tell JSON serializer when to serialize property valueType
+    /// </summary>
+    public bool ShouldSerializevalueType()
+    {
+      return type.ToLower().Contains("summary");
+    }
   }
 }
