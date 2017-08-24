@@ -84,30 +84,33 @@ dir ("MasterDataConsumers")
 
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release-${fullVersion}"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-${fullVersion}"
-
+	    stage ('Tag repository') {
+                sh 'git rev-parse HEAD > GIT_COMMIT'
+                def gitCommit=readFile('GIT_COMMIT').trim()
+                def tagParameters = [
+                  new StringParameterValue("REPO_NAME", "MerinoSandbox"),
+                  new StringParameterValue("COMMIT_ISH", gitCommit),
+                  new StringParameterValue("TAG", fullVersion)
+                ]
+                build job: "tag-vso-commit", parameters: tagParameters
+	    }
 }
 else
 {
        stage 'Build development images'
 
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:${fullVersion}-${branch} ./artifacts/MasterDataConsumer"
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest ./artifacts/MasterDataConsumer"
  
 
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:${fullVersion}-${branch} ./database"
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest ./database"
 
        //Publish to AWS Repo
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:${fullVersion}-${branch}"
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db"
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer"
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:${fullVersion}-${branch}"
 
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:${fullVersion}-${branch}"
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest"
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:${fullVersion}-${branch}"
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer"
 }
 
     }
@@ -130,6 +133,16 @@ node ('Jenkins-Win2016-Raptor')
            bat "build47.bat"
            archiveArtifacts artifacts: 'MasterdataConsumerNet47.zip', fingerprint: true 
            }
+	    stage ('Tag repository') {
+                bat 'git rev-parse HEAD > GIT_COMMIT'
+                def gitCommit=readFile('GIT_COMMIT').trim()
+                def tagParameters = [
+                  new StringParameterValue("REPO_NAME", "MerinoSandbox"),
+                  new StringParameterValue("COMMIT_ISH", gitCommit),
+                  new StringParameterValue("TAG", fullVersion+"-master")
+                ]
+                build job: "tag-vso-commit", parameters: tagParameters
+	    }
           }
 	}
 	else 
