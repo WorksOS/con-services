@@ -1,17 +1,15 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Security.Authentication;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Net;
+using System.Security.Authentication;
+using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.UnitTests;
 
 namespace VSS.MasterData.Models.Tests

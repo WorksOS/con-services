@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
 using VSS.MasterData.Models.Models;
@@ -12,9 +14,9 @@ namespace MockProjectWebApi.Controllers
     /// Gets the list of filters used in the 3D Productivity service acceptance tests.
     /// The data is mocked.
     /// </summary>
-    [Route("api/v4/mockfilter/{projectUid}/{filterUid}")]
+    [Route("api/v4/mockfilter/{projectUid}")]
     [HttpGet]
-    public FilterData GetMockFilter(string projectUid, string filterUid)
+    public FilterData GetMockFilter(string projectUid, [FromUri] string filterUid)
     {
       Console.WriteLine("GetMockFilter: projectUid={0}, filterUid={1}", projectUid, filterUid);
 
