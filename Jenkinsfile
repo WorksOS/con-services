@@ -1,5 +1,7 @@
 properties([disableConcurrentBuilds(), pipelineTriggers([])])
 
+    def result = ''
+
     def branch = env.BRANCH_NAME
     def buildNumber = env.BUILD_NUMBER
     def versionPrefix = ""
@@ -63,6 +65,8 @@ node('Ubuntu_Slave') {
         publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])
         
         echo "Build result is ${currentBuild.result}"
+        result = currentBuild.result
+
         if (currentBuild.result=='SUCCESS') {
             //Rebuild Image, tag & push to AWS Docker Repo
             stage ('Get ecr login, push image to Repo') {
