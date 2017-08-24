@@ -11,7 +11,7 @@ services:
     env_file:
      - docker-compose.env
     environment:
-     - MYSQL_DATABASE_NAME=VSS.Productivity3D.Filter     
+     - MYSQL_DATABASE_NAME=VSS-Productivity3D-Filter     
     depends_on:
       - db 
   schema:
