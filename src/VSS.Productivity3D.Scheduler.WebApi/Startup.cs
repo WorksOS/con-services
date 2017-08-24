@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Dapper;
 using Hangfire;
 using Hangfire.MySql;
@@ -37,7 +38,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     public Startup(IHostingEnvironment env)
     {
       Console.WriteLine("Startup");
-
+      Thread.Sleep(30000);
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
