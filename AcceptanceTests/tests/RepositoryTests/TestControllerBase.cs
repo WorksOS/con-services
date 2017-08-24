@@ -14,11 +14,13 @@ namespace RepositoryTests
     protected IConfigurationStore configStore;
     protected ILoggerFactory logger;
 
-    [TestInitialize]
-    public virtual void InitTest()
+    public void SetupDI()
     {
+      Console.WriteLine("in SetupDI");
       const string loggerRepoName = "UnitTestLogTest";
       var logPath = Directory.GetCurrentDirectory();
+      Console.WriteLine($"in SetupDI. logpath{logPath} loggerRepoName {loggerRepoName}");
+
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 
       ILoggerFactory loggerFactory = new LoggerFactory();
@@ -30,13 +32,14 @@ namespace RepositoryTests
       serviceCollection
         .AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>();
-      
-      serviceProvider = serviceCollection.BuildServiceProvider();
 
+      serviceProvider = serviceCollection.BuildServiceProvider();
       configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
+      Assert.IsNotNull(serviceProvider.GetService<IConfigurationStore>());
       Assert.IsNotNull(serviceProvider.GetService<ILoggerFactory>());
+      Console.WriteLine("exiting SetupDI");
     }
   }
 }

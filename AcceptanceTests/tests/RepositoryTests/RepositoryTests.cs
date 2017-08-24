@@ -1,14 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using System.Linq;
 using Dapper;
+using VSS.Productivity3D.Scheduler.Common.Utilities;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace RepositoryTests
 {
   [TestClass]
   public class RepositoryTests : TestControllerBase
   {
+    protected ILogger log;
+
+    [TestInitialize]
+    public void Init()
+    {
+      Console.WriteLine("in init");
+      SetupDI();
+
+      log = logger.CreateLogger<RepositoryTests>();
+      Assert.IsNotNull(log, "log is null");
+    }
 
     [TestMethod]
     public void FilterSchemaExists_FilterTable()
@@ -28,7 +43,10 @@ namespace RepositoryTests
         "InsertUTC",
         "UpdateUTC"
       };
+      Console.WriteLine(
+        $"in FilterSchemaExists_FilterTable before checksum: tableName {tableName} columnNames {JsonConvert.SerializeObject(columnNames)} configStore {(configStore == null ? "configStoreIsNull" : "configStoreIsNotNull")} log {(log == null ? "logIsNull" : "logIsNotNull")}");
       CheckSchema("_FILTER", tableName, columnNames);
+      Console.WriteLine($"exiting FilterSchemaExists_FilterTable");
     }
 
     [TestMethod]
@@ -87,7 +105,7 @@ namespace RepositoryTests
       };
       CheckSchema("", tableName, columnNames);
     }
-    
+
     [TestMethod]
     public void SchedulerSchemaExists_HashTable()
     {
@@ -131,7 +149,7 @@ namespace RepositoryTests
       };
       CheckSchema("", tableName, columnNames);
     }
-    
+
     [TestMethod]
     public void SchedulerSchemaExists_JobStateTable()
     {
@@ -160,7 +178,7 @@ namespace RepositoryTests
       };
       CheckSchema("", tableName, columnNames);
     }
-    
+
     [TestMethod]
     public void SchedulerSchemaExists_SetQueueTable()
     {
@@ -206,11 +224,19 @@ namespace RepositoryTests
       CheckSchema("", tableName, columnNames);
     }
 
+
     #region privates
 
     private void CheckSchema(string dbNameExtension, string tableName, List<string> columnNames)
     {
-      using (var connection = new MySqlConnection(configStore.GetConnectionString("VSPDB")))
+      Console.WriteLine(
+        $"CheckSchema dbNameExtension {dbNameExtension} tableName {tableName} columnNames {columnNames}");
+
+      string connectionString = string.IsNullOrEmpty(dbNameExtension)
+        ? configStore.GetConnectionString("VSPDB")
+        : ConnectionUtils.GetConnectionString(configStore, log, dbNameExtension);
+      Console.WriteLine($"CheckSchema connectionString {connectionString}");
+      using (var connection = new MySqlConnection(connectionString))
       {
         try
         {
@@ -218,6 +244,7 @@ namespace RepositoryTests
 
           //Check table exists
           var table = connection.Query(GetQuery(dbNameExtension, tableName, true)).FirstOrDefault();
+
           Assert.IsNotNull(table, "Missing " + tableName + " table schema");
           Assert.AreEqual(tableName, table.TABLE_NAME, "Wrong table name");
 
@@ -226,7 +253,8 @@ namespace RepositoryTests
           Assert.IsNotNull(columns, "Missing " + tableName + " table columns");
           Assert.AreEqual(columnNames.Count, columns.Count, "Wrong number of " + tableName + " columns");
           foreach (var columnName in columnNames)
-            Assert.IsNotNull(columns.Find(c => c.COLUMN_NAME == columnName), "Missing " + columnName + " column in " + tableName + " table");
+            Assert.IsNotNull(columns.Find(c => c.COLUMN_NAME == columnName),
+              "Missing " + columnName + " column in " + tableName + " table");
         }
         finally
         {
@@ -238,8 +266,10 @@ namespace RepositoryTests
     private string GetQuery(string dbNameExtension, string tableName, bool selectTable)
     {
       string what = selectTable ? "TABLE_NAME" : "COLUMN_NAME";
-      var query = string.Format("SELECT {0} FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{1}' AND TABLE_NAME ='{2}'",
+      var query = string.Format(
+        "SELECT {0} FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{1}' AND TABLE_NAME ='{2}'",
         what, configStore.GetValueString("MYSQL_DATABASE_NAME" + dbNameExtension), tableName);
+      Console.WriteLine($"GetQuery query {query}");
       return query;
     }
 

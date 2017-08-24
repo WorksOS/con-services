@@ -176,6 +176,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
     }
 
+    /// <summary>
+    /// cleanup transient filters over 4 hours old
+    /// </summary>
+    /// <param name="filterDbConnectionString"></param>
+    /// <param name="ageInHoursToDelete"></param>
     public void DatabaseCleanupJob(string filterDbConnectionString, int ageInHoursToDelete)
     {
       var log = GetLogger();
