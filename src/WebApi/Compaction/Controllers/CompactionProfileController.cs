@@ -144,7 +144,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //Find the cut-fill elevations for the cell stations from the design vertex elevations
         profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult);
       }
-      return profileResultHelper.ConvertProfileResult(slicerProductionDataResult);
+      var transformedResult = profileResultHelper.ConvertProfileResult(slicerProductionDataResult);
+      transformedResult.designFileUid = cutfillDesignUid ?? Guid.Empty;
+      return transformedResult;
     }
 
     [ProjectUidVerifier]

@@ -8,5 +8,6 @@
     public const int NO_TEMPERATURE = SVOICDecls.__Global.kICNullMaterialTempValue;
     public const int NO_PASSCOUNT = SVOICDecls.__Global.kICNullPassCountValue;
     public const float NULL_SINGLE = DTXModelDecls.__Global.NullSingle;
+    public const int NO_SPEED = SVOICDecls.__Global.kICNullMachineSpeed;
   }
 }

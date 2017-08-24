@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
@@ -92,9 +95,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <returns>The new profile result representation</returns>
     public CompactionProfileResult<CompactionProfileData> ConvertProfileResult(CompactionProfileResult<CompactionProfileCell> slicerProfileResult)
     {
+      //shouldn't ever happen but for safety check arg
+      if (slicerProfileResult == null || slicerProfileResult.points == null)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            "Unexpected missing profile result"));
+      }
+
       var profile = new CompactionProfileResult<CompactionProfileData>
       {
         gridDistanceBetweenProfilePoints = slicerProfileResult.gridDistanceBetweenProfilePoints,
+        designFileUid = slicerProfileResult.designFileUid,
         points = new List<CompactionProfileData>
         {
           new CompactionProfileData
