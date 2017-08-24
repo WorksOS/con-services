@@ -8,7 +8,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
 {
   [TestClass]
-  public class TargetPassCountRangeTest
+  public class TargetPassCountRangeTests
   {
     [TestMethod]
     public void CanCreateTargetPassCountRangeTest()

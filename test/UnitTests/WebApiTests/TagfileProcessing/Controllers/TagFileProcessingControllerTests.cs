@@ -17,7 +17,7 @@ using VSS.Productivity3D.WebApiModels.TagfileProcessing.Models;
 namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 {
   [TestClass]
-  public class TagFileProcessingControllerTest
+  public class TagFileProcessingControllerTests
   {
     private WGS84Fence CreateAFence()
     {

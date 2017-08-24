@@ -9,7 +9,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 {
    [TestClass]
-  public class EditDataRequestTest
+  public class EditDataRequestTests
   {
      [TestMethod]
      public void CanCreateEditDataRequestTest()

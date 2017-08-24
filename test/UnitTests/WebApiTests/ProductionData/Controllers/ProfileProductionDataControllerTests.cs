@@ -17,7 +17,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {
   [TestClass]
-  public class ProfileProductionDataControllerTest
+  public class ProfileProductionDataControllerTests
   {
     private const long PD_MODEL_ID = 544; // Dimensions 2012 project...
 

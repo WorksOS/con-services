@@ -6,7 +6,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {
   [TestClass]
-  public class SurveyedSurfaceControllerTest
+  public class SurveyedSurfaceControllerTests
   {
     private const long PD_MODEL_ID = 1;//544; // Dimensions 2012 project...
 

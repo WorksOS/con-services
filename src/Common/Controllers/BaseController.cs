@@ -212,9 +212,8 @@ namespace VSS.Productivity3D.Common.Controllers
     /// Gets the project settings for the project.
     /// </summary>
     /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
-    /// <param name="log">log for logging</param>
     /// <returns>The project settings</returns>
-    protected async Task<CompactionProjectSettings> GetProjectSettings(Guid projectUid, ILogger log)
+    protected async Task<CompactionProjectSettings> GetProjectSettings(Guid projectUid)
     {
       CompactionProjectSettings ps;
       var jsonSettings = await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders);

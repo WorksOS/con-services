@@ -118,7 +118,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       try
       {
-        var projectSettings = await GetProjectSettings(projectUid,  log);
+        var projectSettings = await GetProjectSettings(projectUid);
 
         var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
 

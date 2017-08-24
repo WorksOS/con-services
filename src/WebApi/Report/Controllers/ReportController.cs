@@ -119,7 +119,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Pass count settings required for detailed pass count report"));
       }
-      var projectSettings = await GetProjectSettings(projectUid,  log);
+      var projectSettings = await GetProjectSettings(projectUid);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
