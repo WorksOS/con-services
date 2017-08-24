@@ -378,6 +378,9 @@ namespace TestRun
                     {Console.SetOut(stdOut);}
                 Console.WriteLine(@"=================================================================================================");
                 Console.WriteLine("Test : " + method.Name + " ***********  FAILED ************ ");
+                Console.WriteLine("Message: " + ex.Message);
+                Console.WriteLine("InnerEx: " + ex.InnerException);
+                Console.WriteLine("StackTrace: " + ex.StackTrace);
                 Console.WriteLine(@"=================================================================================================");                
             }
             finally
