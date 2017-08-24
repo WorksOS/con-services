@@ -16,6 +16,9 @@ node('Jenkins-Win2016-Raptor') {
     } else if (branch.contains("Dev")) {
        versionPrefix = "0.99."
        branchName = "Dev"
+    } else if (branch.contains("master")) {
+       versionPrefix = "1.0."
+       branchName = "master"
     } else {
        branchName = branch.substring(branch.lastIndexOf("/") + 1)
        suffix = "-" + branchName
@@ -36,6 +39,7 @@ node('Jenkins-Win2016-Raptor') {
     stage ('Build solution') {
         bat "./build.bat"
     }
+    currentBuild.result = 'SUCCESS'
 //    stage ('Run unit tests') {
 //        bat "./unittests.bat"
 //    }
