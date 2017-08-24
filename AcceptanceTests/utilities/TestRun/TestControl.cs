@@ -190,8 +190,8 @@ namespace TestRun
             Regex regex = new Regex("aaa!");
             WebRequest wr = WebRequest.Create("http://www.google.com");
             BooleanConverter bc = new BooleanConverter();
-           //CustomerProject cs = new CustomerProject();
-        }
+      //CustomerProject cs = new CustomerProject();
+    }
 
         /// <summary>
         /// Loop through all the classes in the DLL
