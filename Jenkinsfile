@@ -87,7 +87,8 @@ node('Ubuntu_Slave') {
                 build job: "tag-vso-commit", parameters: tagParameters
 	    }
 
-            } else {
+            } else if (branch.contains("Dev")) {
+
                 stage ('Build Development Images') {	   
                     sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest ./artifacts/WebApi" 
                     sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess"
