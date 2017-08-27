@@ -15,13 +15,14 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Productivity3D.Common.Interfaces;
 
 namespace VSS.Productivity3D.Common.Controllers
 {
-  public abstract class BaseController : Controller
+  public abstract class 
+    BaseController : Controller
   {
     /// <summary>
     /// Logger for logging
