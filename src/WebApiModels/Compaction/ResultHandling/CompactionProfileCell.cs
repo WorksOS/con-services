@@ -95,9 +95,14 @@
     public float cmvPercentChange;
 
     /// <summary>
-    /// Speed value in cm/s
+    /// Minimum speed value in km/h
     /// </summary>
-    public float speed;
+    public float minSpeed;
+
+    /// <summary>
+    /// Maximum speed value in km/h
+    /// </summary>
+    public float maxSpeed;
 
     /// <summary>
     /// Elevation of the cell pass that contributed the speed value.
@@ -164,7 +169,8 @@
       temperatureHeight = cell.temperatureHeight;
       topLayerPassCount = cell.topLayerPassCount;
       cmvPercentChange = cell.cmvPercentChange;
-      speed = cell.speed;
+      minSpeed = cell.minSpeed;
+      maxSpeed = cell.maxSpeed;
       speedHeight = cell.speedHeight;
       cutFill = cell.cutFill;
       cutFillHeight = cell.cutFillHeight;

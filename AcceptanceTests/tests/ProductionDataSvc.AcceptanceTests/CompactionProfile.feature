@@ -11,427 +11,1443 @@ Scenario: Compaction Get Slicer Profile
 	Then the Compaction Profile should be
 """
 {
+    "designFileUid": "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
     "gridDistanceBetweenProfilePoints": 1.6069349835347946,
     "points": [
         {
-            "cellType": 1,
-            "station": 0,
-            "firstPassHeight": 597.353,
-            "highestPassHeight": 597.396,
-            "lastPassHeight": 597.396,
-            "lowestPassHeight": 597.353,
-            "lastCompositeHeight": 597.1041,
-            "designHeight": 597.438,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 3,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.3338623,
-            "cutFillHeight": 597.4387,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "firstPass",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": 597.353,
+                    "value": 597.353
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": 597.3581,
+                    "value": 597.3581
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": 597.359,
+                    "value": 597.359
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": 597.36084,
+                    "value": 597.36084
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": 597.386,
+                    "value": 597.386
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": 597.3832,
+                    "value": 597.3832
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": 597.382,
+                    "value": 597.382
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": 597.3828,
+                    "value": 597.3828
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": 597.384,
+                    "value": 597.384
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": 597.3836,
+                    "value": 597.3836
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": 597.383,
+                    "value": 597.383
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": 597.383,
+                    "value": 597.383
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": 597.383,
+                    "value": 597.383
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": 597.382935,
+                    "value": 597.382935
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": 597.382,
+                    "value": 597.382
+                }
+            ]
         },
         {
-            "cellType": 0,
-            "station": 0.085205803092608473,
-            "firstPassHeight": 597.3581,
-            "highestPassHeight": 597.388367,
-            "lastPassHeight": 597.388367,
-            "lowestPassHeight": 597.3581,
-            "lastCompositeHeight": 597.1135,
-            "designHeight": 597.4414,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 2,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.326843262,
-            "cutFillHeight": 597.4384,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "highestPass",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": 597.396,
+                    "value": 597.396
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": 597.388367,
+                    "value": 597.388367
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": 597.387,
+                    "value": 597.387
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": 597.386963,
+                    "value": 597.386963
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": 597.386,
+                    "value": 597.386
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": 597.3832,
+                    "value": 597.3832
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": 597.382,
+                    "value": 597.382
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": 597.3828,
+                    "value": 597.3828
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": 597.384,
+                    "value": 597.384
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": 597.3836,
+                    "value": 597.3836
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": 597.383,
+                    "value": 597.383
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": 597.383,
+                    "value": 597.383
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": 597.383,
+                    "value": 597.383
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": 597.382935,
+                    "value": 597.382935
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": 597.382,
+                    "value": 597.382
+                }
+            ]
         },
         {
-            "cellType": 1,
-            "station": 0.10001382414230234,
-            "firstPassHeight": 597.359,
-            "highestPassHeight": 597.387,
-            "lastPassHeight": 597.387,
-            "lowestPassHeight": 597.359,
-            "lastCompositeHeight": 597.1152,
-            "designHeight": 597.442,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 2,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.326843262,
-            "cutFillHeight": 597.438354,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "lastPass",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": 597.396,
+                    "value": 597.396
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": 597.388367,
+                    "value": 597.388367
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": 597.387,
+                    "value": 597.387
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": 597.386963,
+                    "value": 597.386963
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": 597.386,
+                    "value": 597.386
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": 597.3832,
+                    "value": 597.3832
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": 597.382,
+                    "value": 597.382
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": 597.3828,
+                    "value": 597.3828
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": 597.384,
+                    "value": 597.384
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": 597.376,
+                    "value": 597.376
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": 597.364,
+                    "value": 597.364
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": 597.374634,
+                    "value": 597.374634
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": 597.376,
+                    "value": 597.376
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": 597.375549,
+                    "value": 597.375549
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": 597.371,
+                    "value": 597.371
+                }
+            ]
         },
         {
-            "cellType": 0,
-            "station": 0.11482184519199619,
-            "firstPassHeight": 597.36084,
-            "highestPassHeight": 597.386963,
-            "lastPassHeight": 597.386963,
-            "lowestPassHeight": 597.36084,
-            "lastCompositeHeight": 597.115234,
-            "designHeight": 597.4418,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 1,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.3222046,
-            "cutFillHeight": 597.4383,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "lowestPass",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": 597.353,
+                    "value": 597.353
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": 597.3581,
+                    "value": 597.3581
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": 597.359,
+                    "value": 597.359
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": 597.36084,
+                    "value": 597.36084
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": 597.386,
+                    "value": 597.386
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": 597.3832,
+                    "value": 597.3832
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": 597.382,
+                    "value": 597.382
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": 597.3828,
+                    "value": 597.3828
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": 597.384,
+                    "value": 597.384
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": 597.376,
+                    "value": 597.376
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": 597.364,
+                    "value": 597.364
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": 597.374634,
+                    "value": 597.374634
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": 597.376,
+                    "value": 597.376
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": 597.375549,
+                    "value": 597.375549
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": 597.371,
+                    "value": 597.371
+                }
+            ]
         },
         {
-            "cellType": 1,
-            "station": 0.31995441034733291,
-            "firstPassHeight": 597.386,
-            "highestPassHeight": 597.386,
-            "lastPassHeight": 597.386,
-            "lowestPassHeight": 597.386,
-            "lastCompositeHeight": 597.1158,
-            "designHeight": 597.438,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 1,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.3222046,
-            "cutFillHeight": 597.4375,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "lastComposite",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": 597.1041,
+                    "value": 597.1041
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": 597.1135,
+                    "value": 597.1135
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": 597.1152,
+                    "value": 597.1152
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": 597.115234,
+                    "value": 597.115234
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": 597.1158,
+                    "value": 597.1158
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": 597.11676,
+                    "value": 597.11676
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": 597.1172,
+                    "value": 597.1172
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": 597.1214,
+                    "value": 597.1214
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": 597.127441,
+                    "value": 597.127441
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": 597.128,
+                    "value": 597.128
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": 597.128845,
+                    "value": 597.128845
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": 597.138062,
+                    "value": 597.138062
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": 597.1392,
+                    "value": 597.1392
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": 597.139343,
+                    "value": 597.139343
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": 597.1405,
+                    "value": 597.1405
+                }
+            ]
         },
         {
-            "cellType": 0,
-            "station": 0.52508697550266958,
-            "firstPassHeight": 597.3832,
-            "highestPassHeight": 597.3832,
-            "lastPassHeight": 597.3832,
-            "lowestPassHeight": 597.3832,
-            "lastCompositeHeight": 597.11676,
-            "designHeight": 597.435852,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 1,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.317810059,
-            "cutFillHeight": 597.4367,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "cmvSummary",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                }
+            ]
         },
         {
-            "cellType": 1,
-            "station": 0.60891033030474173,
-            "firstPassHeight": 597.382,
-            "highestPassHeight": 597.382,
-            "lastPassHeight": 597.382,
-            "lowestPassHeight": 597.382,
-            "lastCompositeHeight": 597.1172,
-            "designHeight": 597.435,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 1,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.317810059,
-            "cutFillHeight": 597.43634,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "cmvDetail",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": "NaN",
+                    "value": "NaN"
+                }
+            ]
         },
         {
-            "cellType": 0,
-            "station": 0.69273368510681388,
-            "firstPassHeight": 597.3828,
-            "highestPassHeight": 597.3828,
-            "lastPassHeight": 597.3828,
-            "lowestPassHeight": 597.3828,
-            "lastCompositeHeight": 597.1214,
-            "designHeight": 597.4362,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 1,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.310546875,
-            "cutFillHeight": 597.436035,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "cmvPercentChange",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": "NaN",
+                    "value": "NaN"
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": "NaN",
+                    "value": "NaN"
+                }
+            ]
         },
         {
-            "cellType": 1,
-            "station": 0.81404289546017272,
-            "firstPassHeight": 597.384,
-            "highestPassHeight": 597.384,
-            "lastPassHeight": 597.384,
-            "lowestPassHeight": 597.384,
-            "lastCompositeHeight": 597.127441,
-            "designHeight": 597.438,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 1,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.310546875,
-            "cutFillHeight": 597.4356,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "mdpSummary",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                }
+            ]
         },
         {
-            "cellType": 0,
-            "station": 0.93535210581353156,
-            "firstPassHeight": 597.3836,
-            "highestPassHeight": 597.3836,
-            "lastPassHeight": 597.376,
-            "lowestPassHeight": 597.376,
-            "lastCompositeHeight": 597.128,
-            "designHeight": 597.4364,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 2,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.305175781,
-            "cutFillHeight": 597.435364,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "temperatureSummary",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": "NaN",
+                    "value": "NaN",
+                    "valueType": -1
+                }
+            ]
         },
         {
-            "cellType": 1,
-            "station": 1.1178068364676852,
-            "firstPassHeight": 597.383,
-            "highestPassHeight": 597.383,
-            "lastPassHeight": 597.364,
-            "lowestPassHeight": 597.364,
-            "lastCompositeHeight": 597.128845,
-            "designHeight": 597.434,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 2,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.305175781,
-            "cutFillHeight": 597.435059,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "speedSummary",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": 597.396,
+                    "value": 11.34,
+                    "valueType": 2,
+                    "value2": 21.744
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": 597.387,
+                    "value": 10.224,
+                    "valueType": 2,
+                    "value2": 11.844
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": 597.387,
+                    "value": 10.224,
+                    "valueType": 2,
+                    "value2": 11.844
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": 597.386,
+                    "value": 11.34,
+                    "valueType": 2,
+                    "value2": 11.34
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": 597.386,
+                    "value": 11.34,
+                    "valueType": 2,
+                    "value2": 11.34
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": 597.382,
+                    "value": 11.34,
+                    "valueType": 2,
+                    "value2": 11.34
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": 597.382,
+                    "value": 11.34,
+                    "valueType": 2,
+                    "value2": 11.34
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": 597.384,
+                    "value": 10.224,
+                    "valueType": 2,
+                    "value2": 10.224
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": 597.384,
+                    "value": 10.224,
+                    "valueType": 2,
+                    "value2": 10.224
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": 597.364,
+                    "value": 10.224,
+                    "valueType": 2,
+                    "value2": 12.204
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": 597.364,
+                    "value": 10.224,
+                    "valueType": 2,
+                    "value2": 12.204
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": 597.376,
+                    "value": 10.224,
+                    "valueType": 2,
+                    "value2": 12.204
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": 597.376,
+                    "value": 10.224,
+                    "valueType": 2,
+                    "value2": 12.204
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": 597.371,
+                    "value": 10.224,
+                    "valueType": 2,
+                    "value2": 12.204
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": 597.371,
+                    "value": 10.224,
+                    "valueType": 2,
+                    "value2": 12.204
+                }
+            ]
         },
         {
-            "cellType": 0,
-            "station": 1.3002615671218389,
-            "firstPassHeight": 597.383,
-            "highestPassHeight": 597.383,
-            "lastPassHeight": 597.374634,
-            "lowestPassHeight": 597.374634,
-            "lastCompositeHeight": 597.138062,
-            "designHeight": 597.4385,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 2,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.2998047,
-            "cutFillHeight": 597.434753,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "passCountSummary",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": 597.396,
+                    "value": 3,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": 597.388367,
+                    "value": 2,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": 597.387,
+                    "value": 2,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": 597.386963,
+                    "value": 1,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": 597.386,
+                    "value": 1,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": 597.3832,
+                    "value": 1,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": 597.382,
+                    "value": 1,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": 597.3828,
+                    "value": 1,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": 597.384,
+                    "value": 1,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": 597.376,
+                    "value": 2,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": 597.364,
+                    "value": 2,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": 597.374634,
+                    "value": 2,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": 597.376,
+                    "value": 2,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": 597.375549,
+                    "value": 2,
+                    "valueType": 0
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": 597.371,
+                    "value": 2,
+                    "valueType": 0
+                }
+            ]
         },
         {
-            "cellType": 1,
-            "station": 1.3229394016228948,
-            "firstPassHeight": 597.383,
-            "highestPassHeight": 597.383,
-            "lastPassHeight": 597.376,
-            "lowestPassHeight": 597.376,
-            "lastCompositeHeight": 597.1392,
-            "designHeight": 597.439,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 2,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.2998047,
-            "cutFillHeight": 597.434753,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "passCountDetail",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": 597.396,
+                    "value": 3
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": 597.388367,
+                    "value": 2
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": 597.387,
+                    "value": 2
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": 597.386963,
+                    "value": 1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": 597.386,
+                    "value": 1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": 597.3832,
+                    "value": 1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": 597.382,
+                    "value": 1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": 597.3828,
+                    "value": 1
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": 597.384,
+                    "value": 1
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": 597.376,
+                    "value": 2
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": 597.364,
+                    "value": 2
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": 597.374634,
+                    "value": 2
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": 597.376,
+                    "value": 2
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": 597.375549,
+                    "value": 2
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": 597.371,
+                    "value": 2
+                }
+            ]
         },
         {
-            "cellType": 0,
-            "station": 1.3456172361239505,
-            "firstPassHeight": 597.382935,
-            "highestPassHeight": 597.382935,
-            "lastPassHeight": 597.375549,
-            "lowestPassHeight": 597.375549,
-            "lastCompositeHeight": 597.139343,
-            "designHeight": 597.4387,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 2,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.294494629,
-            "cutFillHeight": 597.4347,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
-        },
-        {
-            "cellType": 1,
-            "station": 1.6069349835347946,
-            "firstPassHeight": 597.382,
-            "highestPassHeight": 597.382,
-            "lastPassHeight": 597.371,
-            "lowestPassHeight": 597.371,
-            "lastCompositeHeight": 597.1405,
-            "designHeight": 597.435,
-            "cmv": "NaN",
-            "cmvPercent": "NaN",
-            "cmvHeight": "NaN",
-            "mdpPercent": "NaN",
-            "mdpHeight": "NaN",
-            "temperature": "NaN",
-            "temperatureHeight": "NaN",
-            "topLayerPassCount": 2,
-            "cmvPercentChange": "NaN",
-            "speed": 0,
-            "speedHeight": 0,
-            "cutFill": -0.294494629,
-            "cutFillHeight": 597.434265,
-            "passCountIndex": 0,
-            "temperatureIndex": -1,
-            "cmvIndex": -1,
-            "mdpIndex": -1,
-            "speedIndex": -1
+            "type": "cutFill",
+            "data": [
+                {
+                    "cellType": 1,
+                    "x": 0,
+                    "y": 597.1041,
+                    "value": -0.333740234,
+                    "y2": 597.4387
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.085205803092608473,
+                    "y": 597.1135,
+                    "value": -0.326782227,
+                    "y2": 597.4384
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.10001382414230234,
+                    "y": 597.1152,
+                    "value": -0.326782227,
+                    "y2": 597.438354
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.11482184519199619,
+                    "y": 597.115234,
+                    "value": -0.321960449,
+                    "y2": 597.4383
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.31995441034733291,
+                    "y": 597.1158,
+                    "value": -0.321960449,
+                    "y2": 597.4375
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.52508697550266958,
+                    "y": 597.11676,
+                    "value": -0.3173828,
+                    "y2": 597.4367
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.60891033030474173,
+                    "y": 597.1172,
+                    "value": -0.3173828,
+                    "y2": 597.43634
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.69273368510681388,
+                    "y": 597.1214,
+                    "value": -0.311035156,
+                    "y2": 597.436035
+                },
+                {
+                    "cellType": 1,
+                    "x": 0.81404289546017272,
+                    "y": 597.127441,
+                    "value": -0.311035156,
+                    "y2": 597.4356
+                },
+                {
+                    "cellType": 0,
+                    "x": 0.93535210581353156,
+                    "y": 597.128,
+                    "value": -0.3048706,
+                    "y2": 597.435364
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.1178068364676852,
+                    "y": 597.128845,
+                    "value": -0.3048706,
+                    "y2": 597.435059
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3002615671218389,
+                    "y": 597.138062,
+                    "value": -0.299743652,
+                    "y2": 597.434753
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.3229394016228948,
+                    "y": 597.1392,
+                    "value": -0.299743652,
+                    "y2": 597.434753
+                },
+                {
+                    "cellType": 0,
+                    "x": 1.3456172361239505,
+                    "y": 597.139343,
+                    "value": -0.2944336,
+                    "y2": 597.4347
+                },
+                {
+                    "cellType": 1,
+                    "x": 1.6069349835347946,
+                    "y": 597.1405,
+                    "value": -0.2944336,
+                    "y2": 597.434265
+                }
+            ]
         }
     ],
     "Code": 0,

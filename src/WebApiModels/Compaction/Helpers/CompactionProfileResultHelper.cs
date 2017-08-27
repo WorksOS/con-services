@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
@@ -82,6 +86,221 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         }
       }
       return -1;
+    }
+
+    /// <summary>
+    /// Convert from one profile representation to another
+    /// </summary>
+    /// <param name="slicerProfileResult">The profile result to convert from</param>
+    /// <returns>The new profile result representation</returns>
+    public CompactionProfileResult<CompactionProfileData> ConvertProfileResult(CompactionProfileResult<CompactionProfileCell> slicerProfileResult)
+    {
+      //shouldn't ever happen but for safety check arg
+      if (slicerProfileResult == null || slicerProfileResult.points == null)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            "Unexpected missing profile result"));
+      }
+
+      var profile = new CompactionProfileResult<CompactionProfileData>
+      {
+        gridDistanceBetweenProfilePoints = slicerProfileResult.gridDistanceBetweenProfilePoints,
+        designFileUid = slicerProfileResult.designFileUid,
+        points = new List<CompactionProfileData>
+        {
+          new CompactionProfileData
+          {
+            type = "firstPass",
+            data = (from p in slicerProfileResult.points
+                    select new CompactionDataPoint
+                    {
+                      type = "firstPass",
+                      cellType = p.cellType,
+                      x = p.station,
+                      y = p.firstPassHeight,
+                      value = p.firstPassHeight                     
+                    }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "highestPass",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "highestPass",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.highestPassHeight,
+                value = p.highestPassHeight
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "lastPass",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "lastPass",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.lastPassHeight,
+                value = p.lastPassHeight
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "lowestPass",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "lowestPass",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.lowestPassHeight,
+                value = p.lowestPassHeight
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "lastComposite",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "lastComposite",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.lastCompositeHeight,
+                value = p.lastCompositeHeight
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "cmvSummary",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "cmvSummary",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.cmvHeight,
+                value = p.cmvPercent,
+                valueType = p.cmvIndex
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "cmvDetail",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "cmvDetail",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.cmvHeight,
+                value = p.cmv
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "cmvPercentChange",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "cmvPercentChange",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.cmvHeight,
+                value = p.cmvPercentChange
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "mdpSummary",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "mdpSummary",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.mdpHeight,
+                value = p.mdpPercent,
+                valueType = p.mdpIndex
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "temperatureSummary",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "temperatureSummary",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.temperatureHeight,
+                value = p.temperature,
+                valueType = p.temperatureIndex
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "speedSummary",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "speedSummary",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.speedHeight,
+                value = p.minSpeed,
+                value2 = p.maxSpeed,
+                valueType = p.speedIndex
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "passCountSummary",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "passCountSummary",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.lastPassHeight,
+                value = p.topLayerPassCount,
+                valueType = p.passCountIndex
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "passCountDetail",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "passCountDetail",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.lastPassHeight,
+                value = p.topLayerPassCount
+              }).ToList()
+          },
+          new CompactionProfileData
+          {
+            type = "cutFill",
+            data = (from p in slicerProfileResult.points
+              select new CompactionDataPoint
+              {
+                type = "cutFill",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.lastCompositeHeight,
+                value = p.cutFill,
+                y2 = p.cutFillHeight
+              }).ToList()
+          }
+        }
+      };
+      return profile;
     }
   }
 }

@@ -6,5 +6,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Interfaces
   {
     void FindCutFillElevations(CompactionProfileResult<CompactionProfileCell> slicerProfileResult,
       CompactionProfileResult<CompactionProfileVertex> slicerDesignResult);
+
+    CompactionProfileResult<CompactionProfileData> ConvertProfileResult(
+      CompactionProfileResult<CompactionProfileCell> slicerProfileResult);
   }
 }

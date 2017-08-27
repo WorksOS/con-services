@@ -5,12 +5,15 @@ using Moq;
 using SVOICProfileCell;
 using System;
 using System.IO;
+using Microsoft.Extensions.Caching.Memory;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -19,6 +22,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -62,7 +66,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
-
+ 
       serviceProvider = serviceCollection.BuildServiceProvider();
     }
 
@@ -76,8 +80,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Setup(x => x.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()))
         .Returns((MemoryStream)null);
 
+      var settingsManager = new CompactionSettingsManager(null);
+      var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
+
       var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty, ProductionDataType.Height, null, -1,
-        null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, null, false, null);
+        null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false, null);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionProfileExecutor<CompactionProfileCell>>(logger, raptorClient.Object);
@@ -102,7 +109,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           }
         },
         GridDistanceBetweenProfilePoints = 1.234,
@@ -144,7 +152,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           },
           new TICProfileCell
           {
@@ -154,7 +163,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           }
         },
         GridDistanceBetweenProfilePoints = 1.234,
@@ -198,7 +208,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           },
           new TICProfileCell
           {
@@ -208,7 +219,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           },
           new TICProfileCell
           {
@@ -218,7 +230,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           }
         },
         GridDistanceBetweenProfilePoints = 1.234,
@@ -273,7 +286,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           },
           new TICProfileCell
           {
@@ -283,7 +297,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           },
           new TICProfileCell
           {
@@ -293,7 +308,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           },
           new TICProfileCell
           {
@@ -303,7 +319,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           }
         },
         GridDistanceBetweenProfilePoints = 1.234,
@@ -368,7 +385,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           },
            //Gap here
           new TICProfileCell
@@ -379,7 +397,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           },
           new TICProfileCell
           {
@@ -389,7 +408,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           }
         },
         GridDistanceBetweenProfilePoints = 1.234,
@@ -447,7 +467,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           },
           //Gap here
           new TICProfileCell
@@ -458,7 +479,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           }
         },
         GridDistanceBetweenProfilePoints = 1.234,
@@ -506,7 +528,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           },
           //Gap here
           new TICProfileCell
@@ -517,7 +540,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           },
           //Gap here
           new TICProfileCell
@@ -528,7 +552,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
             CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
-            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
           }
         },
         GridDistanceBetweenProfilePoints = 1.234,
@@ -584,9 +609,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           .Setup(x => x.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()))
           .Returns(ms);
 
+        var settingsManager = new CompactionSettingsManager(null);
+        var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
+
         var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty,
           ProductionDataType.Height, null, -1,
-          null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, null, false, null);
+          null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false, null);
 
         var executor = RequestExecutorContainerFactory
           .Build<CompactionProfileExecutor<CompactionProfileCell>>(logger, raptorClient.Object);

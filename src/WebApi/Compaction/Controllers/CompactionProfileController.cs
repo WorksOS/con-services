@@ -72,6 +72,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Posts a profile production data request to a Raptor's data model/project.
     /// </summary>
+    /// <param name="profileResultHelper">Helper to convert/calculate some profile results</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="startLatDegrees">Start profileLine Lat</param>
     /// <param name="startLonDegrees">Start profileLine Lon</param>
@@ -86,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [NotLandFillProjectWithUIDVerifier]
     [Route("api/v2/profiles/productiondata/slicer")]
     [HttpGet]
-    public async Task<CompactionProfileResult<CompactionProfileCell>> GetProfileProductionDataSlicer(
+    public async Task<CompactionProfileResult<CompactionProfileData>> GetProfileProductionDataSlicer(
       [FromServices] ICompactionProfileResultHelper profileResultHelper,
       [FromQuery] Guid projectUid,
       [FromQuery] double startLatDegrees,
@@ -143,7 +144,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //Find the cut-fill elevations for the cell stations from the design vertex elevations
         profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult);
       }
-      return slicerProductionDataResult;
+      var transformedResult = profileResultHelper.ConvertProfileResult(slicerProductionDataResult);
+      transformedResult.designFileUid = cutfillDesignUid ?? Guid.Empty;
+      return transformedResult;
     }
 
     [ProjectUidVerifier]

@@ -8,10 +8,12 @@ using System.Net;
 using System.Text;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
@@ -129,23 +131,26 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           profile.points.Add(gapCell);
         }
 
-        bool noCCVValue = currCell.TargetCCV == 0 || currCell.TargetCCV == NO_CCV || currCell.CCV == NO_CCV;
-        bool noCCElevation = currCell.CCVElev == NULL_SINGLE || noCCVValue;
-        bool noMDPValue = currCell.TargetMDP == 0 || currCell.TargetMDP == NO_MDP || currCell.MDP == NO_MDP;
-        bool noMDPElevation = currCell.MDPElev == NULL_SINGLE || noMDPValue;
-        bool noTemperatureValue = currCell.materialTemperature == NO_TEMPERATURE;
-        bool noTemperatureElevation = currCell.materialTemperatureElev == NULL_SINGLE || noTemperatureValue;
-        bool noPassCountValue = currCell.topLayerPassCount == NO_PASSCOUNT;
-
-        //TODO: ***** noSpeedValue, noSpeedElevation, speed
-        bool noSpeedValue = true;//currCell.speed == NO_SPEED;
-        bool noSpeedElevation = true; //currCell.speedElev == NULL_SINGLE || noSpeedValue;
-        var speed = 0;//noSpeedValue ? float.NaN : currCell.speed
-
-        var lastCompositeHeight = currCell.compositeLastPassHeight == NULL_SINGLE
+        bool noCCVValue = currCell.TargetCCV == 0 || currCell.TargetCCV == VelociraptorConstants.NO_CCV || currCell.CCV == VelociraptorConstants.NO_CCV;
+        bool noCCElevation = currCell.CCVElev == VelociraptorConstants.NULL_SINGLE || noCCVValue;
+        bool noMDPValue = currCell.TargetMDP == 0 || currCell.TargetMDP == VelociraptorConstants.NO_MDP || currCell.MDP == VelociraptorConstants.NO_MDP;
+        bool noMDPElevation = currCell.MDPElev == VelociraptorConstants.NULL_SINGLE || noMDPValue;
+        bool noTemperatureValue = currCell.materialTemperature == VelociraptorConstants.NO_TEMPERATURE;
+        bool noTemperatureElevation = currCell.materialTemperatureElev == VelociraptorConstants.NULL_SINGLE || noTemperatureValue;
+        bool noPassCountValue = currCell.topLayerPassCount == VelociraptorConstants.NO_PASSCOUNT;
+ 
+        var lastPassHeight = currCell.lastPassHeight == VelociraptorConstants.NULL_SINGLE
+          ? float.NaN
+          : currCell.lastPassHeight;
+        var lastCompositeHeight = currCell.compositeLastPassHeight == VelociraptorConstants.NULL_SINGLE
           ? float.NaN
           : currCell.compositeLastPassHeight;
-        var designHeight = currCell.designHeight == NULL_SINGLE ? float.NaN : currCell.designHeight;
+        var designHeight = currCell.designHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.designHeight;
+
+        //Either have none or both speed values
+        var noSpeedValue = currCell.cellMaxSpeed == VelociraptorConstants.NO_SPEED;
+        var speedMin = noSpeedValue ? float.NaN : (float)(currCell.cellMinSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
+        var speedMax = noSpeedValue ? float.NaN : (float)(currCell.cellMaxSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
 
         var cmvPercent = noCCVValue
           ? float.NaN
@@ -161,10 +166,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
           station = currCell.station,
 
-          firstPassHeight = currCell.firstPassHeight == NULL_SINGLE ? float.NaN : currCell.firstPassHeight,
-          highestPassHeight = currCell.highestPassHeight == NULL_SINGLE ? float.NaN : currCell.highestPassHeight,
-          lastPassHeight = currCell.lastPassHeight == NULL_SINGLE ? float.NaN : currCell.lastPassHeight,
-          lowestPassHeight = currCell.lowestPassHeight == NULL_SINGLE ? float.NaN : currCell.lowestPassHeight,
+          firstPassHeight = currCell.firstPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.firstPassHeight,
+          highestPassHeight = currCell.highestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.highestPassHeight,
+          lastPassHeight = lastPassHeight,
+          lowestPassHeight = currCell.lowestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.lowestPassHeight,
 
           lastCompositeHeight = lastCompositeHeight,
           designHeight = designHeight,
@@ -184,13 +189,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
           topLayerPassCount = noPassCountValue ? -1 : currCell.topLayerPassCount,
 
-          cmvPercentChange = currCell.CCV == NO_CCV ? float.NaN :
-            (currCell.PrevCCV == NO_CCV ? 100.0f :
+          cmvPercentChange = currCell.CCV == VelociraptorConstants.NO_CCV ? float.NaN :
+            (currCell.PrevCCV == VelociraptorConstants.NO_CCV ? 100.0f :
               (float)Math.Abs(currCell.CCV - currCell.PrevCCV) / (float)currCell.PrevCCV * 100.0f),
 
-          //TODO: ***** speed , speedHeight
-          speed = speed,
-          speedHeight = 0,//noSpeedElevation ? float.NaN : currCell.speedElev,
+          minSpeed = speedMin,
+          maxSpeed = speedMax,
+          speedHeight = lastPassHeight,
 
           passCountIndex = noPassCountValue ? ValueTargetType.NoData :
             (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? ValueTargetType.BelowTarget :
@@ -213,9 +218,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
                 ValueTargetType.OnTarget)),
 
           speedIndex = noSpeedValue ? ValueTargetType.NoData :
-            (speed < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
-              (speed > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
-                ValueTargetType.OnTarget)),
+            (speedMax > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
+              (speedMin < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed && 
+               speedMax < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
+                ValueTargetType.OnTarget))
         });
 
         prevCell = currCell;
@@ -382,7 +388,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       temperatureHeight = float.NaN,
       topLayerPassCount = -1,
       cmvPercentChange = float.NaN,
-      speed = float.NaN,
+      minSpeed = float.NaN,
+      maxSpeed = float.NaN,
       passCountIndex = ValueTargetType.NoData,
       temperatureIndex = ValueTargetType.NoData,
       cmvIndex = ValueTargetType.NoData,
@@ -390,11 +397,5 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       speedIndex = ValueTargetType.NoData,
     };
 
-    private const double NO_HEIGHT = 1E9;
-    private const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
-    private const int NO_MDP = SVOICDecls.__Global.kICNullMDPValue;
-    private const int NO_TEMPERATURE = SVOICDecls.__Global.kICNullMaterialTempValue;
-    private const int NO_PASSCOUNT = SVOICDecls.__Global.kICNullPassCountValue;
-    private const float NULL_SINGLE = DTXModelDecls.__Global.NullSingle;
   }
 }
