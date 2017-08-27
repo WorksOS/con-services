@@ -129,7 +129,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       string coordSystem = projectDescr.coordinateSystemFileName;
       var customHeaders = Request.Headers.GetCustomHeaders();
       var userPrefs = await prefProxy.GetUserPreferences(customHeaders);
-      var userUnits = userPrefs == null ? UnitsTypeEnum.US : (UnitsTypeEnum)Enum.Parse(typeof(UnitsTypeEnum), userPrefs.Units, true);
+      var units = userPrefs.Units == "US Standard" ? "US" : userPrefs.Units;
+      var userUnits = userPrefs == null ? UnitsTypeEnum.US : (UnitsTypeEnum)Enum.Parse(typeof(UnitsTypeEnum), units, true);
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, coordSystem, userUnits, fileId, fileType);
       request.Validate();
