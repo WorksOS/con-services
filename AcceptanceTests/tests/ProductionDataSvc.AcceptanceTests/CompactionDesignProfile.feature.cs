@@ -94,16 +94,16 @@ this.ScenarioSetup(scenarioInfo);
     ""gridDistanceBetweenProfilePoints"": 1.6069349835347946,
     ""points"": [
         {
-            ""station"": 0,
-            ""elevation"": 597.4387
+            ""x"": 0,
+            ""y"": 597.4387
         },
         {
-            ""station"": 0.80197204271533173,
-            ""elevation"": 597.4356
+            ""x"": 0.80197204271533173,
+            ""y"": 597.4356
         },
         {
-            ""station"": 1.6069349835347948,
-            ""elevation"": 597.434265
+            ""x"": 1.6069349835347948,
+            ""y"": 597.434265
         }
     ],
     ""Code"": 0,
