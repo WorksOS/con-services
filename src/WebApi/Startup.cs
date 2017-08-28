@@ -78,8 +78,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
           Description = "API for Tagfile authorization service",
           TermsOfService = "None"
         });
-        string path = _isDevEnv ? "bin/Debug/netcoreapp1.1/" : string.Empty;
-        options.IncludeXmlComments(path + "VSS.Productivity3D.TagFileAuth.WebAPI.xml");
+        string pathToXml;
+
+        var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
+        var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
+
+        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
+          pathToXml = Directory.GetCurrentDirectory();
+        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, assemblyName + ".xml")))
+          pathToXml = System.AppContext.BaseDirectory;
+        else
+        {
+          var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+          pathToXml = Path.GetDirectoryName(pathToExe);
+        }
+        options.IncludeXmlComments(Path.Combine(pathToXml, assemblyName + ".xml"));
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
