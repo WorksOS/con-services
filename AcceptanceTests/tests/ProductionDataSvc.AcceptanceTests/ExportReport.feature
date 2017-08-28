@@ -21,9 +21,8 @@ Scenario Outline: ExportReport - Good Request
 	| VedaFinalPassScomAutoMapReset                    | VedaFinalPassScomAutoMapReset                    |
 	| VedaAllPassesScomAutoMapReset                    | VedaAllPassesScomAutoMapReset                    |
 
-Scenario Outline: ExportReport - Bad Request
-	When I request Export Report supplying "<RequestName>" from the request repository expecting BadRequest
-	Then the result should contain error code <ErrorCode> and error message "<ErrorMessage>"
+Scenario Outline: ExportReport - No Content
+	When I request Export Report supplying "<RequestName>" from the request repository expecting NoContent
 	Examples:
 	| RequestName | ErrorCode | ErrorMessage                        |
-	| NoDateRange | -4        | Failed to get requested export data |
+	| NoDateRange |           |                                     |
