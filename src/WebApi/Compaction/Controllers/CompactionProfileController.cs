@@ -183,7 +183,5 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(profileRequest) as CompactionProfileResult<CompactionProfileVertex>
       );
     }
-
- 
   }
 }

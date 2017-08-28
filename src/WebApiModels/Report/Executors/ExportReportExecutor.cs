@@ -28,8 +28,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     {
       ContractExecutionResult result = null;
       ExportReport request = item as ExportReport;
-
-
  
       TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter,
         request.projectId);

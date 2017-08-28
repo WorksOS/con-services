@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using System;
-using VSS.Common.Exceptions;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Extensions;
