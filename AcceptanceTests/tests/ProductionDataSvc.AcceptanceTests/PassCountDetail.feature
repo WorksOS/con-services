@@ -37,6 +37,6 @@ Scenario Outline: PassCountDetail - Bad Request
 	Then the response should contain error code <errorCode>
 	Examples: 
 	| RequestName      | httpCode | errorCode |
-	| NullProjectId    | 400      | -2        |
-	| EmptySetting     | 400      | -2        |
-	| DecendingSetting | 400      | -2        |
+	| NullProjectId    | 400      | -1        |
+	| EmptySetting     | 400      | -1        |
+	| DecendingSetting | 400      | -1        |

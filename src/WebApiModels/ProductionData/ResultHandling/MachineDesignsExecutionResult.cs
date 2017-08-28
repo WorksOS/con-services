@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
     public class MachineDesignsExecutionResult : ContractExecutionResult
     {
@@ -32,15 +32,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
     /// <summary>
     /// Create example instance of MachineDesignsExecutionResult to display in Help documentation.
     /// </summary>
-    public static MachineDesignsExecutionResult HelpSample
+    public static MachineDesignsExecutionResult HelpSample => new MachineDesignsExecutionResult
     {
-        get
-        {
-            return new MachineDesignsExecutionResult
-            {
-              Designs = new List<DesignNames> {DesignNames.HelpSample, DesignNames.HelpSample}
-            };
-        }
+      Designs = new List<DesignNames> {DesignNames.HelpSample, DesignNames.HelpSample}
+    };
     }
-  }
 }

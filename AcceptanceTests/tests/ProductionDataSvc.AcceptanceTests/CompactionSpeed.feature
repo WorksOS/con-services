@@ -1,43 +1,26 @@
 ﻿Feature: CompactionSpeed
 	 I should be able to request compaction speed data
 
-Scenario: Compaction Get Speed Summary 
-Given the Compaction Speed Summary service URI "/api/v2/compaction/speed/summary"
-And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
-When I request Speed summary
-Then the Speed result should be
-"""
-{
-"speedSummaryData": {
-    "percentEqualsTarget": 36.9,
-    "percentGreaterThanTarget": 39.3,
-    "percentLessThanTarget": 23.8,
-    "totalAreaCoveredSqMeters": 10636.7028,
-    "minTarget": 5.0,
-    "maxTarget": 10.0
-},
-"Code": 0,
-"Message": "success"
-}
-"""
-
-Scenario: Compaction Get Speed Summary with summary settings
-Given the Compaction Speed Summary service URI "/api/v2/compaction/speed/summary"
-And a projectUid "3335311a-f0e2-4dbe-8acd-f21135bafee4"
-When I request Speed summary
-Then the Speed result should be
-"""
-{
-  "speedSummaryData": {
-    "percentEqualsTarget": 25.0,
-    "percentGreaterThanTarget": 35.0,
-    "percentLessThanTarget": 40.1,
-    "totalAreaCoveredSqMeters": 10636.7028,
-    "minTarget": 7.0,
-    "maxTarget": 11.0
-  },
-  "Code": 0,
-  "Message": "success"
-}
-"""
+######################################################## Speed Summary ##########################################################
+Scenario Outline: Compaction Get Speed Summary - No Design Filter
+	Given the Compaction service URI "/api/v2/compaction/speed/summary" for operation "SpeedSummary"
+  And the result file "CompactionGetSpeedDataResponse.json"
+	And projectUid "<ProjectUID>"
+	When I request result
+  Then the result should match the "<ResultName>" from the repository
+	Examples: 
+	| RequestName     | ProjectUID                           | ResultName                |
+	|                 | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_Summary    |
+  | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_Summary_PS |
  
+Scenario Outline: Compaction Get Speed Summary
+  Given the Compaction service URI "/api/v2/compaction/speed/summary" for operation "SpeedSummary"
+  And the result file "CompactionGetSpeedDataResponse.json"
+  And projectUid "<ProjectUID>"
+	And filterUid "<FilterUID>"
+	When I request result
+	Then the result should match the "<ResultName>" from the repository
+	Examples: 
+	| RequestName      | ProjectUID                           | FilterUID                            | ResultName               |
+  | DesignOutside    | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | DesignOutside_Summary    |
+	| DesignIntersects | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 3d9086f2-3c04-4d92-9141-5134932b1523 | DesignIntersects_Summary |

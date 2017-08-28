@@ -112,6 +112,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CompactionCmv.feature</DependentUpon>
     </Compile>
+    <Compile Include="CompactionDesignProfile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionDesignProfile.feature</DependentUpon>
+    </Compile>
     <Compile Include="CompactionElevation.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -131,6 +136,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CompactionPassCount.feature</DependentUpon>
+    </Compile>
+    <Compile Include="CompactionProfile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionProfile.feature</DependentUpon>
     </Compile>
     <Compile Include="CompactionSpeed.feature.cs">
       <AutoGen>True</AutoGen>
@@ -268,6 +278,7 @@
     <Compile Include="Models\CompactionMdpSummaryResult.cs" />
     <Compile Include="Models\CompactionPassCountDetailedResult.cs" />
     <Compile Include="Models\CompactionPassCountSummaryResult.cs" />
+    <Compile Include="Models\CompactionProfileResult.cs" />
     <Compile Include="Models\CompactionSpeedSummaryResult.cs" />
     <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Models\CompactionTemperatureSummaryResult.cs" />
@@ -347,6 +358,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Profile.feature</DependentUpon>
     </Compile>
+    <Compile Include="StepDefinitions\BaseCompactionSteps.cs" />
     <Compile Include="StepDefinitions\CcaColorPaletteSteps.cs" />
     <Compile Include="StepDefinitions\CCASummarySteps.cs" />
     <Compile Include="StepDefinitions\CMVChangeSteps.cs" />
@@ -357,6 +369,8 @@
     <Compile Include="StepDefinitions\CompactionMdpSteps.cs" />
     <Compile Include="StepDefinitions\CompactionPaletteSteps.cs" />
     <Compile Include="StepDefinitions\CompactionPassCountSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionDesignProfileSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionProfileSteps.cs" />
     <Compile Include="StepDefinitions\CompactionSpeedSteps.cs" />
     <Compile Include="StepDefinitions\CompactionTagFileSteps.cs" />
     <Compile Include="StepDefinitions\CompactionTemperatureSteps.cs" />
@@ -471,6 +485,14 @@
     <None Include="CompactionPassCount.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CompactionPassCount.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionDesignProfile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionDesignProfile.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionProfile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionProfile.feature.cs</LastGenOutput>
     </None>
     <None Include="CompactionSpeed.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -658,6 +680,30 @@
     <None Include="TestData\CMVSummaryResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\CompactionGetCMVDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetCompactionPalettesResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetElevationAndProjectStatisticsDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetMDPDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetPassCountDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetProductionDataTilesResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetSpeedDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionGetTemperatureDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\CompactionTagFileRequest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -724,6 +770,7 @@
     <None Include="TestData\PassCountSummaryResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\Profiles\DesignProfileSummaryResponse.json" />
     <None Include="TestData\SummarySpeedRequest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

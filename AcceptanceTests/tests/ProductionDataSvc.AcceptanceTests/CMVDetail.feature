@@ -18,7 +18,7 @@ Scenario Outline: CMVDetail - Bad Request
 	Then the response should contain error code <errorCode>
 	Examples: 
 	| ParameterName          | httpCode | errorCode |
-	| MinCmvTooSmall         | 400      | -2        |
-	| MaxCmvTooLarge         | 400      | -2        |
-	| MinCmvLargerThanMaxCmv | 400      | -2        |
-	| CmvTargetOutOfBound    | 400      | -2        |
+	| MinCmvTooSmall         | 400      | -1        |
+	| MaxCmvTooLarge         | 400      | -1        |
+	| MinCmvLargerThanMaxCmv | 400      | -1        |
+	| CmvTargetOutOfBound    | 400      | -1        |

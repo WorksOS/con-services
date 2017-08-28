@@ -1,12 +1,12 @@
-﻿using System;
+﻿using ShineOn.Rtl;
+using System;
 using System.Net;
-using Microsoft.Extensions.Logging;
-using ShineOn.Rtl;
 using TAGProcServiceDecls;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Velociraptor.PDSInterface.Client.TAGProcessor;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
@@ -14,26 +14,18 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   public class EditDataExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock raptorClient & tagProcessor
-    /// </summary>
-    /// <param name="tagProcessor"></param>
-    /// <param name="raptorClient"></param>
-    public EditDataExecutor(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor) : base(logger, raptorClient, tagProcessor)
-    {
-    }
-
-    /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public EditDataExecutor()
     {
+      ProcessErrorCodes();
     }
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
 
       try
-      { 
+      {
         EditDataRequest request = item as EditDataRequest;
         //Note: request.dataEdit should only be null for a global undo. This is checked in request model validation
         //so the following should never happen. But just in case...
@@ -54,11 +46,11 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
           else
           {
             DateTime st = request.dataEdit.startUTC;
-            startTime = new TDateTime((ushort) st.Year, (ushort) st.Month, (ushort) st.Day, (ushort) st.Hour,
-                (ushort) st.Minute, (ushort) st.Second, (ushort) st.Millisecond);
+            startTime = new TDateTime((ushort)st.Year, (ushort)st.Month, (ushort)st.Day, (ushort)st.Hour,
+                (ushort)st.Minute, (ushort)st.Second, (ushort)st.Millisecond);
             DateTime et = request.dataEdit.endUTC;
-            endTime = new TDateTime((ushort) et.Year, (ushort) et.Month, (ushort) et.Day, (ushort) et.Hour,
-                (ushort) et.Minute, (ushort) et.Second, (ushort) et.Millisecond);
+            endTime = new TDateTime((ushort)et.Year, (ushort)et.Month, (ushort)et.Day, (ushort)et.Hour,
+                (ushort)et.Minute, (ushort)et.Second, (ushort)et.Millisecond);
           }
           TTAGProcServerProcessResult returnResult = TTAGProcServerProcessResult.tpsprOK;
           TAGProcessorClient tagClient = tagProcessor.ProjectDataServerTAGProcessorClient();
@@ -98,15 +90,14 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
               //Lift number
               returnResult = tagClient.SubmitLayerToOverride(
                   request.projectId ?? -1, request.dataEdit.assetId, request.dataEdit.liftNumber.Value, startTime, endTime);
-            }          
+            }
           }
           if (returnResult == TTAGProcServerProcessResult.tpsprOK)
             result = new ContractExecutionResult();
           else
             throw new ServiceException(HttpStatusCode.BadRequest,
-                new ContractExecutionResult(ContractExecutionStates.GetErrorNumberwithOffset((int) returnResult),
-                    String.Format("Production data edit failed: {0}",
-                        ContractExecutionStates.FirstNameWithOffset((int) returnResult))));
+                new ContractExecutionResult(ContractExecutionStates.GetErrorNumberwithOffset((int)returnResult),
+                  $"Production data edit failed: {ContractExecutionStates.FirstNameWithOffset((int) returnResult)}"));
         }
       }
       finally
@@ -116,10 +107,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       return result;
     }
 
-        protected override void ProcessErrorCodes()
-        {
-          RaptorResult.AddTagProcessorErrorMessages(ContractExecutionStates);
-        }
-
+    protected sealed override void ProcessErrorCodes()
+    {
+      RaptorResult.AddTagProcessorErrorMessages(ContractExecutionStates);
+    }
   }
 }

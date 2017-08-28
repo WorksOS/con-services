@@ -1,41 +1,32 @@
-﻿using System.Net;
-using ASNodeDecls;
-using Microsoft.Extensions.Logging;
+﻿using ASNodeDecls;
+using System.Net;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Coord.Executors
 {
-    /// <summary>
-    /// Generic coordinate system definition file executor.
-    /// </summary>
-    /// 
-    public class CoordinateSystemExecutor : RequestExecutorContainer
+  /// <summary>
+  /// Generic coordinate system definition file executor.
+  /// </summary>
+  public class CoordinateSystemExecutor : RequestExecutorContainer
     {
-        /// <summary>
-        /// This constructor allows us to mock raptorClient
-        /// </summary>
-        /// <param name="raptorClient"></param>
-        /// 
-        public CoordinateSystemExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-        {
-        }
-
         /// <summary>
         /// Default constructor for RequestExecutorContainer.Build
         /// </summary>
         public CoordinateSystemExecutor() 
         {
+      ProcessErrorCodes();
         }
 
     /// <summary>
     /// Populates ContractExecutionStates with PDS error messages.
     /// </summary>
     /// 
-    protected override void ProcessErrorCodes()
+    protected sealed override void ProcessErrorCodes()
         {
             RaptorResult.AddErrorMessages(ContractExecutionStates);
         }

@@ -1,111 +1,51 @@
 ﻿Feature: CompactionPassCount
-I should be able to request compaction data
+  I should be able to request Pass Count compaction data
 
-Scenario: Compaction Get Passcount Summary 
-Given the Compaction Passcount Summary service URI "/api/v2/compaction/passcounts/summary"
-And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
-When I request Passcount summary
-Then the Passcount summary result should be
-"""
-{
-"passCountSummaryData": {
-    "percentEqualsTarget": 3.3255301569815479,
-    "percentGreaterThanTarget": 45.311209033324154,
-    "percentLessThanTarget": 51.3632608096943,
-    "totalAreaCoveredSqMeters": 1678.9744000000003,
-    "passCountTarget": {
-    "minPassCountMachineTarget": 5,
-    "maxPassCountMachineTarget": 5,
-    "targetVaries": true
-    }
-},
-"Code": 0,
-"Message": "success"
-}
-"""
+######################################################## Pass Count Summary #####################################################
+Scenario Outline: Compaction Get Passcount Summary - No Design Filter
+	Given the Compaction service URI "/api/v2/compaction/passcounts/summary" for operation "PassCountSummary"
+  And the result file "CompactionGetPassCountDataResponse.json"
+	And projectUid "<ProjectUID>"
+	When I request result
+  Then the result should match the "<ResultName>" from the repository
+	Examples: 
+	| RequestName     | ProjectUID                           | ResultName                |
+	|                 | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_Summary    |
+  | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_Summary_PS |
 
-Scenario: Compaction Get Passcount Details 
-Given the Compaction Passcount Details service URI "/api/v2/compaction/passcounts/details"
-And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
-When I request Passcount details
-Then the Passcount details result should be
-"""
-{
-	"passCountDetailsData": {
-		"percents": [
-			19.632901900694421,
-			8.5406274791075756,
-			6.160684206522566,
-			5.132635651332877,
-			4.1589237005401056,
-			3.5981699431639118,
-			2.8341972853432442,
-			2.0126278268618436,
-			47.929232006433452
-		],
-		"totalCoverageArea": 1678.9744000000003,
-		"passCountTarget": {
-			"minPassCountMachineTarget": 0,
-			"maxPassCountMachineTarget": 0,
-			"targetVaries": true
-		}
-	},
-	"Code": 0,
-	"Message": "success"
-}
-"""
+Scenario Outline: Compaction Get Passcount Summary
+  Given the Compaction service URI "/api/v2/compaction/passcounts/summary" for operation "PassCountSummary"
+  And the result file "CompactionGetPassCountDataResponse.json"
+  And projectUid "<ProjectUID>"
+	And filterUid "<FilterUID>"
+	When I request result
+	Then the result should match the "<ResultName>" from the repository
+	Examples: 
+	| RequestName      | ProjectUID                           | FilterUID                            | ResultName               |
+  | DesignOutside    | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | DesignOutside_Summary    |
+	| DesignIntersects | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 3d9086f2-3c04-4d92-9141-5134932b1523 | DesignIntersects_Summary |
 
 
-Scenario: Compaction Get Passcount Summary  with project settings
-Given the Compaction Passcount Summary service URI "/api/v2/compaction/passcounts/summary"
-And a projectUid "3335311a-f0e2-4dbe-8acd-f21135bafee4"
-When I request Passcount summary
-Then the Passcount summary result should be
-"""
-{
-  "passCountSummaryData": {
-    "percentEqualsTarget": 14.701311685630142,
-    "percentGreaterThanTarget": 65.665786413675448,
-    "percentLessThanTarget": 19.632901900694421,
-    "totalAreaCoveredSqMeters": 10637.396400000001,
-    "PassCountTarget": {
-      "minPassCountMachineTarget": 2.0,
-      "maxPassCountMachineTarget": 3.0,
-      "targetVaries": false
-    }
-  },
-  "Code": 0,
-  "Message": "success"
-}
-"""
+######################################################## Pass Count Details #####################################################
+Scenario Outline: Compaction Get Passcount Details - No Design Filter
+	Given the Compaction service URI "/api/v2/compaction/passcounts/details" for operation "PassCountDetails"
+  And the result file "CompactionGetPassCountDataResponse.json"
+	And projectUid "<ProjectUID>"
+	When I request result
+  Then the result should match the "<ResultName>" from the repository
+	Examples: 
+	| RequestName     | ProjectUID                           | ResultName                |
+	|                 | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_Details    |
+  | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_Details_PS |
 
-Scenario: Compaction Get Passcount Details with project settings
-Given the Compaction Passcount Details service URI "/api/v2/compaction/passcounts/details"
-And a projectUid "3335311a-f0e2-4dbe-8acd-f21135bafee4"
-When I request Passcount details
-Then the Passcount details result should be
-"""
-{
-  "passCountDetailsData": {
-    "percents": [
-      19.632901900694421,
-      8.5406274791075756,
-      6.160684206522566,
-      5.132635651332877,
-      14.624153707386517,
-      10.799943489931426,
-      6.4073723904845741,
-      0.59661591627815991,
-      28.105065258261881
-    ],
-    "totalCoverageArea": 10637.396400000001,
-    "PassCountTarget": {
-      "minPassCountMachineTarget": 2.0,
-      "maxPassCountMachineTarget": 3.0,
-      "targetVaries": false
-    }
-  },
-  "Code": 0,
-  "Message": "success"
-}
-"""
+Scenario Outline: Compaction Get Passcount Details
+  Given the Compaction service URI "/api/v2/compaction/passcounts/details" for operation "PassCountDetails"
+  And the result file "CompactionGetPassCountDataResponse.json"
+  And projectUid "<ProjectUID>"
+	And filterUid "<FilterUID>"
+	When I request result
+	Then the result should match the "<ResultName>" from the repository
+	Examples: 
+	| RequestName      | ProjectUID                           | FilterUID                            | ResultName               |
+  | DesignOutside    | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | DesignOutside_Details    |
+	| DesignIntersects | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 3d9086f2-3c04-4d92-9141-5134932b1523 | DesignIntersects_Details |

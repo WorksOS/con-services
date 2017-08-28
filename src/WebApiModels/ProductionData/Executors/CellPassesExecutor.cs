@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using SVOICFiltersDecls;
+﻿using SVOICFiltersDecls;
 using SVOICFilterSettings;
 using SVOICGridCell;
 using SVOICProfileCell;
@@ -7,128 +6,55 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   public class CellPassesExecutor : RequestExecutorContainer
   {
-        /// <summary>
-        /// This constructor allows us to mock RaptorClient
-        /// </summary>
-        /// <param name="raptorClient"></param>
-        public CellPassesExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-        {
-        }
-
-        /// <summary>
-        /// Default constructor for RequestExecutorContainer.Build
-        /// </summary>
-        public CellPassesExecutor()
-        {
-        }
         protected override ContractExecutionResult ProcessEx<T>(T item)
         {
-          ContractExecutionResult result = null;
-          try
+          ContractExecutionResult result;
+          CellPassesRequest request = item as CellPassesRequest;
+          if (request == null)
+            throw new ServiceException(HttpStatusCode.InternalServerError,  
+              new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Missing CellPassesRequest"));
+
+          TICProfileCell profile;
+          bool isGridCoord = request.probePositionGrid != null;
+          bool isLatLgCoord = request.probePositionLL != null;
+          double probeX = isGridCoord ? request.probePositionGrid.x : (isLatLgCoord ? request.probePositionLL.Lon : 0);
+          double probeY = isGridCoord ? request.probePositionGrid.y : (isLatLgCoord ? request.probePositionLL.Lat : 0);
+
+          TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterId, request.filter, request.projectId, null, null,
+            new List<long>());
+          int code = raptorClient.RequestCellProfile
+          (request.projectId ?? -1,
+            RaptorConverters.convertCellAddress(request.cellAddress ?? new CellAddress()),
+            probeX, probeY,
+            isGridCoord,
+            RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
+            request.gridDataType,
+            raptorFilter,
+            out profile);
+
+          if (code == 1)//TICServerRequestResult.icsrrNoError
           {
-            CellPassesRequest request = item as CellPassesRequest;
-            if (request == null)
-               throw new ServiceException(HttpStatusCode.InternalServerError,  
-                    new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Missing CellPassesRequest"));
-
-              TICProfileCell profile;
-            bool isGridCoord = request.probePositionGrid != null;
-            bool isLatLgCoord = request.probePositionLL != null;
-            double probeX = isGridCoord ? request.probePositionGrid.x : (isLatLgCoord ? request.probePositionLL.Lon : 0);
-            double probeY = isGridCoord ? request.probePositionGrid.y : (isLatLgCoord ? request.probePositionLL.Lat : 0);
-
-            TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterId, request.filter, request.projectId, null, null,
-                new List<long>());
-            int code = raptorClient.RequestCellProfile
-                            (request.projectId ?? -1,
-                             RaptorConverters.convertCellAddress(request.cellAddress == null ? new CellAddress() : request.cellAddress),
-                             probeX, probeY,
-                             isGridCoord,
-                             RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
-                             request.gridDataType,
-                             raptorFilter,
-                             out profile);
-
-            if (code == 1)//TICServerRequestResult.icsrrNoError
-            {
-              result = ConvertResult(profile);
-            }
-            else
-            {
-              throw new ServiceException(HttpStatusCode.BadRequest,  new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-                            "Failed to get cell profile details"));
-            }
+            result = ConvertResult(profile);
           }
-          finally
+          else
           {
-            
+            throw new ServiceException(HttpStatusCode.BadRequest,  new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+              "Failed to get cell profile details"));
           }
+
           return result;
-
-        }
-
-        protected override void ProcessErrorCodes()
-        {
-
-          //TODO: These are the error codes returned by Raptor. TICServerRequestResult is not currently exposed.
-          /*
-            icsrrUnknownError = $00000000;
-            icsrrNoError = $00000001;
-            icsrrClientNotRegistered = $00000002;
-            icsrrCellNotFound = $00000003;
-            icsrrUnknownCellPassSelectionMethod = $00000004;
-            icsrrNoFilteredCellValue = $00000005;
-            icsrrFailedToProcessFile = $00000006;
-            icsrrTimedOutWaitingForProcessing = $00000007;
-            icsrrSubGridNotFound = $00000008;
-            icsrrNoSelectedSiteModel = $00000009;
-            icsrrServerUnavailable = $0000000A;
-            icsrrNoOutstandingEvents = $0000000B;
-            icsrrNameAlreadyExists = $0000000C;
-            icsrrEventNotFound = $0000000D;
-            icsrrMaxNoOfMachinesReached = $0000000E;
-            icsrrDataAdminDeleteOpActive = $0000000F;
-            icsrrDataAdminArchiveOpActive = $00000010;
-            icsrrServerBusyNoDBWriteLockAcquired = $00000011;
-            icsrrServerNotReady = $00000012;
-            icsrrFailedToReadSubgridSegment = $00000013;
-            icsrrOperationAbortedByCaller = $00000014;
-            icsrrProductionDataRequiresUpgrade = $00000015;
-            icsrrNoConnectionToServer = $00000016;
-            icsrrFailedToConvertClientWGSCoords = $00000017;
-            icsrrUnableToPrepareFilterForUse = $00000018;
-            icsrrServiceStopped = $00000019;
-            icsrrFailedToRequestSubgridExistenceMap = $0000001A;
-            icsrrFailedToComputeDesignBoundary = $0000001B;
-            icsrrFailedToComputeDesignFilterBoundary = $0000001C;
-            icsrrNoResponseDataInResponse = $0000001D;
-            icsrrFailedToConvertServerNEECoords = $0000001E;
-            icsrrFailedToBuildLiftsForCell = $0000001F;
-            icsrrFailedToLock = $00000020;
-            icsrrCancelled = $00000021;
-            icsrrMissingInputParameters = $00000022;
-            icsrrFilterInitialisationFailure = $00000023;
-            icsrrInvokeError_rpcirFailed = $00000024;
-            icsrrInvokeError_rpcirEncodeFailure = $00000025;
-            icsrrInvokeError_rpcirDecodeFailure = $00000026;
-            icsrrInvokeError_rpcirNotConnected = $00000027;
-            icsrrFailedToComputeDesignFilterPatch = $00000028;
-            icsrrDataModelDoesNotHaveValidPlanExtents = $00000029;
-            icsrrDataModelHasInvalidZeroCellSize = $0000002A;
-           */
-
         }
 
     private CellPassesResult ConvertResult(TICProfileCell profile)

@@ -1,21 +1,21 @@
-﻿using System;
-using System.Globalization;
-using System.Net;
-using System.Linq;
-using System.Collections.Generic;
-using System.Security.Principal;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Common.Contracts;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Net;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// <summary>
   /// 
   /// </summary>
-  [ResponseCache(NoStore = true)]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class MachinesController : Controller, IMachinesContract
   {
     /// <summary>
@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       ProjectID Id = ProjectID.CreateProjectID(projectId);
       Id.Validate();
-      return RequestExecutorContainer.Build<GetMachineIdsExecutor>(logger, raptorClient, null).Process(Id) as MachineExecutionResult;
+      return RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(Id) as MachineExecutionResult;
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
-      return RequestExecutorContainer.Build<GetMachineIdsExecutor>(logger, raptorClient, null).Process(Id) as MachineExecutionResult;
+      return RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(Id) as MachineExecutionResult;
     }
 
     // GET: api/Machines
@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ProjectID Id = ProjectID.CreateProjectID(projectId);
       Id.Validate();
       MachineExecutionResult result =
-          RequestExecutorContainer.Build<GetMachineIdsExecutor>(logger, raptorClient, null).Process(Id) as MachineExecutionResult;
+          RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(Id) as MachineExecutionResult;
       result.FilterByMachineId(machineId);
       return result;
     }
@@ -132,7 +132,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
       MachineExecutionResult result =
-          RequestExecutorContainer.Build<GetMachineIdsExecutor>(logger, raptorClient, null).Process(Id) as MachineExecutionResult;
+          RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(Id) as MachineExecutionResult;
       result.FilterByMachineId(machineId);
       return result;
     }
@@ -153,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       ProjectID Id = ProjectID.CreateProjectID(projectId);
       Id.Validate();
-      return RequestExecutorContainer.Build<GetMachineDesignsExecutor>(logger, raptorClient, null).Process(Id) as MachineDesignsExecutionResult;
+      return RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(Id) as MachineDesignsExecutionResult;
     }
 
     // GET: api/Machines/Designs
@@ -173,7 +173,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
-      return RequestExecutorContainer.Build<GetMachineDesignsExecutor>(logger, raptorClient, null).Process(Id) as MachineDesignsExecutionResult;
+      return RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(Id) as MachineDesignsExecutionResult;
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       ProjectID Id = ProjectID.CreateProjectID(projectId);
       Id.Validate();
-      return RequestExecutorContainer.Build<GetLayerIdsExecutor>(logger, raptorClient, null).Process(Id) as LayerIdsExecutionResult;
+      return RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(Id) as LayerIdsExecutionResult;
     }
 
     /// <summary>
@@ -210,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
-      return RequestExecutorContainer.Build<GetLayerIdsExecutor>(logger, raptorClient, null).Process(Id) as LayerIdsExecutionResult;
+      return RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(Id) as LayerIdsExecutionResult;
     }
 
     /// <summary>
@@ -283,8 +283,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         }
       }
 
-      var layerIdsResult = RequestExecutorContainer.Build<GetLayerIdsExecutor>(logger, raptorClient, null).Process(Id) as LayerIdsExecutionResult;
-      var machineResult = RequestExecutorContainer.Build<GetMachineIdsExecutor>(logger, raptorClient, null).Process(Id) as MachineExecutionResult;
+      var layerIdsResult = RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(Id) as LayerIdsExecutionResult;
+      var machineResult = RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(Id) as MachineExecutionResult;
 
       var liftDetailsList = new List<MachineLiftDetails>();
       foreach (var machine in machineResult.MachineStatuses)

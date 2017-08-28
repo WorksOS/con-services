@@ -3,18 +3,19 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.MasterData.Proxies;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 using ColorValue = VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes.ColorValue;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -22,8 +23,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting color palettes for displaying Raptor production data
   /// </summary>
+
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionPaletteController : Controller
+
+  public class CompactionPaletteController : BaseController
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -41,46 +44,31 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// For getting imported files for a project
-    /// </summary>
-    private readonly IFileListProxy fileListProxy;
-
-
-    /// <summary>
-    /// For getting project settings for a project
-    /// </summary>
-    private readonly IProjectSettingsProxy projectSettingsProxy;
-
-    /// <summary>
     /// Proxy for getting elevation statistics from Raptor
     /// </summary>
     private readonly IElevationExtentsProxy elevProxy;
-
-    /// <summary>
-    /// For getting compaction settings for a project
-    /// </summary>
-    private readonly ICompactionSettingsManager settingsManager;
 
     /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
+    /// <param name="configStore">Configuration store</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="settingsManager">Compaction settings manager</param>
-    public CompactionPaletteController(IASNodeClient raptorClient, ILoggerFactory logger, 
-      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
+    /// <param name="exceptionHandler">Service exception handler</param>
+    /// <param name="filterServiceProxy">Filter service proxy</param>
+    public CompactionPaletteController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
+      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, 
+      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
+      base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       log = logger.CreateLogger<CompactionPaletteController>();
       this.elevProxy = elevProxy;
-      this.fileListProxy = fileListProxy;
-      this.projectSettingsProxy = projectSettingsProxy;
-      this.settingsManager = settingsManager;
     }
 
     /// <summary>
@@ -95,9 +83,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid)
     {
       log.LogInformation("GetColorPalettes: " + Request.QueryString);
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
+      var projectSettings = await GetProjectSettings(projectUid);
 
       //Note: elevation palette is a separate call as it requires a filter
       List<DisplayMode> modes = new List<DisplayMode>
@@ -216,6 +202,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get the elevation color palette for a project.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -238,6 +225,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionDetailPaletteResult> GetElevationPalette(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] bool? vibeStateOn,
@@ -250,13 +238,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetElevationPalette: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
+      var projectSettings = await this.GetProjectSettings(projectUid);
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, headers);
-      Filter filter = settingsManager.CompactionFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
+      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+
       ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(projectId, filter, projectSettings);
       var compactionPalette = settingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettings);
 

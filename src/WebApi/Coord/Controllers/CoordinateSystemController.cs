@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Coord.Contracts;
@@ -12,12 +13,12 @@ using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Coord.Controllers
 {
-    /// <summary>
-    /// Controller for the CoordinateSystemFile resource.
-    /// </summary>
-    /// 
-    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-    public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
+  /// <summary>
+  /// Controller for the CoordinateSystemFile resource.
+  /// </summary>
+  /// 
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+  public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -65,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public CoordinateSystemSettings Post([FromBody]CoordinateSystemFile request)
     {
       request.Validate();
-      return RequestExecutorContainer.Build<CoordinateSystemExecutorPost>(logger, raptorClient, null).Process(request) as CoordinateSystemSettings;
+      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -83,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public CoordinateSystemSettings PostValidate([FromBody]CoordinateSystemFileValidationRequest request)
     {
       request.Validate();
-      return RequestExecutorContainer.Build<CoordinateSystemExecutorPost>(logger, raptorClient, null).Process(request) as CoordinateSystemSettings;
+      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -108,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
       ProjectID request = ProjectID.CreateProjectID(projectId);
 
       request.Validate();
-      return RequestExecutorContainer.Build<CoordinateSystemExecutorGet>(logger, raptorClient, null).Process(request) as CoordinateSystemSettings;
+      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -134,7 +135,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
       ProjectID request = ProjectID.CreateProjectID(projectId, projectUid);
 
       request.Validate();
-      return RequestExecutorContainer.Build<CoordinateSystemExecutorGet>(logger, raptorClient, null).Process(request) as CoordinateSystemSettings;
+      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -154,7 +155,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public CoordinateConversionResult Post([FromBody]CoordinateConversionRequest request)
     {
       request.Validate();
-      return RequestExecutorContainer.Build<CoordinateConversionExecutor>(logger, raptorClient, null).Process(request) as CoordinateConversionResult;
+      return RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger, raptorClient).Process(request) as CoordinateConversionResult;
     }
   }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
@@ -6,36 +7,62 @@ using TechTalk.SpecFlow;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [Binding, Scope(Feature = "CompactionTemperature")]
-  public class CompactionTemperatureSteps
+  public class CompactionTemperatureSteps : BaseCompactionSteps
   {
     private Getter<CompactionTemperatureSummaryResult> temperatureSummaryRequester;
-
-    private string url;
-    private string projectUid;
-
-    [Given(@"a projectUid ""(.*)""")]
-    public void GivenAProjectUid(string projectUid)
+    [Given(@"the result file ""(.*)""")]
+    public void GivenTheResultFile(string resultFileName)
     {
-      this.projectUid = projectUid;
+      switch (operation)
+      {
+        case "TemperatureSummary": temperatureSummaryRequester = new Getter<CompactionTemperatureSummaryResult>(url, resultFileName); break;
+        case "TemperatureDetails": ScenarioContext.Current.Pending(); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Given(@"the Compaction Temperature Summary service URI ""(.*)""")]
-    public void GivenTheCompactionTemperatureSummaryServiceURI(string url)
+    [Given(@"projectUid ""(.*)""")]
+    public void GivenProjectUid(string projectUid)
     {
-      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+      switch (operation)
+      {
+        case "TemperatureSummary": temperatureSummaryRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "TemperatureDetails": ScenarioContext.Current.Pending(); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [When(@"I request Temperature summary")]
-    public void WhenIRequestTemperatureSummary()
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
     {
-      temperatureSummaryRequester = Getter<CompactionTemperatureSummaryResult>.GetIt<CompactionTemperatureSummaryResult>(this.url, this.projectUid);
+      switch (operation)
+      {
+        case "TemperatureSummary": temperatureSummaryRequester.QueryString.Add("filterUid", filterUid); break;
+        case "TemperatureDetails": ScenarioContext.Current.Pending(); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Then(@"the Temperature result should be")]
-    public void ThenTheTemperatureResultShouldBe(string multilineText)
+    [Then(@"the result should match the ""(.*)"" from the repository")]
+    public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
     {
-      temperatureSummaryRequester.CompareIt<CompactionTemperatureSummaryResult>(multilineText);
+      switch (operation)
+      {
+        case "TemperatureSummary": Assert.AreEqual(temperatureSummaryRequester.ResponseRepo[resultName], temperatureSummaryRequester.CurrentResponse); break;
+        case "TemperatureDetails": ScenarioContext.Current.Pending(); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
+    [When(@"I request result")]
+    public void WhenIRequestResult()
+    {
+      switch (operation)
+      {
+        case "TemperatureSummary": temperatureSummaryRequester.DoValidRequest(url); break;
+        case "TemperatureDetails": ScenarioContext.Current.Pending(); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
+    }
   }
 }

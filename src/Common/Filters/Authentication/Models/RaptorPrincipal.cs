@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.Common.Filters.Authentication.Models
 {

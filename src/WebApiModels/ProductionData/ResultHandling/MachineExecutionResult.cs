@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Newtonsoft.Json;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
   public class MachineExecutionResult : ContractExecutionResult
   {

@@ -24,16 +24,12 @@ Scenario: GetProjectExtents - Including Surveyed Surfaces
 Scenario: GetProjectExtents - Bad Request (Null Project ID)
 	Given a GetProjectExtents null project id
 	When I try to get the extents expecting badrequest
-	Then I should get error code -2
+	Then I should get error code -1
 
 Scenario: GetProjectExtents - Bad Request (Invalid Project ID)
 	Given a GetProjectExtents project id 0
 	When I try to get the extents expecting badrequest
-	Then I should get error code -2
-
-#Scenario: GetProjectExtents - Bad Request (Empty Request)
-#	When I post an empty request
-#	Then I should get error code -3
+	Then I should get error code -1
 
 Scenario: GetProjectExtents - Bad Request (Deleted Project)
 	Given a GetProjectExtents project id 1000992

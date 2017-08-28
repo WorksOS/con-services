@@ -6,8 +6,9 @@ using System;
 using System.IO;
 using System.Net;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -17,21 +18,11 @@ namespace VSS.Productivity3D.Common.Executors
   public class TilesExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="logger">Logger</param>
-    /// <param name="raptorClient">Raptor client</param>
-    public TilesExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-      // ...
-    }
-
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
+    /// Default constructor.
     /// </summary>
     public TilesExecutor()
     {
-      // ...
+      ProcessErrorCodes();
     }
 
     /// <summary>
@@ -42,15 +33,13 @@ namespace VSS.Productivity3D.Common.Executors
     /// <returns>a xxxResult if successful</returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
       TileRequest request = item as TileRequest;
 
       try
       {
-        TWGS84Point bl, tr;
-        bool coordsAreGrid;
-        RaptorConverters.convertGridOrLLBoundingBox(request.boundBoxGrid, request.boundBoxLL, out bl, out tr,
-          out coordsAreGrid);
+        RaptorConverters.convertGridOrLLBoundingBox(request.boundBoxGrid, request.boundBoxLL, out TWGS84Point bl, out TWGS84Point tr,
+  out bool coordsAreGrid);
         TICFilterSettings filter1 =
           RaptorConverters.ConvertFilter(request.filterId1, request.filter1, request.projectId);
         TICFilterSettings filter2 =
@@ -61,25 +50,24 @@ namespace VSS.Productivity3D.Common.Executors
 
         RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.mode, request.computeVolType);
 
-        MemoryStream tile;
         TASNodeErrorStatus raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor
-        (request.projectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
-            TASNodeCancellationDescriptorType.cdtWMSTile),
-          RaptorConverters.convertDisplayMode(request.mode),
-          RaptorConverters.convertColorPalettes(request.palettes, request.mode),
-          bl, tr,
-          coordsAreGrid,
-          request.width,
-          request.height,
-          filter1,
-          filter2,
-          RaptorConverters.convertOptions(null, request.liftBuildSettings, request.computeVolNoChangeTolerance,
-            request.filterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
-          RaptorConverters.DesignDescriptor(request.designDescriptor),
-          volType,
-          request.representationalDisplayColor,
-          out tile);
+(request.projectId ?? -1,
+  ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
+    TASNodeCancellationDescriptorType.cdtWMSTile),
+  RaptorConverters.convertDisplayMode(request.mode),
+  RaptorConverters.convertColorPalettes(request.palettes, request.mode),
+  bl, tr,
+  coordsAreGrid,
+  request.width,
+  request.height,
+  filter1,
+  filter2,
+  RaptorConverters.convertOptions(null, request.liftBuildSettings, request.computeVolNoChangeTolerance,
+    request.filterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
+  RaptorConverters.DesignDescriptor(request.designDescriptor),
+  volType,
+  request.representationalDisplayColor,
+  out MemoryStream tile);
 
         log.LogTrace($"Received {raptorResult} as a result of execution and tile is {tile == null}");
 
@@ -99,13 +87,11 @@ namespace VSS.Productivity3D.Common.Executors
         else
         {
           log.LogTrace(
-            String.Format("Failed to get requested tile with error: {0}.",
-              ContractExecutionStates.FirstNameWithOffset((int)raptorResult)));
+            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int) raptorResult)}.");
 
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
-            ContractExecutionStatesEnum.FailedToGetResults,
-            String.Format("Failed to get requested tile with error: {0}.",
-              ContractExecutionStates.FirstNameWithOffset((int)raptorResult))));
+            ContractExecutionStatesEnum.InternalProcessingError,
+            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int) raptorResult)}."));
         }
 
       }
@@ -122,7 +108,7 @@ namespace VSS.Productivity3D.Common.Executors
       return TileResult.CreateTileResult(tile.ToArray(), raptorResult);
     }
 
-    protected override void ProcessErrorCodes()
+    protected sealed override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }

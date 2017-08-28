@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
-using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
@@ -15,130 +19,69 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
   /// </summary>
   public class CompactionSettingsManager : ICompactionSettingsManager
   {
-    public LiftBuildSettings CompactionLiftBuildSettings(CompactionProjectSettings ps)
+    private IFilterServiceProxy filterService; 
+
+    public CompactionSettingsManager(IFilterServiceProxy filterServiceProxy)
     {
-      //Note: CMV raw values are 10ths
-      var cmvOverrideTarget = ps.useMachineTargetCmv.HasValue && !ps.useMachineTargetCmv.Value;
-      var cmvTargetValue = ps.customTargetCmv.HasValue ? ps.customTargetCmv.Value * 10 : 0;
-
-      var cmvOverrideRange = ps.useDefaultTargetRangeCmvPercent.HasValue && !ps.useDefaultTargetRangeCmvPercent.Value;
-      var cmvMinPercent = ps.customTargetCmvPercentMinimum.HasValue ? ps.customTargetCmvPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum.Value;
-      var cmvMaxPercent = ps.customTargetCmvPercentMaximum.HasValue ? ps.customTargetCmvPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum.Value;
-
-      //Note: MDP raw values are 10ths
-      var mdpOverrideTarget = ps.useMachineTargetMdp.HasValue && !ps.useMachineTargetMdp.Value;
-      var mdpTargetValue = ps.customTargetMdp.HasValue ? ps.customTargetMdp.Value * 10 : 0;
-
-      var mdpOverrideRange = ps.useDefaultTargetRangeMdpPercent.HasValue && !ps.useDefaultTargetRangeMdpPercent.Value;
-      var mdpMinPercent = ps.customTargetMdpPercentMinimum.HasValue ? ps.customTargetMdpPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum.Value;
-      var mdpMaxPercent = ps.customTargetMdpPercentMaximum.HasValue ? ps.customTargetMdpPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum.Value;
-
-      //Note: Speed is cm/s for Raptor but km/h in project settings
-      var speedOverrideRange = ps.useDefaultTargetRangeSpeed.HasValue && !ps.useDefaultTargetRangeSpeed.Value;
-      var speedMin = (speedOverrideRange && ps.customTargetSpeedMinimum.HasValue ? ps.customTargetSpeedMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMinimum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
-      var speedMax = (speedOverrideRange && ps.customTargetSpeedMaximum.HasValue ? ps.customTargetSpeedMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMaximum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
-
-      var passCountOverrideRange = ps.useMachineTargetPassCount.HasValue && !ps.useMachineTargetPassCount.Value;
-      var passCountMin = ps.customTargetPassCountMinimum.HasValue ? ps.customTargetPassCountMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetPassCountMinimum.Value;
-      var passCountMax = ps.customTargetPassCountMaximum.HasValue ? ps.customTargetPassCountMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetPassCountMaximum.Value;
-
-      var tempSettings = CompactionTemperatureSettings(ps);
-
-      var liftBuildSettings = LiftBuildSettings.CreateLiftBuildSettings(
-        cmvOverrideRange ? CCVRangePercentage.CreateCcvRangePercentage(cmvMinPercent, cmvMaxPercent) : null,
-        false,
-        0,
-        0,
-        0,
-        LiftDetectionType.None,
-        LiftThicknessType.Compacted,
-        mdpOverrideRange ? MDPRangePercentage.CreateMdpRangePercentage(mdpMinPercent, mdpMaxPercent) : null,
-        false,
-        (float?)null,
-        cmvOverrideTarget ? (short)cmvTargetValue : (short?)null,
-        mdpOverrideTarget ? (short)mdpTargetValue : (short?)null,
-        passCountOverrideRange
-          ? TargetPassCountRange.CreateTargetPassCountRange((ushort)passCountMin, (ushort)passCountMax)
-          : null,
-        tempSettings.overrideTemperatureRange
-          ? TemperatureWarningLevels.CreateTemperatureWarningLevels((ushort)tempSettings.minTemperature,
-            (ushort)tempSettings.maxTemperature)
-          : null,
-        (bool?)null,
-        null,
-        MachineSpeedTarget.CreateMachineSpeedTarget((ushort)speedMin, (ushort)speedMax)
-      );
-      return liftBuildSettings;
+      filterService = filterServiceProxy;
     }
 
-    public Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType,
-      int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds)
+    public LiftBuildSettings CompactionLiftBuildSettings(CompactionProjectSettings ps)
+    {
+      return AutoMapperUtility.Automapper.Map<LiftBuildSettings>(ps);
+    }
+
+    public Common.Models.Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType,
+      int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds, DesignDescriptor designDescriptor = null)
     {
       bool haveFilter =
         startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue || vibeStateOn.HasValue || elevationType.HasValue ||
-        layerNumber.HasValue || (machines != null && machines.Count > 0) || (excludedSurveyedSurfaceIds != null && excludedSurveyedSurfaceIds.Count > 0);
+        layerNumber.HasValue || (machines != null && machines.Count > 0) || (excludedSurveyedSurfaceIds != null && excludedSurveyedSurfaceIds.Count > 0) ||
+        designDescriptor != null;
 
       var layerMethod = layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
       return haveFilter ?
-        Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
-          null, null, null, null, null, null, null, null, null, layerMethod, null, null, layerNumber, null, machines,
+        Common.Models.Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
+          null, null, null, null, null, null, null, null, null, layerMethod, designDescriptor, null, layerNumber, null, machines,
           excludedSurveyedSurfaceIds, null, null, null, null, null, null)
         : null;
     }
 
+
+    public Common.Models.Filter CompactionFilter(string filterUid, string projectUid, IDictionary<string,string> headers)
+    {
+      if (!string.IsNullOrEmpty(filterUid))
+      {
+        filterService.GetFilter(projectUid, filterUid, headers);
+        //TODO apply Anatoli's validation and filter creation logic here
+      }
+      return null;
+    }
+
     public CMVSettings CompactionCmvSettings(CompactionProjectSettings ps)
     {
-      //Note: CMVSettings documentation raw values are 10ths
-      var overrideTarget = ps.useMachineTargetCmv.HasValue && !ps.useMachineTargetCmv.Value;
-      var targetValue = ps.customTargetCmv.HasValue ? ps.customTargetCmv.Value * 10 : CompactionProjectSettings.DefaultSettings.customTargetCmv * 10;
-
-      var overrideRange = ps.useDefaultTargetRangeCmvPercent.HasValue && !ps.useDefaultTargetRangeCmvPercent.Value;
-      var minPercent = ps.customTargetCmvPercentMinimum.HasValue ? ps.customTargetCmvPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum.Value;
-      var maxPercent = ps.customTargetCmvPercentMaximum.HasValue ? ps.customTargetCmvPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum.Value;
-      return CMVSettings.CreateCMVSettings((short)targetValue, MAX_CMV_MDP_VALUE, maxPercent, MIN_CMV_MDP_VALUE, minPercent, overrideTarget);
+      return AutoMapperUtility.Automapper.Map<CMVSettings>(ps);
     }
 
     public MDPSettings CompactionMdpSettings(CompactionProjectSettings ps)
     {
-      //Note: MDPSettings documentation raw values are 10ths
-      var overrideTarget = ps.useMachineTargetMdp.HasValue && !ps.useMachineTargetMdp.Value;
-      var targetValue = ps.customTargetMdp.HasValue ? ps.customTargetMdp.Value * 10 : CompactionProjectSettings.DefaultSettings.customTargetMdp * 10;
-
-      var overrideRange = ps.useDefaultTargetRangeMdpPercent.HasValue && !ps.useDefaultTargetRangeMdpPercent.Value;
-      var minPercent = ps.customTargetMdpPercentMinimum.HasValue ? ps.customTargetMdpPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum.Value;
-      var maxPercent = ps.customTargetMdpPercentMaximum.HasValue ? ps.customTargetMdpPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum.Value;
-      return MDPSettings.CreateMDPSettings((short)targetValue, MAX_CMV_MDP_VALUE, maxPercent, MIN_CMV_MDP_VALUE, minPercent, overrideTarget);
-
+      return AutoMapperUtility.Automapper.Map<MDPSettings>(ps);
     }
 
     public TemperatureSettings CompactionTemperatureSettings(CompactionProjectSettings ps, bool nativeValues = true)
     {
-      // Temperature settings are degrees Celcius (but temperature warning levels for override are 10ths)
-      var overrideRange = ps.useMachineTargetTemperature.HasValue && !ps.useMachineTargetTemperature.Value;
-      var tempMin = ps.customTargetTemperatureMinimum.HasValue ? ps.customTargetTemperatureMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMinimum.Value;
-      var tempMax = ps.customTargetTemperatureMaximum.HasValue ? ps.customTargetTemperatureMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMaximum.Value;
-
-      if (nativeValues)
-      {
-        tempMin = tempMin * 10;
-        tempMax = tempMax * 10;
-      }
-
-      return TemperatureSettings.CreateTemperatureSettings((short)tempMax, (short)tempMin, overrideRange);
+      return AutoMapperUtility.Automapper.Map<TemperatureSettings>(ps);
     }
 
     public double[] CompactionCmvPercentChangeSettings(CompactionProjectSettings ps)
-    {   
-      //return new double[] { 5, 20, 50, NO_CCV };
-      return new double[] { 5, 20, 50 };     
+    {
+      return AutoMapperUtility.Automapper.Map<CmvPercentChangeSettings>(ps).percents;
     }
 
     public PassCountSettings CompactionPassCountSettings(CompactionProjectSettings ps)
     {
-      var overridePassCounts = ps.useDefaultPassCountTargets.HasValue && !ps.useDefaultPassCountTargets.Value;
-      return PassCountSettings.CreatePassCountSettings(overridePassCounts && ps.customPassCountTargets != null && ps.customPassCountTargets.Count > 0 
-        ? ps.customPassCountTargets.ToArray() : CompactionProjectSettings.DefaultSettings.customPassCountTargets.ToArray());
+      return AutoMapperUtility.Automapper.Map<PassCountSettings>(ps);
     }
 
     public List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents, CompactionProjectSettings projectSettings)
@@ -203,7 +146,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           //Note: cut-fill also requires a design for tile requests (make cut-fill compaction settings ?)
           var cutFillTolerances = projectSettings.useDefaultCutFillTolerances.HasValue && !projectSettings.useDefaultCutFillTolerances.Value ?
             projectSettings.customCutFillTolerances : CompactionProjectSettings.DefaultSettings.customCutFillTolerances;
-          List<uint> cutFillColors = new List<uint> { 0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0x01579B, 0x039BE5, 0xB3E5FC };
+          List<uint> cutFillColors = new List<uint> { 0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x039BE5,  0x01579B };
           for (int i = 0; i < cutFillColors.Count; i++)
           {
             palette.Add(ColorPalette.CreateColorPalette(cutFillColors[i], cutFillTolerances[i]));

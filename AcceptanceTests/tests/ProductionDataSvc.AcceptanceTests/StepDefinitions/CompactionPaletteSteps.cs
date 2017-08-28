@@ -8,63 +8,72 @@ using TechTalk.SpecFlow;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [Binding, Scope(Feature = "CompactionPalette")]
-  public class CompactionPaletteSteps
+  public class CompactionPaletteSteps : BaseCompactionSteps
   {
     private Getter<CompactionColorPalettesResult> paletteRequester;
     private Getter<CompactionElevationPaletteResult> elevPaletteRequester;
 
-    private string url;
-    private string projectUid;
-    private string queryParameters = string.Empty;
-
-    [Given(@"the Compaction Elevation Palette service URI ""(.*)""")]
-    public void GivenTheCompactionElevationPaletteServiceURI(string url)
+    [Given(@"startUtc ""(.*)"" and endUtc ""(.*)""")]
+    public void GivenStartUtcAndEndUtc(string startUtc, string endUtc)
     {
-      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+      if (operation == "ElevationPalette")
+      {
+          elevPaletteRequester.QueryString.Add("startUtc", startUtc);
+          elevPaletteRequester.QueryString.Add("endUtc", endUtc);
+      }
     }
 
-    [Given(@"a projectUid ""(.*)""")]
-    public void GivenAProjectUid(string projectUid)
+    [Given(@"the result file ""(.*)""")]
+    public void GivenTheResultFile(string resultFileName)
     {
-      this.projectUid = projectUid;
+      switch (operation)
+      {
+        case "ElevationPalette": elevPaletteRequester = new Getter<CompactionElevationPaletteResult>(url, resultFileName); break;
+        case "CompactionPalettes": paletteRequester = new Getter<CompactionColorPalettesResult>(url, resultFileName); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Given(@"a startUtc ""(.*)"" and an EndUtc ""(.*)""")]
-    public void GivenAStartUtcAndAnEndUtc(string startUtc, string endUtc)
+    [Given(@"projectUid ""(.*)""")]
+    public void GivenProjectUid(string projectUid)
     {
-      queryParameters = string.Format("&startUtc={0}&endUtc={1}",
-        startUtc, endUtc);
+      switch (operation)
+      {
+        case "ElevationPalette": elevPaletteRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "CompactionPalettes": paletteRequester.QueryString.Add("ProjectUid", projectUid); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Given(@"the Compaction Palettes service URI ""(.*)""")]
-    public void GivenTheCompactionPalettesServiceURI(string url)
+    [Given(@"designUid ""(.*)""")]
+    public void GivenDesignUid(string designUid)
     {
-      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+      if (operation == "ElevationPalette")
+        elevPaletteRequester.QueryString.Add("designUid", designUid);
+      else
+        Assert.Fail(TEST_FAIL_MESSAGE);
     }
 
-    [When(@"I request Elevation Palette")]
-    public void WhenIRequestElevationPalette()
+    [Then(@"the result should match the ""(.*)"" from the repository")]
+    public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
     {
-      elevPaletteRequester = Getter<CompactionElevationPaletteResult>.GetIt<CompactionElevationPaletteResult>(this.url, this.projectUid, this.queryParameters);
+      switch (operation)
+      {
+        case "ElevationPalette": Assert.AreEqual(elevPaletteRequester.ResponseRepo[resultName], elevPaletteRequester.CurrentResponse); break;
+        case "CompactionPalettes": Assert.AreEqual(paletteRequester.ResponseRepo[resultName], paletteRequester.CurrentResponse); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [When(@"I request Palettes")]
-    public void WhenIRequestPalettes()
+    [When(@"I request result")]
+    public void WhenIRequestResult()
     {
-      paletteRequester = Getter<CompactionColorPalettesResult>.GetIt<CompactionColorPalettesResult>(this.url, this.projectUid, this.queryParameters);
+      switch (operation)
+      {
+        case "ElevationPalette": elevPaletteRequester.DoValidRequest(url); break;
+        case "CompactionPalettes": paletteRequester.DoValidRequest(url); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
-
-    [Then(@"the Elevation Palette result should be")]
-    public void ThenTheElevationPaletteResultShouldBe(string multilineText)
-    {
-      elevPaletteRequester.CompareIt<CompactionElevationPaletteResult>(multilineText);
-    }
-
-    [Then(@"the Palettes result should be")]
-    public void ThenThePalettesResultShouldBe(string multilineText)
-    {
-      paletteRequester.CompareIt<CompactionColorPalettesResult>(multilineText);
-    }
-
   }
 }

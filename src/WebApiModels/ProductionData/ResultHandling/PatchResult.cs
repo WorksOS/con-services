@@ -1,6 +1,6 @@
-﻿using VSS.Productivity3D.Common.Contracts;
+﻿using VSS.Common.ResultsHandling;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
   public class PatchResult 
     {

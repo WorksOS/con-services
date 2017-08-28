@@ -1,31 +1,35 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using Filter = VSS.Productivity3D.Common.Models.Filter;
+using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
-    /// <summary>
-    /// Controller for supplying CCA data tiles.
-    /// </summary>
-    /// 
-    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-    public class CCATileController : Controller, ICCATileContract
+  /// <summary>
+  /// Controller for supplying CCA data tiles.
+  /// </summary>
+  /// 
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+  public class CCATileController : Controller, ICCATileContract
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -94,8 +98,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       log.LogInformation("Get: " + Request.QueryString);
 
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
-  
-      var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
+
+      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient).Process(request) as TileResult;
 
       if (tileResult != null)
       {
@@ -147,13 +151,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       log.LogInformation("Get: " + Request.QueryString);
       long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
-      var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
-      if (tileResult != null)
+      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient).Process(request) as TileResult;
+
+      if (tileResult == null)
       {
-        Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-        return tileResult.TileData;
+        return null;
       }
-      return null;
+
+      Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+      return tileResult.TileData;
     }
 
     private TileRequest CreateAndValidateRequest(
@@ -185,14 +191,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       List<WGSPoint> geometry = null;
       if (geofenceUid.HasValue)
       {
-                //Todo this ahould be async
+        //Todo this ahould be async
         var geometryWKT = geofenceProxy.GetGeofenceBoundary(geofenceUid.ToString(), RequestUtils.GetCustomHeaders(Request.Headers)).Result;
 
         if (string.IsNullOrEmpty(geometryWKT))
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
               "No Geofence geometry found."));
 
-       geometry = RaptorConverters.geometryToPoints(geometryWKT).ToList();
+        geometry = RaptorConverters.geometryToPoints(geometryWKT).ToList();
       }
 
       var filter = Filter.CreateFilter
@@ -203,7 +209,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         startUtc,
         endUtc,
         null,
-        new List<long>() { assetId },
+        new List<long> { assetId },
         null,
         null,
         null,
@@ -221,7 +227,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         null,
         liftId,
         null,
-        new List<MachineDetails>() { MachineLiftDetails.CreateMachineDetails(assetId, machineName, isJohnDoe) },
+        new List<MachineDetails> { MachineLiftDetails.CreateMachineDetails(assetId, machineName, isJohnDoe) },
         null,
         null,
         null,
@@ -254,8 +260,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           ),
         null,
         width,
-        height,
-        0
+        height
       );
 
       request.Validate();

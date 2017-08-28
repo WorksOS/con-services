@@ -6,38 +6,29 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   public class PatchExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock RaptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    public PatchExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
-    /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public PatchExecutor()
     {
+      ProcessErrorCodes();
     }
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       ContractExecutionResult result = null;
       PatchRequest request = item as PatchRequest;
-
-      MemoryStream patch;
-      int numPatches;
 
       // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
       // in due course once the breaking modifications process is agreed with BC.
@@ -54,6 +45,8 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
         RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.mode, request.computeVolType);
 
+        MemoryStream patch;
+        int numPatches;
         TASNodeErrorStatus raptorResult = raptorClient.RequestDataPatchPage(request.projectId ?? -1,
                 ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
                         TASNodeCancellationDescriptorType.cdtDataPatches),
@@ -96,21 +89,10 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       return result;
     }
 
-
-
-
-
-
-
-
-
-    protected override void ProcessErrorCodes()
+    protected sealed override void ProcessErrorCodes()
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
-
-
-
 
     private PatchResultStructured convertPatchResult(PatchResult patch)
     {

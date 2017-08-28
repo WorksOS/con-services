@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.IO;
 using System.Net;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -39,7 +41,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
       //Reference surface does not have it's own file. It is an offset wrt an existing design surface.
 
       throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
           "Unsupported file type"));
     }
 

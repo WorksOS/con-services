@@ -1,7 +1,7 @@
-﻿using VSS.Productivity3D.Common.Contracts;
+﻿using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
   /// <summary>
   /// ProjectExtentsResult

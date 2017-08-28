@@ -1,19 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Common.Interfaces;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
   /// <summary>
   /// The two end points of a stright line used for a profile calculation, defined in the cartesian grid coordinate system of the project
   /// </summary>
-  /// 
   public class ProfileGridPoints : IValidatable
   {
     /// <summary>
     /// X ordinate of the first profile end point. Values are expressed in meters.
     /// </summary>
-    /// 
     [JsonProperty(PropertyName = "x1", Required = Required.Always)]
     [Required]
     public double x1 { get; private set; }
@@ -21,7 +19,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
     /// <summary>
     /// Y ordinate of the first profile end point. Values are expressed in meters.
     /// </summary>
-    /// 
     [JsonProperty(PropertyName = "y1", Required = Required.Always)]
     [Required]
     public double y1 { get; private set; }
@@ -29,7 +26,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
     /// <summary>
     /// X ordinate of the second profile end point. Values are expressed in meters.
     /// </summary>
-    /// 
     [JsonProperty(PropertyName = "x2", Required = Required.Always)]
     [Required]
     public double x2 { get; private set; }
@@ -37,19 +33,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
     /// <summary>
     /// Y ordinate of the second profile end point. Values are expressed in meters.
     /// </summary>
-    /// 
     [JsonProperty(PropertyName = "y2", Required = Required.Always)]
     [Required]
     public double y2 { get; private set; }
-
-    /// <summary>
-    /// Private constructor.
-    /// </summary>
-    /// 
-    public ProfileGridPoints()
-    {
-      // ...
-    }
 
     /// <summary>
     /// Creates an instance of the ProfileGridPoints class.
@@ -59,7 +45,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
     /// <param name="x2">The second X value.</param>
     /// <param name="y2">The second Y value.</param>
     /// <returns>The created instance.</returns>
-    /// 
     public static ProfileGridPoints CreateProfileGridPoints(double x1, double y1, double x2, double y2)
     {
       return new ProfileGridPoints { x1 = x1, y1 = y1, x2 = x2, y2 = y2 };
@@ -68,20 +53,13 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
     /// <summary>
     /// Creates a sample instance of ProfileGridPoints to be displayed in Help documentation.
     /// </summary>
-    /// 
-    public static ProfileGridPoints HelpSample
+    public static ProfileGridPoints HelpSample => new ProfileGridPoints
     {
-      get
-      {
-        return new ProfileGridPoints
-        {
-          x1 = 82.5,
-          y1 = 130.33,
-          x2 = 135.4,
-          y2 = 130.33
-        };
-      }
-    }
+      x1 = 82.5,
+      y1 = 130.33,
+      x2 = 135.4,
+      y2 = 130.33
+    };
 
     /// <summary>
     /// Validates all properties
@@ -90,6 +68,5 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
     {
       // Nothing to validate...
     }
-
   }
 }

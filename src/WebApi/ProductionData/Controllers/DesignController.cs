@@ -1,19 +1,20 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Filters.Authentication;
-using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
-using Microsoft.Extensions.Logging;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Notification.Controllers;
+using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
@@ -22,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// Controller for Designs resource.
   /// </summary>
   /// 
-  [ResponseCache(NoStore = true)]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class DesignController : Controller, IDesignContract
   {
     #region privates
@@ -91,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface && f.IsActivated).ToList();
 
-      return RequestExecutorContainer.Build<DesignExecutor>(logger, raptorClient, null, configStore, null, null, fileList).Process(request);
+      return RequestExecutorContainerFactory.Build<DesignExecutor>(logger, raptorClient, null, configStore, null, null, fileList).Process(request);
     }
   }
 }

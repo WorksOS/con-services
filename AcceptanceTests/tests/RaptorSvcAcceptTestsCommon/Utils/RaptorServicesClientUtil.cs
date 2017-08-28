@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
-using System.IO;
-using RestAPICoreTestFramework.Utils.Common;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using RaptorSvcAcceptTestsCommon.Utils;
+using RestAPICoreTestFramework.Utils.Common;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
 
 namespace RaptorSvcAcceptTestsCommon.Utils
 {
@@ -100,20 +97,15 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     public static ServiceResponse DoHttpRequest(string resourceUri, string httpMethod,
         string mediaType, string payloadData)
     {
-      HttpWebResponse httpResponse = null;
-
-      WebHeaderCollection responseHeader = null;
-      HttpStatusCode httpResponseCode;
-      string responseString = null;
-
-      httpResponse = DoHttpRequest(resourceUri, httpMethod, mediaType, mediaType, payloadData);
+      var httpResponse = DoHttpRequest(resourceUri, httpMethod, mediaType, mediaType, payloadData);
 
       if (httpResponse != null)
       {
-        responseHeader = httpResponse.Headers;
-        httpResponseCode = httpResponse.StatusCode;
+        var responseHeader = httpResponse.Headers;
+        var httpResponseCode = httpResponse.StatusCode;
 
         // Get the response body string for debug message
+        string responseString;
         using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
           responseString = streamReader.ReadToEnd();
 
@@ -125,15 +117,15 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
         httpResponse.Close();
 
-        return new ServiceResponse()
+        return new ServiceResponse
         {
           ResponseHeader = responseHeader,
           HttpCode = httpResponseCode,
           ResponseBody = responseString
         };
       }
-      else
-        return null;
+
+      return null;
     }
   }
 
@@ -155,8 +147,8 @@ namespace RaptorSvcAcceptTestsCommon.Utils
   public class Poster<TRequest, TResponse>
   {
     #region Members
-    public Dictionary<string, TRequest> RequestRepo { get; private set; }
-    public Dictionary<string, TResponse> ResponseRepo { get; private set; }
+    public Dictionary<string, TRequest> RequestRepo { get; }
+    public Dictionary<string, TResponse> ResponseRepo { get; }
     public string Uri { get; set; }
     public TRequest CurrentRequest { get; set; }
     public TResponse CurrentResponse { get; private set; }
@@ -184,13 +176,12 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       {
         if (requestFile != null)
         {
-          var dir = Directory.GetCurrentDirectory();
           using (StreamReader file = File.OpenText(RaptorClientConfig.TestDataPath + requestFile))
           {
             JsonSerializer serializer = new JsonSerializer();
             RequestRepo = (Dictionary<string, TRequest>)serializer.Deserialize(file,
                 typeof(Dictionary<string, TRequest>));
-          };
+          }
         }
 
         if (responseFile != null)
@@ -200,7 +191,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
             JsonSerializer serializer = new JsonSerializer();
             ResponseRepo = (Dictionary<string, TResponse>)serializer.Deserialize(file,
                 typeof(Dictionary<string, TResponse>));
-          };
+          }
         }
       }
       catch (Exception e)
@@ -327,12 +318,12 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       {
         if (expectedHttpCode != this.CurrentServiceResponse.HttpCode)
         {
-          Logger.Error(String.Format("Expected {0}, but got {1} instead.", expectedHttpCode, this.CurrentServiceResponse.HttpCode),
+          Logger.Error($"Expected {expectedHttpCode}, but got {this.CurrentServiceResponse.HttpCode} instead.",
               Logger.ContentType.Error);
         }
 
         Assert.AreEqual(expectedHttpCode, this.CurrentServiceResponse.HttpCode,
-                    String.Format("Expected {0}, but got {1} instead. Message was {2}", expectedHttpCode, this.CurrentServiceResponse.HttpCode, this.CurrentServiceResponse.ResponseBody));
+          $"Expected {expectedHttpCode}, but got {this.CurrentServiceResponse.HttpCode} instead. Message was {this.CurrentServiceResponse.ResponseBody}");
 
         //if (CurrentServiceResponse.ResponseHeader["Content-Type"] == "image/png")
         //{
@@ -345,8 +336,8 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
         return this.CurrentResponse;
       }
-      else
-        return default(TResponse);
+
+      return default(TResponse);
     }
 
     /// <summary>
@@ -377,7 +368,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
   public class Getter<TResponse>
   {
     #region Members
-    public Dictionary<string, TResponse> ResponseRepo { get; private set; }
+    public Dictionary<string, TResponse> ResponseRepo { get; }
     public string Uri { get; set; }
     public Dictionary<string, string> QueryString { get; set; }
     public TResponse CurrentResponse { get; private set; }
@@ -408,7 +399,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
             JsonSerializer serializer = new JsonSerializer();
             ResponseRepo = (Dictionary<string, TResponse>)serializer.Deserialize(file,
                 typeof(Dictionary<string, TResponse>));
-          };
+          }
         }
       }
       catch (Exception e)
@@ -427,7 +418,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
     #region Methods
     /// <summary>
-    /// Do an HTTP POST request - expecting success e.g. 200 OK.
+    /// Do an HTTP GET request - expecting success e.g. 200 OK.
     /// </summary>
     /// <param name="uri">URI of the service.</param>
     /// <param name="expectedHttpCode">Expected response HttpStatusCode - default to 200 OK.</param>
@@ -438,7 +429,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     }
 
     /// <summary>
-    /// Do an HTTP POST request - expecting success e.g. 200 OK.
+    /// Do an HTTP GET request - expecting success e.g. 200 OK.
     /// </summary>
     /// <param name="expectedHttpCode">Expected response HttpStatusCode.</param>
     /// <returns>Request response.</returns>
@@ -459,7 +450,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     }
 
     /// <summary>
-    /// Do an HTTP POST request - expecting failure e.g. 400 BadRequest.
+    /// Do an HTTP GET request - expecting failure e.g. 400 BadRequest.
     /// </summary>
     /// <param name="expectedHttpCode">Expected response HttpStatusCode.</param>
     /// <returns>Request response.</returns>
@@ -494,25 +485,26 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       {
         if (expectedHttpCode != this.CurrentServiceResponse.HttpCode)
         {
-          Logger.Error(String.Format("Expected {0}, but got {1} instead.", expectedHttpCode, this.CurrentServiceResponse.HttpCode),
+          Logger.Error($"Expected {expectedHttpCode}, but got {this.CurrentServiceResponse.HttpCode} instead.",
               Logger.ContentType.Error);
         }
 
         Assert.AreEqual(expectedHttpCode, this.CurrentServiceResponse.HttpCode,
-            String.Format("Expected {0}, but got {1} instead.", expectedHttpCode, this.CurrentServiceResponse.HttpCode));
+          $"Expected {expectedHttpCode}, but got {this.CurrentServiceResponse.HttpCode} instead.");
 
         this.CurrentResponse = JsonConvert.DeserializeObject<TResponse>(this.CurrentServiceResponse.ResponseBody);
         return this.CurrentResponse;
       }
-      else
-        return default(TResponse);
+
+      return default(TResponse);
     }
 
     private string BuildQueryString()
     {
       StringBuilder queryString = new StringBuilder();
       bool firstparam = true;
-      if (QueryString != null) {
+      if (QueryString != null)
+      {
         foreach (string parameter in QueryString.Keys)
         {
           queryString.Append(firstparam ? "?" : "&");
@@ -529,9 +521,9 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     /// <summary>
     /// Utility method for creating a getter and doing a valid request
     /// </summary>
-    public static Getter<T> GetIt<T>(string url, string projectUid, string queryParameters=null)
+    public static Getter<T> GetIt<T>(string url, string projectUid, string queryParameters = null)
     {
-      url = string.Format("{0}?projectUid={1}", url, projectUid);
+      url = $"{url}?projectUid={projectUid}";
       if (!string.IsNullOrEmpty(queryParameters))
         url += queryParameters;
       Getter<T> getter = new Getter<T>(url);
@@ -550,7 +542,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     #endregion
   }
 
- 
+
 
 
 
@@ -593,10 +585,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
     private static void WriteEntry(string message, string logType, string contentType)
     {
-
-      string contents = String.Format("{0},[{1}],[{2}],{3}",
-          DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-          logType, contentType, message);
+      string contents = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff},[{logType}],[{contentType}],{message}";
 
       using (StreamWriter w = File.AppendText("Log.txt"))
       {

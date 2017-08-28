@@ -1,7 +1,7 @@
-﻿using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+﻿using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
   /// <summary>
   /// Surveyed Surface result class.
@@ -39,9 +39,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
     /// Creates a sample instance of the SurveyedSurfaceResult class to be displayed in Help documentation.
     /// </summary>
     /// 
-    public static SurveyedSurfaceResult HelpSample
-    {
-      get { return new SurveyedSurfaceResult { SurveyedSurfaces = new SurveyedSurfaceDetails[] { SurveyedSurfaceDetails.HelpSample } }; }
-    }
+    public static SurveyedSurfaceResult HelpSample => new SurveyedSurfaceResult { SurveyedSurfaces = new[] { SurveyedSurfaceDetails.HelpSample } };
   }
 }

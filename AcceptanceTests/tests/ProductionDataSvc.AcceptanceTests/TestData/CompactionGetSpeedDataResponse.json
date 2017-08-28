@@ -1,0 +1,50 @@
+{
+  "NoDesignFilter_Summary": {
+    "speedSummaryData": {
+      "percentEqualsTarget": 36.8,
+      "percentGreaterThanTarget": 39.1,
+      "percentLessThanTarget": 24.1,
+      "totalAreaCoveredSqMeters": 10636.7028,
+      "minTarget": 5.0,
+      "maxTarget": 10.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Summary_PS": {
+    "speedSummaryData": {
+      "percentEqualsTarget": 25.1,
+      "percentGreaterThanTarget": 34.8,
+      "percentLessThanTarget": 40.1,
+      "totalAreaCoveredSqMeters": 10636.7028,
+      "minTarget": 7.0,
+      "maxTarget": 11.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside_Summary": {
+    "speedSummaryData": {
+      "percentEqualsTarget": 0,
+      "percentGreaterThanTarget": 0,
+      "percentLessThanTarget": 0,
+      "totalAreaCoveredSqMeters": 0,
+      "minTarget": 5,
+      "maxTarget": 10
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersects_Summary": {
+    "speedSummaryData": {
+      "percentEqualsTarget": 28.7,
+      "percentGreaterThanTarget": 11.9,
+      "percentLessThanTarget": 59.4,
+      "totalAreaCoveredSqMeters": 72.9436,
+      "minTarget": 5.0,
+      "maxTarget": 10.0
+    },
+    "Code": 0,
+    "Message": "success"
+  }
+}

@@ -1,9 +1,9 @@
+using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
 using System.Reflection;
-using Microsoft.AspNetCore.Mvc.Filters;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Filters.Authentication
 {

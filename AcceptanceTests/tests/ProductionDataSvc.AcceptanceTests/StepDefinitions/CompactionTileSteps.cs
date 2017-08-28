@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
@@ -11,38 +12,50 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private Getter<TileResult> tileRequester;
 
     private string url;
-    private string projectUid;
-    private string queryParameters = string.Empty;
 
-    [Given(@"the Compaction Tiles service URI ""(.*)""")]
-    public void GivenTheCompactionTilesServiceURI(string url)
+    [Given(@"the Compaction service URI ""(.*)""")]
+    public void GivenTheCompactionServiceURI(string url)
     {
       this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
     }
 
-    [Given(@"a projectUid ""(.*)""")]
-    public void GivenAProjectUid(string projectUid)
+    [Given(@"the result file ""(.*)""")]
+    public void GivenTheResultFile(string resultFileName)
     {
-      this.projectUid = projectUid;
+      tileRequester = new Getter<TileResult>(url, resultFileName);
     }
 
-    [Given(@"a displayMode ""(.*)"" and a bbox ""(.*)"" and a width ""(.*)"" and a height ""(.*)""")]
-    public void GivenADisplayModeAndABboxAndAWidthAndAHeight(int mode, string bbox, int width, int height)
+    [Given(@"projectUid ""(.*)""")]
+    public void GivenProjectUid(string projectUid)
     {
-      queryParameters = string.Format("&mode={0}&BBOX={1}&WIDTH={2}&HEIGHT={3}",
-        mode, bbox, width, height);
+      tileRequester.QueryString.Add("ProjectUid", projectUid);
     }
 
-    [When(@"I request a Tile")]
-    public void WhenIRequestATile()
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
     {
-      tileRequester = Getter<TileResult>.GetIt<TileResult>(this.url, this.projectUid, this.queryParameters);
+      tileRequester.QueryString.Add("filterUid", filterUid);
     }
 
-    [Then(@"the Tile result should be")]
-    public void ThenTheTileResultShouldBe(string multilineText)
+    [Then(@"the result should match the ""(.*)"" from the repository")]
+    public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
     {
-      tileRequester.CompareIt<TileResult>(multilineText);
+      Assert.AreEqual(tileRequester.ResponseRepo[resultName], tileRequester.CurrentResponse);
+    }
+
+    [When(@"I request result")]
+    public void WhenIRequestResult()
+    {
+      tileRequester.DoValidRequest(url);
+    }
+
+    [Given(@"displayMode ""(.*)"" and bbox ""(.*)"" and width ""(.*)"" and height ""(.*)""")]
+    public void GivenDisplayModeAndBboxLLAndWidthAndHeight(int mode, string bbox, int width, int height)
+    {
+      tileRequester.QueryString.Add("mode", mode.ToString());
+      tileRequester.QueryString.Add("bbox", bbox);
+      tileRequester.QueryString.Add("width", width.ToString());
+      tileRequester.QueryString.Add("height", height.ToString());
     }
   }
 }

@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
@@ -6,72 +7,71 @@ using TechTalk.SpecFlow;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [Binding, Scope(Feature = "CompactionCmv")]
-  public class CompactionCmvSteps
+  public class CompactionCmvSteps : BaseCompactionSteps
   {
     private Getter<CompactionCmvSummaryResult> cmvSummaryRequester;
     private Getter<CompactionCmvDetailedResult> cmvDetailsRequester;
     private Getter<CompactionCmvPercentChangeResult> cmvPercentChangeRequester;
 
-    private string url;
-    private string projectUid;
-
-    [Given(@"a projectUid ""(.*)""")]
-    public void GivenAProjectUid(string projectUid)
+    [Given(@"the result file ""(.*)""")]
+    public void GivenTheResultFile(string resultFileName)
     {
-      this.projectUid = projectUid;
+      switch (operation)
+      {
+        case "CMVSummary": cmvSummaryRequester = new Getter<CompactionCmvSummaryResult>(url, resultFileName); break;
+        case "CMVDetails": cmvDetailsRequester = new Getter<CompactionCmvDetailedResult>(url, resultFileName); break;
+        case "CMVPercentChangeSummary": cmvPercentChangeRequester = new Getter<CompactionCmvPercentChangeResult>(url, resultFileName); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Given(@"the Compaction CMV Summary service URI ""(.*)""")]
-    public void GivenTheCompactionCMVSummaryServiceURI(string url)
+    [Given(@"projectUid ""(.*)""")]
+    public void GivenProjectUid(string projectUid)
     {
-      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
-    }
-    [When(@"I request CMV summary")]
-    public void WhenIRequestCMVSummary()
-    {
-      cmvSummaryRequester = Getter<CompactionCmvSummaryResult>.GetIt<CompactionCmvSummaryResult>(this.url, this.projectUid);
-    }
-
-    [Then(@"the CMV summary result should be")]
-    public void ThenTheCMVSummaryResultShouldBe(string multilineText)
-    {
-      cmvSummaryRequester.CompareIt<CompactionCmvSummaryResult>(multilineText);
+      switch (operation)
+      {
+        case "CMVSummary": cmvSummaryRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "CMVDetails": cmvDetailsRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "CMVPercentChangeSummary": cmvPercentChangeRequester.QueryString.Add("ProjectUid", projectUid); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Given(@"the Compaction CMV Details service URI ""(.*)""")]
-    public void GivenTheCompactionCMVDetailsServiceURI(string url)
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
     {
-      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+      switch (operation)
+      {
+        case "CMVSummary": cmvSummaryRequester.QueryString.Add("filterUid", filterUid); break;
+        case "CMVDetails": cmvDetailsRequester.QueryString.Add("filterUid", filterUid); break;
+        case "CMVPercentChangeSummary": cmvPercentChangeRequester.QueryString.Add("filterUid", filterUid); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [When(@"I request CMV details")]
-    public void WhenIRequestCMVDetails()
+    [Then(@"the result should match the ""(.*)"" from the repository")]
+    public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
     {
-      cmvDetailsRequester = Getter<CompactionCmvDetailedResult>.GetIt<CompactionCmvDetailedResult>(this.url, this.projectUid);
+      switch (operation)
+      {
+        case "CMVSummary": Assert.AreEqual(cmvSummaryRequester.ResponseRepo[resultName], cmvSummaryRequester.CurrentResponse); break;
+        case "CMVDetails": Assert.AreEqual(cmvDetailsRequester.ResponseRepo[resultName], cmvDetailsRequester.CurrentResponse); break;
+        case "CMVPercentChangeSummary": Assert.AreEqual(cmvPercentChangeRequester.ResponseRepo[resultName], cmvPercentChangeRequester.CurrentResponse); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Then(@"the CMV details result should be")]
-    public void ThenTheCMVDetailsResultShouldBe(string multilineText)
+    [When(@"I request result")]
+    public void WhenIRequestResult()
     {
-      cmvDetailsRequester.CompareIt<CompactionCmvDetailedResult>(multilineText);
+      switch (operation)
+      {
+        case "CMVSummary": cmvSummaryRequester.DoValidRequest(url); break;
+        case "CMVDetails": cmvDetailsRequester.DoValidRequest(url); break;
+        case "CMVPercentChangeSummary": cmvPercentChangeRequester.DoValidRequest(url); break;
+        default: Assert.Fail(TEST_FAIL_MESSAGE); break;
+      }
     }
 
-    [Given(@"the Compaction CMV % Change Summary service URI ""(.*)""")]
-    public void GivenTheCompactionCMVChangeSummaryServiceURI(string url)
-    {
-      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
-    }
-
-    [When(@"I request CMV % change")]
-    public void WhenIRequestCMVChange()
-    {
-      cmvPercentChangeRequester = Getter<CompactionCmvPercentChangeResult>.GetIt<CompactionCmvPercentChangeResult>(this.url, this.projectUid);
-    }
-
-    [Then(@"the CMV % Change result should be")]
-    public void ThenTheCMVChangeResultShouldBe(string multilineText)
-    {
-      cmvPercentChangeRequester.CompareIt<CompactionCmvPercentChangeResult>(multilineText);
-    }
   }
 }

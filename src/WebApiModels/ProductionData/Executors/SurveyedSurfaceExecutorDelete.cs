@@ -1,36 +1,16 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   /// <summary>
   /// Executes DELETE method on Surveyed Surfaces resource.
   /// </summary>
-  /// 
   public class SurveyedSurfaceExecutorDelete : SurveyedSurfaceExecutor
   {
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    /// 
-    public SurveyedSurfaceExecutorDelete(ILoggerFactory logger, IASNodeClient raptorClient)
-        : base(logger, raptorClient)
-    {
-    }
-
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public SurveyedSurfaceExecutorDelete()
-    {
-    }
-
     /// <summary>
     /// Sends a DELETE request to Production Data Server (PDS) client.
     /// </summary>

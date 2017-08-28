@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BoundingExtents;
+﻿using BoundingExtents;
 using Fences;
 using SubGridTreesDecls;
 using SVOICDecls;
@@ -10,9 +7,15 @@ using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
 using SVOICOptionsDecls;
 using SVOICVolumeCalculationsDecls;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using VLPDDecls;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using __Global = ProductionServer_TLB.__Global;
+using Filter = VSS.Productivity3D.Common.Models.Filter;
+using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.Common.Proxies
 {
@@ -170,7 +173,7 @@ namespace VSS.Productivity3D.Common.Proxies
                                                         ColorPalette.CreateColorPalette(16776960, 20 ),
                                                         ColorPalette.CreateColorPalette(16744192, 40 ),
                                                         ColorPalette.CreateColorPalette(16711935, 80 ),
-                                                        ColorPalette.CreateColorPalette(16711680, Double.MaxValue )
+                                                        ColorPalette.CreateColorPalette(16711680, double.MaxValue )
                     };
           break;
 
@@ -339,7 +342,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case TICDisplayMode.icdmTargetSpeedSummary: return DisplayMode.TargetSpeedSummary;
         case TICDisplayMode.icdmCCA: return DisplayMode.CCA;
         case TICDisplayMode.icdmCCASummary: return DisplayMode.CCASummary;
-        default: throw new Exception(String.Format("Unknown TICDisplayMode {0}", Convert.ToInt16(mode)));
+        default: throw new Exception($"Unknown TICDisplayMode {Convert.ToInt16(mode)}");
       }
     }
 
@@ -377,7 +380,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case DisplayMode.CMVChange: return TICDisplayMode.icdmCCVChange;
         case DisplayMode.CCA: return TICDisplayMode.icdmCCA;
         case DisplayMode.CCASummary: return TICDisplayMode.icdmCCASummary;
-        default: throw new Exception(String.Format("Unknown DisplayMode {0}", Convert.ToInt16(mode)));
+        default: throw new Exception($"Unknown DisplayMode {Convert.ToInt16(mode)}");
       }
     }
 
@@ -408,11 +411,11 @@ namespace VSS.Productivity3D.Common.Proxies
     }
 
     public static TICFilterSettings ConvertFilter(long? filterID, Filter filter, long? projectid, DateTime? overrideStartUTC = null,
-        DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null)
+        DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null)
     {
       if (filter != null)
       {
-        return ConvertFilter(filter, overrideStartUTC, overrideEndUTC, overrideAssetIds);
+        return ConvertFilter(filter, overrideStartUTC, overrideEndUTC, overrideAssetIds, fileSpaceName);
       }
 
       if (filterID > 0)
@@ -437,7 +440,7 @@ namespace VSS.Productivity3D.Common.Proxies
     //TODO split this method
     //TODO think that this method coul be common as will be consumed by others
     //TODO test this
-    public static TICFilterSettings ConvertFilter(Filter pdf, DateTime? overrideStartUTC = null, DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null)
+    public static TICFilterSettings ConvertFilter(Filter pdf, DateTime? overrideStartUTC = null, DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null)
     {
       const double RADIANS_TO_DEGREES = 180.0 / Math.PI;
 
@@ -470,7 +473,7 @@ namespace VSS.Productivity3D.Common.Proxies
       {
         if (assetList == null)
         {
-          assetList = (from a in overrideAssetIds select new TMachineDetail { Name = String.Empty, ID = a, IsJohnDoeMachine = false }).ToList();
+          assetList = (from a in overrideAssetIds select new TMachineDetail { Name = string.Empty, ID = a, IsJohnDoeMachine = false }).ToList();
         }
       }
 
@@ -487,7 +490,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
         if (pdf.assetIDs != null && pdf.assetIDs.Count > 0)
         {
-          assetList = (from a in pdf.assetIDs select new TMachineDetail { Name = String.Empty, ID = a, IsJohnDoeMachine = false }).ToList();
+          assetList = (from a in pdf.assetIDs select new TMachineDetail { Name = string.Empty, ID = a, IsJohnDoeMachine = false }).ToList();
         }
 
         List<TMachineDetail> machineList = null;
@@ -504,7 +507,7 @@ namespace VSS.Productivity3D.Common.Proxies
         {
           if (assetList == null)
           {
-            assetList = (from a in overrideAssetIds select new TMachineDetail { Name = String.Empty, ID = a, IsJohnDoeMachine = false }).ToList();
+            assetList = (from a in overrideAssetIds select new TMachineDetail { Name = string.Empty, ID = a, IsJohnDoeMachine = false }).ToList();
           }
           else
           {
@@ -638,6 +641,19 @@ namespace VSS.Productivity3D.Common.Proxies
           filter.SetPassTypeState(true);
           filter.PassTypeSelections = filter.PassTypeSelections.Set(TICPassType.ptWheel);
         }
+
+        if (pdf.designOrAlignmentFile != null)
+        {
+          filter.DesignFilter = VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(
+            pdf.designOrAlignmentFile.id,
+            fileSpaceName,
+            pdf.designOrAlignmentFile.file.filespaceId,
+            pdf.designOrAlignmentFile.file.path,
+            pdf.designOrAlignmentFile.file.fileName,
+            pdf.designOrAlignmentFile.offset);
+          
+          filter.SetDesignFilterMaskCellSelectionState(true);
+        }
       }
 
       if ((pdf != null) && (pdf.surveyedSurfaceExclusionList != null))
@@ -718,7 +734,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case LiftDetectionType.MapReset: return TICLiftDetectionType.icldtMapReset;
         case LiftDetectionType.AutoMapReset: return TICLiftDetectionType.icldtAutoMapReset;
         case LiftDetectionType.Tagfile: return TICLiftDetectionType.icldtTagfile;
-        default: throw new Exception(String.Format("Unknown lift detection type: {0}", Convert.ToInt32(type)));
+        default: throw new Exception($"Unknown lift detection type: {Convert.ToInt32(type)}");
       }
     }
 
@@ -728,7 +744,7 @@ namespace VSS.Productivity3D.Common.Proxies
       {
         case LiftThicknessType.Compacted: return __Global.lttCompacted;
         case LiftThicknessType.Uncompacted: return __Global.lttUncompacted;
-        default: throw new Exception(String.Format("Unknown lift thickness type: {0}", Convert.ToInt32(type)));
+        default: throw new Exception($"Unknown lift thickness type: {Convert.ToInt32(type)}");
       }
     }
 
@@ -745,7 +761,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case ElevationType.Last: return TICElevationType.etLast;
         case ElevationType.Highest: return TICElevationType.etHighest;
         case ElevationType.Lowest: return TICElevationType.etLowest;
-        default: throw new Exception(String.Format("Unknown elevation type: {0}", Convert.ToInt32(type)));
+        default: throw new Exception($"Unknown elevation type: {Convert.ToInt32(type)}");
       }
     }
 
@@ -762,35 +778,28 @@ namespace VSS.Productivity3D.Common.Proxies
         case FilterLayerMethod.OffsetFromDesign: return TFilterLayerMethod.flmOffsetFromDesign;
         case FilterLayerMethod.OffsetFromProfile: return TFilterLayerMethod.flmOffsetFromProfile;
         case FilterLayerMethod.TagfileLayerNumber: return TFilterLayerMethod.flmTagfileLayerNumber;
-        default: throw new Exception(String.Format("Unknown layer method: {0}", Convert.ToInt32(method)));
+        default: throw new Exception($"Unknown layer method: {Convert.ToInt32(method)}");
       }
     }
-
 
     public static TVLPDDesignDescriptor DesignDescriptor(long designID, string filespaceId, string path, string fileName, double offset)
     {
       return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designID, "RaptorServices", filespaceId, path, fileName, offset);
     }
 
-    public static TVLPDDesignDescriptor EmptyDesignDescriptor
-    {
-      get { return DesignDescriptor(0, String.Empty, String.Empty, String.Empty, 0); }
-    }
+    public static TVLPDDesignDescriptor EmptyDesignDescriptor => DesignDescriptor(0, string.Empty, string.Empty, string.Empty, 0);
 
     public static TVLPDDesignDescriptor DesignDescriptor(DesignDescriptor dd)
     {
-      if (dd == null) return EmptyDesignDescriptor;
-      if (dd.file == null)
+      if (dd == null)
       {
-        return DesignDescriptor(dd.id, String.Empty, String.Empty, String.Empty, dd.offset);
+        return EmptyDesignDescriptor;
       }
-      else
-      {
-        return DesignDescriptor(dd.id, dd.file.filespaceId, dd.file.path,
-            dd.file.fileName, dd.offset);
-      }
-    }
 
+      return dd.file == null
+        ? DesignDescriptor(dd.id, string.Empty, string.Empty, string.Empty, dd.offset)
+        : DesignDescriptor(dd.id, dd.file.filespaceId, dd.file.path, dd.file.fileName, dd.offset);
+    }
 
     /// <summary>
     /// The different volume computation types available
@@ -849,7 +858,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case VolumesType.Between2Filters: return TComputeICVolumesType.ic_cvtBetween2Filters;
         case VolumesType.BetweenFilterAndDesign: return TComputeICVolumesType.ic_cvtBetweenFilterAndDesign;
         case VolumesType.BetweenDesignAndFilter: return TComputeICVolumesType.ic_cvtBetweenDesignAndFilter;
-        default: throw new Exception(String.Format("Unknown VolumesType {0}", Convert.ToInt16(volumesType)));
+        default: throw new Exception($"Unknown VolumesType {Convert.ToInt16(volumesType)}");
       }
     }
     /// <summary>
@@ -873,6 +882,7 @@ namespace VSS.Productivity3D.Common.Proxies
     /// <returns></returns>
     public static TSurveyedSurfaceID[] convertSurveyedSurfaceExlusionList(List<long> exclusions)
     {
+      if (exclusions == null) return new TSurveyedSurfaceID[0];
       TSurveyedSurfaceID[] result = new TSurveyedSurfaceID[exclusions.Count];
       for (int i = 0; i < exclusions.Count; i++)
         result[i].SurveyedSurfaceID = exclusions[i];

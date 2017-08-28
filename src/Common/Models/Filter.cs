@@ -3,9 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.Common.Models
@@ -150,8 +151,8 @@ namespace VSS.Productivity3D.Common.Models
     [JsonProperty(PropertyName = "layerType", Required = Required.Default)]
     public FilterLayerMethod? layerType { get; private set; }
 
-    /// <summary>
-    /// The design or alignment file in the project that is to be used as a spatial filter when the filter layer method is OffsetFromDesign or OffsetFromProfile.
+    /// <summary>The design or alignment file in the project that is to be used as a spatial filter when the filter layer method is OffsetFromDesign or OffsetFromProfile.
+    /// 
     /// </summary>
     [JsonProperty(PropertyName = "designOrAlignmentFile", Required = Required.Default)]
     public DesignDescriptor designOrAlignmentFile { get; private set; }
@@ -288,40 +289,40 @@ namespace VSS.Productivity3D.Common.Models
         )
     {
       return new Filter
-             {
-                 ID = ID,
-                 name = name,
-                 description = description,
-                 startUTC = startUTC,
-                 endUTC = endUTC,
-                 onMachineDesignID = onMachineDesignID,
-                 assetIDs = assetIDs,
-                 vibeStateOn = vibeStateOn,
-                 compactorDataOnly = compactorDataOnly,
-                 elevationType = elevationType,
-                 polygonLL = polygonLL,
-                 polygonGrid = polygonGrid,
-                 forwardDirection = forwardDirection,
-                 alignmentFile = alignmentFile,
-                 startStation = startStation,
-                 endStation = endStation,
-                 leftOffset = leftOffset,
-                 rightOffset = rightOffset,
-                 machineDesignName = machineDesignName,
-                 layerType = layerType,
-                 designOrAlignmentFile = designOrAlignmentFile,
-                 benchElevation = benchElevation,
-                 layerNumber = layerNumber,
-                 layerThickness = layerThickness,
-                 contributingMachines = contributingMachines,
-                 surveyedSurfaceExclusionList = surveyedSurfaceExclusionList,
-                 returnEarliest = returnEarliest,
-                 gpsAccuracy = accuracy,
-                 gpsAccuracyIsInclusive = inclusive,
-                 bladeOnGround = bladeOnGround,
-                 trackMapping = trackMapping,
-                 wheelTracking = wheelTracking
-             };
+      {
+        ID = ID,
+        name = name,
+        description = description,
+        startUTC = startUTC,
+        endUTC = endUTC,
+        onMachineDesignID = onMachineDesignID,
+        assetIDs = assetIDs,
+        vibeStateOn = vibeStateOn,
+        compactorDataOnly = compactorDataOnly,
+        elevationType = elevationType,
+        polygonLL = polygonLL,
+        polygonGrid = polygonGrid,
+        forwardDirection = forwardDirection,
+        alignmentFile = alignmentFile,
+        startStation = startStation,
+        endStation = endStation,
+        leftOffset = leftOffset,
+        rightOffset = rightOffset,
+        machineDesignName = machineDesignName,
+        layerType = layerType,
+        designOrAlignmentFile = designOrAlignmentFile,
+        benchElevation = benchElevation,
+        layerNumber = layerNumber,
+        layerThickness = layerThickness,
+        contributingMachines = contributingMachines,
+        surveyedSurfaceExclusionList = surveyedSurfaceExclusionList,
+        returnEarliest = returnEarliest,
+        gpsAccuracy = accuracy,
+        gpsAccuracyIsInclusive = inclusive,
+        bladeOnGround = bladeOnGround,
+        trackMapping = trackMapping,
+        wheelTracking = wheelTracking
+      };
     }
 
     /// <summary>
@@ -427,7 +428,7 @@ namespace VSS.Productivity3D.Common.Models
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                   "If using an alignment filter, alignment file, start and end station, left and right offset  must be provided"));
 
-        alignmentFile.Validate();        
+        alignmentFile.Validate();
       }
 
       //Check layer filter parts
@@ -453,7 +454,7 @@ namespace VSS.Productivity3D.Common.Models
                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                         "If using an offset from bench filter, bench elevation must be provided"));
               }
-   
+
             }
             else
             {
@@ -467,12 +468,12 @@ namespace VSS.Productivity3D.Common.Models
             }
             if (!layerNumber.HasValue || !layerThickness.HasValue)
             {
-                throw new ServiceException(HttpStatusCode.BadRequest,
-                    new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                        "If using an offset from bench, design or alignment filter, layer number and layer thickness must be provided"));
+              throw new ServiceException(HttpStatusCode.BadRequest,
+                  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                      "If using an offset from bench, design or alignment filter, layer number and layer thickness must be provided"));
             }
             break;
-            case FilterLayerMethod.TagfileLayerNumber:
+          case FilterLayerMethod.TagfileLayerNumber:
             if (!layerNumber.HasValue)
             {
               throw new ServiceException(HttpStatusCode.BadRequest,
@@ -489,26 +490,22 @@ namespace VSS.Productivity3D.Common.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Too few points for filter polygon"));                  
+                "Too few points for filter polygon"));
       }
 
       if (polygonGrid != null && polygonGrid.Count < 3)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                 "Too few points for filter polygon"));        
+                 "Too few points for filter polygon"));
       }
 
       if (polygonLL != null && polygonLL.Count > 0 && polygonGrid != null && polygonGrid.Count > 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
                  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                     "Only one type of filter boundary can be defined at one time"));                
+                     "Only one type of filter boundary can be defined at one time"));
       }
-
-
     }
-
-
   }
 }

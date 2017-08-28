@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
   /// <summary>
   /// The represenation of the results of an edit data request.
@@ -34,16 +34,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
     /// <summary>
     /// Create example instance of EditDataResult to display in Help documentation.
     /// </summary>
-    public static EditDataResult HelpSample
+    public static EditDataResult HelpSample => new EditDataResult
     {
-      get
-      {
-        return new EditDataResult
-        {
-          dataEdits = new List<ProductionDataEdit> { ProductionDataEdit.HelpSample }
-        };
-      }
-    }
-
+      dataEdits = new List<ProductionDataEdit> { ProductionDataEdit.HelpSample }
+    };
   }
 }

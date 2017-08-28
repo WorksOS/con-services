@@ -1,21 +1,23 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Caching;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
@@ -26,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
   /// <summary>
   /// 
   /// </summary>
-  [ResponseCache(NoStore = true)]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class NotificationController : Controller
   {
     /// <summary>
@@ -68,6 +70,13 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private readonly IFileListProxy fileListProxy;
 
     /// <summary>
+    /// For getting filter by Uid. Used here so FilterService can clear an item from cache.
+    /// </summary>
+    private readonly IFilterServiceProxy filterServiceProxy;
+
+    private readonly IMemoryCacheBuilder<Guid> cacheBuilder;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -77,9 +86,11 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="prefProxy">Proxy for user preferences</param>
     /// <param name="tileGenerator">DXF tile generator</param>
     /// <param name="fileListProxy">File list proxy</param>
+    /// <param name="filterServiceProxy">Filter service proxy</param>
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
-      IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy)
+      IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy,
+      IFilterServiceProxy filterServiceProxy, IMemoryCacheBuilder<Guid> cacheBuilder)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -89,6 +100,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       this.prefProxy = prefProxy;
       this.tileGenerator = tileGenerator;
       this.fileListProxy = fileListProxy;
+      this.filterServiceProxy = filterServiceProxy;
+      this.cacheBuilder = cacheBuilder;
     }
 
     /// <summary>
@@ -116,14 +129,16 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       string coordSystem = projectDescr.coordinateSystemFileName;
       var customHeaders = Request.Headers.GetCustomHeaders();
       var userPrefs = await prefProxy.GetUserPreferences(customHeaders);
-      var userUnits = userPrefs == null ? UnitsTypeEnum.US : (UnitsTypeEnum)Enum.Parse(typeof(UnitsTypeEnum), userPrefs.Units, true);
+      var units = userPrefs.Units == "US Standard" ? "US" : userPrefs.Units;
+      var userUnits = userPrefs == null ? UnitsTypeEnum.US : (UnitsTypeEnum)Enum.Parse(typeof(UnitsTypeEnum), units, true);
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, coordSystem, userUnits, fileId, fileType);
       request.Validate();
-      var executor = RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
+      var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       //Do we need to validate fileUid ?
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
+      cacheBuilder.ClearMemoryCache(projectUid);
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
       return result;
     }
@@ -153,9 +168,10 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, UnitsTypeEnum.None, fileId, fileType);
       request.Validate();
-      var executor = RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
+      var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, Request.Headers.GetCustomHeaders());
+      cacheBuilder.ClearMemoryCache(projectUid);
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
     }
@@ -188,10 +204,27 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       }
       var customHeaders = Request.Headers.GetCustomHeaders();
       await ClearFilesCaches(projectUid, fileUids, customHeaders);
+      cacheBuilder.ClearMemoryCache(projectUid);
       log.LogInformation("GetUpdateFiles returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Update files notification successful");
     }
 
+
+    /// <summary>
+    /// Notifies Raptor that a filterUid has been updated/deleted so clear it from the queue
+    /// </summary>
+    /// <param name="filterUid"></param>
+    /// <returns>A code and message to indicate the result</returns>
+    [Route("api/v2/notification/filterchange")]
+    [HttpGet]
+    public ContractExecutionResult GetNotifyFilterChange(
+      [FromQuery] Guid filterUid)
+    {
+      log.LogDebug("GetNotifyFilterChange: " + Request.QueryString);
+      filterServiceProxy.ClearCacheItem(filterUid.ToString());
+      log.LogInformation("GetNotifyFilterChange returned");
+      return new ContractExecutionResult();
+    }
     /// <summary>
     /// Clears the imported files cache in the proxy so that linework tile requests are refreshed appropriately
     /// </summary>

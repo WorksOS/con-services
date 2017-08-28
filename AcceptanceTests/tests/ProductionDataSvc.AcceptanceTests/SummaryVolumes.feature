@@ -44,5 +44,5 @@ Scenario Outline: SummaryVolumes - Bad Request
 	Then the response body should contain Error Code <ErrorCode>
 	Examples: 
 	| ParameterName         | HttpCode | ErrorCode |
-	| NullProjectId			| 400      | -2        |
-	| InvalidLatLon			| 400      | -2		   |
+	| NullProjectId			| 400      | -1        |
+	| InvalidLatLon			| 400      | -1		   |

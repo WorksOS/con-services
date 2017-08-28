@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
   /// <summary>
   /// The request represents CCA data color palette to be used by a map legend.

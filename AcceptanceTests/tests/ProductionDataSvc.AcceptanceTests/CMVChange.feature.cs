@@ -190,11 +190,11 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CMVChange")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DecendingBoundaryValues")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DecendingBoundaryValues")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "CMVChangeSummaryValues should be in ascending order.")]
         public virtual void CMVChange_BadRequest_DecendingBoundaryValues()
         {
-            this.CMVChange_BadRequest("DecendingBoundaryValues", "-2", "CMVChangeSummaryValues should be in ascending order.", ((string[])(null)));
+            this.CMVChange_BadRequest("DecendingBoundaryValues", "-1", "CMVChangeSummaryValues should be in ascending order.", ((string[])(null)));
         }
     }
 }

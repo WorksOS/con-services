@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using VSS.Productivity3D.Common.Contracts;
+﻿using Newtonsoft.Json.Linq;
+using VSS.Common.ResultsHandling;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
   public class DesignResult : ContractExecutionResult
   {

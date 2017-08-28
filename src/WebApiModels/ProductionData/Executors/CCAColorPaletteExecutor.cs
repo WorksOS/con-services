@@ -1,34 +1,25 @@
 ﻿using System.Net;
-using Microsoft.Extensions.Logging;
 using VLPDDecls;
-using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Interfaces;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   /// <summary>
   /// Executes GET method on the CCA data colour palettes resource.
   /// </summary>
-  /// 
   public class CCAColorPaletteExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    /// <param name="raptorClient"></param>
-    /// 
-    public CCAColorPaletteExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
-    {
-    }
-
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public CCAColorPaletteExecutor()
     {
+      ProcessErrorCodes();
     }
 
     /// <summary>
@@ -40,9 +31,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     /// 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
 
-      if ((object)item != null)
+      if (item != null)
       {
         try
         {
@@ -93,7 +84,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     /// Populates ContractExecutionStates with Production Data Server error messages.
     /// </summary>
     /// 
-    protected override void ProcessErrorCodes()
+    protected sealed override void ProcessErrorCodes()
     {
      //throw new NotImplementedException();
      RaptorResult.AddErrorMessages(ContractExecutionStates); 

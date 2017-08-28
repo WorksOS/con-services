@@ -1,256 +1,243 @@
 ﻿using ASNodeDecls;
 using DesignProfilerDecls;
 using TAGProcServiceDecls;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.Common.ResultHandling
 {
-    public class RaptorResult
-    {
+    public class RaptorResult : ContractExecutionStatesEnum
+  {
         public static void AddErrorMessages(ContractExecutionStatesEnum contractExecutionStates)
         {
-          AddErrorMessages(contractExecutionStates, contractExecutionStates.DefaultDynamicOffset);
-        }
-
-        public static void AddErrorMessages(ContractExecutionStatesEnum contractExecutionStates, int offset)
-        {
-            contractExecutionStates.DynamicAddwithOffset("OK", (int) TASNodeErrorStatus.asneOK, offset);
-            contractExecutionStates.DynamicAddwithOffset("Unknown error", (int) TASNodeErrorStatus.asneUnknown, offset);
-            contractExecutionStates.DynamicAddwithOffset("Exception occurred", (int) TASNodeErrorStatus.asneException, offset);
+            contractExecutionStates.DynamicAddwithOffset("OK", (int) TASNodeErrorStatus.asneOK);
+            contractExecutionStates.DynamicAddwithOffset("Unknown error", (int) TASNodeErrorStatus.asneUnknown);
+            contractExecutionStates.DynamicAddwithOffset("Exception occurred", (int) TASNodeErrorStatus.asneException);
             contractExecutionStates.DynamicAddwithOffset("Unsupported coordinate system definition file type",
-                    (int) TASNodeErrorStatus.asneUnsupportedCSDFileType, offset);
+                    (int) TASNodeErrorStatus.asneUnsupportedCSDFileType);
             contractExecutionStates.DynamicAddwithOffset("Could not convert coordinate system definition file",
-                    (int) TASNodeErrorStatus.asneCouldNotConvertCSDFile, offset);
+                    (int) TASNodeErrorStatus.asneCouldNotConvertCSDFile);
             contractExecutionStates.DynamicAddwithOffset("Failed to write coordinate system definition stream",
-                    (int) TASNodeErrorStatus.asneFailedToWriteCSDStream, offset);
+                    (int) TASNodeErrorStatus.asneFailedToWriteCSDStream);
             contractExecutionStates.DynamicAddwithOffset("Failed on profile request",
-                    (int) TASNodeErrorStatus.asneFailedOnRequestProfile, offset);
+                    (int) TASNodeErrorStatus.asneFailedOnRequestProfile);
             contractExecutionStates.DynamicAddwithOffset("No such data model",
-                    (int) TASNodeErrorStatus.asneNoSuchDataModel, offset);
+                    (int) TASNodeErrorStatus.asneNoSuchDataModel);
             contractExecutionStates.DynamicAddwithOffset("Unsupported display type",
-                    (int) TASNodeErrorStatus.asneUnsupportedDisplayType, offset);
+                    (int) TASNodeErrorStatus.asneUnsupportedDisplayType);
             contractExecutionStates.DynamicAddwithOffset("Failed on request of colour graduated profilee",
-                    (int) TASNodeErrorStatus.asneFailedOnRequestColourGraduatedProfile, offset);
+                    (int) TASNodeErrorStatus.asneFailedOnRequestColourGraduatedProfile);
             contractExecutionStates.DynamicAddwithOffset("Failed to convert client WGS84 coordinates",
-                    (int) TASNodeErrorStatus.asneFailedToConvertClientWGSCoords, offset);
+                    (int) TASNodeErrorStatus.asneFailedToConvertClientWGSCoords);
             contractExecutionStates.DynamicAddwithOffset("Failed to request sub-grid existence map",
-                    (int) TASNodeErrorStatus.asneFailedToRequestSubgridExistenceMap, offset);
+                    (int) TASNodeErrorStatus.asneFailedToRequestSubgridExistenceMap);
             contractExecutionStates.DynamicAddwithOffset("Invalid coordinate range",
-                    (int) TASNodeErrorStatus.asneInvalidCoordinateRange, offset);
+                    (int) TASNodeErrorStatus.asneInvalidCoordinateRange);
             contractExecutionStates.DynamicAddwithOffset("Failed to request data model statistics",
-                    (int) TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics, offset);
+                    (int) TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics);
             contractExecutionStates.DynamicAddwithOffset("Failed to request coordinate system projection file",
-                    (int) TASNodeErrorStatus.asneFailedOnRequestCoordinateSystemProjectionFile, offset);
+                    (int) TASNodeErrorStatus.asneFailedOnRequestCoordinateSystemProjectionFile);
             contractExecutionStates.DynamicAddwithOffset("Coordinate system is empty",
-                    (int) TASNodeErrorStatus.asneEmptyCoordinateSystem, offset);
+                    (int) TASNodeErrorStatus.asneEmptyCoordinateSystem);
             contractExecutionStates.DynamicAddwithOffset("Request has been aborted due to pipeline timeout",
-                    (int) TASNodeErrorStatus.asneAbortedDueToPipelineTimeout, offset);
+                    (int) TASNodeErrorStatus.asneAbortedDueToPipelineTimeout);
             contractExecutionStates.DynamicAddwithOffset("Unsupported filter attribute",
-                    (int) TASNodeErrorStatus.asneUnsupportedFilterAttribute, offset);
-            contractExecutionStates.DynamicAddwithOffset("Service stopped", (int) TASNodeErrorStatus.asneServiceStopped, offset);
+                    (int) TASNodeErrorStatus.asneUnsupportedFilterAttribute);
+            contractExecutionStates.DynamicAddwithOffset("Service stopped", (int) TASNodeErrorStatus.asneServiceStopped);
             contractExecutionStates.DynamicAddwithOffset("Schedule load is too high",
-                    (int) TASNodeErrorStatus.asneRequestScheduleLoadTooHigh, offset);
+                    (int) TASNodeErrorStatus.asneRequestScheduleLoadTooHigh);
             contractExecutionStates.DynamicAddwithOffset("Schedule failure",
-                    (int) TASNodeErrorStatus.asneRequestScheduleFailure, offset);
+                    (int) TASNodeErrorStatus.asneRequestScheduleFailure);
             contractExecutionStates.DynamicAddwithOffset("Schedule timeout",
-                    (int) TASNodeErrorStatus.asneRequestScheduleTimeout, offset);
+                    (int) TASNodeErrorStatus.asneRequestScheduleTimeout);
             contractExecutionStates.DynamicAddwithOffset("Request has been cancelled",
-                    (int) TASNodeErrorStatus.asneRequestHasBeenCancelled, offset);
+                    (int) TASNodeErrorStatus.asneRequestHasBeenCancelled);
             contractExecutionStates.DynamicAddwithOffset("Failed to obtain coordinate system interlock",
-                    (int) TASNodeErrorStatus.asneFailedToObtainCoordinateSystemInterlock, offset);
+                    (int) TASNodeErrorStatus.asneFailedToObtainCoordinateSystemInterlock);
             contractExecutionStates.DynamicAddwithOffset(
                     "Failed to request coordinate system horizontal adjustment file",
-                    (int) TASNodeErrorStatus.asneFailedOnRequestCoordinateSystemHorizontalAdjustmentFile, offset);
+                    (int) TASNodeErrorStatus.asneFailedOnRequestCoordinateSystemHorizontalAdjustmentFile);
             contractExecutionStates.DynamicAddwithOffset("No connection to server",
-                    (int) TASNodeErrorStatus.asneNoConnectionToServer, offset);
+                    (int) TASNodeErrorStatus.asneNoConnectionToServer);
             contractExecutionStates.DynamicAddwithOffset("Invalid response code",
-                    (int) TASNodeErrorStatus.asneInvalidResponseCode, offset);
+                    (int) TASNodeErrorStatus.asneInvalidResponseCode);
             contractExecutionStates.DynamicAddwithOffset("No result has been returned",
-                    (int) TASNodeErrorStatus.asneNoResultReturned, offset);
+                    (int) TASNodeErrorStatus.asneNoResultReturned);
             contractExecutionStates.DynamicAddwithOffset("Failed to notify that coordinate system was changed",
-                    (int) TASNodeErrorStatus.asneFailedToNotifyCSChange, offset);
+                    (int) TASNodeErrorStatus.asneFailedToNotifyCSChange);
             contractExecutionStates.DynamicAddwithOffset("Failed to create DCtoIRecord converter",
-                    (int) TASNodeErrorStatus.asneFailedToCreateDCToIRecordConverter, offset);
+                    (int) TASNodeErrorStatus.asneFailedToCreateDCToIRecordConverter);
             contractExecutionStates.DynamicAddwithOffset("Failed to get coordinate systems settings",
-                    (int) TASNodeErrorStatus.asneFailedToGetCSSettings, offset);
+                    (int) TASNodeErrorStatus.asneFailedToGetCSSettings);
             contractExecutionStates.DynamicAddwithOffset("Coordinate system is incomplete",
-                    (int) TASNodeErrorStatus.asneDCToIRecIncompleteCS, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecIncompleteCS);
             contractExecutionStates.DynamicAddwithOffset("Failed to create CSIB",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedCreateCSIB, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedCreateCSIB);
             contractExecutionStates.DynamicAddwithOffset("Failed to get geoid information",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToGetGeoidInfo, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToGetGeoidInfo);
             contractExecutionStates.DynamicAddwithOffset("Unable to retrieve zone parameters",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToGetZoneParams, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToGetZoneParams);
             contractExecutionStates.DynamicAddwithOffset("Failed to instantiate CSIB constant separation geoid",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateConstGeoid, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateConstGeoid);
             contractExecutionStates.DynamicAddwithOffset("Failed to instantiate CSIB datum grid file",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateDatumGrid, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateDatumGrid);
             contractExecutionStates.DynamicAddwithOffset("Failed to instantiate CSIB ellipsoid",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateEllipsoid, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateEllipsoid);
             contractExecutionStates.DynamicAddwithOffset("Failed to instantiate CSIB Grid Geoid",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateGridGeoid, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateGridGeoid);
             contractExecutionStates.DynamicAddwithOffset("Failed to instantiate CSIB Molodensky datum",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateMolodenskyDatum, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateMolodenskyDatum);
             contractExecutionStates.DynamicAddwithOffset(
                     "Failed to instantiate CSIB Multiple Regression Parameter datum",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateMultiRegressionDatum, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateMultiRegressionDatum);
             contractExecutionStates.DynamicAddwithOffset("Failed to instantiate CSIB Seven Parameter datum",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateSevenParamsDatum, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateSevenParamsDatum);
             contractExecutionStates.DynamicAddwithOffset("Failed to instantiate CSIB WGS84 datum",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateWGS84Datum, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateWGS84Datum);
             contractExecutionStates.DynamicAddwithOffset("Failed to instantiate CSIB Zone Group",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateZoneGroup, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateZoneGroup );
             contractExecutionStates.DynamicAddwithOffset("Failed to instantiate CSIB Zone Based Site",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateZoneBasedSite, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateZoneBasedSite );
             contractExecutionStates.DynamicAddwithOffset("Failed to create an IAZIParameters object",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateAZIParamsObject, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateAZIParamsObject );
             contractExecutionStates.DynamicAddwithOffset("Unable to create an ICSIB object",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateCSIBObject, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToCreateCSIBObject );
             contractExecutionStates.DynamicAddwithOffset("Failed to open Calibration reader",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToOpenCalibrationReader, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToOpenCalibrationReader );
             contractExecutionStates.DynamicAddwithOffset("Unable to set zone parameters",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToSetZoneParams, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToSetZoneParams );
             contractExecutionStates.DynamicAddwithOffset("Failed to read CSIB",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToReadCSIB, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToReadCSIB );
             contractExecutionStates.DynamicAddwithOffset("Failed to read in CSIB",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToReadInCSIB, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToReadInCSIB );
             contractExecutionStates.DynamicAddwithOffset("Failed to read the ZoneBased site",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToReadZoneBasedSite, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToReadZoneBasedSite );
             contractExecutionStates.DynamicAddwithOffset("Failed to read the zone",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToReadZone, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToReadZone );
             contractExecutionStates.DynamicAddwithOffset("Failed to write datum",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToWriteDatum, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToWriteDatum );
             contractExecutionStates.DynamicAddwithOffset("Failed to write geoid",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToWriteGeoid, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToWriteGeoid );
             contractExecutionStates.DynamicAddwithOffset("Failed to write CSIB",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToWriteCSIB, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToWriteCSIB );
             contractExecutionStates.DynamicAddwithOffset("Failed to set zone info",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToSetZoneInfo, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToSetZoneInfo );
             contractExecutionStates.DynamicAddwithOffset("Inifinite adjustment slope value",
-                    (int) TASNodeErrorStatus.asneDCToIRecInifiniteAdjustmentSlopeValue, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecInifiniteAdjustmentSlopeValue );
             contractExecutionStates.DynamicAddwithOffset("Invalid ellipsoid",
-                    (int) TASNodeErrorStatus.asneDCToIRecInvalidEllipsoid, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecInvalidEllipsoid );
             contractExecutionStates.DynamicAddwithOffset("The datum CSIB failed to load",
-                    (int) TASNodeErrorStatus.asneDCToIRecDatumFailedToLoad, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecDatumFailedToLoad );
             contractExecutionStates.DynamicAddwithOffset("Failed to load CSIB",
-                    (int) TASNodeErrorStatus.asneDCToIRecFailedToLoadCSIB, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecFailedToLoadCSIB );
             contractExecutionStates.DynamicAddwithOffset("Not WGS84 ellipsoid",
-                    (int) TASNodeErrorStatus.asneDCToIRecNotWGS84Ellipsoid, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecNotWGS84Ellipsoid );
             contractExecutionStates.DynamicAddwithOffset("Not WGS84 ellipsoid in datum record",
-                    (int) TASNodeErrorStatus.asneDCToIRecNotWGS84EllipsoidSameAsProj, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecNotWGS84EllipsoidSameAsProj );
             contractExecutionStates.DynamicAddwithOffset("Current projection should be scaled",
-                    (int) TASNodeErrorStatus.asneDCToIRecScaleOnlyProj, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecScaleOnlyProj );
             contractExecutionStates.DynamicAddwithOffset("Unknown coordinate system type",
-                    (int) TASNodeErrorStatus.asneDCToIRecUnknownCSType, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecUnknownCSType );
             contractExecutionStates.DynamicAddwithOffset("Unknown datum adjustment was encountered and ignored",
-                    (int) TASNodeErrorStatus.asneDCToIRecUnknownDatumModel, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecUnknownDatumModel );
             contractExecutionStates.DynamicAddwithOffset("Unknown geoid model was encountered and ignored",
-                    (int) TASNodeErrorStatus.asneDCToIRecUnknownGeoidModel, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecUnknownGeoidModel );
             contractExecutionStates.DynamicAddwithOffset("Unknown projection type",
-                    (int) TASNodeErrorStatus.asneDCToIRecUnknownProjType, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecUnknownProjType );
             contractExecutionStates.DynamicAddwithOffset("Unsupported datum",
-                    (int) TASNodeErrorStatus.asneDCToIRecUnsupportedDatum, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecUnsupportedDatum );
             contractExecutionStates.DynamicAddwithOffset("Unsupported geoid",
-                    (int) TASNodeErrorStatus.asneDCToIRecUnsupportedGeoid, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecUnsupportedGeoid );
             contractExecutionStates.DynamicAddwithOffset("Unsupported zone orientation",
-                    (int) TASNodeErrorStatus.asneDCToIRecUnsupportedZoneOrientation, offset);
+                    (int) TASNodeErrorStatus.asneDCToIRecUnsupportedZoneOrientation );
             contractExecutionStates.DynamicAddwithOffset("Failed to request file from TCC",
-                    (int) TASNodeErrorStatus.asneFailedToRequestFileFromTCC, offset);
+                    (int) TASNodeErrorStatus.asneFailedToRequestFileFromTCC );
             contractExecutionStates.DynamicAddwithOffset("Failed to read linework boundary file",
-                    (int) TASNodeErrorStatus.asneFailedToReadLineworkBoundaryFile, offset);
+                    (int) TASNodeErrorStatus.asneFailedToReadLineworkBoundaryFile );
             contractExecutionStates.DynamicAddwithOffset("No boundaries in linework file",
-                    (int) TASNodeErrorStatus.asneNoBoundariesInLineworkFile, offset);
+                    (int) TASNodeErrorStatus.asneNoBoundariesInLineworkFile );
             contractExecutionStates.DynamicAddwithOffset("Failed to perform coordinate conversion",
-                    (int) TASNodeErrorStatus.asneFailedToPerformCoordinateConversion, offset);
+                    (int) TASNodeErrorStatus.asneFailedToPerformCoordinateConversion );
             contractExecutionStates.DynamicAddwithOffset("No production data found",
-                    (int) TASNodeErrorStatus.asneNoProductionDataFound, offset);
+                    (int) TASNodeErrorStatus.asneNoProductionDataFound );
             contractExecutionStates.DynamicAddwithOffset("Invalid plan extents",
-                    (int) TASNodeErrorStatus.asneInvalidPlanExtents, offset);
+                    (int) TASNodeErrorStatus.asneInvalidPlanExtents );
             contractExecutionStates.DynamicAddwithOffset("No design provided",
-                    (int) TASNodeErrorStatus.asneNoDesignProvided, offset);
+                    (int) TASNodeErrorStatus.asneNoDesignProvided );
             contractExecutionStates.DynamicAddwithOffset("No data on production data export",
-                    (int) TASNodeErrorStatus.asneExportNoData, offset);
+                    (int) TASNodeErrorStatus.asneExportNoData );
             contractExecutionStates.DynamicAddwithOffset("Production data export timeout",
-                    (int) TASNodeErrorStatus.asneExportTimeOut, offset);
+                    (int) TASNodeErrorStatus.asneExportTimeOut );
             contractExecutionStates.DynamicAddwithOffset("Production data export cancelled",
-                    (int) TASNodeErrorStatus.asneExportCancelled, offset);
+                    (int) TASNodeErrorStatus.asneExportCancelled );
             contractExecutionStates.DynamicAddwithOffset("Production data export limit reached",
-                    (int) TASNodeErrorStatus.asneExportLimitReached, offset);
+                    (int) TASNodeErrorStatus.asneExportLimitReached );
             contractExecutionStates.DynamicAddwithOffset("Invalid data range on production data export",
-                    (int) TASNodeErrorStatus.asneExportInvalidDateRange, offset);
+                    (int) TASNodeErrorStatus.asneExportInvalidDateRange );
             contractExecutionStates.DynamicAddwithOffset("No overlap on production data export ranges",
-                    (int) TASNodeErrorStatus.asneExportDateRangesNoOverlap, offset);
+                    (int) TASNodeErrorStatus.asneExportDateRangesNoOverlap );
             contractExecutionStates.DynamicAddwithOffset("Invalid page size or number for patch request. Try reducing the area being requested.",
-                    (int) TASNodeErrorStatus.asneInvalidArgument, offset);
+                    (int) TASNodeErrorStatus.asneInvalidArgument );
             contractExecutionStates.DynamicAddwithOffset("No coordinate system assigned to project.",
-              (int)TASNodeErrorStatus.asneNoCoordinateSystem, offset);
+              (int)TASNodeErrorStatus.asneNoCoordinateSystem );
             contractExecutionStates.DynamicAddwithOffset("Failed to load coordinate system data from project's data model file.",
-                (int)TASNodeErrorStatus.asneFailedToLoadCoordinateSystem, offset);
+                (int)TASNodeErrorStatus.asneFailedToLoadCoordinateSystem );
             contractExecutionStates.DynamicAddwithOffset("Failed to create coordinate transformer.",
-                (int)TASNodeErrorStatus.asneFailedToCreateCoordinateTransformer, offset);
+                (int)TASNodeErrorStatus.asneFailedToCreateCoordinateTransformer );
         }
 
-      public static void AddTagProcessorErrorMessages(ContractExecutionStatesEnum contractExecutionStates)
+ 
+      public static void AddTagProcessorErrorMessages(ContractExecutionStatesEnum contractExecutionStates )
       {
-        AddTagProcessorErrorMessages(contractExecutionStates, contractExecutionStates.DefaultDynamicOffset);
+        contractExecutionStates.DynamicAddwithOffset("Tagfile OK", (int)TTAGProcServerProcessResult.tpsprOK );
+        contractExecutionStates.DynamicAddwithOffset("Tagfile Unknown error", (int)TTAGProcServerProcessResult.tpsprUnknown );
+        contractExecutionStates.DynamicAddwithOffset("OnSubmissionBase. Connection Failure.", (int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure );
+        contractExecutionStates.DynamicAddwithOffset("OnSubmissionVerb. Connection Failure.", (int)TTAGProcServerProcessResult.tpsprOnSubmissionVerbConnectionFailure );
+        contractExecutionStates.DynamicAddwithOffset("OnSubmissionResult. ConnectionFailure.", (int)TTAGProcServerProcessResult.tpsprOnSubmissionResultConnectionFailure );
+        contractExecutionStates.DynamicAddwithOffset("The TAG file was found to be corrupted on its pre-processing scan.", (int)TTAGProcServerProcessResult.tpsprFileReaderCorruptedTAGFileData );
+        contractExecutionStates.DynamicAddwithOffset("OnChooseMachine. Unknown Machine AssetID.", (int)TTAGProcServerProcessResult.tpsprOnChooseMachineUnknownMachine );
+        contractExecutionStates.DynamicAddwithOffset("OnChooseMachine. Invalid TagFile on selecting machine AssetID.", (int)TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidTagFile );
+        contractExecutionStates.DynamicAddwithOffset("OnChooseMachine. Machine Subscriptions Invalid.", (int)TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidSubscriptions );
+        contractExecutionStates.DynamicAddwithOffset("OnChooseMachine. Unable To Determine Machine.", (int)TTAGProcServerProcessResult.tpsprOnChooseMachineUnableToDetermineMachine );
+        contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. Unable To Determine DataModel.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelUnableToDetermineDataModel );
+        contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. Could Not Convert DataModel Boundary To Grid.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelCouldNotConvertDataModelBoundaryToGrid );
+        contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. No GridEpochs Found In TAGFile.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelNoGridEpochsFoundInTAGFile );
+        contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. Supplied DataModel Boundary Contains Insufficeint Vertices.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices );
+        contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. First Epoch Blade Position Does Not Lie Within Project Boundary.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary );
+        contractExecutionStates.DynamicAddwithOffset("OnOverrideEvent. Failed on event's date validation.", (int)TTAGProcServerProcessResult.tpsprFailedEventDateValidation );
+        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. Invalid tag file submission message type.", (int)TTAGProcServerProcessResult.tpsprInvalidTagFileSubmissionMessageType );
+        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. TAG file already exists in data model's processing folder.", (int)TTAGProcServerProcessResult.tpsprTAGFileAlreadyExistsInProcessingFolderForDataModel );
+        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. TAG file already exists in data model's processing archival queue.", (int)TTAGProcServerProcessResult.tpsprTAGFileAlreadyExistsInProcessingArchivalQueueForDataModel );
+        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. Service has been stopped.", (int)TTAGProcServerProcessResult.tpsprServiceStopped );
+        contractExecutionStates.DynamicAddwithOffset("OnOverrideEvent. Failed on target data validation.", (int)TTAGProcServerProcessResult.tpsprFailedValidation );
       }
 
-      public static void AddTagProcessorErrorMessages(ContractExecutionStatesEnum contractExecutionStates, int offset)
+      public static void AddDesignProfileErrorMessages(ContractExecutionStatesEnum contractExecutionStates )
       {
-        contractExecutionStates.DynamicAddwithOffset("Tagfile OK", (int)TTAGProcServerProcessResult.tpsprOK, offset);
-        contractExecutionStates.DynamicAddwithOffset("Tagfile Unknown error", (int)TTAGProcServerProcessResult.tpsprUnknown, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnSubmissionBase. Connection Failure.", (int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnSubmissionVerb. Connection Failure.", (int)TTAGProcServerProcessResult.tpsprOnSubmissionVerbConnectionFailure, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnSubmissionResult. ConnectionFailure.", (int)TTAGProcServerProcessResult.tpsprOnSubmissionResultConnectionFailure, offset);
-        contractExecutionStates.DynamicAddwithOffset("The TAG file was found to be corrupted on its pre-processing scan.", (int)TTAGProcServerProcessResult.tpsprFileReaderCorruptedTAGFileData, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnChooseMachine. Unknown Machine AssetID.", (int)TTAGProcServerProcessResult.tpsprOnChooseMachineUnknownMachine, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnChooseMachine. Invalid TagFile on selecting machine AssetID.", (int)TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidTagFile, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnChooseMachine. Machine Subscriptions Invalid.", (int)TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidSubscriptions, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnChooseMachine. Unable To Determine Machine.", (int)TTAGProcServerProcessResult.tpsprOnChooseMachineUnableToDetermineMachine, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. Unable To Determine DataModel.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelUnableToDetermineDataModel, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. Could Not Convert DataModel Boundary To Grid.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelCouldNotConvertDataModelBoundaryToGrid, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. No GridEpochs Found In TAGFile.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelNoGridEpochsFoundInTAGFile, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. Supplied DataModel Boundary Contains Insufficeint Vertices.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. First Epoch Blade Position Does Not Lie Within Project Boundary.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnOverrideEvent. Failed on event's date validation.", (int)TTAGProcServerProcessResult.tpsprFailedEventDateValidation, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. Invalid tag file submission message type.", (int)TTAGProcServerProcessResult.tpsprInvalidTagFileSubmissionMessageType, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. TAG file already exists in data model's processing folder.", (int)TTAGProcServerProcessResult.tpsprTAGFileAlreadyExistsInProcessingFolderForDataModel, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. TAG file already exists in data model's processing archival queue.", (int)TTAGProcServerProcessResult.tpsprTAGFileAlreadyExistsInProcessingArchivalQueueForDataModel, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. Service has been stopped.", (int)TTAGProcServerProcessResult.tpsprServiceStopped, offset);
-        contractExecutionStates.DynamicAddwithOffset("OnOverrideEvent. Failed on target data validation.", (int)TTAGProcServerProcessResult.tpsprFailedValidation, offset);
-      }
-
-    public static void AddDesignProfileErrorMessages(ContractExecutionStatesEnum contractExecutionStates)
-      {
-        AddDesignProfileErrorMessages(contractExecutionStates, contractExecutionStates.DefaultDynamicOffset);
-      }
-      public static void AddDesignProfileErrorMessages(ContractExecutionStatesEnum contractExecutionStates, int offset)
-      {
-        contractExecutionStates.DynamicAddwithOffset("Design Profiler OK", (int)TDesignProfilerRequestResult.dppiOK, offset);
-        contractExecutionStates.DynamicAddwithOffset("Design Profile Unknown Error", (int)TDesignProfilerRequestResult.dppiUnknownError, offset);
-        contractExecutionStates.DynamicAddwithOffset("Could Not Connect To Server", (int)TDesignProfilerRequestResult.dppiCouldNotConnectToServer, offset);
-        contractExecutionStates.DynamicAddwithOffset("Failed To Convert Client WGS Coords", (int)TDesignProfilerRequestResult.dppiFailedToConvertClientWGSCoords, offset);
-        contractExecutionStates.DynamicAddwithOffset("Failed To Load Design File", (int)TDesignProfilerRequestResult.dppiFailedToLoadDesignFile, offset);
-        contractExecutionStates.DynamicAddwithOffset("Profile Generation Failure", (int)TDesignProfilerRequestResult.dppiProfileGenerationFailure, offset);
-        contractExecutionStates.DynamicAddwithOffset("Failed To Result From Response Verb", (int)TDesignProfilerRequestResult.dppiFailedToResultFromResponseVerb, offset);
-        contractExecutionStates.DynamicAddwithOffset("Unsupported Design Type", (int)TDesignProfilerRequestResult.dppiUnsupportedDesignType, offset);
-        contractExecutionStates.DynamicAddwithOffset("Failed To Save Intermediary Result", (int)TDesignProfilerRequestResult.dppiFailedToSaveIntermediaryResult, offset);
-        contractExecutionStates.DynamicAddwithOffset("Failed To Load Intermediary Result", (int)TDesignProfilerRequestResult.dppiFailedToLoadIntermediaryResult, offset);
-        contractExecutionStates.DynamicAddwithOffset("No Elevations In Requested Patch", (int)TDesignProfilerRequestResult.dppiNoElevationsInRequestedPatch, offset);
-        contractExecutionStates.DynamicAddwithOffset("Service Stopped", (int)TDesignProfilerRequestResult.dppiServiceStopped, offset);
-        contractExecutionStates.DynamicAddwithOffset("Design Does Not Support Subgrid Overlay Index", (int)TDesignProfilerRequestResult.dppiDesignDoesNotSupportSubgridOverlayIndex, offset);
-        contractExecutionStates.DynamicAddwithOffset("Failed To Save Subgrid Overlay Index To Stream", (int)TDesignProfilerRequestResult.dppiFailedToSaveSubgridOverlayIndexToStream, offset);
-        contractExecutionStates.DynamicAddwithOffset("Alignment Contains No Elements", (int)TDesignProfilerRequestResult.dppiAlignmentContainsNoElements, offset);
-        contractExecutionStates.DynamicAddwithOffset("Alignment Contains No Stationing", (int)TDesignProfilerRequestResult.dppiAlignmentContainsNoStationing, offset);
-        contractExecutionStates.DynamicAddwithOffset("Alignment Contains Invalid Stationing", (int)TDesignProfilerRequestResult.dppiAlignmentContainsInvalidStationing, offset);
-        contractExecutionStates.DynamicAddwithOffset("Invalid Station Values", (int)TDesignProfilerRequestResult.dppiInvalidStationValues, offset);
-        contractExecutionStates.DynamicAddwithOffset("No Selected Site Model", (int)TDesignProfilerRequestResult.dppiNoSelectedSiteModel, offset);
-        contractExecutionStates.DynamicAddwithOffset("Failed To Compute Alignment Vertices", (int)TDesignProfilerRequestResult.dppiFailedToComputeAlignmentVertices, offset);
-        contractExecutionStates.DynamicAddwithOffset("Failed To Add Item To Cache", (int)TDesignProfilerRequestResult.dppiFailedToAddItemToCache, offset);
-        contractExecutionStates.DynamicAddwithOffset("Failed To Update Cache", (int)TDesignProfilerRequestResult.dppiFailedToUpdateCache, offset);
-        contractExecutionStates.DynamicAddwithOffset("Failed Get Data Model Spatial Extents", (int)TDesignProfilerRequestResult.dppiFailedGetDataModelSpatialExtents, offset);
-        contractExecutionStates.DynamicAddwithOffset("No Alignments Found", (int)TDesignProfilerRequestResult.dppiNoAlignmentsFound, offset);
-        contractExecutionStates.DynamicAddwithOffset("Invalid Response Code", (int)TDesignProfilerRequestResult.dppiInvalidResponseCode, offset);  
+        contractExecutionStates.DynamicAddwithOffset("Design Profiler OK", (int)TDesignProfilerRequestResult.dppiOK );
+        contractExecutionStates.DynamicAddwithOffset("Design Profile Unknown Error", (int)TDesignProfilerRequestResult.dppiUnknownError );
+        contractExecutionStates.DynamicAddwithOffset("Could Not Connect To Server", (int)TDesignProfilerRequestResult.dppiCouldNotConnectToServer );
+        contractExecutionStates.DynamicAddwithOffset("Failed To Convert Client WGS Coords", (int)TDesignProfilerRequestResult.dppiFailedToConvertClientWGSCoords );
+        contractExecutionStates.DynamicAddwithOffset("Failed To Load Design File", (int)TDesignProfilerRequestResult.dppiFailedToLoadDesignFile );
+        contractExecutionStates.DynamicAddwithOffset("Profile Generation Failure", (int)TDesignProfilerRequestResult.dppiProfileGenerationFailure );
+        contractExecutionStates.DynamicAddwithOffset("Failed To Result From Response Verb", (int)TDesignProfilerRequestResult.dppiFailedToResultFromResponseVerb );
+        contractExecutionStates.DynamicAddwithOffset("Unsupported Design Type", (int)TDesignProfilerRequestResult.dppiUnsupportedDesignType );
+        contractExecutionStates.DynamicAddwithOffset("Failed To Save Intermediary Result", (int)TDesignProfilerRequestResult.dppiFailedToSaveIntermediaryResult );
+        contractExecutionStates.DynamicAddwithOffset("Failed To Load Intermediary Result", (int)TDesignProfilerRequestResult.dppiFailedToLoadIntermediaryResult );
+        contractExecutionStates.DynamicAddwithOffset("No Elevations In Requested Patch", (int)TDesignProfilerRequestResult.dppiNoElevationsInRequestedPatch );
+        contractExecutionStates.DynamicAddwithOffset("Service Stopped", (int)TDesignProfilerRequestResult.dppiServiceStopped );
+        contractExecutionStates.DynamicAddwithOffset("Design Does Not Support Subgrid Overlay Index", (int)TDesignProfilerRequestResult.dppiDesignDoesNotSupportSubgridOverlayIndex );
+        contractExecutionStates.DynamicAddwithOffset("Failed To Save Subgrid Overlay Index To Stream", (int)TDesignProfilerRequestResult.dppiFailedToSaveSubgridOverlayIndexToStream );
+        contractExecutionStates.DynamicAddwithOffset("Alignment Contains No Elements", (int)TDesignProfilerRequestResult.dppiAlignmentContainsNoElements );
+        contractExecutionStates.DynamicAddwithOffset("Alignment Contains No Stationing", (int)TDesignProfilerRequestResult.dppiAlignmentContainsNoStationing );
+        contractExecutionStates.DynamicAddwithOffset("Alignment Contains Invalid Stationing", (int)TDesignProfilerRequestResult.dppiAlignmentContainsInvalidStationing );
+        contractExecutionStates.DynamicAddwithOffset("Invalid Station Values", (int)TDesignProfilerRequestResult.dppiInvalidStationValues );
+        contractExecutionStates.DynamicAddwithOffset("No Selected Site Model", (int)TDesignProfilerRequestResult.dppiNoSelectedSiteModel );
+        contractExecutionStates.DynamicAddwithOffset("Failed To Compute Alignment Vertices", (int)TDesignProfilerRequestResult.dppiFailedToComputeAlignmentVertices );
+        contractExecutionStates.DynamicAddwithOffset("Failed To Add Item To Cache", (int)TDesignProfilerRequestResult.dppiFailedToAddItemToCache );
+        contractExecutionStates.DynamicAddwithOffset("Failed To Update Cache", (int)TDesignProfilerRequestResult.dppiFailedToUpdateCache );
+        contractExecutionStates.DynamicAddwithOffset("Failed Get Data Model Spatial Extents", (int)TDesignProfilerRequestResult.dppiFailedGetDataModelSpatialExtents );
+        contractExecutionStates.DynamicAddwithOffset("No Alignments Found", (int)TDesignProfilerRequestResult.dppiNoAlignmentsFound );
+        contractExecutionStates.DynamicAddwithOffset("Invalid Response Code", (int)TDesignProfilerRequestResult.dppiInvalidResponseCode );  
     }
   }
 }

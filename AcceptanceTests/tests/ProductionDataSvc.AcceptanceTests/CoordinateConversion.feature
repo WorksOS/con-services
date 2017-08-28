@@ -41,4 +41,4 @@ Scenario Outline: CoordinateConversion - Bad Request (Bad LL)
 	Then the response should contain error code <errorCode>
 	Examples: 
 	| httpCode | errorCode |
-	| 400      | -2        |
+	| 400      | -1        |

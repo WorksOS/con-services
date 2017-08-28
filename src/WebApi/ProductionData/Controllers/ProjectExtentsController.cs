@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
-using VSS.Productivity3D.WebApiModels.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
   /// <summary>
   /// 
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class ProjectExtentsController : Controller, IProjectExtentsContract
   {
     /// <summary>
@@ -58,9 +59,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     public ProjectExtentsResult Post([FromBody] ExtentRequest request)
     {
-      return RequestExecutorContainer.Build<ProjectExtentsSubmitter>(logger, raptorClient, null).Process(request) as ProjectExtentsResult;
+      return RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient).Process(request) as ProjectExtentsResult;
     }
-
-
   }
 }
