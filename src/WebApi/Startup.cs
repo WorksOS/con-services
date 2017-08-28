@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.IO;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
