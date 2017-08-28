@@ -8,10 +8,10 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   /// <summary>
   /// The executor which passes the summary pass counts request to Raptor
@@ -26,17 +26,19 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     /// <returns>a PassCountSummaryResult if successful</returns>      
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
-      ExportReport request = item as ExportReport;
+      var request = item as ExportReport;
+      if (request == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+            $"Conversion from {item.GetType()} to {typeof(ExportReport)} failed"));
+      }
 
-
- 
       TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter,
         request.projectId);
-      TDataExport dataexport;
 
       bool success = raptorClient.GetProductionDataExport(request.projectId ?? -1,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid) (request.callId ?? Guid.NewGuid()), 0,
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtProdDataExport),
         request.userPrefs, (int)request.exportType, request.callerId, raptorFilter,
         RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
@@ -44,7 +46,9 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         request.tolerance, request.includeSurveydSurface,
         request.precheckonly, request.filename, request.machineList, (int)request.coordType, (int)request.outputType,
         request.dateFromUTC, request.dateToUTC,
-        request.translations, request.projectExtents, out dataexport);
+        request.translations, request.projectExtents, out TDataExport dataexport);
+
+      ContractExecutionResult result;
 
       if (success)
       {
@@ -58,19 +62,25 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to get requested export data" + ex.Message));
+              "Failed to get requested export data: " + ex.Message));
         }
-
       }
       else
       {
+        if (dataexport.ReturnCode == (int)TASNodeExportStatus.asnesNoData ||
+            dataexport.ReturnCode == (int)TASNodeExportStatus.asnesInvalidDateRange)
+        {
+          throw new ServiceException(HttpStatusCode.NoContent,
+            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults));
+        }
+
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Failed to get requested export data"));
       }
       return result;
     }
-
+    
     private string BuildFilePath(long projectid, string callerid, string filename, bool zipped)
     {
       string prodFolder = configStore.GetValueString("RaptorProductionDataFolder");
