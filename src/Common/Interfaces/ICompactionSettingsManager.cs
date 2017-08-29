@@ -14,10 +14,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn,
       ElevationType? elevationType,
       int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds, DesignDescriptor designDescriptor = null);
-
-    Filter CompactionFilter(string filterUid, string projectUid,
-      IDictionary<string, string> headers);
-
+    
     CMVSettings CompactionCmvSettings(CompactionProjectSettings projectSettings);
 
     MDPSettings CompactionMdpSettings(CompactionProjectSettings projectSettings);

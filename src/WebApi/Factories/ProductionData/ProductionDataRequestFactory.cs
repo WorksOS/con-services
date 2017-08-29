@@ -22,6 +22,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     private IDictionary<string, string> headers;
     private CompactionProjectSettings projectSettings;
     private List<long> _excludedIds;
+    private Filter _filter;
 
     /// <summary>
     /// Default constructor.
@@ -49,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, fileListProxy, settingsManager, _projectId, projectSettings, headers, _excludedIds);
+      obj.Initialize(log, configStore, fileListProxy, settingsManager, _projectId, projectSettings, headers, _excludedIds, _filter);
 
       return obj;
     }
@@ -91,6 +92,16 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     public ProductionDataRequestFactory ExcludedIds(List<long> excludedIds)
     {
       _excludedIds = excludedIds;
+      return this;
+    }
+
+    /// <summary>
+    /// Sets the collection of excluded imported file IDs.
+    /// </summary>
+    /// <param name="filter">Filter model for the raptor query.</param>
+    public ProductionDataRequestFactory Filter(Filter filter)
+    {
+      _filter = filter;
       return this;
     }
   }

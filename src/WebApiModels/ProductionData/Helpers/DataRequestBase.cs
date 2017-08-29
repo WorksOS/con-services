@@ -24,8 +24,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     protected IDictionary<string, string> Headers;
     protected CompactionProjectSettings ProjectSettings;
     protected List<long> ExcludedIds;
+    protected Filter Filter;
 
-    public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, long projectId, CompactionProjectSettings projectSettings, IDictionary<string, string> headers, List<long> excludeIds)
+    public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, long projectId, CompactionProjectSettings projectSettings, IDictionary<string, string> headers, List<long> excludeIds, Filter filter = null)
     {
       Log = log;
       ConfigurationStore = configurationStore;
@@ -36,6 +37,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       Headers = headers;
       ProjectSettings = projectSettings;
       ExcludedIds = excludeIds;
+      Filter = filter;
     }
 
     protected DesignDescriptor GetDescriptor(Guid projectUid, Guid importedFileUid)

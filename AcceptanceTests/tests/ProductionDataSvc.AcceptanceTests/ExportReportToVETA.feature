@@ -55,4 +55,22 @@ Scenario Outline: ExportReportToVETA - Bad Request - NoFileName
 	| RequestName | ProjectUID                           | StartDate  | EndDate    | MachineNames | ErrorCode | ErrorMessage                        |
 	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | All          | -4        | Failed to get requested export data |
 
+Scenario Outline: ExportReportToVETA - No Content with Filter - No Machines
+  And projectUid "<ProjectUID>"
+  And filterUid "<FilterUID>"
+	And startUtc "<StartDate>" and endUtc "<EndDate>"
+	And fileName is "<FileName>"
+	When I request an Export Report To VETA expecting NoContent
+	Examples: 
+	| RequestName | ProjectUID                           | FilterUID                            | StartDate           | EndDate             | FileName |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | 2012-11-05T00:00:00 | 2012-11-06T00:00:00 | Test     |
 
+Scenario Outline: ExportReportToVETA - Good Request with Filter - No Machines
+  And projectUid "<ProjectUID>"
+  And filterUid "<FilterUID>"
+	And startUtc "<StartDate>" and endUtc "<EndDate>"
+	And fileName is "<FileName>"
+	When I request an Export Report To VETA
+	Examples: 
+	| RequestName | ProjectUID                           | FilterUID                            | StartDate           | EndDate             | FileName |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 81422acc-9b0c-401c-9987-0aedbf153f1d | 2012-11-05T00:00:00 | 2012-11-06T00:00:00 | Test     |

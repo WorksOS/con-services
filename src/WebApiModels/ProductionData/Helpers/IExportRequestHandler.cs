@@ -11,7 +11,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
     Task<ExportReport> CreateExportRequest(
       Guid projectUid,
-      Guid? filterUid,
       DateTime? startUtc,
       DateTime? endUtc,
       CoordTypes coordType,

@@ -68,7 +68,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
     public async Task<ExportReport> CreateExportRequest(
       Guid projectUid,
-      Guid? filterUid,
       DateTime? startUtc,
       DateTime? endUtc,
       CoordTypes coordType,
@@ -89,7 +88,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
       var excludedIds = await GetExcludedSurveyedSurfaceIds(FileListProxy, projectUid);
-      var filter = SettingsManager.CompactionFilter(filterUid.ToString(), projectUid.ToString(), Headers);
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
@@ -126,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       return ExportReport.CreateExportReportRequest(
         ProjectId,
         liftSettings,
-        filter,
+        Filter,
         -1,
         null,
         false,

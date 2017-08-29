@@ -42,13 +42,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <param name="filterUid"></param>
     /// <returns>An instance of the CompactionProfileProductionDataRequest class.</returns>
     public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(Guid projectUid,
-      double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees,
-      Guid? filterUid,Guid customerUid, Guid? cutfillDesignUid)
+      double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid? cutfillDesignUid)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
-
-      var filterUidStr = filterUid.HasValue ? filterUid.ToString() : null;
-      var filter = SettingsManager.CompactionFilter(filterUidStr, projectUid.ToString(), Headers);
 
       DesignDescriptor designDescriptor = null;
       if (cutfillDesignUid.HasValue)
@@ -64,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         ProjectId,
         Guid.Empty,
         ProductionDataType.Height,
-        filter,
+        Filter,
         -1,
         null,
         null,

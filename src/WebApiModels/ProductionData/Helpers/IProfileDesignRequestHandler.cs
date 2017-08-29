@@ -8,6 +8,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
   {
     DesignProfileRequestHelper SetRaptorClient(IASNodeClient raptorClient);
 
-    DesignProfileProductionDataRequest CreateDesignProfileRequest(Guid projectUid, double latRadians1, double lngRadians1, double latRadians2, double lngRadians2, Guid customerUid, Guid importedFileUid, Guid? filterUid);
+    DesignProfileProductionDataRequest CreateDesignProfileRequest(Guid projectUid, double latRadians1, double lngRadians1, double latRadians2, double lngRadians2, Guid customerUid, Guid importedFileUid);
   }
 }

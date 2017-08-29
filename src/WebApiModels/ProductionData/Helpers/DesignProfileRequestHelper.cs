@@ -36,19 +36,18 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a design profile.   
     /// </summary>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public DesignProfileProductionDataRequest CreateDesignProfileRequest(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid importedFileUid, Guid? filterUid)
+    public DesignProfileProductionDataRequest CreateDesignProfileRequest(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid importedFileUid)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(
         startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
-
-      var filter = SettingsManager.CompactionFilter(filterUid.ToString(), projectUid.ToString(), Headers);
+      
       var designDescriptor = GetDescriptor(projectUid, importedFileUid);
 
       return DesignProfileProductionDataRequest.CreateProfileProductionData(
         ProjectId,
         importedFileUid,
         ProductionDataType.Height,
-        filter,
+        Filter,
         -1,
         designDescriptor,
         null,
