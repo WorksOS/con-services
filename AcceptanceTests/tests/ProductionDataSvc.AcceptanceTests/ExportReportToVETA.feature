@@ -36,15 +36,14 @@ Scenario Outline: ExportReportToVETA - Bad Request - NoProjectUID
 	| RequestName | StartDate  | EndDate    | MachineNames | FileName | ErrorCode | ErrorMessage        |
 	|             | 2005-01-01 | 2017-06-23 | All          | Test     |  -5       |Missing Project or project does not belong to specified customer or don't have access to the project |
 
-Scenario Outline: ExportReportToVETA - Bad Request - NoDateRange
+Scenario Outline: ExportReportToVETA - No Content - NoDateRange
 	And projectUid "<ProjectUID>"
 	And machineNames "<MachineNames>"
 	And fileName is "<FileName>"
-	When I request an Export Report To VETA expecting BadRequest
-	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
+	When I request an Export Report To VETA expecting NoContent
 	Examples:
 	| RequestName | ProjectUID                           | MachineNames | FileName | ErrorCode | ErrorMessage                        |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | All          | Test     | -4        | Failed to get requested export data |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | All          | Test     |           |                                     |
 
 Scenario Outline: ExportReportToVETA - Bad Request - NoFileName
 	And projectUid "<ProjectUID>"
