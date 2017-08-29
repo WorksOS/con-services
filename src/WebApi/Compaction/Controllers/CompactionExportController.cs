@@ -24,8 +24,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class CompactionExportController : BaseController
   {
-    private const double SURFACE_EXPORT_TOLLERANCE = 0.05;
-
     /// <summary>
     /// Logger for logging
     /// </summary>
@@ -68,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IPreferenceProxy prefProxy) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
-      this.log = logger.CreateLogger<CompactionExportController>();
+      log = logger.CreateLogger<CompactionExportController>();
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.prefProxy = prefProxy;
@@ -92,10 +90,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double? tolerance,
       [FromQuery] Guid? filterUid = null)
     {
+      const double SURFACE_EXPORT_TOLLERANCE = 0.05;
+
       log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
 
       tolerance = tolerance ?? SURFACE_EXPORT_TOLLERANCE;
@@ -110,6 +110,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
           projectUid,
+          filterUid,
           null, //startUtc,
           null, //endUtc,
           CoordTypes.ptNORTHEAST,
@@ -123,7 +124,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return RequestExecutorContainerFactory.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(exportRequest) as ExportResult;
+      return RequestExecutorContainerFactory
+        .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
+        .Process(exportRequest) as ExportResult;
     }
 
     /// <summary>
@@ -150,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetExportReportVeta: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
@@ -161,9 +164,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetRaptorClient(raptorClient)
         .SetPreferencesProxy(prefProxy)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
-
         .CreateExportRequest(
           projectUid,
+          filterUid,
           startUtc,
           endUtc,
           CoordTypes.ptNORTHEAST,
@@ -176,7 +179,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return RequestExecutorContainerFactory.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(exportRequest) as ExportResult;
+      return RequestExecutorContainerFactory
+        .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
+        .Process(exportRequest) as ExportResult;
     }
 
     /// <summary>
@@ -209,7 +214,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
@@ -222,6 +227,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
           projectUid,
+          filterUid,
           startUtc,
           endUtc,
           (CoordTypes)coordType,
@@ -234,7 +240,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return RequestExecutorContainerFactory.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(exportRequest) as ExportResult;
+      return RequestExecutorContainerFactory
+        .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
+        .Process(exportRequest) as ExportResult;
     }
   }
 }

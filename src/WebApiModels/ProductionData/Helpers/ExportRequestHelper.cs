@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using ASNode.ExportProductionDataCSV.RPC;
+using ASNode.UserPreferences;
+using BoundingExtents;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using ASNode.ExportProductionDataCSV.RPC;
-using ASNode.UserPreferences;
-using BoundingExtents;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -17,12 +17,8 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.Utilities;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.Extensions;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
@@ -32,7 +28,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
   /// </summary>
   public class ExportRequestHelper : DataRequestBase, IExportRequestHandler
   {
-    private const string ALL_MACHINES = "All";
     private IASNodeClient RaptorClient;
     private UserPreferenceData userPreferences;
     private ProjectDescriptor projectDescriptor;
@@ -71,7 +66,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a design profile.   
     /// </summary>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public async Task<ExportReport> CreateExportRequest(Guid projectUid,
+    public async Task<ExportReport> CreateExportRequest(
+      Guid projectUid,
+      Guid? filterUid,
       DateTime? startUtc,
       DateTime? endUtc,
       CoordTypes coordType,
@@ -83,30 +80,22 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       string machineNames,
       double tolerance = 0.0)
     {
-      //var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-
-//      var userPref = await userPreferences.GetUserPreferences(Headers);
-
       if (userPreferences == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Pass count settings required for detailed pass count report"));
       }
-  //    var projectSettings = await GetProjectSettings(projectUid);
-      LiftBuildSettings liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
       var excludedIds = await GetExcludedSurveyedSurfaceIds(FileListProxy, projectUid);
-
-      // Filter filter = settingsManager.CompactionFilter(startUtc, endUtc, null, null, null, null, this.GetMachines(assetId, machineName, isJohnDoe), null);
-      Filter filter = SettingsManager.CompactionFilter(null, null, null, null, null, null, null, excludedIds);
+      var filter = SettingsManager.CompactionFilter(filterUid.ToString(), projectUid.ToString(), Headers);
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
 
       if (exportType == ExportTypes.kSurfaceExport)
       {
-
         RaptorClient.GetDataModelExtents(ProjectId,
           RaptorConverters.convertSurveyedSurfaceExlusionList(ExcludedIds), out projectExtents);
       }
@@ -116,15 +105,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
         if (machineDetails != null)
         {
-          //machineDetails = machineDetails.GroupBy(x => x.Name).Select(y => y.Last()).ToArray();
-
-          if (machineNames != null)
+          if (machineNames != null && machineNames != "All")
           {
-            if (machineNames != ALL_MACHINES)
-            {
-              var machineNamesArray = machineNames.Split(',');
-              machineDetails = machineDetails.Where(machineDetail => machineNamesArray.Contains(machineDetail.Name)).ToArray();
-            }
+            var machineNamesArray = machineNames.Split(',');
+            machineDetails = machineDetails.Where(machineDetail => machineNamesArray.Contains(machineDetail.Name)).ToArray();
           }
 
           machineList = machineDetails.Select(m => new TMachine { AssetID = m.ID, MachineName = m.Name, SerialNo = "" }).ToArray();
@@ -132,12 +116,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       }
 
       // Set User Preferences' time zone to the project's one and retriev ...
-//      var projectDescriptor = (User as RaptorPrincipal).GetProject(projectUid);
       userPreferences.Timezone = projectDescriptor.projectTimeZone;
 
       if (!string.IsNullOrEmpty(fileName))
       {
-        // Strip invalid characters from the file name...
         fileName = StripInvalidCharacters(fileName);
       }
 
@@ -221,6 +203,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
       return results;
     }
-
   }
 }
