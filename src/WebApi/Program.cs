@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
-
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.CommandLine;
 #if NET_4_7
 using Microsoft.AspNetCore.Hosting.WindowsServices;
 using System.Diagnostics;
@@ -13,11 +14,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
   {
     public static void Main(string[] args)
     {
-      int port = -1;
-      if (args.Length > 0)
-        if (args[0].Contains("--port:"))
-          port = int.Parse(args[0].Split(':')[1]);
-
+      var config = new ConfigurationBuilder()
+        .AddCommandLine(args)
+        .Build();
 
 #if NET_4_7
       //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
@@ -26,24 +25,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
 
 
       var host = new WebHostBuilder()
+        .UseConfiguration(config)
         .UseKestrel()
         .UseContentRoot(pathToContentRoot)
         .UseIISIntegration()
         .UseStartup<Startup>();
-      if (port > 0)
-        host.UseUrls($"http://0.0.0.0:{port}");
-
       host.Build().RunAsService();
 #else
 
       var host = new WebHostBuilder()
+        .UseConfiguration(config)
         .UseKestrel()
         .UseContentRoot(Directory.GetCurrentDirectory())
         .UseIISIntegration()
         .UseStartup<Startup>();
-      if (port > 0)
-        host.UseUrls($"http://0.0.0.0:{port}");
-
       host.Build().Run();
 #endif
     }
