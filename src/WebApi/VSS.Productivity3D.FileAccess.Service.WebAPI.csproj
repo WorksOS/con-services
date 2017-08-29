@@ -13,6 +13,7 @@
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
     <RootNamespace>VSS.Productivity3D.FileAccess.Service.WebAPI</RootNamespace>
+    <DependsOnNETStandard>netstandard1.6</DependsOnNETStandard>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +40,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.2" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="1.1.2"/>
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">

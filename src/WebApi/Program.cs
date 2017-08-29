@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
-
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.CommandLine;
 #if NET_4_7
 using Microsoft.AspNetCore.Hosting.WindowsServices;
 using System.Diagnostics;
@@ -13,6 +14,11 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
     {
         public static void Main(string[] args)
         {
+
+          var config = new ConfigurationBuilder()
+            .AddCommandLine(args)
+            .Build();
+
 #if NET_4_7
       //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
@@ -20,6 +26,7 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
 
 
       var host = new WebHostBuilder()
+        .UseConfiguration(config)
         .UseKestrel()
         .UseContentRoot(pathToContentRoot)
         .UseIISIntegration()
@@ -30,6 +37,7 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
 #else
 
             var host = new WebHostBuilder()
+                .UseConfiguration(config)
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
@@ -38,6 +46,6 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
 
             host.Run();
 #endif
-        }
     }
+  }
 }

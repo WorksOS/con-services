@@ -10,6 +10,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.FileAccess.Service.WebAPI.Models</RootNamespace>
+    <DependsOnNETStandard>netstandard1.6</DependsOnNETStandard>
   </PropertyGroup>
 
   <ItemGroup>
