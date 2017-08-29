@@ -81,8 +81,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
       try
       {
+        filterRequest.filterUid = Guid.NewGuid().ToString();
         var filterEvent = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
-        filterEvent.FilterUID = Guid.NewGuid();
         filterEvent.ActionUTC = DateTime.UtcNow;
         var createdCount = await filterRepo.StoreEvent(filterEvent).ConfigureAwait(false);
         if (createdCount == 0)
