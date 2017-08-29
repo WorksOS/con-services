@@ -18,8 +18,7 @@
     },
     "MockProjectWebApi": {
       "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "http://localhost:5001/api/values",
+      "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

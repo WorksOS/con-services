@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
+using System;
+using System.Collections.Generic;
+using System.Web.Http;
 using VSS.MasterData.Models.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -41,7 +40,7 @@ namespace MockProjectWebApi.Controllers
     {
       new FilterData
       {
-        filterDescriptor = new FilterDescriptor()
+        filterDescriptor = new FilterDescriptor
         {
           FilterUid = "3d9086f2-3c04-4d92-9141-5134932b1523",
           Name = "Filter 1",
@@ -50,7 +49,7 @@ namespace MockProjectWebApi.Controllers
       },
       new FilterData
       {
-        filterDescriptor = new FilterDescriptor()
+        filterDescriptor = new FilterDescriptor
         {
           FilterUid = "81422acc-9b0c-401c-9987-0aedbf153f1d",
           Name = "Filter 2",
@@ -59,13 +58,31 @@ namespace MockProjectWebApi.Controllers
       },
       new FilterData
       {
-        filterDescriptor = new FilterDescriptor()
+        filterDescriptor = new FilterDescriptor
         {
           FilterUid = "1cf81668-1739-42d5-b068-ea025588796a",
           Name = "Filter 3",
           FilterJson = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"ea97efb9-c0c4-4a7f-9eee-e2b0ef0b0916\",\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
         }
+      },
+      new FilterData
+      {
+        filterDescriptor = new FilterDescriptor
+        {
+          FilterUid = "d15e65e0-3cb1-476f-8fc6-08507a14a269",
+          Name = "Filter 4",
+          FilterJson = "{\"startUTC\":\"2012-11-05\",\"endUTC\":\"2012-11-06\",\"designUid\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
+        }
+      },
+      new FilterData
+      {
+        filterDescriptor = new FilterDescriptor
+        {
+          FilterUid = "d7cb424d-b012-4618-b3bc-e526ca84bbd6",
+          Name = "Filter 5",
+          FilterJson = "{\"startUTC\":\"2017-11-05\",\"endUTC\":\"2017-11-06\",\"designUid\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
+        }
       }
     };
- }
+  }
 }
