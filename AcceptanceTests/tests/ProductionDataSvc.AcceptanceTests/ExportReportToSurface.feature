@@ -40,3 +40,14 @@ Scenario Outline: ExportReportToSurface - Bad Request - NoFileName
 	Examples:
 	| RequestName | ProjectUID                           | Tolerance | ErrorCode | ErrorMessage                        |
 	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 0.05      | -4        | Failed to get requested export data |
+
+Scenario Outline: ExportReportToSurface - Good Request with Filter
+  And projectUid "<ProjectUID>"
+  And tolerance "<Tolerance>"
+	And filterUid "<FilterUID>"
+  And fileName is "<FileName>"
+	When I request an Export Report To Surface
+	Then the export result should successful
+	Examples:
+| RequestName | ProjectUID                           | FilterUID                             | Tolerance | FileName              |
+|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d7cb424d-b012-4618-b3bc-e526ca84bbd6  | 0.05      | SurfanceWithTolerance |

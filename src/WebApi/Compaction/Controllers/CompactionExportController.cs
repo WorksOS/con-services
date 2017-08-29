@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] double? tolerance,
-      [FromQuery] Guid? filterUid = null)
+      [FromQuery] Guid? filterUid)
     {
       const double SURFACE_EXPORT_TOLLERANCE = 0.05;
 
@@ -97,6 +97,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = GetProjectId(projectUid);
       var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
       tolerance = tolerance ?? SURFACE_EXPORT_TOLLERANCE;
 
@@ -104,13 +105,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectId(projectId)
           .Headers(customHeaders)
           .ExcludedIds(excludedIds)
-          .ProjectSettings(projectSettings))
+          .ProjectSettings(projectSettings)
+          .Filter(filter))
         .SetPreferencesProxy(prefProxy)
         .SetRaptorClient(raptorClient)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
           projectUid,
-          filterUid,
           null, //startUtc,
           null, //endUtc,
           CoordTypes.ptNORTHEAST,
@@ -148,25 +149,26 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] DateTime? endUtc,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
-      [FromQuery] Guid? filterUid = null)
+      [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetExportReportVeta: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
       var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
           .ExcludedIds(excludedIds)
-          .ProjectSettings(projectSettings))
+          .ProjectSettings(projectSettings)
+          .Filter(filter))
         .SetRaptorClient(raptorClient)
         .SetPreferencesProxy(prefProxy)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
           projectUid,
-          filterUid,
           startUtc,
           endUtc,
           CoordTypes.ptNORTHEAST,
@@ -209,25 +211,26 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] bool restrictOutput,
       [FromQuery] bool rawDataOutput,
       [FromQuery] string fileName,
-      [FromQuery] Guid? filterUid = null)
+      [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
       var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
           .ExcludedIds(excludedIds)
-          .ProjectSettings(projectSettings))
+          .ProjectSettings(projectSettings)
+          .Filter(filter))
         .SetPreferencesProxy(prefProxy)
         .SetRaptorClient(raptorClient)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
           projectUid,
-          filterUid,
           startUtc,
           endUtc,
           (CoordTypes)coordType,

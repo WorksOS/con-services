@@ -103,15 +103,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var settings = CompactionProjectSettings.FromString(
         await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders));
       var exludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
       //Get production data profile
       var slicerProductionDataProfileRequest = requestFactory.Create<ProductionDataProfileRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
           .ProjectSettings(settings)
-          .ExcludedIds(exludedIds))
+          .ExcludedIds(exludedIds)
+          .Filter(filter))
           .CreateProductionDataProfileRequest(
-            projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, filterUid, customerUid, cutfillDesignUid);
+            projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, cutfillDesignUid);
 
       slicerProductionDataProfileRequest.Validate();
 
@@ -129,9 +131,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             .Headers(customHeaders)
             .ProjectSettings(settings)
             .ExcludedIds(exludedIds))
-            .SetRaptorClient(raptorClient)
             .CreateDesignProfileRequest(
-              projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, cutfillDesignUid.Value, filterUid);
+              projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, cutfillDesignUid.Value);
 
         slicerDesignProfileRequest.Validate();
 
@@ -165,15 +166,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetProfileDesignSlicer: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
       var profileRequest = requestFactory.Create<DesignProfileRequestHelper>(async r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
           .ProjectSettings(CompactionProjectSettings.FromString(
             await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders)))
-          .ExcludedIds(await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid)))
-        .SetRaptorClient(raptorClient)
-        .CreateDesignProfileRequest(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, importedFileUid, filterUid);
+          .ExcludedIds(await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid))
+          .Filter(filter))
+        .CreateDesignProfileRequest(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, importedFileUid);
 
       profileRequest.Validate();
 
