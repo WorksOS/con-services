@@ -118,11 +118,8 @@ namespace VSS.Productivity3D.WebApi
 
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
-      //Enable TID here
 
       app.UseFilterMiddleware<TIDAuthentication>();
-
-      //Enable response compression
       app.UseResponseCompression();
 
       app.UseResponseCaching();

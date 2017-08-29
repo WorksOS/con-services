@@ -12,9 +12,9 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
-using VSS.Productivity3D.WebApiModels.Report.Executors;
+using VSS.Productivity3D.WebApi.Models.Report.Executors;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
