@@ -19,6 +19,8 @@
     <ApplicationIcon />
     <OutputTypeEx>library</OutputTypeEx>
     <StartupObject />
+    <DependsOnNETStandard>netstandard1.6</DependsOnNETStandard>
+
   </PropertyGroup>
 
   <ItemGroup>

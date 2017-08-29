@@ -10,9 +10,15 @@ using System.Diagnostics;
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
   public class Program
+  {
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
+      int port = -1;
+      if (args.Length > 0)
+        if (args[0].Contains("--port:"))
+          port = int.Parse(args[0].Split(':')[1]);
+
+
 #if NET_4_7
       //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
@@ -23,21 +29,23 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .UseKestrel()
         .UseContentRoot(pathToContentRoot)
         .UseIISIntegration()
-        .UseStartup<Startup>()
-        .Build();
+        .UseStartup<Startup>();
+      if (port > 0)
+        host.UseUrls($"http://0.0.0.0:{port}");
 
-      host.RunAsService();
+      host.Build().RunAsService();
 #else
 
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();
+      var host = new WebHostBuilder()
+        .UseKestrel()
+        .UseContentRoot(Directory.GetCurrentDirectory())
+        .UseIISIntegration()
+        .UseStartup<Startup>();
+      if (port > 0)
+        host.UseUrls($"http://0.0.0.0:{port}");
 
-            host.Run();
+      host.Build().Run();
 #endif
-        }
     }
+  }
 }
