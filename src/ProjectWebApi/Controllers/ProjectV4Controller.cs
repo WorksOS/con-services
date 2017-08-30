@@ -560,7 +560,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           // this is only called from a Create, so no need to consider Update
           await DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID).ConfigureAwait(false);
 
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "subsProxy.AssociateProjectSubscriptionInSubscriptionService", e.Message);
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "ubscriptionProxy.AssociateProjectSubscriptionInSubscriptionService", e.Message);
         }
       }
     }

@@ -52,7 +52,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
               var fixedGeometry = DbGeometry.FromText(wktText);
               if (fixedGeometry.IsValid)
               {
-                Log.Info("Removed the Last Point in  GeometryWKT as it was duplicated");
+                log.Info("Removed the Last Point in  GeometryWKT as it was duplicated");
                 return wktText;
               }
               else
@@ -64,18 +64,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
                 var adjustedFixedGeometry = DbGeometry.FromText(adjustedWktText);
                 if (adjustedFixedGeometry.IsValid)
                 {
-                  Log.Info("Removed the All the Consecutive Point in  GeometryWKT");
+                  log.Info("Removed the All the Consecutive Point in  GeometryWKT");
                   return adjustedWktText;
                 }
               }
             }
           }
-          Log.Info("Not a valid GeometryWKT");
+          log.Info("Not a valid GeometryWKT");
           return null;
         }
         catch
         {
-          Log.Info("Not a valid GeometryWKT");
+          log.Info("Not a valid GeometryWKT");
           return null;
         }
             */

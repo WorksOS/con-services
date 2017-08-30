@@ -25,7 +25,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected IRaptorProxy raptorProxy;
 
     /// <summary>
-    /// The configuration store for module meta data.
+    /// The configuration configStore for module meta data.
     /// </summary>
     protected IConfigurationStore configStore;
 

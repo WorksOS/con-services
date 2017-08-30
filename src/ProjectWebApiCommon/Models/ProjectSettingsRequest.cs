@@ -1,17 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net;
+using Newtonsoft.Json;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
-  public class ProjectSettingsRequest
+  public class ProjectSettingsRequest : ProjectUID
   {
     /// <summary>
-    /// The id of the projectUid whose settings are to be upserted
-    /// </summary>
-    [JsonProperty(PropertyName = "projectUid", Required = Required.Always)]
-    public string projectUid { get; set; }
-
-    /// <summary>
-    /// The settings to be upserted
+    /// The settings to be CRUD
     /// </summary>
     [JsonProperty(PropertyName = "settings", Required = Required.Always)]
     public string settings { get; set; }
@@ -33,6 +29,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
         projectUid = projectUid,
         settings = settings
       };
+    }
+
+    public void Validate()
+    {
+      // todo
+      if (settings == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Settings cannot be null"));
+      }
+
     }
   }
 }

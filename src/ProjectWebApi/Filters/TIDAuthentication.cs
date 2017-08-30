@@ -35,7 +35,7 @@ namespace VSS.MasterData.Project.WebAPI.Filters
     /// </summary>
     /// <param name="next">The next.</param>
     /// <param name="customerProxy">The customer proxy.</param>
-    /// <param name="store">The store.</param>
+    /// <param name="store">The configStore.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler"></param>
     public TIDAuthentication(RequestDelegate next,

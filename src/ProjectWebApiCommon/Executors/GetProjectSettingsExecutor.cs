@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
@@ -18,7 +18,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    public GetProjectSettingsExecutor(IProjectRepository projectRepo, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : base(projectRepo, configStore, logger, serviceExceptionHandler, producer)
+    public GetProjectSettingsExecutor(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, ClaimsPrincipal user, IProjectRepository projectRepo)
     {
     }
 
@@ -29,10 +29,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException();
-    }
+    //protected override ContractExecutionResult ProcessEx<T>(T item)
+    //{
+    //  throw new NotImplementedException();
+    //}
 
     /// <summary>
     /// Processes the GetProjectSettings request
@@ -46,7 +46,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       try
       {
         string projectUid = item as string;
-
+      
         var projectSettings = await projectRepo.GetProjectSettings(projectUid).ConfigureAwait(false);
         result = ProjectSettingsResult.CreateProjectSettingsResult(projectUid, projectSettings?.Settings);
       }

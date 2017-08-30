@@ -6,10 +6,11 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
-using VSS.MasterData.Project.WebAPI.Filters;
+using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies;
 using VSS.MasterDataProxies.Interfaces;
@@ -20,26 +21,52 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// <summary>
   /// Project Settings controller, version 4.
   /// </summary>
-  public class ProjectSettingsV4Controller : ProjectSettingsBaseController
+  public class ProjectSettingsV4Controller : BaseController
   {
+    /// <summary>
+    /// Logger for logging
+    /// </summary>
     private readonly ILogger log;
+
+    /// <summary>
+    /// Logger factory for use by executor
+    /// </summary>
+    private readonly ILoggerFactory logger;
+
+    //private readonly IConfigurationStore configStore;
+
+    /// <summary>
+    /// The request factory
+    /// </summary>
+    private readonly IRequestFactory requestFactory;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
+    /// <param name="subscriptionProxy"></param>
     /// <param name="projectRepo">The MasterData ProjectRepository persistent storage interface</param>
+    /// <param name="geofenceProxy"></param>
     /// <param name="raptorProxy">The Raptor Proxy refernce</param>
-    /// <param name="configStore">ConfigurationStore for module meta data</param>
+    /// <param name="configStore">configStore for module meta data</param>
     /// <param name="logger">The ILoggerFactory logging implementation</param>
     /// <param name="serviceExceptionHandler">The service exception handler</param>
     /// <param name="producer">The Kafka consumer</param>
-    public ProjectSettingsV4Controller(IRepository<IProjectEvent> projectRepo, IRaptorProxy raptorProxy,
-      IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IKafka producer)
-      : base(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, producer)
+    /// <param name="subscriptionsRepo"></param>
+    /// <param name="requestFactory"></param>
+    public ProjectSettingsV4Controller(ILoggerFactory logger, IConfigurationStore configStore, 
+      IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
+      IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo,
+      IRequestFactory requestFactory
+      )
+      : base(logger, configStore, serviceExceptionHandler, producer, 
+          geofenceProxy, raptorProxy, subscriptionProxy,
+          projectRepo, subscriptionsRepo)
     {
-      log = logger.CreateLogger<ProjectSettingsV4Controller>(); 
-      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      this.logger = logger;
+      log = logger.CreateLogger<ProjectSettingsV4Controller>();
+      //configStore = configStore;
+      this.requestFactory = requestFactory;
     }
 
 
@@ -54,15 +81,22 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       if (string.IsNullOrEmpty(projectUid))
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
-      LogCustomerDetails("UpsertProjectSettings", projectUid);
+      LogCustomerDetails("GetProjectSettings", projectUid);
 
-      await ProjectSettingsValidation.ValidateProjectId(projectRepo, log, serviceExceptionHandler, (User as TIDCustomPrincipal).CustomerUid, projectUid);
+      var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+          .Headers(customHeaders))
+        .CreateProjectSettingsRequest(projectUid, null);
 
-      var executor = RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer);
-      var result = await executor.ProcessAsync(projectUid);
+      projectSettingsRequest.Validate();
+      // should this go into the executor now, somehow? .. 
+      await ProjectSettingsValidation.ValidateProjectWithCustomer(projectRepo, log, serviceExceptionHandler, customerUid, projectUid);
+
+      var executor = RequestExecutorContainerFactory
+          .Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, projectRepo);
+      var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
       log.LogResult(this.ToString(), projectUid, result);
-      return result as ProjectSettingsResult;
+      return result;
     }
 
 
@@ -79,22 +113,24 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       LogCustomerDetails("UpsertProjectSettings", request?.projectUid);
       log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
 
-      await ProjectSettingsValidation.ValidateProjectId(projectRepo, log, serviceExceptionHandler, (User as TIDCustomPrincipal).CustomerUid, request.projectUid);
-      await ProjectSettingsValidation.RaptorValidateProjectSettings(raptorProxy, log, serviceExceptionHandler, request, Request.Headers.GetCustomHeaders());
+      var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+            .Headers(customHeaders))
+          .CreateProjectSettingsRequest(request.projectUid, request.settings);
 
-      var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer, kafkaTopicName);
+      projectSettingsRequest.Validate();
+      // should this go into the executor now, somehow? .. 
+      await ProjectSettingsValidation.ValidateProjectWithCustomer(projectRepo, log, serviceExceptionHandler, customerUid, request.projectUid);
+      await ProjectSettingsValidation.RaptorValidateProjectSettings(raptorProxy, log, serviceExceptionHandler,
+        projectSettingsRequest, customHeaders);
+
+      string kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
+                              configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+
+      var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, projectRepo, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
       log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
       return result as ProjectSettingsResult;
-    }
-
-    private string LogCustomerDetails(string functionName, string projectUid)
-    {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation($"{functionName}: CustomerUID={customerUid} and projectUid={projectUid}");
-
-      return customerUid;
     }
   }
 }

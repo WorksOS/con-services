@@ -65,7 +65,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <param name="producer">The producer.</param>
     /// <param name="projectRepo">The project repo.</param>
-    /// <param name="store">The store.</param>
+    /// <param name="store">The configStore.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="fileRepo">For TCC file transfer</param>

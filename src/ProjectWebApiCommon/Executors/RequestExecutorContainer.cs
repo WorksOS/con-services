@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -19,19 +22,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   public abstract class RequestExecutorContainer
   {
     /// <summary>
-    /// Repository factory used in ProcessEx
+    /// Logger for logging
     /// </summary>
-    protected IProjectRepository projectRepo;
-
+    protected ILogger log;
+    
     /// <summary>
     /// Configuration items
     /// </summary>
     protected IConfigurationStore configStore;
-
-    /// <summary>
-    /// Logger for logging
-    /// </summary>
-    protected ILogger log;
 
     /// <summary>
     /// handle exceptions
@@ -48,8 +46,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     protected string kafkaTopicName;
 
+    /// <summary>
+    /// Repository factory used in ProcessEx
+    /// </summary>
+    protected IProjectRepository projectRepo;
 
-
+    
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
     /// </summary>
@@ -66,13 +68,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       return result;
     }
 
-    /// <summary>
-    /// Processes the specified item. This is the main method to execute real action.
-    /// </summary>
-    /// <typeparam name="T">>Generic type which should be</typeparam>
-    /// <param name="item">>The item.</param>
-    /// <returns></returns>
-    protected abstract ContractExecutionResult ProcessEx<T>(T item);
+    ///// <summary>
+    ///// Processes the specified item. This is the main method to execute real action.
+    ///// </summary>
+    ///// <typeparam name="T">>Generic type which should be</typeparam>
+    ///// <param name="item">>The item.</param>
+    ///// <returns></returns>
+    //protected abstract ContractExecutionResult ProcessEx<T>(T item);
 
     /// <summary>
     /// 
@@ -86,20 +88,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Missing asynchronous executor process method override"));
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="item"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    /// <exception cref="ServiceException"></exception>
-    public ContractExecutionResult Process<T>(T item)
-    {
-      if (item == null)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
-      return ProcessEx(item);
-    }
+    ///// <summary>
+    ///// 
+    ///// </summary>
+    ///// <param name="item"></param>
+    ///// <typeparam name="T"></typeparam>
+    ///// <returns></returns>
+    ///// <exception cref="ServiceException"></exception>
+    //public ContractExecutionResult Process<T>(T item)
+    //{
+    //  if (item == null)
+    //    throw new ServiceException(HttpStatusCode.BadRequest,
+    //      new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
+    //  return ProcessEx(item);
+    //}
 
     public async Task<ContractExecutionResult> ProcessAsync<T>(T item)
     {
@@ -135,16 +137,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    protected RequestExecutorContainer(IProjectRepository projectRepo, IConfigurationStore configStore,  ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : this()
+    public void Initialise(ILogger logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo, IKafka producer = null, string kafkaTopicName = null)
     {
-      this.projectRepo = projectRepo;
+      log = logger;
       this.configStore = configStore;
-      if (logger != null)
-        log = logger.CreateLogger<RequestExecutorContainer>();
       this.serviceExceptionHandler = serviceExceptionHandler;
+      this.projectRepo = projectRepo;
       this.producer = producer;
-      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                       configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      this.kafkaTopicName = kafkaTopicName;
     }
 
     /// <summary>
@@ -160,11 +160,30 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(IProjectRepository projectRepo, IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IKafka producer, string kafkaTopicName = null)
+    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo, IKafka producer = null, string kafkaTopicName = null)
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { projectRepo = projectRepo, configStore = configStore, log = logger.CreateLogger<TExecutor>(), serviceExceptionHandler = serviceExceptionHandler, producer = producer, kafkaTopicName = kafkaTopicName};
+      var executor = new TExecutor() { log = logger.CreateLogger<TExecutor>(), configStore = configStore, serviceExceptionHandler = serviceExceptionHandler, projectRepo = projectRepo, producer  = producer, kafkaTopicName = kafkaTopicName };
       return executor;
+    }
+
+
+    /// <summary>
+    /// Validates a project identifier.
+    /// </summary>
+    /// <param name="customerUid"></param>
+    /// <param name="projectUid">The project uid.</param>
+    /// <returns></returns>
+    public async Task ValidateProjectWithCustomer(string customerUid, string projectUid)
+    {
+      var project = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
+
+      if (project == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
+      }
+
+      log.LogInformation($"projectUid {projectUid} validated");
     }
 
   }

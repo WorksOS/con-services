@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,9 +33,8 @@ namespace VSS.MasterData.ProjectTests
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
 
-      var executor = RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo.Object, configStore, logger, serviceExceptionHandler, producer.Object );
+      var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, projectRepo.Object );
       var result = await executor.ProcessAsync(projectUid) as ProjectSettingsResult;
 
       Assert.IsNotNull(result, "executor failed");
@@ -55,9 +55,8 @@ namespace VSS.MasterData.ProjectTests
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
 
-      var executor = RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo.Object, configStore, logger, serviceExceptionHandler, producer.Object);
+      var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, projectRepo.Object );
       var result = await executor.ProcessAsync(projectUid) as ProjectSettingsResult;
 
       Assert.IsNotNull(result, "executor failed");
@@ -80,8 +79,10 @@ namespace VSS.MasterData.ProjectTests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
+      string kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
+                              configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
-      var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo.Object, configStore, logger, serviceExceptionHandler, producer.Object, kafkaTopicName);
+      var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, projectRepo.Object, producer.Object, kafkaTopicName);
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 

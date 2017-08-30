@@ -22,7 +22,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    public UpsertProjectSettingsExecutor(IProjectRepository projectRepo, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : base(projectRepo, configStore, logger, serviceExceptionHandler, producer)
+    public UpsertProjectSettingsExecutor(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo, IKafka producer, string kafkaTopicName) 
     {
     }
 
@@ -33,10 +33,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new System.NotImplementedException();
-    }
+    //protected override ContractExecutionResult ProcessEx<T>(T item)
+    //{
+    //  throw new System.NotImplementedException();
+    //}
 
     /// <summary>
     /// Processes the UpsertProjectSettings request
@@ -63,7 +63,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       try
       {
-        var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectSettingsEvent = upsertProjectSettingsEvent});
+        var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectSettingsEvent = upsertProjectSettingsEvent });
         producer.Send(kafkaTopicName,
           new List<KeyValuePair<string, string>>
           {
@@ -90,6 +90,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected override void ProcessErrorCodes()
     {
     }
-    
+
   }
 }
