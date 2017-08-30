@@ -78,11 +78,11 @@ namespace ProductionDataSvc.AcceptanceTests
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionTagFile - Good Request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionTagFile - Bad Request - Returns Failed to process tagfile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTagFile")]
-        public virtual void CompactionTagFile_GoodRequest()
+        public virtual void CompactionTagFile_BadRequest_ReturnsFailedToProcessTagfile()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CompactionTagFile - Good Request", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CompactionTagFile - Bad Request - Returns Failed to process tagfile", ((string[])(null)));
 #line 7
 this.ScenarioSetup(scenarioInfo);
 #line 4
