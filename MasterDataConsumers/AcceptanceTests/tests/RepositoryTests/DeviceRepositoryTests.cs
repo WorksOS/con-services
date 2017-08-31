@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RepositoryTests.Internal;
 using System;
+using System.Threading;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
@@ -38,7 +39,14 @@ namespace RepositoryTests
         DeviceSerialNumber = "Device radio serial",
         DeviceType = "SNM940",
         DeviceState = "active",
-        ActionUTC = firstCreatedUTC
+        DeregisteredUTC = firstCreatedUTC,
+        ModuleType = "theModule Type",
+        MainboardSoftwareVersion = "mb45",
+        RadioFirmwarePartNumber = "rd 567",
+        GatewayFirmwarePartNumber = "them or us",
+        DataLinkType = "CAT",
+        ActionUTC = firstCreatedUTC,
+        ReceivedUTC = firstCreatedUTC
       };
 
       var device = new Device
@@ -47,6 +55,13 @@ namespace RepositoryTests
         DeviceSerialNumber = deviceEvent.DeviceSerialNumber,
         DeviceType = deviceEvent.DeviceType,
         DeviceState = deviceEvent.DeviceState,
+        DeregisteredUTC = deviceEvent.DeregisteredUTC,
+        ModuleType = deviceEvent.ModuleType,
+        MainboardSoftwareVersion = deviceEvent.MainboardSoftwareVersion,
+        RadioFirmwarePartNumber = deviceEvent.RadioFirmwarePartNumber,
+        GatewayFirmwarePartNumber = deviceEvent.GatewayFirmwarePartNumber,
+        DataLinkType = deviceEvent.DataLinkType,
+        OwningCustomerUID = null,
         LastActionedUtc = deviceEvent.ActionUTC
       };
 
@@ -77,11 +92,17 @@ namespace RepositoryTests
       var deviceEventCreate = new CreateDeviceEvent()
       {
         DeviceUID = Guid.NewGuid(),
-        DeviceSerialNumber = "A radio serial",
-        DeviceType = "PL121",
+        DeviceSerialNumber = "Device radio serial",
+        DeviceType = "SNM940",
         DeviceState = "active",
-        ModuleType = "whatIsModuleType",
-        ActionUTC = firstCreatedUTC
+        DeregisteredUTC = firstCreatedUTC,
+        ModuleType = "theModule Type",
+        MainboardSoftwareVersion = "mb45",
+        RadioFirmwarePartNumber = "rd 567",
+        GatewayFirmwarePartNumber = "them or us",
+        DataLinkType = "CAT",
+        ActionUTC = firstCreatedUTC,
+        ReceivedUTC = firstCreatedUTC
       };
 
       var deviceEventUpdate = new UpdateDeviceEvent()
@@ -90,7 +111,13 @@ namespace RepositoryTests
         DeviceSerialNumber = "A radio serial changed",
         DeviceType = "PL221",
         DeviceState = "active still",
+        DeregisteredUTC = firstCreatedUTC.AddDays(-1),
         ModuleType = "moduleTypeUpdated",
+        MainboardSoftwareVersion = "mb45 changed",
+        RadioFirmwarePartNumber = "rd 567 changed",
+        GatewayFirmwarePartNumber = "them or us changed",
+        DataLinkType = "CAT changed",
+        OwningCustomerUID = Guid.NewGuid(),
         ActionUTC = firstCreatedUTC.AddMinutes(10)
       };
 
@@ -100,7 +127,13 @@ namespace RepositoryTests
         DeviceSerialNumber = deviceEventUpdate.DeviceSerialNumber,
         DeviceType = deviceEventUpdate.DeviceType,
         DeviceState = deviceEventUpdate.DeviceState,
+        DeregisteredUTC = deviceEventUpdate.DeregisteredUTC,
         ModuleType = deviceEventUpdate.ModuleType,
+        MainboardSoftwareVersion = deviceEventUpdate.MainboardSoftwareVersion,
+        RadioFirmwarePartNumber = deviceEventUpdate.RadioFirmwarePartNumber,
+        GatewayFirmwarePartNumber = deviceEventUpdate.GatewayFirmwarePartNumber,
+        DataLinkType = deviceEventUpdate.DataLinkType,
+        OwningCustomerUID = deviceEventUpdate.OwningCustomerUID.ToString(),
         LastActionedUtc = deviceEventUpdate.ActionUTC
       };
 

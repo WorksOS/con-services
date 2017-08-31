@@ -17,7 +17,7 @@ namespace VSS.MasterData.Repositories.DBModels
         public string DataLinkType { get; set; }
 
         // apparently this owner is different to the asset ownerCustomerUID
-        public Guid? OwningCustomerUID { get; set; }
+        public string OwningCustomerUID { get; set; }
 
         public DateTime? LastActionedUtc { get; set; }
 
