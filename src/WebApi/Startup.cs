@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Extensions;
@@ -90,8 +93,22 @@ namespace VSS.Productivity3D.WebApi
           TermsOfService = "None"
         });
 
-        var path = isDevEnv ? "bin/Debug/net47/" : string.Empty;
-        options.IncludeXmlComments(path + "VSS.Productivity3D.WebApi.xml");
+        string pathToXml;
+
+        var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
+        var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
+
+        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
+          pathToXml = Directory.GetCurrentDirectory();
+        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, assemblyName + ".xml")))
+          pathToXml = System.AppContext.BaseDirectory;
+        else
+        {
+          var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+          pathToXml = Path.GetDirectoryName(pathToExe);
+        }
+        options.IncludeXmlComments(Path.Combine(pathToXml, assemblyName + ".xml"));
+
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
