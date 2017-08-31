@@ -1,20 +1,17 @@
 ﻿using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
-
   public class ExportResult : ContractExecutionResult
   {
+    public byte[] ExportData { get; private set; }
+    public short ResultCode { get; private set; }
+
     /// <summary>
     /// Private constructor
     /// </summary>
     private ExportResult()
     { }
-
-
-    public byte[] ExportData { get; private set; }
-    public short ResultCode { get; private set; }
 
     /// <summary>
     /// Create instance of TileResult
@@ -31,14 +28,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     /// <summary>
     /// Create example instance of TileResult to display in Help documentation.
     /// </summary>
-    public static ExportResult HelpSample
-    {
-      get
-      {
-        return new ExportResult
-        {
-               };
-      }
-    }
+    public static ExportResult HelpSample => new ExportResult();
   }
 }
