@@ -13,6 +13,7 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies;
@@ -85,6 +86,11 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+
+      services.AddScoped<IRequestFactory, RequestFactory>();
+      services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddScoped<IRepository<IProjectEvent>, ProjectRepository>();
+
       services.AddMemoryCache();
 
       var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");

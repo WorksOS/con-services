@@ -5,6 +5,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Repositories;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Factories
 {
@@ -15,8 +16,10 @@ namespace VSS.MasterData.Project.WebAPI.Factories
   {
     private readonly ILogger log;
     private readonly IConfigurationStore configStore;
-    private readonly ServiceExceptionHandler serviceExceptionHandler;
     private IDictionary<string, string> headers;
+    private string customerUid;
+    private string userId;
+    private string userEmailAddress;
     private ProjectRepository projectRepo;
 
     /// <summary>
@@ -24,13 +27,13 @@ namespace VSS.MasterData.Project.WebAPI.Factories
     /// </summary>
     /// <param name="logger">ILoggerFactory service implementation</param>
     /// <param name="configStore">IConfigurationStore service implementation</param>
-    public RequestFactory(ILoggerFactory logger, IConfigurationStore configStore, ServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> headers, ProjectRepository projectRepo)
+    /// <param name="projectRepo"></param>
+    public RequestFactory(ILoggerFactory logger, IConfigurationStore configStore,
+      IRepository<IProjectEvent> projectRepo)
     {
       log = logger.CreateLogger<ProjectSettingsRequestHelper>();
       this.configStore = configStore;
-      this.serviceExceptionHandler = serviceExceptionHandler;
-      this.headers = headers;
-      this.projectRepo = projectRepo;
+      this.projectRepo = projectRepo as ProjectRepository;
     }
 
     /// <summary>
@@ -43,7 +46,7 @@ namespace VSS.MasterData.Project.WebAPI.Factories
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, serviceExceptionHandler, headers, projectRepo);
+      obj.Initialize(log, configStore, projectRepo);
 
       return obj;
     }
@@ -55,6 +58,36 @@ namespace VSS.MasterData.Project.WebAPI.Factories
     public RequestFactory Headers(IDictionary<string, string> headers)
     {
       this.headers = headers;
+      return this;
+    }
+
+    /// <summary>
+    /// Sets the customerUid from the authentication header.
+    /// </summary>
+    /// <param name="customerUid"></param>
+    public RequestFactory CustomerUid(string customerUid)
+    {
+      this.customerUid = customerUid;
+      return this;
+    }
+
+    /// <summary>
+    /// Sets the userId from the authentication header.
+    /// </summary>
+    /// <param name="userId"></param>
+    public RequestFactory UserId(string userId)
+    {
+      this.userId = userId;
+      return this;
+    }
+
+    /// <summary>
+    /// Sets the users email address from the authentication header.
+    /// </summary>
+    /// <param name="userEmailAddress"></param>
+    public RequestFactory UserEmailAddress(string userEmailAddress)
+    {
+      this.userEmailAddress = userEmailAddress;
       return this;
     }
 

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -35,6 +33,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// handle exceptions
     /// </summary>
     protected IServiceExceptionHandler serviceExceptionHandler;
+
+    protected string customerUid;
+    protected string userId;
+    protected string userEmailAddress;
 
     /// <summary>
     /// Gets or sets the Kafak consumer.
@@ -68,13 +70,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       return result;
     }
 
-    ///// <summary>
-    ///// Processes the specified item. This is the main method to execute real action.
-    ///// </summary>
-    ///// <typeparam name="T">>Generic type which should be</typeparam>
-    ///// <param name="item">>The item.</param>
-    ///// <returns></returns>
-    //protected abstract ContractExecutionResult ProcessEx<T>(T item);
+    /// <summary>
+    /// Processes the specified item. This is the main method to execute real action.
+    /// </summary>
+    /// <typeparam name="T">>Generic type which should be</typeparam>
+    /// <param name="item">>The item.</param>
+    /// <returns></returns>
+    protected abstract ContractExecutionResult ProcessEx<T>(T item);
 
     /// <summary>
     /// 
@@ -88,27 +90,32 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Missing asynchronous executor process method override"));
     }
 
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    ///// <param name="item"></param>
-    ///// <typeparam name="T"></typeparam>
-    ///// <returns></returns>
-    ///// <exception cref="ServiceException"></exception>
-    //public ContractExecutionResult Process<T>(T item)
-    //{
-    //  if (item == null)
-    //    throw new ServiceException(HttpStatusCode.BadRequest,
-    //      new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
-    //  return ProcessEx(item);
-    //}
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="item"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="ServiceException"></exception>
+    public ContractExecutionResult Process<T>(T item)
+    {
+      ValidateTItem(item);
+      return ProcessEx(item);
+    }
 
     public async Task<ContractExecutionResult> ProcessAsync<T>(T item)
     {
+      ValidateTItem(item);
+      return await ProcessAsyncEx(item);
+    }
+
+    private static void ValidateTItem<T>(T item)
+    {
       if (item == null)
+      {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
-      return await ProcessAsyncEx(item);
+      }
     }
 
     /// <summary>
@@ -118,6 +125,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// The contract execution states.
     /// </value>
     protected ContractExecutionStatesEnum ContractExecutionStates { get; }
+    protected string UserEmailAddress { get => userEmailAddress; set => userEmailAddress = value; }
 
     /// <summary>
     /// Default constructor which creates all structures necessary for error handling.
@@ -137,11 +145,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    public void Initialise(ILogger logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo, IKafka producer = null, string kafkaTopicName = null)
+    public void Initialise(ILogger logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
+      string customerUid, string userId, string userEmailAddress, 
+      IProjectRepository projectRepo, IKafka producer = null, string kafkaTopicName = null)
     {
       log = logger;
       this.configStore = configStore;
       this.serviceExceptionHandler = serviceExceptionHandler;
+      this.customerUid = customerUid;
+      this.userId = userId;
+      this.UserEmailAddress = userEmailAddress;
       this.projectRepo = projectRepo;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;

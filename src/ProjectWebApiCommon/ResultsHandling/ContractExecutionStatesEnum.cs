@@ -83,6 +83,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       DynamicAddwithOffset("Unable to validate project settings with raptor. Reason: {0} {1}.", 70);
       DynamicAddwithOffset("Unable to update project settings with raptor. Reason: {0} {1}.", 71);
       DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 72);
+      DynamicAddwithOffset("ProjectSettings cannot be null.", 73);
+      DynamicAddwithOffset("Landfill projects are not supported.", 74);
     }
 
     /// <summary>

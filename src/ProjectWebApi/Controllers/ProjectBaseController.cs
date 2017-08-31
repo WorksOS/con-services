@@ -102,7 +102,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       //We probably want to make this thing singleton?
       if (!this.producer.IsInitializedProducer)
         this.producer.InitProducer(store);
-      //TODO change this pattern, make it safer
       projectService = projectRepo as ProjectRepository;
       subsService = subscriptionsRepo as SubscriptionRepository;
       this.subsProxy = subsProxy;

@@ -59,7 +59,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo,
       IRequestFactory requestFactory
       )
-      : base(logger, configStore, serviceExceptionHandler, producer, 
+      : base(logger.CreateLogger<BaseController>(), configStore, serviceExceptionHandler, producer, 
           geofenceProxy, raptorProxy, subscriptionProxy,
           projectRepo, subscriptionsRepo)
     {
@@ -84,53 +84,57 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       LogCustomerDetails("GetProjectSettings", projectUid);
 
       var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
-          .Headers(customHeaders))
-        .CreateProjectSettingsRequest(projectUid, null);
-
+          .Headers(customHeaders)
+          .CustomerUid(customerUid)
+          .UserId(userId)
+          .UserEmailAddress(userEmailAddress))
+        .CreateProjectSettingsRequest(projectUid, "");
       projectSettingsRequest.Validate();
-      // should this go into the executor now, somehow? .. 
-      await ProjectSettingsValidation.ValidateProjectWithCustomer(projectRepo, log, serviceExceptionHandler, customerUid, projectUid);
-
-      var executor = RequestExecutorContainerFactory
-          .Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, projectRepo);
-      var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
-
+     
+      var result = WithServiceExceptionTryExecuteAsync(() => 
+        RequestExecutorContainerFactory
+        .Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, 
+                customerUid, userId, userEmailAddress, 
+                projectRepo)
+        .ProcessAsync(projectSettingsRequest) 
+        ).Result as ProjectSettingsResult;
+      
       log.LogResult(this.ToString(), projectUid, result);
       return result;
     }
 
 
-    /// <summary>
-    /// Upserts the project settings for a project.
-    /// </summary>
-    /// <returns></returns>
-    [Route("api/v4/projectsettings")]
-    [HttpPut]
-    public async Task<ProjectSettingsResult> UpsertProjectSettings([FromBody]ProjectSettingsRequest request)
-    {
-      if (string.IsNullOrEmpty(request?.projectUid))
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
-      LogCustomerDetails("UpsertProjectSettings", request?.projectUid);
-      log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
+    ///// <summary>
+    ///// Upserts the project settings for a project.
+    ///// </summary>
+    ///// <returns></returns>
+    //[Route("api/v4/projectsettings")]
+    //[HttpPut]
+    //public async Task<ProjectSettingsResult> UpsertProjectSettings([FromBody]ProjectSettingsRequest request)
+    //{
+    //  if (string.IsNullOrEmpty(request?.projectUid))
+    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
+    //  LogCustomerDetails("UpsertProjectSettings", request?.projectUid);
+    //  log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
 
-      var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
-            .Headers(customHeaders))
-          .CreateProjectSettingsRequest(request.projectUid, request.settings);
+    //  var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+    //        .Headers(customHeaders))
+    //      .CreateProjectSettingsRequest(request.projectUid, request.settings);
 
-      projectSettingsRequest.Validate();
-      // should this go into the executor now, somehow? .. 
-      await ProjectSettingsValidation.ValidateProjectWithCustomer(projectRepo, log, serviceExceptionHandler, customerUid, request.projectUid);
-      await ProjectSettingsValidation.RaptorValidateProjectSettings(raptorProxy, log, serviceExceptionHandler,
-        projectSettingsRequest, customHeaders);
+    //  projectSettingsRequest.Validate();
+    //  // should this go into the executor now, somehow? .. 
+    //  await ProjectSettingsValidation.ValidateProjectWithCustomer(projectRepo, log, serviceExceptionHandler, customerUid, request.projectUid);
+    //  await ProjectSettingsValidation.RaptorValidateProjectSettings(raptorProxy, log, serviceExceptionHandler,
+    //    projectSettingsRequest, customHeaders);
 
-      string kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                              configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+    //  string kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
+    //                          configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
-      var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, projectRepo, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request);
+    //  var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, projectRepo, producer, kafkaTopicName);
+    //  var result = await executor.ProcessAsync(request);
 
-      log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
-      return result as ProjectSettingsResult;
-    }
+    //  log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
+    //  return result as ProjectSettingsResult;
+    //}
   }
 }

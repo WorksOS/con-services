@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
-using VSS.MasterData.Repositories;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -15,24 +11,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   /// </summary>
   public class GetProjectSettingsExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    public GetProjectSettingsExecutor(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, ClaimsPrincipal user, IProjectRepository projectRepo)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      throw new NotImplementedException();
     }
-
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public GetProjectSettingsExecutor()
-    {
-    }
-
-    //protected override ContractExecutionResult ProcessEx<T>(T item)
-    //{
-    //  throw new NotImplementedException();
-    //}
 
     /// <summary>
     /// Processes the GetProjectSettings request
@@ -43,23 +25,31 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       ContractExecutionResult result = null;
+      ProjectSettingsRequest projectSettingsRequest = null;
+      
+      projectSettingsRequest = item as ProjectSettingsRequest;
+      if ( projectSettingsRequest == null )
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
       try
       {
-        string projectUid = item as string;
-      
-        var projectSettings = await projectRepo.GetProjectSettings(projectUid).ConfigureAwait(false);
-        result = ProjectSettingsResult.CreateProjectSettingsResult(projectUid, projectSettings?.Settings);
+        await ValidateProjectWithCustomer(customerUid, projectSettingsRequest?.projectUid);
       }
-      catch( Exception e)
+      catch (ServiceException ex)
+      {
+        throw ex;
+      }
+
+      try
+      {
+        var projectSettings = await projectRepo.GetProjectSettings(projectSettingsRequest?.projectUid).ConfigureAwait(false);
+        result = ProjectSettingsResult.CreateProjectSettingsResult(projectSettingsRequest?.projectUid, projectSettings.Settings);
+      }
+      catch (Exception e)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69, e.Message);
       }
       return result;
     }
 
-    protected override void ProcessErrorCodes()
-    {
-    }
-   
   }
 }

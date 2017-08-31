@@ -1,13 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Repositories;
-using VSS.MasterDataProxies.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -15,18 +9,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   {
     protected ILogger log;
     protected IConfigurationStore configStore;
-    protected IServiceExceptionHandler serviceExceptionHandler;
-    protected IDictionary<string, string> headers;
     protected ProjectRepository projectRepo;
 
-    public void Initialize(ILogger log, IConfigurationStore configurationStore, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> headers,
-        ProjectRepository projectRepo)
+    public void Initialize(ILogger log, IConfigurationStore configurationStore, ProjectRepository projectRepo)
     {
       this.log = log;
       configStore = configurationStore;
-      this.serviceExceptionHandler = serviceExceptionHandler;
-      this.headers = headers;
-
       this.projectRepo = projectRepo;
     }
 

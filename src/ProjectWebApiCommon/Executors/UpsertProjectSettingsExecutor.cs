@@ -33,10 +33,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
     }
 
-    //protected override ContractExecutionResult ProcessEx<T>(T item)
-    //{
-    //  throw new System.NotImplementedException();
-    //}
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new System.NotImplementedException();
+    }
 
     /// <summary>
     /// Processes the UpsertProjectSettings request

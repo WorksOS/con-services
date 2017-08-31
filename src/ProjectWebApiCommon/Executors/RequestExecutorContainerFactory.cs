@@ -16,6 +16,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <returns></returns>
     public static TExecutor Build<TExecutor>(
       ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
+      string customerUid, string userId, string userEmailAddress,
       IProjectRepository projectRepo, IKafka producer = null, string kafkaTopicName = null) 
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -28,9 +29,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var executor = new TExecutor();
 
       executor.Initialise(
-        log,
-        configStore,
-        serviceExceptionHandler,
+        log, configStore, serviceExceptionHandler,
+        customerUid, userId, userEmailAddress,
         projectRepo,
         producer,
         kafkaTopicName

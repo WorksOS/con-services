@@ -30,10 +30,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Creates an instance of the ProjectSettingsRequest class and populate it.   
     /// </summary>
     /// <param name="projectUid"></param>
+    /// <param name="settings"></param>
     /// <returns>An instance of the ProjectSettingsRequest class.</returns>
     public ProjectSettingsRequest CreateProjectSettingsRequest(string projectUid, string settings)
     {
-      return ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid: projectUid, settings: settings);
+      return ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings);
     }
 
     public async Task RaptorValidateProjectSettings(
@@ -45,7 +46,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       try
       {
         result = await raptorProxy
-          .ValidateProjectSettings(Guid.Parse(request.projectUid), request.settings, headers)
+          .ValidateProjectSettings(Guid.Parse(request.projectUid), request.settings, customHeaders)
           .ConfigureAwait(false);
       }
       catch (Exception e)

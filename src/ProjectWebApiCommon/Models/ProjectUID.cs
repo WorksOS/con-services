@@ -44,10 +44,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     {
       if (string.IsNullOrEmpty(projectUid))
       {
-        // todo errorCode
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "At least one of the project identifiers must be defined!"));
+          new ContractExecutionResult(5, "Missing ProjectUID."));
       }
     }
   }

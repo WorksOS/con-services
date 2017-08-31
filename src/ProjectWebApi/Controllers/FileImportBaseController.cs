@@ -78,7 +78,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.producer = producer;
       if (!this.producer.IsInitializedProducer)
         this.producer.InitProducer(store);
-      //TODO change this pattern, make it safer
       projectService = projectRepo as ProjectRepository;
       this.raptorProxy = raptorProxy;
       this.fileRepo = fileRepo;

@@ -48,23 +48,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       return;
     }
 
-    /// <summary>
-    /// Validates a project identifier.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <returns></returns>
-    public static async Task ValidateProjectWithCustomer(IProjectRepository projectRepo,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid, string projectUid)
-    {
-      var project =
-        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
-          p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
-      if (project == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
-      }
+    ///// <summary>
+    ///// Validates a project identifier.
+    ///// </summary>
+    ///// <param name="projectUid">The project uid.</param>
+    ///// <returns></returns>
+    //public static async Task ValidateProjectWithCustomer(IProjectRepository projectRepo,
+    //  ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid, string projectUid)
+    //{
+    //  var project =
+    //    (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+    //      p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
+    //  if (project == null)
+    //  {
+    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
+    //  }
 
-      log.LogInformation($"projectUid {projectUid} validated");
-    }
+    //  log.LogInformation($"projectUid {projectUid} validated");
+    //}
   }
 }

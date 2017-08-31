@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies.Interfaces;
@@ -24,19 +29,24 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public abstract class BaseController : Controller
   {
     /// <summary>
-    /// Gets or sets the local log provider.
+    /// todo this should be resolved with MIP story to set these per service.
     /// </summary>
-    protected readonly ILogger log;
+    protected readonly int customErrorMessageOffset = 2000;
 
     /// <summary>
-    /// Gets or sets the Configuration Store. 
+    /// Gets or sets the local log provider.
     /// </summary>
-    protected readonly IConfigurationStore configStore;
+    private readonly ILogger log;
 
     /// <summary>
     /// Gets or sets the Service exception handler.
     /// </summary>
-    protected IServiceExceptionHandler serviceExceptionHandler;
+    protected readonly IServiceExceptionHandler serviceExceptionHandler;
+    
+    /// <summary>
+    /// Gets or sets the Configuration Store. 
+    /// </summary>
+    protected readonly IConfigurationStore configStore;
 
     /// <summary>
     /// Gets or sets the Kafak consumer.
@@ -121,7 +131,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseController"/> class.
     /// </summary>
-    /// <param name="logger">The logger.</param>
+    /// <param name="log"></param>
     /// <param name="configStore">The configStore.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     /// <param name="producer">The producer.</param>
@@ -130,13 +140,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="subscriptionProxy">The subs proxy.</param>
     /// <param name="projectRepo">The project repo.</param>
     /// <param name="subscriptionsRepo">The subscriptions repo.</param>
-    protected BaseController(ILoggerFactory logger, IConfigurationStore configStore,
+    protected BaseController(ILogger log, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy, 
       IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo
      )
     {
-      log = logger.CreateLogger<BaseController>();
+      this.log = log;
       this.configStore = configStore;
       this.serviceExceptionHandler = serviceExceptionHandler;
       this.producer = producer;
@@ -146,13 +156,49 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
-      projectRepo = projectRepo as ProjectRepository;
-      subscriptionsRepo = subscriptionsRepo as SubscriptionRepository;
+      this.projectRepo = projectRepo as ProjectRepository;
+      this.subscriptionRepo = subscriptionsRepo as SubscriptionRepository;
       this.subscriptionProxy = subscriptionProxy;
       this.geofenceProxy = geofenceProxy;
       this.raptorProxy = raptorProxy;
 
 
+    }
+
+    /// <summary>
+    /// With the service exception try execute.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="action">The action.</param>
+    /// <returns></returns>
+    protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
+    {
+      TResult result = default(TResult);
+      try
+      {
+        result = (await action.Invoke().ConfigureAwait(false)) as TResult;
+        log.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
+
+      }
+      catch (ServiceException se)
+      {
+        // todo Aaron,
+        //   a) need to GetContent rather than message here.
+        //   b) Also what should HttpStatusCode code be?
+        //  e.s. if my validation fails - its a validation error else some other kind of error
+        throw new ServiceException(se.Code,
+          new ContractExecutionResult(se.GetResult.Code, se.GetContent));
+      }
+      catch (Exception ex)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+          ContractExecutionStatesEnum.InternalProcessingError - customErrorMessageOffset, ex.Message);
+      }
+      finally
+      {
+        log.LogInformation($"Executed {action.GetMethodInfo().Name} with the result {result?.Code}");
+      }
+      return result;
     }
 
     ///// <summary>
@@ -178,7 +224,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     //  catch (Exception ex)
     //  {
     //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-    //      ContractExecutionStatesEnum.InternalProcessingError - 3000, ex.Message);
+    //      ContractExecutionStatesEnum.InternalProcessingError - CUSTOM_ERRORMESSAGE_OFFSET, ex.Message);
     //  }
     //  finally
     //  {

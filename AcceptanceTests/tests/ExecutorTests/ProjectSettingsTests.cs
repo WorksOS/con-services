@@ -16,11 +16,16 @@ namespace ExecutorTests
     [TestMethod]
     public async Task GetProjectSettingsExecutor_NoneExists()
     {
+      string customerUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
+      string userEmailAddress = "whatever@here.there.com";
       string projectUid = Guid.NewGuid().ToString();
 
       var executor =
-        RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo, configStore, logger,
-          serviceExceptionHandler, producer);
+        RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
+          ( logger, configStore, serviceExceptionHandler,
+            customerUid, userId, userEmailAddress,
+            projectRepo);
       var result = await executor.ProcessAsync(projectUid) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");
@@ -30,6 +35,9 @@ namespace ExecutorTests
     [TestMethod]
     public async Task GetProjectSettingsExecutor_Exists()
     {
+      string customerUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
+      string userEmailAddress = "whatever@here.there.com";
       string projectUid = Guid.NewGuid().ToString();
       string settings = "blah";
 
@@ -37,8 +45,10 @@ namespace ExecutorTests
       Assert.IsTrue(isCreatedOk, "created projectSettings");
 
       var executor =
-        RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo, configStore, logger,
-          serviceExceptionHandler, producer);
+        RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
+        (logger, configStore, serviceExceptionHandler,
+          customerUid, userId, userEmailAddress,
+          projectRepo);
       var result = await executor.ProcessAsync(projectUid) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");
@@ -48,14 +58,19 @@ namespace ExecutorTests
     [TestMethod]
     public async Task UpsertProjectSettingsExecutor_NoneExists()
     {
+      string customerUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
+      string userEmailAddress = "whatever@here.there.com";
       var projectUid = Guid.NewGuid();
       string settings = "blah";
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settings);
       string kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                               configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
-      var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, configStore, logger,
-        serviceExceptionHandler, producer, kafkaTopicName);
+      var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
+        (logger, configStore, serviceExceptionHandler,
+        customerUid, userId, userEmailAddress,
+        projectRepo, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");
@@ -65,6 +80,9 @@ namespace ExecutorTests
     [TestMethod]
     public async Task UpsertProjectSettingsExecutor_Exists()
     {
+      string customerUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
+      string userEmailAddress = "whatever@here.there.com";
       var projectUid = Guid.NewGuid();
       string settings = "blah";
       string settingsUpdated = "blah Is Updated";
@@ -74,9 +92,14 @@ namespace ExecutorTests
 
       var projectSettingsRequest =
         ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settingsUpdated);
-      var executor =
-        RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, configStore, logger,
-          serviceExceptionHandler, producer);
+
+      string kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
+                              configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+
+      var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
+      (logger, configStore, serviceExceptionHandler,
+        customerUid, userId, userEmailAddress,
+        projectRepo, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");

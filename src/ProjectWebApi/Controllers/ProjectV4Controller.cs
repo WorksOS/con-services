@@ -110,7 +110,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //Landfill projects are not supported till l&s goes live
       if (projectRequest?.ProjectType == ProjectType.LandFill)
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(3000, "Landfill projects are not supported"));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 73);
 
 
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
@@ -177,7 +177,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //Landfill projects are not supported till l&s goes live
       if (projectRequest?.ProjectType == ProjectType.LandFill)
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(3000, "Landfill projects are not supported"));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 73);
 
       log.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);

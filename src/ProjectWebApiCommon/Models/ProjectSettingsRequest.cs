@@ -31,14 +31,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       };
     }
 
-    public void Validate()
+    public override void Validate()
     {
-      // todo
+      base.Validate();
       if (settings == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Settings cannot be null"));
+          new ContractExecutionResult(73, "ProjectSettings cannot be null."));
       }
 
     }
