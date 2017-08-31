@@ -10,19 +10,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
   public class CompactionProfileResult<T> : ContractExecutionResult
   {
     /// <summary>
-    /// The design file UID the response data is collected from.
-    /// </summary>
-    public Guid designFileUid;
-
-    /// <summary>
     /// The grid distance between the two profile end points. For straight line profiles this is the geomtric plane distance between the points. 
     /// For alignment profiles this is the station distance between start and end locations on the alignment the profile is computed between.
     /// </summary>
     public double gridDistanceBetweenProfilePoints;
 
     /// <summary>
-    /// The collection of vertices produced by the query. Cells are ordered by increasing station value along the line or alignment.
+    /// The collection of results produced by the query. 
     /// </summary>
-    public List<T> points;
+    public List<T> results;
   }
 }
