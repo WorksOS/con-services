@@ -16,13 +16,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// </summary>
     /// <param name="slicerProfileResult">The production data profile result with the cells</param>
     /// <param name="slicerDesignResult">The design profile result with the vertices</param>
-    public void FindCutFillElevations(CompactionProfileResult<CompactionProfileCell> slicerProfileResult, CompactionProfileResult<CompactionProfileVertex> slicerDesignResult)
+    public void FindCutFillElevations(CompactionProfileResult<CompactionProfileCell> slicerProfileResult,
+      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult)
     {
-      var cells = slicerProfileResult.points;
+      var cells = slicerProfileResult.results;
       if (cells != null && cells.Count > 0)
       {
         int startIndx = -1;
-        var vertices = slicerDesignResult.points;
+        var vertices = slicerDesignResult.results;
         foreach (var cell in cells)
         {
           startIndx = FindVertexIndex(vertices, cell.station, startIndx);
@@ -38,9 +39,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
               {
                 cell.cutFillHeight = vertices[startIndx].elevation;
               }
-              else if (Math.Abs(vertices[startIndx+1].station - cell.station) <= THREE_MM)
+              else if (Math.Abs(vertices[startIndx + 1].station - cell.station) <= THREE_MM)
               {
-                cell.cutFillHeight = vertices[startIndx+1].elevation;
+                cell.cutFillHeight = vertices[startIndx + 1].elevation;
               }
             }
             else
@@ -89,43 +90,43 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     }
 
     /// <summary>
-    /// Convert from one profile representation to another
+    /// Convert from one production data profile representation to another
     /// </summary>
     /// <param name="slicerProfileResult">The profile result to convert from</param>
     /// <returns>The new profile result representation</returns>
-    public CompactionProfileResult<CompactionProfileData> ConvertProfileResult(CompactionProfileResult<CompactionProfileCell> slicerProfileResult)
+    public CompactionProfileResult<CompactionProfileDataResult> ConvertProfileResult(
+      CompactionProfileResult<CompactionProfileCell> slicerProfileResult)
     {
       //shouldn't ever happen but for safety check arg
-      if (slicerProfileResult == null || slicerProfileResult.points == null)
+      if (slicerProfileResult == null || slicerProfileResult.results == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             "Unexpected missing profile result"));
       }
 
-      var profile = new CompactionProfileResult<CompactionProfileData>
+      var profile = new CompactionProfileResult<CompactionProfileDataResult>
       {
         gridDistanceBetweenProfilePoints = slicerProfileResult.gridDistanceBetweenProfilePoints,
-        designFileUid = slicerProfileResult.designFileUid,
-        points = new List<CompactionProfileData>
+        results = new List<CompactionProfileDataResult>
         {
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "firstPass",
-            data = (from p in slicerProfileResult.points
-                    select new CompactionDataPoint
-                    {
-                      type = "firstPass",
-                      cellType = p.cellType,
-                      x = p.station,
-                      y = p.firstPassHeight,
-                      value = p.firstPassHeight                     
-                    }).ToList()
+            data = (from p in slicerProfileResult.results
+              select new CompactionDataPoint
+              {
+                type = "firstPass",
+                cellType = p.cellType,
+                x = p.station,
+                y = p.firstPassHeight,
+                value = p.firstPassHeight
+              }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "highestPass",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "highestPass",
@@ -135,10 +136,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 value = p.highestPassHeight
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "lastPass",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "lastPass",
@@ -148,10 +149,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 value = p.lastPassHeight
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "lowestPass",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "lowestPass",
@@ -161,10 +162,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 value = p.lowestPassHeight
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "lastComposite",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "lastComposite",
@@ -174,10 +175,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 value = p.lastCompositeHeight
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "cmvSummary",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "cmvSummary",
@@ -188,10 +189,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 valueType = p.cmvIndex
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "cmvDetail",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "cmvDetail",
@@ -201,10 +202,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 value = p.cmv
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "cmvPercentChange",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "cmvPercentChange",
@@ -214,10 +215,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 value = p.cmvPercentChange
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "mdpSummary",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "mdpSummary",
@@ -228,10 +229,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 valueType = p.mdpIndex
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "temperatureSummary",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "temperatureSummary",
@@ -242,10 +243,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 valueType = p.temperatureIndex
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "speedSummary",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "speedSummary",
@@ -257,10 +258,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 valueType = p.speedIndex
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "passCountSummary",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "passCountSummary",
@@ -271,10 +272,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 valueType = p.passCountIndex
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "passCountDetail",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "passCountDetail",
@@ -284,10 +285,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 value = p.topLayerPassCount
               }).ToList()
           },
-          new CompactionProfileData
+          new CompactionProfileDataResult
           {
             type = "cutFill",
-            data = (from p in slicerProfileResult.points
+            data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
                 type = "cutFill",
@@ -299,6 +300,37 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
               }).ToList()
           }
         }
+      };
+      return profile;
+    }
+
+
+    /// <summary>
+    /// Convert from one design profile representation to another
+    /// </summary>
+    /// <param name="slicerProfileResults">The profile result to convert from</param>
+    /// <returns>The new profile result representation</returns>
+    public CompactionProfileResult<CompactionDesignProfileResult> ConvertProfileResult(
+      Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults)
+    {
+      //shouldn't ever happen but for safety check arg
+      if (slicerProfileResults == null || slicerProfileResults.Count == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            "Unexpected missing design profile results"));
+      }
+
+      var profile = new CompactionProfileResult<CompactionDesignProfileResult>
+      {
+        //all gridDistanceBetweenProfilePoints are the same
+        gridDistanceBetweenProfilePoints = slicerProfileResults.Values.First().gridDistanceBetweenProfilePoints,
+        results = (from spr in slicerProfileResults
+          select new CompactionDesignProfileResult
+          {
+            designFileUid = spr.Key,
+            data = spr.Value.results
+          }).ToList()
       };
       return profile;
     }

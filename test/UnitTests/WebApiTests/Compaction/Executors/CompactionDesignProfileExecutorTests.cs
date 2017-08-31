@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
-      Assert.AreEqual(3, result.points.Count, IncorrectNumberOfPoints);
+      Assert.AreEqual(3, result.results.Count, IncorrectNumberOfPoints);
     }
 
     private CompactionProfileResult<CompactionProfileVertex> MockGetProfile(TICProfileCellListPackager packager)

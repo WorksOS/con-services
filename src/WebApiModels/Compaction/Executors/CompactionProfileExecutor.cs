@@ -118,7 +118,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
       pdsiProfile.GridDistanceBetweenProfilePoints = packager.GridDistanceBetweenProfilePoints;
 
-      profile.points = new List<CompactionProfileCell>();
+      profile.results = new List<CompactionProfileCell>();
       VSS.Velociraptor.PDSInterface.ProfileCell prevCell = null;
       foreach (VSS.Velociraptor.PDSInterface.ProfileCell currCell in pdsiProfile.cells)
       {
@@ -128,7 +128,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         {
           var gapCell = new CompactionProfileCell(GapCell);
           gapCell.station = prevStationIntercept;
-          profile.points.Add(gapCell);
+          profile.results.Add(gapCell);
         }
 
         bool noCCVValue = currCell.TargetCCV == 0 || currCell.TargetCCV == VelociraptorConstants.NO_CCV || currCell.CCV == VelociraptorConstants.NO_CCV;
@@ -160,7 +160,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           ? float.NaN
           : (float) currCell.MDP / (float) currCell.TargetMDP * 100.0F;
 
-        profile.points.Add(new CompactionProfileCell
+        profile.results.Add(new CompactionProfileCell
         {
           cellType = prevCell == null ? ProfileCellType.MidPoint : ProfileCellType.Edge,
 
@@ -230,13 +230,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       //Add a last point at the intercept length of the last cell so profiles are drawn correctly
       if (prevCell != null)
       {
-        var lastCell = new CompactionProfileCell(profile.points[profile.points.Count - 1])
+        var lastCell = new CompactionProfileCell(profile.results[profile.results.Count - 1])
         {
           cellType = ProfileCellType.MidPoint,
           station = prevCell.station + prevCell.interceptLength
         };
 
-        profile.points.Add(lastCell);
+        profile.results.Add(lastCell);
       }
 
       ms.Close();
@@ -244,8 +244,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       profile.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
 
       StringBuilder sb = new StringBuilder();
-      sb.Append($"After profile conversion: {profile.points.Count}");
-      foreach (var cell in profile.points)
+      sb.Append($"After profile conversion: {profile.results.Count}");
+      foreach (var cell in profile.results)
       {
         sb.Append($",{cell.cellType}");
       }
@@ -263,33 +263,33 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     private void AddMidPoints(CompactionProfileResult<CompactionProfileCell> profileResult)
     {
       log.LogDebug("Adding midpoints");
-      if (profileResult.points.Count > 3)
+      if (profileResult.results.Count > 3)
       {
         //No mid point for first and last segments since only partial across the cell.
         //We have already added them as mid points.
         var cells = new List<CompactionProfileCell>();
 
-        cells.Add(profileResult.points[0]);
-        for (int i = 1; i < profileResult.points.Count - 2; i++)
+        cells.Add(profileResult.results[0]);
+        for (int i = 1; i < profileResult.results.Count - 2; i++)
         {
-          cells.Add(profileResult.points[i]);
-          if (profileResult.points[i].cellType != ProfileCellType.Gap)
+          cells.Add(profileResult.results[i]);
+          if (profileResult.results[i].cellType != ProfileCellType.Gap)
           {
-            var midPoint = new CompactionProfileCell(profileResult.points[i]);
+            var midPoint = new CompactionProfileCell(profileResult.results[i]);
             midPoint.cellType = ProfileCellType.MidPoint;
-            midPoint.station = profileResult.points[i].station +
-                               (profileResult.points[i + 1].station - profileResult.points[i].station) / 2;
+            midPoint.station = profileResult.results[i].station +
+                               (profileResult.results[i + 1].station - profileResult.results[i].station) / 2;
             cells.Add(midPoint);
           }
         }
-        cells.Add(profileResult.points[profileResult.points.Count - 2]);
-        cells.Add(profileResult.points[profileResult.points.Count - 1]);
-        profileResult.points = cells;
+        cells.Add(profileResult.results[profileResult.results.Count - 2]);
+        cells.Add(profileResult.results[profileResult.results.Count - 1]);
+        profileResult.results = cells;
       }
 
       StringBuilder sb = new StringBuilder();
-      sb.Append($"After adding midpoints: {profileResult.points.Count}");
-      foreach (var cell in profileResult.points)
+      sb.Append($"After adding midpoints: {profileResult.results.Count}");
+      foreach (var cell in profileResult.results)
       {
         sb.Append($",{cell.cellType}");
       }
@@ -303,26 +303,26 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     private void InterpolateEdges(CompactionProfileResult<CompactionProfileCell> profileResult)
     {
       log.LogDebug("Interpolating edges");
-      if (profileResult.points.Count > 3)
+      if (profileResult.results.Count > 3)
       {
         //First and last points are not gaps or edges. They're always the start and end of the profile line.
-        for (int i = 1; i < profileResult.points.Count - 1; i++)
+        for (int i = 1; i < profileResult.results.Count - 1; i++)
         {
-          if (profileResult.points[i].cellType == ProfileCellType.Edge)
+          if (profileResult.results[i].cellType == ProfileCellType.Edge)
           {
             //Interpolate i edge for line between mid points at i-1 and i+1
             var startIndex = i - 1;
             var endIndex = i + 1;
             //Gap is between i-1 and i. Interpolate i edge for line between mid points at i-2 and i+1
-            if (profileResult.points[i - 1].cellType == ProfileCellType.Gap)
+            if (profileResult.results[i - 1].cellType == ProfileCellType.Gap)
             {
               startIndex--;
               //Also adjust the gap point
-              InterpolateElevations(profileResult.points[i - 1], profileResult.points[startIndex],
-                profileResult.points[endIndex]);
+              InterpolateElevations(profileResult.results[i - 1], profileResult.results[startIndex],
+                profileResult.results[endIndex]);
             }
-            InterpolateElevations(profileResult.points[i], profileResult.points[startIndex],
-              profileResult.points[endIndex]);
+            InterpolateElevations(profileResult.results[i], profileResult.results[startIndex],
+              profileResult.results[endIndex]);
           }
         }
       }

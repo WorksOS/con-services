@@ -45,8 +45,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         if (memoryStream != null)
         {
           result = ConvertProfileResult(memoryStream);
-
-          result.designFileUid = request.importedFileUid;
         }
         else
         {
@@ -95,7 +93,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       var pdsiProfile = new DesignProfile();
       pdsiProfile.ReadFromStream(ms);
 
-      profileResult.points = pdsiProfile.vertices.ConvertAll(dpv => new U
+      profileResult.results = pdsiProfile.vertices.ConvertAll(dpv => new U
       {
         elevation = dpv.elevation >= VelociraptorConstants.NO_HEIGHT ? float.NaN : dpv.elevation,
         station = dpv.station
