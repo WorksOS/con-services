@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Models;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Utilities;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.Productivity3D.WebApiModels.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
@@ -46,17 +42,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           null, null, null, null, null, null, null, null, null, layerMethod, designDescriptor, null, layerNumber, null, machines,
           excludedSurveyedSurfaceIds, null, null, null, null, null, null)
         : null;
-    }
-
-
-    public Common.Models.Filter CompactionFilter(string filterUid, string projectUid, IDictionary<string,string> headers)
-    {
-      if (!string.IsNullOrEmpty(filterUid))
-      {
-        filterService.GetFilter(projectUid, filterUid, headers);
-        //TODO apply Anatoli's validation and filter creation logic here
-      }
-      return null;
     }
 
     public CMVSettings CompactionCmvSettings(CompactionProjectSettings ps)

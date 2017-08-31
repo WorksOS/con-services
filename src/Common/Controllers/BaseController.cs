@@ -1,5 +1,4 @@
-﻿using ASNode.UserPreferences;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -133,12 +132,15 @@ namespace VSS.Productivity3D.Common.Controllers
     /// Gets the project identifier.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
-    /// <returns></returns>
+    /// <returns>The project's Id for the Uid provided</returns>
     /// <exception cref="ArgumentException">Incorrect request context principal.</exception>
     protected long GetProjectId(Guid projectUid)
     {
       if (User is RaptorPrincipal principal)
-        return (principal.GetProjectId(projectUid));
+      {
+        return principal.GetProjectId(projectUid);
+      }
+
       throw new ArgumentException("Incorrect request context principal.");
     }
 
@@ -262,32 +264,6 @@ namespace VSS.Productivity3D.Common.Controllers
         machine = MachineDetails.CreateMachineDetails(assetId.Value, machineName, isJohnDoe.Value);
       }
       return machine == null ? null : new List<MachineDetails> { machine };
-    }
-
-    /// <summary>
-    /// Converts a set user preferences in the format understood by the Raptor for.
-    /// It is solely used by production data export WebAPIs.
-    /// </summary>
-    /// <param name="userPref">The set of user preferences.</param>
-    /// <returns>The set of user preferences in Raptor's format</returns>
-    protected TASNodeUserPreferences convertUserPreferences(UserPreferenceData userPref)
-    {
-      TimeZoneInfo projecTimeZone = TimeZoneInfo.FindSystemTimeZoneById(userPref.Timezone);
-      double projectTimeZoneOffset = projecTimeZone.GetUtcOffset(DateTime.Now).TotalHours;
-
-      return __Global.Construct_TASNodeUserPreferences(
-        userPref.Timezone,
-        Preferences.DefaultDateSeparator,
-        Preferences.DefaultTimeSeparator,
-        userPref.ThousandsSeparator,
-        userPref.DecimalSeparator,
-        projectTimeZoneOffset,
-        Array.IndexOf(LanguageLocales.LanguageLocaleStrings, userPref.Language),
-        (int)UnitsTypeEnum.Metric,
-        Preferences.DefaultDateTimeFormat,
-        Preferences.DefaultNumberFormat,
-        Preferences.DefaultTemperatureUnit,
-        Preferences.DefaultAssetLabelTypeId);
     }
 
     /// <summary>

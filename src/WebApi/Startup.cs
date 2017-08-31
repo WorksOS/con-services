@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using System;
-using VSS.Common.Exceptions;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Extensions;
@@ -119,11 +118,8 @@ namespace VSS.Productivity3D.WebApi
 
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
-      //Enable TID here
 
       app.UseFilterMiddleware<TIDAuthentication>();
-
-      //Enable response compression
       app.UseResponseCompression();
 
       app.UseResponseCaching();

@@ -47,6 +47,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.QueryString.Add("fileName", fileName);
     }
 
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
+    {
+      exportReportRequester.QueryString.Add("filterUid", filterUid);
+    }
 
     [When(@"I request an Export Report To VETA")]
     public void WhenIRequestAnExportReportToVETA()

@@ -107,15 +107,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var settings = CompactionProjectSettings.FromString(
         await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders));
       var exludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
       //Get production data profile
       var slicerProductionDataProfileRequest = requestFactory.Create<ProductionDataProfileRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
           .ProjectSettings(settings)
-          .ExcludedIds(exludedIds))
+          .ExcludedIds(exludedIds)
+          .Filter(filter))
           .CreateProductionDataProfileRequest(
-            projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, filterUid, customerUid, cutfillDesignUid);
+            projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, cutfillDesignUid);
 
       slicerProductionDataProfileRequest.Validate();
 
@@ -133,9 +135,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             .Headers(customHeaders)
             .ProjectSettings(settings)
             .ExcludedIds(exludedIds))
-            .SetRaptorClient(raptorClient)
             .CreateDesignProfileRequest(
-              projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, cutfillDesignUid.Value, filterUid);
+              projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid, cutfillDesignUid.Value);
 
         slicerDesignProfileRequest.Validate();
 
@@ -169,10 +170,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetProfileDesignSlicer: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-
       var settings = CompactionProjectSettings.FromString(
         await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders));
       var exludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
       if (importedFileUid.Length == 0)
       {
@@ -189,13 +190,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             .ProjectId(projectId)
             .Headers(customHeaders)
             .ProjectSettings(settings)
-            .ExcludedIds(exludedIds))
-          .SetRaptorClient(raptorClient)
+            .ExcludedIds(exludedIds)
+            .Filter(filter))
           .CreateDesignProfileRequest(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
-            customerUid, impFileUid, filterUid);
+            customerUid, impFileUid);
 
         profileRequest.Validate();
-
         var slicerDesignResult = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainerFactory
             .Build<CompactionDesignProfileExecutor<CompactionProfileVertex>>(logger, raptorClient)
@@ -207,7 +207,5 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var transformedResult = profileResultHelper.ConvertProfileResult(results);
       return transformedResult;
     }
-
- 
   }
 }

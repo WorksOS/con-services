@@ -328,9 +328,9 @@ this.FeatureBackground();
             this.ExportReportMachinePasses_NoContent_NoDateRange("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "0", "0", "false", "false", "Test", "", "", ((string[])(null)));
         }
         
-        public virtual void ExportReportMachinePasses_BadRequest_NoFileName(string requestName, string projectUID, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void ExportReportMachinePasses_NoContentWithFilter(string requestName, string projectUID, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string fileName, string filterUID, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - Bad Request - NoFileName", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - No Content with Filter", exampleTags);
 #line 52
 this.ScenarioSetup(scenarioInfo);
 #line 4
@@ -338,18 +338,115 @@ this.FeatureBackground();
 #line 53
   testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 54
- testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startDate, endDate), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 55
-  testRunner.And(string.Format("coordType \"{0}\"", coordType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startDate, endDate), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 56
-  testRunner.And(string.Format("outputType \"{0}\"", outputType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("coordType \"{0}\"", coordType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 57
-  testRunner.And(string.Format("restrictOutput \"{0}\"", restrictOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("outputType \"{0}\"", outputType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 58
-  testRunner.And(string.Format("rawDataOutput \"{0}\"", rawDataOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("restrictOutput \"{0}\"", restrictOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 59
- testRunner.When("I request an Export Report Machine Passes expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.And(string.Format("rawDataOutput \"{0}\"", rawDataOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 60
+  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 61
+ testRunner.When("I request an Export Report Machine Passes expecting NoContent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - No Content with Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2012-11-05")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2012-11-06")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CoordType", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:OutputType", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "Test")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "1cf81668-1739-42d5-b068-ea025588796a")]
+        public virtual void ExportReportMachinePasses_NoContentWithFilter_()
+        {
+            this.ExportReportMachinePasses_NoContentWithFilter("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2012-11-05", "2012-11-06", "1", "1", "false", "false", "Test", "1cf81668-1739-42d5-b068-ea025588796a", ((string[])(null)));
+        }
+        
+        public virtual void ExportReportMachinePasses_GoodRequestWithFilter(string requestName, string projectUID, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string fileName, string filterUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - Good Request with Filter", exampleTags);
+#line 66
+this.ScenarioSetup(scenarioInfo);
+#line 4
+this.FeatureBackground();
+#line 67
+  testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 68
+  testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 69
+ testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startDate, endDate), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 70
+  testRunner.And(string.Format("coordType \"{0}\"", coordType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 71
+  testRunner.And(string.Format("outputType \"{0}\"", outputType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 72
+  testRunner.And(string.Format("restrictOutput \"{0}\"", restrictOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 73
+  testRunner.And(string.Format("rawDataOutput \"{0}\"", rawDataOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 74
+  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 75
+  testRunner.When("I request an Export Report Machine Passes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 76
+  testRunner.Then(string.Format("the report result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Good Request with Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2012-11-05")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2012-11-06")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CoordType", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:OutputType", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "Test")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "d15e65e0-3cb1-476f-8fc6-08507a14a269")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NELastPassFilterRaw")]
+        public virtual void ExportReportMachinePasses_GoodRequestWithFilter_()
+        {
+            this.ExportReportMachinePasses_GoodRequestWithFilter("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2012-11-05", "2012-11-06", "1", "1", "false", "false", "Test", "d15e65e0-3cb1-476f-8fc6-08507a14a269", "NELastPassFilterRaw", ((string[])(null)));
+        }
+        
+        public virtual void ExportReportMachinePasses_BadRequest_NoFileName(string requestName, string projectUID, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string errorCode, string errorMessage, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - Bad Request - NoFileName", exampleTags);
+#line 81
+this.ScenarioSetup(scenarioInfo);
+#line 4
+this.FeatureBackground();
+#line 82
+  testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 83
+ testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startDate, endDate), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 84
+  testRunner.And(string.Format("coordType \"{0}\"", coordType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 85
+  testRunner.And(string.Format("outputType \"{0}\"", outputType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 86
+  testRunner.And(string.Format("restrictOutput \"{0}\"", restrictOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 87
+  testRunner.And(string.Format("rawDataOutput \"{0}\"", rawDataOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 88
+ testRunner.When("I request an Export Report Machine Passes expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 89
  testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -376,25 +473,25 @@ this.FeatureBackground();
         public virtual void ExportReportMachinePasses_BadRequest(string requestName, string projectUID, string startDate, string endDate, string coordType, string outputType, string restrictOutput, string rawDataOutput, string errorCode, string errorMessage, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - Bad Request", exampleTags);
-#line 65
+#line 94
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 66
+#line 95
   testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 67
+#line 96
  testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startDate, endDate), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 68
+#line 97
   testRunner.And(string.Format("coordType \"{0}\"", coordType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 69
+#line 98
   testRunner.And(string.Format("outputType \"{0}\"", outputType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 70
+#line 99
   testRunner.And(string.Format("restrictOutput \"{0}\"", restrictOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 71
+#line 100
   testRunner.And(string.Format("rawDataOutput \"{0}\"", rawDataOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 72
+#line 101
  testRunner.When("I request an Export Report Machine Passes expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 73
+#line 102
  testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

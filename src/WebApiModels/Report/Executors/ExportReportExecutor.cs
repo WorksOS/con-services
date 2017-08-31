@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            $"Conversion from {item.GetType()} to { nameof(ExportReport)} failed"));
+            $"Conversion from {item.GetType()} to {typeof(ExportReport)} failed"));
       }
 
       TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter,
