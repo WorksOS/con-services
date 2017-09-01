@@ -55,8 +55,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Setup(x => x.GetDesignProfile(It.IsAny<TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args>()))
         .Returns((MemoryStream)null);
 
-      var request = DesignProfileProductionDataRequest.CreateProfileProductionData(1234, Guid.NewGuid(),  ProductionDataType.Height, null, -1,
-        null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION);
+      var request = CompactionProfileDesignRequest.CreateCompactionProfileDesignRequest(
+        1234, null,  null, -1, null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionDesignProfileExecutor<CompactionProfileVertex>>(logger, raptorClient.Object);
@@ -107,8 +107,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           .Setup(x => x.GetDesignProfile(It.IsAny<TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args>()))
           .Returns(ms);
 
-        var request = DesignProfileProductionDataRequest.CreateProfileProductionData(1234, Guid.NewGuid(), ProductionDataType.Height, null, -1,
-          null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION);
+        var request = CompactionProfileDesignRequest.CreateCompactionProfileDesignRequest(
+          1234, null, null, -1, null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION);
 
         var executor = RequestExecutorContainerFactory
           .Build<CompactionDesignProfileExecutor<CompactionProfileVertex>>(logger, raptorClient.Object);

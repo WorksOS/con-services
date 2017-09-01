@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   /// </summary>
   public class CompactionDesignProfileExecutor<U> : RequestExecutorContainer where U : CompactionProfileVertex, new()
   {
-    private CompactionProfileResult<U> PerformProductionDataProfilePost(DesignProfileProductionDataRequest request)
+    private CompactionProfileResult<U> PerformProductionDataProfilePost(CompactionProfileDesignRequest request)
     {
       CompactionProfileResult<U> result;
 
@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       ContractExecutionResult result;
       try
       {
-        var profile = PerformProductionDataProfilePost(item as DesignProfileProductionDataRequest);
+        var profile = PerformProductionDataProfilePost(item as CompactionProfileDesignRequest);
 
         if (profile != null)
         {

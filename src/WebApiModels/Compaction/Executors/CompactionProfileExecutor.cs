@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         var designDescriptor = RaptorConverters.DesignDescriptor(request.cutFillDesignDescriptor);
         var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
         var liftBuildSettings =
-          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic);
+          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
         if (request.IsAlignmentDesign)
         {
           ASNode.RequestAlignmentProfile.RPC.TASNodeServiceRPCVerb_RequestAlignmentProfile_Args args

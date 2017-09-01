@@ -11,8 +11,8 @@ using VSS.Productivity3D.WebApiModels.Extensions;
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
   /// <summary>
-  /// The request representation for a linear or alignment based profile request for all thematic types other than summary volumes.
-  /// Model represents a production data profile
+  /// The request representation for a linear or alignment based profile request for a design surface.
+  /// Model represents a design profile
   /// </summary>
   public class DesignProfileRequestHelper : DataRequestBase, IDesignProfileRequestHandler
   {
@@ -33,23 +33,22 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     }
 
     /// <summary>
-    /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a design profile.   
+    /// Creates an instance of the CompactionProfileDesignRequest class and populate it with data needed for a design profile.   
     /// </summary>
-    /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public DesignProfileProductionDataRequest CreateDesignProfileRequest(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid importedFileUid)
+    /// <returns>An instance of the CompactionProfileDesignRequest class.</returns>
+    public CompactionProfileDesignRequest CreateDesignProfileRequest(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid importedFileUid)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(
         startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
       
       var designDescriptor = GetDescriptor(projectUid, importedFileUid);
 
-      return DesignProfileProductionDataRequest.CreateProfileProductionData(
+      return CompactionProfileDesignRequest.CreateCompactionProfileDesignRequest(
         ProjectId,
-        importedFileUid,
-        ProductionDataType.Height,
+        designDescriptor,
         Filter,
         -1,
-        designDescriptor,
+        null,
         null,
         llPoints,
         ValidationConstants.MIN_STATION,
