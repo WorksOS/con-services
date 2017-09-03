@@ -3,11 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers

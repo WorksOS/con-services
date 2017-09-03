@@ -59,15 +59,31 @@ namespace ExecutorTests
       producer = serviceProvider.GetRequiredService<IKafka>();
     }
 
+    protected bool CreateCustomerProject(string customerUid, string projectUid)
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        CustomerUID = Guid.Parse(customerUid),
+        ProjectUID = Guid.Parse(projectUid),
+        ActionUTC = actionUtc
+      };
+
+      projectRepo.StoreEvent(createProjectEvent).Wait();
+      var g = projectRepo.GetProject(projectUid); g.Wait();
+      return (g.Result != null ? true : false);
+    }
+
     protected bool CreateProjectSettings(string projectUid, string settings)
     {
-      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
         ProjectUID = Guid.Parse(projectUid),
         Settings = settings,
-        ActionUTC = actionUTC
+        ActionUTC = actionUtc
       };
 
       projectRepo.StoreEvent(createProjectSettingsEvent).Wait();

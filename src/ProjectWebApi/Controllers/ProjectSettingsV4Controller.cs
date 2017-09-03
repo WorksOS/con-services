@@ -84,57 +84,55 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       LogCustomerDetails("GetProjectSettings", projectUid);
 
       var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
-          .Headers(customHeaders)
-          .CustomerUid(customerUid)
-          .UserId(userId)
-          .UserEmailAddress(userEmailAddress))
+          .CustomerUid(customerUid))
         .CreateProjectSettingsRequest(projectUid, "");
       projectSettingsRequest.Validate();
      
-      var result = WithServiceExceptionTryExecuteAsync(() => 
+      var result = (await WithServiceExceptionTryExecuteAsync(() => 
         RequestExecutorContainerFactory
         .Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, 
-                customerUid, userId, userEmailAddress, 
+                customerUid, null, null, null,
+                producer, kafkaTopicName,
+                null, raptorProxy, null,
                 projectRepo)
         .ProcessAsync(projectSettingsRequest) 
-        ).Result as ProjectSettingsResult;
-      
+        )) as ProjectSettingsResult;
+     
       log.LogResult(this.ToString(), projectUid, result);
       return result;
     }
 
 
-    ///// <summary>
-    ///// Upserts the project settings for a project.
-    ///// </summary>
-    ///// <returns></returns>
-    //[Route("api/v4/projectsettings")]
-    //[HttpPut]
-    //public async Task<ProjectSettingsResult> UpsertProjectSettings([FromBody]ProjectSettingsRequest request)
-    //{
-    //  if (string.IsNullOrEmpty(request?.projectUid))
-    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
-    //  LogCustomerDetails("UpsertProjectSettings", request?.projectUid);
-    //  log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
+    /// <summary>
+    /// Upserts the project settings for a project.
+    /// </summary>
+    /// <returns></returns>
+    [Route("api/v4/projectsettings")]
+    [HttpPut]
+    public async Task<ProjectSettingsResult> UpsertProjectSettings([FromBody]ProjectSettingsRequest request)
+    {
+      if (string.IsNullOrEmpty(request?.projectUid))
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
+      LogCustomerDetails("UpsertProjectSettings", request?.projectUid);
+      log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
 
-    //  var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
-    //        .Headers(customHeaders))
-    //      .CreateProjectSettingsRequest(request.projectUid, request.settings);
+      var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+            .CustomerUid(customerUid))
+          .CreateProjectSettingsRequest(request?.projectUid, request?.settings);
+      projectSettingsRequest.Validate();
 
-    //  projectSettingsRequest.Validate();
-    //  // should this go into the executor now, somehow? .. 
-    //  await ProjectSettingsValidation.ValidateProjectWithCustomer(projectRepo, log, serviceExceptionHandler, customerUid, request.projectUid);
-    //  await ProjectSettingsValidation.RaptorValidateProjectSettings(raptorProxy, log, serviceExceptionHandler,
-    //    projectSettingsRequest, customHeaders);
+      var result = (await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
+            customerUid, userId, null, customHeaders,
+            producer, kafkaTopicName,
+            null, raptorProxy, null,
+            projectRepo)
+          .ProcessAsync(projectSettingsRequest)
+      )) as ProjectSettingsResult;
 
-    //  string kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-    //                          configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
-
-    //  var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, projectRepo, producer, kafkaTopicName);
-    //  var result = await executor.ProcessAsync(request);
-
-    //  log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
-    //  return result as ProjectSettingsResult;
-    //}
+      log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
+      return result as ProjectSettingsResult;
+    }
   }
 }

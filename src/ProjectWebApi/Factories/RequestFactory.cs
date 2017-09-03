@@ -16,11 +16,11 @@ namespace VSS.MasterData.Project.WebAPI.Factories
   {
     private readonly ILogger log;
     private readonly IConfigurationStore configStore;
-    private IDictionary<string, string> headers;
+    //private IDictionary<string, string> headers;
     private string customerUid;
-    private string userId;
-    private string userEmailAddress;
-    private ProjectRepository projectRepo;
+    //private string userId;
+    //private string userEmailAddress;
+    //private ProjectRepository projectRepo;
 
     /// <summary>
     /// Default constructor.
@@ -28,12 +28,12 @@ namespace VSS.MasterData.Project.WebAPI.Factories
     /// <param name="logger">ILoggerFactory service implementation</param>
     /// <param name="configStore">IConfigurationStore service implementation</param>
     /// <param name="projectRepo"></param>
-    public RequestFactory(ILoggerFactory logger, IConfigurationStore configStore,
-      IRepository<IProjectEvent> projectRepo)
+    public RequestFactory(ILoggerFactory logger, IConfigurationStore configStore, string customerUid)
     {
       log = logger.CreateLogger<ProjectSettingsRequestHelper>();
       this.configStore = configStore;
-      this.projectRepo = projectRepo as ProjectRepository;
+      this.customerUid = customerUid;
+      //this.projectRepo = projectRepo as ProjectRepository;
     }
 
     /// <summary>
@@ -46,19 +46,9 @@ namespace VSS.MasterData.Project.WebAPI.Factories
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, projectRepo);
+      obj.Initialize(log, configStore, customerUid);
 
       return obj;
-    }
-
-    /// <summary>
-    /// Sets the collection of custom headers used on the service request.
-    /// </summary>
-    /// <param name="headers"></param>
-    public RequestFactory Headers(IDictionary<string, string> headers)
-    {
-      this.headers = headers;
-      return this;
     }
 
     /// <summary>
@@ -70,26 +60,6 @@ namespace VSS.MasterData.Project.WebAPI.Factories
       this.customerUid = customerUid;
       return this;
     }
-
-    /// <summary>
-    /// Sets the userId from the authentication header.
-    /// </summary>
-    /// <param name="userId"></param>
-    public RequestFactory UserId(string userId)
-    {
-      this.userId = userId;
-      return this;
-    }
-
-    /// <summary>
-    /// Sets the users email address from the authentication header.
-    /// </summary>
-    /// <param name="userEmailAddress"></param>
-    public RequestFactory UserEmailAddress(string userEmailAddress)
-    {
-      this.userEmailAddress = userEmailAddress;
-      return this;
-    }
-
+    
   }
 }

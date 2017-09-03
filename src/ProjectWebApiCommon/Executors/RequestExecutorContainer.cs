@@ -10,6 +10,8 @@ using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
+using VSS.MasterDataProxies.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -38,6 +40,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected string userId;
     protected string userEmailAddress;
 
+    protected IDictionary<string, string> headers;
+
     /// <summary>
     /// Gets or sets the Kafak consumer.
     /// </summary>
@@ -49,11 +53,31 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected string kafkaTopicName;
 
     /// <summary>
-    /// Repository factory used in ProcessEx
+    /// Project Geofence for 3dp  service
+    /// </summary>
+    protected IGeofenceProxy geofenceProxy;
+
+    /// <summary>
+    /// Interface to 3dp service validation
+    /// </summary>
+    protected IRaptorProxy raptorProxy;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected ISubscriptionProxy subscriptionProxy;
+
+    /// <summary>
+    /// Repository factory used extensively for project DB
     /// </summary>
     protected IProjectRepository projectRepo;
 
-    
+    /// <summary>
+    /// Repository factory used for subscription checking
+    /// </summary>
+    protected IRepository<ISubscriptionEvent> subscriptionsRepo;
+
+
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
     /// </summary>
@@ -125,7 +149,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// The contract execution states.
     /// </value>
     protected ContractExecutionStatesEnum ContractExecutionStates { get; }
-    protected string UserEmailAddress { get => userEmailAddress; set => userEmailAddress = value; }
 
     /// <summary>
     /// Default constructor which creates all structures necessary for error handling.
@@ -143,21 +166,29 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     { }
 
     /// <summary>
-    /// Injected constructor for mocking.
+    /// 
     /// </summary>
     public void Initialise(ILogger logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
-      string customerUid, string userId, string userEmailAddress, 
-      IProjectRepository projectRepo, IKafka producer = null, string kafkaTopicName = null)
+      string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
+      IKafka producer = null, string kafkaTopicName = null,
+      IGeofenceProxy geofenceProxy = null, IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
+      IProjectRepository projectRepo = null, IRepository<ISubscriptionEvent> subscriptionsRepo = null
+     )
     {
       log = logger;
       this.configStore = configStore;
       this.serviceExceptionHandler = serviceExceptionHandler;
       this.customerUid = customerUid;
       this.userId = userId;
-      this.UserEmailAddress = userEmailAddress;
-      this.projectRepo = projectRepo;
+      this.userEmailAddress = userEmailAddress;
+      this.headers = headers;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
+      this.geofenceProxy = geofenceProxy;
+      this.raptorProxy = raptorProxy;
+      this.subscriptionProxy = subscriptionProxy;
+      this.projectRepo = projectRepo;
+      this.subscriptionsRepo = subscriptionsRepo;
     }
 
     /// <summary>

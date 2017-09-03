@@ -30,14 +30,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       projectSettingsRequest = item as ProjectSettingsRequest;
       if ( projectSettingsRequest == null )
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-      try
-      {
-        await ValidateProjectWithCustomer(customerUid, projectSettingsRequest?.projectUid);
-      }
-      catch (ServiceException ex)
-      {
-        throw ex;
-      }
+      await ValidateProjectWithCustomer(customerUid, projectSettingsRequest?.projectUid);
 
       try
       {

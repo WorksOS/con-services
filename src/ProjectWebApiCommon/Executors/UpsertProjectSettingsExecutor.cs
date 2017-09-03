@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
@@ -49,6 +50,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ContractExecutionResult result = null;
 
       ProjectSettingsRequest request = item as ProjectSettingsRequest;
+      if (request == null)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
+      await ValidateProjectWithCustomer(customerUid, request?.projectUid);
+
+      await RaptorValidateProjectSettings(request);
 
       var upsertProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
@@ -91,5 +97,35 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
     }
 
+    private async Task RaptorValidateProjectSettings(ProjectSettingsRequest request)
+    {
+      BaseDataResult result = null;
+      try
+      {
+        result = await raptorProxy
+          .ValidateProjectSettings(Guid.Parse(request.projectUid), request.settings, headers)
+          .ConfigureAwait(false);
+      }
+      catch (Exception e)
+      {
+        log.LogError(
+          $"RaptorValidateProjectSettings: RaptorServices failed with exception. projectUid:{request.projectUid} settings:{request.settings}. Exception Thrown: {e.Message}. ");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 70,
+          "raptorProxy.ValidateProjectSettings", e.Message);
+      }
+
+      log.LogDebug(
+        $"RaptorValidateProjectSettings: projectUid: {request.projectUid} settings: {request.settings}. RaptorServices returned code: {result?.Code ?? -1} Message {result?.Message ?? "result == null"}.");
+
+      if (result != null && result.Code != 0)
+      {
+        log.LogError(
+          $"RaptorValidateProjectSettings: RaptorServices failed. projectUid:{request.projectUid} settings:{request.settings}. Reason: {result?.Code ?? -1} {result?.Message ?? "null"}. ");
+
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, result.Code.ToString(),
+          result.Message);
+      }
+      return;
+    }
   }
 }

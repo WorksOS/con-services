@@ -14,7 +14,10 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using System.Collections;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -45,7 +48,9 @@ namespace VSS.MasterData.ProjectTests
 
       var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
-        customerUid, userId, userEmailAddress, 
+        customerUid, userId, userEmailAddress, null,
+        null, null,
+        null, null, null,
         projectRepo.Object );
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       
@@ -58,8 +63,6 @@ namespace VSS.MasterData.ProjectTests
     public async Task GetProjectSettingsExecutor_DataExists()
     {
       string customerUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string userEmailAddress = "whatever@here.there.com";
       string projectUid = Guid.NewGuid().ToString();
       string settings = "";
 
@@ -78,8 +81,10 @@ namespace VSS.MasterData.ProjectTests
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings);
 
       var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
-        (logger, configStore, serviceExceptionHandler, 
-         customerUid, userId, userEmailAddress, 
+      (logger, configStore, serviceExceptionHandler,
+        customerUid, null, null, null,
+        null, null,
+        null, null, null,
          projectRepo.Object );
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
@@ -92,8 +97,6 @@ namespace VSS.MasterData.ProjectTests
     public async Task GetProjectSettingsExecutor_ProjectCustomerValidationFails()
     {
       string customerUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string userEmailAddress = "whatever@here.there.com";
       string projectUid = Guid.NewGuid().ToString();
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -109,7 +112,9 @@ namespace VSS.MasterData.ProjectTests
 
       var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
-          customerUid, userId, userEmailAddress,
+          customerUid, null, null, null,
+          null, null,
+          null, null, null,
           projectRepo.Object);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>( async () =>
         await executor.ProcessAsync(projectSettingsRequest));
@@ -121,28 +126,33 @@ namespace VSS.MasterData.ProjectTests
     public async Task UpdateProjectSettingsExecutor()
     {
       string customerUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string userEmailAddress = "whatever@here.there.com";
       string projectUid = Guid.NewGuid().ToString();
       string settings = "blah";
 
       var projectRepo = new Mock<IProjectRepository>();
       var projectSettings = new ProjectSettings() { ProjectUid = projectUid, Settings = settings };
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>())).ReturnsAsync(projectSettings);
-      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(new List<Repositories.DBModels.Project>());
+      var projectList = new List<Repositories.DBModels.Project>();
+      projectList.Add(new Repositories.DBModels.Project(){ ProjectUID = projectUid});
+      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(ps => ps.StoreEvent(It.IsAny<UpdateProjectSettingsEvent>())).ReturnsAsync(1); 
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
-      string kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                              configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+ 
+      var raptorProxy = new Mock<IRaptorProxy>();
+      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<Guid>(), It.IsAny<string>(),
+        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseDataResult());
+
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
-        customerUid, userId, userEmailAddress,
-        projectRepo.Object, producer.Object, kafkaTopicName);
+        customerUid, null, null, null,
+        producer.Object, kafkaTopicName,
+        null, raptorProxy.Object, null,
+        projectRepo.Object);
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
