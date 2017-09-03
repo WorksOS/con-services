@@ -109,40 +109,40 @@ namespace VSS.MasterData.Project.WebAPI.Filters
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
 
-          //if (!requireCustomerUid)
+          if (!requireCustomerUid)
             await _next.Invoke(context);
-          //else if (context.Request.Method == HttpMethod.Get.Method)
-          //  await _next.Invoke(context);
-          //else
-          //  ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 60);
+          else if (context.Request.Method == HttpMethod.Get.Method)
+            await _next.Invoke(context);
+          else
+            ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 60);
           return;
         }
 
         // User must have be authenticated against this customer
-        //if (requireCustomerUid)
-        //{
-        //  try
-        //  {
-        //    CustomerDataResult customerResult =
-        //      await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
-        //    if (customerResult.status != 200 || customerResult.customer == null ||
-        //        customerResult.customer.Count < 1 ||
-        //        !customerResult.customer.Exists(x => x.uid == customerUid))
-        //    {
-        //      var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
-        //      log.LogWarning(error);
-        //      await SetResult(error, context);
-        //      return;
-        //    }
-        //  }
-        //  catch (Exception e)
-        //  {
-        //    log.LogWarning(
-        //      $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
-        //    await SetResult("Failed authentication", context);
-        //    return;
-        //  }
-        //}
+        if (requireCustomerUid)
+        {
+          try
+          {
+            CustomerDataResult customerResult =
+              await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
+            if (customerResult.status != 200 || customerResult.customer == null ||
+                customerResult.customer.Count < 1 ||
+                !customerResult.customer.Exists(x => x.uid == customerUid))
+            {
+              var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
+              log.LogWarning(error);
+              await SetResult(error, context);
+              return;
+            }
+          }
+          catch (Exception e)
+          {
+            log.LogWarning(
+              $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
+            await SetResult("Failed authentication", context);
+            return;
+          }
+        }
 
         log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,
           userEmail);
