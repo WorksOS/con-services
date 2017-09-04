@@ -37,7 +37,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       if (settings == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(73, "ProjectSettings cannot be null."));
+          new ContractExecutionResult(2073, "ProjectSettings cannot be null."));
       }
 
     }

@@ -45,7 +45,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       if (string.IsNullOrEmpty(projectUid))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(5, "Missing ProjectUID."));
+          new ContractExecutionResult(2005, "Missing ProjectUID."));
       }
     }
   }

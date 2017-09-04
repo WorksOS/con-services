@@ -22,9 +22,11 @@ namespace ExecutorTests
     protected ILoggerFactory logger;
     protected IServiceExceptionHandler serviceExceptionHandler;
     protected ProjectRepository projectRepo;
+    protected CustomerRepository customerRepo;
     protected IRaptorProxy raptorProxy;
     protected Dictionary<string, string> customHeaders;
     protected IKafka producer;
+    protected string kafkaTopicName;
 
     [TestInitialize]
     public virtual void InitTest()
@@ -43,6 +45,7 @@ namespace ExecutorTests
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IRaptorProxy, RaptorProxy>()
         .AddSingleton<IKafka, RdKafkaDriver>()
@@ -53,23 +56,59 @@ namespace ExecutorTests
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
+      customerRepo = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
       raptorProxy = serviceProvider.GetRequiredService<IRaptorProxy>();
       customHeaders = new Dictionary<string, string>();
       producer = serviceProvider.GetRequiredService<IKafka>();
+      if (!producer.IsInitializedProducer)
+        producer.InitProducer(configStore);
+
+      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
+                       configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
     protected bool CreateCustomerProject(string customerUid, string projectUid)
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.Parse(customerUid),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUtc
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = Guid.Parse(projectUid),
+        ProjectID = new Random().Next(1, 1999999),
+        ProjectName = "The Project Name",
+        Description = "the Description",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = "New Zealand Standard Time",
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUtc,
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
+        CoordinateSystemFileName = "thisLocation\\this.cs"
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
         ActionUTC = actionUtc
       };
 
       projectRepo.StoreEvent(createProjectEvent).Wait();
+      customerRepo.StoreEvent(createCustomerEvent).Wait();
+      projectRepo.StoreEvent(associateCustomerProjectEvent).Wait();
       var g = projectRepo.GetProject(projectUid); g.Wait();
       return (g.Result != null ? true : false);
     }
