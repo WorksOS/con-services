@@ -55,6 +55,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 
             //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
 
+            // Don't permit the Ignite node to use more than 4Gb RAM (handy when running locally...)
             cfg.MemoryConfiguration = new MemoryConfiguration() { SystemCacheMaxSize = (long)4 * 1024 * 1024 * 1024 };
         }
 
@@ -121,7 +122,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //            };
             cfg.Backups = 0;
             cfg.CacheMode = CacheMode.Partitioned;
-//            cfg.AffinityFunction = new RaptorSpatialAffinityFunction();
+            cfg.AffinityFunction = new RaptorSpatialAffinityFunction();
         }
 
         public override void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
@@ -142,7 +143,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //            };
             cfg.Backups = 0;
             cfg.CacheMode = CacheMode.Partitioned;
-//            cfg.AffinityFunction = new RaptorSpatialAffinityFunction();
+            cfg.AffinityFunction = new RaptorSpatialAffinityFunction();
         }
 
         public override ICache<String, MemoryStream> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
@@ -182,6 +183,8 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             try
             {
                 raptorGrid = Ignition.Start(cfg);
+
+//                raptorGrid.GetCluster().GetLocalNode().consistentID
             }
             catch (Exception e)
             {
