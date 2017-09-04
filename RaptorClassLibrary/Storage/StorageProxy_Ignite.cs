@@ -2,10 +2,12 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Eviction;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
@@ -22,6 +24,8 @@ namespace VSS.VisionLink.Raptor.Storage
     /// </summary>
     public class StorageProxy_Ignite : StorageProxy_IgniteBase, IStorageProxy
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
         /// </summary>
@@ -63,6 +67,8 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
+                Log.Info(String.Format("Getting key:{0}", StreamName));
+
                 if (ReadFromImmutableDataCaches)
                 {
                     try
@@ -84,8 +90,10 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 return FileSystemErrorStatus.OK;
             }
-            catch (Exception E)
+            catch (Exception e)
             {
+                Log.Info(String.Format("Exception occurred: {0}", e));
+
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
             }
@@ -104,6 +112,8 @@ namespace VSS.VisionLink.Raptor.Storage
             try
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+
+                Log.Info(String.Format("Getting key:{0}", cacheKey));
 
                 if (ReadFromImmutableDataCaches)
                 {
@@ -173,6 +183,8 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
+                Log.Info(String.Format("Removing key:{0}", cacheKey));
+
                 // Remove item from both immutable and mutable caches
                 try
                 {
@@ -226,6 +238,8 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
+                Log.Info(String.Format("Putting key:{0}, size:{1}", cacheKey, Stream.Length));
+
                 mutableSpatialCache.Put(cacheKey, Stream);
 
                 try
@@ -266,6 +280,8 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
+                Log.Info(String.Format("Putting key:{0}, size:{1}", cacheKey, Stream.Length));
+
                 mutableNonSpatialCache.Put(cacheKey, Stream);
 
                 try
@@ -301,6 +317,8 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
+                Log.Info(String.Format("Putting key:{0}, size:{1}", cacheKey, Stream.Length));
+
                 mutableNonSpatialCache.Put(cacheKey, Stream);
 
                 try
@@ -310,7 +328,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 }
                 catch (Exception e)
                 {
-                    // Ignore any excpetion here which is typically thrown if the element in the
+                    // Ignore any exception here which is typically thrown if the element in the
                     // cache does not exist, which is entirely possible
                 }
 

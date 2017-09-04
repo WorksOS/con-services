@@ -22,6 +22,8 @@ using log4net;
 using System.Reflection;
 using Apache.Ignite.Core.Cluster;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using System.Diagnostics;
+using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {
@@ -159,7 +161,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 }
                 else
                 {
-                    Log.Info(String.Format("Subgrid request failed with code {0}", result));
+                    Log.Info(String.Format("Request for subgrid {0} request failed with code {1}", address, result));
 
                     //throw new ArgumentException(String.Format("Subgrid request failed with code {0}", result));
                 }
@@ -178,6 +180,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <returns></returns>
         public SubGridRequestsResponse Invoke(SubGridsRequestArgument arg)
         {
+            Debug.Assert(Range.InRange(spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions), 
+                         String.Format("Invalid spatial sub division descriptor (must in be in range {0} -> [{1}, {2}])", spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions));
+
             Log.Info("In SubGridsRequestComputeFunc.invoke()");
 
             SubGridRequestsResponse result = new SubGridRequestsResponse();

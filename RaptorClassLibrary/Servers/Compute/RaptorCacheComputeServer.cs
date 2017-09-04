@@ -29,9 +29,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
     /// </summary>
     public class RaptorCacheComputeServer : RaptorIgniteServer
     {
-        private const string PersistentCacheStoreLocation = "C:\\Temp\\RaptorIgniteData\\Persistence";
-
-
+        private const string PersistentCacheStoreLocation = @"C:\Temp\RaptorIgniteData";
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public override void ConfigureRaptorGrid(IgniteConfiguration cfg)
@@ -41,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.GridName = RaptorGrids.RaptorGridName();
             cfg.IgniteInstanceName = RaptorGrids.RaptorGridName();
             cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
-            cfg.JvmMaxMemoryMb = 4 * 1024; // Set max to 4Gb
+            cfg.JvmMaxMemoryMb = 6 * 1024; // Set max to 4Gb
             cfg.UserAttributes = new Dictionary<String, object>();
             cfg.UserAttributes.Add("Owner", RaptorGrids.RaptorGridName());
 
@@ -50,8 +48,14 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.PersistentStoreConfiguration = new PersistentStoreConfiguration()
             {
                 //MetricsEnabled = true,
-                PersistentStorePath = PersistentCacheStoreLocation                
-            };           
+                PersistentStorePath = Path.Combine(PersistentCacheStoreLocation, "Persistence"),
+                WalArchivePath = Path.Combine(PersistentCacheStoreLocation, "WalArchive"),
+                WalStorePath = Path.Combine(PersistentCacheStoreLocation, "WalStore"),
+            };
+
+            //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
+
+            cfg.MemoryConfiguration = new MemoryConfiguration() { SystemCacheMaxSize = (long)4 * 1024 * 1024 * 1024 };
         }
 
         public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
@@ -65,12 +69,11 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(false, true);
 //            cfg.ReadThrough = true;
 //            cfg.WriteThrough = true;
-
-            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
-            cfg.EvictionPolicy = new LruEvictionPolicy()
-            {
-                MaxMemorySize = 100000000   // 100Mb
-            };
+//            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
+//            cfg.EvictionPolicy = new LruEvictionPolicy()
+//            {
+//                MaxMemorySize = 100000000   // 100Mb
+//            };
             cfg.CacheMode = CacheMode.Replicated;
             cfg.Backups = 0;
         }
@@ -86,12 +89,11 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(false, false);
 //            cfg.ReadThrough = true;
 //            cfg.WriteThrough = true;
-
-            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
-            cfg.EvictionPolicy = new LruEvictionPolicy()
-            {
-                MaxMemorySize = 250000000   // 250Mb
-            };
+//            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
+//            cfg.EvictionPolicy = new LruEvictionPolicy()
+//            {
+//                MaxMemorySize = 250000000   // 250Mb
+//            };
             cfg.CacheMode = CacheMode.Replicated;
             cfg.Backups = 0;
         }
@@ -112,12 +114,11 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(true, true);
 //            cfg.ReadThrough = true;
 //            cfg.WriteThrough = true;
-  
-            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
-            cfg.EvictionPolicy = new LruEvictionPolicy()
-            {
-                MaxMemorySize = 500000000 // 500Mb
-            };
+//            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
+//            cfg.EvictionPolicy = new LruEvictionPolicy()
+//            {
+//                MaxMemorySize = 500000000 // 500Mb
+//            };
             cfg.Backups = 0;
             cfg.CacheMode = CacheMode.Partitioned;
 //            cfg.AffinityFunction = new RaptorSpatialAffinityFunction();
@@ -134,12 +135,11 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(true, false);
 //            cfg.ReadThrough = true;
 //            cfg.WriteThrough = true;
-
-            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
-            cfg.EvictionPolicy = new LruEvictionPolicy()
-            {
-                MaxMemorySize = 1000000000   // 1Gb
-            };
+//            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
+//            cfg.EvictionPolicy = new LruEvictionPolicy()
+//            {
+//                MaxMemorySize = 1000000000   // 1Gb
+//            };
             cfg.Backups = 0;
             cfg.CacheMode = CacheMode.Partitioned;
 //            cfg.AffinityFunction = new RaptorSpatialAffinityFunction();
@@ -174,10 +174,23 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 
         public virtual void StartRaptorGridCacheNode()
         {
+            Log.InfoFormat("Creating new Ignite node");
+
             IgniteConfiguration cfg = new IgniteConfiguration();
             ConfigureRaptorGrid(cfg);
 
-            raptorGrid = Ignition.Start(cfg);
+            try
+            {
+                raptorGrid = Ignition.Start(cfg);
+            }
+            catch (Exception e)
+            {
+                Log.InfoFormat("Creation of new Ignite node", e);
+            }
+            finally
+            {
+                Log.InfoFormat("Completed creation of new Ignite node");
+            }
 
             // Set the grid to be active here for the POC...
 //            if (!ActivatePersistentGridServer.SetGridActive(RaptorGrids.RaptorGridName()))

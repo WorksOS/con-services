@@ -15,6 +15,10 @@ namespace VSS.VisionLink.Raptor.Rendering
             switch (Mode)
             {
                 case DisplayMode.Height: return new PVMDisplayer_Height();
+                case DisplayMode.MachineSpeed: return new PVMDisplayer_MachineSpeed();
+                case DisplayMode.CCV: return new PVMDisplayer_CMV();
+                case DisplayMode.TemperatureSummary: return new PVMDisplayer_Temperature();
+
                 default:
                     Debug.Assert(false, String.Format("Unknown display mode to create a displayer for: {0}", Mode));
                     return null;

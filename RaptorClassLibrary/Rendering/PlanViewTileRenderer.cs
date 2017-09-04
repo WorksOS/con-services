@@ -359,6 +359,18 @@ namespace VSS.VisionLink.Raptor.Rendering
                         break;
                     }
 
+                case DisplayMode.CCV:
+                    {
+                        Palette = new CMVPalette();
+                        break;
+                    }
+
+                case DisplayMode.TemperatureSummary:
+                    {
+                        Palette = new TemperaturePalette();
+                        break;
+                    }
+
                 default: // Just use the elevation palette as a default...
                     extent = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID).GetAdjustedDataModelSpatialExtents(new long[0]);
                     Palette = new HeightPalette(extent.MinZ, extent.MaxZ);

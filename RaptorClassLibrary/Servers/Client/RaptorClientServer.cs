@@ -41,10 +41,25 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                         GridName = RaptorGrids.RaptorGridName(),
                         IgniteInstanceName = RaptorGrids.RaptorGridName(),
                         ClientMode = true,
+
+                        JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
+                        JvmMaxMemoryMb = 4 * 1024, // Set max to 4Gb
+  
                         UserAttributes = new Dictionary<string, object>() { { "Role", role }, { "RaptorNodeID", RaptorNodeID } }
                     };
 
-                    raptorGrid = Ignition.Start(cfg);
+                    try
+                    {
+                        raptorGrid = Ignition.Start(cfg);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.InfoFormat("Creation of new Ignite node with Role = {0} & RaptorNodeID = {1} failed with exception {2}", role, RaptorNodeID, e);
+                    }
+                    finally
+                    {
+                        Log.InfoFormat("Completed creation of new Ignite node with Role = {0} & RaptorNodeID = {1}", role, RaptorNodeID);
+                    }
                 }
             }
         }

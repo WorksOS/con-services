@@ -52,20 +52,24 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             try
             {
-                // Modify extents to be a square area with the data to be rendered centered on it
-                if (extents.SizeX > extents.SizeY)
+                // Modify extents to match the shape of the panel it is being displayed in
+                if ((extents.SizeX / extents.SizeY) < (pictureBox1.Width / pictureBox1.Height))
                 {
-                    double Delta = (extents.SizeX - extents.SizeY) / 2;
-                    extents.MinY -= Delta;
-                    extents.MaxY += Delta;
+                    double pixelSize = extents.SizeX / pictureBox1.Width;
+                    extents = new BoundingWorldExtent3D(extents.CenterX - (pictureBox1.Width / 2) * pixelSize,
+                                                        extents.CenterY - (pictureBox1.Height / 2) * pixelSize,
+                                                        extents.CenterX + (pictureBox1.Width / 2) * pixelSize,
+                                                        extents.CenterY + (pictureBox1.Height / 2) * pixelSize);
                 }
                 else
                 {
-                    double Delta = (extents.SizeY - extents.SizeX) / 2;
-                    extents.MinX -= Delta;
-                    extents.MaxX += Delta;
+                    double pixelSize = extents.SizeY / pictureBox1.Height;
+                    extents = new BoundingWorldExtent3D(extents.CenterX - (pictureBox1.Width / 2) * pixelSize,
+                                                        extents.CenterY - (pictureBox1.Height / 2) * pixelSize,
+                                                        extents.CenterX + (pictureBox1.Width / 2) * pixelSize,
+                                                        extents.CenterY + (pictureBox1.Height / 2) * pixelSize);
                 }
-
+            
                 CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter(siteModel)
                 {
                     ReturnEarliestFilteredCellPass = chkSelectEarliestPass.Checked,
@@ -84,8 +88,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                  (DisplayMode)displayMode.SelectedIndex, //DisplayMode.Height,
                  extents,
                  true, // CoordsAreGrid
-                 (ushort)pictureBox1.Width, // 500, // PixelsX
-                 (ushort)pictureBox1.Height, // 500, // PixelsY
+                 (ushort)pictureBox1.Width, // PixelsX
+                 (ushort)pictureBox1.Height, // PixelsY
                  new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
                  null // filter 2
                 ));
@@ -155,24 +159,26 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             ViewPortChange(() => extents.ScalePlan(1.25));
         }
 
+        private double translationIncrement() => 0.2 * extents.SizeX > extents.SizeY ? extents.SizeY : extents.SizeX;
+
         private void btnTranslateNorth_Click(object sender, EventArgs e)
         {
-            ViewPortChange(() => extents.Offset(0, 0.2 * extents.SizeX));
+            ViewPortChange(() => extents.Offset(0, translationIncrement()));
         }
 
         private void bntTranslateWest_Click(object sender, EventArgs e)
         {
-            ViewPortChange(() => extents.Offset(-0.2 * extents.SizeX, 0));
+            ViewPortChange(() => extents.Offset(-translationIncrement(), 0));
         }
 
         private void bntTranslateEast_Click(object sender, EventArgs e)
         {
-            ViewPortChange(() => extents.Offset(0.2 * extents.SizeX, 0));
+            ViewPortChange(() => extents.Offset(translationIncrement(), 0));
         }
 
         private void bntTranslateSouth_Click(object sender, EventArgs e)
         {
-            ViewPortChange(() => extents.Offset(0, -0.2 * extents.SizeX));
+            ViewPortChange(() => extents.Offset(0, -translationIncrement()));
         }
 
         private void btnRedraw_Click(object sender, EventArgs e)

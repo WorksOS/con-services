@@ -26,7 +26,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Palettes
         /// <returns></returns>
         public Color ChooseColour(double value)
         {
-            for (int i = PaletteTransitions.Length - 1; i > 0; i--)
+            for (int i = PaletteTransitions.Length - 1; i >= 0; i--)
             {
                 if (value >= PaletteTransitions[i].Value)
                 {

@@ -1,9 +1,11 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors;
@@ -27,6 +29,8 @@ namespace VSS.VisionLink.Raptor.Client
 {
     class Program
     {
+        private static ILog Log = null;
+
         /// <summary>
         /// The ProjectID to process the TAG files into
         /// </summary>
@@ -138,7 +142,8 @@ namespace VSS.VisionLink.Raptor.Client
             {
                 if (startcount-- <= 0)
                 {
-                    Console.WriteLine("Processing TAG file #{0}, {1}", ++count, fileName);
+                    Log.Info(String.Format("Processing TAG file #{0}, {1}", ++count, fileName));
+
                     TAGFileConverter converter = new TAGFileConverter();
 
                     // converter.Execute(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile.tag", FileMode.Open, FileAccess.Read));
@@ -188,6 +193,14 @@ namespace VSS.VisionLink.Raptor.Client
 
         static void Main(string[] args)
         {
+            string logFileName = System.Diagnostics.Process.GetCurrentProcess().ProcessName + ".log";
+            log4net.GlobalContext.Properties["LogName"] = logFileName;
+            log4net.Config.XmlConfigurator.Configure();
+
+            Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+            Log.Info("Initialising TAG file processor");
+
             try
             {
                 // Pull relevant arguments off the command line
@@ -240,7 +253,7 @@ namespace VSS.VisionLink.Raptor.Client
                 //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 4");
 
                 // Test out tile rendering against the processed TAG file data
-                TestTileRendering(projectID);
+               // TestTileRendering(projectID);
             }
             finally
             {

@@ -20,7 +20,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="parent"></param>
         /// <param name="level"></param>
         public GenericClientLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
-
         {
             Clear();
         }
@@ -119,6 +118,17 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         {
             // Implement when logging is set up
             // SIGLogMessage.PublishNoODS(Self, Format('Subgrid %s: %s', [Moniker, Title]), slmcDebug);
+        }
+
+        /// <summary>
+        /// Assign 
+        /// </summary>
+        /// <param name="source"></param>
+        public void Assign(GenericClientLeafSubGrid<T> source)
+        {
+            base.Assign(source);
+
+            ForEach((x, y) => Cells[x, y] = source.Cells[x, y]);
         }
     }
 }
