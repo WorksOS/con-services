@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
   [TestClass]
   public class CompactionProfileResultHelperTests
   {
-
+    #region FindCutFillElevations tests
     [TestMethod]
     public void NoProdDataAndNoDesignProfile()
     {
@@ -161,6 +161,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(20, slicerProfileResult.results[2].cutFillHeight, "2: Wrong cut-fill height");
       Assert.IsTrue(float.IsNaN(slicerProfileResult.results[3].cutFillHeight), "3: Wrong cut-fill height");
     }
+    #endregion
+
+    #region ConvertProfileResult production data profile tests
 
     [TestMethod]
     public void ConvertProductionDataProfileResultWithNull()
@@ -401,8 +404,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(expectedY2, actualResult.y2, $"{j}: {expectedType} Wrong y2");
       Assert.AreEqual(expectedValue2, actualResult.value2, $"{j}: {expectedType} Wrong value2");
     }
+    #endregion
 
-
+    #region ConvertProfileResult design profile tests
     [TestMethod]
     public void ConvertDesignProfileResultWithNull()
     {
@@ -481,5 +485,604 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         Assert.AreEqual(expectedVertices[i].elevation, actualResult.data[i].elevation, $"{j}: Wrong elevation {i}");
       }
     }
+    #endregion
+
+    #region RemoveRepeatedNoData tests
+
+    [TestMethod]
+    public void AllGapsShouldReturnEmptyList()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> result =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          gridDistanceBetweenProfilePoints = 1.234,
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "firstPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 0,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 1,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 2,
+                  y = float.NaN
+                }
+              }             
+            }
+          }
+        };
+
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      helper.RemoveRepeatedNoData(result);
+      Assert.AreEqual(1, result.results.Count, "Wrong number of results");
+      foreach (var item in result.results)
+      {
+        Assert.AreEqual(0, item.data.Count, $"{item.type}: Wrong number of data items");
+      }
+    }
+
+    [TestMethod]
+    public void NoRepeatedGapsNoShouldNotChangeData()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> result =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          gridDistanceBetweenProfilePoints = 1.234,
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "firstPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 0,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 1,
+                  y = 1.2F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 2,
+                  y = 1.5F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Gap,
+                  x = 3,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 4,
+                  y = 1.3F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 5,
+                  y = float.NaN
+                }
+              }
+            }
+          }
+        };
+
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      helper.RemoveRepeatedNoData(result);
+      Assert.AreEqual(1, result.results.Count, "Wrong number of results");
+      foreach (var item in result.results)
+      {
+        Assert.AreEqual(6, item.data.Count, $"{item.type}: Wrong number of data items");
+        ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN);
+        ValidateItem(1, item.data[1], ProfileCellType.Edge, 1, 1.2F);
+        ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 2, 1.5F);
+        ValidateItem(3, item.data[3], ProfileCellType.Gap, 3, float.NaN);
+        ValidateItem(4, item.data[4], ProfileCellType.Edge, 4, 1.3F);
+        ValidateItem(5, item.data[5], ProfileCellType.Gap, 5, float.NaN);
+      }
+    }
+
+    [TestMethod]
+    public void NoGapsShouldNotChangeData()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> result =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          gridDistanceBetweenProfilePoints = 1.234,
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "firstPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 0,
+                  y = 1.1F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 1,
+                  y = 1.2F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 2,
+                  y = 1.5F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 4,
+                  y = 1.3F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 5,
+                  y = 1.0F
+                }
+              }
+            }
+          }
+        };
+
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      helper.RemoveRepeatedNoData(result);
+      Assert.AreEqual(1, result.results.Count, "Wrong number of results");
+      foreach (var item in result.results)
+      {
+        Assert.AreEqual(5, item.data.Count, $"{item.type}: Wrong number of data items");
+        ValidateItem(0, item.data[0], ProfileCellType.MidPoint, 0, 1.1F);
+        ValidateItem(1, item.data[1], ProfileCellType.Edge, 1, 1.2F);
+        ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 2, 1.5F);
+        ValidateItem(3, item.data[3], ProfileCellType.Edge, 4, 1.3F);
+        ValidateItem(4, item.data[4], ProfileCellType.MidPoint, 5, 1.0F);
+      }
+    }
+
+    [TestMethod]
+    public void RepeatedGapsShouldBeRemoved()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> result =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          gridDistanceBetweenProfilePoints = 1.234,
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "firstPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 0,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 1,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 2,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 3,
+                  y = 1.3F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 4,
+                  y = 1.2F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Gap,
+                  x = 5,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 6,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 7,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 8,
+                  y = 1.8F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 9,
+                  y = 1.6F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 10,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 11,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Gap,
+                  x = 12,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 13,
+                  y = float.NaN
+                }
+              }
+            }
+          }
+        };
+
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      helper.RemoveRepeatedNoData(result);
+      Assert.AreEqual(1, result.results.Count, "Wrong number of results");
+      foreach (var item in result.results)
+      {
+        Assert.AreEqual(8, item.data.Count, $"{item.type}: Wrong number of data items");
+        ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN);
+        ValidateItem(1, item.data[1], ProfileCellType.Edge, 3, 1.3F);
+        ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 4, 1.2F);
+        ValidateItem(3, item.data[3], ProfileCellType.Gap, 5, float.NaN);
+        ValidateItem(4, item.data[4], ProfileCellType.Edge, 8, 1.8F);
+        ValidateItem(5, item.data[5], ProfileCellType.MidPoint, 9, 1.6F);
+        ValidateItem(6, item.data[6], ProfileCellType.Gap, 10, float.NaN);
+        ValidateItem(7, item.data[7], ProfileCellType.Gap, 13, float.NaN);
+      }
+    }
+
+   
+    [TestMethod]
+    public void RepeatedGapsForDifferentTypesShouldBeRemoved()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> result =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          gridDistanceBetweenProfilePoints = 1.234,
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "firstPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 0,
+                  y = 1.2F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 1,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 2,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 3,
+                  y = 1.3F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 4,
+                  y = 1.2F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Gap,
+                  x = 5,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 6,
+                  y = 1.7F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 7,
+                  y = 1.1F
+                }
+              }
+            },
+            new CompactionProfileDataResult
+            {
+              type = "cmvSummary",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 0,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 1,
+                  y = 1.8F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 2,
+                  y = 1.7F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 3,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 4,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Gap,
+                  x = 5,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 6,
+                  y = 1.1F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 7,
+                  y = 1.0F
+                }
+              }
+            },
+            new CompactionProfileDataResult
+            {
+              type = "passCountDetail",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 0,
+                  y = 1.4F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 1,
+                  y = 1.1F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 2,
+                  y = 1.4F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 3,
+                  y = 1.0F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 4,
+                  y = 1.5F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Gap,
+                  x = 5,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 6,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 7,
+                  y = float.NaN
+                }
+              }
+            },
+            new CompactionProfileDataResult
+            {
+              type = "cutFill",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 0,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 1,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 2,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 3,
+                  y = 1.3F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 4,
+                  y = 1.2F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Gap,
+                  x = 5,
+                  y = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.Edge,
+                  x = 6,
+                  y = 1.7F
+                },
+                new CompactionDataPoint
+                {
+                  cellType = ProfileCellType.MidPoint,
+                  x = 7,
+                  y = 1.6F
+                }
+              }
+            },
+
+          }
+        };
+
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      helper.RemoveRepeatedNoData(result);
+      Assert.AreEqual(4, result.results.Count, "Wrong number of results");
+      for (int i=0; i<4; i++)
+      {
+        var item = result.results[i];
+        switch (i)
+        {
+          case 0:
+            Assert.AreEqual(7, item.data.Count, $"{i}: Wrong number of data items");
+            Assert.AreEqual("firstPass", item.type, $"{i}: Wrong type");
+            ValidateItem(0, item.data[0], ProfileCellType.MidPoint, 0, 1.2F);
+            ValidateItem(1, item.data[1], ProfileCellType.Gap, 1, float.NaN);
+            ValidateItem(2, item.data[2], ProfileCellType.Edge, 3, 1.3F);
+            ValidateItem(3, item.data[3], ProfileCellType.MidPoint, 4, 1.2F);
+            ValidateItem(4, item.data[4], ProfileCellType.Gap, 5, float.NaN);
+            ValidateItem(5, item.data[5], ProfileCellType.Edge, 6, 1.7F);
+            ValidateItem(6, item.data[6], ProfileCellType.MidPoint, 7, 1.1F);
+            break;
+          case 1:
+            Assert.AreEqual(6, item.data.Count, $"{i}: Wrong number of data items");
+            Assert.AreEqual("cmvSummary", item.type, $"{i}: Wrong type");
+            ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN);
+            ValidateItem(1, item.data[1], ProfileCellType.Edge, 1, 1.8F);
+            ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 2, 1.7F);
+            ValidateItem(3, item.data[3], ProfileCellType.Gap, 3, float.NaN);
+            ValidateItem(4, item.data[4], ProfileCellType.Edge, 6, 1.1F);
+            ValidateItem(5, item.data[5], ProfileCellType.MidPoint, 7, 1.0F);
+            break;
+          case 2:
+            Assert.AreEqual(7, item.data.Count, $"{i}: Wrong number of data items");
+            Assert.AreEqual("passCountDetail", item.type, $"{i}: Wrong type");
+            ValidateItem(0, item.data[0], ProfileCellType.MidPoint, 0, 1.4F);
+            ValidateItem(1, item.data[1], ProfileCellType.Edge, 1, 1.1F);
+            ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 2, 1.4F);
+            ValidateItem(3, item.data[3], ProfileCellType.Edge, 3, 1.0F);
+            ValidateItem(4, item.data[4], ProfileCellType.MidPoint, 4, 1.5F);
+            ValidateItem(5, item.data[5], ProfileCellType.Gap, 5, float.NaN);
+            ValidateItem(6, item.data[6], ProfileCellType.Gap, 7, float.NaN);
+            break;
+          case 3:
+            Assert.AreEqual(6, item.data.Count, $"{i}: Wrong number of data items");
+            Assert.AreEqual("cutFill", item.type, $"{i}: Wrong type");
+            ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN);
+            ValidateItem(1, item.data[1], ProfileCellType.Edge, 3, 1.3F);
+            ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 4, 1.2F);
+            ValidateItem(3, item.data[3], ProfileCellType.Gap, 5, float.NaN);
+            ValidateItem(4, item.data[4], ProfileCellType.Edge, 6, 1.7F);
+            ValidateItem(5, item.data[5], ProfileCellType.MidPoint, 7, 1.6F);
+            break;
+        }
+      }
+    }
+
+
+    private void ValidateItem(int i, CompactionDataPoint actual, ProfileCellType expectedCellType, double expectedStation, float expectedElevation)
+    {
+      Assert.AreEqual(expectedCellType, actual.cellType, $"{i}: Wrong cellType");
+      Assert.AreEqual(expectedStation, actual.x, $"{i}: Wrong x");
+      Assert.AreEqual(expectedElevation, actual.y, $"{i}: Wrong y");
+    }
+    #endregion
   }
 }

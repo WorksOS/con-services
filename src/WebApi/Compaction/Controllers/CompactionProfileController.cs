@@ -150,6 +150,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult);
       }
       var transformedResult = profileResultHelper.ConvertProfileResult(slicerProductionDataResult);
+      profileResultHelper.RemoveRepeatedNoData(transformedResult);
       return transformedResult;
     }
 

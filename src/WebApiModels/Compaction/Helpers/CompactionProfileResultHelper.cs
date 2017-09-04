@@ -304,6 +304,59 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return profile;
     }
 
+    /// <summary>
+    /// The profiles for various types (CMV, temperature, pass count etc.) may have several points
+    /// in sequence which have no data which are effectively a single gap. Remove these repeated
+    /// points and just keep the start of the gap and the next data point.
+    /// </summary>
+    /// <param name="result">The profile result to remove the repeated gaps from</param>
+    public void RemoveRepeatedNoData(CompactionProfileResult<CompactionProfileDataResult> result)
+    {
+      foreach (var profileResult in result.results)
+      {
+        //Identify all the gaps.
+        //All data with NaN elevation is effectively a gap
+        foreach (var point in profileResult.data)
+        { 
+          if (float.IsNaN(point.y))
+            point.cellType = ProfileCellType.Gap;          
+        }
+
+        //Now remove repeated gaps.
+        //Always keep first and last points as they are the slicer end points
+        CompactionDataPoint prevData = profileResult.data[0];
+        bool haveGap = prevData.cellType == ProfileCellType.Gap;
+        List<CompactionDataPoint> newList = new List<CompactionDataPoint>{prevData};
+        for (int i = 1; i < profileResult.data.Count-1; i++)
+        {
+          if (profileResult.data[i].cellType == ProfileCellType.Gap)
+          {
+            if (!haveGap)
+            {
+              //This is the start of a gap - keep it
+              haveGap = true;
+              newList.Add(profileResult.data[i]);
+            }
+            //else ignore it - repeated gap
+          }
+          else
+          {
+            //A data point - keep it
+            haveGap = false;
+            newList.Add(profileResult.data[i]);
+          }
+        }
+        newList.Add(profileResult.data[profileResult.data.Count-1]);
+        //If the only 2 points are the slicer end points and they have no data then
+        //remove them and return an empty list to indicate no profile data at all.
+        if (newList.Count == 2 && newList[0].cellType == ProfileCellType.Gap && newList[1].cellType == ProfileCellType.Gap)
+        {
+          newList.RemoveRange(0, 2);
+        }
+        profileResult.data = newList;
+      }
+    }
+
 
     /// <summary>
     /// Convert from one design profile representation to another

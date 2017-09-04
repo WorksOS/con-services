@@ -132,7 +132,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         }
 
         bool noCCVValue = currCell.TargetCCV == 0 || currCell.TargetCCV == VelociraptorConstants.NO_CCV || currCell.CCV == VelociraptorConstants.NO_CCV;
-        bool noCCElevation = currCell.CCVElev == VelociraptorConstants.NULL_SINGLE || noCCVValue;
+        bool noCCVElevation = currCell.CCVElev == VelociraptorConstants.NULL_SINGLE || noCCVValue;
         bool noMDPValue = currCell.TargetMDP == 0 || currCell.TargetMDP == VelociraptorConstants.NO_MDP || currCell.MDP == VelociraptorConstants.NO_MDP;
         bool noMDPElevation = currCell.MDPElev == VelociraptorConstants.NULL_SINGLE || noMDPValue;
         bool noTemperatureValue = currCell.materialTemperature == VelociraptorConstants.NO_TEMPERATURE;
@@ -179,7 +179,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
           cmv = noCCVValue ? float.NaN : currCell.CCV / 10.0F,
           cmvPercent = cmvPercent,
-          cmvHeight = noCCElevation ? float.NaN : currCell.CCVElev,
+          cmvHeight = noCCVElevation ? float.NaN : currCell.CCVElev,
 
           mdpPercent = mdpPercent,
           mdpHeight = noMDPElevation ? float.NaN : currCell.MDPElev,
