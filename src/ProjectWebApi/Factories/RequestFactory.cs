@@ -27,7 +27,7 @@ namespace VSS.MasterData.Project.WebAPI.Factories
     /// </summary>
     /// <param name="logger">ILoggerFactory service implementation</param>
     /// <param name="configStore">IConfigurationStore service implementation</param>
-    /// <param name="projectRepo"></param>
+    /// <param name="customerUid"></param>
     public RequestFactory(ILoggerFactory logger, IConfigurationStore configStore, string customerUid)
     {
       log = logger.CreateLogger<ProjectSettingsRequestHelper>();

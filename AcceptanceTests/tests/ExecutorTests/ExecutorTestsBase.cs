@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -8,9 +7,9 @@ using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,10 +13,9 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using System.Collections;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.ProjectTests
 {

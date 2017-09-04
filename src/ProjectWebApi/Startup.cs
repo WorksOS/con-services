@@ -15,9 +15,9 @@ using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Project.WebAPI.Filters;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 

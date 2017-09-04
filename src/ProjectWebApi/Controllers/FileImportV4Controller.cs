@@ -17,11 +17,11 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.MasterDataProxies.Interfaces;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {

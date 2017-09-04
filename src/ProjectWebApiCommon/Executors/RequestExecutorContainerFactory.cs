@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors

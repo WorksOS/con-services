@@ -10,8 +10,8 @@ using VSS.Authentication.JWT;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Filters
 {

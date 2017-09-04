@@ -13,10 +13,10 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories;
-using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {

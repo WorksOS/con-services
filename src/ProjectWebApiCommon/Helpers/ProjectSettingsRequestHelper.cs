@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {

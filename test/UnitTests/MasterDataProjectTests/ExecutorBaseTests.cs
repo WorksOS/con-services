@@ -7,9 +7,9 @@ using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.ProjectTests
