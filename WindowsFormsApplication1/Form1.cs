@@ -159,7 +159,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             ViewPortChange(() => extents.ScalePlan(1.25));
         }
 
-        private double translationIncrement() => 0.2 * extents.SizeX > extents.SizeY ? extents.SizeY : extents.SizeX;
+        private double translationIncrement() => 0.2 * (extents.SizeX > extents.SizeY ? extents.SizeY : extents.SizeX);
 
         private void btnTranslateNorth_Click(object sender, EventArgs e)
         {
