@@ -177,6 +177,12 @@ namespace VSS.VisionLink.Raptor.Client
             }
             else
             {
+                string[] folders = Directory.GetDirectories(folder);
+                foreach (string f in folders)
+                {
+                    ProcessTAGFilesInFolder(projectID, f);
+                }
+
                 ProcessTAGFiles(projectID, Directory.GetFiles(folder));
             }
         }
