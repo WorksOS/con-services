@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.Interfaces;
+using VSS.VisionLink.Raptor.Storage.Utilities;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.Types;
 
@@ -74,7 +75,7 @@ namespace VSS.VisionLink.Raptor.Storage
                     try
                     {
                         // First look to see if the immutable item is in the cache
-                        Stream = immutableSpatialCache.Get(cacheKey);
+                        Stream = MemoryStreamCompression.Decompress(immutableSpatialCache.Get(cacheKey));
                     }
                     catch (KeyNotFoundException e)
                     {
@@ -83,7 +84,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 }
                 else
                 {
-                    Stream = mutableSpatialCache.Get(cacheKey);
+                    Stream = MemoryStreamCompression.Decompress(mutableSpatialCache.Get(cacheKey));
                 }
 
                 Stream.Position = 0;
@@ -119,7 +120,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 {
                     try
                     {
-                        Stream = immutableNonSpatialCache.Get(cacheKey);
+                        Stream = MemoryStreamCompression.Decompress(immutableNonSpatialCache.Get(cacheKey));
                     }
                     catch (KeyNotFoundException e)
                     {
@@ -128,7 +129,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 }
                 else
                 {
-                    Stream = mutableNonSpatialCache.Get(cacheKey);
+                    Stream = MemoryStreamCompression.Decompress(mutableNonSpatialCache.Get(cacheKey));
                 }
 
                 Stream.Position = 0;
@@ -240,8 +241,10 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 Log.Info(String.Format("Putting key:{0}, size:{1}", cacheKey, Stream.Length));
 
-                mutableSpatialCache.Put(cacheKey, Stream);
-
+                using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
+                {
+                    mutableSpatialCache.Put(cacheKey, compressedStream);
+                }
                 try
                 {
                     // Invalidate the immutable version
@@ -282,7 +285,10 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 Log.Info(String.Format("Putting key:{0}, size:{1}", cacheKey, Stream.Length));
 
-                mutableNonSpatialCache.Put(cacheKey, Stream);
+                using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
+                {
+                    mutableNonSpatialCache.Put(cacheKey, compressedStream);
+                }
 
                 try
                 {
@@ -319,7 +325,10 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 Log.Info(String.Format("Putting key:{0}, size:{1}", cacheKey, Stream.Length));
 
-                mutableNonSpatialCache.Put(cacheKey, Stream);
+                using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
+                {
+                    mutableNonSpatialCache.Put(cacheKey, compressedStream);
+                }
 
                 try
                 {

@@ -14,19 +14,19 @@ using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.Types;
 
-namespace VSS.VisionLink.Raptor.Storage
+namespace VSS.VisionLink.Raptor.Storage.Obsolete
 {
     /// <summary>
     /// Implementation of the IStorageProxy interface that allows to read/write operations against Ignite based IO support.
     /// Note: All read and write operations are sending and receiving MemoryStream objects.
     /// </summary>
-    public class StorageProxy_Ignite_MutableOnly : StorageProxy_IgniteBase, IStorageProxy
+    public class StorageProxy_Ignite_MutableOnly_Obsolete : StorageProxy_IgniteBase, IStorageProxy
     {
         /// <summary>
         /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
         /// </summary>
         /// <param name="gridName"></param>
-        public StorageProxy_Ignite_MutableOnly(string gridName) : base(gridName)
+        public StorageProxy_Ignite_MutableOnly_Obsolete(string gridName) : base(gridName)
         {
             EstablishMutableCaches();
             EstablishImmutableCaches();

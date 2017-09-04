@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
+using VSS.VisionLink.Raptor.Storage.Utilities;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.Types;
 
@@ -94,22 +95,26 @@ namespace VSS.VisionLink.Raptor.Storage
                                                                        FileSystemStreamType streamType)
         {
             MemoryStream immutableStream = null;
-            MemoryStream mutableStream = mutableCache.Get(cacheKey);
-
-            // If successfully read, convert from the mutable to the immutable form and store it into the immutable cache
-            if (mutableStream != null)
+            using (MemoryStream mutableStream = MemoryStreamCompression.Decompress(mutableCache.Get(cacheKey)))
             {
-                if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out immutableStream) && (immutableStream != null))
+                // If successfully read, convert from the mutable to the immutable form and store it into the immutable cache
+                if (mutableStream != null)
                 {
-                    // Place the converted immutable item into the immutable cache
-                    immutableCache.Put(cacheKey, immutableStream);
-                }
-                else
-                {
-                    // There was no immutable version of the requested information. Allow this to bubble up the stack...
-                    // TODO Log the failure
+                    if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out immutableStream) && (immutableStream != null))
+                    {
+                        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
+                        {
+                            // Place the converted immutable item into the immutable cache
+                            immutableCache.Put(cacheKey, compressedStream);
+                        }
+                    }
+                    else
+                    {
+                        // There was no immutable version of the requested information. Allow this to bubble up the stack...
+                        // TODO Log the failure
 
-                    immutableStream = null;
+                        immutableStream = null;
+                    }
                 }
             }
 
@@ -130,22 +135,26 @@ namespace VSS.VisionLink.Raptor.Storage
                                                                   FileSystemStreamType streamType)
         {
             MemoryStream immutableStream = null;
-            MemoryStream mutableStream = mutableCache.Get(cacheKey);
-
-            // If successfully read, convert from the mutable to the immutable form and store it into the immutable cache
-            if (mutableStream != null)
+            using (MemoryStream mutableStream = MemoryStreamCompression.Decompress(mutableCache.Get(cacheKey)))
             {
-                if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out immutableStream) && (immutableStream != null))
+                // If successfully read, convert from the mutable to the immutable form and store it into the immutable cache
+                if (mutableStream != null)
                 {
-                    // Place the converted immutable item into the immutable cache
-                    immutableCache.Put(cacheKey, immutableStream);
-                }
-                else
-                {
-                    // There was no immutable version of the requested information. Allow this to bubble up the stack...
-                    // TODO Log the failure
+                    if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out immutableStream) && (immutableStream != null))
+                    {
+                        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
+                        {
+                            // Place the converted immutable item into the immutable cache
+                            immutableCache.Put(cacheKey, compressedStream);
+                        }
+                    }
+                    else
+                    {
+                        // There was no immutable version of the requested information. Allow this to bubble up the stack...
+                        // TODO Log the failure
 
-                    immutableStream = null;
+                        immutableStream = null;
+                    }
                 }
             }
 

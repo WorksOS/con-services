@@ -195,6 +195,7 @@
     <Compile Include="Storage\StorageProxyFactory.cs" />
     <Compile Include="Storage\StorageProxy_IgniteBase.cs" />
     <Compile Include="Storage\StorageProxy_Ignite_MutableOnly.cs" />
+    <Compile Include="Storage\Utilities\MemoryStreamCompression.cs" />
     <Compile Include="SubGridTrees\Client\ClientCMVLeafSubGrid.cs" />
     <Compile Include="SubGridTrees\Client\ClientTemperatureLeafSubGrid.cs" />
     <Compile Include="SubGridTrees\Client\ClientMachineSpeedLeafSubGrid.cs" />
