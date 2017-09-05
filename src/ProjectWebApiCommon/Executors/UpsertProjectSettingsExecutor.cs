@@ -20,24 +20,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   /// </summary>
   public class UpsertProjectSettingsExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// This constructor allows us to mock raptorClient
-    /// </summary>
-    public UpsertProjectSettingsExecutor(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo, IKafka producer, string kafkaTopicName) 
-    {
-    }
-
-    /// <summary>
-    /// Default constructor for RequestExecutorContainer.Build
-    /// </summary>
-    public UpsertProjectSettingsExecutor()
-    {
-    }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new System.NotImplementedException();
-    }
 
     /// <summary>
     /// Processes the UpsertProjectSettings request
@@ -91,6 +73,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69, e.Message);
       }
       return result;
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new System.NotImplementedException();
     }
 
     protected override void ProcessErrorCodes()

@@ -32,8 +32,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     private readonly ILoggerFactory logger;
 
-    //private readonly IConfigurationStore configStore;
-
     /// <summary>
     /// The request factory
     /// </summary>
@@ -90,8 +88,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
         .Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, 
                 customerUid, null, null, null,
-                producer, kafkaTopicName,
-                null, raptorProxy, null,
+                null, null,
+                null, null, null,
                 projectRepo)
         .ProcessAsync(projectSettingsRequest) 
         )) as ProjectSettingsResult;

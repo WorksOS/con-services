@@ -239,18 +239,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
 
-    /// <summary>
-    /// Gets the project list for a customer
-    /// </summary>
-    /// <returns></returns>
-    protected async Task<ImmutableList<Repositories.DBModels.Project>> GetProjectList()
-    {
-      var customerUid = LogCustomerDetails("GetProjectList");
-      var projects = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
+    ///// <summary>
+    ///// Gets the project list for a customer
+    ///// </summary>
+    ///// <returns></returns>
+    //protected async Task<ImmutableList<Repositories.DBModels.Project>> GetProjectList()
+    //{
+    //  var customerUid = LogCustomerDetails("GetProjectList");
+    //  var projects = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
-      log.LogInformation($"Project list contains {projects.Count} projects");
-      return projects;
-    }
+    //  log.LogInformation($"Project list contains {projects.Count} projects");
+    //  return projects;
+    //}
 
     /// <summary>
     /// Gets the project.

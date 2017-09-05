@@ -63,7 +63,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ProjectV4DescriptorsListResult> GetProjectsV4()
     {
       log.LogInformation("GetProjectsV4");
-      //exclude Landfill Projects for now
+
       //exclude Landfill Projects for now
       var projects = (await GetProjectList().ConfigureAwait(false)).Where(prj => prj.ProjectType != ProjectType.LandFill).ToImmutableList();
 

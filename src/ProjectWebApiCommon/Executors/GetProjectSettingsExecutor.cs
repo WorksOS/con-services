@@ -11,11 +11,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   /// </summary>
   public class GetProjectSettingsExecutor : RequestExecutorContainer
   {
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException();
-    }
-
     /// <summary>
     /// Processes the GetProjectSettings request
     /// </summary>
@@ -43,6 +38,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       return result;
     }
-
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException();
+    }
+    protected override void ProcessErrorCodes()
+    {
+    }
   }
 }
