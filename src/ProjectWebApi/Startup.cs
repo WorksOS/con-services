@@ -10,6 +10,7 @@ using Swashbuckle.Swagger.Model;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
@@ -90,6 +91,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddScoped<IRequestFactory, RequestFactory>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IRepository<IProjectEvent>, ProjectRepository>();
+      services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
 
       services.AddMemoryCache();
 

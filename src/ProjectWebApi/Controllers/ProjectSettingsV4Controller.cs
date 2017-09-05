@@ -64,7 +64,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       this.logger = logger;
       log = logger.CreateLogger<ProjectSettingsV4Controller>();
-      //configStore = configStore;
       this.requestFactory = requestFactory;
     }
 

@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
@@ -41,7 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets or sets the Service exception handler.
     /// </summary>
     protected readonly IServiceExceptionHandler serviceExceptionHandler;
-    
+
     /// <summary>
     /// Gets or sets the Configuration Store. 
     /// </summary>
@@ -51,7 +52,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets or sets the Kafak consumer.
     /// </summary>
     protected readonly IKafka producer;
-    
+
     /// <summary>
     /// Gets or sets the Kafka topic.
     /// </summary>
@@ -141,9 +142,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="subscriptionsRepo">The subscriptions repo.</param>
     protected BaseController(ILogger log, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy, 
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
       IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo
-     )
+    )
     {
       this.log = log;
       this.configStore = configStore;
@@ -170,7 +171,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns></returns>
-    protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
+    protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action)
+      where TResult : ContractExecutionResult
     {
       TResult result = default(TResult);
       try
@@ -181,12 +183,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       catch (ServiceException se)
       {
-        // todo Aaron,
-        //   a) need to GetContent rather than message here.
-        //   b) Also what should HttpStatusCode code be?
-        //  e.s. if my validation fails - its a validation error else some other kind of error
+        // todo temp kludge (see Aaron) until a better solution can be found so that 
+        //    a SE thrown both here, and outside of this method, is consistant.
+        var temp = JsonConvert.DeserializeObject<ServiceExceptionKludge>(se.GetContent);
         throw new ServiceException(se.Code,
-          new ContractExecutionResult(se.GetResult.Code, se.GetContent));
+          new ContractExecutionResult(se.GetResult.Code, temp.Message));
       }
       catch (Exception ex)
       {
@@ -199,39 +200,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       return result;
     }
-
-    ///// <summary>
-    ///// With the service exception try execute.
-    ///// </summary>
-    ///// <typeparam name="TResult">The type of the result.</typeparam>
-    ///// <param name="action">The action.</param>
-    ///// <returns></returns>
-    //protected TResult WithServiceExceptionTryExecute<TResult>(Func<TResult> action) where TResult : ContractExecutionResult
-    //{
-    //  TResult result = default(TResult);
-    //  try
-    //  {
-    //    result = action.Invoke();
-    //    log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
-
-    //  }
-    //  catch (ServiceException se)
-    //  {
-    //    throw new ServiceException(HttpStatusCode.NoContent,
-    //      new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
-    //  }
-    //  catch (Exception ex)
-    //  {
-    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-    //      ContractExecutionStatesEnum.InternalProcessingError - CUSTOM_ERRORMESSAGE_OFFSET, ex.Message);
-    //  }
-    //  finally
-    //  {
-    //    log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
-    //  }
-    //  return result;
-    //}
-
 
     /// <summary>
     /// Gets the customer uid from the context.
@@ -253,7 +221,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private string GetUserId()
     {
       if (User is TIDCustomPrincipal principal
-        && (principal.Identity is GenericIdentity identity))
+          && (principal.Identity is GenericIdentity identity))
         return identity.Name;
       throw new ArgumentException("Incorrect UserId in request context principal.");
     }
@@ -315,9 +283,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected string LogCustomerDetails(string functionName, string projectUid = "")
     {
-      log.LogInformation($"{functionName}: UserUID={GetUserId()}, CustomerUID={GetCustomerUid()}  and projectUid={projectUid}");
+      log.LogInformation(
+        $"{functionName}: UserUID={GetUserId()}, CustomerUID={GetCustomerUid()}  and projectUid={projectUid}");
 
       return GetCustomerUid();
     }
+  }
+
+
+  public class ServiceExceptionKludge
+  {
+    public string Code;
+    public string Message;
   }
 }

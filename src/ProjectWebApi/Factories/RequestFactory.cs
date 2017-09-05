@@ -16,24 +16,17 @@ namespace VSS.MasterData.Project.WebAPI.Factories
   {
     private readonly ILogger log;
     private readonly IConfigurationStore configStore;
-    //private IDictionary<string, string> headers;
     private string customerUid;
-    //private string userId;
-    //private string userEmailAddress;
-    //private ProjectRepository projectRepo;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
     /// <param name="logger">ILoggerFactory service implementation</param>
     /// <param name="configStore">IConfigurationStore service implementation</param>
-    /// <param name="customerUid"></param>
-    public RequestFactory(ILoggerFactory logger, IConfigurationStore configStore, string customerUid)
+    public RequestFactory(ILoggerFactory logger, IConfigurationStore configStore) 
     {
       log = logger.CreateLogger<ProjectSettingsRequestHelper>();
       this.configStore = configStore;
-      this.customerUid = customerUid;
-      //this.projectRepo = projectRepo as ProjectRepository;
     }
 
     /// <summary>
