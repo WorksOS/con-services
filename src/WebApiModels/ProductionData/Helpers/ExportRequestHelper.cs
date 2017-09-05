@@ -32,6 +32,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     private UserPreferenceData userPreferences;
     private ProjectDescriptor projectDescriptor;
 
+    /// <summary>
+    /// Parameterless constructor is required to support factory create function in <see cref="VSS.Productivity3D.WebApi"/> project.
+    /// </summary>
     public ExportRequestHelper()
     { }
 
@@ -54,8 +57,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       userPreferences = preferenceProxy.GetUserPreferences(Headers).Result;
       return this;
     }
-
-
+    
     public ExportRequestHelper SetProjectDescriptor(ProjectDescriptor projectDescriptor)
     {
       this.projectDescriptor = projectDescriptor;
@@ -83,7 +85,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "Pass count settings required for detailed pass count report"));
+            "Failed to retrieve preferences for current user"));
       }
 
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
@@ -113,7 +115,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         }
       }
 
-      // Set User Preferences' time zone to the project's one and retriev ...
+      // Set User Preferences' time zone to the project's one and retrieve...
       userPreferences.Timezone = projectDescriptor.projectTimeZone;
 
       if (!string.IsNullOrEmpty(fileName))
