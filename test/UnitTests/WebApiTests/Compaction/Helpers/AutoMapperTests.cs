@@ -124,10 +124,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       var ps = CompactionProjectSettings.CreateProjectSettings(true, 3, 11, true, 35, 129, true, 43, true, 44, true, 55, 103, true, 56, 102, true, 4, 8, null, null, null, null, null, true, new List<int> { 1, 2, 3, 5, 7, 9, 12, 16 });
 
       var lbs = AutoMapperUtility.Automapper.Map<LiftBuildSettings>(ps);
-      Assert.IsNull(lbs.cCVRange, "cCVRange should be null");
+      Assert.IsNotNull(lbs.cCVRange, "cCVRange should not be null");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum, lbs.cCVRange.min, "cCVRange.min not mapped correctly");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum, lbs.cCVRange.max, "cCVRange.max not mapped correctly");
       Assert.AreEqual(LiftDetectionType.None, lbs.liftDetectionType, "liftDetectionType not mapped correctly");
       Assert.AreEqual(LiftThicknessType.Compacted, lbs.liftThicknessType, "liftThicknessType not mapped correctly");
-      Assert.IsNull(lbs.mDPRange, "mDPRange should be null");
+      Assert.IsNotNull(lbs.mDPRange, "mDPRange should not be null");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum, lbs.mDPRange.min, "mDPRange.min not mapped correctly");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum, lbs.mDPRange.max, "mDPRange.max not mapped correctly");
       Assert.IsNull(lbs.overridingMachineCCV, "overridingMachineCCV should be null");
       Assert.IsNull(lbs.overridingMachineMDP, "overridingMachineMDP should be null");
       Assert.IsNull(lbs.overridingTargetPassCountRange, "overridingTargetPassCountRange should be null");

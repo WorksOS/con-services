@@ -39,7 +39,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <param name="endLonDegrees"></param>
     /// <param name="customerUid"></param>
     /// <param name="cutfillDesignUid"></param>
-    /// <param name="filterUid"></param>
     /// <returns>An instance of the CompactionProfileProductionDataRequest class.</returns>
     public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(Guid projectUid,
       double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid? cutfillDesignUid)
@@ -61,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         Guid.Empty,
         ProductionDataType.Height,
         Filter,
-        -1,
+        null,
         null,
         null,
         llPoints,

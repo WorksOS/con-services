@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
+using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
@@ -11,6 +16,21 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
   [TestClass]
   public class CompactionProfileResultHelperTests
   {
+    public IServiceProvider serviceProvider;
+
+    [TestInitialize]
+    public void InitTest()
+    {
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddDebug();
+
+      var serviceCollection = new ServiceCollection();
+      serviceCollection.AddLogging();
+      serviceCollection.AddSingleton(loggerFactory);
+
+      serviceProvider = serviceCollection.BuildServiceProvider();
+    }
+
     #region FindCutFillElevations tests
     [TestMethod]
     public void NoProdDataAndNoDesignProfile()
@@ -20,7 +40,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
         new CompactionProfileResult<CompactionProfileVertex>();
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult);
 
       Assert.IsNull(slicerProfileResult.results, "Slicer profile should be null");
@@ -42,7 +63,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
         new CompactionProfileResult<CompactionProfileVertex>();
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult);
 
       Assert.AreEqual(3, slicerProfileResult.results.Count, "Wrong number of profile points");
@@ -78,7 +100,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult);
 
       Assert.AreEqual(4, slicerProfileResult.results.Count, "Wrong number of profile points");
@@ -115,7 +138,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult);
 
       Assert.AreEqual(3, slicerProfileResult.results.Count, "Wrong number of profile points");
@@ -152,7 +176,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult);
 
       Assert.AreEqual(4, slicerProfileResult.results.Count, "Wrong number of profile points");
@@ -168,7 +193,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void ConvertProductionDataProfileResultWithNull()
     {
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
 
       Assert.ThrowsException<ServiceException>(
         () => helper.ConvertProfileResult((CompactionProfileResult<CompactionProfileCell>) null));
@@ -180,7 +206,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       CompactionProfileResult<CompactionProfileCell> slicerProfileResult =
         new CompactionProfileResult<CompactionProfileCell>();
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
 
       Assert.ThrowsException<ServiceException>(() => helper.ConvertProfileResult(slicerProfileResult));
     }
@@ -287,7 +314,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
 
       var result = helper.ConvertProfileResult(slicerProfileResult);
       Assert.IsNotNull(result);
@@ -410,7 +438,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void ConvertDesignProfileResultWithNull()
     {
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
 
       Assert.ThrowsException<ServiceException>(
         () => helper.ConvertProfileResult((Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>>) null));
@@ -422,7 +451,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults =
         new Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>>();
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
 
       Assert.ThrowsException<ServiceException>(() => helper.ConvertProfileResult(slicerProfileResults));
     }
@@ -459,7 +489,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         }
       });
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
 
       var result = helper.ConvertProfileResult(slicerProfileResults);
       Assert.IsNotNull(result);
@@ -526,7 +557,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
       helper.RemoveRepeatedNoData(result);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
@@ -590,7 +622,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
       helper.RemoveRepeatedNoData(result);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
@@ -654,7 +687,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
       helper.RemoveRepeatedNoData(result);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
@@ -771,7 +805,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
       helper.RemoveRepeatedNoData(result);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
@@ -1022,7 +1057,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
       helper.RemoveRepeatedNoData(result);
       Assert.AreEqual(4, result.results.Count, "Wrong number of results");
       for (int i=0; i<4; i++)

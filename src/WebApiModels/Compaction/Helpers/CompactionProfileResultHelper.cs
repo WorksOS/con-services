@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Interfaces;
@@ -12,6 +13,26 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   public class CompactionProfileResultHelper : ICompactionProfileResultHelper
   {
     /// <summary>
+    /// Logger for logging
+    /// </summary>
+    private readonly ILogger log;
+
+    /// <summary>
+    /// Logger factory for use by executor
+    /// </summary>
+    private readonly ILoggerFactory logger;
+
+    /// <summary>
+    /// Constructor with injection
+    /// </summary>
+    /// <param name="logger"></param>
+    public CompactionProfileResultHelper(ILoggerFactory logger)
+    {
+      this.logger = logger;
+      log = logger.CreateLogger<CompactionProfileResultHelper>();
+    }
+
+    /// <summary>
     /// Find the cut-fill elevations for the cells from the cut-fill design elevations
     /// </summary>
     /// <param name="slicerProfileResult">The production data profile result with the cells</param>
@@ -19,6 +40,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     public void FindCutFillElevations(CompactionProfileResult<CompactionProfileCell> slicerProfileResult,
       CompactionProfileResult<CompactionProfileVertex> slicerDesignResult)
     {
+      log.LogDebug("FindCutFillElevations: ");
+
       var cells = slicerProfileResult.results;
       if (cells != null && cells.Count > 0)
       {
@@ -97,6 +120,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     public CompactionProfileResult<CompactionProfileDataResult> ConvertProfileResult(
       CompactionProfileResult<CompactionProfileCell> slicerProfileResult)
     {
+      log.LogDebug("ConvertProfileResult: Production data profile");
+
       //shouldn't ever happen but for safety check arg
       if (slicerProfileResult == null || slicerProfileResult.results == null)
       {
@@ -312,6 +337,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="result">The profile result to remove the repeated gaps from</param>
     public void RemoveRepeatedNoData(CompactionProfileResult<CompactionProfileDataResult> result)
     {
+      log.LogDebug("RemoveRepeatedNoData: Production data profile");
+
       foreach (var profileResult in result.results)
       {
         //Identify all the gaps.
@@ -366,6 +393,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     public CompactionProfileResult<CompactionDesignProfileResult> ConvertProfileResult(
       Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults)
     {
+      log.LogDebug("ConvertProfileResult: Design profiles");
+
       //shouldn't ever happen but for safety check arg
       if (slicerProfileResults == null || slicerProfileResults.Count == 0)
       {
@@ -387,5 +416,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       };
       return profile;
     }
+
   }
 }
