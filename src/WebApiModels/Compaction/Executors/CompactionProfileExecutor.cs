@@ -160,68 +160,98 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           ? float.NaN
           : (float) currCell.MDP / (float) currCell.TargetMDP * 100.0F;
 
+        var firstPassHeight = currCell.firstPassHeight == VelociraptorConstants.NULL_SINGLE
+          ? float.NaN
+          : currCell.firstPassHeight;
+
+        var highestPassHeight = currCell.highestPassHeight == VelociraptorConstants.NULL_SINGLE
+          ? float.NaN
+          : currCell.highestPassHeight;
+
+        var lowestPassHeight = currCell.lowestPassHeight == VelociraptorConstants.NULL_SINGLE
+          ? float.NaN
+          : currCell.lowestPassHeight;
+
+        var cutFill = float.IsNaN(lastCompositeHeight) || float.IsNaN(designHeight)
+          ? float.NaN
+          : lastCompositeHeight - designHeight;
+
+        var cmv = noCCVValue ? float.NaN : currCell.CCV / 10.0F;
+        var cmvHeight = noCCVElevation ? float.NaN : currCell.CCVElev;
+        var mdpHeight = noMDPElevation ? float.NaN : currCell.MDPElev;
+        var temperature = noTemperatureValue ? float.NaN : currCell.materialTemperature / 10.0F;// As temperature is reported in 10th...
+        var temperatureHeight = noTemperatureElevation ? float.NaN : currCell.materialTemperatureElev;
+        var topLayerPassCount = noPassCountValue ? -1 : currCell.topLayerPassCount;
+        var cmvPercentChange = currCell.CCV == VelociraptorConstants.NO_CCV ? float.NaN :
+          (currCell.PrevCCV == VelociraptorConstants.NO_CCV ? 100.0f :
+            (float)Math.Abs(currCell.CCV - currCell.PrevCCV) / (float)currCell.PrevCCV * 100.0f);
+
+        var passCountIndex = noPassCountValue ? ValueTargetType.NoData :
+          (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? ValueTargetType.BelowTarget :
+            (currCell.topLayerPassCount > currCell.topLayerPassCountTargetRange.Max ? ValueTargetType.AboveTarget :
+              ValueTargetType.OnTarget));
+
+        var temperatureIndex = noTemperatureValue ? ValueTargetType.NoData :
+          (currCell.materialTemperature < currCell.materialTemperatureWarnMin ? ValueTargetType.BelowTarget :
+            (currCell.materialTemperature > currCell.materialTemperatureWarnMax ? ValueTargetType.AboveTarget :
+              ValueTargetType.OnTarget));
+
+        var cmvIndex = noCCVValue ? ValueTargetType.NoData :
+          (cmvPercent < liftBuildSettings.cCVRange.min ? ValueTargetType.BelowTarget :
+            (cmvPercent > liftBuildSettings.cCVRange.max ? ValueTargetType.AboveTarget :
+              ValueTargetType.OnTarget));
+
+        var mdpIndex = noMDPValue ? ValueTargetType.NoData :
+          (mdpPercent < liftBuildSettings.mDPRange.min ? ValueTargetType.BelowTarget :
+            (mdpPercent > liftBuildSettings.mDPRange.max ? ValueTargetType.AboveTarget :
+              ValueTargetType.OnTarget));
+
+        var speedIndex = noSpeedValue ? ValueTargetType.NoData :
+          (speedMax > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
+            (speedMin < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed &&
+             speedMax < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
+              ValueTargetType.OnTarget));
+
         profile.results.Add(new CompactionProfileCell
         {
           cellType = prevCell == null ? ProfileCellType.MidPoint : ProfileCellType.Edge,
 
           station = currCell.station,
 
-          firstPassHeight = currCell.firstPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.firstPassHeight,
-          highestPassHeight = currCell.highestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.highestPassHeight,
+          firstPassHeight = firstPassHeight,
+          highestPassHeight = highestPassHeight,
           lastPassHeight = lastPassHeight,
-          lowestPassHeight = currCell.lowestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.lowestPassHeight,
+          lowestPassHeight = lowestPassHeight,
 
           lastCompositeHeight = lastCompositeHeight,
           designHeight = designHeight,
 
-          cutFill = float.IsNaN(lastCompositeHeight) || float.IsNaN(designHeight) ? float.NaN : lastCompositeHeight - designHeight,
+          cutFill = cutFill,
           cutFillHeight = float.NaN,//will be set later using the cut-fill design
 
-          cmv = noCCVValue ? float.NaN : currCell.CCV / 10.0F,
+          cmv = cmv,
           cmvPercent = cmvPercent,
-          cmvHeight = noCCVElevation ? float.NaN : currCell.CCVElev,
+          cmvHeight = cmvHeight,
 
           mdpPercent = mdpPercent,
-          mdpHeight = noMDPElevation ? float.NaN : currCell.MDPElev,
+          mdpHeight = mdpHeight,
 
-          temperature = noTemperatureValue ? float.NaN : currCell.materialTemperature / 10.0F,// As temperature is reported in 10th...
-          temperatureHeight = noTemperatureElevation ? float.NaN : currCell.materialTemperatureElev,
+          temperature = temperature,
+          temperatureHeight = temperatureHeight,
 
-          topLayerPassCount = noPassCountValue ? -1 : currCell.topLayerPassCount,
+          topLayerPassCount = topLayerPassCount,
 
-          cmvPercentChange = currCell.CCV == VelociraptorConstants.NO_CCV ? float.NaN :
-            (currCell.PrevCCV == VelociraptorConstants.NO_CCV ? 100.0f :
-              (float)Math.Abs(currCell.CCV - currCell.PrevCCV) / (float)currCell.PrevCCV * 100.0f),
+          cmvPercentChange = cmvPercentChange,
 
           minSpeed = speedMin,
           maxSpeed = speedMax,
           speedHeight = lastPassHeight,
 
-          passCountIndex = noPassCountValue ? ValueTargetType.NoData :
-            (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? ValueTargetType.BelowTarget :
-              (currCell.topLayerPassCount > currCell.topLayerPassCountTargetRange.Max ? ValueTargetType.AboveTarget : 
-              ValueTargetType.OnTarget)),
-
-          temperatureIndex = noTemperatureValue ? ValueTargetType.NoData :
-            (currCell.materialTemperature < currCell.materialTemperatureWarnMin ? ValueTargetType.BelowTarget :
-              (currCell.materialTemperature > currCell.materialTemperatureWarnMax ? ValueTargetType.AboveTarget : 
-              ValueTargetType.OnTarget)),
-
-          cmvIndex = noCCVValue ? ValueTargetType.NoData :
-            (cmvPercent < liftBuildSettings.cCVRange.min ? ValueTargetType.BelowTarget :
-              (cmvPercent > liftBuildSettings.cCVRange.max ? ValueTargetType.AboveTarget :
-                ValueTargetType.OnTarget)),
-
-          mdpIndex = noMDPValue ? ValueTargetType.NoData :
-            (mdpPercent < liftBuildSettings.mDPRange.min ? ValueTargetType.BelowTarget :
-              (mdpPercent > liftBuildSettings.mDPRange.max ? ValueTargetType.AboveTarget :
-                ValueTargetType.OnTarget)),
-
-          speedIndex = noSpeedValue ? ValueTargetType.NoData :
-            (speedMax > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
-              (speedMin < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed && 
-               speedMax < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
-                ValueTargetType.OnTarget))
+          passCountIndex = passCountIndex,
+          temperatureIndex = temperatureIndex,
+          cmvIndex = cmvIndex,
+          mdpIndex = mdpIndex,
+          speedIndex = speedIndex
         });
 
         prevCell = currCell;
@@ -313,9 +343,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
             //Interpolate i edge for line between mid points at i-1 and i+1
             var startIndex = i - 1;
             var endIndex = i + 1;
-            //Gap is between i-1 and i. Interpolate i edge for line between mid points at i-2 and i+1
             if (profileResult.results[i - 1].cellType == ProfileCellType.Gap)
             {
+              //Gap is between i-1 and i. Interpolate i edge for line between mid points at i-2 and i+1
               startIndex--;
               //Also adjust the gap point
               InterpolateElevations(profileResult.results[i - 1], profileResult.results[startIndex],
@@ -348,7 +378,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       cell.cmvHeight = InterpolateElevation(proportion, startCell.cmvHeight, endCell.cmvHeight);
       cell.mdpHeight = InterpolateElevation(proportion, startCell.mdpHeight, endCell.mdpHeight);
       cell.temperatureHeight = InterpolateElevation(proportion, startCell.temperatureHeight, endCell.temperatureHeight);
-      //TODO: Speed ?
+      cell.speedHeight = InterpolateElevation(proportion, startCell.speedHeight, endCell.speedHeight);
       log.LogDebug($"Interpolated point {cell.station} of type {cell.cellType}");
     }
 

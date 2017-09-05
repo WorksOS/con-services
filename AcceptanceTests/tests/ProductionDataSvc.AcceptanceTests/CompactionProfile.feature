@@ -522,7 +522,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 0.085205803092608473,
-                    "y": 597.387,
+                    "y": 597.388367,
                     "value": 10.224,
                     "valueType": 2,
                     "value2": 11.844
@@ -538,7 +538,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 0.11482184519199619,
-                    "y": 597.386,
+                    "y": 597.386963,
                     "value": 11.34,
                     "valueType": 2,
                     "value2": 11.34
@@ -554,7 +554,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 0.52508697550266958,
-                    "y": 597.382,
+                    "y": 597.3832,
                     "value": 11.34,
                     "valueType": 2,
                     "value2": 11.34
@@ -570,7 +570,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 0.69273368510681388,
-                    "y": 597.384,
+                    "y": 597.3828,
                     "value": 10.224,
                     "valueType": 2,
                     "value2": 10.224
@@ -586,7 +586,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 0.93535210581353156,
-                    "y": 597.364,
+                    "y": 597.376,
                     "value": 10.224,
                     "valueType": 2,
                     "value2": 12.204
@@ -602,7 +602,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 1.3002615671218389,
-                    "y": 597.376,
+                    "y": 597.374634,
                     "value": 10.224,
                     "valueType": 2,
                     "value2": 12.204
@@ -618,7 +618,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 1.3456172361239505,
-                    "y": 597.371,
+                    "y": 597.375549,
                     "value": 10.224,
                     "valueType": 2,
                     "value2": 12.204

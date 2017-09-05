@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         ProjectId,
         designDescriptor,
         Filter,
-        -1,
+        null,
         null,
         null,
         llPoints,
