@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Eviction;
+using Apache.Ignite.Core.Discovery.Tcp;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -44,8 +45,13 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                         JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
                         JvmMaxMemoryMb = 4 * 1024, // Set max to 4Gb
-  
-                        UserAttributes = new Dictionary<string, object>() { { "Role", role }, { "RaptorNodeID", RaptorNodeID } }
+
+                        UserAttributes = new Dictionary<string, object>() { { "Role", role }, { "RaptorNodeID", RaptorNodeID } },
+
+                        DiscoverySpi = new TcpDiscoverySpi()
+                        {
+                            LocalAddress = "127.0.0.1"
+                        }
                     };
 
                     try

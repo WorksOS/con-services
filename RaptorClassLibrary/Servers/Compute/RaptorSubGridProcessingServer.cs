@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
+using Apache.Ignite.Core.Discovery.Tcp;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -25,8 +26,11 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         public override void ConfigureRaptorGrid(IgniteConfiguration cfg)
         {
             base.ConfigureRaptorGrid(cfg);
+
             cfg.UserAttributes.Add("Role", "PSNode");
             cfg.UserAttributes.Add("SpatialDivision", RaptorServerConfig.Instance().SpatialSubdivisionDescriptor);
+
+            (cfg.DiscoverySpi as TcpDiscoverySpi).LocalPort = 47500 + (int)RaptorServerConfig.Instance().SpatialSubdivisionDescriptor;
         }
 
         public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)

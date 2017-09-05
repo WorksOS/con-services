@@ -20,6 +20,7 @@ using System.Reflection;
 using Apache.Ignite.Core.PersistentStore;
 using VSS.VisionLink.Raptor.Servers.Client;
 using System.Threading;
+using Apache.Ignite.Core.Discovery.Tcp;
 
 namespace VSS.VisionLink.Raptor.Servers.Compute
 {
@@ -56,7 +57,15 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
 
             // Don't permit the Ignite node to use more than 4Gb RAM (handy when running locally...)
-            cfg.MemoryConfiguration = new MemoryConfiguration() { SystemCacheMaxSize = (long)4 * 1024 * 1024 * 1024 };
+            cfg.MemoryConfiguration = new MemoryConfiguration()
+            {
+                SystemCacheMaxSize = (long)4 * 1024 * 1024 * 1024
+            };
+
+            cfg.DiscoverySpi = new TcpDiscoverySpi()
+            {
+                LocalAddress = "127.0.0.1"
+            };
         }
 
         public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
