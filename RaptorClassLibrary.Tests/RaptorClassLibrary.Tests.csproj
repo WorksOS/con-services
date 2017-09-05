@@ -83,6 +83,7 @@
     <Compile Include="RenderOverlayTileTests.cs" />
     <Compile Include="ServerSubGridTreeLeafTests.cs" />
     <Compile Include="StorageProxy_IgniteTests.cs" />
+    <Compile Include="Storage\Utilities\MemoryStreamCompressionTests.cs" />
     <Compile Include="SubGridCellLatestPassDataWrapperTests.cs" />
     <Compile Include="SubGridCellSegmentPassesDataWrapper_NonStaticTests.cs" />
     <Compile Include="SubGridSegmentCellPassIterator_NonStaticTests.cs" />
