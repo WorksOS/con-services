@@ -239,10 +239,10 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
-                Log.Info(String.Format("Putting key:{0}, size:{1}", cacheKey, Stream.Length));
-
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
+                    Log.Info(String.Format("Putting key:{0}, size:{1} -> {2}", cacheKey, Stream.Length, compressedStream.Length));
+
                     mutableSpatialCache.Put(cacheKey, compressedStream);
                 }
                 try
@@ -283,10 +283,10 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
-                Log.Info(String.Format("Putting key:{0}, size:{1}", cacheKey, Stream.Length));
-
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
+                    Log.Info(String.Format("Putting key:{0}, size:{1} -> {2}", cacheKey, Stream.Length, compressedStream.Length));
+
                     mutableNonSpatialCache.Put(cacheKey, compressedStream);
                 }
 
@@ -323,10 +323,10 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
-                Log.Info(String.Format("Putting key:{0}, size:{1}", cacheKey, Stream.Length));
-
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
+                    Log.Info(String.Format("Putting key:{0}, size:{1} -> {2}", cacheKey, Stream.Length, compressedStream.Length));
+
                     mutableNonSpatialCache.Put(cacheKey, compressedStream);
                 }
 

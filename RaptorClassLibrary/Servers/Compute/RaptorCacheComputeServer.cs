@@ -37,7 +37,6 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         {
             base.ConfigureRaptorGrid(cfg);
 
-            cfg.GridName = RaptorGrids.RaptorGridName();
             cfg.IgniteInstanceName = RaptorGrids.RaptorGridName();
             cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
             cfg.JvmMaxMemoryMb = 6 * 1024; // Set max to 4Gb
@@ -73,7 +72,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             base.ConfigureNonSpatialMutableCache(cfg);
 
             cfg.Name = RaptorCaches.MutableNonSpatialCacheName();
-            cfg.CopyOnRead = false;
+//            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
             cfg.KeepBinaryInStore = false;
 
 //            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(false, true);
@@ -84,6 +83,8 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //            {
 //                MaxMemorySize = 100000000   // 100Mb
 //            };
+
+            // Non-spatial (event) data is replicated to all nodes for local access
             cfg.CacheMode = CacheMode.Replicated;
             cfg.Backups = 0;
         }
@@ -93,7 +94,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             base.ConfigureNonSpatialImmutableCache(cfg);
 
             cfg.Name = RaptorCaches.ImmutableNonSpatialCacheName();
-            cfg.CopyOnRead = false;
+//            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
             cfg.KeepBinaryInStore = false;
 
 //            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(false, false);
@@ -104,6 +105,8 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //            {
 //                MaxMemorySize = 250000000   // 250Mb
 //            };
+
+            // Non-spatial (event) data is replicated to all nodes for local access
             cfg.CacheMode = CacheMode.Replicated;
             cfg.Backups = 0;
         }
@@ -118,7 +121,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             base.ConfigureMutableSpatialCache(cfg);
 
             cfg.Name = RaptorCaches.MutableSpatialCacheName();
-            cfg.CopyOnRead = false;
+//            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
             cfg.KeepBinaryInStore = false;
 
 //            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(true, true);
@@ -130,7 +133,11 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //                MaxMemorySize = 500000000 // 500Mb
 //            };
             cfg.Backups = 0;
+
+            // Spatial data is partitioned among the server grid nodes according to spatial affinity mapping
             cfg.CacheMode = CacheMode.Partitioned;
+
+            // Configure the function that maps subgrid data into the affinity map for the nodes in the grid
             cfg.AffinityFunction = new RaptorSpatialAffinityFunction();
         }
 
@@ -139,7 +146,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             base.ConfigureImmutableSpatialCache(cfg);
 
             cfg.Name = RaptorCaches.ImmutableSpatialCacheName();
-            cfg.CopyOnRead = false;
+//            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
             cfg.KeepBinaryInStore = false;
 
 //            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(true, false);
@@ -151,7 +158,11 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //                MaxMemorySize = 1000000000   // 1Gb
 //            };
             cfg.Backups = 0;
+
+            // Spatial data is partitioned among the server grid nodes according to spatial affinity mapping
             cfg.CacheMode = CacheMode.Partitioned;
+
+            // Configure the function that maps subgrid data into the affinity map for the nodes in the grid
             cfg.AffinityFunction = new RaptorSpatialAffinityFunction();
         }
 
@@ -192,8 +203,6 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             try
             {
                 raptorGrid = Ignition.Start(cfg);
-
-//                raptorGrid.GetCluster().GetLocalNode().consistentID
             }
             catch (Exception e)
             {
@@ -203,12 +212,6 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             {
                 Log.InfoFormat("Completed creation of new Ignite node");
             }
-
-            // Set the grid to be active here for the POC...
-//            if (!ActivatePersistentGridServer.SetGridActive(RaptorGrids.RaptorGridName()))
-//            {
-//                Log.Info("Failed to set grid to Active");
-//            }
 
             // Wait until the grid is active
             ActivatePersistentGridServer.Instance().WaitUntilGridActive(RaptorGrids.RaptorGridName());

@@ -20,7 +20,6 @@ namespace ExceptionReproducer
 
         private static void setupGridConfiguration(IgniteConfiguration cfg)
         {
-            cfg.GridName = "Raptor";
             cfg.IgniteInstanceName = "Raptor";
             cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
             cfg.JvmMaxMemoryMb = 4 * 1024; // Set max to 4Gb

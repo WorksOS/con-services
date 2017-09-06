@@ -39,7 +39,6 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
-                        GridName = RaptorGrids.RaptorGridName(),
                         IgniteInstanceName = RaptorGrids.RaptorGridName(),
                         ClientMode = true,
 
