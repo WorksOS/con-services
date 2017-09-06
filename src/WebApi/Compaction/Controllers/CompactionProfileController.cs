@@ -123,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var slicerProductionDataResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor<CompactionProfileCell>>(logger, raptorClient)
+          .Build<CompactionProfileExecutor>(logger, raptorClient)
           .Process(slicerProductionDataProfileRequest) as CompactionProfileResult<CompactionProfileCell>
       );
 
@@ -142,7 +142,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         var slicerDesignResult = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainerFactory
-            .Build<CompactionDesignProfileExecutor<CompactionProfileVertex>>(logger, raptorClient)
+            .Build<CompactionDesignProfileExecutor>(logger, raptorClient)
             .Process(slicerDesignProfileRequest) as CompactionProfileResult<CompactionProfileVertex>
         );
 
@@ -199,7 +199,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         profileRequest.Validate();
         var slicerDesignResult = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainerFactory
-            .Build<CompactionDesignProfileExecutor<CompactionProfileVertex>>(logger, raptorClient)
+            .Build<CompactionDesignProfileExecutor>(logger, raptorClient)
             .Process(profileRequest) as CompactionProfileResult<CompactionProfileVertex>
         );
         results.Add(impFileUid, slicerDesignResult);

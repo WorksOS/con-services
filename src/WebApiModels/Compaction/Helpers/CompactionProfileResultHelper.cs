@@ -42,11 +42,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       log.LogDebug("FindCutFillElevations: ");
 
+      var vertices = slicerDesignResult.results;
       var cells = slicerProfileResult.results;
-      if (cells != null && cells.Count > 0)
+      if (cells != null && cells.Count > 0 && vertices != null && vertices.Count > 0)
       {
         int startIndx = -1;
-        var vertices = slicerDesignResult.results;
         foreach (var cell in cells)
         {
           startIndx = FindVertexIndex(vertices, cell.station, startIndx);
@@ -403,15 +403,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             "Unexpected missing design profile results"));
       }
 
+      //all gridDistanceBetweenProfilePoints are the same if the profile slices the design surface
+      var profileWithDistance = slicerProfileResults.Values.Where(v => v.gridDistanceBetweenProfilePoints != 0)
+        .FirstOrDefault();
+      var distance = profileWithDistance != null ? profileWithDistance.gridDistanceBetweenProfilePoints : 0;
+
       var profile = new CompactionProfileResult<CompactionDesignProfileResult>
       {
-        //all gridDistanceBetweenProfilePoints are the same
-        gridDistanceBetweenProfilePoints = slicerProfileResults.Values.First().gridDistanceBetweenProfilePoints,
+        gridDistanceBetweenProfilePoints = distance,
         results = (from spr in slicerProfileResults
           select new CompactionDesignProfileResult
           {
             designFileUid = spr.Key,
-            data = spr.Value.results
+            data = spr.Value.results ?? new List<CompactionProfileVertex>()
           }).ToList()
       };
       return profile;

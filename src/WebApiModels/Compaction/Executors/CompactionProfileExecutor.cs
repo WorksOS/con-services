@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
   /// <summary>
   /// Get production data profile calculations executor.
   /// </summary>
-  public class CompactionProfileExecutor<T> : RequestExecutorContainer where T : CompactionProfileCell
+  public class CompactionProfileExecutor : RequestExecutorContainer
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -86,9 +86,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         }
         else
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to get requested slicer profile"));
+          result = new CompactionProfileResult<CompactionProfileCell>{results = new List<CompactionProfileCell>()};
         }
       }
       finally

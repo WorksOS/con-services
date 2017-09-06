@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net;
 using VLPDDecls;
@@ -18,11 +19,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   /// <summary>
   /// Get production data profile calculations executor.
   /// </summary>
-  public class CompactionDesignProfileExecutor<U> : RequestExecutorContainer where U : CompactionProfileVertex, new()
+  public class CompactionDesignProfileExecutor : RequestExecutorContainer 
   {
-    private CompactionProfileResult<U> PerformProductionDataProfilePost(CompactionProfileDesignRequest request)
+    private CompactionProfileResult<CompactionProfileVertex> PerformProductionDataProfilePost(CompactionProfileDesignRequest request)
     {
-      CompactionProfileResult<U> result;
+      CompactionProfileResult<CompactionProfileVertex> result;
 
       try
       {
@@ -48,9 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         }
         else
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to get requested slicer profile"));
+          result = new CompactionProfileResult<CompactionProfileVertex>{results = new List<CompactionProfileVertex>()};
         }
       }
       finally
@@ -85,15 +84,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       return result;
     }
 
-    private CompactionProfileResult<U> ConvertProfileResult(MemoryStream ms)
+    private CompactionProfileResult<CompactionProfileVertex> ConvertProfileResult(MemoryStream ms)
     {
       log.LogDebug("Converting profile result");
 
-      var profileResult = new CompactionProfileResult<U>();
+      var profileResult = new CompactionProfileResult<CompactionProfileVertex>();
       var pdsiProfile = new DesignProfile();
       pdsiProfile.ReadFromStream(ms);
 
-      profileResult.results = pdsiProfile.vertices.ConvertAll(dpv => new U
+      profileResult.results = pdsiProfile.vertices.ConvertAll(dpv => new CompactionProfileVertex
       {
         elevation = dpv.elevation >= VelociraptorConstants.NO_HEIGHT ? float.NaN : dpv.elevation,
         station = dpv.station

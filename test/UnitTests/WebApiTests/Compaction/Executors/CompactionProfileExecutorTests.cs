@@ -87,9 +87,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false, null);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionProfileExecutor<CompactionProfileCell>>(logger, raptorClient.Object);
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
-      
+        .Build<CompactionProfileExecutor>(logger, raptorClient.Object);
+
+      var result = executor.Process(request) as CompactionProfileResult<CompactionProfileCell>;
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(0, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
+      Assert.AreEqual(0, result.results.Count, ResultsShouldBeEmpty);
     }
 
     [TestMethod]
@@ -617,7 +620,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false, null);
 
         var executor = RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor<CompactionProfileCell>>(logger, raptorClient.Object);
+          .Build<CompactionProfileExecutor>(logger, raptorClient.Object);
         var result = executor.Process(request) as CompactionProfileResult<CompactionProfileCell>;
         return result;
       }

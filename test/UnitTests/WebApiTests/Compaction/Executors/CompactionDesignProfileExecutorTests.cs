@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void Should_throw_ServiceException_When_no_result_returned_from_Raptor()
+    public void Should_return_empty_result_When_no_result_returned_from_Raptor()
     {
       var raptorClient = new Mock<IASNodeClient>();
 
@@ -59,8 +59,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         1234, null,  null, -1, null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionDesignProfileExecutor<CompactionProfileVertex>>(logger, raptorClient.Object);
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+        .Build<CompactionDesignProfileExecutor>(logger, raptorClient.Object);
+      var result = executor.Process(request) as CompactionProfileResult<CompactionProfileVertex>;
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(0, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
+      Assert.AreEqual(0, result.results.Count, ResultsShouldBeEmpty);
     }
 
     [TestMethod]
@@ -111,7 +114,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           1234, null, null, -1, null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION);
 
         var executor = RequestExecutorContainerFactory
-          .Build<CompactionDesignProfileExecutor<CompactionProfileVertex>>(logger, raptorClient.Object);
+          .Build<CompactionDesignProfileExecutor>(logger, raptorClient.Object);
         var result = executor.Process(request) as CompactionProfileResult<CompactionProfileVertex>;
         return result;
       }
