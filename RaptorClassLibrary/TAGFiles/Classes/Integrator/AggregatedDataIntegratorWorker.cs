@@ -65,7 +65,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             int Comparison;
 
             AggregatedDataIntegratorTask Task = null;
-            //            AggregatedDataIntegratorTask TestTask = null;
+            AggregatedDataIntegratorTask TestTask = null;
 
             EventIntegrator eventIntegrator = new EventIntegrator();
 
@@ -128,31 +128,29 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                         // while this set is being integrated into the model.
 
 
-                        /* TODO ... Don't perform collation of similar TAG files (same project, same machine) for the POC
-                        if (TasksToProcess.PeekNoLock != null)
+                        if (TasksToProcess.Count > 0)
                         {
-                            for (int I = 0; I < Math.Min(TasksToProcess.CountNoLock - 1, VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch); I++)
+                            for (int I = 0; I < Math.Min(TasksToProcess.Count - 1, TasksToProcess.Count /*Removed for POC VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch*/); I++)
                             {
-                                TestTask = TasksToProcess[I];
-                                if (TestTask != null)
+                                if (TasksToProcess.TryPeek(out TestTask))
                                 {
                                     if (TestTask.TargetSiteModelID == Task.TargetSiteModelID && TestTask.TargetMachineID == Task.TargetMachineID &&
                                       AnyCellPasses == (TestTask.AggregatedCellPasses != null) && AnyMachineEvents == (TestTask.AggregatedMachineEvents != null))
                                     {
-                                        if (ProcessedTasks.Count < VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch)
-                                        {
-                                            TasksToProcess[I] = null;
+                                        // Removed for Ignite POC
+                                        //if (ProcessedTasks.Count < VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch)
+                                        //{
+                                            TasksToProcess.TryDequeue(out TestTask);
                                             ProcessedTasks.Add(TestTask);
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
+                                        //}
+                                        //else
+                                        //{
+                                        //    break;
+                                        //}
                                     }
                                 }
                             }
                         }
-                        */
                     }
 
                     // Decapsulate the cell passes so they are accessible. Perform this after assembling the tasks list to prevent
