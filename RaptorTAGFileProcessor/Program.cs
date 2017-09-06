@@ -30,11 +30,7 @@ namespace VSS.VisionLink.Raptor.Client
     class Program
     {
         private static ILog Log = null;
-
-        /// <summary>
-        /// The ProjectID to process the TAG files into
-        /// </summary>
-//        public static Int64 projectID = 2;
+        private static int tAGFileCount = 0;
 
         public static void TestTileRendering(long projectID)
         {
@@ -127,44 +123,46 @@ namespace VSS.VisionLink.Raptor.Client
 
         public static void ProcessTAGFiles(long projectID, string[] files)
         {
-            int startcount = 0;
-            int stopcount = 2000;
-            int count = 0;
+            int batchSize = 20;
+            int batchCount = 0;
 
+            // Create the integration machinery responsibvle for tracking tasks and integrating them into the database
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
             AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(/*StorageProxy.Instance(), */integrator.TasksToProcess);
+            List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
 
             // Create the site model and machine etc to aggregate the processed TAG file into
             SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(projectID, true);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
+            // Process each file into a task, and batch tasks into groups for integration to reduce the number of cache 
+            // updates made for subgrid changes
             foreach (string fileName in files)
             {
-                if (startcount-- <= 0)
+                Log.Info(String.Format("Processing TAG file #{0}, {1}", ++tAGFileCount, fileName));
+
+                TAGFileConverter converter = new TAGFileConverter();
+
+                using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
                 {
-                    Log.Info(String.Format("Processing TAG file #{0}, {1}", ++count, fileName));
-
-                    TAGFileConverter converter = new TAGFileConverter();
-
-                    // converter.Execute(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile.tag", FileMode.Open, FileAccess.Read));
-                    using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
-                    {
-                        converter.Execute(fs);
-                    }
-
-                    converter.SiteModel.ID = siteModel.ID;
-                    converter.Machine.ID = machine.ID;
-
-                    List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
-                    integrator.AddTaskToProcessList(converter.SiteModel, converter.Machine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
-                    worker.ProcessTask(ProcessedTasks);
-
-                    stopcount--;
-                    if (stopcount == 0)
-                    {
-                        break;
-                    }
+                    converter.Execute(fs);
                 }
+
+                converter.SiteModel.ID = siteModel.ID;
+                converter.Machine.ID = machine.ID;
+
+                integrator.AddTaskToProcessList(converter.SiteModel, converter.Machine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
+               
+                if (++batchCount >= batchSize)
+                {
+                    worker.ProcessTask(ProcessedTasks);
+                    batchCount = 0;
+                }
+            }
+
+            if (batchCount > 0)
+            {
+                worker.ProcessTask(ProcessedTasks);
             }
         }
 
