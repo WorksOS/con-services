@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
@@ -81,7 +82,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       if (assetId <= 0 && string.IsNullOrEmpty(tccOrgUid))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ContractExecutionStatesEnum.ValidationError,
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ResultHandling.ContractExecutionStatesEnum.ValidationError,
             "Must contain one or more of assetId or tccOrgId"));
       }
 

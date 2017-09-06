@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
     /// Create instance of GetAssetIdResult
     /// </summary>
     public static GetAssetIdResult CreateGetAssetIdResult(bool result, long assetId, int machineLevel,
-      int code = ContractExecutionStatesEnum.ExecutedSuccessfullyConst,
+      int code = 0,
       string message = "success")
     {
       return new GetAssetIdResult

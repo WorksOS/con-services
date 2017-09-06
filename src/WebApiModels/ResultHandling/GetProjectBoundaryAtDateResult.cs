@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
     /// </summary>
     public static GetProjectBoundaryAtDateResult CreateGetProjectBoundaryAtDateResult(bool result,
       TWGS84FenceContainer projectBoundary,
-      int code = ContractExecutionStatesEnum.ExecutedSuccessfullyConst,
+      int code = 0,
       string message = "success")
     {
       return new GetProjectBoundaryAtDateResult

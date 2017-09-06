@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(false, new ProjectBoundaryPackage[0],
-            ContractExecutionStatesEnum.ValidationError,
+            ResultHandling.ContractExecutionStatesEnum.ValidationError,
             "Must have assetId"));
       }
 
@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(false, new ProjectBoundaryPackage[0],
-            ContractExecutionStatesEnum.ValidationError,
+            ResultHandling.ContractExecutionStatesEnum.ValidationError,
             "tagFileUTC must have occured within last 50 years"));
       }
     }

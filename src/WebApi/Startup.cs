@@ -9,10 +9,9 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using ExceptionsTrapExtensions = VSS.Common.Exceptions.ExceptionsTrapExtensions;
-using VSS.Common.Filters;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {

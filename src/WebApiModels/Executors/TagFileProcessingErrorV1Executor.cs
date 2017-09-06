@@ -7,13 +7,14 @@ using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
   /// <summary>
   /// The executor which sends an alert if required for a tag file processing error.
   /// </summary>
-  public class TagFileProcessingErrorExecutor : RequestExecutorContainer
+  public class TagFileProcessingErrorV1Executor : RequestExecutorContainer
   {
     /// <summary>
     /// Processes the tag file processing error request and creates an alert if required.
@@ -23,23 +24,24 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <returns>a TagFileProcessingErrorResult if successful</returns>      
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      TagFileProcessingErrorRequest request = item as TagFileProcessingErrorRequest;
-      log.LogDebug("TagFileProcessingErrorExecutor: Going to process request {0}",
+      var request = item as TagFileProcessingErrorV1Request;
+      if (request == null)
+        // todo serviceException refactor
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError, 10));
+
+      log.LogDebug("TagFileProcessingErrorV1Executor: Going to process request {0}",
         JsonConvert.SerializeObject(request));
 
-      bool result = false;
-
-      // if it got past the validation, it is complete.ok, check again
-      if (request.assetId > 0 && !string.IsNullOrEmpty(request.tagFileName) &&
-          Enum.IsDefined(typeof(TagFileErrorsEnum), request.error) == true)
-        result = true;
+      bool result = request.assetId > 0 && !string.IsNullOrEmpty(request.tagFileName) &&
+                    Enum.IsDefined(typeof(TagFileErrorsEnum), request.error) == true;
 
       if (result)
       {
         var errorMessage =
-          string.Format("OnTagFileProcessingError: assetID = {0}, tagFileName = {1}, errorNumber = {2}, error = {3}",
-            request.assetId, request.tagFileName, (int) request.error,
-            Enum.GetName(typeof(TagFileErrorsEnum), request.error));
+          string.Format(
+            $"OnTagFileProcessingError: assetID = {request.assetId}, tagFileName = {request.tagFileName}, errorNumber = {(int) request.error}, error = {Enum.GetName(typeof(TagFileErrorsEnum), request.error)}");
         log.LogDebug(errorMessage);
       }
 
@@ -51,8 +53,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError,
-            "Failed to create an alert for tag file processing error"));
+            ContractExecutionStatesEnum.InternalProcessingError, 11));
       }
 
     }

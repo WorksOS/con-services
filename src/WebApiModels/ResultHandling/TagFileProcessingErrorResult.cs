@@ -1,6 +1,4 @@
 ﻿
-using VSS.Common.ResultsHandling;
-
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
 {
   /// <summary>
@@ -12,14 +10,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
     /// Create instance of TagFileProcessingErrorResult
     /// </summary>
     public static TagFileProcessingErrorResult CreateTagFileProcessingErrorResult(bool result,
-      int code = ContractExecutionStatesEnum.ExecutedSuccessfullyConst,
-      string message = "success")
+      int code = 0,
+      int customCode = 0)
     {
       return new TagFileProcessingErrorResult
       {
         Result = result,
         Code = code,
-        Message = message
+        Message = _contractExecutionStatesEnum.FirstNameWithOffset(customCode)
       };
     }
   }

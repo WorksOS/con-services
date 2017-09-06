@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
     /// Create instance of GetProjectIdResult
     /// </summary>
     public static GetProjectIdResult CreateGetProjectIdResult(bool result, long projectId,
-      int code = ContractExecutionStatesEnum.ExecutedSuccessfullyConst,
+      int code = 0,
       string message = "success")
     {
       return new GetProjectIdResult

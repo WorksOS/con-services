@@ -115,7 +115,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ContractExecutionStatesEnum.InternalProcessingError,
+          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ResultHandling.ContractExecutionStatesEnum.InternalProcessingError,
             "Failed to get legacy asset id"));
       }
     }

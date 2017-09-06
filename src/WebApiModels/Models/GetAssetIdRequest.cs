@@ -3,6 +3,7 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
@@ -73,7 +74,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       if (!string.IsNullOrEmpty(radioSerial) && (deviceType < 1 || !isDeviceTypeValid))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ContractExecutionStatesEnum.ValidationError,
+          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ResultHandling.ContractExecutionStatesEnum.ValidationError,
             "AssetId must have valid deviceType"));
       }
 

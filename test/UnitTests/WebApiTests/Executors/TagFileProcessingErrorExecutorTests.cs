@@ -17,11 +17,11 @@ namespace WebApiTests.Executors
     [TestMethod]
     public void CanCallTagFileProcessingErrorExecutorNoValidInput()
     {
-      TagFileProcessingErrorRequest tagFileProcessingErrorRequest = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(-1, "", 0);
+      TagFileProcessingErrorV1Request tagFileProcessingErrorRequest = TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(-1, "Machine Name--whatever --161230235959", 0);
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var tfaResult = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
+      var tfaResult = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(tfaResult, "executor returned nothing");
       Assert.IsFalse(tfaResult.Result, "executor processed TagFileProcessingError");
     }
@@ -29,11 +29,11 @@ namespace WebApiTests.Executors
     [TestMethod]
     public void CanCallTagFileProcessingErrorExecutorValidInputWithError()
     {
-      TagFileProcessingErrorRequest tagFileProcessingErrorRequest = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(345345, "theFileName", -2);
+      TagFileProcessingErrorV1Request tagFileProcessingErrorRequest = TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(345345, "Machine Name--whatever --161230235959", -2);
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var tfaResult = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
+      var tfaResult = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(tfaResult, "executor returned nothing");
       Assert.IsTrue(tfaResult.Result, "executor process TagFileProcessingError without error");
     }
@@ -41,11 +41,11 @@ namespace WebApiTests.Executors
     [TestMethod]
     public void CanCallTagFileProcessingErrorExecutorValidInputWithoutError()
     {
-      TagFileProcessingErrorRequest tagFileProcessingErrorRequest = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(123, "Who Cares.tag", 3);
+      TagFileProcessingErrorV1Request tagFileProcessingErrorRequest = TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(123, "Machine Name--whatever --161230235959", 3);
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var tfaResult = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
+      var tfaResult = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(tfaResult, "executor returned nothing");
       Assert.IsTrue(tfaResult.Result, "executor didn't process TagFileProcessingError with error");
     }
@@ -53,11 +53,11 @@ namespace WebApiTests.Executors
     [TestMethod]
     public void CanCallTagFileProcessingErrorExecutorValidInput2WithoutError()
     {
-      TagFileProcessingErrorRequest tagFileProcessingErrorRequest = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(123, "Who Cares.tag", 2);
+      TagFileProcessingErrorV1Request tagFileProcessingErrorRequest = TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(123, "Machine Name--whatever --161230235959", 2);
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var tfaResult = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
+      var tfaResult = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(tfaResult, "executor returned nothing");
       Assert.IsTrue(tfaResult.Result, "executor didn't process TagFileProcessingError with error");
     }
@@ -66,15 +66,15 @@ namespace WebApiTests.Executors
     public void CanCallGetTagFileProcessingErrorExecutorWithLegacyAssetId()
     {
       long legacyAssetID = 46534636436;
-      string tagFileName = "Whatever";
+      string tagFileName = "Machine Name--whatever --161230235959";
       TagFileErrorsEnum error = TagFileErrorsEnum.CoordConversion_Failure;
       var eventkeyDate = DateTime.UtcNow;
-      TagFileProcessingErrorRequest tagFileProcessingErrorRequest = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(legacyAssetID, tagFileName, (int)error);
+      TagFileProcessingErrorV1Request tagFileProcessingErrorRequest = TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(legacyAssetID, tagFileName, (int)error);
 
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var tfaResult = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
+      var tfaResult = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(tfaResult, "executor returned nothing");
       Assert.IsTrue(tfaResult.Result, "executor didn't process TagFileProcessingError");
     }

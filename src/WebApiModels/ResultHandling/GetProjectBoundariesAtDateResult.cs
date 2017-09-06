@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
     /// </summary>
     public static GetProjectBoundariesAtDateResult CreateGetProjectBoundariesAtDateResult(bool result,
       ProjectBoundaryPackage[] projectBoundaries,
-      int code = ContractExecutionStatesEnum.ExecutedSuccessfullyConst,
+      int code = 0,
       string message = "success")
     {
       return new GetProjectBoundariesAtDateResult

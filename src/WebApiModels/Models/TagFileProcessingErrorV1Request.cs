@@ -4,13 +4,14 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
   /// The request representation used to raise an alert for a tag file processing error if required.
   /// </summary>
-  public class TagFileProcessingErrorRequest
+  public class TagFileProcessingErrorV1Request
   {
 
     /// <summary>
@@ -31,17 +32,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     /// <summary>
     /// Private constructor
     /// </summary>
-    private TagFileProcessingErrorRequest()
+    private TagFileProcessingErrorV1Request()
     {
     }
 
     /// <summary>
     /// Create instance of TagFileProcessingErrorRequest
     /// </summary>
-    public static TagFileProcessingErrorRequest CreateTagFileProcessingErrorRequest(long assetId, string tagFileName,
+    public static TagFileProcessingErrorV1Request CreateTagFileProcessingErrorRequest(long assetId, string tagFileName,
       int error)
     {
-      return new TagFileProcessingErrorRequest
+      return new TagFileProcessingErrorV1Request
       {
         assetId = assetId,
         tagFileName = tagFileName,
@@ -59,24 +60,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.ValidationError,
-            "Must have assetId"));
+            ResultHandling.ContractExecutionStatesEnum.ValidationError, 9));
       }
 
       if (string.IsNullOrEmpty(tagFileName))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.ValidationError,
-            "Must have filename"));
+            ContractExecutionStatesEnum.ValidationError, 5));
       }
 
       if (Enum.IsDefined(typeof(TagFileErrorsEnum), error) == false)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.ValidationError,
-            "Must have valid error number"));
+            ContractExecutionStatesEnum.ValidationError, 4));
       }
     }
   }
