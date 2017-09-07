@@ -93,7 +93,7 @@ namespace VSS.VisionLink.Raptor.Storage
             }
             catch (Exception e)
             {
-                Log.Info(String.Format("Exception occurred: {0}", e));
+//                Log.Info(String.Format("Exception occurred: {0}", e));
 
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
