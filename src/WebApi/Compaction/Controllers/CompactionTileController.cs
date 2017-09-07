@@ -18,7 +18,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -113,6 +112,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
+    /// <param name="cutFillDesignUid">Design UID for cut-fill</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
@@ -149,6 +149,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] string BBOX,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
+      [FromQuery] Guid? cutFillDesignUid,
       [FromQuery] DisplayMode mode,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
@@ -166,6 +167,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
 
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+
+      DesignDescriptor designDescriptor = null;
+      if (cutFillDesignUid.HasValue)
+      {
+        designDescriptor = await GetDesignDescriptor(projectUid, cutFillDesignUid.Value);
+      }
 
       var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       return tileResult;
@@ -189,6 +196,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
+    /// <param name="cutFillDesignUid">Design UID for cut-fill</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
@@ -230,6 +238,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] string BBOX,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
+      [FromQuery] Guid? cutFillDesignUid,
       [FromQuery] DisplayMode mode,
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,

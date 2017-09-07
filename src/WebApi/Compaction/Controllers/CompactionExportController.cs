@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
@@ -95,7 +94,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
@@ -154,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetExportReportVeta: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
@@ -216,7 +215,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid);
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 

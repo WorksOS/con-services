@@ -25,8 +25,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     protected CompactionProjectSettings ProjectSettings;
     protected List<long> ExcludedIds;
     protected Filter Filter;
+    protected DesignDescriptor DesignDescriptor;
 
-    public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, long projectId, CompactionProjectSettings projectSettings, IDictionary<string, string> headers, List<long> excludeIds, Filter filter = null)
+    public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, 
+      long projectId, CompactionProjectSettings projectSettings, IDictionary<string, string> headers, List<long> excludedIds, Filter filter, DesignDescriptor designDescriptor)
     {
       Log = log;
       ConfigurationStore = configurationStore;
@@ -36,51 +38,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       ProjectId = projectId;
       Headers = headers;
       ProjectSettings = projectSettings;
-      ExcludedIds = excludeIds;
+      ExcludedIds = excludedIds;
       Filter = filter;
-    }
-
-    protected DesignDescriptor GetDescriptor(Guid projectUid, Guid importedFileUid)
-    {
-      var fileList = FileListProxy.GetFiles(projectUid.ToString(), Headers).Result;
-
-      if (fileList.Count <= 0)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Project has no appropriate design files."));
-      }
-
-      var designFile = fileList.SingleOrDefault(
-        f => f.ImportedFileUid ==
-             importedFileUid.ToString() &&
-             f.IsActivated &&
-             f.IsProfileSupportedFileType());
-
-      if (designFile == null)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Unable to access design file."));
-      }
-
-      return DesignDescriptor.CreateDesignDescriptor(
-        designFile.LegacyFileId,
-        FileDescriptor.CreateFileDescriptor(GetFilespaceId(), designFile.Path, designFile.Name),
-        0);
-    }
-
-    private string GetFilespaceId()
-    {
-      var filespaceId = ConfigurationStore.GetValueString("TCCFILESPACEID");
-      if (!string.IsNullOrEmpty(filespaceId))
-      {
-        return filespaceId;
-      }
-
-      const string errorString = "Your application is missing an environment variable TCCFILESPACEID";
-      Log.LogError(errorString);
-      throw new InvalidOperationException(errorString);
+      DesignDescriptor = designDescriptor;
     }
   }
 }

@@ -38,18 +38,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <param name="endLatDegrees"></param>
     /// <param name="endLonDegrees"></param>
     /// <param name="customerUid"></param>
-    /// <param name="cutfillDesignUid"></param>
     /// <returns>An instance of the CompactionProfileProductionDataRequest class.</returns>
     public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(Guid projectUid,
-      double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid, Guid? cutfillDesignUid)
+      double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
-
-      DesignDescriptor designDescriptor = null;
-      if (cutfillDesignUid.HasValue)
-      {
-        designDescriptor = GetDescriptor(projectUid, cutfillDesignUid.Value);
-      }
 
       var liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
@@ -68,7 +61,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         ValidationConstants.MIN_STATION,
         liftBuildSettings,
         false,
-        designDescriptor);
+        DesignDescriptor);
     }
   }
 }

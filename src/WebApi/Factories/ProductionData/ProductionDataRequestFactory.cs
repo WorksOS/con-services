@@ -23,6 +23,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     private CompactionProjectSettings projectSettings;
     private List<long> _excludedIds;
     private Filter _filter;
+    private DesignDescriptor _designDescriptor;
 
     /// <summary>
     /// Default constructor.
@@ -50,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, fileListProxy, settingsManager, _projectId, projectSettings, headers, _excludedIds, _filter);
+      obj.Initialize(log, configStore, fileListProxy, settingsManager, _projectId, projectSettings, headers, _excludedIds, _filter, _designDescriptor);
 
       return obj;
     }
@@ -102,6 +103,16 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     public ProductionDataRequestFactory Filter(Filter filter)
     {
       _filter = filter;
+      return this;
+    }
+
+    /// <summary>
+    /// Sets the design descriptor.
+    /// </summary>
+    /// <param name="designDescriptor">Design for the raptor query.</param>
+    public ProductionDataRequestFactory DesignDescriptor(DesignDescriptor designDescriptor)
+    {
+      _designDescriptor = designDescriptor;
       return this;
     }
   }

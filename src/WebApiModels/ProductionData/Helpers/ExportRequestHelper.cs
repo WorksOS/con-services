@@ -89,7 +89,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       }
 
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(FileListProxy, projectUid);
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
@@ -187,21 +186,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
         Preferences.DefaultNumberFormat,
         Preferences.DefaultTemperatureUnit,
         Preferences.DefaultAssetLabelTypeId);
-    }
-
-    protected async Task<List<long>> GetExcludedSurveyedSurfaceIds(IFileListProxy fileListProxy, Guid projectUid)
-    {
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Headers);
-      if (fileList == null || fileList.Count == 0)
-      {
-        return null;
-      }
-
-      var results = fileList
-        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
-        .Select(f => f.LegacyFileId).ToList();
-
-      return results;
     }
   }
 }
