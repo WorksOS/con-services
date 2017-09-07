@@ -21,8 +21,7 @@ using VSS.Productivity3D.WebApi.Models.Extensions;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
-  public abstract class 
-    BaseController : Controller
+  public abstract class BaseController : Controller
   {
     /// <summary>
     /// Logger for logging
@@ -292,8 +291,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (filterUid.HasValue)
       {
-        var filterData = await GetFilter(projectUid, filterUid.Value,
-          customHeaders);
+        var filterData = await GetFilter(projectUid, filterUid.Value);
 
         if (filterData != null)
         {
@@ -314,7 +312,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return settingsManager.CompactionFilter(startTimeUTC, endTimeUTC, onMachineDesignID, vibrationStateOn, elevationTypeEnum, layerNo, machines, excludedIds, designDescriptor);
     }
 
-    private async Task<MasterData.Models.Models.Filter> GetFilter(Guid projectUid, Guid filterUid, IDictionary<string, string> customHeaders)
+    private async Task<MasterData.Models.Models.Filter> GetFilter(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await filterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), customHeaders);
 

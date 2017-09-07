@@ -8,7 +8,6 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
   public interface IProductionDataRequestFactory
   {
     T Create<T>(Action<ProductionDataRequestFactory> action) where T : DataRequestBase, new();
-    ProductionDataRequestFactory ExcludedIds(List<long> excludedIds);
     ProductionDataRequestFactory Headers(IDictionary<string, string> headers);
     ProductionDataRequestFactory ProjectId(long projectId);
     ProductionDataRequestFactory ProjectSettings(CompactionProjectSettings projectSettings);

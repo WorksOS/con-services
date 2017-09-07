@@ -19,9 +19,8 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     private readonly IFileListProxy fileListProxy;
     private readonly ICompactionSettingsManager settingsManager;
     private long _projectId;
-    private IDictionary<string, string> headers;
-    private CompactionProjectSettings projectSettings;
-    private List<long> _excludedIds;
+    private IDictionary<string, string> _headers;
+    private CompactionProjectSettings _projectSettings;
     private Filter _filter;
     private DesignDescriptor _designDescriptor;
 
@@ -51,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, fileListProxy, settingsManager, _projectId, projectSettings, headers, _excludedIds, _filter, _designDescriptor);
+      obj.Initialize(log, configStore, fileListProxy, settingsManager, _projectId, _projectSettings, _headers, _filter, _designDescriptor);
 
       return obj;
     }
@@ -72,7 +71,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     /// <param name="headers"></param>
     public ProductionDataRequestFactory Headers(IDictionary<string, string> headers)
     {
-      this.headers = headers;
+      _headers = headers;
       return this;
     }
 
@@ -82,17 +81,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     /// <param name="projectSettings"></param>
     public ProductionDataRequestFactory ProjectSettings(CompactionProjectSettings projectSettings)
     {
-      this.projectSettings = projectSettings;
-      return this;
-    }
-
-    /// <summary>
-    /// Sets the collection of excluded imported file IDs.
-    /// </summary>
-    /// <param name="excludedIds"></param>
-    public ProductionDataRequestFactory ExcludedIds(List<long> excludedIds)
-    {
-      _excludedIds = excludedIds;
+      _projectSettings = projectSettings;
       return this;
     }
 

@@ -94,7 +94,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
@@ -103,7 +102,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
-          .ExcludedIds(excludedIds)
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .SetPreferencesProxy(prefProxy)
@@ -153,14 +151,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetExportReportVeta: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
-          .ExcludedIds(excludedIds)
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .SetRaptorClient(raptorClient)
@@ -215,14 +211,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
-          .ExcludedIds(excludedIds)
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .SetPreferencesProxy(prefProxy)

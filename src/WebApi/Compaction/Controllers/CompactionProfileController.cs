@@ -105,7 +105,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var settings = CompactionProjectSettings.FromString(
         await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders));
-      var exludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
       var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid, true);
 
@@ -114,7 +113,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectId(projectId)
           .Headers(customHeaders)
           .ProjectSettings(settings)
-          .ExcludedIds(exludedIds)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
           .CreateProductionDataProfileRequest(
@@ -135,7 +133,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             .ProjectId(projectId)
             .Headers(customHeaders)
             .ProjectSettings(settings)
-            .ExcludedIds(exludedIds)
             .DesignDescriptor(cutFillDesign))
             .CreateDesignProfileRequest(
               projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
@@ -175,7 +172,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = GetProjectId(projectUid);
       var settings = CompactionProjectSettings.FromString(
         await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders));
-      var exludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
 
       if (importedFileUid.Length == 0)
@@ -195,7 +191,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             .ProjectId(projectId)
             .Headers(customHeaders)
             .ProjectSettings(settings)
-            .ExcludedIds(exludedIds)
             .Filter(filter)
             .DesignDescriptor(designDescriptor))
           .CreateDesignProfileRequest(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);

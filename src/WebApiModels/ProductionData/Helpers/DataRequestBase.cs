@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     protected DesignDescriptor DesignDescriptor;
 
     public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, 
-      long projectId, CompactionProjectSettings projectSettings, IDictionary<string, string> headers, List<long> excludedIds, Filter filter, DesignDescriptor designDescriptor)
+      long projectId, CompactionProjectSettings projectSettings, IDictionary<string, string> headers, Filter filter, DesignDescriptor designDescriptor)
     {
       Log = log;
       ConfigurationStore = configurationStore;
@@ -38,7 +38,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       ProjectId = projectId;
       Headers = headers;
       ProjectSettings = projectSettings;
-      ExcludedIds = excludedIds;
       Filter = filter;
       DesignDescriptor = designDescriptor;
     }
