@@ -415,9 +415,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           select new CompactionDesignProfileResult
           {
             designFileUid = spr.Key,
-            data = spr.Value.results ?? new List<CompactionProfileVertex>()
+            data = spr.Value.results
           }).ToList()
       };
+  
+      return profile;
+    }
+
+    /// <summary>
+    /// Adds slicer end points to the profile results if not already present
+    /// </summary>
+    /// <param name="profile">The profile result to check</param>
+    public void AddSlicerEndPoints(CompactionProfileResult<CompactionDesignProfileResult> profile)
+    {
       //Raptor returns only the vertices on the design surface.
       //Add slicer end points with NaN elevation if not present for a profile.
       if (profile.gridDistanceBetweenProfilePoints > 0)
@@ -428,7 +438,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           {
             if (result.data[0].station > 0)
             {
-              result.data.Insert(0, new CompactionProfileVertex {station = 0, elevation = float.NaN});            
+              result.data.Insert(0, new CompactionProfileVertex { station = 0, elevation = float.NaN });
             }
             if (result.data[result.data.Count - 1].station < profile.gridDistanceBetweenProfilePoints)
             {
@@ -437,7 +447,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           }
         }
       }
-      return profile;
     }
 
   }

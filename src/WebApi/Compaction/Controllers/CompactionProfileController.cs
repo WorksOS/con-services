@@ -206,6 +206,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       var transformedResult = profileResultHelper.ConvertProfileResult(results);
+      profileResultHelper.AddSlicerEndPoints(transformedResult);
       return transformedResult;
     }
   }

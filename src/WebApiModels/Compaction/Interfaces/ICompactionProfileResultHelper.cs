@@ -16,5 +16,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Interfaces
       Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults);
 
     void RemoveRepeatedNoData(CompactionProfileResult<CompactionProfileDataResult> result);
+
+    void AddSlicerEndPoints(CompactionProfileResult<CompactionDesignProfileResult> profile);
   }
 }

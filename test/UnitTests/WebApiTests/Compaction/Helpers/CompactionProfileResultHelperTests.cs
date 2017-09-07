@@ -547,6 +547,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       }
     }
 
+
     private void ValidateDesignProfile(Guid expectedDesignUid, int j, List<CompactionProfileVertex>  expectedVertices, CompactionDesignProfileResult actualResult)
     {
       Assert.AreEqual(expectedDesignUid, actualResult.designFileUid, $"{j}: Wrong designUid");
@@ -1160,6 +1161,142 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(expectedCellType, actual.cellType, $"{i}: Wrong cellType");
       Assert.AreEqual(expectedStation, actual.x, $"{i}: Wrong x");
       Assert.AreEqual(expectedElevation, actual.y, $"{i}: Wrong y");
+    }
+    #endregion
+
+    #region AddSlicerEndPoints tests
+
+    [TestMethod]
+    public void DesignProfileWithSlicerEndPointsPresentShouldNotChange()
+    {
+      Guid designUid = Guid.NewGuid();
+      var distance = 7.3;
+      var v1 = new CompactionProfileVertex {station = 0.0, elevation = 2.1F};
+      var v2 = new CompactionProfileVertex { station = 1.1, elevation = 1.3F };
+      var v3 = new CompactionProfileVertex {station = 2.7, elevation = float.NaN};
+      var v4 = new CompactionProfileVertex {station = 3.8, elevation = 3.4F};
+      var v5 = new CompactionProfileVertex {station = distance, elevation = 2.3F};
+      var expectedVertices = new List<CompactionProfileVertex>
+      {
+        v1,
+        v2,
+        v3,
+        v4,
+        v5
+      };
+
+      CompactionProfileResult<CompactionDesignProfileResult> result =
+        new CompactionProfileResult<CompactionDesignProfileResult>
+        {
+          gridDistanceBetweenProfilePoints = distance,
+          results = new List<CompactionDesignProfileResult>
+          {
+            new CompactionDesignProfileResult
+            {
+              designFileUid = designUid,
+              data = new List<CompactionProfileVertex>(expectedVertices)
+            }
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+
+      helper.AddSlicerEndPoints(result);
+      Assert.AreEqual(distance, result.gridDistanceBetweenProfilePoints,
+        "Wrong gridDistanceBetweenProfilePoints");
+      Assert.AreEqual(1, result.results.Count);
+      Assert.AreEqual(designUid, result.results[0].designFileUid);
+      Assert.AreEqual(expectedVertices.Count, result.results[0].data.Count);
+      for (int i = 0; i < expectedVertices.Count; i++)
+      {
+        Assert.AreEqual(expectedVertices[i].station, result.results[0].data[i].station);
+        Assert.AreEqual(expectedVertices[i].elevation, result.results[0].data[i].elevation);
+      }
+    }
+
+    [TestMethod]
+    public void DesignProfileWithoutSlicerEndPointsPresentShouldAddThem()
+    {
+      Guid designUid = Guid.NewGuid();
+      var distance = 7.3;
+      var v1 = new CompactionProfileVertex { station = 0.5, elevation = 2.1F };
+      var v2 = new CompactionProfileVertex { station = 1.1, elevation = 1.3F };
+      var v3 = new CompactionProfileVertex { station = 2.7, elevation = float.NaN };
+      var v4 = new CompactionProfileVertex { station = 3.8, elevation = 3.4F };
+      var v5 = new CompactionProfileVertex { station = 5.1, elevation = 2.3F };
+      var expectedVertices = new List<CompactionProfileVertex>
+      {
+        v1,
+        v2,
+        v3,
+        v4,
+        v5
+      };
+
+      CompactionProfileResult<CompactionDesignProfileResult> result =
+        new CompactionProfileResult<CompactionDesignProfileResult>
+        {
+          gridDistanceBetweenProfilePoints = distance,
+          results = new List<CompactionDesignProfileResult>
+          {
+            new CompactionDesignProfileResult
+            {
+              designFileUid = designUid,
+              data = new List<CompactionProfileVertex>(expectedVertices)
+            }
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+
+      helper.AddSlicerEndPoints(result);
+      Assert.AreEqual(distance, result.gridDistanceBetweenProfilePoints,
+        "Wrong gridDistanceBetweenProfilePoints");
+      Assert.AreEqual(1, result.results.Count);
+      Assert.AreEqual(designUid, result.results[0].designFileUid);
+      Assert.AreEqual(expectedVertices.Count+2, result.results[0].data.Count);
+      Assert.AreEqual(0, result.results[0].data[0].station);
+      Assert.AreEqual(float.NaN, result.results[0].data[0].elevation);
+      for (int i = 1; i < 6; i++)
+      {
+        Assert.AreEqual(expectedVertices[i-1].station, result.results[0].data[i].station);
+        Assert.AreEqual(expectedVertices[i-1].elevation, result.results[0].data[i].elevation);
+      }
+      Assert.AreEqual(distance, result.results[0].data[6].station);
+      Assert.AreEqual(float.NaN, result.results[0].data[6].elevation);
+    }
+
+    [TestMethod]
+    public void DesignProfileWithNoPointsShouldNotChange()
+    {
+      Guid designUid = Guid.NewGuid();
+      var distance = 0;
+ 
+      CompactionProfileResult<CompactionDesignProfileResult> result =
+        new CompactionProfileResult<CompactionDesignProfileResult>
+        {
+          gridDistanceBetweenProfilePoints = distance,
+          results = new List<CompactionDesignProfileResult>
+          {
+            new CompactionDesignProfileResult
+            {
+              designFileUid = designUid,
+              data = new List<CompactionProfileVertex>()
+            }
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+
+      helper.AddSlicerEndPoints(result);
+      Assert.AreEqual(distance, result.gridDistanceBetweenProfilePoints,
+        "Wrong gridDistanceBetweenProfilePoints");
+      Assert.AreEqual(1, result.results.Count);
+      Assert.AreEqual(designUid, result.results[0].designFileUid);
+      Assert.AreEqual(0, result.results[0].data.Count);
     }
     #endregion
   }

@@ -49,6 +49,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         }
         else
         {
+          //For convenience return empty list rather than null for easier manipulation
           result = new CompactionProfileResult<CompactionProfileVertex>{results = new List<CompactionProfileVertex>()};
         }
       }
