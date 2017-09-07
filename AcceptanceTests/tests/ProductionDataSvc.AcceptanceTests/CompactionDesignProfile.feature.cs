@@ -86,9 +86,11 @@ this.ScenarioSetup(scenarioInfo);
 #line 9
   testRunner.And("a importedFileUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 10
+  testRunner.And("a importedFileUid \"220e12e5-ce92-4645-8f01-1942a2d5a57f\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 11
  testRunner.When("I request a Compaction Design Profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 11
+#line 12
  testRunner.Then("the Compaction Design Profile should be", @"{
     ""gridDistanceBetweenProfilePoints"": 1.6069349835347946,
     ""results"": [
@@ -108,11 +110,43 @@ this.ScenarioSetup(scenarioInfo);
                     ""y"": 597.434265
                 }
             ]
+        },
+        {
+            ""designFileUid"": ""220e12e5-ce92-4645-8f01-1942a2d5a57f"",
+            ""data"": []
         }
     ],
     ""Code"": 0,
     ""Message"": ""success""
 }", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Slicer Empty Design Profile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionDesignProfile")]
+        public virtual void CompactionGetSlicerEmptyDesignProfile()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Empty Design Profile", ((string[])(null)));
+#line 44
+this.ScenarioSetup(scenarioInfo);
+#line 45
+ testRunner.Given("the Compaction Profile service URI \"/api/v2/profiles/design/slicer\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 46
+  testRunner.And("a projectUid \"7925f179-013d-4aaf-aff4-7b9833bb06d6\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 47
+  testRunner.And("a startLatDegrees \"36.209310\" and a startLonDegrees \"-115.019584\" and an endLatDe" +
+                    "grees \"36.209322\" And an endLonDegrees \"-115.019574\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 48
+  testRunner.And("a importedFileUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 49
+ testRunner.When("I request a Compaction Design Profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 50
+ testRunner.Then("the Compaction Design Profile should be", "{\n    \"gridDistanceBetweenProfilePoints\": 0,\n    \"results\": [\n        {\n         " +
+                    "   \"designFileUid\": \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\",\n            \"data\": " +
+                    "[]\n        }\n    ],\n    \"Code\": 0,\n    \"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

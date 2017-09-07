@@ -69,26 +69,114 @@ namespace ProductionDataSvc.AcceptanceTests
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Slicer Empty Profile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionProfile")]
+        public virtual void CompactionGetSlicerEmptyProfile()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Empty Profile", ((string[])(null)));
+#line 4
+this.ScenarioSetup(scenarioInfo);
+#line 5
+ testRunner.Given("the Compaction Profile service URI \"/api/v2/profiles/productiondata/slicer\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 6
+  testRunner.And("a projectUid \"7925f179-013d-4aaf-aff4-7b9833bb06d6\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 7
+  testRunner.And("a startLatDegrees \"36.209310\" and a startLonDegrees \"-115.019584\" and an endLatDe" +
+                    "grees \"36.209322\" And an endLonDegrees \"-115.019574\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 8
+  testRunner.And("a cutfillDesignUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 9
+ testRunner.When("I request a Compaction Profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 10
+ testRunner.Then("the Compaction Profile should be", @"  {
+    ""gridDistanceBetweenProfilePoints"": 1.6069225472652788,
+    ""results"": [
+        {
+            ""type"": ""firstPass"",
+            ""data"": []
+        },
+        {
+            ""type"": ""highestPass"",
+            ""data"": []
+        },
+        {
+            ""type"": ""lastPass"",
+            ""data"": []
+        },
+        {
+            ""type"": ""lowestPass"",
+            ""data"": []
+        },
+        {
+            ""type"": ""lastComposite"",
+            ""data"": []
+        },
+        {
+            ""type"": ""cmvSummary"",
+            ""data"": []
+        },
+        {
+            ""type"": ""cmvDetail"",
+            ""data"": []
+        },
+        {
+            ""type"": ""cmvPercentChange"",
+            ""data"": []
+        },
+        {
+            ""type"": ""mdpSummary"",
+            ""data"": []
+        },
+        {
+            ""type"": ""temperatureSummary"",
+            ""data"": []
+        },
+        {
+            ""type"": ""speedSummary"",
+            ""data"": []
+        },
+        {
+            ""type"": ""passCountSummary"",
+            ""data"": []
+        },
+        {
+            ""type"": ""passCountDetail"",
+            ""data"": []
+        },
+        {
+            ""type"": ""cutFill"",
+            ""data"": []
+        }
+    ],
+    ""Code"": 0,
+    ""Message"": ""success""
+}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Slicer Profile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionProfile")]
         public virtual void CompactionGetSlicerProfile()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Profile", ((string[])(null)));
-#line 5
+#line 77
 this.ScenarioSetup(scenarioInfo);
-#line 6
+#line 78
  testRunner.Given("the Compaction Profile service URI \"/api/v2/profiles/productiondata/slicer\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 7
+#line 79
   testRunner.And("a projectUid \"7925f179-013d-4aaf-aff4-7b9833bb06d6\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 8
+#line 80
   testRunner.And("a startLatDegrees \"36.207310\" and a startLonDegrees \"-115.019584\" and an endLatDe" +
                     "grees \"36.207322\" And an endLonDegrees \"-115.019574\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 9
+#line 81
   testRunner.And("a cutfillDesignUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 10
+#line 82
  testRunner.When("I request a Compaction Profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 11
+#line 83
  testRunner.Then("the Compaction Profile should be", "{\n    \"gridDistanceBetweenProfilePoints\": 1.6069349835347946,\n    \"results\": [\n  " +
                     "      {\n            \"type\": \"firstPass\",\n            \"data\": [\n                {" +
                     "\n                    \"cellType\": 1,\n                    \"x\": 0,\n                " +

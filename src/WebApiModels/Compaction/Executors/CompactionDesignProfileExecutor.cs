@@ -14,7 +14,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Velociraptor.PDSInterface.DesignProfile;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
+namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 {
   /// <summary>
   /// Get production data profile calculations executor.

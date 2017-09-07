@@ -467,7 +467,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         new Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>>();
       slicerProfileResults.Add(designUid1, new CompactionProfileResult<CompactionProfileVertex>
       {
-        gridDistanceBetweenProfilePoints = 1.234,
+        gridDistanceBetweenProfilePoints = 12.34,
         results = new List<CompactionProfileVertex>
         {
           new CompactionProfileVertex{station = 1.2, elevation = 0.9F},
@@ -478,7 +478,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       });
       slicerProfileResults.Add(designUid2, new CompactionProfileResult<CompactionProfileVertex>
       {
-        gridDistanceBetweenProfilePoints = 1.234,
+        gridDistanceBetweenProfilePoints = 12.34,
         results = new List<CompactionProfileVertex>
         {
           new CompactionProfileVertex{station = 0.8, elevation = 2.1F},
@@ -495,6 +495,48 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       var result = helper.ConvertProfileResult(slicerProfileResults);
       Assert.IsNotNull(result);
       Assert.AreEqual(slicerProfileResults.Values.First().gridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints,
+        "Wrong gridDistanceBetweenProfilePoints");
+      Assert.AreEqual(slicerProfileResults.Keys.Count, result.results.Count, "Wrong number of profiles");
+      int i = 0;
+      foreach (var item in slicerProfileResults)
+      {
+        ValidateDesignProfile(item.Key, i, item.Value.results, result.results[i]);
+        i++;
+      }
+    }
+
+    [TestMethod]
+    public void ConvertDesignProfileResultWithEmptyProfile()
+    {
+      Guid designUid1 = Guid.NewGuid();
+      Guid designUid2 = Guid.NewGuid();
+
+      Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults =
+        new Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>>();
+      slicerProfileResults.Add(designUid1, new CompactionProfileResult<CompactionProfileVertex>
+      {
+        gridDistanceBetweenProfilePoints = 0,
+        results = new List<CompactionProfileVertex>()
+      });
+      slicerProfileResults.Add(designUid2, new CompactionProfileResult<CompactionProfileVertex>
+      {
+        gridDistanceBetweenProfilePoints = 12.34,
+        results = new List<CompactionProfileVertex>
+        {
+          new CompactionProfileVertex{station = 0.8, elevation = 2.1F},
+          new CompactionProfileVertex{station = 1.1, elevation = 1.3F},
+          new CompactionProfileVertex{station = 2.7, elevation = float.NaN},
+          new CompactionProfileVertex{station = 3.8, elevation = 3.4F},
+          new CompactionProfileVertex{station = 4.2, elevation = 2.3F},
+        }
+      });
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+
+      var result = helper.ConvertProfileResult(slicerProfileResults);
+      Assert.IsNotNull(result);
+      Assert.AreEqual(12.34, result.gridDistanceBetweenProfilePoints,
         "Wrong gridDistanceBetweenProfilePoints");
       Assert.AreEqual(slicerProfileResults.Keys.Count, result.results.Count, "Wrong number of profiles");
       int i = 0;

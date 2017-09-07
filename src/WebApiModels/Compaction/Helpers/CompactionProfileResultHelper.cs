@@ -404,7 +404,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       }
 
       //all gridDistanceBetweenProfilePoints are the same if the profile slices the design surface
-      var profileWithDistance = slicerProfileResults.Values.Where(v => v.gridDistanceBetweenProfilePoints != 0)
+      var profileWithDistance = slicerProfileResults.Values.Where(v => v.gridDistanceBetweenProfilePoints > 0)
         .FirstOrDefault();
       var distance = profileWithDistance != null ? profileWithDistance.gridDistanceBetweenProfilePoints : 0;
 
@@ -418,6 +418,25 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             data = spr.Value.results ?? new List<CompactionProfileVertex>()
           }).ToList()
       };
+      //Raptor returns only the vertices on the design surface.
+      //Add slicer end points with NaN elevation if not present for a profile.
+      if (profile.gridDistanceBetweenProfilePoints > 0)
+      {
+        foreach (var result in profile.results)
+        {
+          if (result.data.Count > 0)
+          {
+            if (result.data[0].station > 0)
+            {
+              result.data.Insert(0, new CompactionProfileVertex {station = 0, elevation = float.NaN});            
+            }
+            if (result.data[result.data.Count - 1].station < profile.gridDistanceBetweenProfilePoints)
+            {
+              result.data.Add(new CompactionProfileVertex { station = profile.gridDistanceBetweenProfilePoints, elevation = float.NaN });
+            }
+          }
+        }
+      }
       return profile;
     }
 

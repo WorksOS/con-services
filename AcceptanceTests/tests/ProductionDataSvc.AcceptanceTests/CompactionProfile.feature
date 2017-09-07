@@ -1,6 +1,78 @@
 ﻿Feature: CompactionProfile
 	I should be able to request Compaction Profile data.
 
+Scenario: Compaction Get Slicer Empty Profile
+	Given the Compaction Profile service URI "/api/v2/profiles/productiondata/slicer"
+  And a projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
+  And a startLatDegrees "36.209310" and a startLonDegrees "-115.019584" and an endLatDegrees "36.209322" And an endLonDegrees "-115.019574"
+  And a cutfillDesignUid "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"
+	When I request a Compaction Profile 
+	Then the Compaction Profile should be
+"""
+  {
+    "gridDistanceBetweenProfilePoints": 1.6069225472652788,
+    "results": [
+        {
+            "type": "firstPass",
+            "data": []
+        },
+        {
+            "type": "highestPass",
+            "data": []
+        },
+        {
+            "type": "lastPass",
+            "data": []
+        },
+        {
+            "type": "lowestPass",
+            "data": []
+        },
+        {
+            "type": "lastComposite",
+            "data": []
+        },
+        {
+            "type": "cmvSummary",
+            "data": []
+        },
+        {
+            "type": "cmvDetail",
+            "data": []
+        },
+        {
+            "type": "cmvPercentChange",
+            "data": []
+        },
+        {
+            "type": "mdpSummary",
+            "data": []
+        },
+        {
+            "type": "temperatureSummary",
+            "data": []
+        },
+        {
+            "type": "speedSummary",
+            "data": []
+        },
+        {
+            "type": "passCountSummary",
+            "data": []
+        },
+        {
+            "type": "passCountDetail",
+            "data": []
+        },
+        {
+            "type": "cutFill",
+            "data": []
+        }
+    ],
+    "Code": 0,
+    "Message": "success"
+}
+"""
 
 Scenario: Compaction Get Slicer Profile
 	Given the Compaction Profile service URI "/api/v2/profiles/productiondata/slicer"
