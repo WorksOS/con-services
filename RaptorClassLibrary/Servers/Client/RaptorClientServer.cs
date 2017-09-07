@@ -3,6 +3,7 @@ using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Eviction;
 using Apache.Ignite.Core.Discovery.Tcp;
+using Apache.Ignite.Log4Net;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -39,18 +40,26 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
+                        GridName = RaptorGrids.RaptorGridName(),
                         IgniteInstanceName = RaptorGrids.RaptorGridName(),
                         ClientMode = true,
 
                         JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
-                        JvmMaxMemoryMb = 4 * 1024, // Set max to 4Gb
+                        JvmMaxMemoryMb = 1 * 1024, // Set max to 2Gb
 
-                        UserAttributes = new Dictionary<string, object>() { { "Role", role }, { "RaptorNodeID", RaptorNodeID } },
+                        UserAttributes = new Dictionary<string, object>()
+                        {
+                            { "Role", role },
+                            { "RaptorNodeID", RaptorNodeID }
+                        },
 
                         DiscoverySpi = new TcpDiscoverySpi()
                         {
-                            LocalAddress = "127.0.0.1"
-                        }
+                            LocalAddress = "127.0.0.1"//,
+                            //LocalPort = 47500
+                        },
+
+                        Logger = new IgniteLog4NetLogger(Log)
                     };
 
                     try

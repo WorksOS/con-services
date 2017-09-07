@@ -37,9 +37,10 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         {
             base.ConfigureRaptorGrid(cfg);
 
-            cfg.IgniteInstanceName = RaptorGrids.RaptorGridName();
+            cfg.GridName = RaptorGrids.RaptorGridName();
+            cfg.IgniteInstanceName = RaptorGrids.RaptorGridName();// + RaptorServerConfig.Instance().SpatialSubdivisionDescriptor.ToString();
             cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
-            cfg.JvmMaxMemoryMb = 6 * 1024; // Set max to 4Gb
+            cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
             cfg.UserAttributes = new Dictionary<String, object>();
             cfg.UserAttributes.Add("Owner", RaptorGrids.RaptorGridName());
 
@@ -55,16 +56,31 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 
             //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
 
-            // Don't permit the Ignite node to use more than 4Gb RAM (handy when running locally...)
+            // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             cfg.MemoryConfiguration = new MemoryConfiguration()
             {
-                SystemCacheMaxSize = (long)4 * 1024 * 1024 * 1024
+                SystemCacheMaxSize = (long)1 * 1024 * 1024 * 1024,
+                DefaultMemoryPolicyName = "defaultPolicy",
+                MemoryPolicies = new[]
+                {
+                    new MemoryPolicyConfiguration
+                    {
+                        Name = "defaultPolicy",
+                        InitialSize = 128 * 1024 * 1024,  // 128 MB
+                        MaxSize = 1L * 1024 * 1024 * 1024  // 1 GB
+                    }
+                }
             };
 
             cfg.DiscoverySpi = new TcpDiscoverySpi()
             {
-                LocalAddress = "127.0.0.1"
+                LocalAddress = "127.0.0.1" //,
+
+                // Make sure each individual subdivision uses a different port number - useful when running clusters on a local system
+//                LocalPort = 47500 + (int)RaptorServerConfig.Instance().SpatialSubdivisionDescriptor
             };
+
+            cfg.Logger = new IgniteLog4NetLogger(Log);
         }
 
         public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)

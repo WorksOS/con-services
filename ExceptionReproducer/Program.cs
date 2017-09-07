@@ -22,7 +22,7 @@ namespace ExceptionReproducer
         {
             cfg.IgniteInstanceName = "Raptor";
             cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
-            cfg.JvmMaxMemoryMb = 4 * 1024; // Set max to 4Gb
+            cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 2Gb
 
             cfg.UserAttributes = new Dictionary<String, object>();
             cfg.UserAttributes.Add("Owner", "Raptor");

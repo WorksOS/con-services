@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 
 namespace VSS.VisionLink.Raptor.Servers.Compute
 {
@@ -30,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.UserAttributes.Add("Role", "PSNode");
             cfg.UserAttributes.Add("SpatialDivision", RaptorServerConfig.Instance().SpatialSubdivisionDescriptor);
 
-            (cfg.DiscoverySpi as TcpDiscoverySpi).LocalPort = 47500 + (int)RaptorServerConfig.Instance().SpatialSubdivisionDescriptor;
+//            (cfg.DiscoverySpi as TcpDiscoverySpi).LocalPort = 47500 + (int)RaptorServerConfig.Instance().SpatialSubdivisionDescriptor;
         }
 
         public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
