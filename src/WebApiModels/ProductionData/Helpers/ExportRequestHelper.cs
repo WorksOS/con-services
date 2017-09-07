@@ -3,7 +3,6 @@ using ASNode.UserPreferences;
 using BoundingExtents;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -18,7 +17,6 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApiModels.Report.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
@@ -28,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
   /// </summary>
   public class ExportRequestHelper : DataRequestBase, IExportRequestHandler
   {
-    private IASNodeClient RaptorClient;
+    private IASNodeClient raptorClient;
     private UserPreferenceData userPreferences;
     private ProjectDescriptor projectDescriptor;
 
@@ -48,13 +46,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     }
     public ExportRequestHelper SetRaptorClient(IASNodeClient raptorClient)
     {
-      RaptorClient = raptorClient;
+      this.raptorClient = raptorClient;
       return this;
     }
 
-    public ExportRequestHelper SetPreferencesProxy(IPreferenceProxy preferenceProxy)
+    public ExportRequestHelper SetUserPreferences(UserPreferenceData userPrefs)
     {
-      userPreferences = preferenceProxy.GetUserPreferences(Headers).Result;
+      userPreferences = userPrefs;
       return this;
     }
     
@@ -81,13 +79,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       string machineNames,
       double tolerance = 0.0)
     {
-      if (userPreferences == null)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "Failed to retrieve preferences for current user"));
-      }
-
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
@@ -95,12 +86,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
       if (exportType == ExportTypes.kSurfaceExport)
       {
-        RaptorClient.GetDataModelExtents(ProjectId,
-          RaptorConverters.convertSurveyedSurfaceExlusionList(ExcludedIds), out projectExtents);
+        raptorClient.GetDataModelExtents(ProjectId,
+          RaptorConverters.convertSurveyedSurfaceExlusionList(Filter?.surveyedSurfaceExclusionList), out projectExtents);
       }
       else
       {
-        TMachineDetail[] machineDetails = RaptorClient.GetMachineIDs(ProjectId);
+        TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(ProjectId);
 
         if (machineDetails != null)
         {

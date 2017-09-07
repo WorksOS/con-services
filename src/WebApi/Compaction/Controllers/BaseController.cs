@@ -273,7 +273,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetID</param>
     /// <returns>An instance of the Filter class.</returns>
-    [Obsolete]
     protected async Task<Common.Models.Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid, DateTime? startUtc, DateTime? endUtc, bool? vibeStateOn, ElevationType? elevationType,
       int? layerNumber, long? onMachineDesignId, long? assetID, string machineName, bool? isJohnDoe)
     {

@@ -27,10 +27,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
       FileListProxy = fileListProxy;
       SettingsManager = settingsManager;
     }
-    public DesignProfileRequestHelper SetRaptorClient(IASNodeClient raptorClient)
-    {
-      return this;
-    }
 
     /// <summary>
     /// Creates an instance of the CompactionProfileDesignRequest class and populate it with data needed for a design profile.   

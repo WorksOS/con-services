@@ -86,7 +86,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     }
 
     /// <summary>
-    /// Sets the collection of excluded imported file IDs.
+    /// Sets the filter.
     /// </summary>
     /// <param name="filter">Filter model for the raptor query.</param>
     public ProductionDataRequestFactory Filter(Filter filter)

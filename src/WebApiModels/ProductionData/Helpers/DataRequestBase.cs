@@ -23,7 +23,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     protected long ProjectId;
     protected IDictionary<string, string> Headers;
     protected CompactionProjectSettings ProjectSettings;
-    protected List<long> ExcludedIds;
     protected Filter Filter;
     protected DesignDescriptor DesignDescriptor;
 

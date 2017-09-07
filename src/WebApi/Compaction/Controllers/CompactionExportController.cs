@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -96,6 +100,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
+      var userPreferences = await GetUserPreferences();
+
 
       tolerance = tolerance ?? SURFACE_EXPORT_TOLLERANCE;
 
@@ -104,7 +110,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Headers(customHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
-        .SetPreferencesProxy(prefProxy)
+        .SetUserPreferences(userPreferences)
         .SetRaptorClient(raptorClient)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
@@ -153,6 +159,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
+      var userPreferences = await GetUserPreferences();
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
@@ -160,7 +167,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .SetRaptorClient(raptorClient)
-        .SetPreferencesProxy(prefProxy)
+        .SetUserPreferences(userPreferences)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
           projectUid,
@@ -213,13 +220,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
+      var userPreferences = await GetUserPreferences();
+
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
-        .SetPreferencesProxy(prefProxy)
+        .SetUserPreferences(userPreferences)
         .SetRaptorClient(raptorClient)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
@@ -239,6 +248,22 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return RequestExecutorContainerFactory
         .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
         .Process(exportRequest) as ExportResult;
+    }
+
+    /// <summary>
+    /// Get user preferences
+    /// </summary>
+    /// <returns></returns>
+    private async Task<UserPreferenceData> GetUserPreferences()
+    {
+      var userPreferences = await prefProxy.GetUserPreferences(customHeaders);
+      if (userPreferences == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+            "Failed to retrieve preferences for current user"));
+      }
+      return userPreferences;
     }
   }
 }
