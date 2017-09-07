@@ -21,14 +21,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
     public static GetProjectBoundariesAtDateResult CreateGetProjectBoundariesAtDateResult(bool result,
       ProjectBoundaryPackage[] projectBoundaries,
       int code = 0,
-      string message = "success")
+      int customCode = 0, string errorMessage1 = null, string errorMessage2 = null)
     {
       return new GetProjectBoundariesAtDateResult
       {
         Result = result,
         projectBoundaries = projectBoundaries,
         Code = code,
-        Message = message
+        Message = string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(customCode), errorMessage1 ?? "null", errorMessage2 ?? "null")
       };
     }
 

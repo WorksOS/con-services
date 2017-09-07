@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Repositories;
@@ -41,12 +42,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <executor>AssetIdExecutor</executor>
     [Route("api/v1/asset/getId")]
     [HttpPost]
-    public GetAssetIdResult GetAssetId([FromBody]GetAssetIdRequest request)
+    public async Task<GetAssetIdResult> GetAssetId([FromBody]GetAssetIdRequest request)
     {
       log.LogDebug("GetAssetId: request:{0}", JsonConvert.SerializeObject(request) );            
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, log).Process(request) as GetAssetIdResult;
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(factory, log);
+      var result = await executor.ProcessAsync(request) as GetAssetIdResult;
 
       log.LogResult(ToString(), request, result);
       return result;

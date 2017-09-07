@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Repositories;
@@ -31,12 +32,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <executor>ProjectIdExecutor</executor>
     [Route("api/v1/project/getId")]
     [HttpPost]
-    public GetProjectIdResult GetProjectId([FromBody]GetProjectIdRequest request)
+    public async Task<GetProjectIdResult> GetProjectId([FromBody]GetProjectIdRequest request)
     {
       log.LogDebug("GetProjectId: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, log).Process(request) as GetProjectIdResult;
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, log);
+      var result = await executor.ProcessAsync(request) as GetProjectIdResult;
 
       log.LogResult(this.ToString(), request, result);      
       return result;
@@ -52,12 +54,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <executor>ProjectBoundaryAtDateExecutor</executor>
     [Route("api/v1/project/getBoundary")]
     [HttpPost]
-    public GetProjectBoundaryAtDateResult PostProjectBoundary([FromBody]GetProjectBoundaryAtDateRequest request)
+    public async Task<GetProjectBoundaryAtDateResult> PostProjectBoundary([FromBody]GetProjectBoundaryAtDateRequest request)
     {
       log.LogDebug("PostProjectBoundary: {0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, log).Process(request) as GetProjectBoundaryAtDateResult;
+      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, log);
+      var result = await executor.ProcessAsync(request) as GetProjectBoundaryAtDateResult;
 
       log.LogResult(this.ToString(), request, result);
       return result;
@@ -73,12 +76,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <executor>ProjectBoundariesAtDateExecutor</executor>
     [Route("api/v1/project/getBoundaries")]
     [HttpPost]
-    public GetProjectBoundariesAtDateResult PostProjectBoundaries([FromBody]GetProjectBoundariesAtDateRequest request)
+    public async Task<GetProjectBoundariesAtDateResult> PostProjectBoundaries([FromBody]GetProjectBoundariesAtDateRequest request)
     {
       log.LogDebug("PostProjectBoundaries: {0}", JsonConvert.SerializeObject(request));
       request.Validate();
-      
-      var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, log).Process(request) as GetProjectBoundariesAtDateResult;
+
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, log);
+      var result = await executor.ProcessAsync(request) as GetProjectBoundariesAtDateResult;
 
       log.LogResult(this.ToString(), request, result);
       return result;

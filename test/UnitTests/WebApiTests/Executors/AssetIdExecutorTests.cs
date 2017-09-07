@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Repositories;
@@ -26,27 +27,31 @@ namespace WebApiTests.Executors
     }
 
     [TestMethod]
-    public void CanCallAssetIDExecutorNoValidInput()
+    public async Task CanCallAssetIDExecutorNoValidInput()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, loggerFactory.CreateLogger<AssetIdExecutorTests>()).Process(assetIdRequest) as GetAssetIdResult;
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(factory, loggerFactory.CreateLogger<AssetIdExecutorTests>());
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
+
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect AssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
 
     [TestMethod]
-    public void CanCallAssetIDExecutorWithRadioSerialWithManualDeviceType()
+    public async Task CanCallAssetIDExecutorWithRadioSerialWithManualDeviceType()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "3k45LK");
 
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, loggerFactory.CreateLogger<AssetIdExecutorTests>()).Process(assetIdRequest) as GetAssetIdResult;
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(factory, loggerFactory.CreateLogger<AssetIdExecutorTests>());
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
+
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect AssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");      

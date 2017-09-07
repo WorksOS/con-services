@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
-using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
@@ -43,8 +44,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("PostTagFileProcessingErrorV1: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      return RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(factory, log)
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(factory, log)
         .Process(request) as TagFileProcessingErrorResult;
+      
+      log.LogDebug("PostTagFileProcessingErrorV2: result:{0}", JsonConvert.SerializeObject(result));
+      return result;
     }
 
     /// <summary>
@@ -57,13 +61,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <executor>TagFileProcessingErrorV2Executor</executor>
     [Route("api/v2/notification/tagFileProcessingError")]
     [HttpPost]
-    public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
+    public async Task<TagFileProcessingErrorResult> PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
     {
       log.LogDebug("PostTagFileProcessingErrorV2: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      return RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(factory, log)
-        .Process(request) as TagFileProcessingErrorResult;
+      var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(factory, log);
+      var result = await executor.ProcessAsync(request) as TagFileProcessingErrorResult;
+
+      log.LogDebug("PostTagFileProcessingErrorV2: result:{0}", JsonConvert.SerializeObject(result));
+      return result;
     }
 
     /// <summary>

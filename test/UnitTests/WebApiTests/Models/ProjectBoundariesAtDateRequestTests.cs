@@ -1,19 +1,28 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace WebApiTests.Models
 {
   [TestClass]
-  public class ProjectBoundariesAtDateRequestTests
+  public class ProjectBoundariesAtDateRequestTests :ModelBaseTests
   {
+    private string projectBoundariesPrefix = @"{{""projectBoundaries"":[],";
+
     [TestMethod]
     public void ValidateGetAssetIdRequest_ValidatorCase1()
     {
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(-1, DateTime.UtcNow);
       var ex = Assert.ThrowsException<ServiceException>(() => projectBoundariesAtDateRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(String.Format("Must have assetId", -1), StringComparison.Ordinal));
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+
+      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(9);
+      var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
+      var exceptionMessage = string.Format(projectBoundariesPrefix + exceptionTemplate, internalCode, errorMessage);
+      Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
     [TestMethod]
@@ -21,7 +30,12 @@ namespace WebApiTests.Models
     {
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(-1, DateTime.UtcNow.AddYears(-1));
       var ex = Assert.ThrowsException<ServiceException>(() => projectBoundariesAtDateRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(String.Format("Must have assetId", -1), StringComparison.Ordinal));
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+
+      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(9);
+      var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
+      var exceptionMessage = string.Format(projectBoundariesPrefix + exceptionTemplate, internalCode, errorMessage);
+      Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
     [TestMethod]
@@ -30,7 +44,12 @@ namespace WebApiTests.Models
       DateTime now = DateTime.UtcNow.AddYears(-50).AddMonths(-1);
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(1233, now);
       var ex = Assert.ThrowsException<ServiceException>(() => projectBoundariesAtDateRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("tagFileUTC must have occured within last 50 years", StringComparison.Ordinal));
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+
+      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(17);
+      var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
+      var exceptionMessage = string.Format(projectBoundariesPrefix + exceptionTemplate, internalCode, errorMessage);
+      Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
     [TestMethod]

@@ -1,19 +1,28 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace WebApiTests.Models
 {
   [TestClass]
-  public class ProjectIdRequestTests
+  public class ProjectIdRequestTests : ModelBaseTests
   {
+    private string projectIdPrefix = @"{{""projectId"":-1,";
+
     [TestMethod]
     public void ValidateGetProjectIdRequest_ValidatorCase1()
     {
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(-1, 91, 181, 0, DateTime.MinValue, "");
       var ex = Assert.ThrowsException<ServiceException>(() => projectIdRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must contain one or more of assetId", StringComparison.Ordinal));
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+
+      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(20);
+      var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
+      var exceptionMessage = string.Format(projectIdPrefix + exceptionTemplate, internalCode, errorMessage);
+      Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
     [TestMethod]
@@ -21,7 +30,12 @@ namespace WebApiTests.Models
     {
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(-1, 89, 179, 0, DateTime.MinValue, "");
       var ex = Assert.ThrowsException<ServiceException>(() => projectIdRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must contain one or more of assetId", StringComparison.Ordinal));
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+
+      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(20);
+      var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
+      var exceptionMessage = string.Format(projectIdPrefix + exceptionTemplate, internalCode, errorMessage);
+      Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
     [TestMethod]
@@ -29,7 +43,12 @@ namespace WebApiTests.Models
     {
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(345345, -91, 179, 0, DateTime.MinValue, "");
       var ex = Assert.ThrowsException<ServiceException>(() => projectIdRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Latitude should be between -90 degrees and 90 degrees", StringComparison.Ordinal));
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+
+      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(21);
+      var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
+      var exceptionMessage = string.Format(projectIdPrefix + exceptionTemplate, internalCode, errorMessage);
+      Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
     [TestMethod]
@@ -37,7 +56,12 @@ namespace WebApiTests.Models
     {
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(345345, -89, 179, 0, DateTime.UtcNow.AddYears(-50).AddMonths(-1), "");
       var ex = Assert.ThrowsException<ServiceException>(() => projectIdRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("timeOfPosition must have occured within last 50 years", StringComparison.Ordinal));
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+
+      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(23);
+      var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
+      var exceptionMessage = string.Format(projectIdPrefix + exceptionTemplate, internalCode, errorMessage);
+      Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
     
     [TestMethod]

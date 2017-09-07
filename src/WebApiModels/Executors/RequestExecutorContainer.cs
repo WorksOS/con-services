@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -57,6 +57,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <returns></returns>
     protected abstract ContractExecutionResult ProcessEx<T>(T item); // where T : IServiceDomainObject;
 
+    protected abstract Task<ContractExecutionResult> ProcessAsyncEx<T>(T item);
+
     internal static object Build<T>()
     {
       throw new NotImplementedException();
@@ -75,6 +77,22 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
       return ProcessEx(item);
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="item"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="ServiceException"></exception>
+    public async Task<ContractExecutionResult> ProcessAsync<T>(T item)
+    {
+      if (item == null)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
+      return await ProcessAsyncEx(item);
     }
 
     /// <summary>

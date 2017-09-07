@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
@@ -96,18 +97,22 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return customer;
     }
 
-    public CustomerTccOrg LoadCustomerByTccOrgId(string tccOrgUid)
+    public async Task<CustomerTccOrg> LoadCustomerByTccOrgId(string tccOrgUid)
     {
       // TFA is only interested in customer and dealer types
       CustomerTccOrg customer = null;
       if (!string.IsNullOrEmpty(tccOrgUid))
       {
         var customerRepo = factory.GetRepository<ICustomerEvent>() as CustomerRepository;
-        var a = customerRepo.GetCustomerWithTccOrg(tccOrgUid);
-        if (a != null && a.Result != null &&
-          (a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
+        if (customerRepo != null)
+        {
+          var customerTccOrg = await customerRepo.GetCustomerWithTccOrg(tccOrgUid).ConfigureAwait(false);
+          if (customerTccOrg != null &&
+              (customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
+               customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
           )
-          customer = a.Result;
+            customer = customerTccOrg;
+        }
       }
       return customer;
     }

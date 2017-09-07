@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
@@ -21,7 +23,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns>a GetProjectBoundaryAtDateResult if successful</returns>      
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       GetProjectBoundaryAtDateRequest request = item as GetProjectBoundaryAtDateRequest;
       log.LogDebug("ProjectBoundaryAtDateExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
@@ -56,9 +58,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           GetProjectBoundaryAtDateResult.CreateGetProjectBoundaryAtDateResult(false, new TWGS84FenceContainer(),
-            ContractExecutionStatesEnum.InternalProcessingError,
-            "Failed to get project boundary"));
+            ContractExecutionStatesEnum.InternalProcessingError, 27));
       }
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException();
     }
   }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
@@ -54,16 +53,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(false, new ProjectBoundaryPackage[0],
-            ResultHandling.ContractExecutionStatesEnum.ValidationError,
-            "Must have assetId"));
+            ResultHandling.ContractExecutionStatesEnum.ValidationError, 9));
       }
 
       if (!(tagFileUTC > DateTime.UtcNow.AddYears(-50) && tagFileUTC <= DateTime.UtcNow.AddDays(30)))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(false, new ProjectBoundaryPackage[0],
-            ResultHandling.ContractExecutionStatesEnum.ValidationError,
-            "tagFileUTC must have occured within last 50 years"));
+            ResultHandling.ContractExecutionStatesEnum.ValidationError, 17));
       }
     }
   }

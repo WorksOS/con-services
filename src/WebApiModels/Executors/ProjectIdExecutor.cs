@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
@@ -20,34 +21,34 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public class ProjectIdExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Processes the get project id request and finds the id of the project corresponding to the given location and asset/tccorgID and relavant subscriptions.
-    /// 
-    ///  A device asset reports at a certain location, at a point in time -
-    ///        which project should its data be accumulating into?
-    ///    assumption1: A customers projects cannot overlap spatially at the same point-in-time
-    ///                 this applies to construction and Landfill types
-    ///                 therefore this should legitimately retrieve max of ONE match
-    ///    assumption2: tag files are data type-generic at this level, so this function does not need to
-    ///                 differentiate between the 3 subscription types.
-    ///    assumption3: the customer must be identifiable by EITHER the AssetID, or TCCOrgID being supplied
-    ///                 only projects for that customer are fair game.
-    ///   
-    ///    A construction project is only fair game if an assetID is provided
-    ///    A landfill project is fair game for an aasetID or a TCCOrgID
-    ///
-    ///    determine the union (ONE) of the following:
-    ///    1) which projects were valid at this time?
-    ///    2) which customers have a machineControl-type subscription for at this time? (for construction type projects)
-    ///        a) for the asset provided OR
-    ///        b) any assets if -1 is provided
-    ///    3) which project.sites are these points are in?
+    ///  <summary>
+    ///  Processes the get project id request and finds the id of the project corresponding to the given location and asset/tccorgID and relavant subscriptions.
+    ///  
+    ///   A device asset reports at a certain location, at a point in time -
+    ///         which project should its data be accumulating into?
+    ///     assumption1: A customers projects cannot overlap spatially at the same point-in-time
+    ///                  this applies to construction and Landfill types
+    ///                  therefore this should legitimately retrieve max of ONE match
+    ///     assumption2: tag files are data type-generic at this level, so this function does not need to
+    ///                  differentiate between the 3 subscription types.
+    ///     assumption3: the customer must be identifiable by EITHER the AssetID, or TCCOrgID being supplied
+    ///                  only projects for that customer are fair game.
     ///    
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
+    ///     A construction project is only fair game if an assetID is provided
+    ///     A landfill project is fair game for an aasetID or a TCCOrgID
+    /// 
+    ///     determine the union (ONE) of the following:
+    ///     1) which projects were valid at this time?
+    ///     2) which customers have a machineControl-type subscription for at this time? (for construction type projects)
+    ///         a) for the asset provided OR
+    ///         b) any assets if -1 is provided
+    ///     3) which project.sites are these points are in?
+    ///     
+    ///  </summary>
+    ///  <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns>a GetProjectIdResult if successful</returns>      
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       GetProjectIdRequest request = item as GetProjectIdRequest;
       log.LogDebug("ProjectIdExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
@@ -63,7 +64,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // must be able to find one or other customer for a) tccOrgUid b) legacyAssetID, whichever is provided
       if (!string.IsNullOrEmpty(request.tccOrgUid))
       {
-        customerTCCOrg = dataRepository.LoadCustomerByTccOrgId(request.tccOrgUid);
+        customerTCCOrg = await dataRepository.LoadCustomerByTccOrgId(request.tccOrgUid).ConfigureAwait(false);
         log.LogDebug("ProjectIdExecutor: Loaded CustomerByTccOrgId? {0}", JsonConvert.SerializeObject(customerTCCOrg));
       }
 
@@ -186,9 +187,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ContractExecutionStatesEnum.InternalProcessingError,
-            "Failed to get project id"));
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1, 
+            ContractExecutionStatesEnum.InternalProcessingError, 19));
       }
+    }
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new System.NotImplementedException();
     }
   }
 }

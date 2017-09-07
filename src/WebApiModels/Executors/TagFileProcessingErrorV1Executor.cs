@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
@@ -26,13 +27,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     {
       var request = item as TagFileProcessingErrorV1Request;
       if (request == null)
-        // todo serviceException refactor
         throw new ServiceException(HttpStatusCode.BadRequest,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 10));
-
-      log.LogDebug("TagFileProcessingErrorV1Executor: Going to process request {0}",
-        JsonConvert.SerializeObject(request));
+            ContractExecutionStatesEnum.InternalProcessingError, 11));
 
       bool result = request.assetId > 0 && !string.IsNullOrEmpty(request.tagFileName) &&
                     Enum.IsDefined(typeof(TagFileErrorsEnum), request.error) == true;
@@ -41,7 +38,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         var errorMessage =
           string.Format(
-            $"OnTagFileProcessingError: assetID = {request.assetId}, tagFileName = {request.tagFileName}, errorNumber = {(int) request.error}, error = {Enum.GetName(typeof(TagFileErrorsEnum), request.error)}");
+            $"OnTagFileProcessingError: assetID = {request.assetId}, tagFileName = {request.tagFileName}, errorNumber = {(int)request.error}, error = {Enum.GetName(typeof(TagFileErrorsEnum), request.error)}");
         log.LogDebug(errorMessage);
       }
 
@@ -53,9 +50,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 11));
+            ContractExecutionStatesEnum.InternalProcessingError, 12));
       }
-
+    }
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    {
+      throw new NotImplementedException();
     }
   }
 }

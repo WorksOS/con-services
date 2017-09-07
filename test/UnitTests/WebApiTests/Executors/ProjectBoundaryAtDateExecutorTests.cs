@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using VSS.Common.ResultsHandling;
+using System.Threading.Tasks;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
@@ -16,13 +16,14 @@ namespace WebApiTests.Executors
   {
 
     [TestMethod]
-    public void CanCallProjectBoundaryAtDateExecutorNoValidInput()
+    public async Task CanCallProjectBoundaryAtDateExecutorNoValidInput()
     {
       GetProjectBoundaryAtDateRequest ProjectBoundaryAtDateRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(-1, DateTime.UtcNow);
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, loggerFactory.CreateLogger<ProjectBoundaryAtDateExecutorTests>()).Process(ProjectBoundaryAtDateRequest) as GetProjectBoundaryAtDateResult;
+      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, loggerFactory.CreateLogger<ProjectBoundaryAtDateExecutorTests>());
+      var result = await executor.ProcessAsync(ProjectBoundaryAtDateRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code, "executor "); // todo does executed successfully mean it executed but may return nothing?
 

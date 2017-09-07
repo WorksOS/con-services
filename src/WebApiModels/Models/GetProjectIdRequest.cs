@@ -82,29 +82,29 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       if (assetId <= 0 && string.IsNullOrEmpty(tccOrgUid))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ResultHandling.ContractExecutionStatesEnum.ValidationError,
-            "Must contain one or more of assetId or tccOrgId"));
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1, 
+            ResultHandling.ContractExecutionStatesEnum.ValidationError, 20));
       }
 
       if (latitude < -90 || latitude > 90)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ContractExecutionStatesEnum.ValidationError,
-            "Latitude should be between -90 degrees and 90 degrees"));
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1, 
+            ContractExecutionStatesEnum.ValidationError, 21));
       }
 
       if (longitude < -180 || longitude > 180)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ContractExecutionStatesEnum.ValidationError,
-            "Longitude should be between -180 degrees and 180 degrees"));
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1, 
+            ContractExecutionStatesEnum.ValidationError, 22));
       }
 
       if (!(timeOfPosition > DateTime.UtcNow.AddYears(-50) && timeOfPosition <= DateTime.UtcNow.AddDays(30)))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ContractExecutionStatesEnum.ValidationError,
-            "timeOfPosition must have occured within last 50 years"));
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1, 
+            ContractExecutionStatesEnum.ValidationError, 23));
       }
 
     }

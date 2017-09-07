@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
@@ -20,14 +21,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public class AssetIdExecutor : RequestExecutorContainer
   {
-
     /// <summary>
     /// Processes the get asset request and finds the id of the asset corresponding to the given tagfile radio serial number.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns>a GetAssetIdResult if successful</returns>      
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       GetAssetIdRequest request = item as GetAssetIdRequest;
       log.LogDebug("AssetIdExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
@@ -115,9 +115,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ResultHandling.ContractExecutionStatesEnum.InternalProcessingError,
-            "Failed to get legacy asset id"));
+          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, 
+            ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 15));
       }
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException();
     }
 
 

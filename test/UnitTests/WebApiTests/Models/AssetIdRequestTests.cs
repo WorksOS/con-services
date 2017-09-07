@@ -1,19 +1,28 @@
 ﻿using System;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace WebApiTests.Models
 {
   [TestClass]
-  public class AssetIdRequestTests
-    {
+  public class AssetIdRequestTests : ModelBaseTests
+  {
+    private string assetIdPrefix = @"{{""assetId"":-1,""machineLevel"":0,";
+
     [TestMethod]
     public void ValidateGetAssetIdRequest_ValidatorCase1()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
       var ex = Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have assetId and/or projectID", StringComparison.Ordinal));
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+
+      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(24);
+      var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
+      var exceptionMessage = string.Format(assetIdPrefix + exceptionTemplate, internalCode, errorMessage);
+      Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
     [TestMethod]
@@ -21,7 +30,12 @@ namespace WebApiTests.Models
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "ASerial5");
       var ex = Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("AssetId must have valid deviceType", StringComparison.Ordinal));
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+
+      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(25);
+      var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
+      var exceptionMessage = string.Format(assetIdPrefix + exceptionTemplate, internalCode, errorMessage);
+      Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
     [TestMethod]
@@ -29,7 +43,12 @@ namespace WebApiTests.Models
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 100, "ASerial5");
       var ex = Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("AssetId must have valid deviceType", StringComparison.Ordinal));
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+
+      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(25);
+      var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
+      var exceptionMessage = string.Format(assetIdPrefix + exceptionTemplate, internalCode, errorMessage);
+      Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
     [TestMethod]

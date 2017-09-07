@@ -18,14 +18,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
     /// </summary>
     public static GetProjectIdResult CreateGetProjectIdResult(bool result, long projectId,
       int code = 0,
-      string message = "success")
+      int customCode = 0, string errorMessage1 = null, string errorMessage2 = null)
     {
       return new GetProjectIdResult
       {
         Result = result,
         projectId = projectId,
         Code = code,
-        Message = message
+        Message = string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(customCode), errorMessage1 ?? "null", errorMessage2 ?? "null")
       };
     }
 

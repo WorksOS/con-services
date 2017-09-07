@@ -64,8 +64,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       if (string.IsNullOrEmpty(radioSerial) && projectId <= 0)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ContractExecutionStatesEnum.ValidationError,
-            "Must have assetId and/or projectID"));
+          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, 
+            ContractExecutionStatesEnum.ValidationError, 24));
       }
 
       // if the number is not in enum then it returns the number
@@ -74,15 +74,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       if (!string.IsNullOrEmpty(radioSerial) && (deviceType < 1 || !isDeviceTypeValid))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ResultHandling.ContractExecutionStatesEnum.ValidationError,
-            "AssetId must have valid deviceType"));
+          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, 
+            ResultHandling.ContractExecutionStatesEnum.ValidationError, 25));
       }
 
       if (deviceType == 0 && projectId <= 0)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ContractExecutionStatesEnum.ValidationError,
-            "A manual/unknown deviceType must have a projectID"));
+          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, 
+            ContractExecutionStatesEnum.ValidationError, 26));
       }
 
     }

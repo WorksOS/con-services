@@ -55,16 +55,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           GetProjectBoundaryAtDateResult.CreateGetProjectBoundaryAtDateResult(false, new TWGS84FenceContainer(),
-            ResultHandling.ContractExecutionStatesEnum.ValidationError,
-            "Must have projectId"));
+            ResultHandling.ContractExecutionStatesEnum.ValidationError, 18));
       }
 
       if (!(tagFileUTC > DateTime.UtcNow.AddYears(-50) && tagFileUTC <= DateTime.UtcNow.AddDays(30)))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetProjectBoundaryAtDateResult.CreateGetProjectBoundaryAtDateResult(false, new TWGS84FenceContainer(),
-            ContractExecutionStatesEnum.ValidationError,
-            "tagFileUTC must have occured within last 50 years"));
+            ContractExecutionStatesEnum.ValidationError, 17));
       }
     }
   }
