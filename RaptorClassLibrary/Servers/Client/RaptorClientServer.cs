@@ -53,13 +53,30 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                             { "RaptorNodeID", RaptorNodeID }
                         },
 
+                        // Enforce using only the LocalHost interface
                         DiscoverySpi = new TcpDiscoverySpi()
                         {
                             LocalAddress = "127.0.0.1"//,
                             //LocalPort = 47500
                         },
 
-                        Logger = new IgniteLog4NetLogger(Log)
+                        Logger = new IgniteLog4NetLogger(Log),
+
+                        // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
+                        MemoryConfiguration = new MemoryConfiguration()
+                        {
+                            SystemCacheMaxSize = (long)1 * 1024 * 1024 * 1024,
+                            DefaultMemoryPolicyName = "defaultPolicy",
+                            MemoryPolicies = new[]
+                            {
+                              new MemoryPolicyConfiguration
+                              {
+                                 Name = "defaultPolicy",
+                                 InitialSize = 128 * 1024 * 1024,  // 128 MB
+                                 MaxSize = 1L * 1024 * 1024 * 1024  // 1 GB
+                              }
+                            }
+                        }
                     };
 
                     try
