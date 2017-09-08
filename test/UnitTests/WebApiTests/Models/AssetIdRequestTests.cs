@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;

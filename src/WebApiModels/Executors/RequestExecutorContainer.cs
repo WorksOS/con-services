@@ -9,6 +9,7 @@ using VSS.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -29,6 +30,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// Logger used in ProcessEx
     /// </summary>
     protected ILogger log;
+    protected AssetRepository assetRepository;
+    protected DeviceRepository deviceRepository;
+    protected CustomerRepository customerRepository;
+    protected ProjectRepository projectRepository;
+    protected SubscriptionRepository subscriptionsRepository;
 
     /// <summary>
     /// allows mapping between CG (which Raptor requires) and NG
@@ -37,6 +43,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
     protected static DataRepository dataRepository = null;
 
+    
     /// <summary>
     ///   Generates the errorlist for instantiated executor.
     /// </summary>
@@ -53,9 +60,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// </summary>
     /// <typeparam name="T">>Generic type which should be</typeparam>
     /// <param name="item">>The item.</param>
-    /// <param name="guidsWithDates">Results from applying subscription logic to the request</param>
     /// <returns></returns>
-    protected abstract ContractExecutionResult ProcessEx<T>(T item); // where T : IServiceDomainObject;
+    protected abstract ContractExecutionResult ProcessEx<T>(T item); 
 
     protected abstract Task<ContractExecutionResult> ProcessAsyncEx<T>(T item);
 
@@ -98,16 +104,26 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
-    /// <param name="factory">Repository factory</param>
+    /// <param name="subscriptionsRepository"></param>
     /// <param name="logger">Ilogger</param>
+    /// <param name="assetRepository"></param>
+    /// <param name="deviceRepository"></param>
+    /// <param name="customerRepository"></param>
+    /// <param name="projectRepository"></param>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(IRepositoryFactory factory, ILogger logger) where TExecutor : RequestExecutorContainer, new()
+    public static TExecutor Build<TExecutor>(ILogger logger, IRepository<IAssetEvent> assetRepository = null, IRepository<IDeviceEvent> deviceRepository = null, 
+      ICustomerRepository customerRepository = null, IProjectRepository projectRepository = null,
+      IRepository<ISubscriptionEvent> subscriptionsRepository = null) where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { factory = factory, log = logger };
-      dataRepository = new DataRepository(factory, logger);
+      var executor = new TExecutor() { log = logger, assetRepository = assetRepository as AssetRepository, deviceRepository = deviceRepository as DeviceRepository,
+        customerRepository = customerRepository as CustomerRepository, projectRepository = projectRepository as ProjectRepository,
+        subscriptionsRepository = subscriptionsRepository as SubscriptionRepository };
+      dataRepository = new DataRepository(logger, assetRepository, deviceRepository, 
+        customerRepository, projectRepository, 
+        subscriptionsRepository);
       return executor;
-    }  
-
+    }
+    
   }
 }

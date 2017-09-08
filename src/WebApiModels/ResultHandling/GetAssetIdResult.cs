@@ -1,6 +1,4 @@
-﻿using VSS.Common.ResultsHandling;
-
-namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
+﻿namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
 {
   /// <summary>
   /// The result of a request to get the legacyAssetID for a radioSerial

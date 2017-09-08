@@ -2,7 +2,6 @@
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 

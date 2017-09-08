@@ -12,14 +12,13 @@ namespace ExecutorTests
 {
   public class ExecutorTestData
   {
-    protected IServiceProvider ServiceProvider;
-    protected AssetRepository AssetContext;
-    protected CustomerRepository CustomerContext;
-    protected DeviceRepository DeviceContext;
-    protected ProjectRepository ProjectContext;
-    protected SubscriptionRepository SubscriptionContext;
-    protected IRepositoryFactory Factory;
-    protected ILogger Logger;
+    protected IServiceProvider serviceProvider;
+    protected AssetRepository assetRepo;
+    protected DeviceRepository deviceRepo;
+    protected CustomerRepository customerRepo;
+    protected ProjectRepository projectRepo;
+    protected SubscriptionRepository subscriptionRepo;
+    protected ILogger logger;
 
     [TestInitialize]
     public virtual void InitTest()
@@ -37,25 +36,22 @@ namespace ExecutorTests
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddSingleton<IRepositoryFactory, RepositoryFactory>()
         .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
-        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
         .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
-        .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
+        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-        .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
         .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
 
-      ServiceProvider = serviceCollection.BuildServiceProvider();
+      serviceProvider = serviceCollection.BuildServiceProvider();
 
-      Logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
+      logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
 
-      Factory = ServiceProvider.GetRequiredService<IRepositoryFactory>();
-      AssetContext = Factory.GetRepository<IAssetEvent>() as AssetRepository;
-      CustomerContext = Factory.GetRepository<ICustomerEvent>() as CustomerRepository;
-      DeviceContext = Factory.GetRepository<IDeviceEvent>() as DeviceRepository;
-      ProjectContext = Factory.GetRepository<IProjectEvent>() as ProjectRepository;
-      SubscriptionContext = Factory.GetRepository<ISubscriptionEvent>() as SubscriptionRepository;
+      assetRepo = serviceProvider.GetRequiredService<IRepository<IAssetEvent>>() as AssetRepository;
+      deviceRepo = serviceProvider.GetRequiredService<IRepository<IDeviceEvent>>() as DeviceRepository;
+      customerRepo = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
+      projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
+      subscriptionRepo = serviceProvider.GetRequiredService<IRepository<ISubscriptionEvent>>() as SubscriptionRepository;
+
 
     }
 
@@ -90,10 +86,10 @@ namespace ExecutorTests
         ActionUTC = actionUtc
       };
 
-      AssetContext.StoreEvent(createAssetEvent).Wait();
-      DeviceContext.StoreEvent(createDeviceEvent).Wait();
-      DeviceContext.StoreEvent(associateDeviceAssetEvent).Wait();
-      var g = DeviceContext.GetAssociatedAsset(createDeviceEvent.DeviceSerialNumber, createDeviceEvent.DeviceType); g.Wait();
+      assetRepo.StoreEvent(createAssetEvent).Wait();
+      deviceRepo.StoreEvent(createDeviceEvent).Wait();
+      deviceRepo.StoreEvent(associateDeviceAssetEvent).Wait();
+      var g = deviceRepo.GetAssociatedAsset(createDeviceEvent.DeviceSerialNumber, createDeviceEvent.DeviceType); g.Wait();
       return g.Result != null;
     }
 
@@ -120,10 +116,10 @@ namespace ExecutorTests
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer { CustomerUID = customerUid, ProjectUID = createProjectEvent.ProjectUID, LegacyCustomerID = 1234, RelationType = RelationType.Customer, ActionUTC = actionUtc };
 
-      ProjectContext.StoreEvent(createProjectEvent).Wait();
-      ProjectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+      projectRepo.StoreEvent(createProjectEvent).Wait();
+      projectRepo.StoreEvent(associateCustomerProjectEvent).Wait();
 
-      var g = ProjectContext.GetProject(legacyProjectId); g.Wait();
+      var g = projectRepo.GetProject(legacyProjectId); g.Wait();
       return g.Result != null;
     }
 
@@ -149,11 +145,11 @@ namespace ExecutorTests
         ActionUTC = actionUtc
       };
 
-      SubscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
-      var s = SubscriptionContext.StoreEvent(associateProjectSubscriptionEvent);
+      subscriptionRepo.StoreEvent(createProjectSubscriptionEvent).Wait();
+      var s = subscriptionRepo.StoreEvent(associateProjectSubscriptionEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "associateProjectSubscription event not written");
-      var g = ProjectContext.GetProjectBySubcription(createProjectSubscriptionEvent.SubscriptionUID.ToString()); g.Wait();
+      var g = projectRepo.GetProjectBySubcription(createProjectSubscriptionEvent.SubscriptionUID.ToString()); g.Wait();
       return g.Result != null;
     }
 
@@ -173,10 +169,10 @@ namespace ExecutorTests
         ActionUTC = actionUtc
       };
 
-      var s = SubscriptionContext.StoreEvent(createAssetSubscriptionEvent);
+      var s = subscriptionRepo.StoreEvent(createAssetSubscriptionEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "createAssetSubscriptionEvent event not written");
-      var g = SubscriptionContext.GetSubscriptionsByAsset(createAssetSubscriptionEvent.AssetUID.ToString(), DateTime.UtcNow.Date); g.Wait();
+      var g = subscriptionRepo.GetSubscriptionsByAsset(createAssetSubscriptionEvent.AssetUID.ToString(), DateTime.UtcNow.Date); g.Wait();
       return g.Result != null;
     }
 
@@ -193,9 +189,9 @@ namespace ExecutorTests
         ActionUTC = actionUtc
       };
 
-      var s = CustomerContext.StoreEvent(createCustomerEvent); s.Wait();
+      var s = customerRepo.StoreEvent(createCustomerEvent); s.Wait();
       Assert.AreEqual(1, s.Result, "createCustomerEvent event not written");
-      var g = CustomerContext.GetCustomerWithTccOrg(createCustomerEvent.CustomerUID); g.Wait();
+      var g = customerRepo.GetCustomerWithTccOrg(createCustomerEvent.CustomerUID); g.Wait();
       areWrittenOk = g.Result != null;
 
       if (areWrittenOk && !string.IsNullOrEmpty(tccOrgId))
@@ -207,9 +203,9 @@ namespace ExecutorTests
           ActionUTC = actionUtc
         };
 
-        s = CustomerContext.StoreEvent(createCustomerTccOrgEvent); s.Wait();
+        s = customerRepo.StoreEvent(createCustomerTccOrgEvent); s.Wait();
         Assert.AreEqual(1, s.Result, "createCustomerTccOrgEvent event not written");
-        g = CustomerContext.GetCustomerWithTccOrg(createCustomerEvent.CustomerUID); g.Wait();
+        g = customerRepo.GetCustomerWithTccOrg(createCustomerEvent.CustomerUID); g.Wait();
         areWrittenOk = g.Result != null;
       }
       return areWrittenOk;
@@ -229,9 +225,9 @@ namespace ExecutorTests
         ActionUTC = actionUtc
       };
 
-      var s = SubscriptionContext.StoreEvent(createCustomerSubscriptionEvent); s.Wait();
+      var s = subscriptionRepo.StoreEvent(createCustomerSubscriptionEvent); s.Wait();
       Assert.AreEqual(1, s.Result, "associateCustomerSubscription event not written");
-      var g = SubscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString()); g.Wait();
+      var g = subscriptionRepo.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString()); g.Wait();
       return g.Result != null;
     }
   }

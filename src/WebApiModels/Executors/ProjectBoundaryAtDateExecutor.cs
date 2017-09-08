@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       TWGS84FenceContainer projectBoundary = new TWGS84FenceContainer();
       Project project = null;
 
-      project = dataRepository.LoadProject(request.projectId);
+      project = await dataRepository.LoadProject(request.projectId);
       log.LogDebug("ProjectBoundaryAtDateExecutor: Loaded project? {0}", JsonConvert.SerializeObject(project));
 
       if (project != null)

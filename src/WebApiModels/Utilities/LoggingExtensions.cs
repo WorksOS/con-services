@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 

@@ -44,53 +44,103 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       log.LogInformation(errorMessage);
 
       var actionUtc = DateTime.UtcNow;
+
+      // Try to find a customerUid - from tccorg/asset or project
+      string customerUid = null;
       CustomerTccOrg customerTCCOrg = null;
-      try
+      Project project = null;
+      Asset asset = null;
+      if (!string.IsNullOrEmpty(request.tccOrgId))
       {
-        customerTCCOrg = await dataRepository.LoadCustomerByTccOrgId(request.tccOrgId).ConfigureAwait(false);
+        try
+        {
+          customerTCCOrg = await dataRepository.LoadCustomerByTccOrgId(request.tccOrgId);
+          log.LogDebug(
+            $"TagFileProcessingErrorV2Executor: tccOrgId {JsonConvert.SerializeObject(customerTCCOrg)}");
+        }
+        catch (Exception e)
+        {
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+              ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+        }
       }
-      catch (Exception e)
+
+      // todo can projectId be -1 thru -3? in which case we may be able to identify a customer from it?
+
+      if (request.projectId != null && request.projectId > 0)
       {
+        try
+        {
+          project = await dataRepository.LoadProject(request.projectId.Value);
+          log.LogDebug($"TagFileProcessingErrorV2Executor: projectId {JsonConvert.SerializeObject(project)}");
+        }
+        catch (Exception e)
+        {
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+              ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+        }
+      }
+
+      if (request.assetId != null && request.assetId > 0)
+      {
+        try
+        {
+          asset = await dataRepository.LoadAsset(request.assetId.Value);
+          log.LogDebug($"TagFileProcessingErrorV2Executor: assetId {JsonConvert.SerializeObject(asset)}");
+        }
+        catch (Exception e)
+        {
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+              ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+        }
+      }
+      
+      customerUid = customerTCCOrg?.CustomerUID;
+      // todo what if project customer different to tccOrgId customer?
+      customerUid = customerUid ?? project?.CustomerUID;
+      customerUid = customerUid ?? asset?.OwningCustomerUID;
+
+      // no customer found, get outta town.
+      if (customerUid == null)
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+            ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 29));
+
+
+      // todo what if this assetUid is different to Asset (from AssetId) or could it be used to obtain the Asset and therefore customer?
+      AssetDevice assetDevice = null;
+      if (!string.IsNullOrEmpty(request.deviceSerialNumber))
+      {
+        try
+        {
+          //assetDevice = await dataRepository.GetAssociatedAsset(request.deviceSerialNumber);
+          log.LogDebug($"TagFileProcessingErrorV2Executor: deviceSerialNumber {JsonConvert.SerializeObject(assetDevice)}");
+        }
+        catch (Exception e)
+        {
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+              ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+        }
       }
-
-      //CustomerTccOrg customerTCCOrg;
-      //try
-      //{
-      //  customerTCCOrg = await dataRepository.LoadCustomerByTccOrgId(request.tccOrgId).ConfigureAwait(false);
-      //}
-      //catch (Exception e)
-      //{
-      //  throw new ServiceException(HttpStatusCode.InternalServerError,
-      //    TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-      //      ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-      //}
-
-      //if (request.tccOrgId) 
-      //  log.LogDebug( $"get CustUID")
-      //else
-      //if (request.projectId)
-      //  log.LogDebug($"get projects CustUID")
-      //else
-      //if (request.assetId)
-      //  log.LogDebug($"get assets CustUID, with a cust sub")
-      //  ie no tccorgid or 
 
       var createTagFileErrorEvent = new CreateTagFileErrorEvent()
       {
-        //CustomerUID = ,
+        CustomerUID = Guid.Parse(customerUid),
         MachineName = request.MachineName(),
         DisplaySerialNumber = request.DisplaySerialNumber(),
         TagFileCreatedUTC = request.TagFileDateTimeUtc(),
-        //ErrorCode = request.error,
-        //todo convert to 1-based
-        //AssetUID =,
+        ErrorCode = 0, //(int) request.error,  //todo convert to 1-based
+        AssetUID = asset == null ? (Guid?)null : Guid.Parse(asset?.AssetUID),
         DeviceSerialNumber = request.deviceSerialNumber,
-        //ProjectUID = ,
+        ProjectUID = project == null ? (Guid?)null : Guid.Parse(project?.ProjectUID),
         ActionUTC = actionUtc
       };
+
+      //todo write createTagFileErrorEvent somewhere.....
 
       try
       {

@@ -54,13 +54,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       });
 
       // Add framework services.
-      services.AddTransient<IRepositoryFactory, RepositoryFactory>()
+      services
           .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
           .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-          .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
           .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddMvc(

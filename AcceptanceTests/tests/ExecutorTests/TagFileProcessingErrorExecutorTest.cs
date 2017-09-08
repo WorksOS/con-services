@@ -15,7 +15,8 @@ namespace ExecutorTests
       TagFileProcessingErrorV1Request request = TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(1, "Data from my dozer", (int) TagFileErrorsEnum.ProjectID_NoMatchingArea);
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(Factory, Logger).Process(request) as TagFileProcessingErrorResult;
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+        .Process(request) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "unsuccessful");
     }

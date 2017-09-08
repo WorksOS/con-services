@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
-using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
@@ -18,10 +17,9 @@ namespace WebApiTests.Executors
     public async Task CanCallProjectBoundariesAtDateExecutorNoValidInput()
     {
       GetProjectBoundariesAtDateRequest ProjectBoundariesAtDateRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(-1, DateTime.UtcNow);
-      var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, loggerFactory.CreateLogger<ProjectBoundariesAtDateExecutorTests>());
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(loggerFactory.CreateLogger<ProjectBoundariesAtDateExecutorTests>(), assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(ProjectBoundariesAtDateRequest) as GetProjectBoundariesAtDateResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

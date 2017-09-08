@@ -6,11 +6,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
@@ -64,23 +62,23 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // must be able to find one or other customer for a) tccOrgUid b) legacyAssetID, whichever is provided
       if (!string.IsNullOrEmpty(request.tccOrgUid))
       {
-        customerTCCOrg = await dataRepository.LoadCustomerByTccOrgId(request.tccOrgUid).ConfigureAwait(false);
+        customerTCCOrg = await dataRepository.LoadCustomerByTccOrgId(request.tccOrgUid);
         log.LogDebug("ProjectIdExecutor: Loaded CustomerByTccOrgId? {0}", JsonConvert.SerializeObject(customerTCCOrg));
       }
 
       // assetId could be valid (>0) or -1 (john doe i.e. landfill) or -2 (imported tagfile)
       if (request.assetId > 0)
       {
-        asset = dataRepository.LoadAsset(request.assetId);
+        asset = await dataRepository.LoadAsset(request.assetId);
         log.LogDebug("ProjectIdExecutor: Loaded asset? {0}", JsonConvert.SerializeObject(asset));
 
         if (asset != null && !string.IsNullOrEmpty(asset.OwningCustomerUID))
         {
-          customerAssetOwner = dataRepository.LoadCustomerByCustomerUID(asset.OwningCustomerUID);
+          customerAssetOwner = await dataRepository.LoadCustomerByCustomerUIDAsync(asset.OwningCustomerUID);
           log.LogDebug("ProjectIdExecutor: Loaded assetsCustomer? {0}",
             JsonConvert.SerializeObject(customerAssetOwner));
 
-          assetSubs = dataRepository.LoadAssetSubs(asset.AssetUID, request.timeOfPosition);
+          assetSubs = await dataRepository.LoadAssetSubs(asset.AssetUID, request.timeOfPosition);
           log.LogDebug("ProjectIdExecutor: Loaded assetSubs? {0}", JsonConvert.SerializeObject(assetSubs));
         }
       }
@@ -93,20 +91,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //and the customer owns the asset. (In VL multiple customers can have subscriptions
         //for an asset but only the owner gets the tag file data).
 
-        ProjectRepository projectRepo = factory.GetRepository<IProjectEvent>() as ProjectRepository;
-
         //  standard 2d / 3d project aka construction project
         //    IGNORE any tccOrgID
         //    must have valid assetID, which must have a 3d sub.
         if (customerAssetOwner != null && assetSubs != null && assetSubs.Count() > 0)
         {
-          var p = projectRepo.GetStandardProject(customerAssetOwner.CustomerUID, request.latitude, request.longitude,
+          var p = await dataRepository.GetStandardProject(customerAssetOwner.CustomerUID, request.latitude, request.longitude,
             request.timeOfPosition);
-          if (p.Result != null && p.Result.Count() > 0)
+          var enumerable = p as IList<Project> ?? p.ToList();
+          if (p != null && enumerable.Any())
           {
-            potentialProjects = potentialProjects == null ? p.Result : potentialProjects.Concat(p.Result);
+            potentialProjects = potentialProjects == null ? p : potentialProjects.Concat(p);
             log.LogDebug("ProjectIdExecutor: Loaded standardProjects which lat/long is within {0}",
-              JsonConvert.SerializeObject(p.Result));
+              JsonConvert.SerializeObject(p));
           }
           else
           {
@@ -120,15 +117,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //  allow johnDoe assets(-1) and valid assetIDs(no manually imported tagfile(assetid = -2))
         if (customerTCCOrg != null && request.assetId != -2)
         {
-          var p = projectRepo.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
+          var p = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
             request.latitude, request.longitude, request.timeOfPosition,
             (int) ProjectType.ProjectMonitoring,
             (serviceTypeMappings.serviceTypes.Find(st => st.name == "Project Monitoring").NGEnum));
-          if (p.Result != null && p.Result.Count() > 0)
+          var enumerable = p as IList<Project> ?? p.ToList();
+          if (p != null && enumerable.Any())
           {
-            potentialProjects = potentialProjects == null ? p.Result : potentialProjects.Concat(p.Result);
+            potentialProjects = potentialProjects == null ? enumerable : potentialProjects.Concat(enumerable);
             log.LogDebug("ProjectIdExecutor: Loaded pmProjects which lat/long is within {0}",
-              JsonConvert.SerializeObject(p.Result));
+              JsonConvert.SerializeObject(enumerable));
           }
           else
           {
@@ -142,14 +140,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //   allow manual assets(-2) and johnDoe assets(-1) and valid assetIDs
         if (customerTCCOrg != null)
         {
-          var p = projectRepo.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
+          var p = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
             request.latitude, request.longitude, request.timeOfPosition,
             (int) ProjectType.LandFill, (serviceTypeMappings.serviceTypes.Find(st => st.name == "Landfill").NGEnum));
-          if (p.Result != null && p.Result.Count() > 0)
+          if (p != null && p.Any())
           {
-            potentialProjects = potentialProjects == null ? p.Result : potentialProjects.Concat(p.Result);
+            potentialProjects = potentialProjects?.Concat(p) ?? p;
             log.LogDebug("ProjectIdExecutor: Loaded landfillProjects which lat/long is within {0}",
-              JsonConvert.SerializeObject(p.Result));
+              JsonConvert.SerializeObject(p));
           }
           else
           {

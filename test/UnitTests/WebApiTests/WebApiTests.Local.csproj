@@ -16,11 +16,7 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <ApplicationIcon />
-    <OutputTypeEx>library</OutputTypeEx>
-    <StartupObject />
-    <DependsOnNETStandard>netstandard1.6</DependsOnNETStandard>
-
+    <RootNamespace>VSS.MasterData.ProjectTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,7 +33,6 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="Moq" Version="4.7.63" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.2.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">
@@ -51,7 +46,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\ITask\src\VSS.ITask.Local.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
+    <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.Local.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

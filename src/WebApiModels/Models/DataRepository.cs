@@ -21,7 +21,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     /// <summary>
     /// Repository factory used in ProcessEx
     /// </summary>
-    public IRepositoryFactory factory;
+    protected AssetRepository assetRepository;
+    protected DeviceRepository deviceRepository;
+    protected ICustomerRepository customerRepository;
+    protected IProjectRepository projectRepository;
+    protected SubscriptionRepository subscriptionsRepository;
 
     /// <summary>
     /// Logger used in ProcessEx
@@ -33,66 +37,99 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     /// </summary>
     public ServiceTypeMappings serviceTypeMappings = new ServiceTypeMappings();
 
-    public DataRepository(IRepositoryFactory factory, ILogger logger)
+    public DataRepository(ILogger logger, IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository, 
+      ICustomerRepository customerRepository, IProjectRepository projectRepository,
+      IRepository<ISubscriptionEvent> subscriptionsRepository)
     {
-      this.factory = factory;
       this.log = logger;
+      this.assetRepository = assetRepository as AssetRepository;
+      this.deviceRepository = deviceRepository as DeviceRepository;
+      this.customerRepository = customerRepository; //  as CustomerRepository;
+      this.projectRepository = projectRepository; // as ProjectRepository;
+      this.subscriptionsRepository = subscriptionsRepository as SubscriptionRepository;
     }
 
-    public Project LoadProject(long legacyProjectId)
+    public async Task<Project> LoadProject(long legacyProjectId)
     {
       Project project = null;
       if (legacyProjectId > 0)
       {
-        var projectRepo = factory.GetRepository<IProjectEvent>() as ProjectRepository;
-        var p = projectRepo.GetProject(legacyProjectId);
-        if (p != null && p.Result != null) project = p.Result;
+        var p = await projectRepository.GetProject(legacyProjectId).ConfigureAwait(false);
+        if (p != null) project = p;
       }
       return project;
     }
 
-    public IEnumerable<Project> LoadProjects(string customerUid, DateTime validAtDate)
+    public async Task<IEnumerable<Project>> LoadProjects(string customerUid, DateTime validAtDate)
     {
       IEnumerable<Project> projects = null;
       if (customerUid != null)
       {
-        var projectRepo = factory.GetRepository<IProjectEvent>() as ProjectRepository;
-        var p = projectRepo.GetProjectsForCustomer(customerUid);
+        var p = await projectRepository.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
 
-        if (p != null && p.Result != null)
+        if (p != null)
         {
-          projects = p.Result.ToList()
+          projects = p.ToList()
             .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate);
         }
       }
       return projects;
     }
 
-    public AssetDeviceIds LoadAssetDevice(string radioSerial, string deviceType)
+    public async Task<IEnumerable<Project>> GetStandardProject(string customerUid, double latitude,
+      double longitude, DateTime timeOfPosition)
+    {
+      IEnumerable<Project> projects = null;
+      if (customerUid != null)
+      {
+        var p = await projectRepository.GetStandardProject(customerUid, latitude, longitude, timeOfPosition).ConfigureAwait(false);
+
+        if (p != null) projects = p;
+      }
+      return projects;
+    }
+
+    public async Task<IEnumerable<Project>> GetProjectMonitoringProject(string customerUid, double latitude,
+      double longitude, DateTime timeOfPosition,
+      int projectType, int serviceType)
+    {
+      IEnumerable<Project> projects = null;
+      if (customerUid != null)
+      {
+        var p = await projectRepository.GetProjectMonitoringProject(customerUid,
+          latitude, longitude, timeOfPosition,
+          projectType,
+          serviceType).ConfigureAwait(false);
+
+        if (p != null) projects = p;
+      }
+      return projects;
+    }
+
+
+    public async Task<AssetDeviceIds> LoadAssetDevice(string radioSerial, string deviceType)
     {
       AssetDeviceIds assetDevice = null;
       if (!string.IsNullOrEmpty(radioSerial) && !string.IsNullOrEmpty(deviceType))
       {
-        var deviceRepo = factory.GetRepository<IDeviceEvent>() as DeviceRepository;
-        var a = deviceRepo.GetAssociatedAsset(radioSerial, deviceType);
-        if (a != null && a.Result != null)
-          assetDevice = a.Result;
+        var a = await deviceRepository.GetAssociatedAsset(radioSerial, deviceType).ConfigureAwait(false);
+        if (a != null)
+          assetDevice = a;
       }
       return assetDevice;
     }
 
-    public Customer LoadCustomer(string customerUid)
+    public async Task<Customer> LoadCustomer(string customerUid)
     {
       // TFA is only interested in customer and dealer types
       Customer customer = null;
       if (!string.IsNullOrEmpty(customerUid))
       {
-        var customerRepo = factory.GetRepository<ICustomerEvent>() as CustomerRepository;
-        var a = customerRepo.GetCustomer(new Guid(customerUid));
-        if (a != null && a.Result != null &&
-          (a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
+        var a = await customerRepository.GetCustomer(new Guid(customerUid)).ConfigureAwait(false);
+        if (a != null && 
+          (a.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
           )
-          customer = a.Result;
+          customer = a;
       }
       return customer;
     }
@@ -103,44 +140,38 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       CustomerTccOrg customer = null;
       if (!string.IsNullOrEmpty(tccOrgUid))
       {
-        var customerRepo = factory.GetRepository<ICustomerEvent>() as CustomerRepository;
-        if (customerRepo != null)
-        {
-          var customerTccOrg = await customerRepo.GetCustomerWithTccOrg(tccOrgUid).ConfigureAwait(false);
-          if (customerTccOrg != null &&
-              (customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
-               customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
-          )
-            customer = customerTccOrg;
-        }
+        var customerTccOrg = await customerRepository.GetCustomerWithTccOrg(tccOrgUid).ConfigureAwait(false);
+        if (customerTccOrg != null &&
+            (customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
+             customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
+        )
+          customer = customerTccOrg;
       }
       return customer;
     }
 
-    public CustomerTccOrg LoadCustomerByCustomerUID(string customerUid)
+    public async Task<CustomerTccOrg> LoadCustomerByCustomerUIDAsync(string customerUid)
     {
       // TFA is only interested in customer and dealer types
       CustomerTccOrg customer = null;
       if (customerUid != null)
       {
-        var customerRepo = factory.GetRepository<ICustomerEvent>() as CustomerRepository;
-        var a = customerRepo.GetCustomerWithTccOrg(new Guid(customerUid));
-        if (a.Result != null && a.Result != null &&
-            (a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
+        var a = await customerRepository.GetCustomerWithTccOrg(new Guid(customerUid)).ConfigureAwait(false);
+        if (a != null &&
+            (a.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
             )
-          customer = a.Result;
+          customer = a;
       }
       return customer;
     }
 
-    public Asset LoadAsset(long legacyAssetId)
+    public async Task<Asset> LoadAsset(long legacyAssetId)
     {
       Asset asset = null;
       if (legacyAssetId > 0)
       {
-        var assetRepo = factory.GetRepository<IAssetEvent>() as AssetRepository;
-        var a = assetRepo.GetAsset(legacyAssetId);
-        if (a.Result != null && a.Result != null) asset = a.Result;
+        var a = await assetRepository.GetAsset(legacyAssetId).ConfigureAwait(false);
+        if (a != null) asset = a;
       }
       return asset;
     }
@@ -148,16 +179,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     // customer Man3Dpm(18-15)
     // this may be from the Projects CustomerUID OR the Assets OwningCustomerUID
-    public IEnumerable<Subscriptions> LoadManual3DCustomerBasedSubs(string customerUid, DateTime validAtDate)
+    public async Task<IEnumerable<Subscriptions>> LoadManual3DCustomerBasedSubs(string customerUid, DateTime validAtDate)
     {
       IEnumerable<Subscriptions> subs = null;
       if (!string.IsNullOrEmpty(customerUid))
       {
-        var subsRepo = factory.GetRepository<ISubscriptionEvent>() as SubscriptionRepository;
-        var s = subsRepo.GetSubscriptionsByCustomer(customerUid, validAtDate);
-        if (s.Result != null && s.Result != null)
+        var s = await subscriptionsRepository.GetSubscriptionsByCustomer(customerUid, validAtDate).ConfigureAwait(false);
+        if (s != null)
         {
-          subs = s.Result.ToList()
+          subs = s.ToList()
           .Where(x => x.ServiceTypeID == serviceTypeMappings.serviceTypes.Find(st => st.name == "Manual 3D Project Monitoring").NGEnum)
           .Select(x => new Subscriptions("", "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate));
         }
@@ -166,16 +196,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     // asset:3dProjMon (16 --> 13) 
-    public IEnumerable<Subscriptions> LoadAssetSubs(string assetUid, DateTime validAtDate)
+    public async Task<IEnumerable<Subscriptions>> LoadAssetSubs(string assetUid, DateTime validAtDate)
     {
       IEnumerable<Subscriptions> subs = null;
       if (!string.IsNullOrEmpty(assetUid))
       {
-        var subsRepo = factory.GetRepository<ISubscriptionEvent>() as SubscriptionRepository;
-        var s = subsRepo.GetSubscriptionsByAsset(assetUid, validAtDate.Date);
-        if (s.Result != null && s.Result != null)
+        var s = await subscriptionsRepository.GetSubscriptionsByAsset(assetUid, validAtDate.Date).ConfigureAwait(false);
+        if (s != null)
         {
-          subs = s.Result.ToList()
+          subs = s.ToList()
             .Where(x => x.ServiceTypeID == (serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum))
             .Distinct()
             .Select(x => new Subscriptions(assetUid, "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate));

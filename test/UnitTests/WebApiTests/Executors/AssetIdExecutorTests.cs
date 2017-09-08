@@ -6,6 +6,7 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace WebApiTests.Executors
 {
@@ -13,10 +14,10 @@ namespace WebApiTests.Executors
   public class AssetIdExecutorTests : ExecutorBaseTests
   {
     [TestMethod]
-    public void GetFactory()
+    public void GetAssetRepository()
     {
-      IRepositoryFactory factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
-      Assert.IsNotNull(factory, "Unable to retrieve factory from DI");
+      var repo = serviceProvider.GetRequiredService<IRepository<IAssetEvent>>();
+      Assert.IsNotNull(repo, "Unable to retrieve asset repo from DI");
     }
 
     [TestMethod]
@@ -30,10 +31,10 @@ namespace WebApiTests.Executors
     public async Task CanCallAssetIDExecutorNoValidInput()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
-      var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(factory, loggerFactory.CreateLogger<AssetIdExecutorTests>());
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), 
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -46,10 +47,10 @@ namespace WebApiTests.Executors
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "3k45LK");
 
-      var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(factory, loggerFactory.CreateLogger<AssetIdExecutorTests>());
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(),
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

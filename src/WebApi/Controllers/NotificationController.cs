@@ -7,28 +7,36 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
   /// <summary>
   /// Notification controller for tag file errors and misc alarms
   /// </summary>
-  public class NotificationController : Controller
+  public class NotificationController : BaseController
   {
-    private readonly IRepositoryFactory factory;
     private readonly ILogger log;
 
     /// <summary>
-    /// Notification constructor
+    /// Default constructor.
     /// </summary>
-    /// <param name="factory"></param>
-    /// <param name="logger"></param>
-    public NotificationController(IRepositoryFactory factory, ILogger<NotificationController> logger)
+    /// <param name="logger">Service implementation of ILogger</param>
+    /// <param name="assetRepository"></param>
+    /// <param name="deviceRepository"></param>
+    /// <param name="customerRepository"></param>
+    /// <param name="projectRepository"></param>
+    /// <param name="subscriptionsRepository"></param>
+    public NotificationController(ILogger logger, IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
+      ICustomerRepository customerRepository, IProjectRepository projectRepository,
+      IRepository<ISubscriptionEvent> subscriptionsRepository)
+      :base(logger, assetRepository, deviceRepository,
+        customerRepository, projectRepository,
+        subscriptionsRepository)
     {
-      this.factory = factory;
       this.log = logger;
     }
-
+    
     /// <summary>
     /// Writes to the log for the given tag file processing error. 
     /// </summary>
@@ -44,7 +52,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("PostTagFileProcessingErrorV1: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(factory, log)
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository)
         .Process(request) as TagFileProcessingErrorResult;
       
       log.LogDebug("PostTagFileProcessingErrorV2: result:{0}", JsonConvert.SerializeObject(result));
@@ -66,7 +74,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("PostTagFileProcessingErrorV2: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(factory, log);
+      var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(log, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as TagFileProcessingErrorResult;
 
       log.LogDebug("PostTagFileProcessingErrorV2: result:{0}", JsonConvert.SerializeObject(result));

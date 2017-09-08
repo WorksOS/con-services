@@ -36,6 +36,7 @@
       DynamicAddwithOffset("A manual/unknown deviceType must have a projectID", 26);
       DynamicAddwithOffset("Failed to get project boundary", 27);
       DynamicAddwithOffset("A problem occurred accessing database. Exception: {0}", 28);
+      DynamicAddwithOffset("Unable to identify a customerUid", 29);
     }
 
     /// <summary>

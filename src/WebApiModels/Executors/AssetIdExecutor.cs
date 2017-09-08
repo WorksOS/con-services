@@ -43,12 +43,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // legacyProjectId can exist with and without a radioSerial so set this up early
       if (request.projectId > 0)
       {
-        project = dataRepository.LoadProject(request.projectId);
+        project = await dataRepository.LoadProject(request.projectId);
         log.LogDebug("AssetIdExecutor: Loaded project? {0}", JsonConvert.SerializeObject(project));
 
         if (project != null)
         {
-          customerSubs = dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow);
+          customerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow);
           log.LogDebug("AssetIdExecutor: Loaded projectsCustomerSubs? {0}", JsonConvert.SerializeObject(customerSubs));
         }
       }
@@ -71,24 +71,24 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         //Radio serial in tag file. Use it to map to asset in VL.
         AssetDeviceIds assetDevice =
-          dataRepository.LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum) request.deviceType).ToString());
+          await dataRepository.LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum) request.deviceType).ToString());
 
         // special case in CGen US36833 If fails on DT SNM940 try as again SNM941 
         if (assetDevice == null && (DeviceTypeEnum) request.deviceType == DeviceTypeEnum.SNM940)
         {
           log.LogDebug("AssetIdExecutor: Failed for SNM940 trying again as Device Type SNM941");
-          assetDevice = dataRepository.LoadAssetDevice(request.radioSerial, DeviceTypeEnum.SNM941.ToString());
+          assetDevice = await dataRepository.LoadAssetDevice(request.radioSerial, DeviceTypeEnum.SNM941.ToString());
         }
         log.LogDebug("AssetIdExecutor: Loaded assetDevice? {0}", JsonConvert.SerializeObject(assetDevice));
 
         if (assetDevice != null)
         {
           legacyAssetId = assetDevice.LegacyAssetID;
-          assetSubs = dataRepository.LoadAssetSubs(assetDevice.AssetUID, DateTime.UtcNow);
+          assetSubs = await dataRepository.LoadAssetSubs(assetDevice.AssetUID, DateTime.UtcNow);
           log.LogDebug("AssetIdExecutor: Loaded assetSubs? {0}", JsonConvert.SerializeObject(assetSubs));
 
           // OwningCustomerUID should always be present, but bug in MD airlift means that most are missing.
-          customerSubs = dataRepository.LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID, DateTime.UtcNow);
+          customerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID, DateTime.UtcNow);
           log.LogDebug("AssetIdExecutor: Loaded assetsCustomerSubs? {0}", JsonConvert.SerializeObject(customerSubs));
 
           serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project, customerSubs, assetSubs);

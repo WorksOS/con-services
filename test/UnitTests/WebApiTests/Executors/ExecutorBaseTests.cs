@@ -13,6 +13,11 @@ namespace WebApiTests.Executors
   public class ExecutorBaseTests
   {
     public IServiceProvider serviceProvider = null;
+    protected AssetRepository assetRepository;
+    protected DeviceRepository deviceRepository;
+    protected CustomerRepository customerRepository;
+    protected ProjectRepository projectRepository;
+    protected SubscriptionRepository subscriptionsRepository;
 
     [TestInitialize]
     public virtual void InitTest()
@@ -29,16 +34,20 @@ namespace WebApiTests.Executors
 
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.AddSingleton<IRepositoryFactory, RepositoryFactory>()
-                        .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
-                        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
-                        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
-                        .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
-                        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-                        .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
-                        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
+      serviceCollection.AddTransient<IRepository<IAssetEvent>, AssetRepository>()
+        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
+        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceProvider = serviceCollection.BuildServiceProvider();
+
+
+      assetRepository = serviceProvider.GetRequiredService<IRepository<IAssetEvent>>() as AssetRepository;
+      deviceRepository = serviceProvider.GetRequiredService<IRepository<IDeviceEvent>>() as DeviceRepository;
+      customerRepository = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
+      projectRepository = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
+      subscriptionsRepository = serviceProvider.GetRequiredService<IRepository<ISubscriptionEvent>>() as SubscriptionRepository;
     }
   
   }

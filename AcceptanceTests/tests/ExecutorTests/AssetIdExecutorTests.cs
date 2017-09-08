@@ -23,7 +23,8 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -48,7 +49,8 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -77,7 +79,8 @@ namespace ExecutorTests
       Assert.IsTrue(isCreatedOk, "created Customer subscription");
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -107,7 +110,8 @@ namespace ExecutorTests
       Assert.IsTrue(isCreatedOk, "created Customer subscription");
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -135,7 +139,8 @@ namespace ExecutorTests
       Assert.IsTrue(isCreatedOk, "created Asset subscription");
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -166,7 +171,8 @@ namespace ExecutorTests
       Assert.IsTrue(isCreatedOk, "created Asset subscription");
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -182,7 +188,8 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+        .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -204,7 +211,8 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -229,7 +237,8 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -264,7 +273,8 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -300,7 +310,8 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -336,7 +347,8 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -372,7 +384,8 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(Factory, Logger).Process(assetIdRequest) as GetAssetIdResult;
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+          .Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
