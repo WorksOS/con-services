@@ -10,7 +10,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     ExportRequestHelper SetRaptorClient(IASNodeClient raptorClient);
 
     Task<ExportReport> CreateExportRequest(
-      Guid projectUid,
       DateTime? startUtc,
       DateTime? endUtc,
       CoordTypes coordType,

@@ -32,15 +32,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// <summary>
     /// Creates an instance of the CompactionProfileProductionDataRequest class and populate it with data needed for a production data slice profile.   
     /// </summary>
-    /// <param name="projectUid"></param>
     /// <param name="startLatDegrees"></param>
     /// <param name="startLonDegrees"></param>
     /// <param name="endLatDegrees"></param>
     /// <param name="endLonDegrees"></param>
-    /// <param name="customerUid"></param>
     /// <returns>An instance of the CompactionProfileProductionDataRequest class.</returns>
-    public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(Guid projectUid,
-      double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid)
+    public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
 

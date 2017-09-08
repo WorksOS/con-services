@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// Creates an instance of the CompactionProfileDesignRequest class and populate it with data needed for a design profile.   
     /// </summary>
     /// <returns>An instance of the CompactionProfileDesignRequest class.</returns>
-    public CompactionProfileDesignRequest CreateDesignProfileRequest(Guid projectUid, double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees)
+    public CompactionProfileDesignRequest CreateDesignProfileRequest(double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(
         startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());

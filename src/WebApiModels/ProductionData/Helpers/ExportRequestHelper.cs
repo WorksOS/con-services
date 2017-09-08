@@ -67,7 +67,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
     /// </summary>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
     public async Task<ExportReport> CreateExportRequest(
-      Guid projectUid,
       DateTime? startUtc,
       DateTime? endUtc,
       CoordTypes coordType,

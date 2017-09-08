@@ -115,8 +115,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectSettings(settings)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
-          .CreateProductionDataProfileRequest(
-            projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, customerUid);
+          .CreateProductionDataProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
       slicerProductionDataProfileRequest.Validate();
 
@@ -134,8 +133,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             .Headers(customHeaders)
             .ProjectSettings(settings)
             .DesignDescriptor(cutFillDesign))
-            .CreateDesignProfileRequest(
-              projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
+            .CreateDesignProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
         slicerDesignProfileRequest.Validate();
 
@@ -193,7 +191,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             .ProjectSettings(settings)
             .Filter(filter)
             .DesignDescriptor(designDescriptor))
-          .CreateDesignProfileRequest(projectUid, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
+          .CreateDesignProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
         profileRequest.Validate();
         var slicerDesignResult = WithServiceExceptionTryExecute(() =>

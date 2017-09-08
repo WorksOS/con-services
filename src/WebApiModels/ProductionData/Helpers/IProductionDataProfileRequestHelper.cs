@@ -5,7 +5,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 {
   public interface IProductionDataProfileRequestHelper
   {
-    CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(Guid projectUid,
-      double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, Guid customerUid);
+    CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees);
   }
 }

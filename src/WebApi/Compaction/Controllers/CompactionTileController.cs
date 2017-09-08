@@ -1,8 +1,6 @@
 ﻿using ASNodeDecls;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -26,7 +24,9 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
@@ -70,6 +70,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
+    /// The request factory
+    /// </summary>
+    private readonly IProductionDataRequestFactory requestFactory;
+
+    /// <summary>
     /// Constructor with injected raptor client, logger and authenticated projects
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -80,12 +85,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="settingsManager">Compaction settings manager</param>
+    /// <param name="requestFactory">The request factory.</param>
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
       IFileRepository fileRepo, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, 
-      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
+      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
@@ -93,6 +99,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.log = logger.CreateLogger<CompactionTileController>();
       this.fileRepo = fileRepo;
       this.elevProxy = elevProxy;
+      this.requestFactory = requestFactory;
     }
 
     /// <summary>
@@ -162,19 +169,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] bool? isJohnDoe)
     {
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
+
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
-
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
 
-      DesignDescriptor designDescriptor = null;
-      if (cutFillDesignUid.HasValue)
-      {
-        designDescriptor = await GetDesignDescriptor(projectUid, cutFillDesignUid.Value);
-      }
+      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
+        GetBoundingBox(BBOX), cutFillDesign);
 
-      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       return tileResult;
     }
 
@@ -255,10 +259,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
-
       var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
 
-      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
+      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX), cutFillDesign);
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
@@ -531,6 +535,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat);
     }
 
+    /// <summary>
+    /// Get the elevation extents for the palette for elevation tile requests
+    /// </summary>
+    /// <param name="projectSettings">Project settings to use for Raptor</param>
+    /// <param name="filter">Filter to use for Raptor</param>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="mode">Display mode; type of data requested</param>
+    /// <returns>Elevation extents to use</returns>
+    private ElevationStatisticsResult GetElevationExtents(CompactionProjectSettings projectSettings, Common.Models.Filter filter, long projectId, DisplayMode mode)
+    {
+      var elevExtents = mode == DisplayMode.Height ? elevProxy.GetElevationRange(projectId, filter, projectSettings) : null;
+      //Fix bug in Raptor - swap elevations if required
+      elevExtents?.SwapElevationsIfRequired();
+      return elevExtents;
+    }
 
     /// <summary>
     /// Gets the requested tile from Raptor
@@ -542,34 +561,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="width">Width of the tile</param>
     /// <param name="height">Height of the tile in pixels</param>
     /// <param name="bbox">Bounding box in radians</param>
+    /// <param name="cutFillDesign">Design descriptor for cut-fill design</param>
     /// <returns>Tile result</returns>
     private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Common.Models.Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
-      BoundingBox2DLatLon bbox)
+      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign)
     {
-      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-      filter?.Validate();
-      ElevationStatisticsResult elevExtents =
-        mode == DisplayMode.Height ? elevProxy.GetElevationRange(projectId, filter, projectSettings) : null;
-      //Fix bug in Raptor - swap elevations if required
-      elevExtents?.SwapElevationsIfRequired();
-      var palette = settingsManager.CompactionPalette(mode, elevExtents, projectSettings);
-      if (mode == DisplayMode.Height)
-      {
-        log.LogDebug("GetProductionDataTile: surveyedSurfaceExclusionList count={0}, elevExtents={1}-{2}, palette count={4}",
-          (filter == null || filter.surveyedSurfaceExclusionList == null)
-            ? 0
-            : filter.surveyedSurfaceExclusionList.Count,
-          elevExtents == null ? 0 : elevExtents.MinElevation, elevExtents == null ? 0 : elevExtents.MaxElevation,
-          palette == null ? 0 : palette.Count);
-      }
-      TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode,
-        palette,
-        liftSettings, RaptorConverters.VolumesType.None, 0, filter?.designOrAlignmentFile, filter, 0, null, 0,
-        filter == null ? FilterLayerMethod.None : filter.layerType.Value,
-        bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, false);
+      var tileRequest = requestFactory.Create<TileRequestHelper>(r => r
+          .ProjectId(projectId)
+          .Headers(customHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter)
+          .DesignDescriptor(cutFillDesign))
+        .CreateTileRequest(mode, width, height, bbox,
+          GetElevationExtents(projectSettings, filter, projectId, mode));
+
       tileRequest.Validate();
-      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient)
-        .Process(tileRequest) as TileResult;
+
+      var tileResult = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<TilesExecutor>(logger, raptorClient)
+          .Process(tileRequest) as TileResult
+      );
       if (tileResult == null)
       {
         //Return en empty tile
@@ -580,7 +592,5 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       return tileResult;
     }
-
-    private const int CMV_DETAILS_NUMBER_OF_COLORS = 16;
   }
 }

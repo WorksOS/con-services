@@ -114,7 +114,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetRaptorClient(raptorClient)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
-          projectUid,
           null, //startUtc,
           null, //endUtc,
           CoordTypes.ptNORTHEAST,
@@ -128,9 +127,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return RequestExecutorContainerFactory
-        .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
-        .Process(exportRequest) as ExportResult;
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
+          .Process(exportRequest) as ExportResult
+      );
     }
 
     /// <summary>
@@ -170,7 +171,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetUserPreferences(userPreferences)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
-          projectUid,
           startUtc,
           endUtc,
           CoordTypes.ptNORTHEAST,
@@ -183,9 +183,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return RequestExecutorContainerFactory
-        .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
-        .Process(exportRequest) as ExportResult;
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
+          .Process(exportRequest) as ExportResult
+      );
     }
 
     /// <summary>
@@ -232,7 +234,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetRaptorClient(raptorClient)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
-          projectUid,
           startUtc,
           endUtc,
           (CoordTypes)coordType,
@@ -245,9 +246,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return RequestExecutorContainerFactory
-        .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
-        .Process(exportRequest) as ExportResult;
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
+          .Process(exportRequest) as ExportResult
+      );
     }
 
     /// <summary>
