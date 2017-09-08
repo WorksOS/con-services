@@ -55,7 +55,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
     /// <returns>Execution result with a list of CCA data colour palettes.</returns>
     [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
     [Route("api/v1/ccacolors")]
     [HttpGet]
     public CCAColorPaletteResult Get([FromQuery] long projectId,
