@@ -30,6 +30,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.DoInvalidRequest(requestName, HttpStatusCode.NoContent);
     }
 
+    [When(@"I request Export Report supplying ""(.*)"" from the request repository expecting BadRequest")]
+    public void WhenIRequestExportReportSupplyingFromTheRequestRepositoryExpectingBadRequest(string requestName)
+    {
+      exportReportRequester.DoInvalidRequest(requestName, HttpStatusCode.BadRequest);
+    }
+
     [Then(@"the result should match ""(.*)"" from the result repository")]
     public void ThenTheResultShouldMatchFromTheResultRepository(string resultName)
     {

@@ -213,30 +213,32 @@ this.FeatureBackground();
             this.ExportReport_GoodRequest("VedaAllPassesScomAutoMapReset", "VedaAllPassesScomAutoMapReset", ((string[])(null)));
         }
         
-        public virtual void ExportReport_NoContent(string requestName, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void ExportReport_BadRequest(string requestName, string errorCode, string errorMessage, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReport - No Content", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReport - Bad Request", exampleTags);
 #line 24
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 25
- testRunner.When(string.Format("I request Export Report supplying \"{0}\" from the request repository expecting NoC" +
-                        "ontent", requestName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When(string.Format("I request Export Report supplying \"{0}\" from the request repository expecting Bad" +
+                        "Request", requestName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 26
+ testRunner.Then(string.Format("the result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReport - No Content")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReport - Bad Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReport")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NoDateRange")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "NoDateRange")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "")]
-        public virtual void ExportReport_NoContent_NoDateRange()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get requested export data")]
+        public virtual void ExportReport_BadRequest_NoDateRange()
         {
-            this.ExportReport_NoContent("NoDateRange", "", "", ((string[])(null)));
+            this.ExportReport_BadRequest("NoDateRange", "-4", "Failed to get requested export data", ((string[])(null)));
         }
     }
 }
