@@ -159,9 +159,11 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Slicer Profile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionProfile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void CompactionGetSlicerProfile()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Profile", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Profile", new string[] {
+                        "ignore"});
 #line 77
 this.ScenarioSetup(scenarioInfo);
 #line 78
