@@ -29,8 +29,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       var request = item as ExportReport;
       if (request == null)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             $"Conversion from {item.GetType()} to {typeof(ExportReport)} failed"));
       }
 
@@ -67,13 +67,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       }
       else
       {
-        if (dataexport.ReturnCode == (int)TASNodeExportStatus.asnesNoData ||
-            dataexport.ReturnCode == (int)TASNodeExportStatus.asnesInvalidDateRange)
-        {
-          throw new ServiceException(HttpStatusCode.NoContent,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults));
-        }
-
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Failed to get requested export data"));

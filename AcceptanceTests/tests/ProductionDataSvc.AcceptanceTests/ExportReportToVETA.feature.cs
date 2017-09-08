@@ -207,7 +207,7 @@ this.FeatureBackground();
                     "cess to the project", ((string[])(null)));
         }
         
-        public virtual void ExportReportToVETA_NoContent_NoDateRange(string requestName, string projectUID, string machineNames, string fileName, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void ExportReportToVETA_NoContent_NoDateRange(string requestName, string projectUID, string machineNames, string fileName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToVETA - No Content - NoDateRange", exampleTags);
 #line 39
@@ -233,16 +233,14 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:MachineNames", "All")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "Test")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "")]
         public virtual void ExportReportToVETA_NoContent_NoDateRange_()
         {
-            this.ExportReportToVETA_NoContent_NoDateRange("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "All", "Test", "", "", ((string[])(null)));
+            this.ExportReportToVETA_NoContent_NoDateRange("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "All", "Test", ((string[])(null)));
         }
         
-        public virtual void ExportReportToVETA_BadRequest_NoFileName(string requestName, string projectUID, string startDate, string endDate, string machineNames, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void ExportReportToVETA_NoContent_NoFileName(string requestName, string projectUID, string startDate, string endDate, string machineNames, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToVETA - Bad Request - NoFileName", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToVETA - No Content - NoFileName", exampleTags);
 #line 48
 this.ScenarioSetup(scenarioInfo);
 #line 4
@@ -254,44 +252,40 @@ this.FeatureBackground();
 #line 51
  testRunner.And(string.Format("machineNames \"{0}\"", machineNames), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 52
- testRunner.When("I request an Export Report To VETA expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 53
- testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I request an Export Report To VETA expecting NoContent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportToVETA - Bad Request - NoFileName")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportToVETA - No Content - NoFileName")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportToVETA")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartDate", "2005-01-01")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndDate", "2017-06-23")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:MachineNames", "All")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get requested export data")]
-        public virtual void ExportReportToVETA_BadRequest_NoFileName_()
+        public virtual void ExportReportToVETA_NoContent_NoFileName_()
         {
-            this.ExportReportToVETA_BadRequest_NoFileName("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "All", "-4", "Failed to get requested export data", ((string[])(null)));
+            this.ExportReportToVETA_NoContent_NoFileName("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "2005-01-01", "2017-06-23", "All", ((string[])(null)));
         }
         
         public virtual void ExportReportToVETA_NoContentWithFilter_NoMachines(string requestName, string projectUID, string filterUID, string startDate, string endDate, string fileName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToVETA - No Content with Filter - No Machines", exampleTags);
-#line 58
+#line 57
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 59
+#line 58
   testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 60
+#line 59
   testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 61
+#line 60
  testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startDate, endDate), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 62
+#line 61
  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 63
+#line 62
  testRunner.When("I request an Export Report To VETA expecting NoContent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             this.ScenarioCleanup();
@@ -314,19 +308,19 @@ this.FeatureBackground();
         public virtual void ExportReportToVETA_GoodRequestWithFilter_NoMachines(string requestName, string projectUID, string filterUID, string startDate, string endDate, string fileName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToVETA - Good Request with Filter - No Machines", exampleTags);
-#line 68
+#line 67
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 69
+#line 68
   testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 70
+#line 69
   testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 71
+#line 70
  testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startDate, endDate), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 72
+#line 71
  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 73
+#line 72
  testRunner.When("I request an Export Report To VETA", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             this.ScenarioCleanup();

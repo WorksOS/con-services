@@ -42,18 +42,17 @@ Scenario Outline: ExportReportToVETA - No Content - NoDateRange
 	And fileName is "<FileName>"
 	When I request an Export Report To VETA expecting NoContent
 	Examples:
-	| RequestName | ProjectUID                           | MachineNames | FileName | ErrorCode | ErrorMessage                        |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | All          | Test     |           |                                     |
+	| RequestName | ProjectUID                           | MachineNames | FileName | 
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | All          | Test     |
 
-Scenario Outline: ExportReportToVETA - Bad Request - NoFileName
+Scenario Outline: ExportReportToVETA - No Content - NoFileName
 	And projectUid "<ProjectUID>"
   And startUtc "<StartDate>" and endUtc "<EndDate>"
 	And machineNames "<MachineNames>"
-	When I request an Export Report To VETA expecting BadRequest
-	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
+	When I request an Export Report To VETA expecting NoContent
 	Examples:
-	| RequestName | ProjectUID                           | StartDate  | EndDate    | MachineNames | ErrorCode | ErrorMessage                        |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | All          | -4        | Failed to get requested export data |
+	| RequestName | ProjectUID                           | StartDate  | EndDate    | MachineNames |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | All          |
 
 Scenario Outline: ExportReportToVETA - No Content with Filter - No Machines
   And projectUid "<ProjectUID>"

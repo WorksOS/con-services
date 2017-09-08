@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
 
       TileRequest tileRequest = TileRequest.CreateTileRequest(
         ProjectId, null, mode, palette, liftSettings, RaptorConverters.VolumesType.None, 
-        0, Filter?.designOrAlignmentFile, Filter, 0, null, 0,
+        0, DesignDescriptor, Filter, 0, null, 0,
         Filter == null ? FilterLayerMethod.None : Filter.layerType.Value,
         bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, false);
       return tileRequest;

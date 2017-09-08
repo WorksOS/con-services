@@ -68,6 +68,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.DoInvalidRequest(url, HttpStatusCode.Unauthorized);
     }
 
+    [When(@"I request an Export Report To Surface expecting NoContent")]
+    public void WhenIRequestAnExportReportToSurfaceExpectingNoContent()
+    {
+      exportReportRequester.DoInvalidRequest(url, HttpStatusCode.NoContent);
+    }
 
     [Then(@"the report result should match the ""(.*)"" from the repository")]
     public void ThenTheReportResultShouldMatchTheFromTheRepository(string resultName)
