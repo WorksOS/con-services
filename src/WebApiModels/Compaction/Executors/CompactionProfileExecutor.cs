@@ -357,7 +357,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
                 {
                   startIndx = endIndx;
                   int startIndx2, endIndx2;
-                  FindMidPoints(endIndx, heightType, profileResult.results, out startIndx2, out endIndx2);
+                  FindMidPoints(endIndx+1, heightType, profileResult.results, out startIndx2, out endIndx2);
                   log.LogDebug($"Special Case Edge {i}: Midpoints: {startIndx}, {endIndx2} for heightType {heightType}");
                   if (endIndx2 <= profileResult.results.Count - 1)
                   {
