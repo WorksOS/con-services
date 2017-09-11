@@ -337,37 +337,36 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         //First and last points are not gaps or edges. They're always the start and end of the profile line.
         for (int i = 1; i < profileResult.results.Count - 1; i++)
         {
-          if (profileResult.results[i].cellType == ProfileCellType.Edge || profileResult.results[i].cellType == ProfileCellType.Gap)
+          if (profileResult.results[i].cellType == ProfileCellType.MidPoint)
+            continue;
+ 
+          int startIndx, endIndx;
+          var heightTypes = (HeightType[])Enum.GetValues(typeof(HeightType));
+          foreach (var heightType in heightTypes)
           {
-            int startIndx, endIndx;
-            var heightTypes = (HeightType[])Enum.GetValues(typeof(HeightType));
-            foreach (var heightType in heightTypes)
+            FindMidPoints(i, heightType, profileResult.results, out startIndx, out endIndx);
+            log.LogDebug($"Edge {i}: Midpoints: {startIndx}, {endIndx} for heightType {heightType}");
+            if (startIndx >= 0 && endIndx <= profileResult.results.Count - 1)
             {
-              FindMidPoints(i, heightType, profileResult.results, out startIndx, out endIndx);
-              log.LogDebug($"Edge {i}: Midpoints: {startIndx}, {endIndx} for heightType {heightType}");
-              if (startIndx >= 0 && endIndx <= profileResult.results.Count - 1)
+              InterpolateElevation(profileResult.results[i], profileResult.results[startIndx],
+                profileResult.results[endIndx], heightType);
+            }
+            //Special case: If all NaN to the LHS try and find 2 mid points to the RHS and extrapolate.
+            //This can happen if profile line starts in a gap.
+            else if (endIndx < profileResult.results.Count - 1)
+            {
+              startIndx = endIndx;
+              int startIndx2, endIndx2;
+              FindMidPoints(endIndx+1, heightType, profileResult.results, out startIndx2, out endIndx2);
+              log.LogDebug($"Special Case Edge {i}: Midpoints: {startIndx}, {endIndx2} for heightType {heightType}");
+              if (endIndx2 <= profileResult.results.Count - 1)
               {
                 InterpolateElevation(profileResult.results[i], profileResult.results[startIndx],
-                  profileResult.results[endIndx], heightType);
-              }
-              else
-              {
-                //Special case: If all NaN to the LHS try and find 2 mid points to the RHS and extrapolate
-                if (endIndx < profileResult.results.Count - 1)
-                {
-                  startIndx = endIndx;
-                  int startIndx2, endIndx2;
-                  FindMidPoints(endIndx+1, heightType, profileResult.results, out startIndx2, out endIndx2);
-                  log.LogDebug($"Special Case Edge {i}: Midpoints: {startIndx}, {endIndx2} for heightType {heightType}");
-                  if (endIndx2 <= profileResult.results.Count - 1)
-                  {
-                    InterpolateElevation(profileResult.results[i], profileResult.results[startIndx],
-                      profileResult.results[endIndx2], heightType);
-                  }
-                }
-              }
+                  profileResult.results[endIndx2], heightType);
+              }             
             }
           }
+          
         }
       }
       log.LogDebug("After interpolation");
@@ -530,7 +529,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// <summary>
     /// Type of height in cell for interpolation
     /// </summary>
-    public enum HeightType
+    private enum HeightType
     {
       FirstPass,
       HighestPass,
