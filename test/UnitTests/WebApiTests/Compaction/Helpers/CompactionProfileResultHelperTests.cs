@@ -1215,6 +1215,94 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       }
     }
 
+    [TestMethod]
+    public void RepeatedGapsWithNoDataShouldBeRemoved()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> result =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          gridDistanceBetweenProfilePoints = 1.234,
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "firstPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint
+                {
+                  type = "firstPass",
+                  cellType = ProfileCellType.MidPoint,
+                  x = 0,
+                  y = 2.0F,
+                  value = 2.0F
+                },
+                new CompactionDataPoint
+                {
+                  type = "firstPass",
+                  cellType = ProfileCellType.Edge,
+                  x = 1,
+                  y = 1.8F,
+                  value = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = "firstPass",
+                  cellType = ProfileCellType.MidPoint,
+                  x = 2,
+                  y = float.NaN,
+                  value = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = "firstPass",
+                  cellType = ProfileCellType.Edge,
+                  x = 3,
+                  y = 1.3F,
+                  value = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = "firstPass",
+                  cellType = ProfileCellType.MidPoint,
+                  x = 4,
+                  y = float.NaN,
+                  value = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = "firstPass",
+                  cellType = ProfileCellType.Edge,
+                  x = 5,
+                  y = 1.7F,
+                  value = 1.7F
+                },
+                new CompactionDataPoint
+                {
+                  type = "firstPass",
+                  cellType = ProfileCellType.MidPoint,
+                  x = 6,
+                  y = 1.2F,
+                  value = 1.2F
+                }
+              }
+            }
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.RemoveRepeatedNoData(result);
+      Assert.AreEqual(1, result.results.Count, "Wrong number of results");
+      foreach (var item in result.results)
+      {
+        Assert.AreEqual(4, item.data.Count, $"{item.type}: Wrong number of data items");
+        ValidateItem(0, item.data[0], ProfileCellType.MidPoint, 0, 2.0F);
+        ValidateItem(1, item.data[1], ProfileCellType.Gap, 1, 1.8F);
+        ValidateItem(2, item.data[2], ProfileCellType.Edge, 5, 1.7F);
+        ValidateItem(3, item.data[3], ProfileCellType.MidPoint, 6, 1.2F);
+      }
+    }
 
     private void ValidateItem(int i, CompactionDataPoint actual, ProfileCellType expectedCellType, double expectedStation, float expectedElevation)
     {

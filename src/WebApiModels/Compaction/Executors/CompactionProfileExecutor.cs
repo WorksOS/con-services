@@ -387,25 +387,25 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       bool found = false;
       while (startIndx >= 0 && !found)
       {
-        found = HeightHasValue(HeightType.FirstPass, cells[startIndx]);
+        found = MidPointCellHasHeightValue(heightType, cells[startIndx]);
         if (!found) startIndx--;
       }
       endIndx = indx;
       found = false;
       while (endIndx < cells.Count && !found)
       {
-        found = HeightHasValue(HeightType.FirstPass, cells[endIndx]);
+        found = MidPointCellHasHeightValue(heightType, cells[endIndx]);
         if (!found) endIndx++;
       }
     }
 
     /// <summary>
-    /// Determine if the current cell has an elevation for the specified type of height
+    /// Determine if the current cell is a midpoint and has an elevation for the specified type of height
     /// </summary>
     /// <param name="heightType">The type of height to check</param>
     /// <param name="cell">The cell to check</param>
     /// <returns>True if the cell has a non-NaN elevation value for the specified height type</returns>
-    private bool HeightHasValue(HeightType heightType, CompactionProfileCell cell)
+    private bool MidPointCellHasHeightValue(HeightType heightType, CompactionProfileCell cell)
     {
       if (cell.cellType == ProfileCellType.MidPoint)
       {
