@@ -10,7 +10,7 @@ namespace WebApiTests.Models
     public void DynamicAddwithOffsetTest()
     {
       var contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-      Assert.AreEqual(30, contractExecutionStatesEnum.DynamicCount);
+      Assert.AreEqual(31, contractExecutionStatesEnum.DynamicCount);
       Assert.AreEqual("AssetId, if present, must be >= -1", contractExecutionStatesEnum.FirstNameWithOffset(2));
       Assert.AreEqual("Unable to identify a customerUid", contractExecutionStatesEnum.FirstNameWithOffset(29));
     }

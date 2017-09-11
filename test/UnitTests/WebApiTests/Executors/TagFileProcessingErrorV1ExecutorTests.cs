@@ -36,7 +36,7 @@ namespace WebApiTests.Executors
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsTrue(result.Result, "executor process TagFileProcessingError without error");
+      Assert.IsTrue(result.Result, "executor process TagFileProcessingError without errorEnum");
     }
 
     [TestMethod]
@@ -49,7 +49,7 @@ namespace WebApiTests.Executors
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsTrue(result.Result, "executor didn't process TagFileProcessingError with error");
+      Assert.IsTrue(result.Result, "executor didn't process TagFileProcessingError with errorEnum");
     }
 
     [TestMethod]
@@ -62,7 +62,7 @@ namespace WebApiTests.Executors
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsTrue(result.Result, "executor didn't process TagFileProcessingError with error");
+      Assert.IsTrue(result.Result, "executor didn't process TagFileProcessingError with errorEnum");
     }
 
     [TestMethod]

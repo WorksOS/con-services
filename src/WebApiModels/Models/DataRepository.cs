@@ -21,11 +21,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     /// <summary>
     /// Repository factory used in ProcessEx
     /// </summary>
-    protected AssetRepository assetRepository;
-    protected DeviceRepository deviceRepository;
+    protected IAssetRepository assetRepository;
+    protected IDeviceRepository deviceRepository;
     protected ICustomerRepository customerRepository;
     protected IProjectRepository projectRepository;
-    protected SubscriptionRepository subscriptionsRepository;
+    protected ISubscriptionRepository subscriptionsRepository;
 
     /// <summary>
     /// Logger used in ProcessEx
@@ -37,16 +37,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     /// </summary>
     public ServiceTypeMappings serviceTypeMappings = new ServiceTypeMappings();
 
-    public DataRepository(ILogger logger, IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository, 
+    public DataRepository(ILogger logger, IAssetRepository assetRepository, IDeviceRepository deviceRepository, 
       ICustomerRepository customerRepository, IProjectRepository projectRepository,
-      IRepository<ISubscriptionEvent> subscriptionsRepository)
+      ISubscriptionRepository subscriptionsRepository)
     {
       this.log = logger;
-      this.assetRepository = assetRepository as AssetRepository;
-      this.deviceRepository = deviceRepository as DeviceRepository;
-      this.customerRepository = customerRepository; //  as CustomerRepository;
-      this.projectRepository = projectRepository; // as ProjectRepository;
-      this.subscriptionsRepository = subscriptionsRepository as SubscriptionRepository;
+      this.assetRepository = assetRepository;
+      this.deviceRepository = deviceRepository;
+      this.customerRepository = customerRepository;  
+      this.projectRepository = projectRepository;
+      this.subscriptionsRepository = subscriptionsRepository;
     }
 
     public async Task<Project> LoadProject(long legacyProjectId)

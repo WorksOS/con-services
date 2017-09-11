@@ -7,7 +7,6 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
@@ -24,9 +23,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <param name="customerRepository"></param>
     /// <param name="projectRepository"></param>
     /// <param name="subscriptionsRepository"></param>
-    public ProjectController(ILogger logger, IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
+    public ProjectController(ILogger logger, IAssetRepository assetRepository, IDeviceRepository deviceRepository,
       ICustomerRepository customerRepository, IProjectRepository projectRepository,
-      IRepository<ISubscriptionEvent> subscriptionsRepository)
+      ISubscriptionRepository subscriptionsRepository)
       :base(logger, assetRepository, deviceRepository,
         customerRepository, projectRepository,
         subscriptionsRepository)

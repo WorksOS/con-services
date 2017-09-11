@@ -5,6 +5,8 @@ namespace VSS.VisionLink.Interfaces.Events.TagFile
 {
   public class CreateTagFileErrorEvent : ITagFileEvent
   {
+    public Guid TagFileErrorUID { get; set; }
+
     public Guid CustomerUID { get; set; }
 
     public string MachineName { get; set; }

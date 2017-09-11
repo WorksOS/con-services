@@ -2,7 +2,7 @@
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
 {
   /// <summary>
-  /// The result representation of a tag file processing error request.
+  /// The result representation of a tag file processing errorEnum request.
   /// </summary>
   public class TagFileProcessingErrorResult : ContractExecutionResultWithResult
   {
@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
       {
         Result = result,
         Code = code,
-        Message = string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(customCode), errorMessage1 ?? "null", errorMessage2 ?? "null")
+        Message = code == 0 ? DefaultMessage : string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(customCode), errorMessage1 ?? "null", errorMessage2 ?? "null")
       };
     }
   }

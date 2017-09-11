@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     {
       if (item == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization errorEnum"));
       return ProcessEx(item);
     }
 
@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     {
       if (item == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization errorEnum"));
       return await ProcessAsyncEx(item);
     }
 
@@ -112,9 +112,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <param name="projectRepository"></param>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(ILogger logger, IRepository<IAssetEvent> assetRepository = null, IRepository<IDeviceEvent> deviceRepository = null, 
+    public static TExecutor Build<TExecutor>(ILogger logger, IAssetRepository assetRepository = null, IDeviceRepository deviceRepository = null, 
       ICustomerRepository customerRepository = null, IProjectRepository projectRepository = null,
-      IRepository<ISubscriptionEvent> subscriptionsRepository = null) where TExecutor : RequestExecutorContainer, new()
+      ISubscriptionRepository subscriptionsRepository = null) where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor() { log = logger, assetRepository = assetRepository as AssetRepository, deviceRepository = deviceRepository as DeviceRepository,
         customerRepository = customerRepository as CustomerRepository, projectRepository = projectRepository as ProjectRepository,

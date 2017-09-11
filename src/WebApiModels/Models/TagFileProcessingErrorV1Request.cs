@@ -8,24 +8,24 @@ using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
-  /// The request representation used to raise an alert for a tag file processing error if required.
+  /// The request representation used to raise an alert for a tag file processing errorEnum if required.
   /// </summary>
   public class TagFileProcessingErrorV1Request
   {
 
     /// <summary>
-    /// The id of the asset whose tag file has the error. 
+    /// The id of the asset whose tag file has the errorEnum. 
     /// </summary>
     [JsonProperty(PropertyName = "assetId", Required = Required.Always)]
     public long assetId { get; set; }
 
     /// <summary>
-    /// The name of the tag file with the error.
+    /// The name of the tag file with the errorEnum.
     /// </summary>
     [JsonProperty(PropertyName = "tagFileName", Required = Required.Always)]
     public string tagFileName { get; set; } = String.Empty;
 
-    [JsonProperty(PropertyName = "error", Required = Required.Always)]
+    [JsonProperty(PropertyName = "errorEnum", Required = Required.Always)]
     public TagFileErrorsEnum error { get; set; }
 
     /// <summary>

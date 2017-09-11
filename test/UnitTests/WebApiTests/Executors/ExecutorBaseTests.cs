@@ -5,6 +5,7 @@ using System;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace WebApiTests.Executors
@@ -18,6 +19,8 @@ namespace WebApiTests.Executors
     protected CustomerRepository customerRepository;
     protected ProjectRepository projectRepository;
     protected SubscriptionRepository subscriptionsRepository;
+    protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+
 
     [TestInitialize]
     public virtual void InitTest()

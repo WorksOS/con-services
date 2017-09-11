@@ -33,9 +33,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     protected ProjectRepository projectRepository;
     protected SubscriptionRepository subscriptionsRepository;
 
-    protected BaseController(ILogger logger, IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
+    protected BaseController(ILogger logger, IAssetRepository assetRepository, IDeviceRepository deviceRepository,
       ICustomerRepository customerRepository, IProjectRepository projectRepository,
-      IRepository<ISubscriptionEvent> subscriptionsRepository)
+      ISubscriptionRepository subscriptionsRepository)
     {
       this.log = logger;
       this.assetRepository = assetRepository as AssetRepository;
