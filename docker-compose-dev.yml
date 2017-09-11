@@ -3,7 +3,7 @@ services:
   webapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest
     environment:
-     - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project&includeLandfill=true
+     - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true
      - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-geofenceservice/1.0
      - PREFERENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
      - IMPORTED_FILE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
