@@ -10,7 +10,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories
 {
-  public class DeviceRepository : RepositoryBase, IRepository<IDeviceEvent>
+  public class DeviceRepository : RepositoryBase, IRepository<IDeviceEvent>, IDeviceRepository
   {
     private readonly ILogger log;
 
