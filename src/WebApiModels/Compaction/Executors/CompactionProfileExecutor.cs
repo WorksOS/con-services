@@ -337,21 +337,36 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         //First and last points are not gaps or edges. They're always the start and end of the profile line.
         for (int i = 1; i < profileResult.results.Count - 1; i++)
         {
-          if (profileResult.results[i].cellType == ProfileCellType.Edge)
+          if (profileResult.results[i].cellType == ProfileCellType.Edge || profileResult.results[i].cellType == ProfileCellType.Gap)
           {
-            //Interpolate i edge for line between mid points at i-1 and i+1
-            var startIndex = i - 1;
-            var endIndex = i + 1;
-            if (profileResult.results[i - 1].cellType == ProfileCellType.Gap)
+            int startIndx, endIndx;
+            var heightTypes = (HeightType[])Enum.GetValues(typeof(HeightType));
+            foreach (var heightType in heightTypes)
             {
-              //Gap is between i-1 and i. Interpolate i edge for line between mid points at i-2 and i+1
-              startIndex--;
-              //Also adjust the gap point
-              InterpolateElevations(profileResult.results[i - 1], profileResult.results[startIndex],
-                profileResult.results[endIndex]);
+              FindMidPoints(i, heightType, profileResult.results, out startIndx, out endIndx);
+              log.LogDebug($"Edge {i}: Midpoints: {startIndx}, {endIndx} for heightType {heightType}");
+              if (startIndx >= 0 && endIndx <= profileResult.results.Count - 1)
+              {
+                InterpolateElevation(profileResult.results[i], profileResult.results[startIndx],
+                  profileResult.results[endIndx], heightType);
+              }
+              else
+              {
+                //Special case: If all NaN to the LHS try and find 2 mid points to the RHS and extrapolate
+                if (endIndx < profileResult.results.Count - 1)
+                {
+                  startIndx = endIndx;
+                  int startIndx2, endIndx2;
+                  FindMidPoints(endIndx, heightType, profileResult.results, out startIndx2, out endIndx2);
+                  log.LogDebug($"Special Case Edge {i}: Midpoints: {startIndx}, {endIndx2} for heightType {heightType}");
+                  if (endIndx2 <= profileResult.results.Count - 1)
+                  {
+                    InterpolateElevation(profileResult.results[i], profileResult.results[startIndx],
+                      profileResult.results[endIndx2], heightType);
+                  }
+                }
+              }
             }
-            InterpolateElevations(profileResult.results[i], profileResult.results[startIndex],
-              profileResult.results[endIndex]);
           }
         }
       }
@@ -359,26 +374,112 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     }
 
     /// <summary>
-    /// Interpolate elevations for the specified point (cell) on the line segment from startCell to endCell
+    /// Finds the mid points each side of an edge to use for interpolation
+    /// </summary>
+    /// <param name="indx">The index of the edge point</param>
+    /// <param name="heightType">The type of height to be interpolated</param>
+    /// <param name="cells">The list of cells</param>
+    /// <param name="startIndx">The index of the mid point before the edge</param>
+    /// <param name="endIndx">The index of the mid point after the edge</param>
+    private void FindMidPoints(int indx, HeightType heightType, List<CompactionProfileCell> cells, out int startIndx, out int endIndx)
+    {
+      startIndx = indx;
+      bool found = false;
+      while (startIndx >= 0 && !found)
+      {
+        found = HeightHasValue(HeightType.FirstPass, cells[startIndx]);
+        if (!found) startIndx--;
+      }
+      endIndx = indx;
+      found = false;
+      while (endIndx < cells.Count && !found)
+      {
+        found = HeightHasValue(HeightType.FirstPass, cells[endIndx]);
+        if (!found) endIndx++;
+      }
+    }
+
+    /// <summary>
+    /// Determine if the current cell has an elevation for the specified type of height
+    /// </summary>
+    /// <param name="heightType">The type of height to check</param>
+    /// <param name="cell">The cell to check</param>
+    /// <returns>True if the cell has a non-NaN elevation value for the specified height type</returns>
+    private bool HeightHasValue(HeightType heightType, CompactionProfileCell cell)
+    {
+      if (cell.cellType == ProfileCellType.MidPoint)
+      {
+        switch (heightType)
+        {
+          case HeightType.FirstPass:
+            return !float.IsNaN(cell.firstPassHeight);
+          case HeightType.HighestPass:
+            return !float.IsNaN(cell.highestPassHeight);
+          case HeightType.LastPass:
+            return !float.IsNaN(cell.lastPassHeight); 
+          case HeightType.LowestPass:
+            return !float.IsNaN(cell.lowestPassHeight); 
+          case HeightType.LastComposite:
+            return !float.IsNaN(cell.lastCompositeHeight);
+          case HeightType.Design:
+            return !float.IsNaN(cell.designHeight);
+          case HeightType.Cmv:
+            return !float.IsNaN(cell.cmvHeight); 
+          case HeightType.Mdp:
+            return !float.IsNaN(cell.mdpHeight);  
+          case HeightType.Temperature:
+            return !float.IsNaN(cell.temperatureHeight);
+          case HeightType.Speed:
+            return !float.IsNaN(cell.speedHeight);    
+        }
+      }
+      return false;
+    }
+
+    /// <summary>
+    /// Interpolate elevation of the specified height type for the specified point (cell) on the line segment from startCell to endCell
     /// </summary>
     /// <param name="cell">The point to interpolate</param>
     /// <param name="startCell">The start of the line segment</param>
     /// <param name="endCell">The end of the line segment</param>
-    private void InterpolateElevations(CompactionProfileCell cell, CompactionProfileCell startCell, CompactionProfileCell endCell)
+    /// <param name="heightType">The type of height to interpolate</param>
+    private void InterpolateElevation(CompactionProfileCell cell, CompactionProfileCell startCell, CompactionProfileCell endCell, HeightType heightType)
     {
       var proportion = (cell.station - startCell.station) / (endCell.station - startCell.station);
 
-      cell.firstPassHeight = InterpolateElevation(proportion, startCell.firstPassHeight, endCell.firstPassHeight);
-      cell.highestPassHeight = InterpolateElevation(proportion, startCell.highestPassHeight, endCell.highestPassHeight);
-      cell.lastPassHeight = InterpolateElevation(proportion, startCell.lastPassHeight, endCell.lastPassHeight);
-      cell.lowestPassHeight = InterpolateElevation(proportion, startCell.lowestPassHeight, endCell.lowestPassHeight);
-      cell.lastCompositeHeight = InterpolateElevation(proportion, startCell.lastCompositeHeight, endCell.lastCompositeHeight);
-      cell.designHeight = InterpolateElevation(proportion, startCell.designHeight, endCell.designHeight); //TODO: Should this be interpolated?
-      cell.cmvHeight = InterpolateElevation(proportion, startCell.cmvHeight, endCell.cmvHeight);
-      cell.mdpHeight = InterpolateElevation(proportion, startCell.mdpHeight, endCell.mdpHeight);
-      cell.temperatureHeight = InterpolateElevation(proportion, startCell.temperatureHeight, endCell.temperatureHeight);
-      cell.speedHeight = InterpolateElevation(proportion, startCell.speedHeight, endCell.speedHeight);
-      log.LogDebug($"Interpolated point {cell.station} of type {cell.cellType}");
+      switch (heightType)
+      {
+          case HeightType.FirstPass:
+          cell.firstPassHeight = InterpolateElevation(proportion, startCell.firstPassHeight, endCell.firstPassHeight);
+            break;
+        case HeightType.HighestPass:
+          cell.highestPassHeight = InterpolateElevation(proportion, startCell.highestPassHeight, endCell.highestPassHeight);
+          break;
+        case HeightType.LastPass:
+          cell.lastPassHeight = InterpolateElevation(proportion, startCell.lastPassHeight, endCell.lastPassHeight);
+          break;
+        case HeightType.LowestPass:
+          cell.lowestPassHeight = InterpolateElevation(proportion, startCell.lowestPassHeight, endCell.lowestPassHeight); break;
+        case HeightType.LastComposite:
+          cell.lastCompositeHeight = InterpolateElevation(proportion, startCell.lastCompositeHeight, endCell.lastCompositeHeight);
+          break;
+        case HeightType.Design:
+          cell.designHeight = InterpolateElevation(proportion, startCell.designHeight, endCell.designHeight); //TODO: Should this be interpolated?
+          break;
+        case HeightType.Cmv:
+          cell.cmvHeight = InterpolateElevation(proportion, startCell.cmvHeight, endCell.cmvHeight);
+          break;
+        case HeightType.Mdp:
+          cell.mdpHeight = InterpolateElevation(proportion, startCell.mdpHeight, endCell.mdpHeight);
+          break;
+        case HeightType.Temperature:
+          cell.temperatureHeight = InterpolateElevation(proportion, startCell.temperatureHeight, endCell.temperatureHeight);
+          break;
+        case HeightType.Speed:
+          cell.speedHeight = InterpolateElevation(proportion, startCell.speedHeight, endCell.speedHeight);
+          break;
+      }
+      log.LogDebug($"Interpolated station {cell.station} of cell type {cell.cellType} for height type {heightType}");
     }
 
     /// <summary>
@@ -425,6 +526,23 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       mdpIndex = ValueTargetType.NoData,
       speedIndex = ValueTargetType.NoData,
     };
+
+    /// <summary>
+    /// Type of height in cell for interpolation
+    /// </summary>
+    public enum HeightType
+    {
+      FirstPass,
+      HighestPass,
+      LastPass,
+      LowestPass,
+      LastComposite,
+      Design,
+      Cmv,
+      Mdp,
+      Temperature,
+      Speed
+    }
 
   }
 }

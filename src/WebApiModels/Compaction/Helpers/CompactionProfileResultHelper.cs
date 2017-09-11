@@ -342,10 +342,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       foreach (var profileResult in result.results)
       {
         //Identify all the gaps.
-        //All data with NaN elevation is effectively a gap
+        //All data with NaN elevation or value is effectively a gap
         foreach (var point in profileResult.data)
-        { 
-          if (float.IsNaN(point.y))
+        {
+          bool noValue = point.type.StartsWith("passCount") ? point.value == -1 : float.IsNaN(point.value);
+          if (float.IsNaN(point.y) || noValue)
             point.cellType = ProfileCellType.Gap;          
         }
 

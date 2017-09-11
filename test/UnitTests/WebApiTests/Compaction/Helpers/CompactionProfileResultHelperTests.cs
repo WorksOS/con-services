@@ -579,18 +579,21 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = float.NaN
@@ -626,36 +629,42 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = 1.2F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = 1.5F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Gap,
                   x = 3,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 4,
                   y = 1.3F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 5,
                   y = float.NaN
@@ -697,30 +706,35 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = 1.1F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = 1.2F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = 1.5F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 4,
                   y = 1.3F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 5,
                   y = 1.0F
@@ -761,84 +775,98 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 3,
                   y = 1.3F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 4,
                   y = 1.2F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Gap,
                   x = 5,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 6,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 7,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 8,
                   y = 1.8F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 9,
                   y = 1.6F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 10,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 11,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Gap,
                   x = 12,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 13,
                   y = float.NaN
@@ -883,48 +911,56 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = 1.2F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 3,
                   y = 1.3F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 4,
                   y = 1.2F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Gap,
                   x = 5,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.Edge,
                   x = 6,
                   y = 1.7F
                 },
                 new CompactionDataPoint
                 {
+                  type = "firstPass",
                   cellType = ProfileCellType.MidPoint,
                   x = 7,
                   y = 1.1F
@@ -938,48 +974,56 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint
                 {
+                  type = "cmvSummary",
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "cmvSummary",
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = 1.8F
                 },
                 new CompactionDataPoint
                 {
+                  type = "cmvSummary",
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = 1.7F
                 },
                 new CompactionDataPoint
                 {
+                  type = "cmvSummary",
                   cellType = ProfileCellType.Edge,
                   x = 3,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "cmvSummary",
                   cellType = ProfileCellType.MidPoint,
                   x = 4,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "cmvSummary",
                   cellType = ProfileCellType.Gap,
                   x = 5,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "cmvSummary",
                   cellType = ProfileCellType.Edge,
                   x = 6,
                   y = 1.1F
                 },
                 new CompactionDataPoint
                 {
+                  type = "cmvSummary",
                   cellType = ProfileCellType.MidPoint,
                   x = 7,
                   y = 1.0F
@@ -993,48 +1037,56 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint
                 {
+                  type = "passCountDetail",
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = 1.4F
                 },
                 new CompactionDataPoint
                 {
+                  type = "passCountDetail",
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = 1.1F
                 },
                 new CompactionDataPoint
                 {
+                  type = "passCountDetail",
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = 1.4F
                 },
                 new CompactionDataPoint
                 {
+                  type = "passCountDetail",
                   cellType = ProfileCellType.Edge,
                   x = 3,
                   y = 1.0F
                 },
                 new CompactionDataPoint
                 {
+                  type = "passCountDetail",
                   cellType = ProfileCellType.MidPoint,
                   x = 4,
                   y = 1.5F
                 },
                 new CompactionDataPoint
                 {
+                  type = "passCountDetail",
                   cellType = ProfileCellType.Gap,
                   x = 5,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "passCountDetail",
                   cellType = ProfileCellType.Edge,
                   x = 6,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "passCountDetail",
                   cellType = ProfileCellType.MidPoint,
                   x = 7,
                   y = float.NaN
@@ -1048,48 +1100,56 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint
                 {
+                  type = "cutFill",
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "cutFill",
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "cutFill",
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "cutFill",
                   cellType = ProfileCellType.Edge,
                   x = 3,
                   y = 1.3F
                 },
                 new CompactionDataPoint
                 {
+                  type = "cutFill",
                   cellType = ProfileCellType.MidPoint,
                   x = 4,
                   y = 1.2F
                 },
                 new CompactionDataPoint
                 {
+                  type = "cutFill",
                   cellType = ProfileCellType.Gap,
                   x = 5,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
+                  type = "cutFill",
                   cellType = ProfileCellType.Edge,
                   x = 6,
                   y = 1.7F
                 },
                 new CompactionDataPoint
                 {
+                  type = "cutFill",
                   cellType = ProfileCellType.MidPoint,
                   x = 7,
                   y = 1.6F
