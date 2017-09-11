@@ -54,18 +54,51 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     #region projects
 
     /// <summary>
+    /// Gets a list of projects for a customer. The list includes projects of all project types,
+    /// except of Landfill projects, and both active and archived projects.
+    /// </summary>
+    /// <param name="includeLandfill">Determines whether to include or exclude Landfill projects.</param>
+    /// <returns>A list of projects</returns>
+    [Route("api/v4/project")]
+    [HttpGet]
+    public async Task<ProjectV4DescriptorsListResult> GetProjectsV4([FromQuery] bool? includeLandfill)
+    {
+      log.LogInformation("GetProjectsV4");
+
+      ImmutableList<Repositories.DBModels.Project> projects;
+
+      if (!includeLandfill.HasValue || !includeLandfill.Value)
+      {
+        //exclude Landfill Projects for now
+        projects = (await GetProjectList().ConfigureAwait(false))
+          .Where(prj => prj.ProjectType != ProjectType.LandFill).ToImmutableList();
+      }
+      else
+      {
+        projects = (await GetProjectList().ConfigureAwait(false)).ToImmutableList();
+      }
+
+      return new ProjectV4DescriptorsListResult
+      {
+        ProjectDescriptors = projects.Select(project =>
+            AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project))
+          .ToImmutableList()
+      };
+    }
+
+    /// <summary>
     /// Gets a list of projects for a customer. The list includes projects of all project types
     /// and both active and archived projects.
     /// </summary>
     /// <returns>A list of projects</returns>
-    [Route("api/v4/project")]
+    [Route("api/v4/project/all")]
     [HttpGet]
-    public async Task<ProjectV4DescriptorsListResult> GetProjectsV4()
+    public async Task<ProjectV4DescriptorsListResult> GetAllProjectsV4()
     {
-      log.LogInformation("GetProjectsV4");
+      log.LogInformation("GetAllProjectsV4");
 
       //exclude Landfill Projects for now
-      var projects = (await GetProjectList().ConfigureAwait(false)).Where(prj => prj.ProjectType != ProjectType.LandFill).ToImmutableList();
+      var projects = (await GetProjectList().ConfigureAwait(false)).ToImmutableList();
 
       return new ProjectV4DescriptorsListResult
       {
