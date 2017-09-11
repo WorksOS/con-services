@@ -198,3 +198,4 @@ Deploy_Production/
 **/project.lock.json
 **/project.lock.json
 **/*.lock.json
+*.nupkg

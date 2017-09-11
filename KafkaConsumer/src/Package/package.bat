@@ -1,8 +1,9 @@
 @ECHO OFF
 
 SET config=Release
-SET projectFile=VSS.MasterData.Models.csproj
+SET projectFile=VSS.KafkaConsumer.csproj
 SET packageServer=https://packages.vspengg.com/
+SET packageOutputFolder=%cd%\nupkgs
 SET apiKey=qATxVIHO5rIPF3K7
 
 IF "%~1"=="" GOTO buildAndPublishPackage
@@ -16,12 +17,13 @@ IF /I "%~1"=="--delete" GOTO deletePackageFromServer
 
   ECHO [90mRemoving build artifacts...[0m
   FOR /d /r . %%d in (bin,obj) do @if exist "%%d" rd /s/q "%%d"
+  rd /s /q %packageOutputFolder%
 
   ECHO [90mPackage restore in progress...[0m
-  dotnet restore %projectFile% --no-cache
+  dotnet restore ..\%projectFile% --no-cache
 
   ECHO [90mCreating Nuget package...[0m
-  dotnet pack %projectFile% -c %config%
+  dotnet pack --output %packageOutputFolder% ..\%projectFile% -c %config%
 
   ECHO [90mPublishing package...[0m
   IF /I "%~1"=="--test" (
@@ -29,7 +31,7 @@ IF /I "%~1"=="--delete" GOTO deletePackageFromServer
     GOTO end
   )
 
-  nuget push .\bin\release\*.nupkg %apiKey% -so %packageServer% -verbosity detailed
+  nuget push %cd%\nupkgs\*.nupkg %apiKey% -so %packageServer% -verbosity detailed
   ECHO [90mFinished.[0m
   GOTO end
 
@@ -40,7 +42,7 @@ IF /I "%~1"=="--delete" GOTO deletePackageFromServer
     GOTO end
   )
 
-  nuget delete log4netExtensions "%~2" -Source %packageServer% -ApiKey %apiKey%
+  nuget delete %projectFile% "%~2" -Source %packageServer% -ApiKey %apiKey%
 
 
 :end
