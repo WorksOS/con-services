@@ -150,6 +150,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         var noSpeedValue = currCell.cellMaxSpeed == VelociraptorConstants.NO_SPEED;
         var speedMin = noSpeedValue ? float.NaN : (float)(currCell.cellMinSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
         var speedMax = noSpeedValue ? float.NaN : (float)(currCell.cellMaxSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
+        var noSpeedElevation = float.IsNaN(lastPassHeight) || noSpeedValue;
+        var speedHeight = noSpeedElevation ? float.NaN : lastPassHeight;
 
         var cmvPercent = noCCVValue
           ? float.NaN
@@ -244,7 +246,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
           minSpeed = speedMin,
           maxSpeed = speedMax,
-          speedHeight = lastPassHeight,
+          speedHeight = speedHeight,
 
           passCountIndex = passCountIndex,
           temperatureIndex = temperatureIndex,
