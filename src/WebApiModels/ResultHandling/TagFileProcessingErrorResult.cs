@@ -2,7 +2,7 @@
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
 {
   /// <summary>
-  /// The result representation of a tag file processing errorEnum request.
+  /// The result representation of a tag file processing error request.
   /// </summary>
   public class TagFileProcessingErrorResult : ContractExecutionResultWithResult
   {

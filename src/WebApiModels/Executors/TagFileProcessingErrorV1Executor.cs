@@ -12,12 +12,12 @@ using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
   /// <summary>
-  /// The executor which sends an alert if required for a tag file processing errorEnum.
+  /// The executor which sends an alert if required for a tag file processing error.
   /// </summary>
   public class TagFileProcessingErrorV1Executor : RequestExecutorContainer
   {
     /// <summary>
-    /// Processes the tag file processing errorEnum request and creates an alert if required.
+    /// Processes the tag file processing error request and creates an alert if required.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         var errorMessage =
           string.Format(
-            $"OnTagFileProcessingError: assetID = {request.assetId}, tagFileName = {request.tagFileName}, errorNumber = {(int)request.error}, errorEnum = {Enum.GetName(typeof(TagFileErrorsEnum), request.error)}");
+            $"OnTagFileProcessingError: assetID = {request.assetId}, tagFileName = {request.tagFileName}, errorNumber = {(int)request.error}, error = {Enum.GetName(typeof(TagFileErrorsEnum), request.error)}");
         log.LogDebug(errorMessage);
       }
 
@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
             ContractExecutionStatesEnum.InternalProcessingError, 12));
       }
     }
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       throw new NotImplementedException();
     }

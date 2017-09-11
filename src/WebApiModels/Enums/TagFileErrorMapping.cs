@@ -3,7 +3,7 @@
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums
 {
 
-  // Tag file errorEnum enums are different between raptor and notifications
+  // Tag file error enums are different between raptor and notifications
   public class TagFileErrorMapping
   {
     public string name = "";

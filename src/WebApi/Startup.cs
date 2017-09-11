@@ -18,7 +18,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
   public class Startup
   {
     private readonly string _loggerRepoName = "WebApi";
-    private readonly bool _isDevEnv;
     IServiceCollection _serviceCollection;
 
     public Startup(IHostingEnvironment env)
@@ -29,7 +28,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
       env.ConfigureLog4Net("log4net.xml", _loggerRepoName);
-      _isDevEnv = env.IsEnvironment("Development");
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -101,18 +99,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+    /// <summary>
+    /// Configures the specified application.
+    /// </summary>
+    /// <param name="app">The application.</param>
+    /// <param name="env">The env.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      _serviceCollection.AddSingleton(loggerFactory);
-      //new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
+      _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       _serviceCollection.BuildServiceProvider();
-
+   
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(_loggerRepoName);
 
       ExceptionsTrapExtensions.UseExceptionTrap(app);
-      //Enable TID here
-      //app.UseTIDAuthentication();
       app.UseCors("VSS");
 
       app.UseMvc();

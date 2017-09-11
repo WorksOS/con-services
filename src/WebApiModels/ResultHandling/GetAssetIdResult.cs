@@ -29,7 +29,7 @@
         assetId = assetId,
         machineLevel = machineLevel,
         Code = code,
-        Message = string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(customCode), errorMessage1 ?? "null", errorMessage2 ?? "null")
+        Message = code == 0 ? DefaultMessage : string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(customCode), errorMessage1 ?? "null", errorMessage2 ?? "null")
       };
     }
   }

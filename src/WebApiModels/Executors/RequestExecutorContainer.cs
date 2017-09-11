@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     {
       if (item == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization errorEnum"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
       return ProcessEx(item);
     }
 
@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     {
       if (item == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization errorEnum"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
       return await ProcessAsyncEx(item);
     }
 

@@ -9,18 +9,18 @@ using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
-  /// The request representation used to raise an alert for a tag file processing errorEnum if required.
+  /// The request representation used to raise an alert for a tag file processing error if required.
   /// </summary>
   public class TagFileProcessingErrorV2Request
   {
     /// <summary>
-    /// The id reflecting our customer in TCC whose tag file has the errorEnum. 
+    /// The id reflecting our customer in TCC whose tag file has the error. 
     /// </summary>
     [JsonProperty(PropertyName = "tccOrgId", Required = Required.Default)]
     public string tccOrgId { get; set; }
     
     /// <summary>
-                                            /// The id of the asset whose tag file has the errorEnum. 
+                                            /// The id of the asset whose tag file has the error. 
                                             /// </summary>
     [JsonProperty(PropertyName = "assetId", Required = Required.Default)]
     public long? assetId { get; set; }
@@ -33,11 +33,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     public int? projectId { get; set; } = -1;
 
     
-    [JsonProperty(PropertyName = "errorEnum", Required = Required.Always)]
-    public TagFileErrorsEnum errorEnum { get; set; }
+    [JsonProperty(PropertyName = "error", Required = Required.Always)]
+    public TagFileErrorsEnum error { get; set; }
 
     /// <summary>
-    /// The name of the tag file with the errorEnum.
+    /// The name of the tag file with the error.
     /// '0346J084SW--ALJON 600 0102--160819203837.tag' (Format: Display Serial--Machine Name--DateTime.tag yymmddhhmmss)
     /// </summary>
     [JsonProperty(PropertyName = "tagFileName", Required = Required.Always)]
@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
 
     /// <summary>
-    /// The radioSerial whose tag file has the errorEnum. 
+    /// The radioSerial whose tag file has the error. 
     /// </summary>
     [JsonProperty(PropertyName = "deviceSerialNumber", Required = Required.Default)]
     public string deviceSerialNumber { get; set; }
@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     /// <summary>
     /// The device type of the machine. Valid values are 0=Manual Device (John Doe machines) and 6=SNM940 (torch machines).
     /// </summary>
-    [JsonProperty(PropertyName = "deviceType", Required = Required.Always)]
+    [JsonProperty(PropertyName = "deviceType", Required = Required.Default)]
     public int deviceType { get; set; }
 
     public string DeviceTypeString()
@@ -113,7 +113,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         tccOrgId = string.IsNullOrEmpty(tccOrgId) ? "" : tccOrgId.Trim(),
         assetId = assetId,
         projectId = projectId,
-        errorEnum = (TagFileErrorsEnum)Enum.ToObject(typeof(TagFileErrorsEnum), error),
+        error = (TagFileErrorsEnum)Enum.ToObject(typeof(TagFileErrorsEnum), error),
         tagFileName = string.IsNullOrEmpty(tagFileName) ? "" : tagFileName.Trim(),
         deviceSerialNumber = string.IsNullOrEmpty(deviceSerialNumber) ? "" : deviceSerialNumber.Trim(),
         deviceType = deviceType
@@ -149,7 +149,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       }
 
 
-      if (Enum.IsDefined(typeof(TagFileErrorsEnum), errorEnum) == false)
+      if (Enum.IsDefined(typeof(TagFileErrorsEnum), error) == false)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,

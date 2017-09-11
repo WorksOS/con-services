@@ -115,8 +115,8 @@ namespace WebApiTests.Models
       int notificationErrorNumber =  tagFileErrorMappings.tagFileErrorTypes.Find(st => string.Equals(st.name, raptorErrorNumber.ToString(), StringComparison.OrdinalIgnoreCase)).NotificationEnum;
       TagFileError notificationError = (TagFileError)tagFileErrorMappings.tagFileErrorTypes.Find(st => string.Equals(st.name, raptorErrorNumber.ToString(), StringComparison.OrdinalIgnoreCase)).NotificationEnum;
 
-      Assert.AreEqual(8, notificationErrorNumber, "Invalid Raptor-Notification errorEnum code mapping");
-      Assert.AreEqual(TagFileError.UnknownProject, notificationError, "Invalid Raptor-Notification errorEnum string mapping");
+      Assert.AreEqual(8, notificationErrorNumber, "Invalid Raptor-Notification error code mapping");
+      Assert.AreEqual(TagFileError.UnknownProject, notificationError, "Invalid Raptor-Notification error string mapping");
     }
 
     [TestMethod]
@@ -128,8 +128,8 @@ namespace WebApiTests.Models
       int notificationErrorNumber = tagFileErrorMappings.tagFileErrorTypes.Find(st => string.Equals(st.name, raptorErrorNumber.ToString(), StringComparison.OrdinalIgnoreCase)).NotificationEnum;
       TagFileError notificationError = (TagFileError)tagFileErrorMappings.tagFileErrorTypes.Find(st => string.Equals(st.name, raptorErrorNumber.ToString(), StringComparison.OrdinalIgnoreCase)).NotificationEnum;
 
-      Assert.AreEqual(2, notificationErrorNumber, "Invalid Raptor-Notification errorEnum code mapping");
-      Assert.AreEqual(TagFileError.NoMatchingProjectArea, notificationError, "Invalid Raptor-Notification errorEnum string mapping");
+      Assert.AreEqual(2, notificationErrorNumber, "Invalid Raptor-Notification error code mapping");
+      Assert.AreEqual(TagFileError.NoMatchingProjectArea, notificationError, "Invalid Raptor-Notification error string mapping");
     }
 
     [TestMethod]

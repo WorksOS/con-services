@@ -59,6 +59,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           {
             subs = await dataRepository.LoadManual3DCustomerBasedSubs(assetOwningCustomer.CustomerUID,
               request.tagFileUTC.Date);
+            subscriptions = subs as IList<Subscriptions> ?? subs.ToList();
             log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded theCustomersSubs? {0}",
               JsonConvert.SerializeObject(subs));
           }

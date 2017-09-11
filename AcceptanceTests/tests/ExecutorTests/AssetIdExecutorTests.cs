@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
@@ -12,19 +13,19 @@ namespace ExecutorTests
   {
 
     [TestMethod]
-    public void AssetIDExecutor_NonExistingDeviceAsset()
+    public async Task AssetIDExecutor_NonExistingDeviceAssetAsync()
     {
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
 
       GetAssetIdRequest assetIdRequest =
-        GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int) deviceType, deviceSerialNumber);
+        GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int)deviceType, deviceSerialNumber);
       assetIdRequest.Validate();
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+        projectRepo, subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -32,7 +33,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void AssetIDExecutor_ExistingDeviceAsset()
+    public async Task AssetIDExecutor_ExistingDeviceAsset()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -48,9 +49,10 @@ namespace ExecutorTests
         GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int) deviceType, deviceSerialNumber);
       assetIdRequest.Validate();
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -59,7 +61,7 @@ namespace ExecutorTests
 
 
     [TestMethod]
-    public void AssetIDExecutor_ExistingDeviceAssetAndCustomerSub()
+    public async Task AssetIDExecutor_ExistingDeviceAssetAndCustomerSub()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -78,9 +80,10 @@ namespace ExecutorTests
       isCreatedOk = CreateCustomerSub(owningCustomerUID.Value, "Manual 3D Project Monitoring");
       Assert.IsTrue(isCreatedOk, "created Customer subscription");
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -88,7 +91,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void AssetIDExecutor_ExistingDeviceAssetAndCustomerSub_NoOwnerCustomer()
+    public async Task AssetIDExecutor_ExistingDeviceAssetAndCustomerSub_NoOwnerCustomer()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -109,9 +112,10 @@ namespace ExecutorTests
       isCreatedOk = CreateCustomerSub(owningCustomerUID.Value, "Manual 3D Project Monitoring");
       Assert.IsTrue(isCreatedOk, "created Customer subscription");
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -119,7 +123,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void AssetIDExecutor_ExistingDeviceAssetAndAssetSub()
+    public async Task AssetIDExecutor_ExistingDeviceAssetAndAssetSub()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -138,9 +142,10 @@ namespace ExecutorTests
       isCreatedOk = CreateAssetSub(assetUID, owningCustomerUID.Value, "3D Project Monitoring");
       Assert.IsTrue(isCreatedOk, "created Asset subscription");
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -148,7 +153,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void AssetIDExecutor_ExistingDeviceAssetAndAssetAndCustomerSub()
+    public async Task AssetIDExecutor_ExistingDeviceAssetAndAssetAndCustomerSub()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -170,9 +175,10 @@ namespace ExecutorTests
       isCreatedOk = CreateAssetSub(assetUID, owningCustomerUID.Value, "3D Project Monitoring");
       Assert.IsTrue(isCreatedOk, "created Asset subscription");
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -180,16 +186,17 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void AssetIDExecutor_NonExistingProject()
+    public async Task AssetIDExecutor_NonExistingProject()
     {
       int legacyProjectId = new Random().Next(0, int.MaxValue);
 
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 0, "");
       assetIdRequest.Validate();
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-        .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -197,7 +204,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void AssetIDExecutor_ExistingProject()
+    public async Task AssetIDExecutor_ExistingProject()
     {
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
@@ -210,9 +217,10 @@ namespace ExecutorTests
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 0, "");
       assetIdRequest.Validate();
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -220,7 +228,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void AssetIDExecutor_ExistingProjectAndCustomerSub()
+    public async Task AssetIDExecutor_ExistingProjectAndCustomerSub()
     {
       // tests path where only ProjectId and goes via CheckForManual3DCustomerBasedSub()
       Guid projectUID = Guid.NewGuid();
@@ -236,9 +244,10 @@ namespace ExecutorTests
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 0, "");
       assetIdRequest.Validate();
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -246,7 +255,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void AssetIDExecutor_ExistingProjectAndDeviceAndCustomerSub()
+    public async Task AssetIDExecutor_ExistingProjectAndDeviceAndCustomerSub()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -272,9 +281,10 @@ namespace ExecutorTests
         GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, (int) deviceType, deviceSerialNumber);
       assetIdRequest.Validate();
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -282,7 +292,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void AssetIDExecutor_ExistingProjectAndDeviceAndAssetSub()
+    public async Task AssetIDExecutor_ExistingProjectAndDeviceAndAssetSub()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -309,9 +319,10 @@ namespace ExecutorTests
         GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, (int) deviceType, deviceSerialNumber);
       assetIdRequest.Validate();
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -319,7 +330,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void AssetIDExecutor_ExistingProjectAndDeviceAndCustomerSub_SNM940ToFindSNM941()
+    public async Task AssetIDExecutor_ExistingProjectAndDeviceAndCustomerSub_SNM940ToFindSNM941()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -346,9 +357,10 @@ namespace ExecutorTests
         GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, (int) requestedDeviceType, deviceSerialNumber);
       assetIdRequest.Validate();
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
@@ -356,7 +368,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void AssetIDExecutor_ExistingProjectAndDeviceAndCustomerSub_SNM941ToNOTFindSNM940()
+    public async Task AssetIDExecutor_ExistingProjectAndDeviceAndCustomerSub_SNM941ToNOTFindSNM940()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -383,9 +395,10 @@ namespace ExecutorTests
         GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, (int) requestedDeviceType, deviceSerialNumber);
       assetIdRequest.Validate();
 
-      var result =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-          .Process(assetIdRequest) as GetAssetIdResult;
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
+          subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");

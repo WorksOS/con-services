@@ -7,6 +7,7 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
@@ -26,20 +27,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <param name="customerRepository"></param>
     /// <param name="projectRepository"></param>
     /// <param name="subscriptionsRepository"></param>
-    public NotificationController(ILogger logger, IAssetRepository assetRepository, IDeviceRepository deviceRepository,
-      ICustomerRepository customerRepository, IProjectRepository projectRepository,
-      ISubscriptionRepository subscriptionsRepository)
+    public NotificationController(ILoggerFactory logger, IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
+      IRepository<ICustomerEvent> customerRepository, IRepository<IProjectEvent> projectRepository,
+      IRepository<ISubscriptionEvent> subscriptionsRepository)
       :base(logger, assetRepository, deviceRepository,
         customerRepository, projectRepository,
         subscriptionsRepository)
     {
-      this.log = logger;
+      this.log = logger.CreateLogger<NotificationController>();
     }
     
     /// <summary>
-    /// Writes to the log for the given tag file processing errorEnum. 
+    /// Writes to the log for the given tag file processing error. 
     /// </summary>
-    /// <param name="request">Details of the errorEnum including the asset id, the tag file and the type of errorEnum</param>
+    /// <param name="request">Details of the error including the asset id, the tag file and the type of error</param>
     /// <returns>
     /// True for success and false for failure.
     /// </returns>
@@ -59,9 +60,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Writes a Kafka event for the given tag file processing errorEnum. 
+    /// Writes a Kafka event for the given tag file processing error. 
     /// </summary>
-    /// <param name="request">Details of the errorEnum including the customerUid, the tag file and the type of errorEnum</param>
+    /// <param name="request">Details of the error including the customerUid, the tag file and the type of error</param>
     /// <returns>
     /// True for success and false for failure.
     /// </returns>

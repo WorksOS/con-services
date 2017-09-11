@@ -157,10 +157,8 @@ namespace WebApiTests.Executors
     public async Task TagFileProcessingErrorV2Executor_AssetUidFound_UsedAsCustomerUid()
     {
       string tccOrgId = null;
-      long? assetId = null;
       long? legacyAssetId = 667;
       int? legacyProjectId = null;
-      long legacyCustomerId = 567;
       int error = 1;
       string tagFileName = "Machine Name--whatever --161230235959";
       string deviceSerialNumber = null;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
@@ -11,7 +12,7 @@ namespace ExecutorTests
   {
 
     [TestMethod]
-    public void ProjectBoundaryAtDateExecutor_NonExistingProject()
+    public async Task ProjectBoundaryAtDateExecutor_NonExistingProject()
     {
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
@@ -22,8 +23,9 @@ namespace ExecutorTests
       GetProjectBoundaryAtDateRequest projectBoundaryAtDateExecutorRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(legacyProjectId, timeOfPositionUtc);
       projectBoundaryAtDateExecutorRequest.Validate();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-        .Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
+      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(logger, assetRepo, deviceRepo,
+        customerRepo, projectRepo, subscriptionRepo);
+      var result = await executor.ProcessAsync(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundary, "executor returned incorrect projectBoundary result");
@@ -31,7 +33,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public void ProjectBoundaryAtDateExecutor_ExistingProject()
+    public async Task ProjectBoundaryAtDateExecutor_ExistingProject()
     {
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
@@ -44,8 +46,9 @@ namespace ExecutorTests
       GetProjectBoundaryAtDateRequest projectBoundaryAtDateExecutorRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(legacyProjectId, timeOfPositionUtc);
       projectBoundaryAtDateExecutorRequest.Validate();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-        .Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
+      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(logger, assetRepo, deviceRepo,
+        customerRepo, projectRepo, subscriptionRepo);
+      var result = await executor.ProcessAsync(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundary, "executor returned incorrect projectBoundary result");
@@ -59,7 +62,7 @@ namespace ExecutorTests
     /// </summary>
     [TestMethod]
     [Ignore]
-    public void ProjectBoundaryAtDateExecutor_ExistingProjectInvalidBoundary()
+    public async Task ProjectBoundaryAtDateExecutor_ExistingProjectInvalidBoundary()
     {
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
@@ -73,8 +76,9 @@ namespace ExecutorTests
       GetProjectBoundaryAtDateRequest projectBoundaryAtDateExecutorRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(legacyProjectId, timeOfPositionUtc);
       projectBoundaryAtDateExecutorRequest.Validate();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
-        .Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
+      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(logger, assetRepo, deviceRepo,
+        customerRepo, projectRepo, subscriptionRepo);
+      var result = await executor.ProcessAsync(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundary, "executor returned incorrect projectBoundary result");

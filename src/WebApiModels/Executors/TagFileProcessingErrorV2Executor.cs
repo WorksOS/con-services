@@ -16,14 +16,14 @@ using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
   /// <summary>
-  /// The executor which sends an alert if required for a tag file processing errorEnum.
+  /// The executor which sends an alert if required for a tag file processing error.
   /// </summary>
   public class TagFileProcessingErrorV2Executor : RequestExecutorContainer
   {
     protected TagFileErrorMappings tagFileErrorMappings = new TagFileErrorMappings();
 
     /// <summary>
-    /// Processes the tag file processing errorEnum request and creates an alert if required.
+    /// Processes the tag file processing error request and creates an alert if required.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var errorMessage =
           string.Format($"OnTagFileProcessingError: assetID = {request.assetId}, " +
                         $"tagFileName = {request.tagFileName}, displaySerialNumber = { request.DisplaySerialNumber()}, machineName = { request.MachineName()}, tagfileUtc = {request.TagFileDateTimeUtc()}" +
-                        $"errorNumber = {(int)request.errorEnum}, errorEnum = {Enum.GetName(typeof(TagFileErrorsEnum), request.errorEnum)}, " + 
+                        $"errorNumber = {(int)request.error}, error = {Enum.GetName(typeof(TagFileErrorsEnum), request.error)}, " + 
                         $"projectId = {request.projectId} tccOrgId = {request.tccOrgId} deviceSerialNumber = {request.deviceSerialNumber} ");
       log.LogInformation(errorMessage);
 
@@ -147,7 +147,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         MachineName = request.MachineName(),
         DisplaySerialNumber = request.DisplaySerialNumber(),
         TagFileCreatedUTC = request.TagFileDateTimeUtc(),
-        ErrorCode = (TagFileError) tagFileErrorMappings.tagFileErrorTypes.Find(st => string.Equals(st.name, request.errorEnum.ToString(), StringComparison.OrdinalIgnoreCase)).NotificationEnum,
+        ErrorCode = (TagFileError) tagFileErrorMappings.tagFileErrorTypes.Find(st => string.Equals(st.name, request.error.ToString(), StringComparison.OrdinalIgnoreCase)).NotificationEnum,
         AssetUID = asset == null ? (Guid?)null : Guid.Parse(asset?.AssetUID),
         DeviceSerialNumber = request.deviceSerialNumber,
         ProjectUID = project == null ? (Guid?)null : Guid.Parse(project?.ProjectUID),

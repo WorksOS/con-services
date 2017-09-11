@@ -11,7 +11,7 @@
       DynamicAddwithOffset("TccOrgId, if present, must be a valid Guid.", 1);
       DynamicAddwithOffset("AssetId, if present, must be >= -1", 2);
       DynamicAddwithOffset("ProjectId, if present, must be -1, -2, -3 or > 0", 3);
-      DynamicAddwithOffset("Must have valid errorEnum number", 4);
+      DynamicAddwithOffset("Must have valid error number", 4);
       DynamicAddwithOffset("Must have tag file name", 5);
       DynamicAddwithOffset("TagFileName invalid as no DisplaySerialNumber", 6);
       DynamicAddwithOffset("TagFileName invalid as no MachineName", 7);
@@ -19,9 +19,9 @@
       DynamicAddwithOffset("Must have assetId", 9);
       DynamicAddwithOffset("Not enough information to identify Customer", 10);
       DynamicAddwithOffset("TagFileProcessingErrorV1Executor: Invalid request structure", 11);
-      DynamicAddwithOffset("TagFileProcessingErrorV1Executor: Failed to create an alert for tag file processing errorEnum",   12);
+      DynamicAddwithOffset("TagFileProcessingErrorV1Executor: Failed to create an alert for tag file processing error",   12);
       DynamicAddwithOffset("TagFileProcessingErrorV2Executor: Invalid request structure", 13);
-      DynamicAddwithOffset("TagFileProcessingErrorV2Executor: Failed to create an alert for tag file processing errorEnum", 14);
+      DynamicAddwithOffset("TagFileProcessingErrorV2Executor: Failed to create an alert for tag file processing error", 14);
       DynamicAddwithOffset("Failed to get legacy asset id", 15);
       DynamicAddwithOffset("Failed to get project boundaries", 16);
       DynamicAddwithOffset("tagFileUTC must have occured within last 50 years", 17);
@@ -62,15 +62,15 @@
     public static readonly int SerializationError = -2;
 
     /// <summary>
-    ///   Internal processing errorEnum
+    ///   Internal processing error
     /// </summary>
     public static readonly int InternalProcessingError = -3;
 
 
     /// <summary>
-    /// Dynamically adds new errorEnum messages addwith offset.
+    /// Dynamically adds new error messages addwith offset.
     /// </summary>
-    /// <param name="name">The name of errorEnum.</param>
+    /// <param name="name">The name of error.</param>
     /// <param name="value">The value of code.</param>
     public void DynamicAddwithOffset(string name, int value)
     {
@@ -78,9 +78,9 @@
     }
 
     /// <summary>
-    /// Gets the errorEnum numberwith offset.
+    /// Gets the error numberwith offset.
     /// </summary>
-    /// <param name="errorNum">The errorEnum number.</param>
+    /// <param name="errorNum">The error number.</param>
     /// <returns></returns>
     public int GetErrorNumberwithOffset(int errorNum)
     {
@@ -88,7 +88,7 @@
     }
 
     /// <summary>
-    /// Gets the frist available name of a errorEnum code taking into account 
+    /// Gets the frist available name of a error code taking into account 
     /// </summary>
     /// <param name="value">The code vale to get the name against.</param>
     /// <returns></returns>

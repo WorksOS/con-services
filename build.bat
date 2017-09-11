@@ -1,7 +1,7 @@
 RMDIR /S /Q artifacts
-dotnet restore
+dotnet restore --no-cache VSS.TagFileAuth.Service.sln
 rem dotnet publish ./src/Repositories -o artifacts/Repositories -f netcoreapp1.1 -c Docker
-dotnet publish ./src/WebApi -o ../../artifacts/WebApi -f netcoreapp1.1 -c Docker
+dotnet publish ./src/WebApi/VSS.Productivity3D.TagFileAuth.WebAPI.csproj -o ../../artifacts/WebApi -f netcoreapp1.1 -c Docker
 
 rem dotnet build ./test/UnitTests/\WebApiTests
 

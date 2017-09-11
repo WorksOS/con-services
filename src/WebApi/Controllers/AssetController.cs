@@ -27,14 +27,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <param name="customerRepository"></param>
     /// <param name="projectRepository"></param>
     /// <param name="subscriptionsRepository"></param>
-    public AssetController(ILogger logger, IAssetRepository assetRepository, IDeviceRepository deviceRepository,
-      ICustomerRepository customerRepository, IProjectRepository projectRepository,
-      ISubscriptionRepository subscriptionsRepository)
+    public AssetController(ILoggerFactory logger, IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
+      IRepository<ICustomerEvent> customerRepository, IRepository<IProjectEvent> projectRepository,
+      IRepository<ISubscriptionEvent> subscriptionsRepository)
       :base(logger, assetRepository, deviceRepository,
             customerRepository, projectRepository,
             subscriptionsRepository)
     {
-      this.log = logger;
+      this.log = logger.CreateLogger< AssetController>();
     }
 
     /// <summary>

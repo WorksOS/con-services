@@ -13,6 +13,7 @@ namespace ExecutorTests
   public class ExecutorTestData
   {
     protected IServiceProvider serviceProvider;
+    protected IConfigurationStore configStore;
     protected AssetRepository assetRepo;
     protected DeviceRepository deviceRepo;
     protected CustomerRepository customerRepo;
@@ -37,22 +38,20 @@ namespace ExecutorTests
       serviceCollection.AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
-        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
         .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
+        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>(); 
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-
+      configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       assetRepo = serviceProvider.GetRequiredService<IRepository<IAssetEvent>>() as AssetRepository;
       deviceRepo = serviceProvider.GetRequiredService<IRepository<IDeviceEvent>>() as DeviceRepository;
       customerRepo = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
       projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
       subscriptionRepo = serviceProvider.GetRequiredService<IRepository<ISubscriptionEvent>>() as SubscriptionRepository;
-
-
     }
 
     protected bool CreateAssetDeviceAssociation(Guid assetUid, long legacyAssetId, Guid? owningCustomerUid, Guid deviceUid, string deviceSerialNumber, string deviceType)
