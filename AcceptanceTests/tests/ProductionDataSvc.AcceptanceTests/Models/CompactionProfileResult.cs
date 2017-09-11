@@ -5,7 +5,7 @@ using RaptorSvcAcceptTestsCommon.Models;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
-  public class CompactionProfileResult : RequestResult, IEquatable<CompactionProfileResult>
+  public class CompactionProfileResult<T> : RequestResult, IEquatable<CompactionProfileResult<T>>
   {
     #region members
     /// <summary>
@@ -17,7 +17,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     /// <summary>
     /// The collection of cells produced by the query. Cells are ordered by increasing station value along the line or alignment.
     /// </summary>
-    public List<CompactionProfileCell> points;
+    public List<T> results;
     #endregion
 
     #region constructors
@@ -30,17 +30,17 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     #endregion
 
     #region Equality test
-    public bool Equals(CompactionProfileResult other)
+    public bool Equals(CompactionProfileResult<T> other)
     {
       if (other == null)
         return false;
 
-      if (this.points.Count != other.points.Count)
+      if (this.results.Count != other.results.Count)
         return false;
 
-      for (int i = 0; i < this.points.Count; i++)
+      for (int i = 0; i < this.results.Count; i++)
       {
-        if (!this.points[i].Equals(other.points[i]))
+        if (!this.results[i].Equals(other.results[i]))
           return false;
       }
 
@@ -49,7 +49,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
              this.Message == other.Message;
     }
 
-    public static bool operator ==(CompactionProfileResult a, CompactionProfileResult b)
+    public static bool operator ==(CompactionProfileResult<T> a, CompactionProfileResult<T> b)
     {
       if ((object)a == null || (object)b == null)
         return Object.Equals(a, b);
@@ -57,14 +57,14 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       return a.Equals(b);
     }
 
-    public static bool operator !=(CompactionProfileResult a, CompactionProfileResult b)
+    public static bool operator !=(CompactionProfileResult<T> a, CompactionProfileResult<T> b)
     {
       return !(a == b);
     }
 
     public override bool Equals(object obj)
     {
-      return obj is CompactionProfileResult && this == (CompactionProfileResult)obj;
+      return obj is CompactionProfileResult<T> && this == (CompactionProfileResult<T>)obj;
     }
 
     public override int GetHashCode()
@@ -85,9 +85,219 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     #endregion
   }
 
-  public class CompactionProfileCell : IEquatable<CompactionProfileCell>
+  public class CompactionDesignProfileResult : IEquatable<CompactionDesignProfileResult>
   {
+    #region members
+    /// <summary>
+    /// The design file UID the response data is collected from.
+    /// </summary>
+    public Guid designFileUid;
 
+    /// <summary>
+    /// The collection of vertices produced by the query. Vertices are ordered by increasing station value along the line or alignment.
+    /// </summary>
+    public List<CompactionProfileVertex> data;
+    #endregion
+
+    #region Equality test
+
+    public bool Equals(CompactionDesignProfileResult other)
+    {
+      if (other == null)
+        return false;
+
+      if (this.data.Count != other.data.Count)
+        return false;
+
+      for (int i = 0; i < this.data.Count; i++)
+      {
+        if (!this.data[i].Equals(other.data[i]))
+          return false;
+      }
+
+      return this.designFileUid == other.designFileUid;
+    }
+
+    public static bool operator ==(CompactionDesignProfileResult a, CompactionDesignProfileResult b)
+    {
+      if ((object)a == null || (object)b == null)
+        return Object.Equals(a, b);
+
+      return a.Equals(b);
+    }
+
+    public static bool operator !=(CompactionDesignProfileResult a, CompactionDesignProfileResult b)
+    {
+      return !(a == b);
+    }
+
+    public override bool Equals(object obj)
+    {
+      return obj is CompactionDesignProfileResult && this == (CompactionDesignProfileResult)obj;
+    }
+
+    public override int GetHashCode()
+    {
+      return base.GetHashCode();
+    }
+    #endregion
+
+
+    #region ToString override
+    /// <summary>
+    /// ToString override
+    /// </summary>
+    /// <returns>A string representation.</returns>
+    public override string ToString()
+    {
+      return JsonConvert.SerializeObject(this, Formatting.Indented);
+    }
+    #endregion
+
+  }
+
+  public class CompactionProfileVertex : IEquatable<CompactionProfileVertex>
+  {
+    #region members
+    /// <summary>
+    /// The station value, or distance from start of the profile line at which the profile line intersects the design surface.
+    /// </summary>
+    public double x;
+
+    /// <summary>
+    /// Elevation of the profile vertex.
+    /// </summary>
+    public float y;
+    #endregion
+
+    #region Equality test
+    public bool Equals(CompactionProfileVertex other)
+    {
+      if (other == null)
+        return false;
+
+
+      return Math.Round(this.x, 2) == Math.Round(other.x, 2) &&
+             FloatEquals(this.y, other.y);
+    }
+
+    private bool FloatEquals(float f1, float f2)
+    {
+      if (float.IsNaN(f1) || float.IsNaN(f2))
+        return float.IsNaN(f1) && float.IsNaN(f2);
+
+      return Math.Round(f1, 2) == Math.Round(f2, 2);
+    }
+
+    public static bool operator ==(CompactionProfileVertex a, CompactionProfileVertex b)
+    {
+      if ((object)a == null || (object)b == null)
+        return Object.Equals(a, b);
+
+      return a.Equals(b);
+    }
+
+    public static bool operator !=(CompactionProfileVertex a, CompactionProfileVertex b)
+    {
+      return !(a == b);
+    }
+
+    public override bool Equals(object obj)
+    {
+      return obj is CompactionProfileVertex && this == (CompactionProfileVertex)obj;
+    }
+
+    public override int GetHashCode()
+    {
+      return base.GetHashCode();
+    }
+    #endregion
+
+
+    #region ToString override
+    /// <summary>
+    /// ToString override
+    /// </summary>
+    /// <returns>A string representation.</returns>
+    public override string ToString()
+    {
+      return JsonConvert.SerializeObject(this, Formatting.Indented);
+    }
+    #endregion
+
+  }
+
+  public class CompactionProfileDataResult : IEquatable<CompactionProfileDataResult>
+  {
+    #region members 
+    /// <summary>
+    /// The type indicates what type of production data e.g. lastPass, cutFill, passCount etc.
+    /// </summary>
+    public string type;
+    /// <summary>
+    /// A list of data points for the profile.
+    /// </summary>
+    public List<CompactionDataPoint> data;
+    #endregion
+
+    #region Equality test
+    public bool Equals(CompactionProfileDataResult other)
+    {
+      if (other == null)
+        return false;
+
+      if (this.data.Count != other.data.Count)
+        return false;
+
+      for (int i = 0; i < this.data.Count; i++)
+      {
+        if (!this.data[i].Equals(other.data[i]))
+          return false;
+      }
+
+      return this.type == other.type;
+    }
+
+    public static bool operator ==(CompactionProfileDataResult a, CompactionProfileDataResult b)
+    {
+      if ((object)a == null || (object)b == null)
+        return Object.Equals(a, b);
+
+      return a.Equals(b);
+    }
+
+    public static bool operator !=(CompactionProfileDataResult a, CompactionProfileDataResult b)
+    {
+      return !(a == b);
+    }
+
+    public override bool Equals(object obj)
+    {
+      return obj is CompactionProfileDataResult && this == (CompactionProfileDataResult)obj;
+    }
+
+    public override int GetHashCode()
+    {
+      return base.GetHashCode();
+    }
+    #endregion
+
+
+    #region ToString override
+    /// <summary>
+    /// ToString override
+    /// </summary>
+    /// <returns>A string representation.</returns>
+    public override string ToString()
+    {
+      return JsonConvert.SerializeObject(this, Formatting.Indented);
+    }
+    #endregion
+
+  }
+
+  public class CompactionDataPoint : IEquatable<CompactionDataPoint>
+  {
     #region members
     /// <summary>
     /// The type of cell, either a cell edge intersection or the mid point of a segment cutting the cell. A edge can also be the start of a gap in the data.
@@ -96,177 +306,70 @@ namespace ProductionDataSvc.AcceptanceTests.Models
 
     /// <summary>
     /// The station value, or distance from start of the profile line at which the profile line intersects this cell for cell edges 
-    /// or the mid point of the line segment cutting through the cell for mid point type cells.
+    /// or the mid point of the line segment cutting through the cell for mid point type points.
     /// </summary>
-    public double station;
+    public double x;
 
     /// <summary>
-    /// Elevation of first cell pass in the profile cell.
+    /// Elevation for profile cell for the type of data, e.g. CMV height for CMV, last pass height for elevation last pass etc.
     /// </summary>
-    public float firstPassHeight;
+    public float y;
 
     /// <summary>
-    /// Highest elevation recoreded for all cell passes involved in computation of this profile cell.
+    /// The value of the profile data for the type of data e.g. cut-fill, CMV, temperature etc. For speed it is the minimum speed value.
     /// </summary>
-    public float highestPassHeight;
+    public float value;
 
     /// <summary>
-    /// The elevation of the last (in time) cell pass involved in computation of this profile cell.
+    /// For summary profile types, what the value represents with respect to the target. Used to select the color for the profile line segment.
     /// </summary>
-    public float lastPassHeight;
+    public ValueTargetType? valueType;
 
     /// <summary>
-    /// Lowest elevation recoreded for all cell passes involved in computation of this profile cell.
+    /// For cut-fill profiles only, the design elevation of the cell.
     /// </summary>
-    public float lowestPassHeight;
+    public float? y2;
 
     /// <summary>
-    /// Last (in time) composite elevation recorded in the cell
+    /// For speed summary profiles only, the maximum speed value.
     /// </summary>
-    /// 
-    public float lastCompositeHeight;
+    public float? value2;
 
-    /// <summary>
-    /// Elevation of the design at the location of the center point of the cell.
-    /// </summary>
-    /// 
-    public float designHeight;
-
-    /// <summary>
-    /// Raw CMV value.
-    /// </summary>
-    public float cmv;
-
-    /// <summary>
-    ///  CMV value expressed as a percentage of the Target CMV applicable at the time the cell pass that contributed the CMV value was recorded.
-    /// </summary>
-    public float cmvPercent;
-
-    /// <summary>
-    /// Elevation of the cell pass that contributed the CMV value.
-    /// </summary>
-    public float cmvHeight;
-
-    /// <summary>
-    /// MDP value expressed as a percentage of the Target MDP applicable at the time the cell pass that contributed the MDP value was recorded.
-    /// </summary>
-    public float mdpPercent;
-
-    /// <summary>
-    /// Elevation of the cell pass that contributed the MDP value.
-    /// </summary>
-    public float mdpHeight;
-
-    /// <summary>
-    /// Temperature value. Value expressed in Celcius.
-    /// </summary>
-    public float temperature;
-
-    /// <summary>
-    /// Elevation of the cell pass that contributed the temperature value.
-    /// </summary>
-    public float temperatureHeight;
-
-    /// <summary>
-    /// Number of passes contained in the top most layer analysed from the cell passes
-    /// </summary>
-    public int topLayerPassCount;
-
-    /// <summary>
-    /// The CCV percent change calculates change of the CCV in % between current and previous CCV % over target.
-    /// </summary>
-    public float cmvPercentChange;
-
-    /// <summary>
-    /// Speed value in cm/s
-    /// </summary>
-    public float speed;
-
-    /// <summary>
-    /// Elevation of the cell pass that contributed the speed value.
-    /// </summary>
-    public float speedHeight;
-
-    /// <summary>
-    /// Cut-fill value in meters. Cut values are positive, fill values are negative, zero is on grade.
-    /// </summary>
-    public float cutFill;
-
-    /// <summary>
-    /// Elevation of the cell pass that contributed the cut-fill value.
-    /// </summary>
-    public float cutFillHeight;
-
-    /// <summary>
-    /// The value in the pass count summary color palette to use for this cell. 
-    /// </summary>
-    public ValueTargetType passCountIndex;
-
-    /// <summary>
-    /// The value in the temperature summary color palette to use for this cell.
-    /// </summary>
-    public ValueTargetType temperatureIndex;
-
-    /// <summary>
-    /// The value in the CMV summary color palette to use for this cell. 
-    /// </summary>
-    public ValueTargetType cmvIndex;
-
-    /// <summary>
-    /// The value in the MDP summary color palette to use for this cell. 
-    /// </summary>
-    public ValueTargetType mdpIndex;
-
-    /// <summary>
-    /// The value in the speed summary color palette to use for this cell. 
-    /// </summary>
-    public ValueTargetType speedIndex;
     #endregion
 
     #region Equality test
-
-    private bool FloatEquals(float f1, float f2)
-    {
-      if (float.IsNaN(f1) || float.IsNaN(f2))
-        return float.IsNaN(f1) && float.IsNaN(f2);
- 
-      return Math.Round(f1, 2) == Math.Round(f2, 2);
-    }
-
-    public bool Equals(CompactionProfileCell other)
+    public bool Equals(CompactionDataPoint other)
     {
       if (other == null)
         return false;
 
       return this.cellType == other.cellType &&
-             Math.Round(this.station, 2) == Math.Round(other.station, 2) &&
-             FloatEquals(this.firstPassHeight, other.firstPassHeight) &&
-             FloatEquals(this.highestPassHeight, other.highestPassHeight) &&
-             FloatEquals(this.lastPassHeight, other.lastPassHeight) &&
-             FloatEquals(this.lowestPassHeight, other.lowestPassHeight) &&
-             FloatEquals(this.lastCompositeHeight, other.lastCompositeHeight) &&
-             FloatEquals(this.designHeight, other.designHeight) &&
-             FloatEquals(this.cmv, other.cmv) &&
-             FloatEquals(this.cmvPercent, other.cmvPercent) &&
-             FloatEquals(this.cmvHeight, other.cmvHeight) &&
-             FloatEquals(this.mdpPercent, other.mdpPercent) &&
-             FloatEquals(this.mdpHeight, other.mdpHeight) &&
-             FloatEquals(this.temperature, other.temperature) &&
-             FloatEquals(this.temperatureHeight, other.temperatureHeight) &&
-             this.topLayerPassCount == other.topLayerPassCount &&
-             FloatEquals(this.cmvPercentChange, other.cmvPercentChange) &&
-             FloatEquals(this.speed, other.speed) &&
-             FloatEquals(this.speedHeight, other.speedHeight) &&
-             FloatEquals(this.cutFill, other.cutFill) &&
-             FloatEquals(this.cutFillHeight, other.cutFillHeight) &&
-             this.passCountIndex == other.passCountIndex &&
-             this.temperatureIndex == other.temperatureIndex &&
-             this.cmvIndex == other.cmvIndex &&
-             this.mdpIndex == other.mdpIndex &&
-             this.speedIndex == other.speedIndex;
+             Math.Round(this.x, 2) == Math.Round(other.x, 2) &&
+             FloatEquals(this.y, other.y) &&
+             FloatEquals(this.value, other.value) &&         
+             this.valueType == other.valueType &&
+             NullableFloatEquals(this.y2, other.y2) &&
+             NullableFloatEquals(this.value2, other.value2);
     }
 
-    public static bool operator ==(CompactionProfileCell a, CompactionProfileCell b)
+    private bool NullableFloatEquals(float? f1, float? f2)
+    {
+      if (f1.HasValue && f2.HasValue)
+      {
+        return FloatEquals(f1.Value, f2.Value);
+      }
+      return f1.HasValue == f2.HasValue;
+    }
+
+    private bool FloatEquals(float f1, float f2)
+    {
+      if (float.IsNaN(f1) || float.IsNaN(f2))
+        return float.IsNaN(f1) && float.IsNaN(f2);
+
+      return Math.Round(f1, 2) == Math.Round(f2, 2);
+    }
+
+    public static bool operator ==(CompactionDataPoint a, CompactionDataPoint b)
     {
       if ((object)a == null || (object)b == null)
         return Object.Equals(a, b);
@@ -274,14 +377,14 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       return a.Equals(b);
     }
 
-    public static bool operator !=(CompactionProfileCell a, CompactionProfileCell b)
+    public static bool operator !=(CompactionDataPoint a, CompactionDataPoint b)
     {
       return !(a == b);
     }
 
     public override bool Equals(object obj)
     {
-      return obj is CompactionProfileCell && this == (CompactionProfileCell)obj;
+      return obj is CompactionDataPoint && this == (CompactionDataPoint)obj;
     }
 
     public override int GetHashCode()
@@ -302,51 +405,53 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     }
     #endregion
 
-    /// <summary>
-    /// Specifies the type of profile cell 
-    /// </summary>
-    public enum ProfileCellType
-    {
-      /// <summary>
-      /// Station intersects the cell edge and has data
-      /// </summary>
-      Edge,
-
-      /// <summary>
-      /// Station is the midpoint of the line segment that cuts through the cell
-      /// </summary>
-      MidPoint,
-
-      /// <summary>
-      /// Station intersects the cell edge and has no data; the start of a gap
-      /// </summary>
-      Gap,
-    }
-
-    /// <summary>
-    /// Specifies what the summary value represents in terms of the target
-    /// </summary>
-    public enum ValueTargetType
-    {
-      /// <summary>
-      /// No value for this type of data for this cell
-      /// </summary>
-      NoData = -1,
-
-      /// <summary>
-      /// Value is above target
-      /// </summary>
-      AboveTarget = 0,
-
-      /// <summary>
-      /// Value is on target
-      /// </summary>
-      OnTarget = 1,
-
-      /// <summary>
-      /// Value is below target
-      /// </summary>
-      BelowTarget = 2
-    }
   }
+
+  /// <summary>
+  /// Specifies the type of profile cell 
+  /// </summary>
+  public enum ProfileCellType
+  {
+    /// <summary>
+    /// Station intersects the cell edge and has data
+    /// </summary>
+    Edge,
+
+    /// <summary>
+    /// Station is the midpoint of the line segment that cuts through the cell
+    /// </summary>
+    MidPoint,
+
+    /// <summary>
+    /// Station intersects the cell edge and has no data; the start of a gap
+    /// </summary>
+    Gap,
+  }
+
+  /// <summary>
+  /// Specifies what the summary value represents in terms of the target
+  /// </summary>
+  public enum ValueTargetType
+  {
+    /// <summary>
+    /// No value for this type of data for this cell
+    /// </summary>
+    NoData = -1,
+
+    /// <summary>
+    /// Value is above target
+    /// </summary>
+    AboveTarget = 0,
+
+    /// <summary>
+    /// Value is on target
+    /// </summary>
+    OnTarget = 1,
+
+    /// <summary>
+    /// Value is below target
+    /// </summary>
+    BelowTarget = 2
+  }
+
 }

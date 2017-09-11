@@ -4,14 +4,13 @@ using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.Executors;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Contracts;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
@@ -23,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
   /// 
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class ReportController : BaseController, IReportSvc
+  public class ReportController : IReportSvc
   {
     #region privates
     /// <summary>
@@ -37,24 +36,21 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
+    /// Where to get environment variables, connection string etc. from
+    /// </summary>
+    private readonly IConfigurationStore configStore;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="configStore">Configuration store</param>
-    /// <param name="fileListProxy">File list proxy</param>
-    /// <param name="prefProxy">User preferences proxy</param>
-    /// <param name="projectSettingsProxy">Project settings proxy</param>
-    /// <param name="settingsManager">Compaction settings manager</param>
-    /// <param name="exceptionHandler">Service exception handler</param>
-    /// <param name="filterServiceProxy">Filter service proxy</param>
-    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
-      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) :
-      base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
+      this.configStore = configStore;
     }
 
     #endregion

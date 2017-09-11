@@ -32,11 +32,21 @@ Scenario Outline: ExportReportToSurface - Bad Request - NoProjectUID
 	| RequestName | Tolerance | FileName | ErrorCode | ErrorMessage        |
 	|             | 0.05      | Test     |  -5       | Missing Project or project does not belong to specified customer or don't have access to the project |
 
-Scenario Outline: ExportReportToSurface - Bad Request - NoFileName
+Scenario Outline: ExportReportToSurface - No Content - NoFileName
 	And projectUid "<ProjectUID>"
 	And tolerance "<Tolerance>"
-	When I request an Export Report To Surface expecting BadRequest
-	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
+	When I request an Export Report To Surface expecting NoContent
 	Examples:
-	| RequestName | ProjectUID                           | Tolerance | ErrorCode | ErrorMessage                        |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 0.05      | -4        | Failed to get requested export data |
+	| RequestName | ProjectUID                           | Tolerance |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 0.05      |
+
+Scenario Outline: ExportReportToSurface - Good Request with Filter
+  And projectUid "<ProjectUID>"
+  And tolerance "<Tolerance>"
+	And filterUid "<FilterUID>"
+  And fileName is "<FileName>"
+	When I request an Export Report To Surface
+	Then the export result should successful
+	Examples:
+| RequestName | ProjectUID                           | FilterUID                             | Tolerance | FileName              |
+|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d7cb424d-b012-4618-b3bc-e526ca84bbd6  | 0.05      | SurfanceWithTolerance |

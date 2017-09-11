@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net;
 using VLPDDecls;
@@ -13,16 +14,16 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Velociraptor.PDSInterface.DesignProfile;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
+namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 {
   /// <summary>
   /// Get production data profile calculations executor.
   /// </summary>
-  public class CompactionDesignProfileExecutor<U> : RequestExecutorContainer where U : CompactionProfileVertex, new()
+  public class CompactionDesignProfileExecutor : RequestExecutorContainer 
   {
-    private CompactionProfileResult<U> PerformProductionDataProfilePost(DesignProfileProductionDataRequest request)
+    private CompactionProfileResult<CompactionProfileVertex> PerformProductionDataProfilePost(CompactionProfileDesignRequest request)
     {
-      CompactionProfileResult<U> result;
+      CompactionProfileResult<CompactionProfileVertex> result;
 
       try
       {
@@ -45,14 +46,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         if (memoryStream != null)
         {
           result = ConvertProfileResult(memoryStream);
-
-          result.designFileUid = request.importedFileUid;
         }
         else
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to get requested slicer profile"));
+          //For convenience return empty list rather than null for easier manipulation
+          result = new CompactionProfileResult<CompactionProfileVertex>{results = new List<CompactionProfileVertex>()};
         }
       }
       finally
@@ -68,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       ContractExecutionResult result;
       try
       {
-        var profile = PerformProductionDataProfilePost(item as DesignProfileProductionDataRequest);
+        var profile = PerformProductionDataProfilePost(item as CompactionProfileDesignRequest);
 
         if (profile != null)
         {
@@ -87,15 +85,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       return result;
     }
 
-    private CompactionProfileResult<U> ConvertProfileResult(MemoryStream ms)
+    private CompactionProfileResult<CompactionProfileVertex> ConvertProfileResult(MemoryStream ms)
     {
       log.LogDebug("Converting profile result");
 
-      var profileResult = new CompactionProfileResult<U>();
+      var profileResult = new CompactionProfileResult<CompactionProfileVertex>();
       var pdsiProfile = new DesignProfile();
       pdsiProfile.ReadFromStream(ms);
 
-      profileResult.points = pdsiProfile.vertices.ConvertAll(dpv => new U
+      profileResult.results = pdsiProfile.vertices.ConvertAll(dpv => new CompactionProfileVertex
       {
         elevation = dpv.elevation >= VelociraptorConstants.NO_HEIGHT ? float.NaN : dpv.elevation,
         station = dpv.station

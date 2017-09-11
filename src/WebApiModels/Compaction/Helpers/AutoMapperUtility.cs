@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             .ForMember(x => x.cCVRange,
               opt => opt.ResolveUsing<CustomCCVRangePercentageResolver>())
             .ForMember(x => x.cCVSummarizeTopLayerOnly,
-              opt => opt.Ignore())
+              opt => opt.Ignore())//Raptor only uses this when using lifts (all layers)
             .ForMember(x => x.CCvSummaryType,
               opt => opt.Ignore())
             .ForMember(x => x.deadBandLowerBoundary,
@@ -112,7 +112,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             .ForMember(x => x.mDPRange,
               opt => opt.ResolveUsing<CustomMDPRangePercentageResolver>())
             .ForMember(x => x.mDPSummarizeTopLayerOnly,
-              opt => opt.Ignore())
+              opt => opt.Ignore())//Raptor only uses this when using lifts (all layers)
             .ForMember(x => x.overridingLiftThickness,
               opt => opt.Ignore())
             .ForMember(x => x.overridingMachineCCV,
@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             .ForMember(x => x.overridingTemperatureWarningLevels,
               opt => opt.ResolveUsing<CustomTemperatureWarningLevelsResolver>())
             .ForMember(x => x.includeSupersededLifts,
-              opt => opt.Ignore())
+              opt => opt.Ignore())//Raptor only uses this when using lifts (all layers). For 'no lift' is always true.
             .ForMember(x => x.liftThicknessTarget,
               opt => opt.Ignore())
             .ForMember(x => x.machineSpeedTarget,
@@ -142,7 +142,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       public CCVRangePercentage Resolve(CompactionProjectSettings src, LiftBuildSettings dst, CCVRangePercentage member, ResolutionContext context)
       {
         return src.OverrideDefaultTargetRangeCmvPercent ? 
-          CCVRangePercentage.CreateCcvRangePercentage(src.CustomTargetCmvPercentMinimum, src.CustomTargetCmvPercentMaximum) : null;
+          CCVRangePercentage.CreateCcvRangePercentage(src.CustomTargetCmvPercentMinimum, src.CustomTargetCmvPercentMaximum) :
+          CCVRangePercentage.CreateCcvRangePercentage(CompactionProjectSettings.DefaultSettings.CustomTargetCmvPercentMinimum, CompactionProjectSettings.DefaultSettings.CustomTargetCmvPercentMaximum);
       }
     }
 
@@ -151,7 +152,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       public MDPRangePercentage Resolve(CompactionProjectSettings src, LiftBuildSettings dst, MDPRangePercentage member, ResolutionContext context)
       {
         return src.OverrideDefaultTargetRangeMdpPercent ? 
-          MDPRangePercentage.CreateMdpRangePercentage(src.CustomTargetMdpPercentMinimum, src.CustomTargetMdpPercentMaximum) : null;
+          MDPRangePercentage.CreateMdpRangePercentage(src.CustomTargetMdpPercentMinimum, src.CustomTargetMdpPercentMaximum) :
+          MDPRangePercentage.CreateMdpRangePercentage(CompactionProjectSettings.DefaultSettings.CustomTargetMdpPercentMinimum, CompactionProjectSettings.DefaultSettings.CustomTargetMdpPercentMaximum);
       }
     }
 

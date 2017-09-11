@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
-using System;
 using System.Net;
 using TechTalk.SpecFlow;
 
@@ -28,14 +27,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       //this.projectUid = projectUid;
       exportReportRequester.QueryString.Add("ProjectUid", projectUid);
     }
-        
+
     [Given(@"startUtc ""(.*)"" and endUtc ""(.*)""")]
     public void GivenStartUtcAndEndUtc(string startUtc, string endUtc)
     {
       exportReportRequester.QueryString.Add("startUtc", startUtc);
       exportReportRequester.QueryString.Add("endUtc", endUtc);
     }
-        
+
     [Given(@"machineNames ""(.*)""")]
     public void GivenMachineNames(string machineNames)
     {
@@ -48,11 +47,16 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.QueryString.Add("fileName", fileName);
     }
 
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
+    {
+      exportReportRequester.QueryString.Add("filterUid", filterUid);
+    }
 
     [When(@"I request an Export Report To VETA")]
     public void WhenIRequestAnExportReportToVETA()
     {
-      exportReportRequester.DoValidRequest(url);     
+      exportReportRequester.DoValidRequest(url);
     }
 
     [When(@"I request an Export Report To VETA expecting BadRequest")]
@@ -67,7 +71,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.DoInvalidRequest(url, HttpStatusCode.Unauthorized);
     }
 
-
+    [When(@"I request an Export Report To VETA expecting NoContent")]
+    public void WhenIRequestAnExportReportToVETAExpectingNoContent()
+    {
+      exportReportRequester.DoInvalidRequest(url, HttpStatusCode.NoContent);
+    }
 
     [Then(@"the report result should match the ""(.*)"" from the repository")]
     public void ThenTheReportResultShouldMatchTheFromTheRepository(string resultName)
@@ -79,8 +87,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void ThenTheReportResultShouldContainErrorCodeAndErrorMessage(int errorCode, string errorMessage)
     {
       Assert.IsTrue(exportReportRequester.CurrentResponse.Code == errorCode && (exportReportRequester.CurrentResponse.Message == errorMessage || exportReportRequester.CurrentResponse.Message.Contains(errorMessage)),
-        string.Format("Expected to see code {0} and message {1}, but got {2} and {3} instead.",
-          errorCode, errorMessage, exportReportRequester.CurrentResponse.Code, exportReportRequester.CurrentResponse.Message));
+        $"Expected to see code {errorCode} and message {errorMessage}, but got {exportReportRequester.CurrentResponse.Code} and {exportReportRequester.CurrentResponse.Message} instead.");
     }
   }
 }

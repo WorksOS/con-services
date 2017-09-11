@@ -8,7 +8,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   [Binding, Scope(Feature = "CompactionProfile")]
   public class CompactionProfileSteps
   {
-    private Getter<CompactionProfileResult> profileRequester;
+    private Getter<CompactionProfileResult<CompactionProfileDataResult>> profileRequester;
 
     private string url;
     private string projectUid;
@@ -41,13 +41,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I request a Compaction Profile")]
     public void WhenIRequestACompactionProfile()
     {
-      profileRequester = Getter<CompactionProfileResult>.GetIt<CompactionProfileResult>(this.url, this.projectUid, this.queryParameters);
+      profileRequester = Getter<CompactionProfileResult<CompactionProfileDataResult>>.GetIt<CompactionProfileResult<CompactionProfileDataResult>>(this.url, this.projectUid, this.queryParameters);
     }
 
     [Then(@"the Compaction Profile should be")]
     public void ThenTheCompactionProfileShouldBe(string multilineText)
     {
-      profileRequester.CompareIt<CompactionProfileResult>(multilineText);
+      profileRequester.CompareIt<CompactionProfileResult<CompactionProfileDataResult>>(multilineText);
     }
   }
 }

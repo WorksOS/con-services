@@ -9,7 +9,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
   /// <summary>
   /// The data for a compaction profile. 
   /// </summary>
-  public class CompactionProfileData
+  public class CompactionProfileDataResult
   {
     /// <summary>
     /// The type indicates what type of production data e.g. lastPass, cutFill, passCount etc.

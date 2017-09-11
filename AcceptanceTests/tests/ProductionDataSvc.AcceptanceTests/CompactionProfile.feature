@@ -1,7 +1,79 @@
 ﻿Feature: CompactionProfile
 	I should be able to request Compaction Profile data.
 
-
+Scenario: Compaction Get Slicer Empty Profile
+	Given the Compaction Profile service URI "/api/v2/profiles/productiondata/slicer"
+  And a projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
+  And a startLatDegrees "36.209310" and a startLonDegrees "-115.019584" and an endLatDegrees "36.209322" And an endLonDegrees "-115.019574"
+  And a cutfillDesignUid "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"
+	When I request a Compaction Profile 
+	Then the Compaction Profile should be
+"""
+  {
+    "gridDistanceBetweenProfilePoints": 1.6069225472652788,
+    "results": [
+        {
+            "type": "firstPass",
+            "data": []
+        },
+        {
+            "type": "highestPass",
+            "data": []
+        },
+        {
+            "type": "lastPass",
+            "data": []
+        },
+        {
+            "type": "lowestPass",
+            "data": []
+        },
+        {
+            "type": "lastComposite",
+            "data": []
+        },
+        {
+            "type": "cmvSummary",
+            "data": []
+        },
+        {
+            "type": "cmvDetail",
+            "data": []
+        },
+        {
+            "type": "cmvPercentChange",
+            "data": []
+        },
+        {
+            "type": "mdpSummary",
+            "data": []
+        },
+        {
+            "type": "temperatureSummary",
+            "data": []
+        },
+        {
+            "type": "speedSummary",
+            "data": []
+        },
+        {
+            "type": "passCountSummary",
+            "data": []
+        },
+        {
+            "type": "passCountDetail",
+            "data": []
+        },
+        {
+            "type": "cutFill",
+            "data": []
+        }
+    ],
+    "Code": 0,
+    "Message": "success"
+}
+"""
+@ignore
 Scenario: Compaction Get Slicer Profile
 	Given the Compaction Profile service URI "/api/v2/profiles/productiondata/slicer"
   And a projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
@@ -11,9 +83,8 @@ Scenario: Compaction Get Slicer Profile
 	Then the Compaction Profile should be
 """
 {
-    "designFileUid": "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
     "gridDistanceBetweenProfilePoints": 1.6069349835347946,
-    "points": [
+    "results": [
         {
             "type": "firstPass",
             "data": [
@@ -491,523 +562,23 @@ Scenario: Compaction Get Slicer Profile
         },
         {
             "type": "cmvSummary",
-            "data": [
-                {
-                    "cellType": 1,
-                    "x": 0,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.085205803092608473,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.10001382414230234,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.11482184519199619,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.31995441034733291,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.52508697550266958,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.60891033030474173,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.69273368510681388,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.81404289546017272,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.93535210581353156,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.1178068364676852,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 1.3002615671218389,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.3229394016228948,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 1.3456172361239505,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.6069349835347946,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                }
-            ]
+            "data": []
         },
         {
             "type": "cmvDetail",
-            "data": [
-                {
-                    "cellType": 1,
-                    "x": 0,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.085205803092608473,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.10001382414230234,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.11482184519199619,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.31995441034733291,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.52508697550266958,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.60891033030474173,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.69273368510681388,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.81404289546017272,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.93535210581353156,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.1178068364676852,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 1.3002615671218389,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.3229394016228948,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 1.3456172361239505,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.6069349835347946,
-                    "y": "NaN",
-                    "value": "NaN"
-                }
-            ]
+            "data": []
         },
         {
             "type": "cmvPercentChange",
-            "data": [
-                {
-                    "cellType": 1,
-                    "x": 0,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.085205803092608473,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.10001382414230234,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.11482184519199619,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.31995441034733291,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.52508697550266958,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.60891033030474173,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.69273368510681388,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.81404289546017272,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.93535210581353156,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.1178068364676852,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 1.3002615671218389,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.3229394016228948,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 0,
-                    "x": 1.3456172361239505,
-                    "y": "NaN",
-                    "value": "NaN"
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.6069349835347946,
-                    "y": "NaN",
-                    "value": "NaN"
-                }
-            ]
+            "data": []
         },
         {
             "type": "mdpSummary",
-            "data": [
-                {
-                    "cellType": 1,
-                    "x": 0,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.085205803092608473,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.10001382414230234,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.11482184519199619,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.31995441034733291,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.52508697550266958,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.60891033030474173,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.69273368510681388,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.81404289546017272,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.93535210581353156,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.1178068364676852,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 1.3002615671218389,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.3229394016228948,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 1.3456172361239505,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.6069349835347946,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                }
-            ]
+            "data": []
         },
         {
             "type": "temperatureSummary",
-            "data": [
-                {
-                    "cellType": 1,
-                    "x": 0,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.085205803092608473,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.10001382414230234,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.11482184519199619,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.31995441034733291,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.52508697550266958,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.60891033030474173,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.69273368510681388,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 0.81404289546017272,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 0.93535210581353156,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.1178068364676852,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 1.3002615671218389,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.3229394016228948,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 0,
-                    "x": 1.3456172361239505,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                },
-                {
-                    "cellType": 1,
-                    "x": 1.6069349835347946,
-                    "y": "NaN",
-                    "value": "NaN",
-                    "valueType": -1
-                }
-            ]
+            "data": []
         },
         {
             "type": "speedSummary",
@@ -1023,7 +594,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 0.085205803092608473,
-                    "y": 597.387,
+                    "y": 597.388367,
                     "value": 10.224,
                     "valueType": 2,
                     "value2": 11.844
@@ -1039,7 +610,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 0.11482184519199619,
-                    "y": 597.386,
+                    "y": 597.386963,
                     "value": 11.34,
                     "valueType": 2,
                     "value2": 11.34
@@ -1055,7 +626,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 0.52508697550266958,
-                    "y": 597.382,
+                    "y": 597.3832,
                     "value": 11.34,
                     "valueType": 2,
                     "value2": 11.34
@@ -1071,7 +642,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 0.69273368510681388,
-                    "y": 597.384,
+                    "y": 597.3828,
                     "value": 10.224,
                     "valueType": 2,
                     "value2": 10.224
@@ -1087,7 +658,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 0.93535210581353156,
-                    "y": 597.364,
+                    "y": 597.376,
                     "value": 10.224,
                     "valueType": 2,
                     "value2": 12.204
@@ -1103,7 +674,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 1.3002615671218389,
-                    "y": 597.376,
+                    "y": 597.374634,
                     "value": 10.224,
                     "valueType": 2,
                     "value2": 12.204
@@ -1119,7 +690,7 @@ Scenario: Compaction Get Slicer Profile
                 {
                     "cellType": 0,
                     "x": 1.3456172361239505,
-                    "y": 597.371,
+                    "y": 597.375549,
                     "value": 10.224,
                     "valueType": 2,
                     "value2": 12.204
@@ -1346,105 +917,105 @@ Scenario: Compaction Get Slicer Profile
                     "cellType": 1,
                     "x": 0,
                     "y": 597.1041,
-                    "value": -0.333740234,
+                    "value": -0.3338623,
                     "y2": 597.4387
                 },
                 {
                     "cellType": 0,
                     "x": 0.085205803092608473,
                     "y": 597.1135,
-                    "value": -0.326782227,
+                    "value": -0.326843262,
                     "y2": 597.4384
                 },
                 {
                     "cellType": 1,
                     "x": 0.10001382414230234,
                     "y": 597.1152,
-                    "value": -0.326782227,
+                    "value": -0.326843262,
                     "y2": 597.438354
                 },
                 {
                     "cellType": 0,
                     "x": 0.11482184519199619,
                     "y": 597.115234,
-                    "value": -0.321960449,
+                    "value": -0.3222046,
                     "y2": 597.4383
                 },
                 {
                     "cellType": 1,
                     "x": 0.31995441034733291,
                     "y": 597.1158,
-                    "value": -0.321960449,
+                    "value": -0.3222046,
                     "y2": 597.4375
                 },
                 {
                     "cellType": 0,
                     "x": 0.52508697550266958,
                     "y": 597.11676,
-                    "value": -0.3173828,
+                    "value": -0.317810059,
                     "y2": 597.4367
                 },
                 {
                     "cellType": 1,
                     "x": 0.60891033030474173,
                     "y": 597.1172,
-                    "value": -0.3173828,
+                    "value": -0.317810059,
                     "y2": 597.43634
                 },
                 {
                     "cellType": 0,
                     "x": 0.69273368510681388,
                     "y": 597.1214,
-                    "value": -0.311035156,
+                    "value": -0.310546875,
                     "y2": 597.436035
                 },
                 {
                     "cellType": 1,
                     "x": 0.81404289546017272,
                     "y": 597.127441,
-                    "value": -0.311035156,
+                    "value": -0.310546875,
                     "y2": 597.4356
                 },
                 {
                     "cellType": 0,
                     "x": 0.93535210581353156,
                     "y": 597.128,
-                    "value": -0.3048706,
+                    "value": -0.305175781,
                     "y2": 597.435364
                 },
                 {
                     "cellType": 1,
                     "x": 1.1178068364676852,
                     "y": 597.128845,
-                    "value": -0.3048706,
+                    "value": -0.305175781,
                     "y2": 597.435059
                 },
                 {
                     "cellType": 0,
                     "x": 1.3002615671218389,
                     "y": 597.138062,
-                    "value": -0.299743652,
+                    "value": -0.2998047,
                     "y2": 597.434753
                 },
                 {
                     "cellType": 1,
                     "x": 1.3229394016228948,
                     "y": 597.1392,
-                    "value": -0.299743652,
+                    "value": -0.2998047,
                     "y2": 597.434753
                 },
                 {
                     "cellType": 0,
                     "x": 1.3456172361239505,
                     "y": 597.139343,
-                    "value": -0.2944336,
+                    "value": -0.294494629,
                     "y2": 597.4347
                 },
                 {
                     "cellType": 1,
                     "x": 1.6069349835347946,
                     "y": 597.1405,
-                    "value": -0.2944336,
+                    "value": -0.294494629,
                     "y2": 597.434265
                 }
             ]

@@ -37,31 +37,58 @@ Scenario Outline: ExportReportMachinePasses - Bad Request - NoProjectUID
 	| RequestName | StartDate  | EndDate    | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ErrorCode | ErrorMessage        |
 	|             | 2005-01-01 | 2017-06-23 | 0         | 0          | false          | false         | Test     |  -5       | Missing Project or project does not belong to specified customer or don't have access to the project |
 
-Scenario Outline: ExportReportMachinePasses - Bad Request - NoDateRange
+Scenario Outline: ExportReportMachinePasses - No Content - NoDateRange
 	And projectUid "<ProjectUID>"
   And coordType "<CoordType>" 
   And outputType "<OutputType>"
   And restrictOutput "<RestrictOutput>"
   And rawDataOutput "<RawDataOutput>"
 	And fileName is "<FileName>"	
-	When I request an Export Report Machine Passes expecting BadRequest
-	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
+	When I request an Export Report Machine Passes expecting NoContent
 	Examples:
-	| RequestName | ProjectUID                           | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ErrorCode | ErrorMessage                        |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 0         | 0          | false          | false         | Test     | -4        | Failed to get requested export data |
+	| RequestName | ProjectUID                           | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 0         | 0          | false          | false         | Test     |
 
-Scenario Outline: ExportReportMachinePasses - Bad Request - NoFileName
+Scenario Outline: ExportReportMachinePasses - No Content with Filter
+  And projectUid "<ProjectUID>"
+	And filterUid "<FilterUID>"
+  And startUtc "<StartDate>" and endUtc "<EndDate>"
+  And coordType "<CoordType>" 
+  And outputType "<OutputType>"
+  And restrictOutput "<RestrictOutput>"
+  And rawDataOutput "<RawDataOutput>"
+  And fileName is "<FileName>"
+	When I request an Export Report Machine Passes expecting NoContent
+	Examples:
+| RequestName | ProjectUID                           | StartDate  | EndDate    | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | FilterUID                            |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2012-11-05 | 2012-11-06 | 1         | 1          | false          | false         | Test     |1cf81668-1739-42d5-b068-ea025588796a |
+
+Scenario Outline: ExportReportMachinePasses - Good Request with Filter
+  And projectUid "<ProjectUID>"
+  And filterUid "<FilterUID>"
+	And startUtc "<StartDate>" and endUtc "<EndDate>"
+  And coordType "<CoordType>" 
+  And outputType "<OutputType>"
+  And restrictOutput "<RestrictOutput>"
+  And rawDataOutput "<RawDataOutput>"
+  And fileName is "<FileName>"
+  When I request an Export Report Machine Passes
+  Then the report result should match the "<ResultName>" from the repository
+	Examples:
+  | RequestName | ProjectUID                           | StartDate  | EndDate    | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | FilterUID                            | ResultName                    |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2012-11-05 | 2012-11-06 | 1         | 1          | false          | false         | Test     | d15e65e0-3cb1-476f-8fc6-08507a14a269 | NELastPassFilterRaw           |
+
+Scenario Outline: ExportReportMachinePasses - No Content - NoFileName
   And projectUid "<ProjectUID>"
 	And startUtc "<StartDate>" and endUtc "<EndDate>"
   And coordType "<CoordType>" 
   And outputType "<OutputType>"
   And restrictOutput "<RestrictOutput>"
   And rawDataOutput "<RawDataOutput>"
-	When I request an Export Report Machine Passes expecting BadRequest
-	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
+	When I request an Export Report Machine Passes expecting NoContent
 	Examples:
-	| RequestName | ProjectUID                           | StartDate  | EndDate    | CoordType | OutputType | RestrictOutput | RawDataOutput | ErrorCode | ErrorMessage                        |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | 0         | 0          | false          | false         | -4        | Failed to get requested export data |
+	| RequestName | ProjectUID                           | StartDate  | EndDate    | CoordType | OutputType | RestrictOutput | RawDataOutput |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | 0         | 0          | false          | false         |
 
 Scenario Outline: ExportReportMachinePasses - Bad Request
   And projectUid "<ProjectUID>"

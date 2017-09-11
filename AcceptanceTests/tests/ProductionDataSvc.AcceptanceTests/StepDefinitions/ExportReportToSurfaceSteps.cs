@@ -1,8 +1,7 @@
-﻿using System;
-using System.Net;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
+using System.Net;
 using TechTalk.SpecFlow;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -26,19 +25,31 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       exportReportRequester.QueryString.Add("ProjectUid", projectUid);
     }
-        
+
     [Given(@"fileName is ""(.*)""")]
     public void GivenFileNameIs(string fileName)
     {
       exportReportRequester.QueryString.Add("fileName", fileName);
     }
-        
+
     [Given(@"tolerance ""(.*)""")]
     public void GivenTolerance(string tolerance)
     {
       exportReportRequester.QueryString.Add("tolerance", tolerance);
     }
-        
+
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
+    {
+      exportReportRequester.QueryString.Add("filterUid", filterUid);
+    }
+
+    [When(@"I request an Export Report Machine Passes expecting NoContent")]
+    public void WhenIRequestAnExportReportMachinePassesExpectingNoContent()
+    {
+      exportReportRequester.DoInvalidRequest(url, HttpStatusCode.NoContent);
+    }
+
     [When(@"I request an Export Report To Surface")]
     public void WhenIRequestAnExportReportToSurface()
     {
@@ -57,6 +68,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.DoInvalidRequest(url, HttpStatusCode.Unauthorized);
     }
 
+    [When(@"I request an Export Report To Surface expecting NoContent")]
+    public void WhenIRequestAnExportReportToSurfaceExpectingNoContent()
+    {
+      exportReportRequester.DoInvalidRequest(url, HttpStatusCode.NoContent);
+    }
 
     [Then(@"the report result should match the ""(.*)"" from the repository")]
     public void ThenTheReportResultShouldMatchTheFromTheRepository(string resultName)

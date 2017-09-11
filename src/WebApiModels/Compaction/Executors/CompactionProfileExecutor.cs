@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
   /// <summary>
   /// Get production data profile calculations executor.
   /// </summary>
-  public class CompactionProfileExecutor<T> : RequestExecutorContainer where T : CompactionProfileCell
+  public class CompactionProfileExecutor : RequestExecutorContainer
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         var designDescriptor = RaptorConverters.DesignDescriptor(request.cutFillDesignDescriptor);
         var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
         var liftBuildSettings =
-          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic);
+          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
         if (request.IsAlignmentDesign)
         {
           ASNode.RequestAlignmentProfile.RPC.TASNodeServiceRPCVerb_RequestAlignmentProfile_Args args
@@ -86,9 +86,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         }
         else
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to get requested slicer profile"));
+          //For convenience return empty list rather than null for easier manipulation
+          result = new CompactionProfileResult<CompactionProfileCell>{results = new List<CompactionProfileCell>()};
         }
       }
       finally
@@ -118,7 +117,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
       pdsiProfile.GridDistanceBetweenProfilePoints = packager.GridDistanceBetweenProfilePoints;
 
-      profile.points = new List<CompactionProfileCell>();
+      profile.results = new List<CompactionProfileCell>();
       VSS.Velociraptor.PDSInterface.ProfileCell prevCell = null;
       foreach (VSS.Velociraptor.PDSInterface.ProfileCell currCell in pdsiProfile.cells)
       {
@@ -128,11 +127,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         {
           var gapCell = new CompactionProfileCell(GapCell);
           gapCell.station = prevStationIntercept;
-          profile.points.Add(gapCell);
+          profile.results.Add(gapCell);
         }
 
         bool noCCVValue = currCell.TargetCCV == 0 || currCell.TargetCCV == VelociraptorConstants.NO_CCV || currCell.CCV == VelociraptorConstants.NO_CCV;
-        bool noCCElevation = currCell.CCVElev == VelociraptorConstants.NULL_SINGLE || noCCVValue;
+        bool noCCVElevation = currCell.CCVElev == VelociraptorConstants.NULL_SINGLE || noCCVValue;
         bool noMDPValue = currCell.TargetMDP == 0 || currCell.TargetMDP == VelociraptorConstants.NO_MDP || currCell.MDP == VelociraptorConstants.NO_MDP;
         bool noMDPElevation = currCell.MDPElev == VelociraptorConstants.NULL_SINGLE || noMDPValue;
         bool noTemperatureValue = currCell.materialTemperature == VelociraptorConstants.NO_TEMPERATURE;
@@ -160,68 +159,98 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           ? float.NaN
           : (float) currCell.MDP / (float) currCell.TargetMDP * 100.0F;
 
-        profile.points.Add(new CompactionProfileCell
+        var firstPassHeight = currCell.firstPassHeight == VelociraptorConstants.NULL_SINGLE
+          ? float.NaN
+          : currCell.firstPassHeight;
+
+        var highestPassHeight = currCell.highestPassHeight == VelociraptorConstants.NULL_SINGLE
+          ? float.NaN
+          : currCell.highestPassHeight;
+
+        var lowestPassHeight = currCell.lowestPassHeight == VelociraptorConstants.NULL_SINGLE
+          ? float.NaN
+          : currCell.lowestPassHeight;
+
+        var cutFill = float.IsNaN(lastCompositeHeight) || float.IsNaN(designHeight)
+          ? float.NaN
+          : lastCompositeHeight - designHeight;
+
+        var cmv = noCCVValue ? float.NaN : currCell.CCV / 10.0F;
+        var cmvHeight = noCCVElevation ? float.NaN : currCell.CCVElev;
+        var mdpHeight = noMDPElevation ? float.NaN : currCell.MDPElev;
+        var temperature = noTemperatureValue ? float.NaN : currCell.materialTemperature / 10.0F;// As temperature is reported in 10th...
+        var temperatureHeight = noTemperatureElevation ? float.NaN : currCell.materialTemperatureElev;
+        var topLayerPassCount = noPassCountValue ? -1 : currCell.topLayerPassCount;
+        var cmvPercentChange = currCell.CCV == VelociraptorConstants.NO_CCV ? float.NaN :
+          (currCell.PrevCCV == VelociraptorConstants.NO_CCV ? 100.0f :
+            (float)Math.Abs(currCell.CCV - currCell.PrevCCV) / (float)currCell.PrevCCV * 100.0f);
+
+        var passCountIndex = noPassCountValue ? ValueTargetType.NoData :
+          (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? ValueTargetType.BelowTarget :
+            (currCell.topLayerPassCount > currCell.topLayerPassCountTargetRange.Max ? ValueTargetType.AboveTarget :
+              ValueTargetType.OnTarget));
+
+        var temperatureIndex = noTemperatureValue ? ValueTargetType.NoData :
+          (currCell.materialTemperature < currCell.materialTemperatureWarnMin ? ValueTargetType.BelowTarget :
+            (currCell.materialTemperature > currCell.materialTemperatureWarnMax ? ValueTargetType.AboveTarget :
+              ValueTargetType.OnTarget));
+
+        var cmvIndex = noCCVValue ? ValueTargetType.NoData :
+          (cmvPercent < liftBuildSettings.cCVRange.min ? ValueTargetType.BelowTarget :
+            (cmvPercent > liftBuildSettings.cCVRange.max ? ValueTargetType.AboveTarget :
+              ValueTargetType.OnTarget));
+
+        var mdpIndex = noMDPValue ? ValueTargetType.NoData :
+          (mdpPercent < liftBuildSettings.mDPRange.min ? ValueTargetType.BelowTarget :
+            (mdpPercent > liftBuildSettings.mDPRange.max ? ValueTargetType.AboveTarget :
+              ValueTargetType.OnTarget));
+
+        var speedIndex = noSpeedValue ? ValueTargetType.NoData :
+          (speedMax > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
+            (speedMin < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed &&
+             speedMax < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
+              ValueTargetType.OnTarget));
+
+        profile.results.Add(new CompactionProfileCell
         {
           cellType = prevCell == null ? ProfileCellType.MidPoint : ProfileCellType.Edge,
 
           station = currCell.station,
 
-          firstPassHeight = currCell.firstPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.firstPassHeight,
-          highestPassHeight = currCell.highestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.highestPassHeight,
+          firstPassHeight = firstPassHeight,
+          highestPassHeight = highestPassHeight,
           lastPassHeight = lastPassHeight,
-          lowestPassHeight = currCell.lowestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.lowestPassHeight,
+          lowestPassHeight = lowestPassHeight,
 
           lastCompositeHeight = lastCompositeHeight,
           designHeight = designHeight,
 
-          cutFill = float.IsNaN(lastCompositeHeight) || float.IsNaN(designHeight) ? float.NaN : lastCompositeHeight - designHeight,
+          cutFill = cutFill,
           cutFillHeight = float.NaN,//will be set later using the cut-fill design
 
-          cmv = noCCVValue ? float.NaN : currCell.CCV / 10.0F,
+          cmv = cmv,
           cmvPercent = cmvPercent,
-          cmvHeight = noCCElevation ? float.NaN : currCell.CCVElev,
+          cmvHeight = cmvHeight,
 
           mdpPercent = mdpPercent,
-          mdpHeight = noMDPElevation ? float.NaN : currCell.MDPElev,
+          mdpHeight = mdpHeight,
 
-          temperature = noTemperatureValue ? float.NaN : currCell.materialTemperature / 10.0F,// As temperature is reported in 10th...
-          temperatureHeight = noTemperatureElevation ? float.NaN : currCell.materialTemperatureElev,
+          temperature = temperature,
+          temperatureHeight = temperatureHeight,
 
-          topLayerPassCount = noPassCountValue ? -1 : currCell.topLayerPassCount,
+          topLayerPassCount = topLayerPassCount,
 
-          cmvPercentChange = currCell.CCV == VelociraptorConstants.NO_CCV ? float.NaN :
-            (currCell.PrevCCV == VelociraptorConstants.NO_CCV ? 100.0f :
-              (float)Math.Abs(currCell.CCV - currCell.PrevCCV) / (float)currCell.PrevCCV * 100.0f),
+          cmvPercentChange = cmvPercentChange,
 
           minSpeed = speedMin,
           maxSpeed = speedMax,
           speedHeight = lastPassHeight,
 
-          passCountIndex = noPassCountValue ? ValueTargetType.NoData :
-            (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? ValueTargetType.BelowTarget :
-              (currCell.topLayerPassCount > currCell.topLayerPassCountTargetRange.Max ? ValueTargetType.AboveTarget : 
-              ValueTargetType.OnTarget)),
-
-          temperatureIndex = noTemperatureValue ? ValueTargetType.NoData :
-            (currCell.materialTemperature < currCell.materialTemperatureWarnMin ? ValueTargetType.BelowTarget :
-              (currCell.materialTemperature > currCell.materialTemperatureWarnMax ? ValueTargetType.AboveTarget : 
-              ValueTargetType.OnTarget)),
-
-          cmvIndex = noCCVValue ? ValueTargetType.NoData :
-            (cmvPercent < liftBuildSettings.cCVRange.min ? ValueTargetType.BelowTarget :
-              (cmvPercent > liftBuildSettings.cCVRange.max ? ValueTargetType.AboveTarget :
-                ValueTargetType.OnTarget)),
-
-          mdpIndex = noMDPValue ? ValueTargetType.NoData :
-            (mdpPercent < liftBuildSettings.mDPRange.min ? ValueTargetType.BelowTarget :
-              (mdpPercent > liftBuildSettings.mDPRange.max ? ValueTargetType.AboveTarget :
-                ValueTargetType.OnTarget)),
-
-          speedIndex = noSpeedValue ? ValueTargetType.NoData :
-            (speedMax > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
-              (speedMin < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed && 
-               speedMax < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
-                ValueTargetType.OnTarget))
+          passCountIndex = passCountIndex,
+          temperatureIndex = temperatureIndex,
+          cmvIndex = cmvIndex,
+          mdpIndex = mdpIndex,
+          speedIndex = speedIndex
         });
 
         prevCell = currCell;
@@ -230,13 +259,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       //Add a last point at the intercept length of the last cell so profiles are drawn correctly
       if (prevCell != null)
       {
-        var lastCell = new CompactionProfileCell(profile.points[profile.points.Count - 1])
+        var lastCell = new CompactionProfileCell(profile.results[profile.results.Count - 1])
         {
           cellType = ProfileCellType.MidPoint,
           station = prevCell.station + prevCell.interceptLength
         };
 
-        profile.points.Add(lastCell);
+        profile.results.Add(lastCell);
       }
 
       ms.Close();
@@ -244,8 +273,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       profile.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
 
       StringBuilder sb = new StringBuilder();
-      sb.Append($"After profile conversion: {profile.points.Count}");
-      foreach (var cell in profile.points)
+      sb.Append($"After profile conversion: {profile.results.Count}");
+      foreach (var cell in profile.results)
       {
         sb.Append($",{cell.cellType}");
       }
@@ -263,33 +292,33 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     private void AddMidPoints(CompactionProfileResult<CompactionProfileCell> profileResult)
     {
       log.LogDebug("Adding midpoints");
-      if (profileResult.points.Count > 3)
+      if (profileResult.results.Count > 3)
       {
         //No mid point for first and last segments since only partial across the cell.
         //We have already added them as mid points.
         var cells = new List<CompactionProfileCell>();
 
-        cells.Add(profileResult.points[0]);
-        for (int i = 1; i < profileResult.points.Count - 2; i++)
+        cells.Add(profileResult.results[0]);
+        for (int i = 1; i < profileResult.results.Count - 2; i++)
         {
-          cells.Add(profileResult.points[i]);
-          if (profileResult.points[i].cellType != ProfileCellType.Gap)
+          cells.Add(profileResult.results[i]);
+          if (profileResult.results[i].cellType != ProfileCellType.Gap)
           {
-            var midPoint = new CompactionProfileCell(profileResult.points[i]);
+            var midPoint = new CompactionProfileCell(profileResult.results[i]);
             midPoint.cellType = ProfileCellType.MidPoint;
-            midPoint.station = profileResult.points[i].station +
-                               (profileResult.points[i + 1].station - profileResult.points[i].station) / 2;
+            midPoint.station = profileResult.results[i].station +
+                               (profileResult.results[i + 1].station - profileResult.results[i].station) / 2;
             cells.Add(midPoint);
           }
         }
-        cells.Add(profileResult.points[profileResult.points.Count - 2]);
-        cells.Add(profileResult.points[profileResult.points.Count - 1]);
-        profileResult.points = cells;
+        cells.Add(profileResult.results[profileResult.results.Count - 2]);
+        cells.Add(profileResult.results[profileResult.results.Count - 1]);
+        profileResult.results = cells;
       }
 
       StringBuilder sb = new StringBuilder();
-      sb.Append($"After adding midpoints: {profileResult.points.Count}");
-      foreach (var cell in profileResult.points)
+      sb.Append($"After adding midpoints: {profileResult.results.Count}");
+      foreach (var cell in profileResult.results)
       {
         sb.Append($",{cell.cellType}");
       }
@@ -303,26 +332,26 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     private void InterpolateEdges(CompactionProfileResult<CompactionProfileCell> profileResult)
     {
       log.LogDebug("Interpolating edges");
-      if (profileResult.points.Count > 3)
+      if (profileResult.results.Count > 3)
       {
         //First and last points are not gaps or edges. They're always the start and end of the profile line.
-        for (int i = 1; i < profileResult.points.Count - 1; i++)
+        for (int i = 1; i < profileResult.results.Count - 1; i++)
         {
-          if (profileResult.points[i].cellType == ProfileCellType.Edge)
+          if (profileResult.results[i].cellType == ProfileCellType.Edge)
           {
             //Interpolate i edge for line between mid points at i-1 and i+1
             var startIndex = i - 1;
             var endIndex = i + 1;
-            //Gap is between i-1 and i. Interpolate i edge for line between mid points at i-2 and i+1
-            if (profileResult.points[i - 1].cellType == ProfileCellType.Gap)
+            if (profileResult.results[i - 1].cellType == ProfileCellType.Gap)
             {
+              //Gap is between i-1 and i. Interpolate i edge for line between mid points at i-2 and i+1
               startIndex--;
               //Also adjust the gap point
-              InterpolateElevations(profileResult.points[i - 1], profileResult.points[startIndex],
-                profileResult.points[endIndex]);
+              InterpolateElevations(profileResult.results[i - 1], profileResult.results[startIndex],
+                profileResult.results[endIndex]);
             }
-            InterpolateElevations(profileResult.points[i], profileResult.points[startIndex],
-              profileResult.points[endIndex]);
+            InterpolateElevations(profileResult.results[i], profileResult.results[startIndex],
+              profileResult.results[endIndex]);
           }
         }
       }
@@ -348,7 +377,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       cell.cmvHeight = InterpolateElevation(proportion, startCell.cmvHeight, endCell.cmvHeight);
       cell.mdpHeight = InterpolateElevation(proportion, startCell.mdpHeight, endCell.mdpHeight);
       cell.temperatureHeight = InterpolateElevation(proportion, startCell.temperatureHeight, endCell.temperatureHeight);
-      //TODO: Speed ?
+      cell.speedHeight = InterpolateElevation(proportion, startCell.speedHeight, endCell.speedHeight);
       log.LogDebug($"Interpolated point {cell.station} of type {cell.cellType}");
     }
 
