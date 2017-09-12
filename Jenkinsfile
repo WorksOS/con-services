@@ -37,7 +37,7 @@ node('Ubuntu_Slave') {
         checkout scm
     }
     stage ('Restore packages') {
-        sh "dotnet restore --no-cache" VSS.TagFileAuth.Service.sln
+        sh "dotnet restore --no-cache VSS.TagFileAuth.Service.sln"
     }
     stage ('Build solution') {
         sh "bash ./build.sh"
