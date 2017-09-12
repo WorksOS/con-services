@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ASNodeDecls;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Models;
@@ -17,7 +21,9 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using Filter = VSS.Productivity3D.Common.Models.Filter;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
@@ -79,7 +85,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectIdVerifier]
     [Route("api/v1/ccatiles/png")]
     [HttpGet]
-    public byte[] Get
+    public async Task<FileResult> Get
     (
       [FromQuery] long projectId,
       [FromQuery] long assetId,
@@ -98,18 +104,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
 
-      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient).Process(request) as TileResult;
-
-      if (tileResult != null)
-      {
-        if (tileResult != null)
-        {
-          Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-          return tileResult.TileData;
-        }
-      }
-
-      return null;
+      return GetCCADataTile(request);
     }
 
 
@@ -132,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [NotLandFillProjectWithUIDVerifier]
     [Route("api/v2/ccatiles/png")]
     [HttpGet]
-    public byte[] Get
+    public async Task<FileResult> Get
     (
       [FromQuery] Guid projectUid,
       [FromQuery] long assetId,
@@ -150,17 +145,35 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       log.LogInformation("Get: " + Request.QueryString);
       long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
+
+      return GetCCADataTile(request);
+    }
+
+    /// <summary>
+    /// Gets the requested CA data tile from Raptor.
+    /// </summary>
+    /// <param name="request">HTTP request.</param>
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds. 
+    /// If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered 
+    /// in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used 
+    /// to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 
+    /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
+    private FileResult GetCCADataTile(TileRequest request)
+    {
       var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient).Process(request) as TileResult;
 
       if (tileResult == null)
       {
-        return null;
+        //Return en empty tile
+        using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
+        {
+          tileResult = TileResult.CreateTileResult(bitmap.BitmapToByteArray(), TASNodeErrorStatus.asneOK);
+        }
       }
 
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-      return tileResult.TileData;
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
-
     private TileRequest CreateAndValidateRequest(
       long projectId,
       long assetId,
