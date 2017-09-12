@@ -176,13 +176,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
             ContractExecutionStatesEnum.ValidationError, 30));
       }
 
-      if (!( tccOrgUID != Guid.Empty || assetId.HasValue || projectId.HasValue || !string.IsNullOrEmpty(deviceSerialNumber)))
-      {
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.ValidationError, 10));
-      }
-
       if (string.IsNullOrEmpty(DisplaySerialNumber()))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,

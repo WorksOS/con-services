@@ -71,7 +71,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
       }
 
-      // todo can projectId be -1 thru -3? in which case we may be able to identify a customer from it?
+      // can TFHarvester send a projectId -1 thru -3? 
+      //    if so we may be able to identify a customer from it using boundaries and subs
       if (request.projectId != null && request.projectId > 0)
       {
         try
@@ -108,7 +109,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
       }
 
-      // if no assetid how about getting it and possibly customerUid from DeviceSerialNumber?
+      // if no assetid how about getting it and possibly customerUid from DeviceSerialNumber/DeviceType?
       // todo what if this assetUid is different to Asset (from AssetId) or could it be used to obtain the Asset and therefore customer?
       //AssetDeviceIds assetDeviceIds = null;
       //if (asset == null && !string.IsNullOrEmpty(request.deviceSerialNumber))
@@ -134,8 +135,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       customerUid = customerUid ?? project?.CustomerUID;
       customerUid = customerUid ?? asset?.OwningCustomerUID;
 
-      // even if no customerUid is found, create an event with all the stuff
-
+      // even if no customerUid is found, create an event with everything available
       var createTagFileErrorEvent = new CreateTagFileErrorEvent()
       {
         TagFileErrorUID = Guid.NewGuid(),

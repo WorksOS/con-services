@@ -227,6 +227,8 @@ namespace WebApiTests.Models
     [TestMethod]
     public void TagFileProcessingErrorV2Request_Validation_NotEnoughForCustomerIdentification()
     {
+      // Even if no customerUid can be determined e.g. from tccOrgId/AssetUid/ProjectUid
+      //      still write a notification.
       string tccOrgId = null;
       long? legacyAssetId = null;
       int? legacyProjectId = null;
@@ -238,13 +240,7 @@ namespace WebApiTests.Models
       (tccOrgId, legacyAssetId, legacyProjectId,
         error, tagFileName,
         deviceSerialNumber);
-      var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
-      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
-
-      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(10);
-      var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
-      Assert.AreEqual(exceptionMessage, ex.GetContent);
+      request.Validate();
     }
 
     [TestMethod]
