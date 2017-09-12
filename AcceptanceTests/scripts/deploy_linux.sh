@@ -21,4 +21,4 @@ cp RepositoryTests/appsettings.json ../deploy/RepositoryTests/
 
 cd ..
 cd utilities
-dotnet publish TestRun\TestRun.csproj -o ../../deploy/TestRun -f netcoreapp1.1
+dotnet publish TestRun/TestRun.csproj -o ../../deploy/TestRun -f netcoreapp1.1
