@@ -23,7 +23,8 @@ namespace ExecutorTests
         GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int)deviceType, deviceSerialNumber);
       assetIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore,
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -50,8 +51,9 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
@@ -81,8 +83,9 @@ namespace ExecutorTests
       Assert.IsTrue(isCreatedOk, "created Customer subscription");
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
@@ -113,8 +116,9 @@ namespace ExecutorTests
       Assert.IsTrue(isCreatedOk, "created Customer subscription");
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
@@ -143,8 +147,9 @@ namespace ExecutorTests
       Assert.IsTrue(isCreatedOk, "created Asset subscription");
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
@@ -176,8 +181,9 @@ namespace ExecutorTests
       Assert.IsTrue(isCreatedOk, "created Asset subscription");
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
@@ -194,8 +200,9 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
@@ -218,8 +225,9 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
@@ -245,8 +253,9 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
@@ -282,8 +291,9 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
@@ -320,8 +330,9 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
@@ -358,8 +369,9 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");
@@ -396,8 +408,9 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       var executor =
-        RequestExecutorContainer.Build<AssetIdExecutor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo,
-          subscriptionRepo);
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "successful");

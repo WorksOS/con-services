@@ -37,7 +37,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="Moq" Version="4.7.63" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.2.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.2.3" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">

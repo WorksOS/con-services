@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask.Local", "..\..\Me
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions.Local", "..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj", "{28744E55-A07B-404D-96B8-839B2FA61C63}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.KafkaConsumer.Local", "..\..\MerinoSandbox\KafkaConsumer\src\VSS.KafkaConsumer.Local.csproj", "{39AED270-E786-4992-B481-EEA8E902D159}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{28744E55-A07B-404D-96B8-839B2FA61C63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28744E55-A07B-404D-96B8-839B2FA61C63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28744E55-A07B-404D-96B8-839B2FA61C63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39AED270-E786-4992-B481-EEA8E902D159}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39AED270-E786-4992-B481-EEA8E902D159}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39AED270-E786-4992-B481-EEA8E902D159}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39AED270-E786-4992-B481-EEA8E902D159}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

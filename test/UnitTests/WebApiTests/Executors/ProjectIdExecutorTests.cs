@@ -19,7 +19,8 @@ namespace WebApiTests.Executors
       GetProjectIdRequest ProjectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(-1, 91, 181, 0, DateTime.MinValue, "");
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(loggerFactory.CreateLogger<ProjectIdExecutorTests>(), assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(loggerFactory.CreateLogger<ProjectIdExecutorTests>(), configStore,
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(ProjectIdRequest) as GetProjectIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

@@ -38,6 +38,7 @@
       DynamicAddwithOffset("A problem occurred accessing database. Exception: {0}", 28);
       DynamicAddwithOffset("Unable to identify a customerUid", 29);
       DynamicAddwithOffset("DeviceType is invalid", 30);
+      DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 31);
     }
 
     /// <summary>

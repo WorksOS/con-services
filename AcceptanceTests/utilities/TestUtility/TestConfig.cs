@@ -9,6 +9,7 @@ namespace TestUtility
   {
     public string telematicsTopic = "VSS.VisionLink.Interfaces.Events.Telematics.Machine.";
     public string masterDataTopic = "VSS.Interfaces.Events.MasterData.";
+    public string notificationsDataTopic = Environment.GetEnvironmentVariable("KAFKA_TOPIC_NAME_NOTIFICATIONS");
     public string mySqlServer;
     public string mySqlUser = Environment.GetEnvironmentVariable("MYSQL_USERNAME");
     public string mySqlPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD");

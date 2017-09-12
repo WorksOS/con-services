@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
@@ -19,6 +20,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   public class DataRepository : IDataRepository
   {
     /// <summary>
+    /// Logger used in ProcessEx
+    /// </summary>
+    public ILogger log;
+    protected IConfigurationStore configStore;
+
+    /// <summary>
     /// Repository factory used in ProcessEx
     /// </summary>
     protected IAssetRepository assetRepository;
@@ -27,26 +34,29 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     protected IProjectRepository projectRepository;
     protected ISubscriptionRepository subscriptionsRepository;
 
-    /// <summary>
-    /// Logger used in ProcessEx
-    /// </summary>
-    public ILogger log;
+    protected IKafka producer;
+    protected string kafkaTopicName;
+
 
     /// <summary>
     /// allows mapping between CG (which Raptor requires) and NG
     /// </summary>
     public ServiceTypeMappings serviceTypeMappings = new ServiceTypeMappings();
 
-    public DataRepository(ILogger logger, IAssetRepository assetRepository, IDeviceRepository deviceRepository, 
+    public DataRepository(ILogger logger, IConfigurationStore configStore, IAssetRepository assetRepository, IDeviceRepository deviceRepository, 
       ICustomerRepository customerRepository, IProjectRepository projectRepository,
-      ISubscriptionRepository subscriptionsRepository)
+      ISubscriptionRepository subscriptionsRepository,
+      IKafka producer, string kafkaTopicName)
     {
       this.log = logger;
+      this.configStore = configStore;
       this.assetRepository = assetRepository;
       this.deviceRepository = deviceRepository;
       this.customerRepository = customerRepository;  
       this.projectRepository = projectRepository;
       this.subscriptionsRepository = subscriptionsRepository;
+      this.producer = producer;
+      this.kafkaTopicName = kafkaTopicName;
     }
 
     public async Task<Project> LoadProject(long legacyProjectId)

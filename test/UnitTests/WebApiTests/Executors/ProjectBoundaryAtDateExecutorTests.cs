@@ -20,7 +20,8 @@ namespace WebApiTests.Executors
       GetProjectBoundaryAtDateRequest ProjectBoundaryAtDateRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(-1, DateTime.UtcNow);
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(loggerFactory.CreateLogger<ProjectBoundaryAtDateExecutorTests>(), assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(loggerFactory.CreateLogger<ProjectBoundaryAtDateExecutorTests>(), configStore,
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(ProjectBoundaryAtDateRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code, "executor "); // todo does executed successfully mean it executed but may return nothing?

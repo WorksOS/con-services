@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -6,11 +7,11 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.TagFile;
+using VSS.VisionLink.Interfaces.Events.Notifications.Enums;
+using VSS.VisionLink.Interfaces.Events.Notifications.Events;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       var actionUtc = DateTime.UtcNow;
 
-      // Try to find a customerUid - from tccorg/asset or project
+      // Try to find a customerUid - from tccorg/asset/project
       string customerUid = null;
       CustomerTccOrg customerTCCOrg = null;
       Project project = null;
@@ -129,35 +130,45 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //}
 
       customerUid = customerTCCOrg?.CustomerUID;
-      // todo what if project customer different to tccOrgId customer?
+      // what if project customer is different to tccOrgId customer?
       customerUid = customerUid ?? project?.CustomerUID;
       customerUid = customerUid ?? asset?.OwningCustomerUID;
 
-      // no customer found, get outta town.
-      if (customerUid == null)
-      {
-        log.LogError($"TagFileProcessingErrorV2Executor: No customerUid established)");
-        return TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false);
-      }
+      // even if no customerUid is found, create an event with all the stuff
 
       var createTagFileErrorEvent = new CreateTagFileErrorEvent()
       {
         TagFileErrorUID = Guid.NewGuid(),
-        CustomerUID = Guid.Parse(customerUid),
         MachineName = request.MachineName(),
         DisplaySerialNumber = request.DisplaySerialNumber(),
         TagFileCreatedUTC = request.TagFileDateTimeUtc(),
         ErrorCode = (TagFileError) tagFileErrorMappings.tagFileErrorTypes.Find(st => string.Equals(st.name, request.error.ToString(), StringComparison.OrdinalIgnoreCase)).NotificationEnum,
+        CustomerUID = string.IsNullOrEmpty(customerUid) ? (Guid?)null : Guid.Parse(customerUid),
         AssetUID = asset == null ? (Guid?)null : Guid.Parse(asset?.AssetUID),
         DeviceSerialNumber = request.deviceSerialNumber,
+        DeviceType = request.deviceType,
         ProjectUID = project == null ? (Guid?)null : Guid.Parse(project?.ProjectUID),
-        ActionUTC = actionUtc,
-        // todo ReceivedUTC is in all base interfaces but is meaningless here as
-        //    these events are not received from outside the Vlink system
-        ReceivedUTC = actionUtc 
+        TccOrgId = request.tccOrgId,
+        LegacyAssetId = request.assetId,
+        LegacyProjectId = request.projectId,
+        ActionUTC = actionUtc
       };
 
-      //todo write createTagFileErrorEvent somewhere.....
+      try
+      {
+        var messagePayload = JsonConvert.SerializeObject(new { CreateTagFileErrorEvent = createTagFileErrorEvent });
+        producer.Send(kafkaTopicName,
+          new List<KeyValuePair<string, string>>
+          {
+            new KeyValuePair<string, string>(createTagFileErrorEvent.TagFileErrorUID.ToString(), messagePayload)
+          });
+      }
+      catch (Exception e)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError, 31, e.Message));
+      }
 
       processedOk = true;
 
@@ -167,7 +178,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
       catch
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
+        throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
             ContractExecutionStatesEnum.InternalProcessingError, 14));
       }

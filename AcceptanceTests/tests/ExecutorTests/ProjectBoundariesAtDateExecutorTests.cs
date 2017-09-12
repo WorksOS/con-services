@@ -22,8 +22,9 @@ namespace ExecutorTests
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
       projectBoundariesAtDateExecutorRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
@@ -49,8 +50,9 @@ namespace ExecutorTests
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
       projectBoundariesAtDateExecutorRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
@@ -77,8 +79,9 @@ namespace ExecutorTests
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
       projectBoundariesAtDateExecutorRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
@@ -109,8 +112,9 @@ namespace ExecutorTests
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
       projectBoundariesAtDateExecutorRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "unsuccessful");
@@ -143,8 +147,9 @@ namespace ExecutorTests
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
       projectBoundariesAtDateExecutorRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "unsuccessful");
@@ -181,8 +186,9 @@ namespace ExecutorTests
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
       projectBoundariesAtDateExecutorRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "unsuccessful");
@@ -230,8 +236,9 @@ namespace ExecutorTests
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
       projectBoundariesAtDateExecutorRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
@@ -263,8 +270,9 @@ namespace ExecutorTests
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
       projectBoundariesAtDateExecutorRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
@@ -295,8 +303,9 @@ namespace ExecutorTests
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
       projectBoundariesAtDateExecutorRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
@@ -327,8 +336,9 @@ namespace ExecutorTests
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
       projectBoundariesAtDateExecutorRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
@@ -361,8 +371,9 @@ namespace ExecutorTests
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
       projectBoundariesAtDateExecutorRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore,
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
@@ -12,20 +14,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// </summary>
     private readonly ILogger log;
 
-    ///// <summary>
-    ///// Gets or sets the Configuration Store. 
-    ///// </summary>
-    //protected readonly IConfigurationStore configStore;
+    /// <summary>
+    /// Gets or sets the Configuration Store. 
+    /// </summary>
+    protected readonly IConfigurationStore configStore;
 
-    ///// <summary>
-    ///// Gets or sets the Kafak consumer.
-    ///// </summary>
-    //protected readonly IKafka producer;
+    /// <summary>
+    /// Gets or sets the Kafak consumer.
+    /// </summary>
+    protected readonly IKafka producer;
 
     /// <summary>
     /// Gets or sets the Kafka topic.
     /// </summary>
-    //protected readonly string kafkaTopicName;
+    protected readonly string kafkaTopicName;
 
     protected AssetRepository assetRepository;
     protected DeviceRepository deviceRepository;
@@ -33,23 +35,25 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     protected ProjectRepository projectRepository;
     protected SubscriptionRepository subscriptionsRepository;
 
-    protected BaseController(ILoggerFactory logger, IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
+    protected BaseController(ILoggerFactory logger, IConfigurationStore configStore, 
+      IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
       IRepository<ICustomerEvent> customerRepository, IRepository<IProjectEvent> projectRepository,
-      IRepository<ISubscriptionEvent> subscriptionsRepository)
+      IRepository<ISubscriptionEvent> subscriptionsRepository, IKafka producer)
     {
-      this.log = this.log = logger.CreateLogger<BaseController>(); ;
+      this.log = logger.CreateLogger<BaseController>();
+      this.configStore = configStore;
       this.assetRepository = assetRepository as AssetRepository;
       this.deviceRepository = deviceRepository as DeviceRepository;
       this.customerRepository = customerRepository as CustomerRepository;
       this.projectRepository = projectRepository as ProjectRepository;
       this.subscriptionsRepository = subscriptionsRepository as SubscriptionRepository;
 
-      //this.producer = producer;
-      //if (!this.producer.IsInitializedProducer)
-      //  this.producer.InitProducer(configStore);
+      this.producer = producer;
+      if (!this.producer.IsInitializedProducer)
+        this.producer.InitProducer(configStore);
 
-      //kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-      //                 configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
+                       configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
   }
 }

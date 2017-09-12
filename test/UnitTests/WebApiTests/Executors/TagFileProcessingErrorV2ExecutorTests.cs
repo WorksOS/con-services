@@ -40,13 +40,15 @@ namespace WebApiTests.Executors
       var customerRepo = new Mock<ICustomerRepository>();
       var customerTccOrg = new CustomerTccOrg() { Name = "theName", CustomerType = VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer, CustomerUID = customerUid, TCCOrgID = tccOrgId};
       customerRepo.Setup(c => c.GetCustomerWithTccOrg(It.IsAny<string>())).ReturnsAsync(customerTccOrg);
-
+      
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), assetRepository, deviceRepository,
-          customerRepo.Object, projectRepository, subscriptionsRepository);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore, 
+          assetRepository, deviceRepository,
+          customerRepo.Object, projectRepository, subscriptionsRepository, 
+          producer, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -76,12 +78,14 @@ namespace WebApiTests.Executors
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), assetRepository, deviceRepository,
-          customerRepo.Object, projectRepository, subscriptionsRepository);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore, 
+          assetRepository, deviceRepository,
+          customerRepo.Object, projectRepository, subscriptionsRepository, 
+          producer, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsFalse(result.Result, "Result should be true");
+      Assert.IsTrue(result.Result, "Result should be true");
       Assert.AreEqual(0, result.Code, "Code should be success");
       Assert.AreEqual("success", result.Message, "Message should be: success");
     }
@@ -106,8 +110,10 @@ namespace WebApiTests.Executors
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), assetRepository, deviceRepository,
-          customerRepository, projectRepository, subscriptionsRepository);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore, 
+          assetRepository, deviceRepository,
+          customerRepository, projectRepository, subscriptionsRepository,
+          producer, kafkaTopicName);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync(tagFileProcessingErrorRequest));
       Assert.AreEqual(HttpStatusCode.InternalServerError, ex.Code);
@@ -143,8 +149,10 @@ namespace WebApiTests.Executors
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), assetRepository, deviceRepository,
-          customerRepository, projectRepo.Object, subscriptionsRepository);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
+          assetRepository, deviceRepository,
+          customerRepository, projectRepo.Object, subscriptionsRepository,
+          producer, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -180,8 +188,10 @@ namespace WebApiTests.Executors
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), assetRepo.Object, deviceRepository,
-          customerRepository, projectRepository, subscriptionsRepository);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
+          assetRepo.Object, deviceRepository,
+          customerRepository, projectRepository, subscriptionsRepository,
+          producer, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -226,8 +236,10 @@ namespace WebApiTests.Executors
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), assetRepository, deviceRepo.Object,
-          customerRepo.Object, projectRepository, subscriptionsRepository);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
+          assetRepository, deviceRepo.Object,
+          customerRepo.Object, projectRepository, subscriptionsRepository,
+          producer, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -261,8 +273,10 @@ namespace WebApiTests.Executors
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), assetRepository, deviceRepository,
-          customerRepo.Object, projectRepository, subscriptionsRepository);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
+          assetRepository, deviceRepository,
+          customerRepo.Object, projectRepository, subscriptionsRepository,
+          producer, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

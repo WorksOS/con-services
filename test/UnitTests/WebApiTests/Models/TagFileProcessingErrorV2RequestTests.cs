@@ -5,7 +5,7 @@ using VSS.Common.Exceptions;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.TagFile;
+using VSS.VisionLink.Interfaces.Events.Notifications.Enums;
 
 namespace WebApiTests.Models
 {

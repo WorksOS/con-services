@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Repositories;
@@ -57,8 +58,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
           .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
           .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
-      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
+          .AddSingleton<IKafka, RdKafkaDriver>()
+          .AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddMvc(
         config =>
         {

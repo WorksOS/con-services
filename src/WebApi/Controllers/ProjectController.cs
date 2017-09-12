@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
@@ -19,17 +21,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     /// <param name="logger">Service implementation of ILogger</param>
+    /// <param name="configStore"></param>
     /// <param name="assetRepository"></param>
     /// <param name="deviceRepository"></param>
     /// <param name="customerRepository"></param>
     /// <param name="projectRepository"></param>
     /// <param name="subscriptionsRepository"></param>
-    public ProjectController(ILoggerFactory logger, IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
+    /// <param name="producer"></param>
+    public ProjectController(ILoggerFactory logger, IConfigurationStore configStore,
+      IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
       IRepository<ICustomerEvent> customerRepository, IRepository<IProjectEvent> projectRepository,
-      IRepository<ISubscriptionEvent> subscriptionsRepository)
-      :base(logger, assetRepository, deviceRepository,
+      IRepository<ISubscriptionEvent> subscriptionsRepository, IKafka producer)
+      : base(logger, configStore, assetRepository, deviceRepository,
         customerRepository, projectRepository,
-        subscriptionsRepository)
+        subscriptionsRepository, producer)
     {
       this.log = logger.CreateLogger<ProjectController>();
     }
@@ -50,7 +55,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("GetProjectId: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(log, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetProjectIdResult;
 
       log.LogResult(this.ToString(), request, result);      
@@ -72,7 +77,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("PostProjectBoundary: {0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(log, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetProjectBoundaryAtDateResult;
 
       log.LogResult(this.ToString(), request, result);
@@ -94,7 +99,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("PostProjectBoundaries: {0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(log, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetProjectBoundariesAtDateResult;
 
       log.LogResult(this.ToString(), request, result);

@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -21,20 +22,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public abstract class RequestExecutorContainer
   {
-    /// <summary>
-    /// Repository factory used in ProcessEx
-    /// </summary>
-    protected IRepositoryFactory factory;
-
+  
     /// <summary>
     /// Logger used in ProcessEx
     /// </summary>
     protected ILogger log;
+
+    protected IConfigurationStore configStore;
+
     protected AssetRepository assetRepository;
     protected DeviceRepository deviceRepository;
     protected CustomerRepository customerRepository;
     protected ProjectRepository projectRepository;
     protected SubscriptionRepository subscriptionsRepository;
+    protected IKafka producer;
+    protected string kafkaTopicName;
 
     /// <summary>
     /// allows mapping between CG (which Raptor requires) and NG
@@ -106,22 +108,29 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// </summary>
     /// <param name="subscriptionsRepository"></param>
     /// <param name="logger">Ilogger</param>
+    /// <param name="configStore"></param>
     /// <param name="assetRepository"></param>
     /// <param name="deviceRepository"></param>
     /// <param name="customerRepository"></param>
     /// <param name="projectRepository"></param>
+    /// <param name="producer"></param>
+    /// <param name="kafkaTopicName"></param>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(ILogger logger, IAssetRepository assetRepository = null, IDeviceRepository deviceRepository = null, 
+    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore, 
+      IAssetRepository assetRepository = null, IDeviceRepository deviceRepository = null, 
       ICustomerRepository customerRepository = null, IProjectRepository projectRepository = null,
-      ISubscriptionRepository subscriptionsRepository = null) where TExecutor : RequestExecutorContainer, new()
+      ISubscriptionRepository subscriptionsRepository = null, IKafka producer = null, string kafkaTopicName = null) where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger, assetRepository = assetRepository as AssetRepository, deviceRepository = deviceRepository as DeviceRepository,
+      var executor = new TExecutor() { log = logger, configStore = configStore,
+        assetRepository = assetRepository as AssetRepository, deviceRepository = deviceRepository as DeviceRepository,
         customerRepository = customerRepository as CustomerRepository, projectRepository = projectRepository as ProjectRepository,
-        subscriptionsRepository = subscriptionsRepository as SubscriptionRepository };
-      dataRepository = new DataRepository(logger, assetRepository, deviceRepository, 
+        subscriptionsRepository = subscriptionsRepository as SubscriptionRepository,
+        producer = producer, kafkaTopicName = kafkaTopicName};
+      dataRepository = new DataRepository(logger, configStore, assetRepository, deviceRepository, 
         customerRepository, projectRepository, 
-        subscriptionsRepository);
+        subscriptionsRepository,
+        producer, kafkaTopicName);
       return executor;
     }
     

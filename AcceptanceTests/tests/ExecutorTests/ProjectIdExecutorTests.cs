@@ -24,7 +24,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, "");
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -52,7 +53,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, "");
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -92,7 +94,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, tccOrgId);
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -126,7 +129,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, tccOrgId);
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -166,7 +170,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, tccOrgId);
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -195,7 +200,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, tccOrgId);
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -225,7 +231,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, tccOrgIdQueried);
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -253,7 +260,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, tccOrgId);
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -293,7 +301,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, tccOrgId);
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -323,7 +332,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, tccOrgId);
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -353,7 +363,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, tccOrgId);
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
@@ -393,7 +404,8 @@ namespace ExecutorTests
       GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, tccOrgId);
       projectIdRequest.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, assetRepo, deviceRepo, customerRepo,
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(logger, configStore, 
+        assetRepo, deviceRepo, customerRepo,
         projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");

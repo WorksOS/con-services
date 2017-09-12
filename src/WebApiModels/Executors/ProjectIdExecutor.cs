@@ -184,7 +184,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
       catch
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
+        throw new ServiceException(HttpStatusCode.InternalServerError,
           GetProjectIdResult.CreateGetProjectIdResult(false, -1, 
             ContractExecutionStatesEnum.InternalProcessingError, 19));
       }

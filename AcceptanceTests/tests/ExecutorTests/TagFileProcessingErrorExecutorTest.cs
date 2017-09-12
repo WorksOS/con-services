@@ -17,7 +17,10 @@ namespace ExecutorTests
       TagFileProcessingErrorV1Request request = TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(1, "Data from my dozer", (int) TagFileErrorsEnum.ProjectID_NoMatchingArea);
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(logger, assetRepo, deviceRepo, customerRepo, projectRepo, subscriptionRepo)
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(logger, configStore, 
+          assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo,
+          producer, kafkaTopicName)
         .Process(request) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "unsuccessful");
@@ -38,8 +41,10 @@ namespace ExecutorTests
         deviceSerialNumber, 0);
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(logger, assetRepo, deviceRepo,
-        customerRepo, projectRepo, subscriptionRepo);
+      var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(logger, configStore,
+        assetRepo, deviceRepo, customerRepo, 
+        projectRepo, subscriptionRepo,
+        producer, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");

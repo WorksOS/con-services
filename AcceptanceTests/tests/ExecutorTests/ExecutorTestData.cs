@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -13,13 +14,17 @@ namespace ExecutorTests
   public class ExecutorTestData
   {
     protected IServiceProvider serviceProvider;
+    protected ILogger logger;
     protected IConfigurationStore configStore;
+
     protected AssetRepository assetRepo;
     protected DeviceRepository deviceRepo;
     protected CustomerRepository customerRepo;
     protected ProjectRepository projectRepo;
     protected SubscriptionRepository subscriptionRepo;
-    protected ILogger logger;
+
+    protected IKafka producer;
+    protected string kafkaTopicName;
 
     [TestInitialize]
     public virtual void InitTest()
@@ -41,7 +46,8 @@ namespace ExecutorTests
         .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
         .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>(); 
+        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
+        .AddSingleton<IKafka, RdKafkaDriver>(); 
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -52,6 +58,13 @@ namespace ExecutorTests
       customerRepo = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
       projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
       subscriptionRepo = serviceProvider.GetRequiredService<IRepository<ISubscriptionEvent>>() as SubscriptionRepository;
+
+
+      producer = serviceProvider.GetRequiredService<IKafka>();
+      if (!producer.IsInitializedProducer)
+        producer.InitProducer(configStore);
+      kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
+                       configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
     protected bool CreateAssetDeviceAssociation(Guid assetUid, long legacyAssetId, Guid? owningCustomerUid, Guid deviceUid, string deviceSerialNumber, string deviceType)
