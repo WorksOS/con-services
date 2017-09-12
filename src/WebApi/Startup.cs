@@ -56,7 +56,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
           .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
           .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
-          .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
           .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
