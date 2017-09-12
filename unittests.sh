@@ -1,5 +1,5 @@
 #!/bin/bash
-(cd ./test/UnitTests/WebApiTests && dotnet test -f netcoreapp1.1 )
+(cd ./test/UnitTests/WebApiTests/WebApiTests.csproj && dotnet test -f netcoreapp1.1 )
 if [ $? -ne 0 ]; then exit 1
 fi
 
