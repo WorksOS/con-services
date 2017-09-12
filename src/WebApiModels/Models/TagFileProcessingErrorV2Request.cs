@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     /// The device type of the machine. Valid values are 0=Manual Device (John Doe machines) and 6=SNM940 (torch machines).
     /// </summary>
     [JsonProperty(PropertyName = "deviceType", Required = Required.Default)]
-    public int deviceType { get; set; }
+    public int? deviceType { get; set; }
 
     public string DeviceTypeString()
     {
