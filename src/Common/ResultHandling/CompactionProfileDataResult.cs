@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
   /// <summary>
   /// The data for a compaction profile. 

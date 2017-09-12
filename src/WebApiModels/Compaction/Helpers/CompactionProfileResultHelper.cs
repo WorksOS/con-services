@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.WebApi.Models.Compaction.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
+
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
@@ -37,19 +39,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// </summary>
     /// <param name="slicerProfileResult">The production data profile result with the cells</param>
     /// <param name="slicerDesignResult">The design profile result with the vertices</param>
-    public void FindCutFillElevations(CompactionProfileResult<CompactionProfileCell> slicerProfileResult,
+    public void FindCutFillElevations(CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult,
       CompactionProfileResult<CompactionProfileVertex> slicerDesignResult)
     {
       log.LogDebug("FindCutFillElevations: ");
 
       var vertices = slicerDesignResult.results;
-      var cells = slicerProfileResult.results;
+      var cells = (from r in slicerProfileResult.results
+        where r.type == "cutFill"
+        select r).Single().data;
       if (cells != null && cells.Count > 0 && vertices != null && vertices.Count > 0)
       {
         int startIndx = -1;
         foreach (var cell in cells)
         {
-          startIndx = FindVertexIndex(vertices, cell.station, startIndx);
+          startIndx = FindVertexIndex(vertices, cell.x, startIndx);
           if (startIndx != -1)
           {
             //Check for no design elevation
@@ -58,23 +62,22 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
               //If the cell station matches (within 3mm) either vertex station
               //then we can use that vertex elevation directly
               const double THREE_MM = 0.003;
-              if (Math.Abs(vertices[startIndx].station - cell.station) <= THREE_MM)
+              if (Math.Abs(vertices[startIndx].station - cell.x) <= THREE_MM)
               {
-                cell.cutFillHeight = vertices[startIndx].elevation;
+                cell.y2 = vertices[startIndx].elevation;
               }
-              else if (Math.Abs(vertices[startIndx + 1].station - cell.station) <= THREE_MM)
+              else if (Math.Abs(vertices[startIndx + 1].station - cell.x) <= THREE_MM)
               {
-                cell.cutFillHeight = vertices[startIndx + 1].elevation;
+                cell.y2 = vertices[startIndx + 1].elevation;
               }
             }
             else
             {
               //Calculate elevation by interpolation
-              var proportion = (cell.station - vertices[startIndx].station) /
+              var proportion = (cell.x - vertices[startIndx].station) /
                                (vertices[startIndx + 1].station - vertices[startIndx].station);
-              cell.cutFillHeight = (float) (vertices[startIndx].elevation +
-                                            proportion *
-                                            (vertices[startIndx + 1].elevation - vertices[startIndx].elevation));
+              cell.y2 = (float) (vertices[startIndx].elevation +
+                                proportion * (vertices[startIndx + 1].elevation - vertices[startIndx].elevation));
             }
           }
         }
@@ -113,11 +116,76 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     }
 
     /// <summary>
-    /// Convert from one production data profile representation to another
+    /// Convert from one design profile representation to another
+    /// </summary>
+    /// <param name="slicerProfileResults">The profile result to convert from</param>
+    /// <returns>The new profile result representation</returns>
+    public CompactionProfileResult<CompactionDesignProfileResult> ConvertProfileResult(
+      Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults)
+    {
+      log.LogDebug("ConvertProfileResult: Design profiles");
+
+      //shouldn't ever happen but for safety check arg
+      if (slicerProfileResults == null || slicerProfileResults.Count == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            "Unexpected missing design profile results"));
+      }
+
+      //all gridDistanceBetweenProfilePoints are the same if the profile slices the design surface
+      var profileWithDistance = slicerProfileResults.Values.Where(v => v.gridDistanceBetweenProfilePoints > 0)
+        .FirstOrDefault();
+      var distance = profileWithDistance != null ? profileWithDistance.gridDistanceBetweenProfilePoints : 0;
+
+      var profile = new CompactionProfileResult<CompactionDesignProfileResult>
+      {
+        gridDistanceBetweenProfilePoints = distance,
+        results = (from spr in slicerProfileResults
+          select new CompactionDesignProfileResult
+          {
+            designFileUid = spr.Key,
+            data = spr.Value.results
+          }).ToList()
+      };
+  
+      return profile;
+    }
+
+    /// <summary>
+    /// Adds slicer end points to the profile results if not already present
+    /// </summary>
+    /// <param name="profile">The profile result to check</param>
+    public void AddSlicerEndPoints(CompactionProfileResult<CompactionDesignProfileResult> profile)
+    {
+      //Raptor returns only the vertices on the design surface.
+      //Add slicer end points with NaN elevation if not present for a profile.
+      if (profile.gridDistanceBetweenProfilePoints > 0)
+      {
+        foreach (var result in profile.results)
+        {
+          if (result.data.Count > 0)
+          {
+            if (result.data[0].station > 0)
+            {
+              result.data.Insert(0, new CompactionProfileVertex { station = 0, elevation = float.NaN });
+            }
+            if (result.data[result.data.Count - 1].station < profile.gridDistanceBetweenProfilePoints)
+            {
+              result.data.Add(new CompactionProfileVertex { station = profile.gridDistanceBetweenProfilePoints, elevation = float.NaN });
+            }
+          }
+        }
+      }
+    }
+
+    /// <summary>
+    /// Convert from one production data profile representation to another. The source is a list with each item containing the
+    /// data for every profile type. The destination is a list of lists, one list for each profile type containing its own data.
     /// </summary>
     /// <param name="slicerProfileResult">The profile result to convert from</param>
     /// <returns>The new profile result representation</returns>
-    public CompactionProfileResult<CompactionProfileDataResult> ConvertProfileResult(
+    public CompactionProfileResult<CompactionProfileDataResult> RearrangeProfileResult(
       CompactionProfileResult<CompactionProfileCell> slicerProfileResult)
     {
       log.LogDebug("ConvertProfileResult: Production data profile");
@@ -277,7 +345,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                 type = "speedSummary",
                 cellType = p.cellType,
                 x = p.station,
-                y = p.speedHeight,
+                y = p.lastPassHeight,
                 value = p.minSpeed,
                 value2 = p.maxSpeed,
                 valueType = p.speedIndex
@@ -329,6 +397,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return profile;
     }
 
+
     /// <summary>
     /// The profiles for various types (CMV, temperature, pass count etc.) may have several points
     /// in sequence which have no data which are effectively a single gap. Remove these repeated
@@ -347,15 +416,15 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         {
           bool noValue = point.type.StartsWith("passCount") ? point.value == -1 : float.IsNaN(point.value);
           if (float.IsNaN(point.y) || noValue)
-            point.cellType = ProfileCellType.Gap;          
+            point.cellType = ProfileCellType.Gap;
         }
 
         //Now remove repeated gaps.
         //Always keep first and last points as they are the slicer end points
         CompactionDataPoint prevData = profileResult.data[0];
         bool haveGap = prevData.cellType == ProfileCellType.Gap;
-        List<CompactionDataPoint> newList = new List<CompactionDataPoint>{prevData};
-        for (int i = 1; i < profileResult.data.Count-1; i++)
+        List<CompactionDataPoint> newList = new List<CompactionDataPoint> { prevData };
+        for (int i = 1; i < profileResult.data.Count - 1; i++)
         {
           if (profileResult.data[i].cellType == ProfileCellType.Gap)
           {
@@ -374,7 +443,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             newList.Add(profileResult.data[i]);
           }
         }
-        newList.Add(profileResult.data[profileResult.data.Count-1]);
+        newList.Add(profileResult.data[profileResult.data.Count - 1]);
         //If the only 2 points are the slicer end points and they have no data then
         //remove them and return an empty list to indicate no profile data at all.
         if (newList.Count == 2 && newList[0].cellType == ProfileCellType.Gap && newList[1].cellType == ProfileCellType.Gap)
@@ -385,70 +454,161 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       }
     }
 
-
     /// <summary>
-    /// Convert from one design profile representation to another
+    /// Add mid points between the cell edge intersections. This is because the profile line is plotted using these points.
+    /// The cell edges are retained as this is where the color changes on the graph or chart.
     /// </summary>
-    /// <param name="slicerProfileResults">The profile result to convert from</param>
-    /// <returns>The new profile result representation</returns>
-    public CompactionProfileResult<CompactionDesignProfileResult> ConvertProfileResult(
-      Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults)
+    /// <param name="profileResult">The profile results from Raptor, one list of cell points for each profile type</param>
+    /// <returns>The complete list of interspersed edges and  mid points for each profile type.</returns>
+    public void AddMidPoints(CompactionProfileResult<CompactionProfileDataResult> profileResult)
     {
-      log.LogDebug("ConvertProfileResult: Design profiles");
-
-      //shouldn't ever happen but for safety check arg
-      if (slicerProfileResults == null || slicerProfileResults.Count == 0)
+      log.LogDebug("Adding midpoints");
+      foreach (var result in profileResult.results)
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            "Unexpected missing design profile results"));
-      }
+        log.LogDebug($"Adding midpoints for {result.type}");
 
-      //all gridDistanceBetweenProfilePoints are the same if the profile slices the design surface
-      var profileWithDistance = slicerProfileResults.Values.Where(v => v.gridDistanceBetweenProfilePoints > 0)
-        .FirstOrDefault();
-      var distance = profileWithDistance != null ? profileWithDistance.gridDistanceBetweenProfilePoints : 0;
-
-      var profile = new CompactionProfileResult<CompactionDesignProfileResult>
-      {
-        gridDistanceBetweenProfilePoints = distance,
-        results = (from spr in slicerProfileResults
-          select new CompactionDesignProfileResult
-          {
-            designFileUid = spr.Key,
-            data = spr.Value.results
-          }).ToList()
-      };
-  
-      return profile;
-    }
-
-    /// <summary>
-    /// Adds slicer end points to the profile results if not already present
-    /// </summary>
-    /// <param name="profile">The profile result to check</param>
-    public void AddSlicerEndPoints(CompactionProfileResult<CompactionDesignProfileResult> profile)
-    {
-      //Raptor returns only the vertices on the design surface.
-      //Add slicer end points with NaN elevation if not present for a profile.
-      if (profile.gridDistanceBetweenProfilePoints > 0)
-      {
-        foreach (var result in profile.results)
+        if (result.data.Count > 3)
         {
-          if (result.data.Count > 0)
+          //No mid point for first and last segments since only partial across the cell.
+          //We have already added them as mid points.
+          var points = new List<CompactionDataPoint>();
+
+          points.Add(result.data[0]);
+          for (int i = 1; i < result.data.Count - 2; i++)
           {
-            if (result.data[0].station > 0)
+            points.Add(result.data[i]);
+            if (result.data[i].cellType != ProfileCellType.Gap)
             {
-              result.data.Insert(0, new CompactionProfileVertex { station = 0, elevation = float.NaN });
-            }
-            if (result.data[result.data.Count - 1].station < profile.gridDistanceBetweenProfilePoints)
-            {
-              result.data.Add(new CompactionProfileVertex { station = profile.gridDistanceBetweenProfilePoints, elevation = float.NaN });
+              var midPoint = new CompactionDataPoint(result.data[i]);
+              midPoint.cellType = ProfileCellType.MidPoint;
+              midPoint.x = result.data[i].x +
+                           (result.data[i + 1].x - result.data[i].x) / 2;
+              points.Add(midPoint);
             }
           }
+          points.Add(result.data[result.data.Count - 2]);
+          points.Add(result.data[result.data.Count - 1]);
+          result.data = points;
         }
+
+        StringBuilder sb = new StringBuilder();
+        sb.Append($"After adding midpoints for {result.type}: {result.data.Count}");
+        foreach (var point in result.data)
+        {
+          sb.Append($",{point.cellType}");
+        }
+        log.LogDebug(sb.ToString());
       }
     }
+
+    /// <summary>
+    /// Since the profile line will be drawn between line segment mid points we need to interpolate the cell edge points to lie on these line segments.
+    /// </summary>
+    /// <param name="profileResult">The profile containing the list of line segment points, both edges and mid points, for each profile type.</param>
+    public void InterpolateEdges(CompactionProfileResult<CompactionProfileDataResult> profileResult)
+    {
+      log.LogDebug("Interpolating edges");
+      foreach (var result in profileResult.results)
+      {
+        log.LogDebug($"Interpolating edges for {result.type}");
+
+        if (result.data.Count > 3)
+        {
+          //First and last points are not gaps or edges. They're always the start and end of the profile line.
+          for (int i = 1; i < result.data.Count - 1; i++)
+          {
+            if (result.data[i].cellType == ProfileCellType.MidPoint)
+              continue;
+
+            int startIndx, endIndx;
+            FindMidPoints(i, result.data, out startIndx, out endIndx);
+            log.LogDebug($"Edge {i}: Midpoints: {startIndx}, {endIndx} for type {result.type}");
+            if (startIndx >= 0 && endIndx <= result.data.Count - 1)
+            {
+              InterpolateElevation(result.data[i], result.data[startIndx], result.data[endIndx]);
+            }
+            //Special case: If all NaN to the LHS try and find 2 mid points to the RHS and extrapolate.
+            //This can happen if profile line starts in a gap.
+            else if (endIndx < result.data.Count - 1)
+            {
+              startIndx = endIndx;
+              int startIndx2, endIndx2;
+              FindMidPoints(endIndx + 1, result.data, out startIndx2, out endIndx2);
+              log.LogDebug($"Special Case Edge {i}: Midpoints: {startIndx}, {endIndx2} for type {result.type}");
+              if (endIndx2 <= result.data.Count - 1)
+              {
+                InterpolateElevation(result.data[i], result.data[startIndx], result.data[endIndx2]);
+              }
+            }
+
+          }
+        }
+        log.LogDebug($"After interpolation for {result.type}");
+      }
+    }
+
+    /// <summary>
+    /// Finds the mid points each side of an edge to use for interpolation
+    /// </summary>
+    /// <param name="indx">The index of the edge point</param>
+    /// <param name="points">The list of points</param>
+    /// <param name="startIndx">The index of the mid point before the edge</param>
+    /// <param name="endIndx">The index of the mid point after the edge</param>
+    private void FindMidPoints(int indx, List<CompactionDataPoint> points, out int startIndx, out int endIndx)
+    {
+      startIndx = indx;
+      bool found = false;
+      while (startIndx >= 0 && !found)
+      {
+        found = MidPointCellHasHeightValue(points[startIndx]);
+        if (!found) startIndx--;
+      }
+      endIndx = indx;
+      found = false;
+      while (endIndx < points.Count && !found)
+      {
+        found = MidPointCellHasHeightValue(points[endIndx]);
+        if (!found) endIndx++;
+      }
+    }
+
+    /// <summary>
+    /// Determine if the current point is a midpoint and has an elevation.
+    /// </summary>
+    /// <param name="point">The point to check</param>
+    /// <returns>True if the cell has a non-NaN elevation value for the specified height type</returns>
+    private bool MidPointCellHasHeightValue(CompactionDataPoint point)
+    {
+      return point.cellType == ProfileCellType.MidPoint ? !float.IsNaN(point.y) : false;
+    }
+
+    /// <summary>
+    /// Interpolate elevation for the specified point on the line segment from startPoint to endPoint
+    /// </summary>
+    /// <param name="point">The point to interpolate</param>
+    /// <param name="startPoint">The start of the line segment</param>
+    /// <param name="endPoint">The end of the line segment</param>
+    private void InterpolateElevation(CompactionDataPoint point, CompactionDataPoint startPoint, CompactionDataPoint endPoint)
+    {
+      var proportion = (point.x - startPoint.x) / (endPoint.x - startPoint.x);
+      point.y = InterpolateElevation(proportion, startPoint.y, endPoint.y);
+      log.LogDebug($"Interpolated station {point.x} of cell type {point.cellType} for type {point.type}");
+    }
+
+    /// <summary>
+    /// Interpolate an elevation
+    /// </summary>
+    /// <param name="proportion">The proportion of the elevation to use</param>
+    /// <param name="startElevation">The elevation at the start of the line segment to be used for interpolation</param>
+    /// <param name="endElevation">The elevation at the end of the line segment to be used for interpolation</param>
+    /// <returns></returns>
+    private float InterpolateElevation(double proportion, float startElevation, float endElevation)
+    {
+      //Check for no elevation data before trying to interpolate
+      return float.IsNaN(startElevation) || float.IsNaN(endElevation) ? float.NaN :
+        startElevation + (float)proportion * (endElevation - startElevation);
+    }
+
 
   }
 }

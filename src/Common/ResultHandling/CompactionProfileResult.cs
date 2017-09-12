@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using VSS.Common.ResultsHandling;
 
-namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Profile slicer request for compaction.
