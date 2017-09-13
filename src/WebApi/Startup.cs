@@ -137,6 +137,11 @@ namespace VSS.Productivity3D.WebApi
       app.UseCors("VSS");
 
       app.UseFilterMiddleware<TIDAuthentication>();
+      
+      //Add stats
+      if (Configuration["newrelic"] == "true")
+        app.UseFilterMiddleware<NewRelicMiddleware>();
+
       app.UseResponseCompression();
 
       app.UseResponseCaching();
