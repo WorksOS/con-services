@@ -45,6 +45,12 @@ namespace VSS.MasterData.Models.ResultHandling
       DynamicAddwithOffset("DeleteFilter. Invalid parameters.", 37);
       DynamicAddwithOffset("UpsertFilter. Invalid parameters.", 38);
       DynamicAddwithOffset("UpsertFilter failed. Unable to add persistent filter as Name already exists.", 39);
+      DynamicAddwithOffset("Validation of Project/Boundary failed. Not allowed.", 40);
+      DynamicAddwithOffset("Validation of Project/Boundary failed. Exception: {0}.", 41);
+      DynamicAddwithOffset("Invalid filterJson. Exception: {0}.", 42);
+      DynamicAddwithOffset("Hydration of filterJson with boundary failed. Exception: {0}.", 43);
+      DynamicAddwithOffset("Hydration of filterJson with boundary failed.", 44);
+      DynamicAddwithOffset("Invalid spatial filter boundary. One or more polygon components are missing.", 45);
     }
   }
 }

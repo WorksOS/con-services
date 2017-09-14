@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Models.Utilities;
@@ -65,6 +63,18 @@ namespace VSS.MasterData.Models.Models
     public bool? vibeStateOn { get; private set; }
 
     /// <summary>
+    /// The boundary/geofence unique identifier. Used as a spatial filter.
+    /// </summary>
+    [JsonProperty(PropertyName = "polygonUid", Required = Required.Default)]
+    public string polygonUid { get; protected set; }
+
+    /// <summary>
+    /// name of polygonLL 
+    /// </summary>
+    [JsonProperty(PropertyName = "polygonName", Required = Required.Default)]
+    public string polygonName { get; private set; }
+
+    /// <summary>
     /// A polygon to be used as a spatial filter boundary. The vertices are WGS84 positions
     /// </summary>
     [JsonProperty(PropertyName = "polygonLL", Required = Required.Default)]
@@ -93,6 +103,14 @@ namespace VSS.MasterData.Models.Models
     [JsonProperty(PropertyName = "layerType", Required = Required.Default)]
     public FilterLayerMethod? layerType { get; private set; }
 
+
+    public void AddBoundary(string polygonUid, string polygonName, List<WGSPoint> polygonLL)
+    {
+      this.polygonUid = polygonUid;
+      this.polygonName = polygonName;
+      this.polygonLL = polygonLL;
+    }
+
     /// <summary>
     /// Create instance of Filter
     /// </summary>
@@ -108,7 +126,9 @@ namespace VSS.MasterData.Models.Models
         List<WGSPoint> polygonLL,
         bool? forwardDirection,
         int? layerNumber,
-        FilterLayerMethod? layerType
+        FilterLayerMethod? layerType,
+        string polygonUid = null,
+        string polygonName = null
       )
     {
       return new Filter()
@@ -123,13 +143,15 @@ namespace VSS.MasterData.Models.Models
         polygonLL = polygonLL,
         forwardDirection = forwardDirection,
         layerNumber = layerNumber,
-        layerType = layerType
+        layerType = layerType,
+        polygonUid = polygonUid,
+        polygonName = polygonName
       };
     }
     
     public string ToJsonString()
     {
-      var filter = CreateFilter(startUTC, endUTC, designUid, contributingMachines, onMachineDesignID, elevationType, vibeStateOn, polygonLL, forwardDirection, layerNumber, layerType);
+      var filter = CreateFilter(startUTC, endUTC, designUid, contributingMachines, onMachineDesignID, elevationType, vibeStateOn, polygonLL, forwardDirection, layerNumber, layerType, polygonUid, polygonName);
 
       return JsonConvert.SerializeObject(filter);
     }
@@ -180,6 +202,12 @@ namespace VSS.MasterData.Models.Models
       //Raptor handles any weird boundary you give it and automatically closes it if not closed already therefore we just need to check we have at least 3 points
       if (polygonLL != null && polygonLL.Count < 3)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 35);
+
+      if ((!string.IsNullOrEmpty(polygonUid) || !string.IsNullOrEmpty(polygonName) || polygonLL != null )
+            && (string.IsNullOrEmpty(polygonUid) || string.IsNullOrEmpty(polygonName) || polygonLL == null)
+        )
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
+
     }
 
   }
