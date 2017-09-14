@@ -137,7 +137,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
             : new GenericIdentity(userUid, customerUid);
           //this patams were validated and are exepected to be non-null
           var principal = new RaptorPrincipal(identity, customerUid, authProjects, username,
-            _customerDataResult.customer.First().name, isApplicationContext);
+            _customerDataResult.customer.First(cst=>cst.uid==customerUid).name, isApplicationContext);
           context.User = principal;
         }
         catch (Exception ex)
