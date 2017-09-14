@@ -12,8 +12,6 @@ namespace VSS.MasterData.Repositories
 {
     public class AssetRepository : RepositoryBase, IRepository<IAssetEvent>
     {
-        private readonly ILogger log;
-
         public AssetRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString,
             logger)
         {

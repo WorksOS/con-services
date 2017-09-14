@@ -12,8 +12,6 @@ namespace VSS.MasterData.Repositories
 {
     public class CustomerRepository : RepositoryBase, IRepository<ICustomerEvent>
     {
-        private readonly ILogger log;
-
         public CustomerRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(
             _connectionString, logger)
         {

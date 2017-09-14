@@ -11,12 +11,10 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories
 {
-  public class GeofenceRepository : RepositoryBase, IRepository<IGeofenceEvent>
+  public class GeofenceRepository : RepositoryBase, IRepository<IGeofenceEvent>, IGeofenceRepository
   {
-    private readonly ILogger log;
-
-    public GeofenceRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(
-      _connectionString, logger)
+    public GeofenceRepository(IConfigurationStore connectionString, ILoggerFactory logger) : base(
+      connectionString, logger)
     {
       log = logger.CreateLogger<GeofenceRepository>();
     }
@@ -278,7 +276,7 @@ namespace VSS.MasterData.Repositories
     #region getters
 
     /// <summary>
-    ///     Returns all geofences for the Customer
+    /// Returns all geofences for the Customer
     /// </summary>
     /// <param name="customerUid"></param>
     /// <returns></returns>
@@ -294,30 +292,28 @@ namespace VSS.MasterData.Repositories
         new {customerUid}
       );
     }
+    
+    /// <summary>
+    /// Returns all project geofences for the Project.
+    /// </summary>
+    /// <returns>Returns a collection of <see cref="Geofence"/> objects for a given <see cref="Project"/>.</returns>
+    public async Task<IEnumerable<Geofence>> GetProjectGeofencesByProjectUID(string projectUid)
+    {
+      var queryResult = await QueryWithAsyncPolicy<Geofence>
+      (@"SELECT 
+                GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
+                IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
+                g.LastActionedUTC
+              FROM Geofence g
+                JOIN ProjectGeofence pg ON pg.fk_GeofenceUID = g.GeofenceUID 
+              WHERE fk_ProjectUID = @projectUid AND IsDeleted = 0",
+        new { projectUid }
+      );
+      
+      return queryResult;
+    }
 
-    // obsolete as the project boundary is now included in the project object
-    ///// <summary>
-    /////     Returns all project geofences for the Project - 
-    ///// </summary>
-    ///// <returns></returns>
-    //public async Task<IEnumerable<Geofence>> GetProjectGeofencesByProjectUID(string projectUid)
-    //{
-    //  var projectGeofences = await QueryWithAsyncPolicy<Geofence>
-    //  (@"SELECT 
-    //            GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
-    //            IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
-    //            g.LastActionedUTC
-    //          FROM Geofence g
-    //            JOIN ProjectGeofence pg ON pg.fk_GeofenceUID = g.GeofenceUID 
-    //          WHERE fk_ProjectUID = @projectUid AND IsDeleted = 0",
-    //    new {projectUid}
-    //  );
-
-
-    //  return projectGeofences;
-    //}
-
-    public async Task<Geofence> GetGeofence_UnitTest(string geofenceUid)
+    public async Task<Geofence> GetGeofence(string geofenceUid)
     {
       return (await QueryWithAsyncPolicy<Geofence>
       (@"SELECT 
