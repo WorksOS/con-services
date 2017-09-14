@@ -41,13 +41,20 @@ namespace VSS.KafkaConsumer.Kafka
     {
       var payloads = new List<byte[]>();
       Confluent.Kafka.Message result = null;
+      int protectionCounter = 0;
 
-      while (payloads.Count < batchSize)
+      while (payloads.Count < batchSize && protectionCounter<10) //arbitary number here for the perfomance testing
       {
         rdConsumer.Consume(out result, timeout);
-        if (result == null) continue;
+        if (result == null)
+        {
+          protectionCounter++;
+          continue;
+        }
         if (!result.Error.HasError)
           payloads.Add(result.Value);
+        else
+          protectionCounter++;
       }
 
       return result != null
@@ -79,11 +86,6 @@ namespace VSS.KafkaConsumer.Kafka
         {"session.timeout.ms", "179000"},
         {"request.timeout.ms", "180000"},
         {"auto.offset.reset", OffsetReset},
-        {"key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer"},
-        {"value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer"},
-        {"key.serializer", "org.apache.kafka.common.serialization.StringSerializer"},
-        {"value.serializer", "org.apache.kafka.common.serialization.StringSerializer"},
-        {"receive.buffer.bytes", "1048576"}
       };
 
       IsInitializedConsumer = true;
@@ -104,10 +106,6 @@ namespace VSS.KafkaConsumer.Kafka
       producerConfig = new Dictionary<string, object>
       {
         {"bootstrap.servers", Uri},
-        {"key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer"},
-        {"value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer"},
-        {"key.serializer", "org.apache.kafka.common.serialization.StringSerializer"},
-        {"value.serializer", "org.apache.kafka.common.serialization.StringSerializer"},
         {"session.timeout.ms", "10000"},
         {"retries", "3"},
         {"batch.size", "1048576"},
