@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
           var identity = string.IsNullOrEmpty(customerUid)
             ? new GenericIdentity(userUid)
             : new GenericIdentity(userUid, customerUid);
-          //this patams were validated and are exepected to be non-null
+          //this params were validated and are exepected to be non-null
           var principal = new RaptorPrincipal(identity, customerUid, authProjects, username,
             _customerDataResult.customer.First(cst=>cst.uid==customerUid).name, isApplicationContext);
           context.User = principal;

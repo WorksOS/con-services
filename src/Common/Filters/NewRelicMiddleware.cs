@@ -43,8 +43,8 @@ namespace VSS.Productivity3D.Common.Filters
         _eventAttributes = new Dictionary<string, object>()
         {
           {"endpoint", context.Request.Path},
-          {"useruid", principal.Identity.Name},
-          {"customeruid", principal.CustomerUid},
+          {"userUid", principal.Identity.Name},
+          {"customerUid", principal.CustomerUid},
           {"userName", principal.userEmail},
           {"customerName", principal.customerName},
           {"elapsedTime", (Single) watch.ElapsedMilliseconds},
