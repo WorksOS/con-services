@@ -50,6 +50,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, RaptorResult>();
       services.AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
+      services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
      
       serviceCollection = services;
     }
