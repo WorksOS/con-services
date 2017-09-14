@@ -109,7 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         log.LogError(
           $"RaptorValidateProjectSettings: RaptorServices failed. projectUid:{request.projectUid} settings:{request.settings}. Reason: {result?.Code ?? -1} {result?.Message ?? "null"}. ");
 
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, result.Code.ToString(),
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 67, result.Code.ToString(),
           result.Message);
       }
       return;
