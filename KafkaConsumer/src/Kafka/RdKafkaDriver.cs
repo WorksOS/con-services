@@ -1,171 +1,169 @@
-﻿using RdKafka;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Confluent.Kafka;
 using VSS.ConfigurationStore;
 
 namespace VSS.KafkaConsumer.Kafka
 {
   public class RdKafkaDriver : IKafka
+  {
+    Consumer rdConsumer = null;
+    Producer rdProducer = null;
+
+    private readonly Object syncPollObject = new object();
+    private Dictionary<string, object> consumerConfig;
+    private Dictionary<string, object> producerConfig;
+    private int batchSize;
+
+
+    public string ConsumerGroup { get; set; }
+
+    public string Uri { get; set; }
+
+    public string OffsetReset { get; set; }
+
+    public bool EnableAutoCommit { get; set; }
+
+    public int Port { get; set; }
+
+    public bool IsInitializedProducer { get; private set; } = false;
+    public bool IsInitializedConsumer { get; private set; } = false;
+
+    public async Task<CommittedOffsets> Commit()
     {
-        Consumer rdConsumer = null;
-        Producer rdProducer = null;
-
-        private readonly Object syncPollObject = new object();
-        private Config config;
-
-
-        public string ConsumerGroup { get; set; }
-
-        public string Uri { get; set; }
-
-        public string OffsetReset { get; set; }
-
-        public bool EnableAutoCommit { get; set; }
-
-        public int Port { get; set; }
-
-        public bool IsInitializedProducer { get; private set; } = false;
-        public bool IsInitializedConsumer { get; private set; } = false;
-
-        public void Commit()
-        {
-            rdConsumer?.Commit();
-        }
-
-        public Message Consume(TimeSpan timeout)
-        {
-            lock (syncPollObject)
-            {
-                var result = rdConsumer.Consume(timeout);
-                if (result.HasValue)
-                    if (result.Value.Error == ErrorCode.NO_ERROR)
-                        return new Message(new List<byte[]>() {result.Value.Message.Payload},
-                            Error.NO_ERROR,result.Value.Message.Offset, result.Value.Message.Partition);
-                    else
-                        return new Message(null, (Error) (int) result.Value.Error);
-                else
-                    return new Message(null, Error.NO_DATA);
-            }
-        }
-
-     
-        public void InitConsumer(IConfigurationStore configurationStore, string groupName = null)
-        {
-            ConsumerGroup = groupName == null ? configurationStore.GetValueString("KAFKA_GROUP_NAME") : groupName;
-            EnableAutoCommit = configurationStore.GetValueBool("KAFKA_AUTO_COMMIT").Value;
-            OffsetReset = configurationStore.GetValueString("KAFKA_OFFSET");
-            Uri = configurationStore.GetValueString("KAFKA_URI");
-            Port = configurationStore.GetValueInt("KAFKA_PORT");
-
-            Console.WriteLine("KAFKA_GROUP_NAME:" + ConsumerGroup);
-            Console.WriteLine("KAFKA_AUTO_COMMIT:" + EnableAutoCommit);
-            Console.WriteLine("KAFKA_OFFSET:" + OffsetReset);
-            Console.WriteLine("KAFKA_URI:" + Uri);
-            Console.WriteLine("KAFKA_PORT:" + Port);
-
-            var topicConfig = new TopicConfig();
-            topicConfig["auto.offset.reset"] = OffsetReset;
-
-            config = new Config()
-            {
-                GroupId = ConsumerGroup,
-                EnableAutoCommit = EnableAutoCommit,
-                DefaultTopicConfig = topicConfig
-            };
-            IsInitializedConsumer = true;
-        }
-
-        public void Subscribe(List<string> topics)
-        {
-            rdConsumer = new Consumer(config, Uri);
-            rdConsumer.Subscribe(topics);
-        }
-
-
-        public void InitProducer(IConfigurationStore configurationStore)
-        {
-            //overrideConfigValues = ConfigurationManager.GetSection("ikvmConsumerSettings") as NameValueCollection;
-
-            Config config = new Config();
-            var topicConfig = new TopicConfig();
-
-/*            foreach (string key in overrideConfigValues)
-            {
-                string value = overrideConfigValues[key];
-                if (key != "receive.buffer.bytes" && key != "zookeeper.session.timeout.ms" && key != "offsets.commit.timeout.ms" &&
-                    key != "fetch.max.wait.ms" && key != "auto.offset.reset" && key != "key.deserializer" &&
-                    key != "value.deserializer" && key != "key.serializer" && key != "value.serializer" &&
-                    key != "request.timeout.ms")
-                    config[key] = value;
-            }
-
-
-            // topicConfig["request.required.acks"] = "0";
-
-            // config["socket.blocking.max.ms"] = "1";
-
-            config["queue.buffering.max.messages"] = "200";
-            config["queue.buffering.max.ms"] = "50";*/
-
-            config.DefaultTopicConfig = topicConfig;
-
-            //socket.blocking.max.ms=1
-            rdProducer = new Producer(config, configurationStore.GetValueString("KAFKA_URI"));
-            IsInitializedProducer = true;
-        }
-
-        public void Send(string topic, IEnumerable<KeyValuePair<string, string>> messagesToSendWithKeys)
-        {
-            List<Task> tasks = new List<Task>();
-            using (Topic myTopic = rdProducer.Topic(topic))
-            {
-                foreach (var messagesToSendWithKey in messagesToSendWithKeys)
-                {
-                    byte[] data = Encoding.UTF8.GetBytes(messagesToSendWithKey.Value);
-                    byte[] key = Encoding.UTF8.GetBytes(messagesToSendWithKey.Key);
-                    tasks.Add(myTopic.Produce(data, key));
-                }
-            }
-            Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(4));
-        }
-
-        public async Task Send(string topic, KeyValuePair<string, string> messageToSendWithKey)
-        {
-            using (Topic myTopic = rdProducer.Topic(topic))
-            {
-                    byte[] data = Encoding.UTF8.GetBytes(messageToSendWithKey.Value);
-                    byte[] key = Encoding.UTF8.GetBytes(messageToSendWithKey.Key);
-                    await myTopic.Produce(data, key);
-            }
-        }
-
-        public void Send(IEnumerable<KeyValuePair<string, KeyValuePair<string, string>>> topicMessagesToSendWithKeys)
-        {
-            foreach (var topicMessagesToSendWithKey in topicMessagesToSendWithKeys)
-            {
-                using (Topic myTopic = rdProducer.Topic(topicMessagesToSendWithKey.Key))
-                {
-                    byte[] data = Encoding.UTF8.GetBytes(topicMessagesToSendWithKey.Value.Value);
-                    byte[] key = Encoding.UTF8.GetBytes(topicMessagesToSendWithKey.Value.Key);
-                    DeliveryReport deliveryReport = myTopic.Produce(data, key).Result;
-                }
-            }
-        }
-
-
-        public void Dispose()
-        {
-            lock (syncPollObject)
-            {
-                rdConsumer?.Unsubscribe();
-                rdConsumer?.Dispose();
-            }
-            rdProducer?.Dispose();
-            IsInitializedProducer = false;
-            IsInitializedConsumer = false;
-
-        }
+      return await rdConsumer?.CommitAsync();
     }
+
+    public Message Consume(TimeSpan timeout)
+    {
+      var payloads = new List<byte[]>();
+      Confluent.Kafka.Message result = null;
+
+      while (payloads.Count < batchSize)
+      {
+        rdConsumer.Consume(out result, timeout);
+        if (result == null) continue;
+        if (!result.Error.HasError)
+          payloads.Add(result.Value);
+      }
+
+      return result != null
+        ? new Message(payloads, Error.NO_ERROR, result.Offset, result.Partition)
+        : new Message(payloads, Error.NO_DATA, result.Offset, result.Partition);
+    }
+
+
+    public void InitConsumer(IConfigurationStore configurationStore, string groupName = null)
+    {
+      ConsumerGroup = groupName ?? configurationStore.GetValueString("KAFKA_GROUP_NAME");
+      EnableAutoCommit = configurationStore.GetValueBool("KAFKA_AUTO_COMMIT").Value;
+      OffsetReset = configurationStore.GetValueString("KAFKA_OFFSET");
+      Uri = configurationStore.GetValueString("KAFKA_URI");
+      Port = configurationStore.GetValueInt("KAFKA_PORT");
+      batchSize = configurationStore.GetValueInt("KAFKA_BATCH_SIZE");
+
+      Console.WriteLine("KAFKA_GROUP_NAME:" + ConsumerGroup);
+      Console.WriteLine("KAFKA_AUTO_COMMIT:" + EnableAutoCommit);
+      Console.WriteLine("KAFKA_OFFSET:" + OffsetReset);
+      Console.WriteLine("KAFKA_URI:" + Uri);
+      Console.WriteLine("KAFKA_PORT:" + Port);
+
+      consumerConfig = new Dictionary<string, object>
+      {
+        {"bootstrap.servers", Uri},
+        {"enable.auto.commit", EnableAutoCommit},
+        {"group.id", ConsumerGroup},
+        {"session.timeout.ms", "179000"},
+        {"request.timeout.ms", "180000"},
+        {"auto.offset.reset", OffsetReset},
+        {"key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer"},
+        {"value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer"},
+        {"key.serializer", "org.apache.kafka.common.serialization.StringSerializer"},
+        {"value.serializer", "org.apache.kafka.common.serialization.StringSerializer"},
+        {"receive.buffer.bytes", "1048576"}
+      };
+
+      IsInitializedConsumer = true;
+    }
+
+    public void Subscribe(List<string> topics)
+    {
+      rdConsumer = new Consumer(consumerConfig);
+      rdConsumer.Subscribe(topics);
+    }
+
+
+    public void InitProducer(IConfigurationStore configurationStore)
+    {
+      Uri = configurationStore.GetValueString("KAFKA_URI");
+      Port = configurationStore.GetValueInt("KAFKA_PORT");
+
+      producerConfig = new Dictionary<string, object>
+      {
+        {"bootstrap.servers", Uri},
+        {"key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer"},
+        {"value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer"},
+        {"key.serializer", "org.apache.kafka.common.serialization.StringSerializer"},
+        {"value.serializer", "org.apache.kafka.common.serialization.StringSerializer"},
+        {"session.timeout.ms", "10000"},
+        {"retries", "3"},
+        {"batch.size", "1048576"},
+        {"linger.ms", "20"},
+        {"acks", "all"},
+        {"block.on.buffer.full", "true"}
+      };
+
+      //socket.blocking.max.ms=1
+      rdProducer = new Producer(producerConfig);
+      IsInitializedProducer = true;
+    }
+
+    public void Send(string topic, IEnumerable<KeyValuePair<string, string>> messagesToSendWithKeys)
+    {
+      List<Task> tasks = new List<Task>();
+      foreach (var messagesToSendWithKey in messagesToSendWithKeys)
+      {
+        byte[] data = Encoding.UTF8.GetBytes(messagesToSendWithKey.Value);
+        byte[] key = Encoding.UTF8.GetBytes(messagesToSendWithKey.Key);
+        tasks.Add(rdProducer.ProduceAsync(topic, key, data));
+      }
+      Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(10));
+    }
+
+    public async Task Send(string topic, KeyValuePair<string, string> messageToSendWithKey)
+    {
+      byte[] data = Encoding.UTF8.GetBytes(messageToSendWithKey.Value);
+      byte[] key = Encoding.UTF8.GetBytes(messageToSendWithKey.Key);
+      await rdProducer.ProduceAsync(topic, key, data);
+    }
+
+    public void Send(IEnumerable<KeyValuePair<string, KeyValuePair<string, string>>> topicMessagesToSendWithKeys)
+    {
+      List<Task> tasks = new List<Task>();
+      foreach (var topicMessagesToSendWithKey in topicMessagesToSendWithKeys)
+      {
+        byte[] data = Encoding.UTF8.GetBytes(topicMessagesToSendWithKey.Value.Value);
+        byte[] key = Encoding.UTF8.GetBytes(topicMessagesToSendWithKey.Value.Key);
+        tasks.Add(rdProducer.ProduceAsync(topicMessagesToSendWithKey.Key, key, data));
+      }
+      Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(10));
+    }
+
+
+    public void Dispose()
+    {
+      lock (syncPollObject)
+      {
+        rdConsumer?.Unsubscribe();
+        rdConsumer?.Dispose();
+      }
+      rdProducer?.Dispose();
+      IsInitializedProducer = false;
+      IsInitializedConsumer = false;
+
+    }
+  }
 }

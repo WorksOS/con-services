@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Confluent.Kafka;
 using VSS.ConfigurationStore;
 
 namespace VSS.KafkaConsumer.Kafka
@@ -13,7 +14,7 @@ namespace VSS.KafkaConsumer.Kafka
     bool EnableAutoCommit { get; set; }
     int Port { get; set; }
     void Subscribe(List<string> topics);
-    void Commit();
+    Task<CommittedOffsets> Commit();
     void InitConsumer(IConfigurationStore configurationStore, string groupName = null);
     void InitProducer(IConfigurationStore configurationStore);
     void Send(string topic, IEnumerable<KeyValuePair<string, string>> messagesToSendWithKeys);
