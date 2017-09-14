@@ -49,7 +49,8 @@ namespace VSS.Productivity3D.Common.Filters
           {"customerName", principal.customerName},
           {"elapsedTime", (Single) watch.ElapsedMilliseconds},
           {"projectUid",projectUid },
-          {"origin",origin }
+          {"origin",origin },
+          {"result", context.Response.StatusCode.ToString() }
         };
 
         NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Request", _eventAttributes);
