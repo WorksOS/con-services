@@ -467,7 +467,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       {
         log.LogDebug($"Adding midpoints for {result.type}");
 
-        if (result.data.Count > 3)
+        if (result.data.Count >= 4)
         {
           //No mid point for first and last segments since only partial across the cell.
           //We have already added them as mid points.
@@ -512,7 +512,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       {
         log.LogDebug($"Interpolating edges for {result.type}");
 
-        if (result.data.Count > 3)
+        if (result.data.Count >= 3)
         {
           //First and last points are not gaps or edges. They're always the start and end of the profile line.
           for (int i = 1; i < result.data.Count - 1; i++)
@@ -534,10 +534,23 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
               startIndx = endIndx;
               int startIndx2, endIndx2;
               FindMidPoints(endIndx + 1, result.data, out startIndx2, out endIndx2);
-              log.LogDebug($"Special Case Edge {i}: Midpoints: {startIndx}, {endIndx2} for type {result.type}");
+              log.LogDebug($"Special Case Start Gap {i}: Midpoints: {startIndx}, {endIndx2} for type {result.type}");
               if (endIndx2 <= result.data.Count - 1)
               {
                 InterpolateElevation(result.data[i], result.data[startIndx], result.data[endIndx2]);
+              }
+            }
+            //Special case: If all NaN to the RHS try and find 2 mid points to the LHS and extrapolate.
+            //This can happen if profile line ends in a gap.
+            else if (startIndx > 0)
+            {
+              endIndx = startIndx;
+              int startIndx2, endIndx2;
+              FindMidPoints(startIndx - 1, result.data, out startIndx2, out endIndx2);
+              log.LogDebug($"Special Case End Gap {i}: Midpoints: {startIndx}, {endIndx2} for type {result.type}");
+              if (startIndx2 >= 0)
+              {
+                InterpolateElevation(result.data[i], result.data[startIndx2], result.data[endIndx]);
               }
             }
 

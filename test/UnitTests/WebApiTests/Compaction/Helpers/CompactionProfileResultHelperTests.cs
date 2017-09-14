@@ -813,8 +813,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         ValidateItem(7, item.data[7], ProfileCellType.Gap, 13, float.NaN);
       }
     }
-
-   
+ 
     [TestMethod]
     public void RepeatedGapsForDifferentTypesShouldBeRemoved()
     {
@@ -1448,7 +1447,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN},
                 new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 190F},
                 new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.5, y = 235F},
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 2.0, y = 235F}
@@ -1471,7 +1470,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[1].cellType, "Wrong cellType 2");
       Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
-      Assert.AreEqual(100F, actualPoints[1].y, "Wrong y 2");
+      Assert.AreEqual(float.NaN, actualPoints[1].y, "Wrong y 2");
 
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[2].cellType, "Wrong cellType 3");
       Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
@@ -1504,7 +1503,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN},
                 new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 190F},
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.5, y = 190F}
               }
@@ -1526,7 +1525,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[1].cellType, "Wrong cellType 2");
       Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
-      Assert.AreEqual(100F, actualPoints[1].y, "Wrong y 2");
+      Assert.AreEqual(float.NaN, actualPoints[1].y, "Wrong y 2");
 
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[2].cellType, "Wrong cellType 3");
       Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
@@ -1551,9 +1550,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN},
                 new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 190F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 1.5, y = 190F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 1.5, y = float.NaN},
                 new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 2.0, y = 235F},
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 2.5, y = 235F}
               }
@@ -1575,7 +1574,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[1].cellType, "Wrong cellType 2");
       Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
-      Assert.AreEqual(100F, actualPoints[1].y, "Wrong y 2");
+      Assert.AreEqual(float.NaN, actualPoints[1].y, "Wrong y 2");
 
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[2].cellType, "Wrong cellType 3");
       Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
@@ -1587,7 +1586,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[4].cellType, "Wrong cellType 5");
       Assert.AreEqual(1.5, actualPoints[4].x, "Wrong x 5");
-      Assert.AreEqual(190F, actualPoints[4].y, "Wrong y 5");
+      Assert.AreEqual(float.NaN, actualPoints[4].y, "Wrong y 5");
 
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[5].cellType, "Wrong cellType 6");
       Assert.AreEqual(2.0, actualPoints[5].x, "Wrong x 6");
@@ -1598,55 +1597,474 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(235F, actualPoints[6].y, "Wrong y 7");
     }
 
+    [TestMethod]
+    public void SlicerStartAndEndInGapAddMidPointsCorrectly()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "lastPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0, y = float.NaN},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 200F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 1.5, y = float.NaN},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 2.0, y = float.NaN}
+              }
+            }
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.AddMidPoints(profileResult);
+
+      Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = profileResult.results[0].data;
+      Assert.AreEqual(7, actualPoints.Count, "Wrong number of profile points");
+
+      Assert.AreEqual(ProfileCellType.Gap, actualPoints[0].cellType, "Wrong cellType 1");
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(float.NaN, actualPoints[0].y, "Wrong y 1");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[1].cellType, "Wrong cellType 2");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(100F, actualPoints[1].y, "Wrong y 2");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[2].cellType, "Wrong cellType 3");
+      Assert.AreEqual(0.75, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(100F, actualPoints[2].y, "Wrong y 3");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[3].cellType, "Wrong cellType 4");
+      Assert.AreEqual(1.0, actualPoints[3].x, "Wrong x 4");
+      Assert.AreEqual(200F, actualPoints[3].y, "Wrong y 4");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[4].cellType, "Wrong cellType 5");
+      Assert.AreEqual(1.25, actualPoints[4].x, "Wrong x 5");
+      Assert.AreEqual(200F, actualPoints[4].y, "Wrong y 5");
+
+      Assert.AreEqual(ProfileCellType.Gap, actualPoints[5].cellType, "Wrong cellType 6");
+      Assert.AreEqual(1.5, actualPoints[5].x, "Wrong x 6");
+      Assert.AreEqual(float.NaN, actualPoints[5].y, "Wrong y 6");
+
+      Assert.AreEqual(ProfileCellType.Gap, actualPoints[6].cellType, "Wrong cellType 7");
+      Assert.AreEqual(2.0, actualPoints[6].x, "Wrong x 7");
+      Assert.AreEqual(float.NaN, actualPoints[6].y, "Wrong y 7");
+    }
+
     #endregion
 
     #region InterpolateEdges tests
     [TestMethod]
-    public void SlicerInOneCell()
+    public void SlicerInOneCellNoInterpolation()
     {
+      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "lastPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 597F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.085, y = 597F}
+              }
+            }
+          }
+        };
 
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.InterpolateEdges(profileResult);
+
+      Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = profileResult.results[0].data;
+      Assert.AreEqual(2, actualPoints.Count, "Wrong number of profile points");
+      Assert.AreEqual(597F, actualPoints[0].y, "Wrong y 1");
+      Assert.AreEqual(597F, actualPoints[1].y, "Wrong y 2");
     }
 
     [TestMethod]
-    public void SlicesOneEdge()
+    public void SlicesOneEdgeInterpolated()
     {
+      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "lastPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = 200F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.0, y = 200F}
+              }
+            }
+          }
+        };
 
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.InterpolateEdges(profileResult);
+
+      Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = profileResult.results[0].data;
+      Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
+      Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
+      Assert.AreEqual(150F, actualPoints[1].y, "Wrong y 2");
+      Assert.AreEqual(200F, actualPoints[2].y, "Wrong y 3");
+    }
+
+    [TestMethod] public void SlicesTwoEdgesInterpolated()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "lastPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = 250F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.75, y = 250F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 325F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.5, y = 325F}
+              }
+            }
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.InterpolateEdges(profileResult);
+
+      Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = profileResult.results[0].data;
+      Assert.AreEqual(5, actualPoints.Count, "Wrong number of profile points");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[0].cellType, "Wrong cellType 1");
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[1].cellType, "Wrong cellType 2");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(200F, actualPoints[1].y, "Wrong y 2");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[2].cellType, "Wrong cellType 3");
+      Assert.AreEqual(0.75, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(250F, actualPoints[2].y, "Wrong y 3");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[3].cellType, "Wrong cellType 4");
+      Assert.AreEqual(1.0, actualPoints[3].x, "Wrong x 4");
+      Assert.AreEqual(275F, actualPoints[3].y, "Wrong y 4");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[4].cellType, "Wrong cellType 5");
+      Assert.AreEqual(1.5, actualPoints[4].x, "Wrong x 5");
+      Assert.AreEqual(325F, actualPoints[4].y, "Wrong y 5");
     }
 
     [TestMethod]
-    public void SlicesTwoEdges()
-    {
+    public void SlicerWithOneGapInterpolated()
+    {     
+      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "lastPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 190F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = 190F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.5, y = 235F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 2.0, y = 235F}
+              }
+            }
+          }
+        };
 
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.InterpolateEdges(profileResult);
+
+      Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = profileResult.results[0].data;
+      Assert.AreEqual(6, actualPoints.Count, "Wrong number of profile points");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[0].cellType, "Wrong cellType 1");
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
+
+      Assert.AreEqual(ProfileCellType.Gap, actualPoints[1].cellType, "Wrong cellType 2");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(136F, actualPoints[1].y, "Wrong y 2");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[2].cellType, "Wrong cellType 3");
+      Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(172F, actualPoints[2].y, "Wrong y 3");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[3].cellType, "Wrong cellType 4");
+      Assert.AreEqual(1.25, actualPoints[3].x, "Wrong x 4");
+      Assert.AreEqual(190F, actualPoints[3].y, "Wrong y 4");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[4].cellType, "Wrong cellType 5");
+      Assert.AreEqual(1.5, actualPoints[4].x, "Wrong x 5");
+      Assert.AreEqual(205F, actualPoints[4].y, "Wrong y 5");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[5].cellType, "Wrong cellType 6");
+      Assert.AreEqual(2.0, actualPoints[5].x, "Wrong x 6");
+      Assert.AreEqual(235F, actualPoints[5].y, "Wrong y 6");
     }
 
     [TestMethod]
-    public void SlicerNoGaps()
+    public void SlicerWithOnlyAGapInterpolated()
     {
+      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "lastPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 190F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.5, y = 190F}
+              }
+            }
+          }
+        };
 
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.InterpolateEdges(profileResult);
+
+      Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = profileResult.results[0].data;
+      Assert.AreEqual(4, actualPoints.Count, "Wrong number of profile points");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[0].cellType, "Wrong cellType 1");
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
+
+      Assert.AreEqual(ProfileCellType.Gap, actualPoints[1].cellType, "Wrong cellType 2");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(130F, actualPoints[1].y, "Wrong y 2");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[2].cellType, "Wrong cellType 3");
+      Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(160F, actualPoints[2].y, "Wrong y 3");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[3].cellType, "Wrong cellType 4");
+      Assert.AreEqual(1.5, actualPoints[3].x, "Wrong x 4");
+      Assert.AreEqual(190F, actualPoints[3].y, "Wrong y 4");
     }
 
     [TestMethod]
-    public void WithOneGap()
+    public void SlicerWithTwoGapsInterpolated()
     {
+      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "lastPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 190F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = 190F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 1.5, y = float.NaN},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 2.0, y = 235F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 2.5, y = 235F}
+              }
+            }
+          }
+        };
 
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.InterpolateEdges(profileResult);
+
+      Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = profileResult.results[0].data;
+      Assert.AreEqual(7, actualPoints.Count, "Wrong number of profile points");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[0].cellType, "Wrong cellType 1");
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
+
+      Assert.AreEqual(ProfileCellType.Gap, actualPoints[1].cellType, "Wrong cellType 2");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(136F, actualPoints[1].y, "Wrong y 2");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[2].cellType, "Wrong cellType 3");
+      Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(172F, actualPoints[2].y, "Wrong y 3");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[3].cellType, "Wrong cellType 4");
+      Assert.AreEqual(1.25, actualPoints[3].x, "Wrong x 4");
+      Assert.AreEqual(190F, actualPoints[3].y, "Wrong y 4");
+
+      Assert.AreEqual(ProfileCellType.Gap, actualPoints[4].cellType, "Wrong cellType 5");
+      Assert.AreEqual(1.5, actualPoints[4].x, "Wrong x 5");
+      Assert.AreEqual(199F, actualPoints[4].y, "Wrong y 5");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[5].cellType, "Wrong cellType 6");
+      Assert.AreEqual(2.0, actualPoints[5].x, "Wrong x 6");
+      Assert.AreEqual(217F, actualPoints[5].y, "Wrong y 6");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[6].cellType, "Wrong cellType 7");
+      Assert.AreEqual(2.5, actualPoints[6].x, "Wrong x 7");
+      Assert.AreEqual(235F, actualPoints[6].y, "Wrong y 7");
     }
 
     [TestMethod]
-    public void WithOnlyAGap()
+    public void SlicerStartInGapExtrapolated()
     {
+      //Tests the extrapolation special case
 
+      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "lastPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0, y = float.NaN},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.75, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 200F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = 200F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.5, y = 350F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 2.0, y = 350F}
+              }
+            }
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.InterpolateEdges(profileResult);
+
+      Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = profileResult.results[0].data;
+      Assert.AreEqual(7, actualPoints.Count, "Wrong number of profile points");
+
+      Assert.AreEqual(ProfileCellType.Gap, actualPoints[0].cellType, "Wrong cellType 1");
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(float.NaN, actualPoints[0].y, "Wrong y 1");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[1].cellType, "Wrong cellType 2");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(50F, actualPoints[1].y, "Wrong y 2");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[2].cellType, "Wrong cellType 3");
+      Assert.AreEqual(0.75, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(100F, actualPoints[2].y, "Wrong y 3");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[3].cellType, "Wrong cellType 4");
+      Assert.AreEqual(1.0, actualPoints[3].x, "Wrong x 4");
+      Assert.AreEqual(150F, actualPoints[3].y, "Wrong y 4");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[4].cellType, "Wrong cellType 5");
+      Assert.AreEqual(1.25, actualPoints[4].x, "Wrong x 5");
+      Assert.AreEqual(200F, actualPoints[4].y, "Wrong y 5");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[5].cellType, "Wrong cellType 6");
+      Assert.AreEqual(1.5, actualPoints[5].x, "Wrong x 6");
+      Assert.AreEqual(250F, actualPoints[5].y, "Wrong y 6");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[6].cellType, "Wrong cellType 7");
+      Assert.AreEqual(2.0, actualPoints[6].x, "Wrong x 7");
+      Assert.AreEqual(350F, actualPoints[6].y, "Wrong y 7");
     }
 
     [TestMethod]
-    public void WithTwoGaps()
+    public void SlicerStartAndEndInGapInterpolatedCorrectly()
     {
+      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = "lastPass",
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0, y = float.NaN},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.75, y = 100F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 200F},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = 200F},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 1.5, y = float.NaN},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 2.0, y = float.NaN}
+              }
+            }
+          }
+        };
 
-    }
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.InterpolateEdges(profileResult);
 
-    [TestMethod]
-    public void StartInGap()
-    {
+      Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = profileResult.results[0].data;
+      Assert.AreEqual(7, actualPoints.Count, "Wrong number of profile points");
 
+      Assert.AreEqual(ProfileCellType.Gap, actualPoints[0].cellType, "Wrong cellType 1");
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(float.NaN, actualPoints[0].y, "Wrong y 1");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[1].cellType, "Wrong cellType 2");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(50F, actualPoints[1].y, "Wrong y 2");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[2].cellType, "Wrong cellType 3");
+      Assert.AreEqual(0.75, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(100F, actualPoints[2].y, "Wrong y 3");
+
+      Assert.AreEqual(ProfileCellType.Edge, actualPoints[3].cellType, "Wrong cellType 4");
+      Assert.AreEqual(1.0, actualPoints[3].x, "Wrong x 4");
+      Assert.AreEqual(150F, actualPoints[3].y, "Wrong y 4");
+
+      Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[4].cellType, "Wrong cellType 5");
+      Assert.AreEqual(1.25, actualPoints[4].x, "Wrong x 5");
+      Assert.AreEqual(200F, actualPoints[4].y, "Wrong y 5");
+
+      Assert.AreEqual(ProfileCellType.Gap, actualPoints[5].cellType, "Wrong cellType 6");
+      Assert.AreEqual(1.5, actualPoints[5].x, "Wrong x 6");
+      Assert.AreEqual(250F, actualPoints[5].y, "Wrong y 6");
+
+      Assert.AreEqual(ProfileCellType.Gap, actualPoints[6].cellType, "Wrong cellType 7");
+      Assert.AreEqual(2.0, actualPoints[6].x, "Wrong x 7");
+      Assert.AreEqual(float.NaN, actualPoints[6].y, "Wrong y 7");
     }
     #endregion
 
@@ -1762,7 +2180,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         i++;
       }
     }
-
 
     private void ValidateDesignProfile(Guid expectedDesignUid, int j, List<CompactionProfileVertex> expectedVertices, CompactionDesignProfileResult actualResult)
     {
