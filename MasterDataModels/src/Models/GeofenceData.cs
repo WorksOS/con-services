@@ -1,38 +1,26 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using VSS.MasterData.Models.Interfaces;
 
 namespace VSS.MasterData.Models.Models
 {
+  /// <summary>
+  /// Describes geofence data returned by the geofence master data service.
+  /// </summary>
+  public class GeofenceData : BaseDataResult, IData
+  {
     /// <summary>
-    /// Describes geofence data returned by the geofence master data service.
+    /// Gets or sets the descriptor.
     /// </summary>
-    public class GeofenceData : IData
-    {
-        public string GeofenceName { get; set; }
+    /// <value>
+    /// The <see cref="GeofenceDescriptor"/> descriptor object.
+    /// </value>
+    [JsonProperty(PropertyName = "geofenceDescriptor")]
+    public GeofenceDescriptor GeofenceDescriptor { get; set; }
 
-        public string Description { get; set; }
-
-        public string GeofenceType { get; set; }
-
-        public string GeometryWKT { get; set; }
-
-        public int FillColor { get; set; }
-
-        public bool IsTransparent { get; set; }
-
-        public Guid CustomerUID { get; set; }
-
-        public Guid GeofenceUID { get; set; }
-
-        public Guid UserUID { get; set; }
-
-        public DateTime ActionUTC => DateTime.UtcNow;
-
-        /// <summary>
-        /// Key to use for caching geofence master data
-        /// </summary>
-        [JsonIgnore]
-        public string CacheKey => GeofenceUID.ToString();
-    }
+    /// <summary>
+    /// Key to use for caching geofence master data.
+    /// </summary>
+    [JsonIgnore]
+    public string CacheKey => GeofenceDescriptor.GeofenceUID.ToString();
+  }
 }
