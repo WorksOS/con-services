@@ -1,14 +1,13 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {
   /// <summary>
   /// The request representation for a linear or alignment based profile request for all thematic types other than summary volumes.

@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 {
@@ -88,7 +87,22 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       {
         Assert.AreEqual(expectedPercents[i], cmvChange.percents[i], $"percents item {i} not mapped correctly");
       }
+    }
 
+    [TestMethod]
+    public void MapProjectSettingsToCutFillSettings()
+    {
+      var ps = CompactionProjectSettings.CreateProjectSettings(
+        useDefaultCutFillTolerances: false, customCutFillTolerances: new List<double> { 0.3, 0.2, 0.1, 0, -0.1, -0.2, -0.3 }
+      );
+
+      var cutFill = AutoMapperUtility.Automapper.Map<CutFillSettings>(ps);
+      Assert.AreEqual(7, cutFill.percents.Length, "cutFill total not mapped correctly");
+      double[] expectedPercents = ps.CustomCutFillTolerances;
+      for (int i = 0; i < cutFill.percents.Length; i++)
+      {
+        Assert.AreEqual(expectedPercents[i], cutFill.percents[i], $"cutFill item {i} not mapped correctly");
+      }
     }
 
     [TestMethod]

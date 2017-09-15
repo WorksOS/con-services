@@ -92,6 +92,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             .ForMember(x => x.percents,
               opt => opt.MapFrom(ps => ps.CmvPercentChange));
 
+          cfg.CreateMap<CompactionProjectSettings, CutFillSettings>()
+            .ForMember(x => x.percents,
+              opt => opt.MapFrom(ps => ps.CustomCutFillTolerances));
+
           cfg.CreateMap<CompactionProjectSettings, LiftBuildSettings>()
             .ForMember(x => x.cCVRange,
               opt => opt.ResolveUsing<CustomCCVRangePercentageResolver>())

@@ -4,11 +4,8 @@ using BoundingExtents;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using VLPDDecls;
-using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
@@ -18,7 +15,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
+namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
   /// <summary>
   /// The request representation for a linear or alignment based profile request for all thematic types other than summary volumes.

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
@@ -11,7 +6,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
+namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
   /// <summary>
   /// Helper class for constructing a tile request
