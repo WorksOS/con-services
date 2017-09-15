@@ -10,7 +10,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories
 {
-  public class DeviceRepository : RepositoryBase, IRepository<IDeviceEvent>
+  public class DeviceRepository : RepositoryBase, IRepository<IDeviceEvent>, IDeviceRepository
   {
     public DeviceRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString,
       logger)

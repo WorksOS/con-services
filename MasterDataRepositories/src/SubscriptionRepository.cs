@@ -11,7 +11,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories
 {
-  public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>
+  public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>, ISubscriptionRepository
   {
     public Dictionary<string, ServiceType> _serviceTypes;
 

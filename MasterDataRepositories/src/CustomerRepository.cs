@@ -10,7 +10,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories
 {
-    public class CustomerRepository : RepositoryBase, IRepository<ICustomerEvent>
+    public class CustomerRepository : RepositoryBase, IRepository<ICustomerEvent>, ICustomerRepository
     {
         public CustomerRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(
             _connectionString, logger)
