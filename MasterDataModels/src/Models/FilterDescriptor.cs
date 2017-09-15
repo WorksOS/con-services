@@ -6,7 +6,7 @@ namespace VSS.MasterData.Models.Models
   ///   Describes a filter
   /// </summary>
   /// CustomerUid; UserUid and projectUid must be provided so shouldn't be returned
-  public class FilterDescriptor : IModelDescriptor
+  public class FilterDescriptor
   {
     /// <summary>
     /// Gets or sets the filter uid.
