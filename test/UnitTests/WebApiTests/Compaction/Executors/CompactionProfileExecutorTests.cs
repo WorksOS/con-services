@@ -4,22 +4,22 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICProfileCell;
 using System;
+using System.Collections.Generic;
 using System.IO;
-using Microsoft.Extensions.Caching.Memory;
+using System.Linq;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.Common;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
@@ -29,6 +29,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
   [TestClass]
   public class CompactionProfileExecutorTests : ExecutorTestsBase
   {
+    //NOTE: Tests all use "last pass" to test logic as all interpolation is the same for each type of data (last pass, composite, CMV, temperature etc.)
+
     private const string WrongCellType1 = "wrong cellType 1";
     private const string WrongCellType2 = "wrong cellType 2";
     private const string WrongCellType3 = "wrong cellType 3";
@@ -65,7 +67,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       serviceCollection
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
+        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>()
+        .AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
  
       serviceProvider = serviceCollection.BuildServiceProvider();
     }
@@ -74,6 +77,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     public void ProfileExecutorSlicerNoResult()
     {
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
+
       var raptorClient = new Mock<IASNodeClient>();
     
       raptorClient
@@ -87,9 +92,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false, null);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionProfileExecutor>(logger, raptorClient.Object);
+        .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
 
-      var result = executor.Process(request) as CompactionProfileResult<CompactionProfileCell>;
+      var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(0, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
       Assert.AreEqual(0, result.results.Count, ResultsShouldBeEmpty);
@@ -124,16 +129,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var result = MockGetProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
-      Assert.AreEqual(2, result.results.Count, IncorrectNumberOfPoints);
+      Assert.AreEqual(2, result.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[0].cellType, WrongCellType1);
-      Assert.AreEqual(packager.CellList[0].Station, result.results[0].station, WrongStation1);
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.results[0].lastPassHeight, WrongLastPassHeight1);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result[0].x, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result[0].y, WrongLastPassHeight1);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[1].cellType, WrongCellType2);
-      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.results[1].station, WrongStation2);
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.results[1].lastPassHeight, WrongLastPassHeight2);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result[1].x, WrongStation2);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result[1].y, WrongLastPassHeight2);
       
     }
 
@@ -150,7 +154,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           new TICProfileCell
           {
             Station= 0.000, InterceptLength= 0.05,
-            CellLowestElev=597.2F, CellHighestElev=598.6F, CellFirstElev=597.2F, CellLastElev=596.3F, CellLastCompositeElev=597.3F,
+            CellLowestElev=597.2F, CellHighestElev=598.6F, CellFirstElev=597.2F, CellLastElev=596.0F, CellLastCompositeElev=597.3F,
             DesignElev=0F,
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
@@ -160,8 +164,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           },
           new TICProfileCell
           {
-            Station= 0.05, InterceptLength= 0.07,
-            CellLowestElev=597.4F, CellHighestElev=598.0F, CellFirstElev=597.1F, CellLastElev=596.7F, CellLastCompositeElev=597.8F,
+            Station= 0.05, InterceptLength= 0.05,
+            CellLowestElev=597.4F, CellHighestElev=598.0F, CellFirstElev=597.1F, CellLastElev=597.0F, CellLastCompositeElev=597.8F,
             DesignElev=0F,
             CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
             CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
@@ -178,20 +182,19 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var result = MockGetProfile(packager);
       
       Assert.IsNotNull(result, ExecutorFailed);
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
-      Assert.AreEqual(3, result.results.Count, IncorrectNumberOfPoints);
+      Assert.AreEqual(3, result.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[0].cellType, WrongCellType1);
-      Assert.AreEqual(packager.CellList[0].Station, result.results[0].station, WrongStation1);
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.results[0].lastPassHeight, WrongLastPassHeight1);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result[0].x, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result[0].y, WrongLastPassHeight1);
 
-      Assert.AreEqual(ProfileCellType.Edge, result.results[1].cellType, WrongCellType2);
-      Assert.AreEqual(packager.CellList[1].Station, result.results[1].station, WrongStation2);
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.results[1].lastPassHeight, WrongLastPassHeight2);
+      Assert.AreEqual(ProfileCellType.Edge, result[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[1].Station, result[1].x, WrongStation2);
+      Assert.AreEqual(596.5F, result[1].y, WrongLastPassHeight2);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[2].cellType, WrongCellType3);
-      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result.results[2].station, WrongStation3);
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.results[2].lastPassHeight, WrongLastPassHeight3);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[2].cellType, WrongCellType3);
+      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result[2].x, WrongStation3);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result[2].y, WrongLastPassHeight3);
     }
 
     [TestMethod]
@@ -245,30 +248,29 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var result = MockGetProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
-      Assert.AreEqual(5, result.results.Count, IncorrectNumberOfPoints);
+      Assert.AreEqual(5, result.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[0].cellType, WrongCellType1);
-      Assert.AreEqual(packager.CellList[0].Station, result.results[0].station, WrongStation1);
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.results[0].lastPassHeight, WrongLastPassHeight1);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result[0].x, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result[0].y, WrongLastPassHeight1);
 
-      Assert.AreEqual(ProfileCellType.Edge, result.results[1].cellType, WrongCellType2);
-      Assert.AreEqual(packager.CellList[1].Station, result.results[1].station, WrongStation2);
-      Assert.AreEqual(200, result.results[1].lastPassHeight, WrongLastPassHeight2);
+      Assert.AreEqual(ProfileCellType.Edge, result[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[1].Station, result[1].x, WrongStation2);
+      Assert.AreEqual(200F, result[1].y, WrongLastPassHeight2);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[2].cellType, WrongCellType3);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[2].cellType, WrongCellType3);
       var expectedStation = packager.CellList[1].Station +
                              (packager.CellList[2].Station - packager.CellList[1].Station) / 2;
-      Assert.AreEqual(expectedStation, result.results[2].station, WrongStation3);
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.results[2].lastPassHeight, WrongLastPassHeight3);
+      Assert.AreEqual(expectedStation, result[2].x, WrongStation3);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result[2].y, WrongLastPassHeight3);
 
-      Assert.AreEqual(ProfileCellType.Edge, result.results[3].cellType, WrongCellType4);
-      Assert.AreEqual(packager.CellList[2].Station, result.results[3].station, WrongStation4);
-      Assert.AreEqual(230, result.results[3].lastPassHeight, WrongLastPassHeight4);
+      Assert.AreEqual(ProfileCellType.Edge, result[3].cellType, WrongCellType4);
+      Assert.AreEqual(packager.CellList[2].Station, result[3].x, WrongStation4);
+      Assert.AreEqual(230F, result[3].y, WrongLastPassHeight4);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[4].cellType, WrongCellType5);
-      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result.results[4].station, WrongStation5);
-      Assert.AreEqual(packager.CellList[2].CellLastElev, result.results[4].lastPassHeight, WrongLastPassHeight5);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[4].cellType, WrongCellType5);
+      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result[4].x, WrongStation5);
+      Assert.AreEqual(packager.CellList[2].CellLastElev, result[4].y, WrongLastPassHeight5);
     }
 
 
@@ -334,40 +336,39 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var result = MockGetProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
-      Assert.AreEqual(7, result.results.Count, IncorrectNumberOfPoints);
+      Assert.AreEqual(7, result.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[0].cellType, WrongCellType1);
-      Assert.AreEqual(packager.CellList[0].Station, result.results[0].station, WrongStation1);
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.results[0].lastPassHeight, WrongLastPassHeight1);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result[0].x, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result[0].y, WrongLastPassHeight1);
 
-      Assert.AreEqual(ProfileCellType.Edge, result.results[1].cellType, WrongCellType2);
-      Assert.AreEqual(packager.CellList[1].Station, result.results[1].station, WrongStation2);
-      Assert.AreEqual(200, result.results[1].lastPassHeight, WrongLastPassHeight2);
+      Assert.AreEqual(ProfileCellType.Edge, result[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[1].Station, result[1].x, WrongStation2);
+      Assert.AreEqual(200F, result[1].y, WrongLastPassHeight2);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[2].cellType, WrongCellType3);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[2].cellType, WrongCellType3);
       var expectedStation = packager.CellList[1].Station +
                             (packager.CellList[2].Station - packager.CellList[1].Station) / 2;
-      Assert.AreEqual(expectedStation, result.results[2].station, WrongStation3);
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.results[2].lastPassHeight, WrongLastPassHeight3);
+      Assert.AreEqual(expectedStation, result[2].x, WrongStation3);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result[2].y, WrongLastPassHeight3);
 
-      Assert.AreEqual(ProfileCellType.Edge, result.results[3].cellType, WrongCellType4);
-      Assert.AreEqual(packager.CellList[2].Station, result.results[3].station, WrongStation4);
-      Assert.AreEqual(220, result.results[3].lastPassHeight, WrongLastPassHeight4);
+      Assert.AreEqual(ProfileCellType.Edge, result[3].cellType, WrongCellType4);
+      Assert.AreEqual(packager.CellList[2].Station, result[3].x, WrongStation4);
+      Assert.AreEqual(220F, result[3].y, WrongLastPassHeight4);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[4].cellType, WrongCellType5);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[4].cellType, WrongCellType5);
       expectedStation = packager.CellList[2].Station +
                         (packager.CellList[3].Station - packager.CellList[2].Station) / 2;
-      Assert.AreEqual(expectedStation, result.results[4].station, WrongStation5);
-      Assert.AreEqual(packager.CellList[2].CellLastElev, result.results[4].lastPassHeight, WrongLastPassHeight5);
+      Assert.AreEqual(expectedStation, result[4].x, WrongStation5);
+      Assert.AreEqual(packager.CellList[2].CellLastElev, result[4].y, WrongLastPassHeight5);
 
-      Assert.AreEqual(ProfileCellType.Edge, result.results[5].cellType, WrongCellType6);
-      Assert.AreEqual(packager.CellList[3].Station, result.results[5].station, WrongStation6);
-      Assert.AreEqual(205, result.results[5].lastPassHeight, WrongLastPassHeight6);
+      Assert.AreEqual(ProfileCellType.Edge, result[5].cellType, WrongCellType6);
+      Assert.AreEqual(packager.CellList[3].Station, result[5].x, WrongStation6);
+      Assert.AreEqual(205F, result[5].y, WrongLastPassHeight6);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[6].cellType, WrongCellType7);
-      Assert.AreEqual(packager.CellList[3].Station + packager.CellList[3].InterceptLength, result.results[6].station, WrongStation7);
-      Assert.AreEqual(packager.CellList[3].CellLastElev, result.results[6].lastPassHeight, WrongLastPassHeight7);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[6].cellType, WrongCellType7);
+      Assert.AreEqual(packager.CellList[3].Station + packager.CellList[3].InterceptLength, result[6].x, WrongStation7);
+      Assert.AreEqual(packager.CellList[3].CellLastElev, result[6].y, WrongLastPassHeight7);
     }
 
 
@@ -423,34 +424,33 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var result = MockGetProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
-      Assert.AreEqual(6, result.results.Count, IncorrectNumberOfPoints);
+      Assert.AreEqual(6, result.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[0].cellType, WrongCellType1);
-      Assert.AreEqual(packager.CellList[0].Station, result.results[0].station, WrongStation1);
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.results[0].lastPassHeight, WrongLastPassHeight1);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result[0].x, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result[0].y, WrongLastPassHeight1);
 
-      Assert.AreEqual(ProfileCellType.Gap, result.results[1].cellType, WrongCellType2);
-      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.results[1].station, WrongStation2);
-      Assert.AreEqual(136, result.results[1].lastPassHeight, WrongLastPassHeight2);
+      Assert.AreEqual(ProfileCellType.Gap, result[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result[1].x, WrongStation2);
+      Assert.AreEqual(136F, result[1].y, WrongLastPassHeight2);
 
-      Assert.AreEqual(ProfileCellType.Edge, result.results[2].cellType, WrongCellType3);
-      Assert.AreEqual(packager.CellList[1].Station, result.results[2].station, WrongStation3);
-      Assert.AreEqual(172, result.results[2].lastPassHeight, WrongLastPassHeight3);
+      Assert.AreEqual(ProfileCellType.Edge, result[2].cellType, WrongCellType3);
+      Assert.AreEqual(packager.CellList[1].Station, result[2].x, WrongStation3);
+      Assert.AreEqual(172F, result[2].y, WrongLastPassHeight3);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[3].cellType, WrongCellType4);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[3].cellType, WrongCellType4);
       var expectedStation = packager.CellList[1].Station +
                         (packager.CellList[2].Station - packager.CellList[1].Station) / 2;
-      Assert.AreEqual(expectedStation, result.results[3].station, WrongStation4);
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.results[3].lastPassHeight, WrongLastPassHeight4);
+      Assert.AreEqual(expectedStation, result[3].x, WrongStation4);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result[3].y, WrongLastPassHeight4);
 
-      Assert.AreEqual(ProfileCellType.Edge, result.results[4].cellType, WrongCellType5);
-      Assert.AreEqual(packager.CellList[2].Station, result.results[4].station, WrongStation5);
-      Assert.AreEqual(205, result.results[4].lastPassHeight, WrongLastPassHeight5);
+      Assert.AreEqual(ProfileCellType.Edge, result[4].cellType, WrongCellType5);
+      Assert.AreEqual(packager.CellList[2].Station, result[4].x, WrongStation5);
+      Assert.AreEqual(205F, result[4].y, WrongLastPassHeight5);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[5].cellType, WrongCellType6);
-      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result.results[5].station, WrongStation6);
-      Assert.AreEqual(packager.CellList[2].CellLastElev, result.results[5].lastPassHeight, WrongLastPassHeight6);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[5].cellType, WrongCellType6);
+      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result[5].x, WrongStation6);
+      Assert.AreEqual(packager.CellList[2].CellLastElev, result[5].y, WrongLastPassHeight6);
     }
 
     [TestMethod]
@@ -494,24 +494,23 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var result = MockGetProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
-      Assert.AreEqual(4, result.results.Count, IncorrectNumberOfPoints);
+      Assert.AreEqual(4, result.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[0].cellType, WrongCellType1);
-      Assert.AreEqual(packager.CellList[0].Station, result.results[0].station, WrongStation1);
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.results[0].lastPassHeight, WrongLastPassHeight1);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result[0].x, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result[0].y, WrongLastPassHeight1);
 
-      Assert.AreEqual(ProfileCellType.Gap, result.results[1].cellType, WrongCellType2);
-      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.results[1].station, WrongStation2);
-      Assert.AreEqual(130, result.results[1].lastPassHeight, WrongLastPassHeight2);
+      Assert.AreEqual(ProfileCellType.Gap, result[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result[1].x, WrongStation2);
+      Assert.AreEqual(130F, result[1].y, WrongLastPassHeight2);
 
-      Assert.AreEqual(ProfileCellType.Edge, result.results[2].cellType, WrongCellType3);
-      Assert.AreEqual(packager.CellList[1].Station, result.results[2].station, WrongStation3);
-      Assert.AreEqual(160, result.results[2].lastPassHeight, WrongLastPassHeight3);
+      Assert.AreEqual(ProfileCellType.Edge, result[2].cellType, WrongCellType3);
+      Assert.AreEqual(packager.CellList[1].Station, result[2].x, WrongStation3);
+      Assert.AreEqual(160F, result[2].y, WrongLastPassHeight3);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[3].cellType, WrongCellType4);
-      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result.results[3].station, WrongStation4);
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.results[3].lastPassHeight, WrongLastPassHeight4);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[3].cellType, WrongCellType4);
+      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result[3].x, WrongStation4);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result[3].y, WrongLastPassHeight4);
     }
 
     [TestMethod]
@@ -567,41 +566,332 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var result = MockGetProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
-      Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
-      Assert.AreEqual(7, result.results.Count, IncorrectNumberOfPoints);
+      Assert.AreEqual(7, result.Count, IncorrectNumberOfPoints);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[0].cellType, WrongCellType1);
-      Assert.AreEqual(packager.CellList[0].Station, result.results[0].station, WrongStation1);
-      Assert.AreEqual(packager.CellList[0].CellLastElev, result.results[0].lastPassHeight, WrongLastPassHeight1);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result[0].x, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result[0].y, WrongLastPassHeight1);
 
-      Assert.AreEqual(ProfileCellType.Gap, result.results[1].cellType, WrongCellType2);
-      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result.results[1].station, WrongStation2);
-      Assert.AreEqual(136, result.results[1].lastPassHeight, WrongLastPassHeight2);
+      Assert.AreEqual(ProfileCellType.Gap, result[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result[1].x, WrongStation2);
+      Assert.AreEqual(136F, result[1].y, WrongLastPassHeight2);
 
-      Assert.AreEqual(ProfileCellType.Edge, result.results[2].cellType, WrongCellType3);
-      Assert.AreEqual(packager.CellList[1].Station, result.results[2].station, WrongStation3);
-      Assert.AreEqual(172, result.results[2].lastPassHeight, WrongLastPassHeight3);
+      Assert.AreEqual(ProfileCellType.Edge, result[2].cellType, WrongCellType3);
+      Assert.AreEqual(packager.CellList[1].Station, result[2].x, WrongStation3);
+      Assert.AreEqual(172F, result[2].y, WrongLastPassHeight3);
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[3].cellType, WrongCellType4);
-      Assert.AreEqual(1.25, result.results[3].station, WrongStation4);
-      Assert.AreEqual(packager.CellList[1].CellLastElev, result.results[3].lastPassHeight, WrongLastPassHeight4);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[3].cellType, WrongCellType4);
+      Assert.AreEqual(1.25, result[3].x, WrongStation4);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result[3].y, WrongLastPassHeight4);
 
-      Assert.AreEqual(ProfileCellType.Gap, result.results[4].cellType, WrongCellType5);
-      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result.results[4].station, WrongStation5);
-      Assert.AreEqual(199, result.results[4].lastPassHeight, WrongLastPassHeight5);
+      Assert.AreEqual(ProfileCellType.Gap, result[4].cellType, WrongCellType5);
+      Assert.AreEqual(packager.CellList[1].Station + packager.CellList[1].InterceptLength, result[4].x, WrongStation5);
+      Assert.AreEqual(199F, result[4].y, WrongLastPassHeight5);
 
-      Assert.AreEqual(ProfileCellType.Edge, result.results[5].cellType, WrongCellType6);
-      Assert.AreEqual(packager.CellList[2].Station, result.results[5].station, WrongStation6);
-      Assert.AreEqual(217, result.results[5].lastPassHeight, WrongLastPassHeight6); 
+      Assert.AreEqual(ProfileCellType.Edge, result[5].cellType, WrongCellType6);
+      Assert.AreEqual(packager.CellList[2].Station, result[5].x, WrongStation6);
+      Assert.AreEqual(217F, result[5].y, WrongLastPassHeight6); 
 
-      Assert.AreEqual(ProfileCellType.MidPoint, result.results[6].cellType, WrongCellType7);
-      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result.results[6].station, WrongStation7);
-      Assert.AreEqual(packager.CellList[2].CellLastElev, result.results[6].lastPassHeight, WrongLastPassHeight7);
+      Assert.AreEqual(ProfileCellType.MidPoint, result[6].cellType, WrongCellType7);
+      Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result[6].x, WrongStation7);
+      Assert.AreEqual(packager.CellList[2].CellLastElev, result[6].y, WrongLastPassHeight7);
     }
 
-    private CompactionProfileResult<CompactionProfileCell> MockGetProfile(TICProfileCellListPackager packager)
+    [TestMethod]
+    public void ProfileExecutorWithGapFromNoData()
+    {
+      // O-----X------X------X------O becomes O-----X      X------X------O
+
+
+      TICProfileCellListPackager packager = new TICProfileCellListPackager
+      {
+        CellList = new TICProfileCellList
+        {
+          new TICProfileCell
+          {
+            Station= 0.000, InterceptLength= 0.5,
+            CellLowestElev=100F, CellHighestElev=200F, CellFirstElev=120F, CellLastElev=100F, CellLastCompositeElev=200F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          },
+          //No data = gap here
+          new TICProfileCell
+          {
+            Station= 0.5, InterceptLength= 0.5,
+            CellLowestElev=150, CellHighestElev=300F, CellFirstElev=240F, CellLastElev=VelociraptorConstants.NULL_SINGLE, CellLastCompositeElev=300F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          },
+          new TICProfileCell
+          {
+            Station= 1.0, InterceptLength= 0.5,
+            CellLowestElev=200F, CellHighestElev=350F, CellFirstElev=360F, CellLastElev=200F, CellLastCompositeElev=400F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          },
+          new TICProfileCell
+          {
+            Station= 1.5, InterceptLength= 0.5,
+            CellLowestElev=210F, CellHighestElev=320F, CellFirstElev=320F, CellLastElev=350F, CellLastCompositeElev=300F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          }
+        },
+        GridDistanceBetweenProfilePoints = 1.234,
+        WriteCellPassesAndLayers = false,
+        LatLongList = new TWGS84StationPoint[0]
+      };
+
+      var result = MockGetProfile(packager);
+
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(6, result.Count, IncorrectNumberOfPoints);
+
+      Assert.AreEqual(ProfileCellType.MidPoint, result[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result[0].x, WrongStation1);
+      Assert.AreEqual(packager.CellList[0].CellLastElev, result[0].y, WrongLastPassHeight1);
+
+      Assert.AreEqual(ProfileCellType.Gap, result[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[1].Station, result[1].x, WrongStation2);
+      Assert.AreEqual(140F, result[1].y, WrongLastPassHeight2);
+
+      Assert.AreEqual(ProfileCellType.Edge, result[2].cellType, WrongCellType3);
+      Assert.AreEqual(packager.CellList[2].Station, result[2].x, WrongStation3);
+      Assert.AreEqual(180F, result[2].y, WrongLastPassHeight3);
+
+      Assert.AreEqual(ProfileCellType.MidPoint, result[3].cellType, WrongCellType4);
+      var expectedStation = packager.CellList[2].Station +
+                        (packager.CellList[3].Station - packager.CellList[2].Station) / 2;
+      Assert.AreEqual(expectedStation, result[3].x, WrongStation4);
+      Assert.AreEqual(packager.CellList[2].CellLastElev, result[3].y, WrongLastPassHeight4);
+
+      Assert.AreEqual(ProfileCellType.Edge, result[4].cellType, WrongCellType5);
+      Assert.AreEqual(packager.CellList[3].Station, result[4].x, WrongStation5);
+      Assert.AreEqual(250F, result[4].y, WrongLastPassHeight5);
+
+      Assert.AreEqual(ProfileCellType.MidPoint, result[5].cellType, WrongCellType6);
+      Assert.AreEqual(packager.CellList[3].Station + packager.CellList[3].InterceptLength, result[5].x, WrongStation6);
+      Assert.AreEqual(packager.CellList[3].CellLastElev, result[5].y, WrongLastPassHeight6);
+    }
+
+    [TestMethod]
+    public void ProfileExecutorStartInGapFromNoData()
+    {
+      // O-----X------X------X------O becomes O     X------X------X------O
+
+      //Tests the extrapolation special case
+
+      TICProfileCellListPackager packager = new TICProfileCellListPackager
+      {
+        CellList = new TICProfileCellList
+        {
+          new TICProfileCell
+          {
+            Station= 0.000, InterceptLength= 0.5,
+            CellLowestElev=100F, CellHighestElev=200F, CellFirstElev=120F, CellLastElev=VelociraptorConstants.NULL_SINGLE, CellLastCompositeElev=200F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          },
+          new TICProfileCell
+          {
+            Station= 0.5, InterceptLength= 0.5,
+            CellLowestElev=150, CellHighestElev=300F, CellFirstElev=240F, CellLastElev=100F, CellLastCompositeElev=300F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          },
+          new TICProfileCell
+          {
+            Station= 1.0, InterceptLength= 0.5,
+            CellLowestElev=200F, CellHighestElev=350F, CellFirstElev=360F, CellLastElev=200F, CellLastCompositeElev=400F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          },
+          new TICProfileCell
+          {
+            Station= 1.5, InterceptLength= 0.5,
+            CellLowestElev=210F, CellHighestElev=320F, CellFirstElev=320F, CellLastElev=350F, CellLastCompositeElev=300F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          }
+        },
+        GridDistanceBetweenProfilePoints = 1.234,
+        WriteCellPassesAndLayers = false,
+        LatLongList = new TWGS84StationPoint[0]
+      };
+
+      var result = MockGetProfile(packager);
+
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(7, result.Count, IncorrectNumberOfPoints);
+
+      Assert.AreEqual(ProfileCellType.Gap, result[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result[0].x, WrongStation1);
+      Assert.AreEqual(float.NaN, result[0].y, WrongLastPassHeight1);
+
+      Assert.AreEqual(ProfileCellType.Edge, result[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[1].Station, result[1].x, WrongStation2);
+      Assert.AreEqual(50F, result[1].y, WrongLastPassHeight2);
+
+      Assert.AreEqual(ProfileCellType.MidPoint, result[2].cellType, WrongCellType3);
+      var expectedStation = packager.CellList[1].Station +
+                            (packager.CellList[2].Station - packager.CellList[1].Station) / 2;
+      Assert.AreEqual(expectedStation, result[2].x, WrongStation3);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result[2].y, WrongLastPassHeight3);
+
+      Assert.AreEqual(ProfileCellType.Edge, result[3].cellType, WrongCellType4);
+      Assert.AreEqual(packager.CellList[2].Station, result[3].x, WrongStation4);
+      Assert.AreEqual(150F, result[3].y, WrongLastPassHeight4);
+
+      Assert.AreEqual(ProfileCellType.MidPoint, result[4].cellType, WrongCellType5);
+      expectedStation = packager.CellList[2].Station +
+                        (packager.CellList[3].Station - packager.CellList[2].Station) / 2;
+      Assert.AreEqual(expectedStation, result[4].x, WrongStation5);
+      Assert.AreEqual(packager.CellList[2].CellLastElev, result[4].y, WrongLastPassHeight5);
+
+      Assert.AreEqual(ProfileCellType.Edge, result[5].cellType, WrongCellType6);
+      Assert.AreEqual(packager.CellList[3].Station, result[5].x, WrongStation6);
+      Assert.AreEqual(250F, result[5].y, WrongLastPassHeight6);
+
+      Assert.AreEqual(ProfileCellType.MidPoint, result[6].cellType, WrongCellType7);
+      Assert.AreEqual(packager.CellList[3].Station + packager.CellList[3].InterceptLength, result[6].x, WrongStation7);
+      Assert.AreEqual(packager.CellList[3].CellLastElev, result[6].y, WrongLastPassHeight7);
+    }
+
+    [TestMethod]
+    public void ProfileExecutorEndInGapFromNoData()
+    {
+      // O-----X------X------X------O becomes O-----X------X------X      O
+
+      //Tests the extrapolation special case
+
+      TICProfileCellListPackager packager = new TICProfileCellListPackager
+      {
+        CellList = new TICProfileCellList
+        {
+          new TICProfileCell
+          {
+            Station= 0.000, InterceptLength= 0.5,
+            CellLowestElev=100F, CellHighestElev=200F, CellFirstElev=120F, CellLastElev=70F, CellLastCompositeElev=200F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          },
+          new TICProfileCell
+          {
+            Station= 0.5, InterceptLength= 0.5,
+            CellLowestElev=150, CellHighestElev=300F, CellFirstElev=240F, CellLastElev=100F, CellLastCompositeElev=300F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          },
+          new TICProfileCell
+          {
+            Station= 1.0, InterceptLength= 0.5,
+            CellLowestElev=200F, CellHighestElev=350F, CellFirstElev=360F, CellLastElev=200F, CellLastCompositeElev=400F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          },
+          new TICProfileCell
+          {
+            Station= 1.5, InterceptLength= 0.5,
+            CellLowestElev=210F, CellHighestElev=320F, CellFirstElev=320F, CellLastElev=VelociraptorConstants.NULL_SINGLE, CellLastCompositeElev=300F,
+            DesignElev=0F,
+            CellCCV=0, CellTargetCCV=0, CellCCVElev=0, CellPreviousMeasuredCCV=0,
+            CellMDP=0, CellTargetMDP=0, CellMDPElev=0,
+            CellMaterialTemperature=0, CellMaterialTemperatureWarnMin=0, CellMaterialTemperatureWarnMax=0, CellMaterialTemperatureElev=0,
+            TopLayerPassCount=0, TopLayerPassCountTargetRangeMin=0, TopLayerPassCountTargetRangeMax=0,
+            CellMaxSpeed = 0, CellMinSpeed = 0
+          }
+        },
+        GridDistanceBetweenProfilePoints = 1.234,
+        WriteCellPassesAndLayers = false,
+        LatLongList = new TWGS84StationPoint[0]
+      };
+
+      var result = MockGetProfile(packager);
+
+      Assert.IsNotNull(result, ExecutorFailed);
+      Assert.AreEqual(7, result.Count, IncorrectNumberOfPoints);
+
+      Assert.AreEqual(ProfileCellType.MidPoint, result[0].cellType, WrongCellType1);
+      Assert.AreEqual(packager.CellList[0].Station, result[0].x, WrongStation1);
+      Assert.AreEqual(70F, result[0].y, WrongLastPassHeight1);
+
+      Assert.AreEqual(ProfileCellType.Edge, result[1].cellType, WrongCellType2);
+      Assert.AreEqual(packager.CellList[1].Station, result[1].x, WrongStation2);
+      Assert.AreEqual(90F, result[1].y, WrongLastPassHeight2);
+
+      Assert.AreEqual(ProfileCellType.MidPoint, result[2].cellType, WrongCellType3);
+      var expectedStation = packager.CellList[1].Station +
+                            (packager.CellList[2].Station - packager.CellList[1].Station) / 2;
+      Assert.AreEqual(expectedStation, result[2].x, WrongStation3);
+      Assert.AreEqual(packager.CellList[1].CellLastElev, result[2].y, WrongLastPassHeight3);
+
+      Assert.AreEqual(ProfileCellType.Edge, result[3].cellType, WrongCellType4);
+      Assert.AreEqual(packager.CellList[2].Station, result[3].x, WrongStation4);
+      Assert.AreEqual(150F, result[3].y, WrongLastPassHeight4);
+
+      Assert.AreEqual(ProfileCellType.MidPoint, result[4].cellType, WrongCellType5);
+      expectedStation = packager.CellList[2].Station +
+                        (packager.CellList[3].Station - packager.CellList[2].Station) / 2;
+      Assert.AreEqual(expectedStation, result[4].x, WrongStation5);
+      Assert.AreEqual(packager.CellList[2].CellLastElev, result[4].y, WrongLastPassHeight5);
+
+      Assert.AreEqual(ProfileCellType.Gap, result[5].cellType, WrongCellType6);
+      Assert.AreEqual(packager.CellList[3].Station, result[5].x, WrongStation6);
+      Assert.AreEqual(250F, result[5].y, WrongLastPassHeight6);
+
+      Assert.AreEqual(ProfileCellType.Gap, result[6].cellType, WrongCellType7);
+      Assert.AreEqual(packager.CellList[3].Station + packager.CellList[3].InterceptLength, result[6].x, WrongStation7);
+      Assert.AreEqual(float.NaN, result[6].y, WrongLastPassHeight7);
+    }
+
+    private List<CompactionDataPoint> MockGetProfile(TICProfileCellListPackager packager)
     {
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
 
       var raptorClient = new Mock<IASNodeClient>();
       using (var ms = new MemoryStream())
@@ -620,9 +910,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false, null);
 
         var executor = RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(logger, raptorClient.Object);
-        var result = executor.Process(request) as CompactionProfileResult<CompactionProfileCell>;
-        return result;
+          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
+        var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
+        Assert.IsNotNull(result, ExecutorFailed);
+        Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
+
+        //NOTE: Tests all use "last pass" to test logic as it's the same for each type of data (last pass, composite, CMV, temperature etc.)
+        var lastPassResult = (from r in result.results where r.type == "lastPass" select r).SingleOrDefault();
+        Assert.IsNotNull(lastPassResult, ExecutorFailed);
+        return lastPassResult.data;
       }
     }
   }

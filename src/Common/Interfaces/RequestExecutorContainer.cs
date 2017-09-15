@@ -54,6 +54,11 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
     protected List<FileData> fileList;
 
     /// <summary>
+    /// For working with profiles
+    /// </summary>
+    protected ICompactionProfileResultHelper profileResultHelper;
+
+    /// <summary>
     /// Gets the available contract execution error states.
     /// </summary>
     /// <value>
@@ -137,7 +142,7 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
     protected virtual void ProcessErrorCodes()
     { }
 
-    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList)
+    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper)
     {
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
@@ -146,6 +151,7 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
       this.fileRepo = fileRepo;
       this.tileGenerator = tileGenerator;
       this.fileList = fileList;
+      this.profileResultHelper = profileResultHelper;
     }
 
     /// <summary>

@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using VSS.Productivity3D.Common.ResultHandling;
+
+namespace VSS.Productivity3D.Common.Interfaces
+{
+  public interface ICompactionProfileResultHelper
+  {
+    void FindCutFillElevations(CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult,
+      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult);
+
+    CompactionProfileResult<CompactionProfileDataResult> RearrangeProfileResult(
+      CompactionProfileResult<CompactionProfileCell> slicerProfileResult);
+
+    void RemoveRepeatedNoData(CompactionProfileResult<CompactionProfileDataResult> result);
+
+    void AddMidPoints(CompactionProfileResult<CompactionProfileDataResult> profileResult);
+
+    void InterpolateEdges(CompactionProfileResult<CompactionProfileDataResult> profileResult);
+
+    CompactionProfileResult<CompactionDesignProfileResult> ConvertProfileResult(
+      Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults);
+
+    void AddSlicerEndPoints(CompactionProfileResult<CompactionDesignProfileResult> profile);
+
+  }
+}

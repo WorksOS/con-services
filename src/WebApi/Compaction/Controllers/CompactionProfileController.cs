@@ -12,9 +12,8 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
-using VSS.Productivity3D.WebApi.Models.Compaction.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
@@ -117,8 +116,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var slicerProductionDataResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(logger, raptorClient)
-          .Process(slicerProductionDataProfileRequest) as CompactionProfileResult<CompactionProfileCell>
+          .Build<CompactionProfileExecutor>(logger, raptorClient, null, null, null, null, null, profileResultHelper)
+          .Process(slicerProductionDataProfileRequest) as CompactionProfileResult<CompactionProfileDataResult>
       );
 
       if (cutfillDesignUid.HasValue)
@@ -142,9 +141,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //Find the cut-fill elevations for the cell stations from the design vertex elevations
         profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult);
       }
-      var transformedResult = profileResultHelper.ConvertProfileResult(slicerProductionDataResult);
-      profileResultHelper.RemoveRepeatedNoData(transformedResult);
-      return transformedResult;
+      return slicerProductionDataResult;
     }
 
     [ProjectUidVerifier]

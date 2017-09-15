@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Linq;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Models;
@@ -13,10 +14,9 @@ using VSS.MasterData.Models.Utilities;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Velociraptor.PDSInterface;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
@@ -80,14 +80,16 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         if (memoryStream != null)
         {
           var profileResult = ConvertProfileResult(memoryStream, request.liftBuildSettings);
-          AddMidPoints(profileResult);
-          InterpolateEdges(profileResult);
-          result = profileResult;
+          var transformedResult = profileResultHelper.RearrangeProfileResult(profileResult);
+          profileResultHelper.RemoveRepeatedNoData(transformedResult);
+          profileResultHelper.AddMidPoints(transformedResult);
+          profileResultHelper.InterpolateEdges(transformedResult);
+          result = transformedResult;
         }
         else
         {
           //For convenience return empty list rather than null for easier manipulation
-          result = new CompactionProfileResult<CompactionProfileCell>{results = new List<CompactionProfileCell>()};
+          result = new CompactionProfileResult<Common.ResultHandling.CompactionProfileDataResult> {results = new List<CompactionProfileDataResult>()};
         }
       }
       finally
@@ -130,6 +132,14 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           profile.results.Add(gapCell);
         }
 
+        var lastPassHeight = currCell.lastPassHeight == VelociraptorConstants.NULL_SINGLE
+          ? float.NaN
+          : currCell.lastPassHeight;
+        var lastCompositeHeight = currCell.compositeLastPassHeight == VelociraptorConstants.NULL_SINGLE
+          ? float.NaN
+          : currCell.compositeLastPassHeight;
+
+        var designHeight = currCell.designHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.designHeight;
         bool noCCVValue = currCell.TargetCCV == 0 || currCell.TargetCCV == VelociraptorConstants.NO_CCV || currCell.CCV == VelociraptorConstants.NO_CCV;
         bool noCCVElevation = currCell.CCVElev == VelociraptorConstants.NULL_SINGLE || noCCVValue;
         bool noMDPValue = currCell.TargetMDP == 0 || currCell.TargetMDP == VelociraptorConstants.NO_MDP || currCell.MDP == VelociraptorConstants.NO_MDP;
@@ -138,14 +148,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         bool noTemperatureElevation = currCell.materialTemperatureElev == VelociraptorConstants.NULL_SINGLE || noTemperatureValue;
         bool noPassCountValue = currCell.topLayerPassCount == VelociraptorConstants.NO_PASSCOUNT;
  
-        var lastPassHeight = currCell.lastPassHeight == VelociraptorConstants.NULL_SINGLE
-          ? float.NaN
-          : currCell.lastPassHeight;
-        var lastCompositeHeight = currCell.compositeLastPassHeight == VelociraptorConstants.NULL_SINGLE
-          ? float.NaN
-          : currCell.compositeLastPassHeight;
-        var designHeight = currCell.designHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.designHeight;
-
         //Either have none or both speed values
         var noSpeedValue = currCell.cellMaxSpeed == VelociraptorConstants.NO_SPEED;
         var speedMin = noSpeedValue ? float.NaN : (float)(currCell.cellMinSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
@@ -185,27 +187,27 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           (currCell.PrevCCV == VelociraptorConstants.NO_CCV ? 100.0f :
             (float)Math.Abs(currCell.CCV - currCell.PrevCCV) / (float)currCell.PrevCCV * 100.0f);
 
-        var passCountIndex = noPassCountValue ? ValueTargetType.NoData :
+        var passCountIndex = noPassCountValue || float.IsNaN(lastPassHeight) ? ValueTargetType.NoData :
           (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? ValueTargetType.BelowTarget :
             (currCell.topLayerPassCount > currCell.topLayerPassCountTargetRange.Max ? ValueTargetType.AboveTarget :
               ValueTargetType.OnTarget));
 
-        var temperatureIndex = noTemperatureValue ? ValueTargetType.NoData :
+        var temperatureIndex = noTemperatureValue || noTemperatureElevation ? ValueTargetType.NoData :
           (currCell.materialTemperature < currCell.materialTemperatureWarnMin ? ValueTargetType.BelowTarget :
             (currCell.materialTemperature > currCell.materialTemperatureWarnMax ? ValueTargetType.AboveTarget :
               ValueTargetType.OnTarget));
 
-        var cmvIndex = noCCVValue ? ValueTargetType.NoData :
+        var cmvIndex = noCCVValue || noCCVElevation ? ValueTargetType.NoData :
           (cmvPercent < liftBuildSettings.cCVRange.min ? ValueTargetType.BelowTarget :
             (cmvPercent > liftBuildSettings.cCVRange.max ? ValueTargetType.AboveTarget :
               ValueTargetType.OnTarget));
 
-        var mdpIndex = noMDPValue ? ValueTargetType.NoData :
+        var mdpIndex = noMDPValue || noMDPElevation ? ValueTargetType.NoData :
           (mdpPercent < liftBuildSettings.mDPRange.min ? ValueTargetType.BelowTarget :
             (mdpPercent > liftBuildSettings.mDPRange.max ? ValueTargetType.AboveTarget :
               ValueTargetType.OnTarget));
 
-        var speedIndex = noSpeedValue ? ValueTargetType.NoData :
+        var speedIndex = noSpeedValue || float.IsNaN(lastPassHeight) ? ValueTargetType.NoData :
           (speedMax > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
             (speedMin < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed &&
              speedMax < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
@@ -244,7 +246,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
           minSpeed = speedMin,
           maxSpeed = speedMax,
-          speedHeight = lastPassHeight,
 
           passCountIndex = passCountIndex,
           temperatureIndex = temperatureIndex,
@@ -281,118 +282,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
       log.LogDebug(sb.ToString());
       return profile;
-    }
-
-    /// <summary>
-    /// Add mid points between the cell edge intersections. This is because the profile line is plotted using these points.
-    /// The cell edges are retained as this is where the color changes on the graph or chart.
-    /// </summary>
-    /// <param name="profileResult">The profile containing the list of cell edge points from Raptor</param>
-    /// <returns>The complete list of interspersed edges and  mid points.</returns>
-    private void AddMidPoints(CompactionProfileResult<CompactionProfileCell> profileResult)
-    {
-      log.LogDebug("Adding midpoints");
-      if (profileResult.results.Count > 3)
-      {
-        //No mid point for first and last segments since only partial across the cell.
-        //We have already added them as mid points.
-        var cells = new List<CompactionProfileCell>();
-
-        cells.Add(profileResult.results[0]);
-        for (int i = 1; i < profileResult.results.Count - 2; i++)
-        {
-          cells.Add(profileResult.results[i]);
-          if (profileResult.results[i].cellType != ProfileCellType.Gap)
-          {
-            var midPoint = new CompactionProfileCell(profileResult.results[i]);
-            midPoint.cellType = ProfileCellType.MidPoint;
-            midPoint.station = profileResult.results[i].station +
-                               (profileResult.results[i + 1].station - profileResult.results[i].station) / 2;
-            cells.Add(midPoint);
-          }
-        }
-        cells.Add(profileResult.results[profileResult.results.Count - 2]);
-        cells.Add(profileResult.results[profileResult.results.Count - 1]);
-        profileResult.results = cells;
-      }
-
-      StringBuilder sb = new StringBuilder();
-      sb.Append($"After adding midpoints: {profileResult.results.Count}");
-      foreach (var cell in profileResult.results)
-      {
-        sb.Append($",{cell.cellType}");
-      }
-      log.LogDebug(sb.ToString());
-    }
-
-    /// <summary>
-    /// Since the profile line will be drawn between line segment mid points we need to interpolate the cell edge points to lie on these line segments.
-    /// </summary>
-    /// <param name="profileResult">The profile containing the list of line segment points, both edges and mid points.</param>
-    private void InterpolateEdges(CompactionProfileResult<CompactionProfileCell> profileResult)
-    {
-      log.LogDebug("Interpolating edges");
-      if (profileResult.results.Count > 3)
-      {
-        //First and last points are not gaps or edges. They're always the start and end of the profile line.
-        for (int i = 1; i < profileResult.results.Count - 1; i++)
-        {
-          if (profileResult.results[i].cellType == ProfileCellType.Edge)
-          {
-            //Interpolate i edge for line between mid points at i-1 and i+1
-            var startIndex = i - 1;
-            var endIndex = i + 1;
-            if (profileResult.results[i - 1].cellType == ProfileCellType.Gap)
-            {
-              //Gap is between i-1 and i. Interpolate i edge for line between mid points at i-2 and i+1
-              startIndex--;
-              //Also adjust the gap point
-              InterpolateElevations(profileResult.results[i - 1], profileResult.results[startIndex],
-                profileResult.results[endIndex]);
-            }
-            InterpolateElevations(profileResult.results[i], profileResult.results[startIndex],
-              profileResult.results[endIndex]);
-          }
-        }
-      }
-      log.LogDebug("After interpolation");
-    }
-
-    /// <summary>
-    /// Interpolate elevations for the specified point (cell) on the line segment from startCell to endCell
-    /// </summary>
-    /// <param name="cell">The point to interpolate</param>
-    /// <param name="startCell">The start of the line segment</param>
-    /// <param name="endCell">The end of the line segment</param>
-    private void InterpolateElevations(CompactionProfileCell cell, CompactionProfileCell startCell, CompactionProfileCell endCell)
-    {
-      var proportion = (cell.station - startCell.station) / (endCell.station - startCell.station);
-
-      cell.firstPassHeight = InterpolateElevation(proportion, startCell.firstPassHeight, endCell.firstPassHeight);
-      cell.highestPassHeight = InterpolateElevation(proportion, startCell.highestPassHeight, endCell.highestPassHeight);
-      cell.lastPassHeight = InterpolateElevation(proportion, startCell.lastPassHeight, endCell.lastPassHeight);
-      cell.lowestPassHeight = InterpolateElevation(proportion, startCell.lowestPassHeight, endCell.lowestPassHeight);
-      cell.lastCompositeHeight = InterpolateElevation(proportion, startCell.lastCompositeHeight, endCell.lastCompositeHeight);
-      cell.designHeight = InterpolateElevation(proportion, startCell.designHeight, endCell.designHeight); //TODO: Should this be interpolated?
-      cell.cmvHeight = InterpolateElevation(proportion, startCell.cmvHeight, endCell.cmvHeight);
-      cell.mdpHeight = InterpolateElevation(proportion, startCell.mdpHeight, endCell.mdpHeight);
-      cell.temperatureHeight = InterpolateElevation(proportion, startCell.temperatureHeight, endCell.temperatureHeight);
-      cell.speedHeight = InterpolateElevation(proportion, startCell.speedHeight, endCell.speedHeight);
-      log.LogDebug($"Interpolated point {cell.station} of type {cell.cellType}");
-    }
-
-    /// <summary>
-    /// Interpolate an elevation
-    /// </summary>
-    /// <param name="proportion">The proportion of the elevation to use</param>
-    /// <param name="startElevation">The elevation at the start of the line segment to be used for interpolation</param>
-    /// <param name="endElevation">The elevation at the end of the line segment to be used for interpolation</param>
-    /// <returns></returns>
-    private float InterpolateElevation(double proportion, float startElevation, float endElevation)
-    {
-      //Check for no elevation data before trying to interpolate
-      return float.IsNaN(startElevation) || float.IsNaN(endElevation) ? float.NaN : 
-        startElevation + (float)proportion * (endElevation - startElevation);
     }
 
     /// <summary>

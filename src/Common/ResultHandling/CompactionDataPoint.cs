@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
   /// <summary>
   /// One point of compaction profile data.
@@ -51,8 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     /// <summary>
     /// The type of profile this cell belongs to. Used to determine which properties to serialize.
     /// </summary>
-    [JsonIgnore]
-    public string type;
+    [JsonIgnore] public string type;
 
     /// <summary>
     /// Tell JSON serializer when to serialize property y2
@@ -76,6 +70,28 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     public bool ShouldSerializevalueType()
     {
       return type.ToLower().Contains("summary");
+    }
+
+    /// <summary>
+    /// Default constructor
+    /// </summary>
+    public CompactionDataPoint()
+    { }
+
+    /// <summary>
+    /// Copy constructor
+    /// </summary>
+    /// <param name="point">The point to copy</param>
+    public CompactionDataPoint(CompactionDataPoint point)
+    {
+      cellType = point.cellType;
+      x = point.x;
+      y = point.y;
+      value = point.value;
+      valueType = point.valueType;
+      y2 = point.y2;
+      value2 = point.value2;
+      type = point.type;
     }
   }
 }

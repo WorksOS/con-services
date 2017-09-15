@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
   public class CompactionDesignProfileResult
   {
