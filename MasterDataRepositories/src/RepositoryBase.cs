@@ -12,23 +12,25 @@ namespace VSS.MasterData.Repositories
 {
   public abstract class RepositoryBase
   {
-    // this is used by the unit tests only 
-    private static readonly int dbSyncRetryCount = 3;
+    protected const int Nil_Upserts = 0;
+    protected ILogger log;
 
-    private static readonly int dbSyncMsDelay = 500;
+    // this is used by the unit tests only 
+    private const int dbSyncRetryCount = 3;
+
+    private const int dbSyncMsDelay = 500;
     private static int dbSyncRetryCountSoFar;
 
-    private static readonly int dbAsyncRetryCount = 3;
-    private static readonly int dbAsyncMsDelay = 500;
+    private const int dbAsyncRetryCount = 3;
+    private const int dbAsyncMsDelay = 500;
     private static int dbAsyncRetriesSoFar;
     private readonly string connectionString = string.Empty;
-    private readonly ILogger log;
 
     private MySqlConnection Connection;
     private readonly Policy dbAsyncPolicy;
     private Policy dbSyncPolicy;
     private bool isInTransaction;
-
+    
 
     protected RepositoryBase(IConfigurationStore _connectionString, ILoggerFactory logger)
     {

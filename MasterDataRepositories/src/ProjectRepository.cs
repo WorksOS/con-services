@@ -15,8 +15,6 @@ namespace VSS.MasterData.Repositories
 {
   public class ProjectRepository : RepositoryBase, IRepository<IProjectEvent>, IProjectRepository
   {
-    private readonly ILogger log;
-
     public ProjectRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString,
       logger)
     {

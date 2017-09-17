@@ -12,6 +12,7 @@
         FillZone = 7,
         Import = 8,
         Export = 9,
-        Landfill = 10
+        Landfill = 10,
+        Filter = 11
     }
 }

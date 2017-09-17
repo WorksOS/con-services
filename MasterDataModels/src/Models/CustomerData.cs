@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace VSS.MasterData.Models.Models
+﻿namespace VSS.MasterData.Models.Models
 {
   /// <summary>
   ///   Describes VL customer
