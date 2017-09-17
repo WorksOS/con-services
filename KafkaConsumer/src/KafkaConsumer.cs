@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,14 +53,30 @@ namespace VSS.KafkaConsumer
     {
       log.LogDebug("KafkaConsumer: StartProcessingAsync");
       stopToken = token;
-      log.LogDebug("KafkaConsumer: StartProcessingAsync has been cancelled");
+
       return await Task.Factory.StartNew(async () =>
-      {
-        while (!token.IsCancellationRequested)
         {
-          await ProcessMessage();
-        }
-      }, TaskCreationOptions.LongRunning);
+          while (!token.IsCancellationRequested)
+          {
+            try
+            {
+              await ProcessMessage();
+            }
+            catch (Exception ex)
+            {
+              log.LogError($"Unhandled error occured {ex.Message} in {ex.StackTrace}");
+            }
+          }
+        }, TaskCreationOptions.LongRunning)
+        .ContinueWith((o) =>
+        {
+          log.LogDebug("KafkaConsumer: StartProcessingAsync has been cancelled");
+          if (o.Exception != null)
+          {
+            log.LogDebug($"Exception: {o.Exception.Message}");
+          }
+          return Task.FromResult(1);
+        });
     }
 
     /// <summary>
@@ -100,7 +117,7 @@ namespace VSS.KafkaConsumer
           }
         }
         log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
-        kafkaDriver.Commit();
+        await kafkaDriver.Commit();
       }
     }
 

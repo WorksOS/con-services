@@ -32,7 +32,7 @@ namespace VSS.KafkaConsumer.Kafka
     public long offset { get; }
     public long partition { get; }
 
-    public Message(IEnumerable<byte[]> payload, Error message, long offset=-1, long partition=-1)
+    public Message(IEnumerable<byte[]> payload, Error message, long offset=-1, long partition=-1 )
     {
       this.payload = payload;
       this.message = message;

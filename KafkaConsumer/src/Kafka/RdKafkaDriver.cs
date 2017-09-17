@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Confluent.Kafka;
@@ -34,17 +35,26 @@ namespace VSS.KafkaConsumer.Kafka
 
     public async Task<CommittedOffsets> Commit()
     {
-      return await rdConsumer?.CommitAsync();
+     // Console.WriteLine($"Comitting offsets");
+      var comittedOffsets = rdConsumer.CommitAsync().ContinueWith(o =>
+      {
+        Console.WriteLine(
+          $"Committed with result {o.Result.Error.Reason} {o.Result.Error.Code}");
+        return o.Result;
+      }).Result;
+      return comittedOffsets;
     }
 
     public Message Consume(TimeSpan timeout)
     {
       var payloads = new List<byte[]>();
+
       Confluent.Kafka.Message result = null;
       int protectionCounter = 0;
-
-      while (payloads.Count < batchSize && protectionCounter<10) //arbitary number here for the perfomance testing
+      
+      while (payloads.Count < batchSize && protectionCounter < 10) //arbitary number here for the perfomance testing
       {
+        //Console.WriteLine($"Polling with {timeout.Milliseconds} ms and retries {protectionCounter}");
         rdConsumer.Consume(out result, timeout);
         if (result == null)
         {
@@ -52,14 +62,16 @@ namespace VSS.KafkaConsumer.Kafka
           continue;
         }
         if (!result.Error.HasError)
+        {
           payloads.Add(result.Value);
+        }
         else
           protectionCounter++;
       }
 
       return result != null
         ? new Message(payloads, Error.NO_ERROR, result.Offset, result.Partition)
-        : new Message(payloads, Error.NO_DATA, result.Offset, result.Partition);
+        : new Message(payloads, Error.NO_DATA);
     }
 
 
