@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,14 +53,30 @@ namespace VSS.KafkaConsumer
     {
       log.LogDebug("KafkaConsumer: StartProcessingAsync");
       stopToken = token;
-      log.LogDebug("KafkaConsumer: StartProcessingAsync has been cancelled");
+
       return await Task.Factory.StartNew(async () =>
-      {
-        while (!token.IsCancellationRequested)
         {
-          await ProcessMessage();
-        }
-      }, TaskCreationOptions.LongRunning);
+          while (!token.IsCancellationRequested)
+          {
+            try
+            {
+              await ProcessMessage();
+            }
+            catch (Exception ex)
+            {
+              log.LogError($"Unhandled error occured {ex.Message} in {ex.StackTrace}");
+            }
+          }
+        }, TaskCreationOptions.LongRunning)
+        .ContinueWith((o) =>
+        {
+          log.LogWarning("KafkaConsumer: StartProcessingAsync has been cancelled");
+          if (o.Exception != null)
+          {
+            log.LogCritical($"Exception: {o.Exception.Message}");
+          }
+          return Task.FromResult(1);
+        });
     }
 
     /// <summary>
@@ -72,7 +89,6 @@ namespace VSS.KafkaConsumer
 
     private async Task ProcessMessage()
     {
-//      log.LogTrace("Kafka Consuming");
       var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(requestTime));
       if (messages.message == Error.NO_ERROR)
       {
@@ -90,17 +106,17 @@ namespace VSS.KafkaConsumer
           }
           catch (Exception ex)
           {
-            log.LogDebug("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}",
+            log.LogError("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}",
               ex.Message, ex.StackTrace);
             if (ex.InnerException != null)
             {
-              log.LogDebug("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message,
+              log.LogError("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message,
                 ex.InnerException.StackTrace);
             }
           }
         }
         log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
-        kafkaDriver.Commit();
+        await kafkaDriver.Commit();
       }
     }
 
