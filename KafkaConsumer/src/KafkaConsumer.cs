@@ -70,10 +70,10 @@ namespace VSS.KafkaConsumer
         }, TaskCreationOptions.LongRunning)
         .ContinueWith((o) =>
         {
-          log.LogDebug("KafkaConsumer: StartProcessingAsync has been cancelled");
+          log.LogWarning("KafkaConsumer: StartProcessingAsync has been cancelled");
           if (o.Exception != null)
           {
-            log.LogDebug($"Exception: {o.Exception.Message}");
+            log.LogCritical($"Exception: {o.Exception.Message}");
           }
           return Task.FromResult(1);
         });
@@ -89,7 +89,6 @@ namespace VSS.KafkaConsumer
 
     private async Task ProcessMessage()
     {
-//      log.LogTrace("Kafka Consuming");
       var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(requestTime));
       if (messages.message == Error.NO_ERROR)
       {
@@ -107,11 +106,11 @@ namespace VSS.KafkaConsumer
           }
           catch (Exception ex)
           {
-            log.LogDebug("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}",
+            log.LogError("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}",
               ex.Message, ex.StackTrace);
             if (ex.InnerException != null)
             {
-              log.LogDebug("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message,
+              log.LogError("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message,
                 ex.InnerException.StackTrace);
             }
           }
