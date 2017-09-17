@@ -12,14 +12,11 @@ namespace VSS.MasterData.Repositories
 {
   public class FilterRepository : RepositoryBase, IRepository<IFilterEvent>, IFilterRepository
   {
-    private readonly ILogger log;
-
     public FilterRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString,
       logger)
     {
       log = logger.CreateLogger<FilterRepository>();
     }
-
 
     #region store
 
@@ -37,8 +34,8 @@ namespace VSS.MasterData.Repositories
       log.LogDebug($"Event type is {evt.GetType()}");
       if (evt is CreateFilterEvent)
       {
-        var filterEvent = (CreateFilterEvent) evt;
-        var filter = new Filter()
+        var filterEvent = (CreateFilterEvent)evt;
+        var filter = new Filter
         {
           CustomerUid = filterEvent.CustomerUID.ToString(),
           UserId = filterEvent.UserID,
@@ -53,8 +50,8 @@ namespace VSS.MasterData.Repositories
       }
       else if (evt is UpdateFilterEvent)
       {
-        var filterEvent = (UpdateFilterEvent) evt;
-        var filter = new Filter()
+        var filterEvent = (UpdateFilterEvent)evt;
+        var filter = new Filter
         {
           CustomerUid = filterEvent.CustomerUID.ToString(),
           UserId = filterEvent.UserID,
@@ -68,8 +65,8 @@ namespace VSS.MasterData.Repositories
       }
       else if (evt is DeleteFilterEvent)
       {
-        var filterEvent = (DeleteFilterEvent) evt;
-        var filter = new Filter()
+        var filterEvent = (DeleteFilterEvent)evt;
+        var filter = new Filter
         {
           CustomerUid = filterEvent.CustomerUID.ToString(),
           UserId = filterEvent.UserID,
@@ -102,7 +99,7 @@ namespace VSS.MasterData.Repositories
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
               WHERE f.FilterUID = @filterUid",
-        new {filter.FilterUid})).FirstOrDefault();
+        new { filter.FilterUid })).FirstOrDefault();
 
       if (eventType == "CreateFilterEvent")
         upsertedCount = await CreateFilter(filter, existing);
@@ -120,7 +117,7 @@ namespace VSS.MasterData.Repositories
     {
       log.LogDebug($"FilterRepository/CreateFilter: filter={JsonConvert.SerializeObject(filter)}))')");
       int upsertedCount = 0;
-      
+
       if (existing == null)
       {
         const string insert =
@@ -140,7 +137,7 @@ namespace VSS.MasterData.Repositories
 
       // a delete was processed before the create, even though it's actionUTC is later (due to kafka partioning issue)
       //       update everything but ActionUTC from the create
-      if (existing.LastActionedUtc >= filter.LastActionedUtc && existing.IsDeleted) 
+      if (existing.LastActionedUtc >= filter.LastActionedUtc && existing.IsDeleted)
       {
         filter.IsDeleted = true;
         log.LogDebug("FilterRepository/CreateFilter: going to update filter if received after a delete");
@@ -155,12 +152,9 @@ namespace VSS.MasterData.Repositories
         return upsertedCount;
       }
 
-      // if Create received after it's been , then ignore it 
-      //   as Name; FilterJson and actionUtc will be more recent
-      
+      // If Create received after it's been deleted then ignore it as Name; BoundaryJson and actionUtc will be more recent.
       return upsertedCount;
     }
-
 
     private async Task<int> UpdateFilter(Filter filter, Filter existing)
     {
@@ -187,10 +181,8 @@ namespace VSS.MasterData.Repositories
       }
 
       // update received before create
-      if (existing == null)
-      {
-        const string insert =
-          @"INSERT Filter
+      const string insert =
+        @"INSERT Filter
                  (fk_CustomerUid, UserID, fk_ProjectUID, FilterUID,
                   Name, FilterJson, 
                   IsDeleted, LastActionedUTC)
@@ -199,10 +191,8 @@ namespace VSS.MasterData.Repositories
                @Name, @FilterJson, 
                @IsDeleted, @LastActionedUTC)";
 
-        upsertedCount = await ExecuteWithAsyncPolicy(insert, filter);
-        log.LogDebug($"FilterRepository/UpdateFilter: created {upsertedCount}");
-        return upsertedCount;
-      }
+      upsertedCount = await ExecuteWithAsyncPolicy(insert, filter);
+      log.LogDebug($"FilterRepository/UpdateFilter: created {upsertedCount}");
       return upsertedCount;
     }
 
@@ -270,7 +260,7 @@ namespace VSS.MasterData.Repositories
     public async Task<IEnumerable<Filter>> GetFiltersForProjectUser(string customerUid, string projectUid, string userId, bool includeTransient = false)
     {
       string queryString = null;
-      
+
       if (includeTransient)
         queryString = @"SELECT 
                 f.fk_CustomerUid AS CustomerUID, f.UserID, 
@@ -337,7 +327,7 @@ namespace VSS.MasterData.Repositories
               FROM Filter f
               WHERE f.FilterUID = @filterUid 
                 AND f.IsDeleted = 0",
-        new {filterUid})).FirstOrDefault();
+        new { filterUid })).FirstOrDefault();
       return filter;
     }
 

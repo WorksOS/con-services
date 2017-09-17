@@ -3,6 +3,7 @@
 SET config=Release
 SET projectFile=VSS.MasterData.Models.csproj
 SET packageServer=https://packages.vspengg.com/
+SET projectId=VSS.MasterData.Models.netcore
 SET packageOutputFolder=%cd%\nupkgs
 SET apiKey=qATxVIHO5rIPF3K7
 
@@ -42,7 +43,7 @@ IF /I "%~1"=="--delete" GOTO deletePackageFromServer
     GOTO end
   )
 
-  nuget delete %projectFile% "%~2" -Source %packageServer% -ApiKey %apiKey%
+  nuget delete %projectId% "%~2" -Source %packageServer% -ApiKey %apiKey%
 
 
 :end

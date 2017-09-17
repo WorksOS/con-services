@@ -12,8 +12,6 @@ namespace VSS.MasterData.Repositories
 {
   public class DeviceRepository : RepositoryBase, IRepository<IDeviceEvent>, IDeviceRepository
   {
-    private readonly ILogger log;
-
     public DeviceRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString,
       logger)
     {
@@ -30,7 +28,7 @@ namespace VSS.MasterData.Repositories
         return 0;
       }
 
-      log.LogDebug($"Event type is {evt.GetType().ToString()}");
+      log.LogDebug($"Event type is {evt.GetType()}");
       if (evt is CreateDeviceEvent)
       {
         var device = new Device();

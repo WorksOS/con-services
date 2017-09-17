@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Repositories.netcore</Product>
     <Description>Shared lib to access Masterdata aspects in the DB</Description>
-    <VersionPrefix>2.2.3</VersionPrefix>
+    <VersionPrefix>2.3.0</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>VSS.MasterData.Repositories</AssemblyName>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
@@ -15,7 +15,6 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
-
 
   <ItemGroup>
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
@@ -40,6 +39,5 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
-
 
 </Project>

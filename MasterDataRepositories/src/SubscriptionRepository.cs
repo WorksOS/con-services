@@ -13,8 +13,6 @@ namespace VSS.MasterData.Repositories
 {
   public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>, ISubscriptionRepository
   {
-    private readonly ILogger log;
-
     public Dictionary<string, ServiceType> _serviceTypes;
 
     public SubscriptionRepository(IConfigurationStore connectionString, ILoggerFactory logger) : base(
