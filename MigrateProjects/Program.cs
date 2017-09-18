@@ -15,10 +15,13 @@ namespace MigrateProjects
     static void Main(string[] args)
     {
       //Get all projects
+      Console.WriteLine("Loading projects");
       NH_OPDataSet opDataset = new NH_OPDataSet();
       NH_OPDataSetTableAdapters.DataTable1TableAdapter table = new NH_OPDataSetTableAdapters.DataTable1TableAdapter();
       NH_OPDataSetTableAdapters.CoordinateSystemTableAdapter coordtable = new NH_OPDataSetTableAdapters.CoordinateSystemTableAdapter();
+      Console.WriteLine("Filling projects");
       table.Fill(opDataset.DataTable1);
+      Console.WriteLine("Filling CSs");
       coordtable.Fill(opDataset.CoordinateSystem);
 
       var projectsToSend = opDataset.DataTable1.Where(p=>1==1);

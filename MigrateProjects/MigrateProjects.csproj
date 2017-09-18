@@ -57,8 +57,8 @@
     <Reference Include="VSS.Hosted.VLCommon">
       <HintPath>.\VSS.Hosted.VLCommon.dll</HintPath>
     </Reference>
-    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.1340.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.1340.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.1356.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.1356.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

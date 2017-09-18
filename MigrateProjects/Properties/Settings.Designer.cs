@@ -12,7 +12,7 @@ namespace MigrateProjects.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.3.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,21 +25,21 @@ namespace MigrateProjects.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=sjc3-nhd-dbv30.vss-eng.com,2985\\sjc3_NHD_SQL01;Initial Catalog=NH_OP;" +
-            "Integrated Security=True")]
-        public string NH_OPConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("10.97.97.96")]
+        public string KAFKA_URI {
             get {
-                return ((string)(this["NH_OPConnectionString"]));
+                return ((string)(this["KAFKA_URI"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10.97.97.32")]
-        public string KAFKA_URI {
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=SJC3-NHB-DBV30.vss-eng.com\\SJC3_NHB_SQL01,2985;Initial Catalog=NH_OP;" +
+            "Integrated Security=False;User ID=FlexGateway;Password=!Trup2ud@;")]
+        public string NH_OPConnectionString {
             get {
-                return ((string)(this["KAFKA_URI"]));
+                return ((string)(this["NH_OPConnectionString"]));
             }
         }
     }

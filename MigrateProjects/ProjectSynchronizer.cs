@@ -6,7 +6,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using log4net;
-using RestSharp;
 using VSS.Hosted.VLCommon;
 using MigrateProjects.Properties;
 using Newtonsoft.Json;
@@ -72,7 +71,7 @@ namespace ThreeDAPIs.ProjectMasterData
                           };
 
       var messagePayload = JsonConvert.SerializeObject(new { CreateProjectEvent = evt });
-      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1",
+      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1-Alpha",
         new KeyValuePair<string, string>(evt.ProjectUID.ToString(), messagePayload)).Wait();
     }
 
@@ -88,7 +87,7 @@ namespace ThreeDAPIs.ProjectMasterData
                                     ReceivedUTC = actionUTC
                                 };
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectCustomer = evt });
-      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1",
+      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1-Alpha",
         new KeyValuePair<string, string>(evt.ProjectUID.ToString(), messagePayload)).Wait();
     }
 
@@ -103,7 +102,7 @@ namespace ThreeDAPIs.ProjectMasterData
                                    ReceivedUTC = actionUTC
                                };
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = evt });
-      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1",
+      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1-Alpha",
         new KeyValuePair<string, string>(evt.ProjectUID.ToString(), messagePayload)).Wait();
     }
 
@@ -118,7 +117,7 @@ namespace ThreeDAPIs.ProjectMasterData
         ReceivedUTC = actionUTC
       };
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = evt });
-      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1",
+      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1-Alpha",
         new KeyValuePair<string, string>(evt.ProjectUID.ToString(), messagePayload)).Wait();
     }
 
