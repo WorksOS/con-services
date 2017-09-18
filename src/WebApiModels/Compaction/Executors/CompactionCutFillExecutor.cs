@@ -26,27 +26,30 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
-      /*
-       * Uncomment when Raptor implementation done
-       * 
+ /*
       TCutFillDetails cutFillDetails;
 
       bool success = raptorClient.GetCutFillDetails(request.projectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtNull),
-        request.CutFillTolerances,
+        new TCutFillSettings
+        {
+          Offsets = request.CutFillTolerances,
+          DesignDescriptor = designDescriptor
+        },
         filter,
         liftBuildSettings,
         out cutFillDetails);
+
       if (success)
       {
-        result = CompactionCutFillDetailedResult.CreateCutFillDetailedResult(cutFillDetails.percents);
+        result = CompactionCutFillDetailedResult.CreateCutFillDetailedResult(cutFillDetails.Percents);
       }
       else
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           "Failed to get requested cut-fill details data"));
       }
-      */
+ */     
       return result;
     }
   }

@@ -1,0 +1,30 @@
+﻿{
+  "NoDesignFilter_Details": {
+    "percents": [
+
+    ],
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Details_PS": {
+    "percents": [
+
+    ],
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside_Details": {
+    "percents": [
+
+    ],
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersects_Details": {
+    "percents": [
+
+    ],
+    "Code": 0,
+    "Message": "success"
+  }
+}
