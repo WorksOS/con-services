@@ -691,6 +691,7 @@ namespace VSS.Productivity3D.Common.Proxies
         OverrideMachineCCV = settings.overridingMachineCCV.HasValue,
         OverrideMachineMDP = settings.overridingMachineMDP.HasValue,
         OverrideTargetPassCount = settings.overridingTargetPassCountRange != null,
+        OverrideTemperatureWarningLevels = settings.overridingTemperatureWarningLevels != null,
         OverridingLiftThickness = settings.overridingLiftThickness.HasValue ? settings.overridingLiftThickness.Value : 0f,
         OverridingMachineCCV = settings.overridingMachineCCV.HasValue ? settings.overridingMachineCCV.Value : (short)0,
         OverridingMachineMDP = settings.overridingMachineMDP.HasValue ? settings.overridingMachineMDP.Value : (short)0,
