@@ -28,20 +28,21 @@ namespace LandfillService.WebApi.Controllers
     {
         private RaptorApiClient raptorApiClient = new RaptorApiClient();
 
-        //public ProjectsController()
-        //{
-        //    LandfillDb.UnlockAllProjects();  // if the service terminates, some projects can be left locked for volume retrieval; unlock them
-        //}
+    //public ProjectsController()
+    //{
+    //    LandfillDb.UnlockAllProjects();  // if the service terminates, some projects can be left locked for volume retrieval; unlock them
+    //}
 
-        #region Projects
-        /// <summary>
-        /// Retrieves a list of projects from the db
-        /// </summary>
-        /// <param name="userUid">User ID</param>
-        /// <returns>A list of projects or error details</returns>
-        private IEither<IHttpActionResult, IEnumerable<Project>> PerhapsUpdateProjectList(string userUid)
+    #region Projects
+    /// <summary>
+    /// Retrieves a list of projects from the db
+    /// </summary>
+    /// <param name="userUid">User ID</param>
+    /// <param name="customerUid">User ID</param>
+    /// <returns>A list of projects or error details</returns>
+    private IEither<IHttpActionResult, IEnumerable<Project>> PerhapsUpdateProjectList(string userUid, string customerUid)
         {
-           IEnumerable<Project> projects = LandfillDb.GetProjects(userUid);
+           IEnumerable<Project> projects = LandfillDb.GetProjects(userUid, customerUid);
            //LoggerSvc.LogMessage(null, null, null, "PerhapsUpdateProjectList: projects count=" + projects.Count());
            return Either.Right<IHttpActionResult, IEnumerable<Project>>(projects);
         }
@@ -53,7 +54,8 @@ namespace LandfillService.WebApi.Controllers
         [Route("")]
         public IHttpActionResult Get()
         {
-          return PerhapsUpdateProjectList((RequestContext.Principal as LandfillPrincipal).UserUid).Case(errorResponse => errorResponse, projects => Ok(projects));
+          var principal = (RequestContext.Principal as LandfillPrincipal);
+          return PerhapsUpdateProjectList(principal.UserUid, principal.CustomerUid).Case(errorResponse => errorResponse, projects => Ok(projects));
         }
 
         /// <summary>
@@ -104,11 +106,11 @@ namespace LandfillService.WebApi.Controllers
         [Route("{id}")]
         public IHttpActionResult Get(uint id, Guid? geofenceUid=null, DateTime? startDate=null, DateTime? endDate=null)
         {
-            // Get the available data
-            // Kick off missing volumes retrieval IF not already running
-            // Check if there are missing volumes and indicate to the client
+          // Get the available data
+          // Kick off missing volumes retrieval IF not already running
+          // Check if there are missing volumes and indicate to the client
+          var principal = (RequestContext.Principal as LandfillPrincipal);
 
-          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
           //Secure with project list
           if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
           {
@@ -116,7 +118,7 @@ namespace LandfillService.WebApi.Controllers
           }
           LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(),"Retrieving density");
 
-            return PerhapsUpdateProjectList(userUid).Case(errorResponse => errorResponse, projects => 
+            return PerhapsUpdateProjectList(principal.UserUid, principal.CustomerUid).Case(errorResponse => errorResponse, projects => 
             {
                 try
                 {
@@ -152,7 +154,8 @@ namespace LandfillService.WebApi.Controllers
         [Route("{id}/weights")]
         public IHttpActionResult GetWeights(uint id)
         {
-          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          var principal = (RequestContext.Principal as LandfillPrincipal);
+
           //Secure with project list
           if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
           {
@@ -160,7 +163,7 @@ namespace LandfillService.WebApi.Controllers
           }
           LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving weights");
 
-          return PerhapsUpdateProjectList(userUid).Case(errorResponse => errorResponse, projects => 
+          return PerhapsUpdateProjectList(principal.UserUid, principal.CustomerUid).Case(errorResponse => errorResponse, projects => 
           {
               try
               {
@@ -253,12 +256,12 @@ namespace LandfillService.WebApi.Controllers
                            "Missing geofence UID"));            
           }
           var geofenceUidStr = geofenceUid.Value.ToString();
- 
-          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+
+          var principal = (RequestContext.Principal as LandfillPrincipal);
           //LoggerSvc.LogMessage(null, null, null, "PostWeights: userUid=" + userUid);          
 
 
-            return PerhapsUpdateProjectList(userUid).Case(errorResponse => errorResponse, projects =>
+          return PerhapsUpdateProjectList(principal.UserUid, principal.CustomerUid).Case(errorResponse => errorResponse, projects =>
             {
                 var project = projects.Where(p => p.id == id).First();
 
@@ -283,7 +286,7 @@ namespace LandfillService.WebApi.Controllers
                     }
                 };
 
-                GetVolumesInBackground(userUid, project, validEntries, () =>
+                GetVolumesInBackground(principal.UserUid, project, validEntries, () =>
                 {
                    // GetMissingVolumesInBackground(userUid, project);
                 });
@@ -372,7 +375,7 @@ namespace LandfillService.WebApi.Controllers
         [Route("{id}/volumeTime")]
         public async Task<IHttpActionResult> GetVolumeTimeSummary(uint id)
         {
-          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          var principal = (RequestContext.Principal as LandfillPrincipal);
           //Secure with project list
           if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
           {
@@ -382,7 +385,7 @@ namespace LandfillService.WebApi.Controllers
 
        try
           {
-            var projects = LandfillDb.GetProjects(userUid);
+            var projects = LandfillDb.GetProjects(principal.UserUid, principal.CustomerUid);
             var project = projects.Where(p => p.id == id).First();
             //var project = LandfillDb.GetProject(id).First();
             DateTime todayinProjTimeZone = LandfillDb.GetTodayInProjectTimeZone(project.timeZoneName);
@@ -394,9 +397,9 @@ namespace LandfillService.WebApi.Controllers
             var res = await raptorApiClient.GetDesignID((RequestContext.Principal as LandfillPrincipal).JWT, project,(RequestContext.Principal as LandfillPrincipal).CustomerUid );
             var designId = res.Where(r => r.name == "TOW.ttm").Select(i => i.id).First();
             LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Design id: " + designId.ToString(), "Retrieving DesignID");
-            var firstAirspaceVol = await GetAirspaceVolumeInBackground(userUid, project, true, designId);
-            var lastAirspaceVol = await GetAirspaceVolumeInBackground(userUid, project, false, designId);
-            var statsDates = await GetProjectStatisticsInBackground(userUid, project);
+            var firstAirspaceVol = await GetAirspaceVolumeInBackground(principal.UserUid, project, true, designId);
+            var lastAirspaceVol = await GetAirspaceVolumeInBackground(principal.UserUid, project, false, designId);
+            var statsDates = await GetProjectStatisticsInBackground(principal.UserUid, project);
             var dates = statsDates.ToList();
             var volPerDay = firstAirspaceVol.HasValue && lastAirspaceVol.HasValue ?
               Math.Abs(firstAirspaceVol.Value - lastAirspaceVol.Value) /
@@ -537,7 +540,7 @@ namespace LandfillService.WebApi.Controllers
         [Route("{id}/geofences")]
         public IHttpActionResult GetGeofences(uint id)
         {
-          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          var principal = (RequestContext.Principal as LandfillPrincipal);
           //Secure with project list
           if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
           {
@@ -547,7 +550,7 @@ namespace LandfillService.WebApi.Controllers
          
           try
           {
-            var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
+            var project = LandfillDb.GetProjects(principal.UserUid, principal.CustomerUid).Where(p => p.id == id).First();
             IEnumerable<Geofence> geofences = LandfillDb.GetGeofences(project.projectUid);            
             return Ok(geofences);
           }
@@ -611,7 +614,7 @@ namespace LandfillService.WebApi.Controllers
         [Route("{id}/ccaratio")]
         public IHttpActionResult GetCCARatio(uint id, Guid? geofenceUid=null, DateTime? startDate=null, DateTime? endDate=null)
         {
-          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          var principal = (RequestContext.Principal as LandfillPrincipal);
           //Secure with project list
           if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
           {
@@ -621,7 +624,7 @@ namespace LandfillService.WebApi.Controllers
 
           try
           {
-            var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
+            var project = LandfillDb.GetProjects(principal.UserUid, principal.CustomerUid).Where(p => p.id == id).First();
             var ccaData = LandfillDb.GetCCA(project, geofenceUid.HasValue ? geofenceUid.ToString() : null, startDate, endDate, null, null);
             var groupedData = ccaData.GroupBy(c => c.machineId).ToDictionary(k => k.Key, v => v.ToList());
             var machines = groupedData.ToDictionary(k => k.Key, v => LandfillDb.GetMachine(v.Key));
@@ -662,7 +665,7 @@ namespace LandfillService.WebApi.Controllers
         //NOTE: CCA summary is not cumulative. 
         //If data for more than one day is required, client must call Raptor service directly
 
-        var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+        var principal = (RequestContext.Principal as LandfillPrincipal);
         //Secure with project list
         if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
         {
@@ -688,7 +691,7 @@ namespace LandfillService.WebApi.Controllers
 
         try
         {
-          var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
+          var project = LandfillDb.GetProjects(principal.UserUid, principal.CustomerUid).Where(p => p.id == id).First();
           long? machineId = noMachine ? (long?)null :
               LandfillDb.GetMachineId(project.projectUid,
                                       new MachineDetails
@@ -736,7 +739,7 @@ namespace LandfillService.WebApi.Controllers
       [Route("{id}/machinelifts")]
       public async Task<IHttpActionResult> GetMachineLifts(uint id, DateTime? startDate = null, DateTime? endDate = null)
       {
-        var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+        var principal = (RequestContext.Principal as LandfillPrincipal);
         //Secure with project list
         if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
         {
@@ -747,7 +750,7 @@ namespace LandfillService.WebApi.Controllers
         try
         {
 
-          var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
+          var project = LandfillDb.GetProjects(principal.UserUid, principal.CustomerUid).Where(p => p.id == id).First();
       //    var project = LandfillDb.GetProject(id).First(); 
           var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
 

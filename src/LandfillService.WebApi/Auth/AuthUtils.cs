@@ -38,7 +38,24 @@ public class AuthUtilities
       {
         var jwtToken = new TPaaSJWT(token);
         userId = jwtToken.UserUid.ToString();
-        var customer = this._customerService.GetAssociatedCustomerbyUserUid(Guid.Parse(userId));
+        var customerUid = headers.GetValues("X-VisionLink-CustomerUid").ElementAt(0);
+
+        var customer = this._customerService.GetCustomer(Guid.Parse(customerUid));
+
+        if (customer == null)
+        {
+          errorMessage = $"No customer with ID: {customerUid}";
+          return null;
+        }
+
+        var customerbyUser = this._customerService.GetAssociatedCustomerbyUserUid(Guid.Parse(userId));
+
+        if (customerbyUser == null || customerbyUser.CustomerUID != customer.CustomerUID)
+        {
+          errorMessage = $"No customer associated with user ID: {userId}";
+          return null;
+        }
+
         AssociatedCustomer associatedCustomer = new AssociatedCustomer()
         {
           CustomerUID = Guid.Parse(customer.CustomerUID),

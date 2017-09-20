@@ -66,14 +66,15 @@ namespace LandfillService.Common.Context
         }
 
 
-        #region(Projects)
+    #region(Projects)
 
-        /// <summary>
-        /// Retrieves a list of projects for a given user 
-        /// </summary>
-        /// <param name="userUid">User ID used to associate projects with a user</param>
-        /// <returns>A list of projects</returns>
-        public static IEnumerable<Project> GetProjects(string userUid)
+    /// <summary>
+    /// Retrieves a list of projects for a given user 
+    /// </summary>
+    /// <param name="userUid">User ID used to associate projects with a user</param>
+    /// <param name="customerUid">Customer ID used to associate projects with a user</param>
+    /// <returns>A list of projects</returns>
+    public static IEnumerable<Project> GetProjects(string userUid, string customerUid)
         {
             return InTransaction((conn) =>
             {
@@ -87,11 +88,11 @@ namespace LandfillService.Common.Context
                               JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
                               JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
                               JOIN Subscription s ON ps.fk_SubscriptionUID = s.SubscriptionUID
-                              WHERE cu.fk_UserUID = @userUid and p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
+                              WHERE cu.fk_UserUID = @userUid AND cu.fk_CustomerUID = @customerUid AND p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
       
               var projects = new List<Project>();
 
-              using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid)))
+              using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid), new MySqlParameter("@customerUid", customerUid)))
                 {
                     while (reader.Read())
                     {

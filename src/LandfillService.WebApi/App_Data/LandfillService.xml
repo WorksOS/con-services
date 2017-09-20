@@ -521,11 +521,12 @@
             Handles project related requests
             </summary>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PerhapsUpdateProjectList(System.String)">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PerhapsUpdateProjectList(System.String,System.String)">
             <summary>
             Retrieves a list of projects from the db
             </summary>
             <param name="userUid">User ID</param>
+            <param name="customerUid">User ID</param>
             <returns>A list of projects or error details</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get">
