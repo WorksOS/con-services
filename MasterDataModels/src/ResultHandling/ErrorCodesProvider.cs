@@ -51,6 +51,11 @@ namespace VSS.MasterData.Models.ResultHandling
       DynamicAddwithOffset("Hydration of filterJson with boundary failed. Exception: {0}.", 43);
       DynamicAddwithOffset("Hydration of filterJson with boundary failed.", 44);
       DynamicAddwithOffset("Invalid spatial filter boundary. One or more polygon components are missing.", 45);
+      DynamicAddwithOffset("Invalid object type, cast failed.", 46);
+      DynamicAddwithOffset("GetBoundary By BoundaryUid. Invalid parameters.", 47);
+      DynamicAddwithOffset("GetBoundary By BoundaryUid. Unable to retrieve boundary. Exception: {0}.", 48);
+      DynamicAddwithOffset("GetBoundary By BoundaryUid. The requested Boundary does exist, or does not belong to the requesting project or filter.", 49);
+      DynamicAddwithOffset("GetBoundaries By projectUid. Unable to retrieve Boundaries. Exception: {0}.", 50);
     }
   }
 }

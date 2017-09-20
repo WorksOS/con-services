@@ -131,7 +131,7 @@ namespace VSS.MasterData.Models.Models
         string polygonName = null
       )
     {
-      return new Filter()
+      return new Filter
       {
         startUTC = startUtc,
         endUTC = endUtc,
@@ -156,7 +156,8 @@ namespace VSS.MasterData.Models.Models
       return JsonConvert.SerializeObject(filter);
     }
 
-    public void Validate([FromServices] IServiceExceptionHandler serviceExceptionHandler)
+    public void 
+      Validate([FromServices] IServiceExceptionHandler serviceExceptionHandler)
     {
       //Check date range properties
       if (startUTC.HasValue || endUTC.HasValue)
@@ -207,8 +208,6 @@ namespace VSS.MasterData.Models.Models
             && (string.IsNullOrEmpty(polygonUid) || string.IsNullOrEmpty(polygonName) || polygonLL == null)
         )
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
-
     }
-
   }
 }

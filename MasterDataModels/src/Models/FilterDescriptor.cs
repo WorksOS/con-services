@@ -3,7 +3,7 @@
 namespace VSS.MasterData.Models.Models
 {
   /// <summary>
-  ///   Describes a filter
+  /// Describes a filter
   /// </summary>
   /// CustomerUid; UserUid and projectUid must be provided so shouldn't be returned
   public class FilterDescriptor

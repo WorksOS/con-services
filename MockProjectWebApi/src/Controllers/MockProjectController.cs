@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
+using System;
+using System.Collections.Generic;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -22,7 +22,7 @@ namespace MockProjectWebApi.Controllers
       Console.WriteLine("GetMockProjects");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
-      return new ProjectDataResult { ProjectDescriptors = projectList};
+      return new ProjectDataResult { ProjectDescriptors = _projectList };
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ namespace MockProjectWebApi.Controllers
           {
             Name = "CERA.bg.dxf",
             ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
-            CustomerUid = "DxfTileAcceptanceTest", 
+            CustomerUid = "DxfTileAcceptanceTest",
             ImportedFileType = ImportedFileType.Linework,
             ImportedFileUid = "cfcd4c01-6fc8-45d5-872f-513a0f619f03",
             LegacyFileId = 1,
@@ -56,7 +56,7 @@ namespace MockProjectWebApi.Controllers
           {
             Name = "Marylands_Metric.dxf",
             ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
-            CustomerUid = "DxfTileAcceptanceTest", 
+            CustomerUid = "DxfTileAcceptanceTest",
             ImportedFileType = ImportedFileType.Linework,
             ImportedFileUid = "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b",
             LegacyFileId = 2,
@@ -67,7 +67,7 @@ namespace MockProjectWebApi.Controllers
       else if (projectUidStr == ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1 ||
                projectUidStr == ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2)
       {
-        fileList = surveyedSurfacesFileList;
+        fileList = _surveyedSurfacesFileList;
         foreach (var file in fileList)
         {
           file.ProjectUid = projectUidStr;
@@ -75,11 +75,11 @@ namespace MockProjectWebApi.Controllers
         }
         if (projectUidStr == ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1)
         {
-          fileList.AddRange(designSurfacesFileList);
+          fileList.AddRange(_designSurfacesFileList);
         }
       }
 
-      return new FileDataResult { ImportedFileDescriptors = fileList};
+      return new FileDataResult { ImportedFileDescriptors = fileList };
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ namespace MockProjectWebApi.Controllers
       return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
     }
 
-    private List<FileData> surveyedSurfacesFileList = new List<FileData>
+    private readonly List<FileData> _surveyedSurfacesFileList = new List<FileData>
     {
       new FileData
       {
@@ -181,7 +181,7 @@ namespace MockProjectWebApi.Controllers
       }
     };
 
-    private List<FileData> designSurfacesFileList = new List<FileData>
+    private readonly List<FileData> _designSurfacesFileList = new List<FileData>
     {
       new FileData
       {
@@ -235,7 +235,7 @@ namespace MockProjectWebApi.Controllers
       }
     };
 
-    private List<ProjectData>  projectList = new List<ProjectData>
+    private readonly List<ProjectData> _projectList = new List<ProjectData>
     {
       new ProjectData {LegacyProjectId = 1000001, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1000100, ProjectUid = Guid.NewGuid().ToString()},

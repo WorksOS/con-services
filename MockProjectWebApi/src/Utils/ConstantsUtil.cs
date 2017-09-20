@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace MockProjectWebApi.Utils
+﻿namespace MockProjectWebApi.Utils
 {
-    public static class ConstantsUtil
+  public static class ConstantsUtil
     {
       public const int DIMENSIONS_PROJECT_ID = 1001158;
       public const string DIMENSIONS_PROJECT_UID = "ff91dd40-1569-4765-a2bc-014321f76ace";
