@@ -24,9 +24,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
-          .SetBasePath(env.ContentRootPath)
-          .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+        .SetBasePath(env.ContentRootPath)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
       env.ConfigureLog4Net("log4net.xml", _loggerRepoName);
 
@@ -48,19 +48,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       services.AddCors(options =>
       {
         options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
-                .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization", "X-VisionLink-CustomerUid", "X-VisionLink-UserUid")
-                .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
+          .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
+            "X-VisionLink-CustomerUid", "X-VisionLink-UserUid")
+          .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
       });
 
       // Add framework services.
       services
-          .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
-          .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
-          .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
-          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
-          .AddSingleton<IKafka, RdKafkaDriver>()
-          .AddSingleton<IConfigurationStore, GenericConfiguration>();
+        .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
+        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
+        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
+        .AddSingleton<IKafka, RdKafkaDriver>()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddMvc(
         config =>
         {
@@ -110,11 +111,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     {
       _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       _serviceCollection.BuildServiceProvider();
-   
+
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(_loggerRepoName);
 
-      ExceptionsTrapExtensions.UseExceptionTrap(app);
+      app.UseExceptionTrap();
+#if NET_4_7
+      if (Configuration["newrelic"] == "true")
+        app.UseFilterMiddleware<NewRelicMiddleware>();
+#endif
       app.UseCors("VSS");
 
       app.UseMvc();
