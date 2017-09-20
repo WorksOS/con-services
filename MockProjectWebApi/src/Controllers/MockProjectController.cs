@@ -249,6 +249,7 @@ namespace MockProjectWebApi.Controllers
       new ProjectData {LegacyProjectId = 1001153, ProjectUid = "b14bb927-3c10-47b2-b958-4ce7aabbc594", ProjectGeofenceWKT = "POLYGON((6.96461375644884 46.250301540882, 6.96643887353764 46.2509268520462, 6.97460415600528 46.2477169036207, 6.97269423208211 46.2470325441392, 6.96461375644884 46.250301540882))"},
       new ProjectData {LegacyProjectId = ConstantsUtil.DIMENSIONS_PROJECT_ID, ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID},
       new ProjectData {LegacyProjectId = ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_ID, ProjectUid = ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID},
+      new ProjectData {LegacyProjectId = 1001164, ProjectUid = "a2cb39c7-95a0-4bb1-845f-cb1052467e98", ProjectTimeZone = "W. Europe Standard Time"},
       new ProjectData {LegacyProjectId = 1001184, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001186, ProjectUid = "8590b7fc-079e-4b5a-b5ff-8514dadfe985"},
       new ProjectData {LegacyProjectId = 1001191, ProjectUid = Guid.NewGuid().ToString()},
@@ -265,7 +266,8 @@ namespace MockProjectWebApi.Controllers
       new ProjectData {LegacyProjectId = 1009999, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1012413, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1099999, ProjectUid = Guid.NewGuid().ToString()},
-      new ProjectData {LegacyProjectId = 1999999, ProjectUid = "0fa94210-0d7a-4015-9eee-4d9956f4b250"}
+      new ProjectData {LegacyProjectId = 1999999, ProjectUid = "0fa94210-0d7a-4015-9eee-4d9956f4b250"},
+      new ProjectData {LegacyProjectId = ConstantsUtil.LANDFILL_PROJECT_ID, ProjectUid = ConstantsUtil.LANDFILL_PROJECT_UID, ProjectType = ProjectType.LandFill}
     };
   }
 }

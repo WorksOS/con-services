@@ -4658,10 +4658,10 @@ SELECT ID, Name, Description, fk_CustomerID, Visible, Colour, Transparent, MinLa
                 "ginal_AreaST)) AND ([fk_SiteTypeID] = @Original_fk_SiteTypeID) AND ([fk_UserID] " +
                 "= @Original_fk_UserID) AND ((@IsNull_SiteUID = 1 AND [SiteUID] IS NULL) OR ([Sit" +
                 "eUID] = @Original_SiteUID)) AND ((@IsNull_UpdateBy = 1 AND [UpdateBy] IS NULL) O" +
-                "R ([UpdateBy] = @Original_UpdateBy)));\r\nSELECT ID, Name, Description, fk_Custome" +
-                "rID, Visible, Colour, Transparent, MinLat, MaxLat, MinLon, MaxLon, UpdateUTC, Po" +
-                "lygon, AreaST, fk_SiteTypeID, fk_UserID, SiteUID, UpdateBy FROM Site WHERE (ID =" +
-                " @ID)";
+                "R ([UpdateBy] = @Original_UpdateBy)));\nSELECT ID, Name, Description, fk_Customer" +
+                "ID, Visible, Colour, Transparent, MinLat, MaxLat, MinLon, MaxLon, UpdateUTC, Pol" +
+                "ygon, AreaST, fk_SiteTypeID, fk_UserID, SiteUID, UpdateBy FROM Site WHERE (ID = " +
+                "@ID)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Name", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Name", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -5452,7 +5452,7 @@ SELECT ID, Name, Description, fk_CustomerID, Visible, Colour, Transparent, MinLa
             this._adapter.UpdateCommand.Connection = this.Connection;
             this._adapter.UpdateCommand.CommandText = "UPDATE [Customer] SET [CustomerUID] = @CustomerUID WHERE (([ID] = @Original_ID) A" +
                 "ND ((@IsNull_CustomerUID = 1 AND [CustomerUID] IS NULL) OR ([CustomerUID] = @Ori" +
-                "ginal_CustomerUID)));\r\nSELECT ID, CustomerUID FROM Customer WHERE (ID = @ID)";
+                "ginal_CustomerUID)));\nSELECT ID, CustomerUID FROM Customer WHERE (ID = @ID)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CustomerUID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CustomerUID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ID", global::System.Data.SqlDbType.BigInt, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
@@ -5474,7 +5474,7 @@ SELECT ID, Name, Description, fk_CustomerID, Visible, Colour, Transparent, MinLa
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT        ID, CustomerUID\r\nFROM            Customer";
+            this._commandCollection[0].CommandText = "SELECT        ID, CustomerUID\nFROM            Customer";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -5873,8 +5873,8 @@ SELECT p.[ID]
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
             this._adapter.InsertCommand.CommandText = "INSERT INTO [CoordinateSystem] ([CoordinateSystemFileName]) VALUES (@CoordinateSy" +
-                "stemFileName);\r\nSELECT CoordinateSystemFileName, ID FROM CoordinateSystem WHERE " +
-                "(ID = SCOPE_IDENTITY())";
+                "stemFileName);\nSELECT CoordinateSystemFileName, ID FROM CoordinateSystem WHERE (" +
+                "ID = SCOPE_IDENTITY())";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CoordinateSystemFileName", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CoordinateSystemFileName", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
@@ -5902,7 +5902,7 @@ SELECT CoordinateSystemFileName, ID FROM CoordinateSystem WHERE (ID = @ID)";
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT        CoordinateSystemFileName, ID\r\nFROM            CoordinateSystem";
+            this._commandCollection[0].CommandText = "SELECT        CoordinateSystemFileName, ID\nFROM            CoordinateSystem";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         

@@ -2,16 +2,16 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MigrateProjects.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
+    <Setting Name="KAFKA_URI" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">10.97.97.96</Value>
+    </Setting>
     <Setting Name="NH_OPConnectionString" Type="(Connection string)" Scope="Application">
       <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;SerializableConnectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
-  &lt;ConnectionString&gt;Data Source=sjc3-nhd-dbv30.vss-eng.com,2985\sjc3_NHD_SQL01;Initial Catalog=NH_OP;Integrated Security=True&lt;/ConnectionString&gt;
+  &lt;ConnectionString&gt;Data Source=SJC3-NHB-DBV30.vss-eng.com\SJC3_NHB_SQL01,2985;Initial Catalog=NH_OP;Integrated Security=False;User ID=FlexGateway;Password=!Trup2ud@;&lt;/ConnectionString&gt;
   &lt;ProviderName&gt;System.Data.SqlClient&lt;/ProviderName&gt;
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
-      <Value Profile="(Default)">Data Source=sjc3-nhd-dbv30.vss-eng.com,2985\sjc3_NHD_SQL01;Initial Catalog=NH_OP;Integrated Security=True</Value>
-    </Setting>
-    <Setting Name="KAFKA_URI" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">10.97.97.32</Value>
+      <Value Profile="(Default)">Data Source=SJC3-NHB-DBV30.vss-eng.com\SJC3_NHB_SQL01,2985;Initial Catalog=NH_OP;Integrated Security=False;User ID=FlexGateway;Password=!Trup2ud@;</Value>
     </Setting>
   </Settings>
 </SettingsFile>
