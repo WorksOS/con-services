@@ -101,6 +101,10 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
       loggerFactory.AddLog4Net(LoggerRepoName);
 
       app.UseExceptionTrap();
+#if NET_4_7
+      if (Configuration["newrelic"] == "true")
+        app.UseFilterMiddleware<NewRelicMiddleware>();
+#endif
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
 
