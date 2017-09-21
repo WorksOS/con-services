@@ -118,12 +118,12 @@ namespace VSS.KafkaConsumer.Kafka
       producerConfig = new Dictionary<string, object>
       {
         {"bootstrap.servers", Uri},
-        {"session.timeout.ms", "10000"},
-        {"retries", "3"},
-        {"batch.size", "1048576"},
-        {"linger.ms", "20"},
-        {"acks", "all"},
-        {"block.on.buffer.full", "true"}
+        //{"session.timeout.ms", "10000"},
+        //{"retries", "3"},
+        //{"batch.size", "1048576"},
+        //{"linger.ms", "20"},
+        //{"acks", "all"},
+        //{"block.on.buffer.full", "true"}
       };
 
       //socket.blocking.max.ms=1
@@ -169,8 +169,8 @@ namespace VSS.KafkaConsumer.Kafka
       {
         rdConsumer?.Unsubscribe();
         rdConsumer?.Dispose();
+        rdProducer?.Dispose();
       }
-      rdProducer?.Dispose();
       IsInitializedProducer = false;
       IsInitializedConsumer = false;
 

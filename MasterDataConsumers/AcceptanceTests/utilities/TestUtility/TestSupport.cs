@@ -161,7 +161,7 @@ namespace TestUtility
     /// </summary>
     /// <param name="eventObject">event to be published</param>
     /// <param name="kafkaDriver">kafkadriver</param>
-    private void BuildEventAndPublishToKafka(dynamic eventObject, RdKafkaDriver kafkaDriver)
+    public void BuildEventAndPublishToKafka(dynamic eventObject, RdKafkaDriver kafkaDriver)
     {
       var topicName= string.Empty;
       var jsonString = string.Empty;

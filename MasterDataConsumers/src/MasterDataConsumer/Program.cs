@@ -89,6 +89,7 @@ namespace VSS.Productivity3D.MasterDataConsumer
         {"IProjectEvent", typeof(IKafkaConsumer<IProjectEvent>)},
         {"ISubscriptionEvent", typeof(IKafkaConsumer<ISubscriptionEvent>)},
         {"IGeofenceEvent", typeof(IKafkaConsumer<IGeofenceEvent>)},
+        {"IFilterEvent", typeof(IKafkaConsumer<IFilterEvent>)},
       };
 
 
@@ -105,6 +106,7 @@ namespace VSS.Productivity3D.MasterDataConsumer
         .AddTransient<IKafkaConsumer<IGeofenceEvent>, KafkaConsumer<IGeofenceEvent>>()
         .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
         .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
+        .AddTransient<IKafkaConsumer<IFilterEvent>, KafkaConsumer<IFilterEvent>>()
 
         .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
         .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
@@ -151,7 +153,8 @@ namespace VSS.Productivity3D.MasterDataConsumer
       loggerFactory.AddLog4Net(loggerRepoName);
       serviceCollection.AddSingleton(loggerFactory);
       serviceProvider = serviceCollection.BuildServiceProvider();
-      _log = loggerFactory.CreateLogger(loggerRepoName);
+      _log = loggerFactory.CreateLogger(loggerRepoName);
+
       _log.LogDebug("MasterDataConsumer is starting....");
 
       foreach (var kafkaTopic in kafkaTopics)

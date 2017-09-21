@@ -31,7 +31,7 @@
     <PackageReference Include="RdKafka" Version="0.9.2-ci-170" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
-    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="2.3.*" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.0.25" />
   </ItemGroup>
 
 </Project>

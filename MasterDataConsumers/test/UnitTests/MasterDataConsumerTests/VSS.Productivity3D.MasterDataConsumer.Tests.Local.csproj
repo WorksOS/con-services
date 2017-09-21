@@ -39,7 +39,6 @@
     <ProjectReference Include="..\..\..\..\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
     <ProjectReference Include="..\..\..\..\KafkaConsumer\src\VSS.KafkaConsumer.Local.csproj" />
     <ProjectReference Include="..\..\..\..\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
-    <ProjectReference Include="..\..\..\..\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
   </ItemGroup>
 
   <ItemGroup>

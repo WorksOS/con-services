@@ -21,6 +21,8 @@ namespace VSS.KafkaConsumer
         return new ProjectEventConverter();
       if (typeof(T) == typeof(ISubscriptionEvent))
         return new SubscriptionEventConverter();
+      if (typeof(T) == typeof(IFilterEvent))
+        return new FilterEventConverter();
 
       return null;
     }

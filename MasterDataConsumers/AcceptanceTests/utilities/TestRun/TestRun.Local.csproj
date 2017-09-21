@@ -24,13 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="C:\Users\ejeet\.nuget\packages\rdkafka.internal.librdkafka\0.9.1\build\..\runtimes\win7-x64\native\librdkafka.dll" />
-    <Content Remove="C:\Users\ejeet\.nuget\packages\rdkafka.internal.librdkafka\0.9.1\build\..\runtimes\win7-x64\native\zlib.dll" />
-    <Content Remove="C:\Users\ejeet\.nuget\packages\rdkafka.internal.librdkafka\0.9.1\build\..\runtimes\win7-x86\native\librdkafka.dll" />
-    <Content Remove="C:\Users\ejeet\.nuget\packages\rdkafka.internal.librdkafka\0.9.1\build\..\runtimes\win7-x86\native\zlib.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="log4net.netcore" Version="3.0.*" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />

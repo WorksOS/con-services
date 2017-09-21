@@ -4,6 +4,7 @@ SET config=Release
 SET projectFile=VSS.KafkaConsumer.csproj
 SET packageServer=https://packages.vspengg.com/
 SET packageOutputFolder=%cd%\nupkgs
+set packageId=VSS.KafkaConsumer.netcore
 SET apiKey=qATxVIHO5rIPF3K7
 
 IF "%~1"=="" GOTO buildAndPublishPackage
@@ -42,7 +43,7 @@ IF /I "%~1"=="--delete" GOTO deletePackageFromServer
     GOTO end
   )
 
-  nuget delete %projectFile% "%~2" -Source %packageServer% -ApiKey %apiKey%
+  nuget delete %packageId% "%~2" -Source %packageServer% -ApiKey %apiKey%
 
 
 :end
