@@ -45,6 +45,15 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
     }
 
+    [Given(@"filterUid ""(.*)""")]
+    public void GivenFilterUid(string filterUid)
+    {
+      if (operation == "ElevationPalette")
+        elevPaletteRequester.QueryString.Add("filterUid", filterUid);
+      else
+        Assert.Fail(TEST_FAIL_MESSAGE);
+    }
+
     [Given(@"designUid ""(.*)""")]
     public void GivenDesignUid(string designUid)
     {

@@ -261,24 +261,38 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<Common.Models.Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid)
     {
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
+      bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
 
       DesignDescriptor designDescriptor = null;
+      if (filterUid.HasValue)
+      {
+        var filterData = await GetFilter(projectUid, filterUid.Value);
+        if (filterData != null)
+        {
+          Guid designUidGuid;
+          if (filterData.designUid != null && Guid.TryParse(filterData.designUid, out designUidGuid))
+            designDescriptor = await GetDesignDescriptor(projectUid, designUidGuid);
 
-      if (!filterUid.HasValue)
-        return null;
+          bool haveData = filterData.startUTC.HasValue || filterData.endUTC.HasValue || filterData.onMachineDesignID.HasValue ||
+                     filterData.vibeStateOn.HasValue || filterData.elevationType.HasValue || filterData.layerNumber.HasValue ||
+                     (filterData.contributingMachines != null && filterData.contributingMachines.Count > 0);
 
-      var filterData = await GetFilter(projectUid, filterUid.Value);
+          if (haveData || haveExcludedIds || designDescriptor != null)
+          {
+            var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
-      if (filterData == null)
-        return null;
-
-      Guid designUidGuid;
-      if (filterData.designUid != null && Guid.TryParse(filterData.designUid, out designUidGuid))
-        designDescriptor = await GetDesignDescriptor(projectUid, designUidGuid);
-
-      return settingsManager.CompactionFilter(filterData.startUTC, filterData.endUTC, filterData.onMachineDesignID, filterData.vibeStateOn, filterData.elevationType, filterData.layerNumber, filterData.contributingMachines, excludedIds, designDescriptor);
+            return Common.Models.Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
+              filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
+              null, null, null, null, null, null, null, null, null,
+              layerMethod, designDescriptor, null, filterData.layerNumber, null, filterData.contributingMachines,
+              excludedIds, null, null, null, null, null, null);
+          }
+        }
+      }
+      return haveExcludedIds ? Common.Models.Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, excludedIds, null, null, null, null, null, null) : null;
     }
-
+ 
     private async Task<MasterData.Models.Models.Filter> GetFilter(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await filterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), customHeaders);

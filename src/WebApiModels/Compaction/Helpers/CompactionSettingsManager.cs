@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Interfaces;
+﻿using System.Collections.Generic;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-
+using VSS.Productivity3D.Common.ResultHandling;
+  
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
   /// <summary>
@@ -15,33 +12,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
   /// </summary>
   public class CompactionSettingsManager : ICompactionSettingsManager
   {
-    private IFilterServiceProxy filterService; 
-
-    public CompactionSettingsManager(IFilterServiceProxy filterServiceProxy)
+    public CompactionSettingsManager()
     {
-      filterService = filterServiceProxy;
     }
 
     public LiftBuildSettings CompactionLiftBuildSettings(CompactionProjectSettings ps)
     {
       return AutoMapperUtility.Automapper.Map<LiftBuildSettings>(ps);
-    }
-
-    public Common.Models.Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType,
-      int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds, DesignDescriptor designDescriptor = null)
-    {
-      bool haveFilter =
-        startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue || vibeStateOn.HasValue || elevationType.HasValue ||
-        layerNumber.HasValue || (machines != null && machines.Count > 0) || (excludedSurveyedSurfaceIds != null && excludedSurveyedSurfaceIds.Count > 0) ||
-        designDescriptor != null;
-
-      var layerMethod = layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
-
-      return haveFilter ?
-        Common.Models.Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
-          null, null, null, null, null, null, null, null, null, layerMethod, designDescriptor, null, layerNumber, null, machines,
-          excludedSurveyedSurfaceIds, null, null, null, null, null, null)
-        : null;
     }
 
     public CMVSettings CompactionCmvSettings(CompactionProjectSettings ps)
