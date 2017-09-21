@@ -24,16 +24,33 @@ namespace MockProjectWebApi.Controllers
 
     private FilterData GetFilter(string projectUid, string filterUid)
     {
-      if (projectUid != ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1)
-        return null;
-
-      foreach (var filter in _filterList)
+      if (projectUid == ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1)
       {
-        if (filterUid != null && filter.filterDescriptor.FilterUid == filterUid)
-          return filter;
+        foreach (var filter in _filterList)
+        {
+          if (filterUid != null && filter.filterDescriptor.FilterUid == filterUid)
+            return filter;
+        }
+      }
+      else if (projectUid == ConstantsUtil.DIMENSIONS_PROJECT_UID)
+      {
+        return new FilterData
+        {
+          filterDescriptor = new FilterDescriptor
+          {
+            FilterUid = "200c7b47-b5e6-48ee-a731-7df6623412da",
+            Name = "Elevation Range and Palette No Data Filter",
+            FilterJson =
+              "{\"startUTC\":\"2017-01-01\",\"endUTC\":\"2017-01-01\",\"designUid\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
+          }
+        };
       }
 
-      return null;
+      return new FilterData
+      {
+        Code = 36,
+        Message = "GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user."
+      };
     }
 
     private readonly List<FilterData> _filterList = new List<FilterData>
