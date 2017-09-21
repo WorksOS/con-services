@@ -12,6 +12,10 @@ using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.TCCFileAccess;
 
+#if NET_4_7
+  using VSS.Productivity3D.Common.Filters;
+#endif
+
 namespace VSS.Productivity3D.FileAccess.Service.WebAPI
 {
   public class Startup
@@ -103,7 +107,7 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
       app.UseExceptionTrap();
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
-        app.UseFilterMiddleware<NewRelicMiddleware>();
+        app.UseMiddleware<NewRelicMiddleware>();
 #endif
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
