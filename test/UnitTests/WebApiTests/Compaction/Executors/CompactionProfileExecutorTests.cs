@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Setup(x => x.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()))
         .Returns((MemoryStream)null);
 
-      var settingsManager = new CompactionSettingsManager(null);
+      var settingsManager = new CompactionSettingsManager();
       var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
       var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty, ProductionDataType.Height, null, -1,
@@ -902,7 +902,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           .Setup(x => x.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()))
           .Returns(ms);
 
-        var settingsManager = new CompactionSettingsManager(null);
+        var settingsManager = new CompactionSettingsManager();
         var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
         var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty,

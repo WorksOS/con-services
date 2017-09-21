@@ -266,61 +266,44 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Creates an instance of the Filter class and populate it with data.
     /// </summary>
     /// <param name="projectUid">Project Uid</param>
-    /// <param name="startUtc">Start date and time in UTC</param>
-    /// <param name="endUtc">End date and time in UTC</param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <returns>An instance of the Filter class.</returns>
-    protected async Task<Common.Models.Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid, DateTime? startUtc, DateTime? endUtc, bool? vibeStateOn, ElevationType? elevationType,
-      int? layerNumber, long? onMachineDesignId, long? assetID, string machineName, bool? isJohnDoe)
+    protected async Task<Common.Models.Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid)
     {
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
-
-      var startTimeUTC = startUtc;
-      var endTimeUTC = endUtc;
-      var onMachineDesignID = onMachineDesignId;
-      var vibrationStateOn = vibeStateOn;
-      var elevationTypeEnum = elevationType;
-      var layerNo = layerNumber;
-      var machines = GetMachines(assetID, machineName, isJohnDoe);
+      bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
 
       DesignDescriptor designDescriptor = null;
-
       if (filterUid.HasValue)
       {
         var filterData = await GetFilter(projectUid, filterUid.Value);
-
         if (filterData != null)
         {
-          startTimeUTC = filterData.startUTC;
-          endTimeUTC = filterData.endUTC;
-          onMachineDesignID = filterData.onMachineDesignID;
-          vibrationStateOn = filterData.vibeStateOn;
-          elevationTypeEnum = filterData.elevationType;
-          layerNo = filterData.layerNumber;
-          machines = filterData.contributingMachines;
-
           Guid designUidGuid;
           if (filterData.designUid != null && Guid.TryParse(filterData.designUid, out designUidGuid))
             designDescriptor = await GetDesignDescriptor(projectUid, designUidGuid);
+
+          //TODO: Replace this with getter on Filter model class. Aaron is updating MasterData models nuget package.
+          //Also note missing some filter properties here e.g. forward direction
+          bool haveData = filterData.startUTC.HasValue || filterData.endUTC.HasValue || filterData.onMachineDesignID.HasValue ||
+                     filterData.vibeStateOn.HasValue || filterData.elevationType.HasValue || filterData.layerNumber.HasValue ||
+                     (filterData.contributingMachines != null && filterData.contributingMachines.Count > 0);
+
+          if (haveData || haveExcludedIds || designDescriptor != null)
+          {
+            var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
+
+            return Common.Models.Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
+              filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
+              null, null, null, null, null, null, null, null, null,
+              layerMethod, designDescriptor, null, filterData.layerNumber, null, filterData.contributingMachines,
+              excludedIds, null, null, null, null, null, null);
+          }
         }
       }
-
-      return settingsManager.CompactionFilter(startTimeUTC, endTimeUTC, onMachineDesignID, vibrationStateOn, elevationTypeEnum, layerNo, machines, excludedIds, designDescriptor);
+      return haveExcludedIds ? Common.Models.Filter.CreateFilter(excludedIds) : null;
     }
-
+ 
     private async Task<MasterData.Models.Models.Filter> GetFilter(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await filterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), customHeaders);

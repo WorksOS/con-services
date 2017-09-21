@@ -99,7 +99,7 @@ this.ScenarioSetup(scenarioInfo);
             this.CompactionGetElevationRange_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter_ER", ((string[])(null)));
         }
         
-        public virtual void CompactionGetElevationRange_NoData(string requestName, string projectUID, string startUTC, string endUTC, string resultName, string[] exampleTags)
+        public virtual void CompactionGetElevationRange_NoData(string requestName, string projectUID, string filterUid, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Range - No Data", exampleTags);
 #line 15
@@ -112,7 +112,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 18
  testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 19
-  testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startUTC, endUTC), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("filterUid \"{0}\"", filterUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 20
  testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 21
@@ -126,12 +126,11 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionElevation")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartUTC", "2017-01-01")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndUTC", "2017-01-01")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "200c7b47-b5e6-48ee-a731-7df6623412da")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoData_ER")]
         public virtual void CompactionGetElevationRange_NoData_()
         {
-            this.CompactionGetElevationRange_NoData("", "ff91dd40-1569-4765-a2bc-014321f76ace", "2017-01-01", "2017-01-01", "NoData_ER", ((string[])(null)));
+            this.CompactionGetElevationRange_NoData("", "ff91dd40-1569-4765-a2bc-014321f76ace", "200c7b47-b5e6-48ee-a731-7df6623412da", "NoData_ER", ((string[])(null)));
         }
         
         public virtual void CompactionGetProjectStatistics_GoodRequest(string requestName, string projectUID, string resultName, string[] exampleTags)

@@ -80,38 +80,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC. </param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>Elevation statistics</returns>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/elevationrange")]
     [HttpGet]
     public async Task<ElevationStatisticsResult> GetElevationRange(
       [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
-      [FromQuery] bool? vibeStateOn,
-      [FromQuery] ElevationType? elevationType,
-      [FromQuery] int? layerNumber,
-      [FromQuery] long? onMachineDesignId,
-      [FromQuery] long? assetID,
-      [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe)
+      [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetElevationRange: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
@@ -119,7 +94,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var projectSettings = await GetProjectSettings(projectUid);
 
-        var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+        var filter = await GetCompactionFilter(projectUid, filterUid);
 
         ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId, filter, projectSettings);
         if (result == null)

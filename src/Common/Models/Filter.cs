@@ -326,6 +326,17 @@ namespace VSS.Productivity3D.Common.Models
     }
 
     /// <summary>
+    /// Create instance of Filter specifically for excluding surveyed surfaces only
+    /// </summary>
+    public static Filter CreateFilter(List<long> surveyedSurfaceExclusionList)
+    {
+      return new Filter
+      {
+        surveyedSurfaceExclusionList = surveyedSurfaceExclusionList
+      };
+    }
+
+    /// <summary>
     /// Create example instance of Filter to display in Help documentation.
     /// </summary>
     public static Filter HelpSample
@@ -369,6 +380,7 @@ namespace VSS.Productivity3D.Common.Models
         };
       }
     }
+
 
     /// <summary>
     /// Validates all properties
