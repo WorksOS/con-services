@@ -7,21 +7,31 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
   /// </summary>
   public class TIDCustomPrincipal : ClaimsPrincipal
   {
-
+    /// <inheritdoc />
     /// <summary>
-    /// Initializes a new instance of the <see cref="TIDCustomPrincipal"/> class.
+    /// Initializes a new instance of the <see cref="T:VSS.Productivity3D.Filter.WebApi.Filters.TIDCustomPrincipal" /> class.
     /// </summary>
     /// <param name="identity">The identity.</param>
     /// <param name="customerUid">The customer uid.</param>
     /// <param name="emailAddress">The email address.</param>
+    /// <param name="customerName"></param>
     /// <param name="isApplication">if set to <c>true</c> [is application].</param>
-    public TIDCustomPrincipal(ClaimsIdentity identity, string customerUid, string emailAddress,
+    public TIDCustomPrincipal(ClaimsIdentity identity, string customerUid, string emailAddress, string customerName,
       bool isApplication = false) : base(identity)
     {
       CustomerUid = customerUid;
       EmailAddress = emailAddress;
       this.isApplication = isApplication;
+      CustomerName = customerName;
     }
+
+    /// <summary>
+    /// Gets the name of the customer.
+    /// </summary>
+    /// <value>
+    /// The name of the customer.
+    /// </value>
+    public string CustomerName { get; private set; }
 
     /// <summary>
     /// Gets the customer uid.

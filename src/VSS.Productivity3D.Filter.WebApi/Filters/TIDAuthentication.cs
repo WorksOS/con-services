@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -63,14 +64,13 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
         string applicationName = "";
         string userUid = "";
         string userEmail = "";
-        bool requireCustomerUid = true;
         string customerUid = "";
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
         customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
 
         // If no authorization header found, nothing to process further
-        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid) && requireCustomerUid))
+        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid) ))
         {
           log.LogWarning("No account selected for the request");
           await SetResult("No account selected", context);
@@ -94,12 +94,13 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
           return;
         }
 
-        //Set calling context Principal
-        context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail, isApplicationContext);
+
 
         //If this is an application context do not validate user-customer
         if (isApplicationContext)
         {
+          //Set calling context Principal
+          context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail, "Application", isApplicationContext);
           log.LogInformation(
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
@@ -107,13 +108,12 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
           await _next.Invoke(context);
           return;
         }
+        CustomerDataResult customerResult;
 
         // User must have be authenticated against this customer
-        if (requireCustomerUid)
-        {
           try
           {
-            CustomerDataResult customerResult =
+            customerResult =
               await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
             if (customerResult.status != 200 || customerResult.customer == null ||
                 customerResult.customer.Count < 1 ||
@@ -132,10 +132,13 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
             await SetResult("Failed authentication", context);
             return;
           }
-        }
 
         log.LogInformation("Authorization: for Customer: {0} userId: {1} userEmail: {2} allowed", customerUid, userUid,
           userEmail);
+        //Set calling context Principal
+        context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail,
+          customerResult.customer.First(x => string.Equals(x.uid, customerUid, StringComparison.OrdinalIgnoreCase))
+            .name, isApplicationContext);
       }
 
       await _next.Invoke(context);

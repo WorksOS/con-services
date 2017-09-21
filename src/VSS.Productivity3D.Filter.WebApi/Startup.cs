@@ -21,6 +21,9 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.WebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+#if NET_4_7
+  using VSS.Productivity3D.Common.Filters;
+#endif
 
 namespace VSS.Productivity3D.Filter.WebApi
 {
@@ -144,6 +147,10 @@ namespace VSS.Productivity3D.Filter.WebApi
       loggerFactory.AddLog4Net(loggerRepoName);
 
       app.UseExceptionTrap();
+#if NET_4_7
+      if (Configuration["newrelic"] == "true")
+        app.UseMiddleware<NewRelicMiddleware>();
+#endif
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
       //Enable TID here
