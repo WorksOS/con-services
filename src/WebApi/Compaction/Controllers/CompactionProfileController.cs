@@ -102,7 +102,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var settings = CompactionProjectSettings.FromString(
         await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders));
-      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid, true);
 
       //Get production data profile
@@ -165,7 +165,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = GetProjectId(projectUid);
       var settings = CompactionProjectSettings.FromString(
         await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders));
-      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
 
       if (importedFileUid.Length == 0)
       {

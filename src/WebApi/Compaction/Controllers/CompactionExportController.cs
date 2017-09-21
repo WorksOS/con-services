@@ -99,7 +99,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
 
 
@@ -159,7 +159,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
@@ -221,7 +221,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid, null, null, null, null, null, null, null, null, null);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
 
 

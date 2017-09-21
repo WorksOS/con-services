@@ -73,42 +73,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC. </param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber">The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>CMV summary</returns>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/cmv/summary")]
     [HttpGet]
     public async Task<CompactionCmvSummaryResult> GetCmvSummary(
       [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
-      [FromQuery] bool? vibeStateOn,
-      [FromQuery] ElevationType? elevationType,
-      [FromQuery] int? layerNumber,
-      [FromQuery] long? onMachineDesignId,
-      [FromQuery] long? assetID,
-      [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe)
+      [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetCmvSummary: " + Request.QueryString);
-      CMVRequest request = await GetCMVRequest(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType,
-        layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      CMVRequest request = await GetCMVRequest(projectUid, filterUid);
       request.Validate();
       log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
       try
@@ -137,22 +111,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC. </param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
     /// when the filter layer method is OffsetFromDesign or OffsetFromProfile.</param>
     /// <returns>MDP summary</returns>
     [ProjectUidVerifier]
@@ -160,16 +118,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionMdpSummaryResult> GetMdpSummary(
       [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
-      [FromQuery] bool? vibeStateOn,
-      [FromQuery] ElevationType? elevationType,
-      [FromQuery] int? layerNumber,
-      [FromQuery] long? onMachineDesignId,
-      [FromQuery] long? assetID,
-      [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe)
+      [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
@@ -177,7 +126,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       MDPSettings mdpSettings = settingsManager.CompactionMdpSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
 
       MDPRequest request = MDPRequest.CreateMDPRequest(projectId, null, mdpSettings, liftSettings, filter,
         -1,
@@ -208,43 +157,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC. </param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Pass count summary</returns>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/passcounts/summary")]
     [HttpGet]
     public async Task<CompactionPassCountSummaryResult> GetPassCountSummary(
       [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
-      [FromQuery] bool? vibeStateOn,
-      [FromQuery] ElevationType? elevationType,
-      [FromQuery] int? layerNumber,
-      [FromQuery] long? onMachineDesignId,
-      [FromQuery] long? assetID,
-      [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe)
+      [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetPassCountSummary: " + Request.QueryString);
 
-      PassCounts request = await GetPassCountRequest(projectUid, filterUid, startUtc, endUtc, vibeStateOn,
-        elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, true);
+      PassCounts request = await GetPassCountRequest(projectUid, filterUid, true);
       request.Validate();
 
       try
@@ -272,38 +195,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC. </param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Temperature summary</returns>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/temperature/summary")]
     [HttpGet]
     public async Task<CompactionTemperatureSummaryResult> GetTemperatureSummary(
       [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
-      [FromQuery] bool? vibeStateOn,
-      [FromQuery] ElevationType? elevationType,
-      [FromQuery] int? layerNumber,
-      [FromQuery] long? onMachineDesignId,
-      [FromQuery] long? assetID,
-      [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe)
+      [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
@@ -311,7 +209,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       TemperatureSettings temperatureSettings = settingsManager.CompactionTemperatureSettings(projectSettings, false);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
 
       TemperatureRequest request = TemperatureRequest.CreateTemperatureRequest(projectId, null,
         temperatureSettings, liftSettings, filter, -1, null, null, null);
@@ -342,38 +240,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC. </param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Speed summary</returns>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/speed/summary")]
     [HttpGet]
     public async Task<CompactionSpeedSummaryResult> GetSpeedSummary(
       [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
-      [FromQuery] bool? vibeStateOn,
-      [FromQuery] ElevationType? elevationType,
-      [FromQuery] int? layerNumber,
-      [FromQuery] long? onMachineDesignId,
-      [FromQuery] long? assetID,
-      [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe)
+      [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetSpeedSummary: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
@@ -381,7 +254,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
 
       SummarySpeedRequest request =
         SummarySpeedRequest.CreateSummarySpeedRequestt(projectId, null, liftSettings, filter, -1);
@@ -412,45 +285,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC. </param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>CMV % change</returns>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/cmv/percentchange")]
     [HttpGet]
     public async Task<CompactionCmvPercentChangeResult> GetCmvPercentChange(
       [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
-      [FromQuery] bool? vibeStateOn,
-      [FromQuery] ElevationType? elevationType,
-      [FromQuery] int? layerNumber,
-      [FromQuery] long? onMachineDesignId,
-      [FromQuery] long? assetID,
-      [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe)
+      [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await this.GetProjectSettings(projectUid);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
 
       double[] cmvChangeSummarySettings = settingsManager.CompactionCmvPercentChangeSettings(projectSettings);
       CMVChangeSummaryRequest request = CMVChangeSummaryRequest.CreateCMVChangeSummaryRequest(
@@ -485,38 +333,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC. </param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>CMV details</returns>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/cmv/details")]
     [HttpGet]
     public async Task<CompactionCmvDetailedResult> GetCmvDetails(
       [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
-      [FromQuery] bool? vibeStateOn,
-      [FromQuery] ElevationType? elevationType,
-      [FromQuery] int? layerNumber,
-      [FromQuery] long? onMachineDesignId,
-      [FromQuery] long? assetID,
-      [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe)
+      [FromQuery] Guid? filterUid)
     {
       /**************************************************************************************************
        * NOTE: This end point for CMV details is currently not called from the Compaction UI.
@@ -528,8 +351,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
-      CMVRequest request = await GetCMVRequest(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType,
-        layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      CMVRequest request = await GetCMVRequest(projectUid, filterUid);
       request.Validate();
 
       try
@@ -559,43 +381,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC. </param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Pass count details</returns>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/passcounts/details")]
     [HttpGet]
     public async Task<CompactionPassCountDetailedResult> GetPassCountDetails(
       [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
-      [FromQuery] bool? vibeStateOn,
-      [FromQuery] ElevationType? elevationType,
-      [FromQuery] int? layerNumber,
-      [FromQuery] long? onMachineDesignId,
-      [FromQuery] long? assetID,
-      [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe)
+      [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetPassCountDetails: " + Request.QueryString);
 
-      PassCounts request = await GetPassCountRequest(projectUid, filterUid, startUtc, endUtc, vibeStateOn,
-        elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, false);
+      PassCounts request = await GetPassCountRequest(projectUid, filterUid, false);
       request.Validate();
 
       try
@@ -626,33 +422,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project Uid</param>
     /// <param name="filterUid">Filter UID</param>
-    /// <param name="startUtc">Start date and time in UTC</param>
-    /// <param name="endUtc">End date and time in UTC</param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>An instance of the CMVRequest class.</returns>
-    private async Task<CMVRequest> GetCMVRequest(Guid projectUid, Guid? filterUid, DateTime? startUtc, DateTime? endUtc,
-      bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
-      string machineName, bool? isJohnDoe)
+    private async Task<CMVRequest> GetCMVRequest(Guid projectUid, Guid? filterUid)
     {
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       CMVSettings cmvSettings = settingsManager.CompactionCmvSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
 
       return CMVRequest.CreateCMVRequest(projectId, null, cmvSettings, liftSettings, filter, -1, null, null, null);
     }
@@ -661,34 +439,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Creates an instance of the PassCounts class and populate it with data.
     /// </summary>
     /// <param name="projectUid">Project Uid</param>
-    /// <param name="startUtc">Start date and time in UTC</param>
-    /// <param name="endUtc">End date and time in UTC</param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
+    /// <param name="filterUid">Filter UID</param>
     /// <param name="isSummary">True for summary request, false for details request</param>
     /// <returns>An instance of the PassCounts class.</returns>
-    private async Task<PassCounts> GetPassCountRequest(Guid projectUid, Guid? filterUid, DateTime? startUtc, DateTime? endUtc,
-      bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
-      string machineName, bool? isJohnDoe, bool isSummary)
+    private async Task<PassCounts> GetPassCountRequest(Guid projectUid, Guid? filterUid, bool isSummary)
     {
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await this.GetProjectSettings(projectUid);
       PassCountSettings passCountSettings = isSummary ? null : settingsManager.CompactionPassCountSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
 
       return PassCounts.CreatePassCountsRequest(projectId, null, passCountSettings, liftSettings, filter, -1, null, null, null);
     }
