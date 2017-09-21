@@ -14,6 +14,10 @@ using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
+#if NET_4_7
+  using VSS.Productivity3D.Common.Filters;
+#endif
+
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
   public class Startup
@@ -118,7 +122,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       app.UseExceptionTrap();
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
-        app.UseFilterMiddleware<NewRelicMiddleware>();
+        app.UseMiddleware<NewRelicMiddleware>();
 #endif
       app.UseCors("VSS");
 
