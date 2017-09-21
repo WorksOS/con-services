@@ -208,9 +208,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
               ValueTargetType.OnTarget));
 
         var speedIndex = noSpeedValue || float.IsNaN(lastPassHeight) ? ValueTargetType.NoData :
-          (speedMax > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
-            (speedMin < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed &&
-             speedMax < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
+          (currCell.cellMaxSpeed > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed ? ValueTargetType.AboveTarget :
+            (currCell.cellMinSpeed < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed &&
+             currCell.cellMaxSpeed < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed ? ValueTargetType.BelowTarget :
               ValueTargetType.OnTarget));
 
         profile.results.Add(new CompactionProfileCell
