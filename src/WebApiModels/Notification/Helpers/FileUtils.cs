@@ -157,5 +157,16 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
       }
       return utcDate;
     }
+
+    /// <summary>
+    /// Construct the Iso8601 formatted date time
+    /// </summary>
+    /// <param name="dateTimeUtc">The date time in UTC</param>
+    /// <returns>Iso8601 formatted string</returns>
+    public static string ToIso8601DateTimeString(this DateTime dateTimeUtc)
+    {
+      // CAUTION - this assumes the DateTime passed in is already UTC!!
+      return string.Format("{0:yyyy-MM-ddTHH:mm:ssZ}", dateTimeUtc);
+    }
   }
 }

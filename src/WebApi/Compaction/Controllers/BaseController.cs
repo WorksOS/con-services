@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Productivity3D.WebApi.Models.Extensions;
+using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -189,8 +191,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               "Unable to access design file."));
         }
 
+        var tccFileName = file.Name;
+        if (file.ImportedFileType == ImportedFileType.SurveyedSurface)
+        {
+          //Note: ':' is an invalid character for filenames in Windows so get rid of them
+          tccFileName = Path.GetFileNameWithoutExtension(tccFileName) + 
+            "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) + 
+            Path.GetExtension(tccFileName);
+        }
         string fileSpaceId = FileDescriptor.GetFileSpaceId(configStore, log);
-        FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, file.Name);
+        FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
         return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
       }
