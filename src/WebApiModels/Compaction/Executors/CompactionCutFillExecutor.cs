@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
- /*
+ 
       TCutFillDetails cutFillDetails;
 
       bool success = raptorClient.GetCutFillDetails(request.projectId ?? -1,
@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           "Failed to get requested cut-fill details data"));
       }
- */     
+    
       return result;
     }
   }

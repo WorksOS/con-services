@@ -469,7 +469,7 @@ namespace VSS.Productivity3D.Common.Proxies
       return client.GetGriddedOrAlignmentCSVExport(DataModelID, ReportType, ExternalDescriptor, DesignFile, Interval, ElevationReport, CutFillReport, CMVReport, MDPReport, PassCountReport, TemperatureReport, ReportOption, StartNorthing, StartEasting, EndNorthing, EndEasting, Direction, Filter, LiftBuildSettings, ICOptions, out DataExport);
     }
 
-    /*
+
     public bool GetCutFillDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
       TCutFillSettings cutFillSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TCutFillDetails cutFillDetails)
@@ -477,6 +477,6 @@ namespace VSS.Productivity3D.Common.Proxies
       return client.GetCutFillDetails(projectID, externalRequestDescriptor, cutFillSettings, filter,
                liftBuildSettings, out cutFillDetails) == TASNodeErrorStatus.asneOK;
     }
-    */
+    
   }
 }

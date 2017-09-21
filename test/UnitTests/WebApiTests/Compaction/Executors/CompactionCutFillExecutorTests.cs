@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
+using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -56,8 +57,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
     [TestMethod]
     public void CutFillExecutorNoResult()
-    {
-      /*
+    {   
       var request = CutFillDetailsRequest.CreateCutFillDetailsRequest(0, null, null, null, null);
 
       TCutFillDetails details = new TCutFillDetails();
@@ -65,21 +65,19 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var raptorClient = new Mock<IASNodeClient>();
 
       raptorClient
-        .Setup(x => x.GetCutFillDetails(request.projectId.Value, It.IsAny<TASNodeRequestDescriptor>,
-          It.IsAny<TCutFillSettings>, It.IsAny<TICFilterSettings>, It.IsAny<TICLiftBuildSettings>,
-          out details()))
+        .Setup(x => x.GetCutFillDetails(request.projectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
+          It.IsAny<TCutFillSettings>(), It.IsAny<TICFilterSettings>(), It.IsAny<TICLiftBuildSettings>(),
+          out details))
         .Returns(false);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionCutFillExecutor>(logger, raptorClient.Object);
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
-      */
     }
 
     [TestMethod]
     public void CutFillExecutorSuccess()
     {
-      /*
       var request = CutFillDetailsRequest.CreateCutFillDetailsRequest(0, null, null, null, null);
 
       TCutFillDetails details = new TCutFillDetails{ Percents = new double[] {5.0, 20.0, 13.0, 10.0, 22.0, 12.0, 18.0}};
@@ -87,9 +85,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var raptorClient = new Mock<IASNodeClient>();
 
       raptorClient
-        .Setup(x => x.GetCutFillDetails(request.projectId.Value, It.IsAny<TASNodeRequestDescriptor>,
-          It.IsAny<TCutFillSettings>, It.IsAny<TICFilterSettings>, It.IsAny<TICLiftBuildSettings>,
-          out details()))
+        .Setup(x => x.GetCutFillDetails(request.projectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
+          It.IsAny<TCutFillSettings>(), It.IsAny<TICFilterSettings>(), It.IsAny<TICLiftBuildSettings>(),
+          out details))
         .Returns(true);
 
       var executor = RequestExecutorContainerFactory
@@ -97,7 +95,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var result = executor.Process(request) as CompactionCutFillDetailedResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual<double[]>(details.Percents, result.Percents, "Wrong percents");
-      */
     }
   }
 }
