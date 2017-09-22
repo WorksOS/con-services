@@ -1,4 +1,3 @@
-
 FROM dhoer/flyway:4.1.2
 
 RUN mkdir -p /scripts/sql

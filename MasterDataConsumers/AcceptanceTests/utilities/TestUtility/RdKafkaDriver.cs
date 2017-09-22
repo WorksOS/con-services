@@ -18,8 +18,8 @@ namespace TestUtility
       var producerConfig = new Dictionary<string, object>
       {
         {"bootstrap.servers", appConfig.kafkaServer},
-        //{"session.timeout.ms", "10000"},
-        //{"retries", "3"},
+        {"session.timeout.ms", "10000"},
+        {"retries", "3"},
         //{"batch.size", "1048576"},
         //{"linger.ms", "20"},
         //{"acks", "all"},
@@ -42,14 +42,14 @@ namespace TestUtility
         Console.WriteLine($"Publish: {topicName} Message: {message} ");
         var data = Encoding.UTF8.GetBytes(message);
         var key = Encoding.UTF8.GetBytes(message);
-        var deliveryReport = kafkaProducer.ProduceAsync(topicName, key, data);
-        var response = deliveryReport.ContinueWith(task =>
+        var deliveryReport = kafkaProducer.ProduceAsync(topicName, key, data).ContinueWith(task =>
         {
           Log.Info(
-            $"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {deliveryReport.Status.ToString()}",
+            $"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {task.Status.ToString()}",
             Log.ContentType.KafkaResponse);
-        });
-        response.Wait();
+          return 1;
+        }).Result;
+
       }
       catch (Exception ex)
       {
