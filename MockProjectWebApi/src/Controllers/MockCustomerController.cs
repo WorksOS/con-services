@@ -32,6 +32,5 @@ namespace MockProjectWebApi.Controllers
       Console.WriteLine($"DummyGetCustomersForMe: customerUid {customerUid}. CustomerDataResult {JsonConvert.SerializeObject(cs)}");
       return cs;
     }
-    
   }
 }
