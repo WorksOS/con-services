@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Authors>Merino</Authors>
     <Company>VSS</Company>
-    <TargetFrameworks>netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp1.1;net47</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>VSS.Productivity3D.TagFileAuth.WebAPI</AssemblyName>
