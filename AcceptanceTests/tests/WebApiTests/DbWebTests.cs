@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 
 namespace WebApiTests
@@ -136,7 +135,7 @@ namespace WebApiTests
       var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = customerUid;
-      var filterJson = CreateTestFilter( null, null, null, null, FilterLayerMethod.None);
+      var filterJson = CreateTestFilter( null, null, null, null);
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -158,7 +157,7 @@ namespace WebApiTests
       var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = customerUid;
-      var filterJson = CreateTestFilter( null, null, null, null, FilterLayerMethod.MapReset);
+      var filterJson = CreateTestFilter();
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId}  | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -180,7 +179,7 @@ namespace WebApiTests
       var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = customerUid;
-      var filterJson = CreateTestFilter( null, null, null, null, FilterLayerMethod.TagfileLayerNumber);
+      var filterJson = CreateTestFilter();
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -202,7 +201,7 @@ namespace WebApiTests
       var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = customerUid;
-      var filterJson = CreateTestFilter( ElevationType.Highest, true, true, 1, FilterLayerMethod.None);
+      var filterJson = CreateTestFilter( ElevationType.Highest, true, true, 1);
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -228,9 +227,9 @@ namespace WebApiTests
       var filterUid2 = Guid.NewGuid();
       var filterUid3 = Guid.NewGuid();
       ts.CustomerUid = customerUid;
-      var filterJson1 = CreateTestFilter( ElevationType.Highest, true, true, 1, FilterLayerMethod.None);
-      var filterJson2 = CreateTestFilter( ElevationType.Last, true, true, 1, FilterLayerMethod.MapReset);
-      var filterJson3 = CreateTestFilter( ElevationType.Lowest, true, true, 1, FilterLayerMethod.None);
+      var filterJson1 = CreateTestFilter( ElevationType.Highest, true, true, 1);
+      var filterJson2 = CreateTestFilter( ElevationType.Last, true, true, 1);
+      var filterJson3 = CreateTestFilter( ElevationType.Lowest, true, true, 1);
       var eventsArray = new[] {
         $"| TableName | FilterUID    | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid1} | {customerUid}  | {projectUid}  | {userId} | {filterName} | {filterJson1}  | 0         | {ts.EventDate:yyyy-MM-dd} |",
@@ -274,10 +273,9 @@ namespace WebApiTests
     /// <param name="vibestate">true or false</param>
     /// <param name="forward">true or false</param>
     /// <param name="layerNo">layer number</param>
-    /// <param name="fltlayer">FilterLayerMethod</param>
     /// <returns>complete filter in json format</returns>
-    private string CreateTestFilter(ElevationType? elevation = null, bool? vibestate = null, bool? forward = null,
-      int? layerNo = null, FilterLayerMethod? fltlayer = null)
+    private static string CreateTestFilter(ElevationType? elevation = null, bool? vibestate = null, bool? forward = null,
+      int? layerNo = null)
     {
       var startUtc = DateTime.Now.AddMonths(-6).ToUniversalTime();
       var endUtc = DateTime.Now.AddMonths(+6).ToUniversalTime();
@@ -292,7 +290,7 @@ namespace WebApiTests
         WGSPoint.CreatePoint(38.8387145521594, -121.347189366818)
       };
       var filter = Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), listMachines,123,
-                                        elevation, vibestate, listPoints, forward, layerNo, fltlayer);
+                                        elevation, vibestate, listPoints, forward, layerNo);
       return filter.ToJsonString();
     }
   }

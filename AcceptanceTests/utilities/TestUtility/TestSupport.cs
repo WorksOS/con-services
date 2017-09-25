@@ -119,7 +119,7 @@ namespace TestUtility
     public string CallFilterWebApi(string routeSuffix, string method, string body = null)
     {
 
-      var uri = GetBaseUri() + routeSuffix;  // "http://localhost:20979/"
+      var uri = GetBaseUri() + routeSuffix;
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(uri, method, body, HttpStatusCode.OK, "application/json", CustomerUid.ToString());
       return response;
@@ -135,10 +135,12 @@ namespace TestUtility
     public string GetBaseUri()
     {
       var baseUri = tsCfg.webApiUri;
+
       if (Debugger.IsAttached || tsCfg.operatingSystem == "Windows_NT")
       {
         baseUri = tsCfg.debugWebApiUri;
       }
+
       return baseUri;
     }
 

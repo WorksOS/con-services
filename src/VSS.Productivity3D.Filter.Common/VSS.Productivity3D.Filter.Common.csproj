@@ -23,13 +23,15 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="AutoMapper" Version="6.1.1" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="2.2.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.5.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.7.25" />
   </ItemGroup>
 
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors></WarningsAsErrors>
   </PropertyGroup>
 
 
