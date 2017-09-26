@@ -68,7 +68,7 @@ namespace ExecutorTests
       
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       var filterToTest = new FilterDescriptorSingleResult(
         new FilterDescriptor()
@@ -118,7 +118,7 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreEqual(filterUid, result.filterDescriptor.FilterUid,"executor returned incorrect filterDescriptor FilterUid");

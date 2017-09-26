@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler,
           filterRepo.Object);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(filterToTest.filterDescriptor.FilterUid, result.filterDescriptor.FilterUid,
@@ -170,7 +170,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler,
           filterRepo.Object);
-      var filterListResult = await executor.ProcessAsync(request) as FilterDescriptorListResult;
+      var filterListResult = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorListResult;
 
       Assert.IsNotNull(filterListResult, "executor failed");
       Assert.AreEqual(filterListToTest.filterDescriptors[0], filterListResult.filterDescriptors[0],
@@ -204,16 +204,6 @@ namespace VSS.Productivity3D.Filter.Tests
       string kafkaTopicName = "whatever";
 
       var filterRepo = new Mock<IFilterRepository>();
-      var filter = new MasterData.Repositories.DBModels.Filter()
-      {
-        CustomerUid = custUid,
-        UserId = userUid,
-        ProjectUid = projectUid,
-        FilterUid = filterUid,
-        Name = name,
-        FilterJson = filterJson,
-        LastActionedUtc = DateTime.UtcNow
-      };
       var filters = new List<MasterData.Repositories.DBModels.Filter>()
       {
         new MasterData.Repositories.DBModels.Filter()
@@ -229,8 +219,6 @@ namespace VSS.Productivity3D.Filter.Tests
       };
       filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), true)).ReturnsAsync(filters);
       filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<UpdateFilterEvent>())).ReturnsAsync(1);
-
-      var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
 
       var request =
         FilterRequestFull.Create
@@ -306,7 +294,7 @@ namespace VSS.Productivity3D.Filter.Tests
         FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(filterToTest.filterDescriptor.FilterUid, result.filterDescriptor.FilterUid,
@@ -339,16 +327,6 @@ namespace VSS.Productivity3D.Filter.Tests
       string kafkaTopicName = "whatever";
 
       var filterRepo = new Mock<IFilterRepository>();
-      var filter = new MasterData.Repositories.DBModels.Filter()
-      {
-        CustomerUid = custUid,
-        UserId = userUid,
-        ProjectUid = projectUid,
-        FilterUid = filterUid,
-        Name = name,
-        FilterJson = filterJson,
-        LastActionedUtc = DateTime.UtcNow
-      };
       var filters = new List<MasterData.Repositories.DBModels.Filter>()
       {
         new MasterData.Repositories.DBModels.Filter()
@@ -365,13 +343,11 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), false)).ReturnsAsync(filters);
       filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<DeleteFilterEvent>())).ReturnsAsync(1);
 
-      var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
-
       var request =
         FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
-      var result = await executor.ProcessAsync(request);
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false);
 
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(0, result.Code, "executor returned incorrect result code");
@@ -416,27 +392,10 @@ namespace VSS.Productivity3D.Filter.Tests
         ProjectUid = projectUid,
         filterRequests = filterListRequest.filterRequests
       };
-      //// expected result data:
-      //var resultList = new List<FilterDescriptor>()
-      //{
-      //  new FilterDescriptor(){ FilterUid = filterUid1, Name = name, FilterJson = filterJson1}
-      //};
-      //var expectedResultList = new FilterDescriptorListResult {filterDescriptors = resultList.ToImmutableList()};
-
-
+     
       // setup moq
       var filterRepo = new Mock<IFilterRepository>();
-      //var dbGetResult = new MasterData.Repositories.DBModels.Filter()
-      //{
-      //  CustomerUid = custUid,
-      //  UserId = userUid,
-      //  ProjectUid = projectUid,
-      //  FilterUid = filterUid1,
-      //  Name = "",
-      //  FilterJson = filterJson1,
-      //  LastActionedUtc = DateTime.UtcNow
-      //};
-
+     
       var dbGetResultList1 = new List<MasterData.Repositories.DBModels.Filter>()
       {
         new MasterData.Repositories.DBModels.Filter()
@@ -484,7 +443,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var executor = RequestExecutorContainer.Build<CreateFiltersExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object);
-      var result = await executor.ProcessAsync(filterListRequestFull) as FilterDescriptorListResult;
+      var result = await executor.ProcessAsync(filterListRequestFull).ConfigureAwait(false) as FilterDescriptorListResult;
 
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(3, result.filterDescriptors.Count, "Wrong result count returned");
@@ -560,19 +519,6 @@ namespace VSS.Productivity3D.Filter.Tests
           FilterUid = filterUid2,
           Name = "",
           FilterJson = filterJson2,
-          LastActionedUtc = DateTime.UtcNow
-        }
-      };
-      var dbGetResultList3 = new List<MasterData.Repositories.DBModels.Filter>()
-      {
-        new MasterData.Repositories.DBModels.Filter()
-        {
-          CustomerUid = custUid,
-          UserId = userUid,
-          ProjectUid = projectUid,
-          FilterUid = filterUid3,
-          Name = "",
-          FilterJson = filterJson3,
           LastActionedUtc = DateTime.UtcNow
         }
       };

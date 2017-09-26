@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -194,6 +195,50 @@ namespace VSS.Productivity3D.Filter.Tests
 
       StringAssert.Contains(ex.GetContent, "2008");
       StringAssert.Contains(ex.GetContent, "Validation of Customer/Project failed. Not allowed.");
+    }
+
+    [TestMethod]
+    public async Task CreateFiltersValidation_PersistantNotAllowed()
+    {
+      // a list of 3 valid transient filters are sent in request to creat
+      // a list of 3 should be returned
+      string custUid = Guid.NewGuid().ToString();
+      string userUid = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string name1 = "";
+      string name2 = "This is persistant";
+      string name3 = "";
+      string filterJson1 = "";
+      string filterJson2 = "{\"startUTC\":\"2012-11-05\",\"endUTC\":\"2012-11-06\"}";
+      string filterJson3 = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"}";
+
+      // request data:
+      var requestList = new List<FilterRequest>()
+      {
+        FilterRequest.Create("", name1, filterJson1),
+        FilterRequest.Create("", name2, filterJson2),
+        FilterRequest.Create("", name3, filterJson3)
+      };
+
+      FilterListRequest filterListRequest = new FilterListRequest()
+      {
+        filterRequests = new List<FilterRequest>()
+      };
+      filterListRequest.filterRequests = requestList.ToImmutableList();
+
+      var filterListRequestFull = new FilterListRequestFull()
+      {
+        CustomerUid = custUid,
+        UserId = userUid,
+        ProjectUid = projectUid,
+        filterRequests = filterListRequest.filterRequests
+      };
+
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var ex = Assert.ThrowsException<ServiceException>(() => filterListRequestFull.Validate(serviceExceptionHandler));
+
+      StringAssert.Contains(ex.GetContent, "2024");
+      StringAssert.Contains(ex.GetContent, "UpsertFilter failed. Unable to create persistent filter.");
     }
   }
 }

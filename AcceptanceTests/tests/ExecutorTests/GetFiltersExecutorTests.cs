@@ -33,7 +33,7 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorListResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorListResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreEqual(0, result.filterDescriptors.Count, "executor count is incorrect");
@@ -70,7 +70,7 @@ namespace ExecutorTests
       
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorListResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorListResult;
 
       var filterToTest = new FilterDescriptorListResult
       {
@@ -133,7 +133,7 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorListResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorListResult;
 
       var filterToTest = new FilterDescriptorListResult
       {

@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(requestFull) as FilterDescriptorListResult;
+      var result = await executor.ProcessAsync(requestFull).ConfigureAwait(false) as FilterDescriptorListResult;
 
       log.LogInformation($"{ToString()}.GetProjectFilters Completed: resultCode: {result?.Code} filterCount={result?.filterDescriptors.Count}");
       return result;
@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = (await executor.ProcessAsync(requestFull)) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(requestFull).ConfigureAwait(false) as FilterDescriptorSingleResult;
       
       log.LogInformation($"{ToString()}.GetProjectFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result;
@@ -131,7 +131,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(requestFull) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(requestFull).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       log.LogInformation($"{ToString()}.UpsertFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result;
@@ -155,7 +155,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(requestFull);
+      var result = await executor.ProcessAsync(requestFull).ConfigureAwait(false);
 
       log.LogInformation($"{ToString()}.DeleteFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result;
@@ -193,7 +193,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestListFull.Validate(serviceExceptionHandler);
 
       var executor = RequestExecutorContainer.Build<CreateFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(requestListFull) as FilterDescriptorListResult;
+      var result = await executor.ProcessAsync(requestListFull).ConfigureAwait(false) as FilterDescriptorListResult;
 
       log.LogInformation($"{ToString()}.UpsertFilters Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result;

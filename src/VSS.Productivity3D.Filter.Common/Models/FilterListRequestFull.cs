@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
       foreach (var request in filterRequests)
       {
         if (!string.IsNullOrEmpty(request.Name))
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 3);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 24);
 
         if (!string.IsNullOrEmpty(request.FilterUid))
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 16);

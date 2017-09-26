@@ -67,7 +67,7 @@ namespace ExecutorTests
       
       var executor =
         RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as ContractExecutionResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as ContractExecutionResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreEqual(0, result.Code, "executor returned incorrect code");

@@ -36,7 +36,7 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
@@ -112,14 +112,14 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result1 = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result1 = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
       Assert.IsNotNull(result1, "executor should always return a result");
       Assert.IsNotNull(result1.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
       Assert.AreEqual(name, result1.filterDescriptor.Name, "executor returned incorrect filter Name");
       Assert.AreEqual(filterJson1, result1.filterDescriptor.FilterJson, "executor returned incorrect FilterJson");
 
       request = FilterRequestFull.Create(custUid, false, userUid, projectUid, null, name, filterJson2);
-      var result2 = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result2 = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result2, "executor should always return a result");
       Assert.AreNotEqual(result1.filterDescriptor.FilterUid, result2.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
@@ -162,7 +162,7 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreNotEqual(filterUid, result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
@@ -187,7 +187,7 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
@@ -242,7 +242,7 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
@@ -288,7 +288,7 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
