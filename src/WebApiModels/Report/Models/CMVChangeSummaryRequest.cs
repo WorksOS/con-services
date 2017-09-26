@@ -95,24 +95,5 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
         CMVChangeSummaryValues = cmvChangeSummaryValues
       };
     }
-
-
-    /// <summary>
-    /// Create example instance of PassCounts to display in Help documentation.
-    /// </summary>
-    public new static CMVChangeSummaryRequest HelpSample
-    {
-      get
-      {
-        return new CMVChangeSummaryRequest
-        {
-                   projectId = 34,
-                   callId = Guid.NewGuid(),
-                   liftBuildSettings = LiftBuildSettings.HelpSample,
-                   CMVChangeSummaryValues = new double[3] {-10,1,20 }
-               };
-      }
-    }
-
   }
 }

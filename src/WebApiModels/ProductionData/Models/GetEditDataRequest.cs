@@ -39,22 +39,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       };
     }
 
-
-    /// <summary>
-    /// Create example instance of GetEditDataRequest to display in Help documentation.
-    /// </summary>
-    public new static GetEditDataRequest HelpSample
-    {
-      get
-      {
-        return new GetEditDataRequest
-        {
-          projectId = 1523,
-          assetId = 753648483
-        };
-      }
-    }
-
     /// <summary>
     /// Validates all properties
     /// </summary>

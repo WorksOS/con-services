@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.Utilities;
@@ -163,37 +163,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
                    patchSize = patchSize
                };
       }
-
-      
-    /// <summary>
-    /// Create example instance of PatchRequest to display in Help documentation.
-    /// </summary>
-    public new static PatchRequest HelpSample
-    {
-      get
-      {
-        return new PatchRequest
-        {
-          projectId = 404,
-          callId = new Guid(),
-          mode = DisplayMode.CompactionCoverage,
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(0x008000, 0 ),
-                                              ColorPalette.CreateColorPalette(0x00FFFF, 1 ) },
-          liftBuildSettings = LiftBuildSettings.HelpSample,
-          computeVolType = RaptorConverters.VolumesType.None,
-          computeVolNoChangeTolerance = 0.02,
-          designDescriptor = DesignDescriptor.HelpSample,
-          filter1 = null,
-          filterId1 = 21,
-          filter2 = null,
-          filterId2 = 0,
-          filterLayerMethod = FilterLayerMethod.None,
-          patchNumber = 2,
-          patchSize = 10
-        };
-      }
-    }
-
+    
         public override void Validate()
         {
           base.Validate();
@@ -220,8 +190,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       private const int MAX_PATCH_SIZE = 1000;
       private const int MIN_PATCH_NUM = 0;
       private const int MAX_PATCH_NUM = 1000;
-
     }
-
-    
 }

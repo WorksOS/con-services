@@ -30,13 +30,7 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "projectUid", Required = Required.Default)]
     [ValidProjectUID]
-    public Guid? projectUid { get; protected set; }
-
-    /// <summary>
-    /// ProjectID sample instance.
-    /// </summary>
-    /// 
-    public static ProjectID HelpSample => new ProjectID { projectId = 1, projectUid = new Guid() };
+    public Guid? projectUid { get; set; }
 
     /// <summary>
     /// Creates an instance of the ProjectID class.

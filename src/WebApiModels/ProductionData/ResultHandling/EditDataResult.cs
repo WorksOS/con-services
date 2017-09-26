@@ -30,13 +30,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
         dataEdits = dataEdits
       };
     }
-
-    /// <summary>
-    /// Create example instance of EditDataResult to display in Help documentation.
-    /// </summary>
-    public static EditDataResult HelpSample => new EditDataResult
-    {
-      dataEdits = new List<ProductionDataEdit> { ProductionDataEdit.HelpSample }
-    };
   }
 }

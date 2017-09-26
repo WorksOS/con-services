@@ -4,7 +4,7 @@ using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
-    public class LayerIdsExecutionResult : ContractExecutionResult
+  public class LayerIdsExecutionResult : ContractExecutionResult
     {
 
         public LayerIdDetails[] LayerIdDetailsArray { get; private set; }
@@ -24,17 +24,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
                 EndDate = layerlist[i].FEndTime
               };
             }
+
             return new LayerIdsExecutionResult {LayerIdDetailsArray = LayerIdDetails};
-
         }
-
-        /// <summary>
-        /// Create example instance of MachineExecutionResult to display in Help documentation.
-        /// </summary>
-        public static LayerIdsExecutionResult HelpSample => new LayerIdsExecutionResult
-        {
-          LayerIdDetailsArray = new[] { LayerIdDetails.HelpSample, LayerIdDetails.HelpSample }
-        };
     }
 
     public class LayerIdDetails
@@ -44,14 +36,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
         public long LayerId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-
-        public static LayerIdDetails HelpSample => new LayerIdDetails
-        {
-          AssetId = 1137642418461469,
-          DesignId = 1005,
-          StartDate = DateTime.UtcNow,
-          EndDate = DateTime.UtcNow.AddDays(1),
-          LayerId = 42
-        };
     }
 }

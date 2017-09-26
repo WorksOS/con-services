@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.Interfaces;
@@ -40,13 +40,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Models
     {
       // ...
     }
-
-    /// <summary>
-    /// CoordinateSystemFile sample instance.
-    /// </summary>
-    /// 
-    public static CoordinateSystemFileValidationRequest HelpSample => new CoordinateSystemFileValidationRequest { csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 }, csFileName = "CSD Test.DC" };
-
+    
     /// <summary>
     /// Creates an instance of the CoordinateSystemFileValidationRequest class.
     /// </summary>

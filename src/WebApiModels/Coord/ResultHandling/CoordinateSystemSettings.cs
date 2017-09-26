@@ -1,13 +1,12 @@
 ﻿using System;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 
 namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
 {
-    /// <summary>
-    /// Coordinate system settings result object.
-    /// </summary>
-    ///    
+  /// <summary>
+  /// Coordinate system settings result object.
+  /// </summary>
+  ///    
   public class CoordinateSystemSettings : ContractExecutionResult
     {
         /// <summary>
@@ -105,34 +104,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
         /// </summary>
         private CoordinateSystemSettings() 
         {}
-
-        /// <summary>
-        /// Create an instance of the CoordinaeSystemSettings class.
-        /// </summary>
-        public static CoordinateSystemSettings HelpSample
-        {
-            get
-            {
-                return new CoordinateSystemSettings
-                { 
-                    csName = "DatumGrid and Geoid.cal",
-                    csGroup = "Projection from Data Collector",
-                    csib = new byte[] { 0,1,2,3,4,5,6,7 },
-                    datumName = "Datum Grid",
-                    siteCalibration = false,
-                    geoidFileName = "NZ2009.GGF",
-                    geoidName = "New Zealand Geoid 2009",
-                    isDatumGrid = true,
-                    latitudeDatumGridFileName = "NZNATlat.DGF",
-                    longitudeDatumGridFileName = "NZNATlon.DGF",
-                    heightDatumGridFileName = null,
-                    shiftGridName = null,
-                    snakeGridName = null,
-                    verticalDatumName = null
-                };
-            }            
-        }
-
+    
         public static CoordinateSystemSettings CreateCoordinateSystemSettings
           (   
                 string csName, 

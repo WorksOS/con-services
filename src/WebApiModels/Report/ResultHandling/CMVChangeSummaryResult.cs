@@ -1,6 +1,5 @@
 
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 
 namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
@@ -39,21 +38,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
                  Values = values,
                  CoverageArea = coverageArea
              };
-    }
-
-    /// <summary>
-    /// Create example instance of SummaryVolumesResult to display in Help documentation.
-    /// </summary>
-    public static CMVChangeSummaryResult HelpSample
-    {
-      get
-      {
-        return new CMVChangeSummaryResult
-        {
-                   Values = new double[] {23, 543, 1233, 633}
-               };
-      }
-
     }
   }
 }

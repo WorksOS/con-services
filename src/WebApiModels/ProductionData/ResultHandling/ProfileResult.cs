@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
@@ -30,22 +29,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     {
       // ...
     }
-
-    /// <summary>
-    /// Creates a sample instance of ProfileResult class to be displayed in the Help documentation.
-    /// </summary>
-    /// 
-    public static ProfileResult HelpSample => new ProfileResult
-    {
-      callId = new Guid(),
-      success = true,
-      minStation = 0,
-      maxStation = 100,
-      minHeight = 0,
-      maxHeight = 212,
-      gridDistanceBetweenProfilePoints = 12,
-      cells = new List<ProfileCell> { ProfileCell.HelpSample, ProfileCell.HelpSample },
-      alignmentPoints = new List<StationLLPoint> { StationLLPoint.HelpSample, StationLLPoint.HelpSample}
-    };
   }
 }

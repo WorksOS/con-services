@@ -61,15 +61,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         Extents = extents
       };
     }
-
-    /// <summary>
-    /// Creates a sample instance of the SurveyedSurfaceDetails class to be displayed in Help documentation.
-    /// </summary>
-    /// 
-    public static SurveyedSurfaceDetails HelpSample
-    {
-      get { return new SurveyedSurfaceDetails { Id = 1, SurveyedSurface = DesignDescriptor.HelpSample, AsAtDate = DateTime.UtcNow }; }
-    }
-
   }
 }

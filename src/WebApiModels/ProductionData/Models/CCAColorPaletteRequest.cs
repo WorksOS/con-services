@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
@@ -67,20 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       return new CCAColorPaletteRequest { projectId = projectId, assetId = assetId, startUtc = startUtc, endUtc = endUtc, liftId = liftId};
     }
-
-    /// <summary>
-    /// Creates CCAColorPaletteRequest class sample instance to be displayed in Help documantation.
-    /// </summary>
-    /// 
-    public new static CCAColorPaletteRequest HelpSample => new CCAColorPaletteRequest
-    {
-      projectId = 111,
-      assetId = 1,
-      startUtc = DateTime.UtcNow,
-      endUtc = DateTime.UtcNow.AddDays(5),
-      liftId = 1
-    };
-
+    
     /// <summary>
     /// Validates properties.
     /// </summary>
@@ -107,6 +94,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         }
       }
     }
-
   }
 }

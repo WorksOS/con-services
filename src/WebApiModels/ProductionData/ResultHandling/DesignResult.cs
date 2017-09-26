@@ -30,11 +30,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     {
       return new DesignResult { designBoundaries = designBoundaries };
     }
-
-    /// <summary>
-    /// Creates a sample instance of the DesignResult class to be displayed in Help documentation.
-    /// </summary>
-    /// 
-    public static DesignResult HelpSample => new DesignResult { designBoundaries = new JObject[0] };
   }
 }

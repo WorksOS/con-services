@@ -25,13 +25,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
         MachineLiftDetails = machineLiftDetails,
       };
     }
-
-    /// <summary>
-    /// Create example instance of MachineLayerIdsExecutionResult to display in Help documentation.
-    /// </summary>
-    public static MachineLayerIdsExecutionResult HelpSample => new MachineLayerIdsExecutionResult
-    {
-      MachineLiftDetails = new[] { Models.MachineLiftDetails.HelpSample }
-    };
   }
 }

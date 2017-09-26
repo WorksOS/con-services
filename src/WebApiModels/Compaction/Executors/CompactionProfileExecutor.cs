@@ -4,22 +4,17 @@ using SVOICProfileCell;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Text;
-using System.Linq;
-using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.Utilities;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Velociraptor.PDSInterface;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 {
@@ -315,6 +310,5 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       mdpIndex = ValueTargetType.NoData,
       speedIndex = ValueTargetType.NoData,
     };
-
   }
 }

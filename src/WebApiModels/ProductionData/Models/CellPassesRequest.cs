@@ -13,7 +13,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
   /// </summary>
   public class CellPassesRequest : ProjectID, IValidatable
   {
- 
+
     /// <summary>
     /// Location of the cell in the form of cartesian cell index address. 
     /// May be null.
@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// The lift/layer build settings to be used.
     /// May be null.
     /// </summary>
-    [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]    
+    [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
     public LiftBuildSettings liftBuildSettings { get; private set; }
 
     /// <summary>
@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       }
 
 
-    //  throw new NotImplementedException();
+      //  throw new NotImplementedException();
     }
 
     /// <summary>
@@ -113,35 +113,19 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// <param name="filter"></param>
     /// <returns></returns>
     public static CellPassesRequest CreateCellPassRequest(long projectId, CellAddress cellAddress, Point probePositionGrid,
-     WGSPoint probePositionLL, LiftBuildSettings liftBuildSettings, int gridDataType, long filterId ,Filter filter )
+     WGSPoint probePositionLL, LiftBuildSettings liftBuildSettings, int gridDataType, long filterId, Filter filter)
     {
       return new CellPassesRequest
       {
-        projectId = projectId,cellAddress = cellAddress,probePositionGrid = probePositionGrid,probePositionLL = probePositionLL,
-        liftBuildSettings = liftBuildSettings, gridDataType = gridDataType, filterId = filterId,filter = filter
+        projectId = projectId,
+        cellAddress = cellAddress,
+        probePositionGrid = probePositionGrid,
+        probePositionLL = probePositionLL,
+        liftBuildSettings = liftBuildSettings,
+        gridDataType = gridDataType,
+        filterId = filterId,
+        filter = filter
       };
     }
-
-    /// <summary>
-    /// Create example instance of CellPassesRequest to display in Help documentation.
-    /// </summary>
-    public new static CellPassesRequest HelpSample
-    {
-      get
-      {
-        return new CellPassesRequest
-        {
-            projectId = 100,
-            cellAddress = CellAddress.HelpSample,
-            filter = Filter.HelpSample,
-            filterId = 132,
-            gridDataType = 1,
-            liftBuildSettings = LiftBuildSettings.HelpSample,
-            probePositionGrid = Point.HelpSample,
-            probePositionLL = WGSPoint.HelpSample,
-        };
-      }
-    }
-
   }
 }

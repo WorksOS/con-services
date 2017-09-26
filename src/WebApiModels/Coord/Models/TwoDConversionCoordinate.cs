@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Common.Interfaces;
 
 namespace VSS.Productivity3D.WebApiModels.Coord.Models
@@ -46,27 +46,11 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Models
     }
 
     /// <summary>
-    /// Create a samble instance of the TwoDConversionCoordinate to display in Help documentation.
-    /// </summary>
-    public static TwoDConversionCoordinate HelpSample
-    {
-      get
-      {
-        return new TwoDConversionCoordinate
-        {
-          x = 192.35,
-          y = 234.12
-        };
-      }
-    }
-
-    /// <summary>
     /// Validates all properties.
     /// </summary>
     public void Validate()
     {
       //Nothing else to validate
     }
-
   }
 }

@@ -88,21 +88,7 @@ namespace VSS.Productivity3D.Common.Models
         overrideTargetCMV = overrideTargetCMV
       };
     }
-
-    /// <summary>
-    /// Create example instance of CMVSettings to display in Help documentation.
-    /// </summary>
-    public static CMVSettings HelpSample => new CMVSettings
-    {
-      cmvTarget = 400,
-      maxCMV = 800,
-      maxCMVPercent = 130.0,
-      minCMV = 0,
-      minCMVPercent = 0.0,
-      overrideTargetCMV = true
-    };
-
-
+    
     /// <summary>
     /// Validates all properties
     /// </summary>

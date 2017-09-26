@@ -1,6 +1,4 @@
-﻿using ASNodeDecls;
-using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
+﻿using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
@@ -60,24 +58,5 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
         underCompletePercent = underCompactedPercent
       };
     }
-
-    /// <summary>
-    /// Create example instance of CCASummaryResult to display in Help documentation.
-    /// </summary>
-    public static CCASummaryResult HelpSample
-    {
-      get
-      {
-        return new CCASummaryResult
-        {
-          completePercent = 50.0,
-          overCompletePercent = 12.7,
-          returnCode = (short)TASNodeErrorStatus.asneOK,
-          totalAreaCoveredSqMeters = 18476.54,
-          underCompletePercent = 37.3
-        };
-      }
-    }
-
   }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 
 namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
@@ -33,21 +32,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
         percents = percents
       };
     }
-
-    /// <summary>
-    /// Create example instance of CMVDetailedResult to display in Help documentation.
-    /// </summary>
-    public static CMVDetailedResult HelpSample
-    {
-      get
-      {
-        return new CMVDetailedResult
-        {
-          percents = new double[] { 7.5, 21.2, 30.3, 24.1, 16.9 }
-        };
-      }
-    }
-
 
     /// <summary>
     /// ToString override

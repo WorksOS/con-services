@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
@@ -78,29 +77,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 
       };
     }
-
-    /// <summary>
-    /// Create example instance of MachineStatus to display in Help documentation.
-    /// </summary>
-    public static new MachineStatus HelpSample
-    {
-      get
-      {
-        return new MachineStatus
-        {
-          assetID = 1137642418461469,
-          machineName = "VOLVO G946B",
-          isJohnDoe = false,
-          lastKnownDesignName = "Green Park",
-          lastKnownLayerId = 2,
-          lastKnownTimeStamp = DateTime.UtcNow.AddHours(-2),
-          lastKnownLatitude = 3.010479,
-          lastKnownLongitude = -0.758809
-        };
-      }
-    }
-
-
-
   }
 }

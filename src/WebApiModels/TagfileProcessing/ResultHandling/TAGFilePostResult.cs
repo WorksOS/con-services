@@ -1,30 +1,24 @@
 ﻿using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 
 namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.ResultHandling
 {
+  /// <summary>
+  /// REpresents response from the service after TAG file POST request
+  /// </summary>
+  public class TAGFilePostResult : ContractExecutionResult
+  {
     /// <summary>
-    /// REpresents response from the service after TAG file POST request
+    /// Private constructor
     /// </summary>
-    public class TAGFilePostResult : ContractExecutionResult
+    private TAGFilePostResult()
+    { }
+
+    /// <summary>
+    /// Create instance of TAGFilePostResult
+    /// </summary>
+    public static TAGFilePostResult CreateTAGFilePostResult()
     {
-        /// <summary>
-        /// Private constructor
-        /// </summary>
-        private TAGFilePostResult()
-        {}
-
-        /// <summary>
-        /// Create instance of TAGFilePostResult
-        /// </summary>
-        public static TAGFilePostResult CreateTAGFilePostResult()
-        {
-          return new TAGFilePostResult();
-        }
-
-        /// <summary>
-        /// TAGFile instance
-        /// </summary>
-        public static TAGFilePostResult HelpSample => new TAGFilePostResult();
+      return new TAGFilePostResult();
     }
+  }
 }

@@ -32,14 +32,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
           ProjectExtents = convertedExtents
         };
       }
-
-
-      /// <summary>
-      /// Create example instance of ProjectExtentsResult to display in Help documentation.
-      /// </summary>
-      public static ProjectExtentsResult HelpSample => new ProjectExtentsResult
-      {
-        ProjectExtents = BoundingBox3DGrid.HelpSample
-      };
   }
 }

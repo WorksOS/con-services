@@ -4,10 +4,8 @@ using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
@@ -162,49 +160,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
         public TTranslation[] translations { get; private set; }
 
         protected ExportGridCSV()
-        {
-        }
-
-        /*
-    /// <summary>
-    /// Create instance of ExportGridCSV
-    /// </summary>
-    public static ExportGridCSV CreateExportGridCSVRequest(long projectId, LiftBuildSettings liftBuildSettings,
-        Filter filter, long filterID, Guid? callid, string callerID, 
-        string FileName, GriddedCSVReportType ExportType)
-    {
-      return new ExportGridCSV
-      {
-                 projectId = projectId,
-                 liftBuildSettings = liftBuildSettings,
-                 filter = filter,
-                 filterID = filterID,
-                 callId = callid,
-                 callerId = callerID,
-                 filename = FileName
-       };
-    }
-    */
-    /*
-        /// <summary>
-        /// Create example instance of PassCounts to display in Help documentation.
-        /// </summary>
-        public static ExportGridCSV HelpSample
-        {
-            get
-            {
-                return new ExportGridCSV()
-                {
-                    projectId = 34,
-                    liftBuildSettings = LiftBuildSettings.HelpSample,
-                    filter = Filter.HelpSample,
-                    filterID = 0,
-                    callId = new Guid(),
-                    callerId = "Myself"
-                };
-            }
-        }
-*/
+        { }
 
         /// <summary>
         /// Validates all properties

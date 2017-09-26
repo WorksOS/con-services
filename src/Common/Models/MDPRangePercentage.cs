@@ -1,18 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Contains a percentage range of observed MDP values with respect to the target MDP value configured on a machine
   /// </summary>
-    public class MDPRangePercentage : IValidatable
+  public class MDPRangePercentage : IValidatable
   {
     /// <summary>
     /// The minimum percentage range. Must be between 0 and 250.
@@ -54,21 +52,6 @@ namespace VSS.Productivity3D.Common.Models
     }
 
     /// <summary>
-    /// Create example instance of MDPRangePercentage to display in Help documentation.
-    /// </summary>
-    public static MDPRangePercentage HelpSample
-    {
-      get
-      {
-        return new MDPRangePercentage
-        {
-          min = 80.0,
-          max = 130.0
-        };
-      }
-    }
-
-    /// <summary>
     /// Validates all properties
     /// </summary>
     public void Validate()
@@ -82,7 +65,5 @@ namespace VSS.Productivity3D.Common.Models
 
     private const double MIN_PERCENT = 0.0;
     private const double MAX_PERCENT = 250.0;
-
-
   }
 }

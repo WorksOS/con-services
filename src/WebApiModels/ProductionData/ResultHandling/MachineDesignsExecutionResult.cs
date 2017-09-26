@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using VLPDDecls;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
-    public class MachineDesignsExecutionResult : ContractExecutionResult
+  public class MachineDesignsExecutionResult : ContractExecutionResult
     {
     /// <summary>
     /// The list of the on-machine designs available for the project.
@@ -27,14 +27,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
         }
         return result;
     }
-
-
-    /// <summary>
-    /// Create example instance of MachineDesignsExecutionResult to display in Help documentation.
-    /// </summary>
-    public static MachineDesignsExecutionResult HelpSample => new MachineDesignsExecutionResult
-    {
-      Designs = new List<DesignNames> {DesignNames.HelpSample, DesignNames.HelpSample}
-    };
     }
 }

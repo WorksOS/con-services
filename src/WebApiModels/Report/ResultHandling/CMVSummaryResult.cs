@@ -1,5 +1,4 @@
-﻿using ASNodeDecls;
-using VSS.Common.ResultsHandling;
+﻿using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
@@ -73,26 +72,5 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
         underCompactedPercent = underCompactedPercent
       };
     }
-
-    /// <summary>
-    /// Create example instance of CMVSummaryResult to display in Help documentation.
-    /// </summary>
-    public static CMVSummaryResult HelpSample
-    {
-      get
-      {
-        return new CMVSummaryResult
-        {
-          compactedPercent = 50.0,
-          constantTargetCMV = 95,
-          isTargetCMVConstant = false,
-          overCompactedPercent = 12.7,
-          returnCode = (short)TASNodeErrorStatus.asneOK,
-          totalAreaCoveredSqMeters = 18476.54,
-          underCompactedPercent = 37.3
-        };
-      }
-    }
-
   }
 }
