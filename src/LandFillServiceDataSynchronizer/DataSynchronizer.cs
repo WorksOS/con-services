@@ -123,7 +123,7 @@ namespace LandFillServiceDataSynchronizer
           projDate = projDate.Date.AddDays(1);
         }
 
-        //Process CCA for missing dates
+       /* //Process CCA for missing dates
         var missingDates = LandfillDb.GetDatesWithNoCCA(project);
         foreach (var missingDate in missingDates)
         {
@@ -145,7 +145,7 @@ namespace LandFillServiceDataSynchronizer
                     new RaptorApiClient().GetCCAInBackground(
             userId, project, cca.geofenceUid, geofence, cca.date, cca.machineId, machines[cca.machineId], cca.liftId).Wait();          
         }
-        Log.InfoFormat("END Processing project {0}", project.id);
+        Log.InfoFormat("END Processing project {0}", project.id);*/
       }
 
     }
