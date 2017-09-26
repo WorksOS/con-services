@@ -104,30 +104,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
         overrideAssetIds = overrideAssetIds
       };
     }
-
-    /// <summary>
-    /// Create example instance of CMVRequest to display in Help documentation.
-    /// </summary>
-    public static new CMVRequest HelpSample
-    {
-      get
-      {
-        return new CMVRequest
-        {
-          projectId = 735,
-          callId = null,
-          cmvSettings = CMVSettings.HelpSample,
-          liftBuildSettings = LiftBuildSettings.HelpSample,
-          filter = Filter.HelpSample,
-          filterID = 0,
-          overrideStartUTC = null,
-          overrideEndUTC = null,
-          overrideAssetIds = null
-        };
-      }
-    }
-
-
+    
     /// <summary>
     /// Validates all properties
     /// </summary>

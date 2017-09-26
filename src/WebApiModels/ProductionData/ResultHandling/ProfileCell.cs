@@ -155,32 +155,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// </summary>
     /// 
     public float maxHeight => highestPassHeight > highestCompositeHeight ? highestPassHeight : highestCompositeHeight;
-
-    public static ProfileCell HelpSample { get { return new ProfileCell
-    {
-      cmvHeight = 10,
-      cmvPercent = 43,
-      station = 11,
-      topLayerPassCount = 15,
-      topLayerPassCountTargetRange = TargetPassCountRange.HelpSample,
-      firstPassHeight = 4,
-      lastCompositeHeight = 6,
-      lastPassHeight = 1,
-      designHeight = 6,
-      firstCompositeHeight = 54,
-      highestCompositeHeight = 123,
-      highestPassHeight = 33,
-      lowestCompositeHeight = 54,
-      lowestPassHeight = 1,
-      mdpHeight = 7,
-      mdpPercent = 33,
-      passCountIndex = 6,
-      temperature = 120,
-      temperatureHeight = 4,
-      temperatureLevel = 5,
-      topLayerThickness = 100
-    };}  }
-
+    
     /// <summary>
     /// ToString override
     /// </summary>

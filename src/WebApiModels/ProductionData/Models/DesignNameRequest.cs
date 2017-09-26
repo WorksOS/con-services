@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 
@@ -18,19 +18,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     [JsonProperty(PropertyName = "DesignFilename", Required = Required.Always)]
     [Required]
     public string DesignFilename { get; private set; }
-    
+
     public override void Validate()
     {
       base.Validate();
-    }
-
-    /// <summary>
-    /// Creates a sample instance of the DesignNameRequest class to be displayed in Help documentation.
-    /// </summary>
-    /// 
-    public new static DesignNameRequest HelpSample
-    {
-      get { return new DesignNameRequest { projectId = 1, DesignFilename = "MyDesign.ttm" }; }
     }
   }
 }

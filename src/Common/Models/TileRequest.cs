@@ -5,10 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.Common.Models
@@ -141,7 +138,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Private constructor
     /// </summary>
     protected TileRequest()
-      {}
+    { }
 
     /// <summary>
     /// Create instance of TileRequest
@@ -158,7 +155,7 @@ namespace VSS.Productivity3D.Common.Models
         Filter filter1,
         long filterId1,
         Filter filter2,
-        long filterId2, 
+        long filterId2,
         FilterLayerMethod filterLayerMethod,
         BoundingBox2DLatLon boundingBoxLatLon,
         BoundingBox2DGrid boundingBoxGrid,
@@ -168,68 +165,31 @@ namespace VSS.Productivity3D.Common.Models
         uint cmvDetailsColorNumber = 5,
         bool setSummaryDataLayersVisibility = true
       )
-      {
-        return new TileRequest
-        {
-          projectId = projectId,
-          callId = callId,
-          mode = mode,
-          palettes = palettes,
-          liftBuildSettings = liftBuildSettings,
-          computeVolType = computeVolType,
-          computeVolNoChangeTolerance = computeVolNoChangeTolerance,
-          designDescriptor = designDescriptor,
-          filter1 = filter1,
-          filterId1 = filterId1,
-          filter2 = filter2,
-          filterId2 = filterId2,
-          filterLayerMethod = filterLayerMethod,
-          boundBoxLL = boundingBoxLatLon,
-          boundBoxGrid = boundingBoxGrid,
-          width = width,
-          height = height,
-          representationalDisplayColor = representationalDisplayColor,
-          cmvDetailsColorNumber = cmvDetailsColorNumber,
-          setSummaryDataLayersVisibility = setSummaryDataLayersVisibility
-        };
-      }
-
-    /// <summary>
-    /// Create example instance of PassCounts to display in Help documentation.
-    /// </summary>
-    public new static TileRequest HelpSample
     {
-      get
+      return new TileRequest
       {
-        return new TileRequest
-        {
-          projectId = 404,
-          callId = new Guid(),
-          mode = DisplayMode.CompactionCoverage,
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(0x008000, 0 ),
-                                              ColorPalette.CreateColorPalette(0x00FFFF, 1 ) },
-          liftBuildSettings = LiftBuildSettings.HelpSample,
-          computeVolType = RaptorConverters.VolumesType.None,
-          computeVolNoChangeTolerance = 0.02,
-          designDescriptor = DesignDescriptor.HelpSample,
-          filter1 = null,
-          filterId1 = 21,
-          filter2 = null,
-          filterId2 = 0,
-          filterLayerMethod = FilterLayerMethod.None,
-          boundBoxLL = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(
-              -91.73583984375 * ConversionConstants.DEGREES_TO_RADIANS, 
-              29.916852233070173 * ConversionConstants.DEGREES_TO_RADIANS,
-              -91.73309326171875 * ConversionConstants.DEGREES_TO_RADIANS, 
-              29.91923280484215 * ConversionConstants.DEGREES_TO_RADIANS),
-          boundBoxGrid = null,
-          width = 256,
-          height = 256,
-          representationalDisplayColor = 255
-        };
-      }
+        projectId = projectId,
+        callId = callId,
+        mode = mode,
+        palettes = palettes,
+        liftBuildSettings = liftBuildSettings,
+        computeVolType = computeVolType,
+        computeVolNoChangeTolerance = computeVolNoChangeTolerance,
+        designDescriptor = designDescriptor,
+        filter1 = filter1,
+        filterId1 = filterId1,
+        filter2 = filter2,
+        filterId2 = filterId2,
+        filterLayerMethod = filterLayerMethod,
+        boundBoxLL = boundingBoxLatLon,
+        boundBoxGrid = boundingBoxGrid,
+        width = width,
+        height = height,
+        representationalDisplayColor = representationalDisplayColor,
+        cmvDetailsColorNumber = cmvDetailsColorNumber,
+        setSummaryDataLayersVisibility = setSummaryDataLayersVisibility
+      };
     }
-
 
     /// <summary>
     /// Validates all properties
@@ -240,8 +200,7 @@ namespace VSS.Productivity3D.Common.Models
       ValidatePalettes(palettes, mode);
 
       //Compaction settings
-      if (liftBuildSettings != null)
-        liftBuildSettings.Validate();
+      liftBuildSettings?.Validate();
 
       //Volumes
       //mode == DisplayMode.VolumeCoverage
@@ -257,31 +216,31 @@ namespace VSS.Productivity3D.Common.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  string.Format("Bounding box required either in lat/lng or grid coordinates")));
-          
-      }
-      else if (boundBoxLL != null && boundBoxGrid != null)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                string.Format("Only one bounding box is allowed")));
-         
+                  "Bounding box required either in lat/lng or grid coordinates"));
+
       }
 
-      if ((mode == DisplayMode.TargetThicknessSummary) && (liftBuildSettings.liftThicknessTarget ==  null))
+      if (boundBoxLL != null && boundBoxGrid != null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Only one bounding box is allowed"));
+      }
+
+      if ((mode == DisplayMode.TargetThicknessSummary) && (liftBuildSettings.liftThicknessTarget == null))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                string.Format("For this mode LiftThickness Target in LIftBuildSettings must be specified.")));
+                "For this mode LiftThickness Target in LIftBuildSettings must be specified."));
       }
 
       if ((mode == DisplayMode.TargetSpeedSummary) && (liftBuildSettings.machineSpeedTarget == null))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                string.Format("For this mode SpeedSummary Target in LiftBuildSettings must be specified.")));
+                "For this mode SpeedSummary Target in LiftBuildSettings must be specified."));
       }
-    
+
     }
 
     private const int MIN_PIXELS = 64;

@@ -279,9 +279,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var filterData = await GetFilter(projectUid, filterUid.Value);
         if (filterData != null)
         {
-          Guid designUidGuid;
-          if (filterData.designUid != null && Guid.TryParse(filterData.designUid, out designUidGuid))
+          if (filterData.designUID != null && Guid.TryParse(filterData.designUID, out Guid designUidGuid))
+          {
             designDescriptor = await GetDesignDescriptor(projectUid, designUidGuid);
+          }
 
           //TODO: Replace this with getter on Filter model class. Aaron is updating MasterData models nuget package.
           //Also note missing some filter properties here e.g. forward direction

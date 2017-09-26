@@ -34,11 +34,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     {
       return new SurveyedSurfaceResult { SurveyedSurfaces = surveyedSurfaces };
     }
-
-    /// <summary>
-    /// Creates a sample instance of the SurveyedSurfaceResult class to be displayed in Help documentation.
-    /// </summary>
-    /// 
-    public static SurveyedSurfaceResult HelpSample => new SurveyedSurfaceResult { SurveyedSurfaces = new[] { SurveyedSurfaceDetails.HelpSample } };
   }
 }

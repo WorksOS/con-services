@@ -189,53 +189,16 @@ namespace VSS.Productivity3D.Common.Models
     }
 
     /// <summary>
-    /// Create example instance of LiftBuildSettings to display in Help documentation.
-    /// </summary>
-    public static LiftBuildSettings HelpSample
-    {
-      get
-      {
-        return new LiftBuildSettings
-        {
-          cCVRange = CCVRangePercentage.HelpSample,
-          cCVSummarizeTopLayerOnly = true,
-          deadBandLowerBoundary = 0.2,
-          deadBandUpperBoundary = 0.05,
-          firstPassThickness = 0,
-          liftDetectionType = LiftDetectionType.Automatic,
-          liftThicknessType = LiftThicknessType.Compacted,
-          mDPRange = MDPRangePercentage.HelpSample,
-          mDPSummarizeTopLayerOnly = true,
-          overridingLiftThickness = 0,
-          overridingMachineCCV = 150,
-          overridingMachineMDP = 0,
-          overridingTargetPassCountRange = TargetPassCountRange.HelpSample,
-          overridingTemperatureWarningLevels = TemperatureWarningLevels.HelpSample,
-          includeSupersededLifts = false,
-          liftThicknessTarget = LiftThicknessTarget.HelpSample,
-          machineSpeedTarget = MachineSpeedTarget.HelpSample
-        };
-      }
-    }
-
-
-    /// <summary>
     /// Validates all properties
     /// </summary>
     public void Validate()
     {
-      if (cCVRange != null)
-        cCVRange.Validate();
-      if (mDPRange != null)
-        mDPRange.Validate();
-      if (overridingTemperatureWarningLevels != null)
-        overridingTemperatureWarningLevels.Validate();
-      if (overridingTargetPassCountRange != null)
-        overridingTargetPassCountRange.Validate();
-      if (liftThicknessTarget != null)
-        liftThicknessTarget.Validate();
-      if (machineSpeedTarget != null)
-        machineSpeedTarget.Validate();
+      cCVRange?.Validate();
+      mDPRange?.Validate();
+      overridingTemperatureWarningLevels?.Validate();
+      overridingTargetPassCountRange?.Validate();
+      liftThicknessTarget?.Validate();
+      machineSpeedTarget?.Validate();
     }
 
     private const short MIN_TARGET_MDP = 0;
@@ -246,6 +209,5 @@ namespace VSS.Productivity3D.Common.Models
     private const float MAX_THICKNESS = 100.0f;
     private const float MAX_THICKNESS_ABOVE_TOLERANCE = 1.0f;
     private const float MAX_THICKNESS_BELOW_TOLERANCE = 2.0f;
-
   }
 }

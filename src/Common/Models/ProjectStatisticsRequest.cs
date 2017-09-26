@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 
@@ -49,14 +48,5 @@ namespace VSS.Productivity3D.Common.Models
     //Private constructor to hide the request builder
     private ProjectStatisticsRequest()
     { }
-
-    /// <summary>
-    /// Statistics parameters request help instance
-    /// </summary>
-    public new static ProjectStatisticsRequest HelpSample => new ProjectStatisticsRequest
-    {
-      projectId = 100,
-      excludedSurveyedSurfaceIds = new long[] {1, 3, 5 }
-    };
   }
 }

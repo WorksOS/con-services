@@ -4,11 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -30,7 +26,7 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "bottomLeftLat", Required = Required.Always)]
     [Required]
-    [DecimalIsWithinRange(-Math.PI/2, Math.PI/2)]
+    [DecimalIsWithinRange(-Math.PI / 2, Math.PI / 2)]
     public double bottomLeftLat { get; private set; }
 
     /// <summary>
@@ -46,15 +42,15 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "topRightLat", Required = Required.Always)]
     [Required]
-    [DecimalIsWithinRange(-Math.PI/2, Math.PI/2)]
+    [DecimalIsWithinRange(-Math.PI / 2, Math.PI / 2)]
     public double topRightLat { get; private set; }
 
-   
+
     /// <summary>
     /// Private constructor
     /// </summary>
     private BoundingBox2DLatLon()
-    {}
+    { }
 
     /// <summary>
     /// Create instance of BoundingBox2DLatLon
@@ -67,31 +63,13 @@ namespace VSS.Productivity3D.Common.Models
         )
     {
       return new BoundingBox2DLatLon
-             {
-                 bottomLeftLon = blLon,
-                 bottomLeftLat = blLat,
-                 topRightLon = trLon,
-                 topRightLat = trLat
-             };
-    }
-
-    /// <summary>
-    /// Create example instance of BoundingBox2DLatLon to display in Help documentation.
-    /// </summary>
-    public static BoundingBox2DLatLon HelpSample
-    {
-      get
       {
-        return new BoundingBox2DLatLon
-        {
-                   bottomLeftLat = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
-                   bottomLeftLon = -106.604076 * ConversionConstants.DEGREES_TO_RADIANS,
-                   topRightLat = 35.39012 * ConversionConstants.DEGREES_TO_RADIANS,
-                   topRightLon = -105.234 * ConversionConstants.DEGREES_TO_RADIANS
-               };
-      }
+        bottomLeftLon = blLon,
+        bottomLeftLat = blLat,
+        topRightLon = trLon,
+        topRightLat = trLat
+      };
     }
-
 
     /// <summary>
     /// Validates all properties
@@ -105,6 +83,5 @@ namespace VSS.Productivity3D.Common.Models
                 "Invalid bounding box: corners are not bottom left and top right."));
       }
     }
-
   }
 }

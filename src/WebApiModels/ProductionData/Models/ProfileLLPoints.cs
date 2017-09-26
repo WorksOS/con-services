@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
@@ -62,18 +62,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       return new ProfileLLPoints { lat1 = lat1, lon1 = lon1, lat2 = lat2, lon2 = lon2 };
     }
-
-    /// <summary>
-    /// Creates a sample instance of ProfileLLPoints to be displayed in Help documentation.
-    /// </summary>
-    public static ProfileLLPoints HelpSample => new ProfileLLPoints
-    {
-      lat1 = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
-      lon1 = -106.6040765 * ConversionConstants.DEGREES_TO_RADIANS,
-      lat2 = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
-      lon2 = -104.28745 * ConversionConstants.DEGREES_TO_RADIANS
-    };
-
+    
     /// <summary>
     /// Validates all properties
     /// </summary>

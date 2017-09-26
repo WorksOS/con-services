@@ -51,23 +51,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     }
 
     /// <summary>
-    /// Create example instance of Elevation Statistics to display in Help documentation.
-    /// </summary>
-    public new static ElevationStatisticsRequest HelpSample
-    {
-      get
-      {
-        return new ElevationStatisticsRequest
-        {
-          projectId = 34,
-          callId = Guid.NewGuid(),
-          Filter = Filter.HelpSample,
-          liftBuildSettings = LiftBuildSettings.HelpSample
-        };
-      }
-    }
-
-    /// <summary>
     /// Create instance of ElevationStatisticsRequest
     /// </summary>
     public static ElevationStatisticsRequest CreateElevationStatisticsRequest(
@@ -87,8 +70,4 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       };
     }
   }
-
 }
-
-
-

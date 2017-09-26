@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -73,34 +72,5 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
           if (this.baseFilter != null)
             this.baseFilter.Validate();
         }
-
-         /// <summary>
-         /// Create example instance of PassCounts to display in Help documentation.
-         /// </summary>
-         public new static SummaryVolumesRequest HelpSample
-         {
-             get
-             {
-                 return new SummaryVolumesRequest
-                 {
-                     projectId = 34,
-                     additionalSpatialFilter = Filter.HelpSample,
-                     additionalSpatialFilterID = 144,
-                     baseDesignDescriptor = DesignDescriptor.HelpSample,
-                     baseFilter = Filter.HelpSample,
-                     baseFilterID = 153,
-                     callId = Guid.NewGuid(),
-                     liftBuildSettings = LiftBuildSettings.HelpSample,
-                     topDesignDescriptor = DesignDescriptor.HelpSample,
-                     topFilter = Filter.HelpSample,
-                     topFilterID = 123,
-                     volumeCalcType = RaptorConverters.VolumesType.Between2Filters,
-                 };
-             }
-         }
-
     }
-
-
-
 }

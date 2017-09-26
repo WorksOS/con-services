@@ -21,6 +21,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
@@ -279,6 +280,5 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       return request;
     }
-
   }
 }

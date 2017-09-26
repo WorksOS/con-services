@@ -51,11 +51,6 @@ namespace VSS.Productivity3D.Common.Models
     public double minZ { get; set; }
 
     /// <summary>
-    /// Get Help sample for the object
-    /// </summary>
-    public static BoundingBox3DGrid HelpSample => new BoundingBox3DGrid {maxX = 100, maxY = 200, maxZ = 300, minX = 50, minY = 45, minZ = 10};
-
-    /// <summary>
     /// Prevents a default instance of the <see cref="BoundingBox3DGrid"/> class from being created.
     /// </summary>
     private BoundingBox3DGrid()
@@ -65,13 +60,13 @@ namespace VSS.Productivity3D.Common.Models
     {
       return new BoundingBox3DGrid
       {
-                 minX = minx,
-                 minY = miny,
-                 minZ = minz,
-                 maxX = maxx,
-                 maxY = maxy,
-                 maxZ = maxz,
-             };
+        minX = minx,
+        minY = miny,
+        minZ = minz,
+        maxX = maxx,
+        maxY = maxy,
+        maxZ = maxz,
+      };
     }
 
     /// <summary>

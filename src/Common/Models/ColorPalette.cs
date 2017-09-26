@@ -25,48 +25,30 @@ namespace VSS.Productivity3D.Common.Models
     [Required]
     public double value { get; private set; }
 
-       /// <summary>
-      /// Private constructor
-      /// </summary>
+    /// <summary>
+    /// Private constructor
+    /// </summary>
     private ColorPalette()
-      {}
-
-      /// <summary>
-    /// Create instance of ColorPalette
-      /// </summary>
-    public static ColorPalette CreateColorPalette(
-        uint color,
-        double value )
-      {
-        return new ColorPalette
-        {
-          color = color,
-          value = value
-        };
-      }
+    { }
 
     /// <summary>
-    /// Create example instance of ColorPalette to display in Help documentation.
+    /// Create instance of ColorPalette
     /// </summary>
-    public static ColorPalette HelpSample
+    public static ColorPalette CreateColorPalette(uint color, double value)
     {
-      get
+      return new ColorPalette
       {
-        return new ColorPalette
-        {
-          color = 0xA5BC4E,
-          value = 0.2
-        };
-      }
+        color = color,
+        value = value
+      };
     }
 
-
-      /// <summary>
-      /// Validates all properties
-      /// </summary>
-      public void Validate()
-      {
-        //Nothing else to validate
-      }
+    /// <summary>
+    /// Validates all properties
+    /// </summary>
+    public void Validate()
+    {
+      //Nothing else to validate
+    }
   }
 }

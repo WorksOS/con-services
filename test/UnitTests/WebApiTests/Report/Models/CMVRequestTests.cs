@@ -52,11 +52,18 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
+    private static readonly LiftThicknessTarget LiftThicknessTarget = new LiftThicknessTarget
+    {
+      AboveToleranceLiftThickness = (float)0.001,
+      BelowToleranceLiftThickness = (float)0.002,
+      TargetLiftThickness = (float)0.05
+    };
+
     private long projectId = 1234;
     private Guid callId = new Guid();
     private CMVSettings cmvSettings = CMVSettings.CreateCMVSettings(800, 1200, 110.0, 700, 85.0, false);
     private LiftBuildSettings liftSettings = LiftBuildSettings.CreateLiftBuildSettings(
       CCVRangePercentage.CreateCcvRangePercentage(80, 110), false, 1.0, 2.0, 0.2f, LiftDetectionType.Automatic, LiftThicknessType.Compacted,
-      MDPRangePercentage.CreateMdpRangePercentage(70, 120), false, null, null, null, null, null, null, LiftThicknessTarget.HelpSample, null);
+      MDPRangePercentage.CreateMdpRangePercentage(70, 120), false, null, null, null, null, null, null, LiftThicknessTarget, null);
   }
 }

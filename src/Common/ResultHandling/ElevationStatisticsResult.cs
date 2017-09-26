@@ -1,5 +1,4 @@
 ﻿using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.Common.ResultHandling
@@ -21,15 +20,15 @@ namespace VSS.Productivity3D.Common.ResultHandling
     {
     }
 
-      public void SwapElevationsIfRequired()
+    public void SwapElevationsIfRequired()
+    {
+      if (MinElevation > MaxElevation)
       {
-          if (MinElevation > MaxElevation)
-          {
-              var tempVar = MinElevation;
-              MinElevation = MaxElevation;
-              MaxElevation = tempVar;
-          }
+        var tempVar = MinElevation;
+        MinElevation = MaxElevation;
+        MaxElevation = tempVar;
       }
+    }
 
     /// <summary>
     /// Zone boundaries
@@ -60,24 +59,6 @@ namespace VSS.Productivity3D.Common.ResultHandling
         Message = convertExtents == null ? "No elevation range" : DefaultMessage,
         Code = convertExtents == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ExecutedSuccessfully
       };
-    }
-
-    /// <summary>
-    /// Create example instance of SummaryVolumesResult to display in Help documentation.
-    /// </summary>
-    public static ElevationStatisticsResult HelpSample
-    {
-      get
-      {
-        return new ElevationStatisticsResult
-        {
-          BoundingExtents = BoundingBox3DGrid.HelpSample,
-          MinElevation = 100.0,
-          MaxElevation = 200.0,
-          TotalCoverageArea = 132,
-        };
-      }
-
     }
   }
 }

@@ -9,7 +9,6 @@ using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.TCCFileAccess.Models;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -36,17 +35,17 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// The name of the file.
     /// </summary>
-    [ValidFilename(MAX_FILE_NAME)] 
+    [ValidFilename(MAX_FILE_NAME)]
     [MaxLength(MAX_FILE_NAME)]
     [JsonProperty(PropertyName = "fileName", Required = Required.Always)]
     [Required]
     public string fileName { get; private set; }
 
-   /// <summary>
+    /// <summary>
     /// Private constructor
     /// </summary>
     private FileDescriptor()
-    {}
+    { }
 
     /// <summary>
     /// Create instance of FileDescriptor
@@ -59,11 +58,11 @@ namespace VSS.Productivity3D.Common.Models
         )
     {
       return new FileDescriptor
-             {
-               filespaceId = filespaceId,
-               path = path,
-               fileName = fileName
-             };
+      {
+        filespaceId = filespaceId,
+        path = path,
+        fileName = fileName
+      };
     }
 
     public static FileDescriptor EmptyFileDescriptor { get; } = new FileDescriptor
@@ -71,16 +70,6 @@ namespace VSS.Productivity3D.Common.Models
       filespaceId = string.Empty,
       path = string.Empty,
       fileName = string.Empty
-    };
-
-    /// <summary>
-    /// Create example instance of FileDescriptor to display in Help documentation.
-    /// </summary>
-    public static FileDescriptor HelpSample => new FileDescriptor
-    {
-      filespaceId = "u72003136-d859-4be8-86de-c559c841bf10",
-      path = "BC Data/Sites/Integration10/Designs",
-      fileName = "Cycleway.ttm"
     };
 
     /// <summary>
@@ -93,9 +82,9 @@ namespace VSS.Productivity3D.Common.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  "Filespace Id, filespace name, path and file name are all required"));           
+                  "Filespace Id, filespace name, path and file name are all required"));
       }
-        
+
     }
 
     /// <summary>

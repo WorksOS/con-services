@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-using VSS.MasterData.Models.Models;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Utilities;
-using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
 {
@@ -15,7 +12,7 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
   /// If not set, Raptor will determine automatically which project the TAG file should be processed into. 
   /// When provided it acts as an override value. 
   /// </summary>
-    public class TagFileRequest : ProjectID, IValidatable//
+  public class TagFileRequest : ProjectID, IValidatable//
     {
         /// <summary>
         /// The name of the TAG file.
@@ -91,33 +88,7 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
         private TagFileRequest()
         {}
 
-
-        /// <summary>
-        /// TAGFile instance
-        /// </summary>
-        public new static TagFileRequest HelpSample
-        {
-            get
-            {
-                return new TagFileRequest
-                {
-                               fileName = "test.tag",
-                               data = new byte[] {0, 1, 2},
-                               projectId = 1,
-                               boundary =
-                                       WGS84Fence.CreateWGS84Fence(new WGSPoint[]
-                                                                   {
-                                                                           WGSPoint.CreatePoint(45.4*ConversionConstants.DEGREES_TO_RADIANS, 54.5*ConversionConstants.DEGREES_TO_RADIANS),
-                                                                           WGSPoint.CreatePoint(-55.6*ConversionConstants.DEGREES_TO_RADIANS, 32.5*ConversionConstants.DEGREES_TO_RADIANS)
-                                                                   }),
-                               machineId = 132,
-                               /*convertToCSV = false,
-                               convertToDXF = true*/
-                       };
-            }
-        }
-
-        /// <summary>
+      /// <summary>
         /// Create instance of TAGFile
         /// </summary>
         /// <param name="fileName">file name</param>

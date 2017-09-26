@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Validation;
@@ -77,26 +77,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
                  liftNumber = liftNumber
              };
     }
-
-
-    /// <summary>
-    /// Create example instance of ProductionDataEdit to display in Help documentation.
-    /// </summary>
-    public static ProductionDataEdit HelpSample
-    {
-      get
-      {
-        return new ProductionDataEdit
-        {
-                   assetId = 8265735274,
-                   startUTC = DateTime.UtcNow.AddDays(-5),
-                   endUTC = DateTime.UtcNow.AddDays(-3),
-                   onMachineDesignName = "Bob Excavator",
-                   liftNumber = null
-               };
-      }
-    }
-
+    
     /// <summary>
     /// Validates all properties
     /// </summary>

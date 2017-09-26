@@ -1,13 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
@@ -101,30 +99,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
                  overrideAssetIds = overrideAssetIds
              };
     }
-
-    /// <summary>
-    /// Create example instance of PassCounts to display in Help documentation.
-    /// </summary>
-    public new static PassCounts HelpSample
-    {
-      get
-      {
-        return new PassCounts
-        {
-          projectId = 34,
-
-          passCountSettings = PassCountSettings.HelpSample,
-          liftBuildSettings = LiftBuildSettings.HelpSample,
-          filter = Filter.HelpSample,
-          filterID = 0,
-          overrideStartUTC = null,
-          overrideEndUTC = null,
-          overrideAssetIds = null       
-        };
-      }
-    }
-
-
+    
     /// <summary>
     /// Validates all properties
     /// </summary>

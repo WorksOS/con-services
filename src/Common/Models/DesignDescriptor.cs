@@ -47,17 +47,7 @@ namespace VSS.Productivity3D.Common.Models
         offset = offset
       };
     }
-
-    /// <summary>
-    /// Create example instance of DesignDescriptor to display in Help documentation.
-    /// </summary>
-    public static DesignDescriptor HelpSample => new DesignDescriptor
-    {
-      id = 1234,
-      file = FileDescriptor.HelpSample,
-      offset = 0
-    };
-
+    
     /// <summary>
     /// Validates all properties
     /// </summary>

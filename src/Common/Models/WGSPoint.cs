@@ -1,15 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.Common.Models
 {
-    /// <summary>
-    ///     A point specified in WGS 84 latitude/longtitude coordinates
-    /// </summary>
+  /// <summary>
+  ///     A point specified in WGS 84 latitude/longtitude coordinates
+  /// </summary>
   public class WGSPoint : IValidatable
     {
         private WGSPoint()
@@ -43,22 +41,7 @@ namespace VSS.Productivity3D.Common.Models
             return new WGSPoint {Lat = lat, Lon = lon};
         }
 
-        /// <summary>
-        /// Create example instance of WGSPoint to display in Help documentation.
-        /// </summary>
-        public static WGSPoint HelpSample
-        {
-          get
-          {
-            return new WGSPoint
-            {
-              Lat = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
-              Lon = -106.604076 * ConversionConstants.DEGREES_TO_RADIANS
-            };
-          }
-        }
-
-        /// <summary>
+      /// <summary>
         /// Validates all properties
         /// </summary>
         public void Validate()

@@ -1,22 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Models
 {
-    /// <summary>
-    /// Raptor filter identifier.
-    /// </summary>
-    ///
-    public class DataID : IValidatable
+  /// <summary>
+  /// Raptor filter identifier.
+  /// </summary>
+  ///
+  public class DataID : IValidatable
     {
         /// <summary>
         /// The ID of a filter.
@@ -35,16 +34,7 @@ namespace VSS.Productivity3D.Common.Models
         {
             // ...
         }
-
-        /// <summary>
-        /// ProjectID sample instance.
-        /// </summary>
-        /// 
-        public static DataID HelpSample
-        {
-          get { return new DataID { dataId = 1 }; }
-        }
-
+    
         /// <summary>
         /// Creates an instance of the ProjectID class.
         /// </summary>

@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -52,15 +50,6 @@ namespace VSS.Productivity3D.Common.Models
         max = max
       };
     }
-
-    /// <summary>
-    /// Create example instance of TemperatureWarningLevels to display in Help documentation.
-    /// </summary>
-    public static TemperatureWarningLevels HelpSample => new TemperatureWarningLevels
-    {
-      min = 300,
-      max = 800
-    };
 
     /// <summary>
     /// Validates all properties

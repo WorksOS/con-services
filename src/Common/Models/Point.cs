@@ -46,15 +46,6 @@ namespace VSS.Productivity3D.Common.Models
     }
 
     /// <summary>
-    /// Create example instance of Point to display in Help documentation.
-    /// </summary>
-    public static Point HelpSample => new Point
-    {
-      x = 82.3,
-      y = 130.12
-    };
-
-    /// <summary>
     /// Validates all properties
     /// </summary>
     public void Validate()

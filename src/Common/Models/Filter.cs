@@ -337,52 +337,6 @@ namespace VSS.Productivity3D.Common.Models
     }
 
     /// <summary>
-    /// Create example instance of Filter to display in Help documentation.
-    /// </summary>
-    public static Filter HelpSample
-    {
-      get
-      {
-        return new Filter
-        {
-          ID = 1,
-          name = "Filter 1",
-          description = "The first filter",
-          startUTC = new DateTime(2014, 3, 1),
-          endUTC = new DateTime(2014, 8, 31),
-          onMachineDesignID = 34,
-          assetIDs = null,
-          vibeStateOn = false,
-          compactorDataOnly = false,
-          elevationType = ElevationType.Last,
-          polygonLL = null,
-          polygonGrid = null,
-          forwardDirection = true,
-          alignmentFile = null,
-          startStation = null,
-          endStation = null,
-          leftOffset = null,
-          rightOffset = null,
-          machineDesignName = null,
-          layerType = FilterLayerMethod.Automatic,
-          designOrAlignmentFile = null,
-          benchElevation = null,
-          layerNumber = null,
-          layerThickness = null,
-          contributingMachines = null,
-          surveyedSurfaceExclusionList = null,
-          returnEarliest = null,
-          gpsAccuracy = GPSAccuracy.Medium,
-          gpsAccuracyIsInclusive = true,
-          bladeOnGround = null,
-          trackMapping = null,
-          wheelTracking = null
-        };
-      }
-    }
-
-
-    /// <summary>
     /// Validates all properties
     /// </summary>
     public void Validate()

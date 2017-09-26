@@ -27,19 +27,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         tolerance = tolerance
       };
     }
-
-    /// <summary>
-    /// Create a sample instance of DesignBoundariesRequest class to display in Help documentation.
-    /// </summary>
-    public new static DesignBoundariesRequest HelpSample()
-    {
-      return new DesignBoundariesRequest
-      {
-        projectId = 123,
-        tolerance = BOUNDARY_POINTS_INTERVAL,
-      };
-    }
-
+    
     public const double BOUNDARY_POINTS_INTERVAL = 1.00;
   }
 }

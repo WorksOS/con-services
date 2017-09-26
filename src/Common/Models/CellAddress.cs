@@ -15,19 +15,13 @@
     /// </summary>
     public int y { get; private set; }
 
-      public static CellAddress HelpSample => new CellAddress
-      {
-        x = 100,
-        y = 200
-      };
-
     public CellAddress()
     {
       x = int.MaxValue;
       y = int.MaxValue;
     }
 
-      public static CellAddress CreateCellAddress(int x, int y)
+    public static CellAddress CreateCellAddress(int x, int y)
     {
       return new CellAddress
       {

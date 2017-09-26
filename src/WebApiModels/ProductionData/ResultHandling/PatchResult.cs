@@ -186,19 +186,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
             subgrids = subgrids,
           };
         }
-
-        /// <summary>
-        /// Create example instance of PatchResultStructured to display in Help documentation.
-        /// </summary>
-        public static PatchResultStructured HelpSample
-        {
-          get
-          {
-            return new PatchResultStructured
-            {
-            };
-          }
-        }
     }
-
 }

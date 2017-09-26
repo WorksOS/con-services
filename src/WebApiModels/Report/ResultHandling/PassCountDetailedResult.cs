@@ -1,6 +1,4 @@
-﻿using System;
-using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
+﻿using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
@@ -57,31 +55,15 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
         TotalCoverageArea = totalArea
       };
     }
-
-    /// <summary>
-    /// Create example instance of PassCountDetailedResult to display in Help documentation.
-    /// </summary>
-    public static PassCountDetailedResult HelpSample
-    {
-      get
-      {
-        return new PassCountDetailedResult
-        {
-          percents = new double[2] {0.1,0.2},
-          TotalCoverageArea = 100,
-          constantTargetPassCountRange = TargetPassCountRange.HelpSample
-        };
-      }
-    }
-
+    
     /// <summary>
     /// ToString override
     /// </summary>
     /// <returns>A string representation of the array of passcount percentages</returns>
     public override string ToString()
     {
-      return String.Format("constantTargetPassCountRange:({0}, {1}), isTargetPassCountConstant:{2}, percents:{3}",
-                            constantTargetPassCountRange.min, constantTargetPassCountRange.max, isTargetPassCountConstant, string.Join("%, ", percents) + "%");
+      return
+        $"constantTargetPassCountRange:({constantTargetPassCountRange.min}, {constantTargetPassCountRange.max}), isTargetPassCountConstant:{isTargetPassCountConstant}, percents:{string.Join("%, ", percents) + "%"}";
     }
 
   }

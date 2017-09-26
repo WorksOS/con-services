@@ -4,9 +4,9 @@ using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
-    /// <summary>
-    /// A representation of a project extents request
-    /// </summary>
+  /// <summary>
+  /// A representation of a project extents request
+  /// </summary>
   public class ExtentRequest : ProjectID, IValidatable
     {
 
@@ -31,21 +31,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       public override void Validate()
       {
         base.Validate();
-      }
-
-      /// <summary>
-      /// Create example instance of ExtentRequest to display in Help documentation.
-      /// </summary>
-      public new static ExtentRequest HelpSample
-      {
-        get
-        {
-          return new ExtentRequest
-          {
-              projectId = 100,
-              excludedSurveyedSurfaceIds = new long[]{100,101,201},
-          };
-        }
       }
     }
 }

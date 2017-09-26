@@ -1,50 +1,33 @@
-﻿
-using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
+﻿using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
-    public class ConfigResult : ContractExecutionResult
+  public class ConfigResult : ContractExecutionResult
+  {
+    /// <summary>
+    /// Provides current Raptor configuration as XML.
+    /// </summary>
+    /// <value>
+    /// The configuration.
+    /// </value>
+    public string Configuration { get; private set; }
+
+
+    /// <summary>
+    /// Private constructor
+    /// </summary>
+    private ConfigResult()
+    { }
+
+    /// <summary>
+    /// Create instance of ConfigResult
+    /// </summary>
+    public static ConfigResult CreateConfigResult(string config)
     {
-      /// <summary>
-      /// Provides current Raptor configuration as XML.
-      /// </summary>
-      /// <value>
-      /// The configuration.
-      /// </value>
-        public string Configuration { get; private set; }
-
-
-      /// <summary>
-      /// Private constructor
-      /// </summary>
-      private ConfigResult()
+      return new ConfigResult
       {
-      }
-
-        /// <summary>
-        /// Create instance of ConfigResult
-        /// </summary>
-        public static ConfigResult CreateConfigResult(string config)
-        {
-          return new ConfigResult
-                 {
-                     Configuration = config
-                 };
-        }
-
-        /// <summary>
-        /// Create example instance of ConfigResult to display in Help documentation.
-        /// </summary>
-        public static ConfigResult HelpSample
-        {
-          get
-          {
-            return new ConfigResult
-            {
-              Configuration = "{\"XML\":{\"@version\":\"1.0\",\"Config\":{\"@NetworkConfigFileLocation\":\"\",\"@VLPDSystemMonitorUpdateEpochInternalMS\":\"10000\",\"@VLPDIOServerIPAddress\":\"sjc3-nhd-iolv01.vss-eng.com\",\"@VLPDIOServerIPPort\":\"15002\",\"@VLPDMonitorServiceIPAddress\":\"sjc3-nhd-iolv01.vss-eng.com\",\"@VLPDMonitorServiceIPPort\":\"15001\",\"@VLPDTAGProcServiceIPAddress\":\"sjc3-nhd-iolv01.vss-eng.com\",\"@VLPDTAGProcServiceIPPort\":\"15003\",\"@VLPDPSNodeIPPort\":\"15007\",\"@VLPDASNodeIPPort\":\"15008\",\"@VLPDASNodeAsyncResponseIPPort\":\"15013\",\"@VLPDCoordServiceIPAddress\":\"127.0.0.1\",\"@VLPDCoordServiceIPPort\":\"15012\",\"@VLPDCanaryServiceIPAddress\":\"127.0.0.1\",\"@VLPDCanaryServiceIPPort\":\"15014\",\"@VLPDDesignProfilerIPAddress\":\"127.0.0.1\",\"@VLPDDesignProfilerIPPort\":\"15009\",\"@VLPDIONodeTestIPAddress\":\"sjc3-nhd-iolv01.vss-eng.com\",\"@VLPDIONodeTestIPPort\":\"16009\",\"@VLPDPSNodeTestIPAddress\":\"sjc3-nhd-pslv01.vss-eng.com\",\"@VLPDPSNodeTestIPPort\":\"16008\",\"@VLPDASNodeTestIPAddress\":\"sjc3-nhd-aslv01.vss-eng.com\",\"@VLPDASNodeTestIPPort\":\"16010\",\"@VLPDAccessIPAddress\":\"dev-www.vss-eng.com\",\"@VLPDAccessIPPort\":\"15006\",\"@VLPDTCCFileAccessIPAddress\":\"dev-www.vss-eng.com\",\"@VLPDTCCFileAccessIPPort\":\"15010\",\"@VLPDReplicationServiceIPAddress\":\"sjc3-nhd-iolv01.vss-eng.com\",\"@VLPDReplicationServiceIPPort\":\"15011\",\"@VLPDAWSELBHTTPHealthCheckPort\":\"15015\",\"@VLPDAWSELBTCPHealthCheckPort\":\"15016\",\"@VLPDLoggingServiceIPAddress\":\"127.0.0.1\",\"@VLPDLoggingServiceIPPort\":\"15017\",\"@VLPDDataStoreLocation\":\"\\\\\\\\sjc3-nhd-iolv01.vss-eng.com\\\\ProductionData\",\"@VLPDLocalDataLocation\":\"D:\\\\VLPD Production Data\",\"@VLPDLogFilesLocation\":\"\\\\\\\\sjc3-nhd-iolv01.vss-eng.com\\\\ProductionData\\\\Logs\",\"@VLPDLogFilesSecondaryLocation\":\"\",\"@VLPDFilesToProcessLocation\":\"\\\\\\\\sjc3-nhd-iolv01.vss-eng.com\\\\ProductionData\",\"@VLPDArchiveFilesLocation\":\"\\\\\\\\sjc3-nhd-iolv01.vss-eng.com\\\\ProductionData\",\"@VLPDPSShardFileBaseLocation\":\"D:\\\\VLPD Production Data\\\\\",\"@VLPDASNode_GovernorWMSQueueLength\":\"1000\",\"@VLPDASNode_GovernorVolumesQueueLength\":\"100\",\"@VLPDASNode_GovernorPassCountAndCCVQueueLength\":\"100\",\"@VLPDASNode_GovernorSurfaceExportQueueLength\":\"100\",\"@VLPDASNode_GovernorDataPatchQueueLength\":\"110\",\"@VLPDASNode_MaxSubgridProcessingPipelines\":\"50\",\"@VLPDASNode_MaxBatchedSubgridsToSubmitPerRequest\":\"500\",\"@VLPDASNode_MaxBatchedSubgridsToSubmitPerRequestExport\":\"500\",\"@VLPDASNode_MaxCancellationRequestQueueLength\":\"1000\",\"@VLPDASNode_CancellationRequestTTLInQueueSecs\":\"0\",\"@VLPDASNode_ExportProductionDataTTLSeconds\":\"600\",\"@VLPDASNode_ExportReportSocketReadSeconds\":\"-1\",\"@VLPDASNode_UseGlobalMutualExclusionForWMSSubgridRendering\":\"False\",\"@VLPDASNode_ManageInboundRequestConnectionPoolsForNetworkLoadBalancing\":\"False\",\"@VLPDASNode_MaxStationOffsetPointsPerCycle\":\"5000\",\"@VLPDASNode_SuppressWMSTileCancellationRequests\":\"False\",\"@VLPDASNode_SuppressAllCancellationRequests\":\"False\",\"@VLPDASNode_SubgridPipelineSleepTimeOnMaximumOutstandingSubgridRequestsMS\":\"1000\",\"@VLPDASNode_DefaultMaximumOutstandingSubgridRequestsInPipeline\":\"100000\",\"@VLPDASNode_ExportMaximumOutstandingSubgridRequestsInPipeline\":\"250\",\"@VLPDASNode_ReportMaximumOutstandingSubgridRequestsInPipeline\":\"250\",\"@VLPDASNode_ExportAndReportStreamWritersBufferSizeKB\":\"5120\",\"@VLPDASNode_MaxCellPassDepthForProductionDataAllPassesExport\":\"50\",\"@VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis\":\"50\",\"@VLPDASNode_MaxNumSubgridsPerDataPatchRequest\":\"1000\",\"@VLPDASNode_MaxNumberOfDataPatches\":\"1000\",\"@VLPDPSNode_MaxAsyncSubGridRequests\":\"1000\",\"@VLPDPSNode_MaxAsyncSubGridResults\":\"1000\",\"@VLPDPSNode_MaxAsyncCellPassesRequests\":\"10000\",\"@VLPDPSNode_MaxAsyncCellPassesResults\":\"10000\",\"@VLPDPSNode_TilePipelineTTLSeconds\":\"110\",\"@VLPDPSNode_VolumePipelineTTLSeconds\":\"110\",\"@VLPDPSNode_ExportOperationTTLSeconds\":\"300\",\"@VLPDASNode_GovernorWMSTimeout\":\"220\",\"@VLPDASNode_GovernorVolumesTimeout\":\"220\",\"@VLPDASNode_GovernorPassCountAndCCVTimeout\":\"220\",\"@VLPDASNode_GovernorSurfaceExportTimeout\":\"600\",\"@VLPDASNode_GovernorDataPatchTimeout\":\"0\",\"@VLPDEmptySocketReadWaitTimeMS\":\"50\",\"@VLPDReceiveSocketTimeOut\":\"-1\",\"@VLPDPSNode_SubgridRequestThreadProcessingBucketSize\":\"10\",\"@VLPDPSNode_SubgridRequestThreadPoolSize_WMSTiles\":\"2\",\"@VLPDPSNode_SubgridRequestThreadPoolSize_CMV\":\"2\",\"@VLPDPSNode_SubgridRequestThreadPoolSize_PassCount\":\"2\",\"@VLPDPSNode_SubgridRequestThreadPoolSize_Volumes\":\"2\",\"@VLPDPSNode_SubgridRequestThreadPoolSize_Temperature\":\"2\",\"@VLPDPSNode_SubgridRequestThreadPoolSize_MDP\":\"2\",\"@VLPDPSNode_SubgridRequestThreadPoolSize_SurfaceExport\":\"2\",\"@VLPDPSNode_SubgridRequestThreadPoolSize_ProductionDataExport\":\"2\",\"@VLPDPSNode_SubgridRequestThreadPoolSize_ProductionDataReport\":\"2\",\"@VLPDPSNode_SubgridRequestThreadPoolSize_DataPatches\":\"2\",\"@VLPDPSNode_CellRequestThreadPoolSize\":\"1\",\"@VLPDPSNode_MaxSubgridResultBucketSize\":\"500\",\"@VLPDPSNode_MaxSubgridResultBucketCount\":\"10\",\"@VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary\":\"50\",\"@VLPDPSNode_EmitSubgridCellPassCounts\":\"False\",\"@VLPDPSNode_CellPassAggregationListSizeIncrement\":\"100\",\"@VLPDPSNode_TouchSubgridAndSegmentsInCacheDuringAccessOperations\":\"True\",\"@VLPDPSNode_EnableGeneralSubgridProcessingResultCaching\":\"True\",\"@VLPDPSNode_GeneralSubgridProcessingResultCacheSizeMB\":\"512\",\"@VLPDPSNode_GeneralSubgridProcessingMaxCachedResultSubgrids\":\"250000\",\"@VLPDPSNode_ReportGeneralSubgridProcessingResultCachingStatusToLogInMonitor\":\"False\",\"@VLPDPSNode_AsyncSubgridResponseAggregatorIdleCheckDelayMS\":\"50\",\"@VLPDPSNode_ClientGridPoolsSize\":\"500\",\"@VLPDPSNode_DataModelOpenEntryLockAcquisitionTimeoutMS\":\"10000\",\"@VLPDPSNode_SubgridResponseStreamMemoryDeltaPowerOfTwoMB\":\"2\",\"@VLPDPSNode_AsyncResponsesMaxStreamSizeMB\":\"10\",\"@VLPDPSNode_RequestProcessorThreadPoolIdleTimeoutMS\":\"2000\",\"@VLPDPSNode_UseShardCaching\":\"False\",\"@VLPDPSNode_UseSkipStepComputationForWMSSubgridRequests\":\"True\",\"@VLPDDesignProfiler_MaxWaitForFileAppearanceAfternTCCDownloadSeconds\":\"10\",\"@VLPDDesignProfiler_TouchSubgridsDuringAccessOperations\":\"True\",\"@VLPDDesignProfiler_EnforceStrictExclusiveInterlockOnDesignOperations\":\"True\",\"@VLPDDesignProfiler_MinimumStationIntervalForSVLFilterBoundaryGeneration\":\"1\",\"@VLPDIONode_MaxConcurrentReadingThreads\":\"16\",\"@VLPDIONode_FSFileRecoveryAlgorithm\":\"1\",\"@VLPDTagProc_InterAggregationEpochDelayMS\":\"250\",\"@VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch\":\"10\",\"@VLPDTagProc_NumberOfTAGFileProcessorThreads\":\"1\",\"@VLPDTagProc_MaxOutstandingCellPasses\":\"1000000\",\"@VLPDTagProc_MaxOutstandingSubGridTrees\":\"500\",\"@VLPDTagProc_TAGFileArchiveQuarantinePeriodSeconds\":\"30\",\"@VLPDTagProc_SendTAGProcessingAlertsToVisionLink\":\"True\",\"@VLPDTagProc_ResubmissionMaxQueueDepth\":\"2\",\"@VLPDTagProc_ResubmissionTAGFileSubmissionDelayMS\":\"10000\",\"@VLPD_DefaultSiteModelGridCellSize\":\"0.34\",\"@VLPD_DefaultTAGProcProductionDataStoreCacheSizeInMb\":\"1024\",\"@VLPD_DefaultPSNodeProductionDataStoreCacheSizeInMb\":\"2048\",\"@VLPD_SubGridSegmentPassCountLimit\":\"15000\",\"@VLPD_SubGridMaxSegmentCellPassesLimit\":\"250\",\"@VLPD_ApplyCompressionToSubgridDirectoryFiles\":\"True\",\"@VLPD_DefaultDesignProfilerCacheSizeInMb\":\"512\",\"@VLPD_SubGridTreeNodeCellSparcityLimit\":\"10\",\"@VLPD_DesignFilterBoundaryPolylineCompressionTolerance\":\"0.05\",\"@VLPD_DiscardIdleConnections\":\"True\",\"@VLPD_ConnectionIdleDiscardTimeoutSeconds\":\"300\",\"@VLPD_ConnectionMonitoringEpochSeconds\":\"60\",\"@VLPD_SendHeartbeats\":\"True\",\"@VLPD_DefaultMaxServiceConnectionThreads\":\"400\",\"@VLPD_ReusePortsOnSocketConnections\":\"False\",\"@VLPD_IOServiceEventualConsistencyWindowSizeSeconds\":\"600\",\"@VLPD_FSSweepEpochSeconds\":\"900\",\"@VLPD_EnableFSSweeping\":\"True\",\"@VLPD_FSShutdownWaitPeriodInSec\":\"5\",\"@Debug_VLPDWMSRendering_AnnotateTilesWithBoundary\":\"False\",\"@Debug_VLPDWMSRendering_AnnotateTilesWithSubgridBoundaries\":\"False\",\"@Debug_VLPDWMSRendering_AnnotateTilesWithNumberOfSubgrids\":\"False\",\"@Debug_VLPDPSNode_FillElevationSubgridsWithZeroElevations\":\"False\",\"@Debug_VLPDLogRPCVerbActiveCounts\":\"False\",\"@Debug_FlushLogFileOnWrite\":\"True\",\"@Debug_LogDebugMessagesToFile\":\"True\",\"@Debug_LogDebugRequestCancellationToFile\":\"True\",\"@Debug_UseHighPerformanceTimingInLog\":\"True\",\"@Debug_LogIndyExceptions\":\"False\",\"@Debug_PeriodicallyDumpCacheToLog\":\"False\",\"@Debug_LogIOPostReadConcurrencyChecks\":\"False\",\"@Debug_LogIOServiceInterfaceCalls\":\"False\",\"@Debug_PeriodicDumpCacheToLogIntervalSeconds\":\"60\",\"@RecordItemsPersistedViaDataPersistorToLog\":\"False\",\"@Debug_BlockAppAlarmSendingToVisionLink\":\"False\",\"@VLPD_MaxAppAlarmsSentToVisionLinkPerMinute\":\"120\",\"@Debug_ExtremeLoggingSwitches\":\"\",\"@Debug_SwitchOffCompositeSurfaceGenerationFromSurveyedSurfaces\":\"False\",\"@Debug_DebugOutputLocation\":\"c:\\\\Temp\\\\RaptorDebugOutput\",\"@Debug_SaveRenderedWMSTilesToDebugOutputLocation\":\"False\",\"@Debug_WriteWMSTilesToDiskForDataModelNumber\":\"-1\",\"@Debug_EmitInvalidCoordinateRangeTileRenderingFailureLogging\":\"True\",\"@Debug_EmitSubgridRequestGroupSubmissionLogging\":\"True\",\"@Debug_EmitSubgridPipelineProgressLogging\":\"True\",\"@Debug_EmitPSNodeSubgridResponseSendingLogging\":\"True\",\"@Debug_EmitSocketReadBufferSizeToLogOnVerbRead\":\"False\",\"@Debug_PerformTestExceptionOnSystemMonitorInitialisation\":\"False\",\"@Debug_HighRateLoggingControl_1PerXInstances\":\"1000\",\"@Debug_PerformSegmentAdditionIntegrityChecks\":\"False\",\"@Debug_PerformIOServiceRequestLogging\":\"False\",\"@Debug_PerformPSServiceRequestLogging\":\"True\",\"@Debug_PerformDPServiceRequestLogging\":\"True\",\"@Debug_PerformDPServiceRequestHighRateLogging\":\"False\",\"@Debug_LogDataModelSpatialExtentRequests\":\"True\",\"@Debug_LogLiftAnalysisCellPassIteratorRestriction\":\"False\",\"@Debug_LogCellPassLookerUpperFullLookups\":\"False\",\"@Debug_LogSubgridProcessingPipelineDetails\":\"False\",\"@EnableDesignProfilerDesignExistanceMapCaching\":\"True\",\"@EnableDesignProfilerDesignElevationSubgridCaching\":\"True\",\"@EnableDesignProfilerSurveyedSurfaceExistanceMapCaching\":\"True\",\"@EnableProductionDataExistanceMapCaching\":\"True\",\"@EnableDesignProfilerSurveyedSurfaceElevationSubgridCaching\":\"True\",\"@DesignProfilerElevationSubgridCacheSizeInMb\":\"512\",\"@DesignProfilerExistanceMapCacheSizeInMb\":\"100\",\"@ProductionDataExistanceMapCacheSizeInMb\":\"100\",\"@SurfaceExport_MaximumNumberOfVerticesInSurface\":\"2000000\",\"@UsePerCellHeightInterpolationForSubgridElevationPatchCalculation\":\"True\",\"@DesignProfiler_MaxTrianglesToScanInSpatialSearchForHeightInterpolation\":\"1000\",\"@EnableReplication\":\"False\",\"@ReplicationThrottleTimeInMSecs\":\"10\",\"@PasscountExportMaxRecords\":\"99000000\",\"@VLPD_ConnectionErrorRequestRetryCount\":\"5\",\"@VLPD_ConnectionErrorRequestRetryWaitIntervalMS\":\"500\",\"@CanarySvcSongSheetPath\":\"C:\\\\VLPDArtifacts\\\\CanaryProfile.Config.xml\",\"@CanaryDefaultWarnDurationSeconds\":\"60\",\"@CanaryDefaultErrorDurationSeconds\":\"120\",\"@CanaryDurationReportingIntervalSeconds\":\"10\",\"@SupressSocket10054ErrorIsEnabled\":\"False\",\"@VisionLinkSupportIsEnabled\":\"True\",\"@UseTagFileXMLFilesIsEnabled\":\"False\",\"@VLPD_EmitLoggingToRemoteLoggingService\":\"False\",\"Monitoring\":{\"@Monitoring_ProjectID\":\"-1\",\"@Monitoring_TilingFrequencySeconds\":\"30\",\"@Monitoring_ProfilingFrequencySeconds\":\"30\",\"Monitoring_TileRenderBounds\":{\"@CoordsAreGrid\":\"True\",\"@MinX\":\"0\",\"@MinY\":\"0\",\"@MaxX\":\"0\",\"@MaxY\":\"0\"},\"Monitoring_ProfilingPoints\":{\"@CoordsAreGrid\":\"True\",\"@X1\":\"0\",\"@Y1\":\"0\",\"@X2\":\"0\",\"@Y2\":\"0\"}},\"ASNodes\":{\"ASNode\":{\"@IPAddress\":\"sjc3-nhd-aslv01.vss-eng.com\",\"@Descriptor\":\"0\",\"@CommencementDate\":\"41939.358624456\",\"@Healthy\":\"False\"}},\"PSNodes\":{\"PSNode\":[{\"@IPAddress\":\"sjc3-nhd-pslv01.vss-eng.com\",\"@Descriptor\":\"0\",\"@CommencementDate\":\"41939.358624456\",\"@Healthy\":\"False\"},{\"@IPAddress\":\"sjc3-nhd-pslv02.vss-eng.com\",\"@Descriptor\":\"1\",\"@CommencementDate\":\"41939.358624456\",\"@Healthy\":\"False\"}]},\"IONodes\":{\"IONode\":{\"@IPAddress\":\"sjc3-nhd-iolv01.vss-eng.com\",\"@Descriptor\":\"0\",\"@CommencementDate\":\"41939.358624456\",\"@Healthy\":\"False\"}},\"Replicants\":null,\"CoordServices\":{\"CoordService\":[{\"@IPAddress\":\"sjc3-nhd-aslv01.vss-eng.com\",\"@Descriptor\":\"0\",\"@CommencementDate\":\"41939.358624456\",\"@Healthy\":\"False\"},{\"@IPAddress\":\"sjc3-nhd-iolv01.vss-eng.com\",\"@Descriptor\":\"1\",\"@CommencementDate\":\"41939.358624456\",\"@Healthy\":\"False\"}]}}}}"
-            };
-          }
-        }
+        Configuration = config
+      };
     }
+  }
 }
