@@ -68,10 +68,10 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [HttpGet]
     public async Task<FilterDescriptorListResult> GetProjectFilters(string projectUid)
     {
-      log.LogInformation($"{ToString()}.GetProjectFilters: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} isApplication={(User as TIDCustomPrincipal)?.isApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid}");
+      log.LogInformation($"{ToString()}.GetProjectFilters: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} IsApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid}");
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
-          (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
+        FilterRequestFull.Create((User as TIDCustomPrincipal)?.CustomerUid,
+          (User as TIDCustomPrincipal).IsApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
           projectUid);
       requestFull.Validate(serviceExceptionHandler);
 
@@ -95,10 +95,10 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [HttpGet]
     public async Task<FilterDescriptorSingleResult> GetProjectFilter(string projectUid, [FromUri] string filterUid)
     {
-      log.LogInformation($"{ToString()}.GetProjectFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} isApplication={(User as TIDCustomPrincipal)?.isApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid} filterUid: {filterUid}");
+      log.LogInformation($"{ToString()}.GetProjectFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} IsApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid} filterUid: {filterUid}");
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
-          (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
+        FilterRequestFull.Create((User as TIDCustomPrincipal)?.CustomerUid,
+          (User as TIDCustomPrincipal).IsApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
           projectUid, filterUid);
       requestFull.Validate(serviceExceptionHandler);
 
@@ -123,11 +123,11 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     {
       log.LogInformation($"{ToString()}.UpsertFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} FilterRequest: {JsonConvert.SerializeObject(request)}");
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
-          (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-          projectUid, request.filterUid, request.name, request.filterJson);
+        FilterRequestFull.Create((User as TIDCustomPrincipal)?.CustomerUid,
+          (User as TIDCustomPrincipal).IsApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
+          projectUid, request.FilterUid, request.Name, request.FilterJson);
       requestFull.Validate(serviceExceptionHandler);
-      await FilterValidation.ValidateCustomerProject(projectListProxy, log, serviceExceptionHandler, Request.Headers.GetCustomHeaders(),
+      await FilterValidation.ValidateProjectForCustomer(projectListProxy, log, serviceExceptionHandler, Request.Headers.GetCustomHeaders(),
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -147,17 +147,55 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     {
       log.LogInformation($"{ToString()}.DeleteFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} projectUid: {projectUid} filterUid: {filterUid}");
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest((User as TIDCustomPrincipal)?.CustomerUid,
-          (User as TIDCustomPrincipal).isApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
+        FilterRequestFull.Create((User as TIDCustomPrincipal)?.CustomerUid,
+          (User as TIDCustomPrincipal).IsApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
           projectUid, filterUid);
       requestFull.Validate(serviceExceptionHandler);
-      await FilterValidation.ValidateCustomerProject(projectListProxy, log, serviceExceptionHandler, Request.Headers.GetCustomHeaders(),
+      await FilterValidation.ValidateProjectForCustomer(projectListProxy, log, serviceExceptionHandler, Request.Headers.GetCustomHeaders(),
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(requestFull);
 
       log.LogInformation($"{ToString()}.DeleteFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
+      return result;
+    }
+
+    /// <summary>
+    /// List of transient filters
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="request"></param>
+    /// <returns>FilterDescriptorListResult</returns>
+    [Route("api/v1/filters/{projectUid}")]
+    [HttpPost]
+    public async Task<FilterDescriptorListResult> CreateFilters(string projectUid, [FromBody] FilterListRequest request)
+    {
+      log.LogInformation($"{ToString()}.CreateFilters: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} FilterListRequest: {JsonConvert.SerializeObject(request)}");
+      var requestListFull =
+        FilterListRequestFull.CreateFilterListRequestFull((User as TIDCustomPrincipal)?.CustomerUid,
+          (User as TIDCustomPrincipal).IsApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
+          projectUid, request.filterRequests);
+
+      await FilterValidation.ValidateProjectForCustomer(projectListProxy, log, serviceExceptionHandler, Request.Headers.GetCustomHeaders(),
+        (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
+
+      foreach (var filter in requestListFull.filterRequests)
+      {
+        // todo once 56114 is complete
+        //if (!string.IsNullOrEmpty(filter.BoundaryUid))
+        //{
+        //  filter.FilterJson = await ValidationUtil
+        //    .HydrateJsonWithBoundary(geofenceRepo, log, serviceExceptionHandler, requestListFull.ProjectUid, filter.BoundaryUid, filter.FilterJson).ConfigureAwait(false);
+        //}
+      }
+
+      requestListFull.Validate(serviceExceptionHandler);
+
+      var executor = RequestExecutorContainer.Build<CreateFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
+      var result = await executor.ProcessAsync(requestListFull) as FilterDescriptorListResult;
+
+      log.LogInformation($"{ToString()}.UpsertFilters Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result;
     }
   }

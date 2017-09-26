@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <param name="log"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <returns></returns>
-    public static async Task ValidateCustomerProject(IProjectListProxy projectListProxy,
+    public static async Task ValidateProjectForCustomer(IProjectListProxy projectListProxy,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
       string customerUid, string projectUid)
     {
@@ -35,19 +35,19 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       catch (Exception e)
       {
         log.LogError(
-          $"ValidateCustomerProject: projectListProxy.GetProjectsV4 failed with exception. customerUid:{customerUid} projectUid:{projectUid}. Exception Thrown: {e.Message}. ");
+          $"ValidateProjectForCustomer: projectListProxy.GetProjectsV4 failed with exception. customerUid:{customerUid} projectUid:{projectUid}. Exception Thrown: {e.Message}. ");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 7, e.Message);
       }
 
       if (project == null)
       {
         log.LogInformation(
-          $"ValidateCustomerProject: projectListProxy: customerUid:{customerUid} projectUid:{projectUid}. returned no project match");
+          $"ValidateProjectForCustomer: projectListProxy: customerUid:{customerUid} projectUid:{projectUid}. returned no project match");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 8);
       }
 
       log.LogInformation(
-        $"ValidateCustomerProject: succeeded: customerUid:{customerUid} projectUid:{projectUid}.");
+        $"ValidateProjectForCustomer: succeeded: customerUid:{customerUid} projectUid:{projectUid}.");
     }
 
     /// <summary>

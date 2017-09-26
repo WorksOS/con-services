@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_MissingCustomerUid()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest
+        FilterRequestFull.Create
         (
           "sfgsdfsf",
           false,
@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_MissingUserId()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest
+        FilterRequestFull.Create
         (
           custUid, 
           false, 
@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_MissingProjectUid()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, null, filterUid, Name, FilterJson);
+        FilterRequestFull.Create(custUid, false, userUid, null, filterUid, Name, FilterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2001");
@@ -86,7 +86,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidFilterUid()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, "this is so wrong", Name, FilterJson);
+        FilterRequestFull.Create(custUid, false, userUid, projectUid, "this is so wrong", Name, FilterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2002");
@@ -99,7 +99,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, null, Name, FilterJson);
+        FilterRequestFull.Create(custUid, false, userUid, projectUid, null, Name, FilterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2002");
@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidName()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, null, FilterJson);
+        FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, null, FilterJson);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2003");
@@ -121,7 +121,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidFilterJson()
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, Name, null);
+        FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, Name, null);
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2004");
@@ -134,18 +134,18 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_Should_succeed_When_supplied_json_is_valid(string filterJson)
     {
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, "", filterJson);
+        FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, "", filterJson);
       requestFull.Validate(_serviceExceptionHandler);
     }
 
     [TestMethod]
     public void FilterRequestValidation_Should_fail_When_supplied_string_is_invalid_json()
     {
-      var requestFull = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, Name, "de blah");
+      var requestFull = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, Name, "de blah");
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(_serviceExceptionHandler));
 
-      StringAssert.Contains(ex.GetContent, "2004");
-      StringAssert.Contains(ex.GetContent, "Invalid filterJson");
+      StringAssert.Contains(ex.GetContent, "2042");
+      StringAssert.Contains(ex.GetContent, "Invalid filterJson. Exception: Unexpected character encountered while parsing value:");
     }
 
     [TestMethod]
@@ -158,7 +158,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var requestFull =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, "");
+        FilterRequestFull.Create(custUid, false, userUid, projectUid, "");
       requestFull.Validate(serviceExceptionHandler);
     }
 
@@ -175,7 +175,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var customHeaders = new Dictionary<string, string>();
       projectListProxy.Setup(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders)).ReturnsAsync(projects);
 
-      await FilterValidation.ValidateCustomerProject(projectListProxy.Object, log, _serviceExceptionHandler,
+      await FilterValidation.ValidateProjectForCustomer(projectListProxy.Object, log, _serviceExceptionHandler,
         customHeaders, custUid, projectUid).ConfigureAwait(false);
     }
 
@@ -189,7 +189,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var customHeaders = new Dictionary<string, string>();
       projectListProxy.Setup(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders)).ReturnsAsync(projects);
 
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await FilterValidation.ValidateCustomerProject(projectListProxy.Object, log, _serviceExceptionHandler,
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await FilterValidation.ValidateProjectForCustomer(projectListProxy.Object, log, _serviceExceptionHandler,
         customHeaders, custUid, projectUid).ConfigureAwait(false));
 
       StringAssert.Contains(ex.GetContent, "2008");
