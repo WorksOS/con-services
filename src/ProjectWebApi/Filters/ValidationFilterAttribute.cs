@@ -39,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Filters
             {
               if (error.Exception is ServiceException)
               {
-                value += (error.Exception as ServiceException).GetContent;
+                value += (error.Exception as ServiceException).Content;
               }
               else
               {

@@ -33,9 +33,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       }
       catch (ServiceException ex)
       {
-        log.LogWarning($"Service exception: {ex.GetContent} statusCode: {ex.Code}");
+        log.LogWarning($"Service exception: {ex.Content} statusCode: {ex.Code}");
         context.Response.StatusCode = (int)ex.Code;
-        await context.Response.WriteAsync(ex.GetContent);
+        await context.Response.WriteAsync(ex.Content);
       }
       catch (Exception ex)
       {
