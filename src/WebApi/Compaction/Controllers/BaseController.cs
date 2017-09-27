@@ -285,13 +285,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             designDescriptor = await GetDesignDescriptor(projectUid, designUidGuid);
           }
 
-          //TODO: Replace this with getter on Filter model class. Aaron is updating MasterData models nuget package.
-          //Also note missing some filter properties here e.g. forward direction
-          bool haveData = filterData.startUTC.HasValue || filterData.endUTC.HasValue || filterData.onMachineDesignID.HasValue ||
-                     filterData.vibeStateOn.HasValue || filterData.elevationType.HasValue || filterData.layerNumber.HasValue ||
-                     (filterData.contributingMachines != null && filterData.contributingMachines.Count > 0);
-
-          if (haveData || haveExcludedIds || designDescriptor != null)
+          if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
           {
             var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
