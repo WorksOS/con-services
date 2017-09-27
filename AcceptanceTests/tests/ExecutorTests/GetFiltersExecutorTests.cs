@@ -6,6 +6,7 @@ using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.MasterData.Models.Models;
 
 namespace ExecutorTests
 {
@@ -27,12 +28,12 @@ namespace ExecutorTests
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid);
       request.Validate(serviceExceptionHandler);
 
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorListResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorListResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreEqual(0, result.filterDescriptors.Count, "executor count is incorrect");
@@ -64,12 +65,12 @@ namespace ExecutorTests
       Assert.AreEqual(1, s.Result, "Filter event not written");
       
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid);
       request.Validate(serviceExceptionHandler);
       
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorListResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorListResult;
 
       var filterToTest = new FilterDescriptorListResult
       {
@@ -127,12 +128,12 @@ namespace ExecutorTests
       filterRepo.StoreEvent(createFilterEvent2).Wait();
 
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid);
       request.Validate(serviceExceptionHandler);
 
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorListResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorListResult;
 
       var filterToTest = new FilterDescriptorListResult
       {

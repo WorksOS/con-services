@@ -26,7 +26,7 @@ namespace ExecutorTests
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid);
       request.Validate(serviceExceptionHandler);
 
       var executor =
@@ -62,12 +62,12 @@ namespace ExecutorTests
       Assert.AreEqual(1, s.Result, "Filter event not written");
       
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid);
       request.Validate(serviceExceptionHandler);
       
       var executor =
         RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as ContractExecutionResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as ContractExecutionResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreEqual(0, result.Code, "executor returned incorrect code");

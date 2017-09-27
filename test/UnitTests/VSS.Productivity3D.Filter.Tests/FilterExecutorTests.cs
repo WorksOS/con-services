@@ -19,7 +19,6 @@ using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using FilterDescriptor = VSS.Productivity3D.Filter.Common.ResultHandling.FilterDescriptor;
 
 namespace VSS.Productivity3D.Filter.Tests
 {
@@ -54,7 +53,7 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.Setup(ps => ps.GetFilter(It.IsAny<string>())).ReturnsAsync(filter);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
 
-      var request = FilterRequestFull.CreateFilterFullRequest
+      var request = FilterRequestFull.Create
       (
         customerUid: custUid, 
         isApplicationContext: false,
@@ -66,7 +65,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler,
           filterRepo.Object);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(filterToTest.filterDescriptor.FilterUid, result.filterDescriptor.FilterUid,
@@ -106,7 +105,7 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.Setup(ps => ps.GetFilter(It.IsAny<string>())).ReturnsAsync(filter);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
 
-      var request = FilterRequestFull.CreateFilterFullRequest
+      var request = FilterRequestFull.Create
       (
         customerUid: custUid,
         isApplicationContext: false,
@@ -161,7 +160,7 @@ namespace VSS.Productivity3D.Filter.Tests
           .ToImmutableList()
       };
 
-      var request = FilterRequestFull.CreateFilterFullRequest
+      var request = FilterRequestFull.Create
       (
         customerUid: custUid,
         isApplicationContext: false,
@@ -171,7 +170,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler,
           filterRepo.Object);
-      var filterListResult = await executor.ProcessAsync(request) as FilterDescriptorListResult;
+      var filterListResult = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorListResult;
 
       Assert.IsNotNull(filterListResult, "executor failed");
       Assert.AreEqual(filterListToTest.filterDescriptors[0], filterListResult.filterDescriptors[0],
@@ -205,16 +204,6 @@ namespace VSS.Productivity3D.Filter.Tests
       string kafkaTopicName = "whatever";
 
       var filterRepo = new Mock<IFilterRepository>();
-      var filter = new MasterData.Repositories.DBModels.Filter()
-      {
-        CustomerUid = custUid,
-        UserId = userUid,
-        ProjectUid = projectUid,
-        FilterUid = filterUid,
-        Name = name,
-        FilterJson = filterJson,
-        LastActionedUtc = DateTime.UtcNow
-      };
       var filters = new List<MasterData.Repositories.DBModels.Filter>()
       {
         new MasterData.Repositories.DBModels.Filter()
@@ -231,10 +220,8 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), true)).ReturnsAsync(filters);
       filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<UpdateFilterEvent>())).ReturnsAsync(1);
 
-      var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
-
       var request =
-        FilterRequestFull.CreateFilterFullRequest
+        FilterRequestFull.Create
         (
           customerUid: custUid,
           isApplicationContext: false,
@@ -304,10 +291,10 @@ namespace VSS.Productivity3D.Filter.Tests
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
 
       var request =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+        FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(filterToTest.filterDescriptor.FilterUid, result.filterDescriptor.FilterUid,
@@ -340,16 +327,6 @@ namespace VSS.Productivity3D.Filter.Tests
       string kafkaTopicName = "whatever";
 
       var filterRepo = new Mock<IFilterRepository>();
-      var filter = new MasterData.Repositories.DBModels.Filter()
-      {
-        CustomerUid = custUid,
-        UserId = userUid,
-        ProjectUid = projectUid,
-        FilterUid = filterUid,
-        Name = name,
-        FilterJson = filterJson,
-        LastActionedUtc = DateTime.UtcNow
-      };
       var filters = new List<MasterData.Repositories.DBModels.Filter>()
       {
         new MasterData.Repositories.DBModels.Filter()
@@ -366,16 +343,300 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), false)).ReturnsAsync(filters);
       filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<DeleteFilterEvent>())).ReturnsAsync(1);
 
-      var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
-
       var request =
-        FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+        FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
-      var result = await executor.ProcessAsync(request);
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false);
 
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(0, result.Code, "executor returned incorrect result code");
+    }
+
+    [TestMethod]
+    public async Task CreateFiltersExecutor_3GoodFilters()
+    {
+      // a list of 3 valid transient filters are sent in request to creat
+      // a list of 3 should be returned
+      string custUid = Guid.NewGuid().ToString();
+      string userUid = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string filterUid1 = Guid.NewGuid().ToString();
+      string filterUid2 = Guid.NewGuid().ToString();
+      string filterUid3 = Guid.NewGuid().ToString();
+      string filterJson1 = "";
+      string filterJson2 = "{\"startUTC\":\"2012-11-05\",\"endUTC\":\"2012-11-06\"}";
+      string filterJson3 = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"}";
+
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      // request data:
+      var requestList = new List<FilterRequest>()
+      {
+        FilterRequest.Create("", "", filterJson1),
+        FilterRequest.Create("", "", filterJson2),
+        FilterRequest.Create("", "", filterJson3)
+      };
+
+      FilterListRequest filterListRequest = new FilterListRequest()
+      {
+        filterRequests = new List<FilterRequest>()
+      };
+      filterListRequest.filterRequests = requestList.ToImmutableList();
+
+      var filterListRequestFull = new FilterListRequestFull()
+      {
+        CustomerUid = custUid,
+        ProjectUid = projectUid,
+        filterRequests = filterListRequest.filterRequests
+      };
+     
+      // setup moq
+      var filterRepo = new Mock<IFilterRepository>();
+     
+      var dbGetResultList1 = new List<MasterData.Repositories.DBModels.Filter>()
+      {
+        new MasterData.Repositories.DBModels.Filter()
+        {
+          CustomerUid = custUid,
+          UserId = userUid,
+          ProjectUid = projectUid,
+          FilterUid = filterUid1,
+          Name = "",
+          FilterJson = filterJson1,
+          LastActionedUtc = DateTime.UtcNow
+        }
+      };
+      var dbGetResultList2 = new List<MasterData.Repositories.DBModels.Filter>()
+      {
+        new MasterData.Repositories.DBModels.Filter()
+        {
+          CustomerUid = custUid,
+          UserId = userUid,
+          ProjectUid = projectUid,
+          FilterUid = filterUid2,
+          Name = "",
+          FilterJson = filterJson2,
+          LastActionedUtc = DateTime.UtcNow
+        }
+      };
+      var dbGetResultList3 = new List<MasterData.Repositories.DBModels.Filter>()
+      {
+        new MasterData.Repositories.DBModels.Filter()
+        {
+          CustomerUid = custUid,
+          UserId = userUid,
+          ProjectUid = projectUid,
+          FilterUid = filterUid3,
+          Name = "",
+          FilterJson = filterJson3,
+          LastActionedUtc = DateTime.UtcNow
+        }
+      };
+      filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<CreateFilterEvent>())).ReturnsAsync(1);
+      filterRepo.SetupSequence(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), true))
+        .ReturnsAsync(dbGetResultList1)
+        .ReturnsAsync(dbGetResultList2)
+        .ReturnsAsync(dbGetResultList3);
+
+      var executor = RequestExecutorContainer.Build<CreateFiltersExecutor>(configStore, logger, serviceExceptionHandler,
+        filterRepo.Object);
+      var result = await executor.ProcessAsync(filterListRequestFull).ConfigureAwait(false) as FilterDescriptorListResult;
+
+      Assert.IsNotNull(result, "executor failed");
+      Assert.AreEqual(3, result.filterDescriptors.Count, "Wrong result count returned");
+      Assert.AreNotEqual("", result.filterDescriptors[0].FilterUid, "first filterUid incorrect");
+      Assert.AreEqual(filterJson1, result.filterDescriptors[0].FilterJson, "first filterJson incorrect");
+      Assert.AreEqual(filterJson2, result.filterDescriptors[1].FilterJson, "second filterJson incorrect");
+      Assert.AreEqual(filterJson3, result.filterDescriptors[2].FilterJson, "third filterJson incorrect");
+    }
+
+    [TestMethod]
+    public async Task CreateFiltersExecutor_2GoodFilters_1BadRead()
+    {
+      // a list of 3 valid and 1 invalid (fails to read) transient filters are sent in request to create
+      // should throw exception
+      string custUid = Guid.NewGuid().ToString();
+      string userUid = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string filterUid1 = Guid.NewGuid().ToString();
+      string filterUid2 = Guid.NewGuid().ToString();
+      string filterUid3 = Guid.NewGuid().ToString();
+      string filterJson1 = "";
+      string filterJson2 = "{\"startUTC\":\"2012-11-05\",\"endUTC\":\"2012-11-06\"}";
+      string filterJson3 = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"}";
+
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      // request data:
+      var requestList = new List<FilterRequest>()
+      {
+        FilterRequest.Create("", "", filterJson1),
+        FilterRequest.Create("", "", filterJson2),
+        FilterRequest.Create("", "", filterJson3)
+      };
+
+      FilterListRequest filterListRequest = new FilterListRequest()
+      {
+        filterRequests = new List<FilterRequest>()
+      };
+      filterListRequest.filterRequests = requestList.ToImmutableList();
+
+      var filterListRequestFull = new FilterListRequestFull()
+      {
+        CustomerUid = custUid,
+        ProjectUid = projectUid,
+        filterRequests = filterListRequest.filterRequests
+      };
+
+      // setup moq
+      var filterRepo = new Mock<IFilterRepository>();
+
+      var dbGetResultList1 = new List<MasterData.Repositories.DBModels.Filter>()
+      {
+        new MasterData.Repositories.DBModels.Filter()
+        {
+          CustomerUid = custUid,
+          UserId = userUid,
+          ProjectUid = projectUid,
+          FilterUid = filterUid1,
+          Name = "",
+          FilterJson = filterJson1,
+          LastActionedUtc = DateTime.UtcNow
+        }
+      };
+      var dbGetResultList2 = new List<MasterData.Repositories.DBModels.Filter>()
+      {
+        new MasterData.Repositories.DBModels.Filter()
+        {
+          CustomerUid = custUid,
+          UserId = userUid,
+          ProjectUid = projectUid,
+          FilterUid = filterUid2,
+          Name = "",
+          FilterJson = filterJson2,
+          LastActionedUtc = DateTime.UtcNow
+        }
+      };
+      filterRepo.SetupSequence(
+          ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), true))
+        .ReturnsAsync(dbGetResultList1)
+        .ReturnsAsync(dbGetResultList2);
+      // third missing;
+      filterRepo.Setup(ps => ps.StoreEvent(It.IsAny<CreateFilterEvent>())).ReturnsAsync(1);
+
+
+      var executor = RequestExecutorContainer.Build<CreateFiltersExecutor>(configStore, logger, serviceExceptionHandler,
+        filterRepo.Object);
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(filterListRequestFull).ConfigureAwait(false)); ;
+
+      StringAssert.Contains(ex.GetContent, "2019");
+      StringAssert.Contains(ex.GetContent, "UpsertFilter failed. Unable to create transient filter.");
+    }
+
+    [TestMethod]
+    public async Task CreateFiltersExecutor_2GoodFilters_1BadStore()
+    {
+      // a list of 3 valid and 1 invalid (bad store) transient filters are sent in request to create
+      // should throw exception
+      string custUid = Guid.NewGuid().ToString();
+      string userUid = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string filterUid1 = Guid.NewGuid().ToString();
+      string filterUid2 = Guid.NewGuid().ToString();
+      string filterUid3 = Guid.NewGuid().ToString();
+      string filterJson1 = "";
+      string filterJson2 = "{\"startUTC\":\"2012-11-05\",\"endUTC\":\"2012-11-06\"}";
+      string filterJson3 = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"}";
+
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      // request data:
+      var requestList = new List<FilterRequest>()
+      {
+        FilterRequest.Create("", "", filterJson1),
+        FilterRequest.Create("", "", filterJson2),
+        FilterRequest.Create("", "", filterJson3)
+      };
+
+      FilterListRequest filterListRequest = new FilterListRequest()
+      {
+        filterRequests = new List<FilterRequest>()
+      };
+      filterListRequest.filterRequests = requestList.ToImmutableList();
+
+      var filterListRequestFull = new FilterListRequestFull()
+      {
+        CustomerUid = custUid,
+        ProjectUid = projectUid,
+        filterRequests = filterListRequest.filterRequests
+      };
+
+      // setup moq
+      var filterRepo = new Mock<IFilterRepository>();
+
+      var dbGetResultList1 = new List<MasterData.Repositories.DBModels.Filter>()
+      {
+        new MasterData.Repositories.DBModels.Filter()
+        {
+          CustomerUid = custUid,
+          UserId = userUid,
+          ProjectUid = projectUid,
+          FilterUid = filterUid1,
+          Name = "",
+          FilterJson = filterJson1,
+          LastActionedUtc = DateTime.UtcNow
+        }
+      };
+      var dbGetResultList2 = new List<MasterData.Repositories.DBModels.Filter>()
+      {
+        new MasterData.Repositories.DBModels.Filter()
+        {
+          CustomerUid = custUid,
+          UserId = userUid,
+          ProjectUid = projectUid,
+          FilterUid = filterUid2,
+          Name = "",
+          FilterJson = filterJson2,
+          LastActionedUtc = DateTime.UtcNow
+        }
+      };
+      var dbGetResultList3 = new List<MasterData.Repositories.DBModels.Filter>()
+      {
+        new MasterData.Repositories.DBModels.Filter()
+        {
+          CustomerUid = custUid,
+          UserId = userUid,
+          ProjectUid = projectUid,
+          FilterUid = filterUid3,
+          Name = "",
+          FilterJson = filterJson3,
+          LastActionedUtc = DateTime.UtcNow
+        }
+      };
+      filterRepo.SetupSequence(
+          ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), true))
+        .ReturnsAsync(dbGetResultList1)
+        .ReturnsAsync(dbGetResultList2)
+        .ReturnsAsync(dbGetResultList3);
+      filterRepo.SetupSequence(
+          ps => ps.StoreEvent(It.IsAny<CreateFilterEvent>()))
+        .ReturnsAsync(1)
+        .ReturnsAsync(1)
+        .ReturnsAsync(0);
+
+      var executor = RequestExecutorContainer.Build<CreateFiltersExecutor>(configStore, logger, serviceExceptionHandler,
+        filterRepo.Object);
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(filterListRequestFull).ConfigureAwait(false)); ;
+
+      StringAssert.Contains(ex.GetContent, "2019");
+      StringAssert.Contains(ex.GetContent, "UpsertFilter failed. Unable to create transient filter.");
     }
   }
 }

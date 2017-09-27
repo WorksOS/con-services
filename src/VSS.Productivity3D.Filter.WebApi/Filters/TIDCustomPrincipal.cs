@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
     {
       CustomerUid = customerUid;
       EmailAddress = emailAddress;
-      this.isApplication = isApplication;
+      this.IsApplication = isApplication;
       CustomerName = customerName;
     }
 
@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
     /// <value>
     ///   <c>true</c> if this instance is application; otherwise, <c>false</c>.
     /// </value>
-    public bool isApplication { get; private set; } = false;
+    public bool IsApplication { get; private set; } = false;
 
   }
 }

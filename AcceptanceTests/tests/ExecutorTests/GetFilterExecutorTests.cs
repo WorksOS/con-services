@@ -5,6 +5,7 @@ using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.MasterData.Models.Models;
 
 namespace ExecutorTests
 {
@@ -26,7 +27,7 @@ namespace ExecutorTests
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid);
       request.Validate(serviceExceptionHandler);
 
       var executor =
@@ -62,12 +63,12 @@ namespace ExecutorTests
       Assert.AreEqual(1, s.Result, "Filter event not written");
       
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid);
       request.Validate(serviceExceptionHandler);
       
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       var filterToTest = new FilterDescriptorSingleResult(
         new FilterDescriptor()
@@ -112,12 +113,12 @@ namespace ExecutorTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Filter event not written");
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid.ToUpper(), false, userId.ToUpper(), projectUid.ToUpper(), filterUid.ToUpper());
+      var request = FilterRequestFull.Create(custUid.ToUpper(), false, userId.ToUpper(), projectUid.ToUpper(), filterUid.ToUpper());
       request.Validate(serviceExceptionHandler);
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreEqual(filterUid, result.filterDescriptor.FilterUid,"executor returned incorrect filterDescriptor FilterUid");

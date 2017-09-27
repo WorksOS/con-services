@@ -32,11 +32,11 @@ namespace ExecutorTests
       string name = "";
       string filterJson = "theJsonString";
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
@@ -54,7 +54,7 @@ namespace ExecutorTests
       string name = "";
       string filterJson = "theJsonString";
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -89,7 +89,7 @@ namespace ExecutorTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Filter event not written");
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
       
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -108,18 +108,18 @@ namespace ExecutorTests
       string filterJson1 = "theJsonString";
       string filterJson2 = "theJsonString different";
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, null, name, filterJson1);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, null, name, filterJson1);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result1 = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result1 = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
       Assert.IsNotNull(result1, "executor should always return a result");
       Assert.IsNotNull(result1.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
       Assert.AreEqual(name, result1.filterDescriptor.Name, "executor returned incorrect filter Name");
       Assert.AreEqual(filterJson1, result1.filterDescriptor.FilterJson, "executor returned incorrect FilterJson");
 
-      request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, null, name, filterJson2);
-      var result2 = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      request = FilterRequestFull.Create(custUid, false, userUid, projectUid, null, name, filterJson2);
+      var result2 = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result2, "executor should always return a result");
       Assert.AreNotEqual(result1.filterDescriptor.FilterUid, result2.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
@@ -158,11 +158,11 @@ namespace ExecutorTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Filter event not written");
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, null, name, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, null, name, filterJsonUpdated);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreNotEqual(filterUid, result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
@@ -183,11 +183,11 @@ namespace ExecutorTests
       string name = "the Name";
       string filterJson = "theJsonString";
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
@@ -205,7 +205,7 @@ namespace ExecutorTests
       string name = "the Name";
       string filterJson = "theJsonString";
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -238,11 +238,11 @@ namespace ExecutorTests
       };
       filterRepo.StoreEvent(createFilterEvent).Wait();
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
@@ -284,11 +284,11 @@ namespace ExecutorTests
       };
       filterRepo.StoreEvent(createFilterEvent).Wait();
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid, nameUpdated, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid, nameUpdated, filterJsonUpdated);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
@@ -330,7 +330,7 @@ namespace ExecutorTests
       filterRepo.StoreEvent(createFilterEvent).Wait();
 
       // try to add a new filterUid with same name but upper case
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, null, name.ToUpper(), filterJsonNew);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, null, name.ToUpper(), filterJsonNew);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -371,7 +371,7 @@ namespace ExecutorTests
       };
       filterRepo.StoreEvent(createFilterEvent).Wait();
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, null, name, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, null, name, filterJsonUpdated);
  
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -410,7 +410,7 @@ namespace ExecutorTests
       filterRepo.StoreEvent(createFilterEvent).Wait();
 
       // now try to change the 2nd filter to the name of the first
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid2, name, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid2, name, filterJsonUpdated);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
@@ -443,7 +443,7 @@ namespace ExecutorTests
       };
       filterRepo.StoreEvent(createTransientFilterEvent).Wait();
 
-      var request = FilterRequestFull.CreateFilterFullRequest(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);

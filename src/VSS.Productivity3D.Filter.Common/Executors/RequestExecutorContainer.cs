@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected IRaptorProxy raptorProxy;
 
     /// <summary>
-    /// Repository factory used in ProcessEx
+    /// DB repo for filters used in ProcessEx
     /// </summary>
     protected IFilterRepository filterRepo;
 

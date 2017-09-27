@@ -2,7 +2,6 @@
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -12,6 +11,7 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         //                     else get only those for the calling UserUid
         try
         {
-          filter = await filterRepo.GetFilter(filterRequest.filterUid).ConfigureAwait(false);
+          filter = await filterRepo.GetFilter(filterRequest.FilterUid).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -71,9 +71,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         }
 
         if (filter == null
-            || !string.Equals(filter.CustomerUid, filterRequest.customerUid, StringComparison.OrdinalIgnoreCase)
-            || !string.Equals(filter.ProjectUid, filterRequest.projectUid, StringComparison.OrdinalIgnoreCase)
-            || !string.Equals(filter.UserId, filterRequest.userId, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(filter.CustomerUid, filterRequest.CustomerUid, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(filter.ProjectUid, filterRequest.ProjectUid, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(filter.UserId, filterRequest.UserId, StringComparison.OrdinalIgnoreCase)
           )
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 36);

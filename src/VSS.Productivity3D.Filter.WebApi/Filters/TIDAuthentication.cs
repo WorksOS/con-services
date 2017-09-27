@@ -133,7 +133,7 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
             return;
           }
 
-        log.LogInformation("Authorization: for Customer: {0} userId: {1} userEmail: {2} allowed", customerUid, userUid,
+        log.LogInformation("Authorization: for Customer: {0} UserId: {1} UserEmail: {2} allowed", customerUid, userUid,
           userEmail);
         //Set calling context Principal
         context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail,

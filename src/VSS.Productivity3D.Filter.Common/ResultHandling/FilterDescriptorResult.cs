@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Filter.Common.ResultHandling
 {
@@ -37,53 +38,10 @@ namespace VSS.Productivity3D.Filter.Common.ResultHandling
     /// <value>
     /// The filter descriptor.
     /// </value>
-    public FilterDescriptor filterDescriptor { get { return _filterDescriptor; } set { _filterDescriptor = value; } }
-  }
-
-
-  /// <summary>
-  ///   Describes a filter
-  /// </summary>
-  public class FilterDescriptor
-  {
-    // CustomerUid; UserUid and projectUid must be provided so shouldn't be returned
-    
-    /// <summary>
-    /// Gets or sets the filter uid.
-    /// </summary>
-    /// <value>
-    /// The filter uid.
-    /// </value>
-    public string FilterUid { get; set; }
-
-    /// <summary>
-    /// Gets or sets the name of the filter.
-    ///    if empty, then this is a transient filter
-    /// </summary>
-    /// <value>
-    /// The name.
-    /// </value>
-    public string Name { get; set; }
-
-    /// <summary>
-    /// Gets or sets the string containing the filter in Json format
-    /// </summary>
-    /// <value>
-    /// The FilterJson.
-    /// </value>
-    public string FilterJson { get; set; }
-
-
-    public override bool Equals(object obj)
+    public FilterDescriptor filterDescriptor
     {
-      var otherFilter = obj as FilterDescriptor;
-      if (otherFilter == null) return false;
-      return otherFilter.FilterUid == this.FilterUid
-             && otherFilter.Name == this.Name
-             && otherFilter.FilterJson == this.FilterJson
-        ;
+      get { return _filterDescriptor; }
+      set { _filterDescriptor = value; }
     }
-
-    public override int GetHashCode() { return 0; }
   }
 }
