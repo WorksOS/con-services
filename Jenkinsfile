@@ -90,7 +90,7 @@ node('Jenkins-Win2016-Raptor') {
                     bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion latest-release-${fullVersion}"
 				}
         } else if (branch.contains("master")) {
-		bat "7z a 3DPMWebApiNet47.zip -r ./artifacts/3DPMWebApiNet47/"
+		bat "7z a 3DPMWebApiNet47.zip -r ./artifacts/WebApi/"
                 archiveArtifacts artifacts: '3DPMWebApiNet47.zip', fingerprint: true
          	    stage ('Tag repository') {
                       bat 'git rev-parse HEAD > GIT_COMMIT'
