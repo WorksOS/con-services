@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
+using Microsoft.AspNetCore.Hosting.WindowsServices;
 
 namespace VSS.Productivity3D.WebApi
 {
