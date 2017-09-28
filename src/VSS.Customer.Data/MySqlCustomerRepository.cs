@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dapper;
@@ -179,14 +180,14 @@ namespace VSS.Customer.Data
       return 0;
     }
 
-    public Models.Customer GetAssociatedCustomerbyUserUid(System.Guid userUid)
+    public IEnumerable<Models.Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
     {
       PerhapsOpenConnection();
 
       var customer = Connection.Query<Models.Customer>
           (@"SELECT c.* 
             FROM Customer c JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
-            WHERE cu.fk_UserUID = @userUid", new {userUid = userUid.ToString()}).FirstOrDefault();
+            WHERE cu.fk_UserUID = @userUid", new {userUid = userUid.ToString()});
 
       PerhapsCloseConnection();
 

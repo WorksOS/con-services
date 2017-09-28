@@ -6,7 +6,7 @@ namespace VSS.Customer.Data.Interfaces
 {
   public interface ICustomerService
   {
-    Models.Customer GetAssociatedCustomerbyUserUid(Guid userUID);
+    IEnumerable<Models.Customer> GetAssociatedCustomerbyUserUid(Guid userUID);
     Models.Customer GetCustomer(Guid customerUID);
     int StoreCustomer(ICustomerEvent evt);
   }

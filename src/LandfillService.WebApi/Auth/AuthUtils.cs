@@ -50,7 +50,7 @@ public class AuthUtilities
 
         var customerbyUser = this._customerService.GetAssociatedCustomerbyUserUid(Guid.Parse(userId));
 
-        if (customerbyUser == null || customerbyUser.CustomerUID != customer.CustomerUID)
+        if (customerbyUser == null || customerbyUser.All(cui => cui.CustomerUID != customer.CustomerUID))
         {
           errorMessage = $"No customer associated with user ID: {userId}";
           return null;

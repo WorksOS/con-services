@@ -38,7 +38,7 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
         string userUid = string.Empty;
         string jwt = string.Empty;
         var customer = utils.GetContext(context.Request.Headers, out message, out userUid, out jwt);
-        Log.DebugFormat("Authorization: For userID {0} customer is {1}", userUid, customer);
+        Log.DebugFormat("Authorization: For userID {0} customer is {1}", userUid, customer?.CustomerUID);
 
         Dictionary<long, ProjectDescriptor> projectList = new Dictionary<long, ProjectDescriptor>();
         IEnumerable<VSS.Project.Data.Models.Project> userProjects;
