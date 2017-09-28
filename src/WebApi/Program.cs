@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
@@ -23,10 +24,14 @@ namespace VSS.Productivity3D.WebApi
         .AddCommandLine(args)
         .Build();
 
+      //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
+      var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+      var pathToContentRoot = Path.GetDirectoryName(pathToExe);
+
       var host = new WebHostBuilder()
           .UseConfiguration(config)
           .UseKestrel()
-          .UseContentRoot(Directory.GetCurrentDirectory())
+          .UseContentRoot(pathToContentRoot)
           .UseIISIntegration()
           .UseStartup<Startup>()
           .Build();
