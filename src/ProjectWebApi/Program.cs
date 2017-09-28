@@ -1,5 +1,8 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.CommandLine;
+
 
 #if NET_4_7
 using Microsoft.AspNetCore.Hosting.WindowsServices;
@@ -20,6 +23,10 @@ namespace VSS.MasterData.Project.WebAPI
     public static void Main(string[] args)
     {
 
+      var config = new ConfigurationBuilder()
+        .AddCommandLine(args)
+        .Build();
+
 #if NET_4_7
       //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
@@ -27,6 +34,7 @@ namespace VSS.MasterData.Project.WebAPI
 
 
       var host = new WebHostBuilder()
+        .UseConfiguration(config)
         .UseKestrel()
         .UseContentRoot(pathToContentRoot)
         .UseIISIntegration()
@@ -36,6 +44,7 @@ namespace VSS.MasterData.Project.WebAPI
       host.RunAsService();
 #else
             var host = new WebHostBuilder()
+        	.UseConfiguration(config)
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
