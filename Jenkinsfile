@@ -12,10 +12,13 @@ node('Jenkins-Win2016-Raptor') {
 
     if (branch.contains("release")) {
        versionPrefix = "1.0."
-       branchName = "release"
+       branchName = "Release"
     } else if (branch.contains("Dev")) {
        versionPrefix = "0.99."
        branchName = "Dev"
+    } else if (branch.contains("master")) {
+       versionPrefix = "1.0."
+       branchName = "master"
     } else {
        branchName = branch.substring(branch.lastIndexOf("/") + 1)
        suffix = "-" + branchName
