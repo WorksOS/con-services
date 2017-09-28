@@ -15,6 +15,8 @@ namespace VSS.Productivity3D.WebApi
     /// <param name="args"></param>
     public static void Main(string[] args)
     {
+      bool isService = args.Contains("--service");
+
       var config = new ConfigurationBuilder()
         .AddCommandLine(args)
         .Build();
@@ -27,7 +29,10 @@ namespace VSS.Productivity3D.WebApi
           .UseStartup<Startup>()
           .Build();
 
+if (!isService)
       host.Run();
+else
+      host.RunAsService();
     }
   }
 }
