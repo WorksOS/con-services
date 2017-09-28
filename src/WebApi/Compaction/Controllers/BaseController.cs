@@ -17,9 +17,10 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApiModels.Notification.Helpers;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -167,7 +168,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return results;
     }
 
-    protected async Task<DesignDescriptor> GetDesignDescriptor(Guid projectUid, Guid? fileUid, bool forProfile=false)
+    protected async Task<DesignDescriptor> GetDesignDescriptor(Guid projectUid, Guid? fileUid, bool forProfile = false)
     {
       if (fileUid.HasValue)
       {
@@ -195,8 +196,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         if (file.ImportedFileType == ImportedFileType.SurveyedSurface)
         {
           //Note: ':' is an invalid character for filenames in Windows so get rid of them
-          tccFileName = Path.GetFileNameWithoutExtension(tccFileName) + 
-            "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) + 
+          tccFileName = Path.GetFileNameWithoutExtension(tccFileName) +
+            "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
             Path.GetExtension(tccFileName);
         }
         string fileSpaceId = FileDescriptor.GetFileSpaceId(configStore, log);
@@ -268,7 +269,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project Uid</param>
     /// <param name="filterUid">Filter UID</param>
     /// <returns>An instance of the Filter class.</returns>
-    protected async Task<Common.Models.Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid)
+    protected async Task<Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid)
     {
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
@@ -279,40 +280,35 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var filterData = await GetFilter(projectUid, filterUid.Value);
         if (filterData != null)
         {
-          Guid designUidGuid;
-          if (filterData.designUid != null && Guid.TryParse(filterData.designUid, out designUidGuid))
+          if (filterData.designUID != null && Guid.TryParse(filterData.designUID, out Guid designUidGuid))
+          {
             designDescriptor = await GetDesignDescriptor(projectUid, designUidGuid);
+          }
 
-          //TODO: Replace this with getter on Filter model class. Aaron is updating MasterData models nuget package.
-          //Also note missing some filter properties here e.g. forward direction
-          bool haveData = filterData.startUTC.HasValue || filterData.endUTC.HasValue || filterData.onMachineDesignID.HasValue ||
-                     filterData.vibeStateOn.HasValue || filterData.elevationType.HasValue || filterData.layerNumber.HasValue ||
-                     (filterData.contributingMachines != null && filterData.contributingMachines.Count > 0);
-
-          if (haveData || haveExcludedIds || designDescriptor != null)
+          if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
           {
             var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
-            return Common.Models.Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
+            return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
               filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
-              null, null, null, null, null, null, null, null, null,
+              null, null, filterData.forwardDirection, null, null, null, null, null, null,
               layerMethod, designDescriptor, null, filterData.layerNumber, null, filterData.contributingMachines,
               excludedIds, null, null, null, null, null, null);
           }
         }
       }
-      return haveExcludedIds ? Common.Models.Filter.CreateFilter(excludedIds) : null;
+      return haveExcludedIds ? Filter.CreateFilter(excludedIds) : null;
     }
- 
+
     private async Task<MasterData.Models.Models.Filter> GetFilter(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await filterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), customHeaders);
-
       if (filterDescriptor == null)
+      {
         return null;
+      }
 
       return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
     }
-
   }
 }

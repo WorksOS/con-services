@@ -1,6 +1,4 @@
-﻿using System;
-using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
+﻿using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
@@ -76,29 +74,13 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     }
 
     /// <summary>
-    /// Create example instance of PassCountSummaryResult to display in Help documentation.
-    /// </summary>
-    public static PassCountSummaryResult HelpSample
-    {
-      get
-      {
-        return new PassCountSummaryResult
-        {
-        };
-      }
-    }
-
-    /// <summary>
     /// ToString override
     /// </summary>
     /// <returns>A string representation of the values in the summary pass count result.</returns>
     public override string ToString()
     {
-      return String.Format("constantTargetPassCountRange:({0}, {1}), isTargetPassCountConstant:{2}, percentEqualsTarget:{3}, percentGreaterThanTarget:{4}, percentLessThanTarget:{5}, totalAreaCoveredSqMeters:{6}, returnCode:{7}",
-                            constantTargetPassCountRange.min, constantTargetPassCountRange.max, isTargetPassCountConstant, percentEqualsTarget, percentGreaterThanTarget, percentLessThanTarget, totalAreaCoveredSqMeters, returnCode);
+      return
+        $"constantTargetPassCountRange:({constantTargetPassCountRange.min}, {constantTargetPassCountRange.max}), isTargetPassCountConstant:{isTargetPassCountConstant}, percentEqualsTarget:{percentEqualsTarget}, percentGreaterThanTarget:{percentGreaterThanTarget}, percentLessThanTarget:{percentLessThanTarget}, totalAreaCoveredSqMeters:{totalAreaCoveredSqMeters}, returnCode:{returnCode}";
     }
-
-  
-
   }
 }

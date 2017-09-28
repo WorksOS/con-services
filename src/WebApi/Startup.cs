@@ -100,8 +100,8 @@ namespace VSS.Productivity3D.WebApi
 
         if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
           pathToXml = Directory.GetCurrentDirectory();
-        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, assemblyName + ".xml")))
-          pathToXml = System.AppContext.BaseDirectory;
+        else if (File.Exists(Path.Combine(AppContext.BaseDirectory, assemblyName + ".xml")))
+          pathToXml = AppContext.BaseDirectory;
         else
         {
           var pathToExe = Process.GetCurrentProcess().MainModule.FileName;

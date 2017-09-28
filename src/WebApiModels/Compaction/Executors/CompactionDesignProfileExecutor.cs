@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using System.Linq;
 using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
@@ -97,6 +98,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
       profileResult.results = pdsiProfile.vertices.ConvertAll(dpv => new CompactionProfileVertex
       {
+        cellType = dpv.elevation >= VelociraptorConstants.NO_HEIGHT ? ProfileCellType.Gap : ProfileCellType.Edge,
         elevation = dpv.elevation >= VelociraptorConstants.NO_HEIGHT ? float.NaN : dpv.elevation,
         station = dpv.station
       });
@@ -105,7 +107,38 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
       profileResult.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
 
+      FixGaps(profileResult.results);
+
       return profileResult;
+    }
+
+    /// <summary>
+    /// Fixes gaps in the design profile to be consistent with how production data profile gaps are represented.
+    /// </summary>
+    /// <param name="results">The design profile to fix</param>
+    private void FixGaps(List<CompactionProfileVertex> results)
+    {
+      //A gap vertex returned by Raptor is the midpoint of the gap. We need to remove any of these and set the type of
+      //the previous vertex to 'Gap' to indicate the start of the gap to be consistent with production data gaps.
+      if (results.Any(x => x.cellType == ProfileCellType.Gap))
+      {
+        //Raptor always returns the first point on the design surface even if the profile starts in a gap.
+        int i = 1;
+        int count = results.Count;
+        while (i < count)
+        {
+          if (results[i].cellType == ProfileCellType.Gap)
+          {
+            results[i - 1].cellType = ProfileCellType.Gap;
+            results.RemoveAt(i);
+            count--;
+          }
+          else
+          {
+            i++;
+          }
+        }
+      }
     }
   }
 }

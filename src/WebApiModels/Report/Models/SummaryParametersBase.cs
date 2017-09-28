@@ -1,12 +1,10 @@
+using Newtonsoft.Json;
 using System;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
@@ -90,31 +88,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// Prevents a default instance of the <see cref="SummaryParametersBase"/> class from being created.
     /// </summary>
     protected SummaryParametersBase()
-    {
-    }
-
-
-    /// <summary>
-    /// Create example instance of PassCounts to display in Help documentation.
-    /// </summary>
-    public new static SummaryParametersBase HelpSample
-    {
-      get
-      {
-        return new SummaryParametersBase
-        {
-                   projectId = 34,
-                   additionalSpatialFilter = Filter.HelpSample,
-                   additionalSpatialFilterID = 144,
-                   baseFilter = Filter.HelpSample,
-                   baseFilterID = 153,
-                   callId = Guid.NewGuid(),
-                   liftBuildSettings = LiftBuildSettings.HelpSample,
-                   topFilter = Filter.HelpSample,
-                   topFilterID = 123,
-               };
-      }
-    }
-
+    { }
   }
 }

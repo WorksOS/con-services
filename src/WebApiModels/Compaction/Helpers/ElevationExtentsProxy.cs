@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
@@ -12,7 +12,6 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
@@ -55,7 +54,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <summary>
     /// Where to get environment variables, connection string etc. from
     /// </summary>
-    private IConfigurationStore configStore;
+    private readonly IConfigurationStore configStore;
 
     /// <summary>
     /// Constructor with injection
@@ -84,13 +83,12 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <returns>Elevation statistics</returns>
     public ElevationStatisticsResult GetElevationRange(long projectId, Filter filter, CompactionProjectSettings projectSettings)
     {
-      ElevationStatisticsResult result = null;
       string cacheKey;
       lock (lockObject)
       {
         cacheKey = ElevationCacheKey(projectId, filter);
       }
-      if (!elevationExtentsCache.TryGetValue(cacheKey, out result))
+      if (!elevationExtentsCache.TryGetValue(cacheKey, out ElevationStatisticsResult result))
       {
         LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
@@ -106,7 +104,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         //Check for 'No elevation range' result
         const double NO_ELEVATION = 10000000000.0;
         if (Math.Abs(result.MinElevation - NO_ELEVATION) < 0.001 && Math.Abs(result.MaxElevation + NO_ELEVATION) < 0.001)
-        { 
+        {
           result = null;
         }
 
@@ -126,7 +124,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       return
         filter == null
-          ? ElevationCacheKey(projectId, null, null, null, null, null, null, null, null, null, null)
+          ? ElevationCacheKey(projectId, null, null, null, null, null, null, null, null, null, null, null)
           : ElevationCacheKey(projectId, filter.startUTC, filter.endUTC, filter.vibeStateOn,
             filter.elevationType, filter.layerNumber, filter.onMachineDesignID,
             filter.contributingMachines == null || filter.contributingMachines.Count == 0
@@ -139,7 +137,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             filter.contributingMachines == null || filter.contributingMachines.Count == 0
               ? (bool?)null
               : filter.contributingMachines[0].isJohnDoe,
-            filter.surveyedSurfaceExclusionList);
+            filter.surveyedSurfaceExclusionList,
+            filter.forwardDirection);
     }
 
     /// <summary>
@@ -164,12 +163,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetID</param>
     /// <param name="excludedSurveyedSurfaceIds">The legacy imported file IDs of surveyed surfaces to exclude</param>
+    /// <param name="machineDirectionForward">Indicates the direction in which the cell pass occurred.</param>
     private string ElevationCacheKey(long projectId, DateTime? startUtc, DateTime? endUtc,
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetId,
-      string machineName, bool? isJohnDoe, List<long> excludedSurveyedSurfaceIds)
+      string machineName, bool? isJohnDoe, List<long> excludedSurveyedSurfaceIds, bool? machineDirectionForward)
     {
       var key =
-        $"{projectId},{startUtc},{endUtc},{vibeStateOn},{elevationType},{layerNumber},{onMachineDesignId},{assetId},{machineName},{isJohnDoe}";
+        $"{projectId},{startUtc},{endUtc},{vibeStateOn},{elevationType},{layerNumber},{onMachineDesignId},{assetId},{machineName},{isJohnDoe},{machineDirectionForward}";
       if (excludedSurveyedSurfaceIds == null || excludedSurveyedSurfaceIds.Count == 0)
       {
         key += ",null";

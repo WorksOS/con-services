@@ -49,18 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       return new ProfileGridPoints { x1 = x1, y1 = y1, x2 = x2, y2 = y2 };
     }
-
-    /// <summary>
-    /// Creates a sample instance of ProfileGridPoints to be displayed in Help documentation.
-    /// </summary>
-    public static ProfileGridPoints HelpSample => new ProfileGridPoints
-    {
-      x1 = 82.5,
-      y1 = 130.33,
-      x2 = 135.4,
-      y2 = 130.33
-    };
-
+    
     /// <summary>
     /// Validates all properties
     /// </summary>

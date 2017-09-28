@@ -1,18 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Contains a percentage range of observed CCV values with respect to the target MDP value configured on a machine
   /// </summary>
-    public class CCVRangePercentage : IValidatable
+  public class CCVRangePercentage : IValidatable
   {
     /// <summary>
     /// The minimum percentage range. Must be between 0 and 250.
@@ -30,12 +28,12 @@ namespace VSS.Productivity3D.Common.Models
     [Required]
     public double max { get; private set; }
 
-    
+
     /// <summary>
     /// Private constructor
     /// </summary>
     private CCVRangePercentage()
-    {}
+    { }
 
     /// <summary>
     /// Create instance of CCVRangePercentage
@@ -54,16 +52,6 @@ namespace VSS.Productivity3D.Common.Models
     }
 
     /// <summary>
-    /// Create example instance of CCVRangePercentage to display in Help documentation.
-    /// </summary>
-    public static CCVRangePercentage HelpSample => new CCVRangePercentage
-    {
-      min = 75.0,
-      max = 125.0
-    };
-
-
-    /// <summary>
     /// Validates all properties
     /// </summary>
     public void Validate()
@@ -72,12 +60,11 @@ namespace VSS.Productivity3D.Common.Models
       if (min > max)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "CCV percentage minimum must be less than CCV percentage maximum"));      
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "CCV percentage minimum must be less than CCV percentage maximum"));
       }
     }
 
     private const double MIN_PERCENT = 0.0;
     private const double MAX_PERCENT = 250.0;
-
   }
 }

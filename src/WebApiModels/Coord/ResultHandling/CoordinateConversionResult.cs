@@ -1,5 +1,4 @@
 ﻿using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
@@ -34,15 +33,6 @@ namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
     public static CoordinateConversionResult CreateCoordinateConversionResult(TwoDConversionCoordinate[] conversionCoordinates)
     {
       return new CoordinateConversionResult { conversionCoordinates = conversionCoordinates };
-    }
-
-    /// <summary>
-    /// Creates a sample instance of the CoordinateConversionResult class to be displayed in Help documentation.
-    /// </summary>
-    /// 
-    public static CoordinateConversionResult HelpSample
-    {
-      get { return new CoordinateConversionResult { conversionCoordinates = new TwoDConversionCoordinate[] { TwoDConversionCoordinate.HelpSample } }; }
     }
   }
 }

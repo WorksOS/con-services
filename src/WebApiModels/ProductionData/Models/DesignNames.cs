@@ -1,7 +1,7 @@
 ﻿
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
-    public class DesignNames 
+  public class DesignNames 
     {
       /// <summary>
       /// The name of the design.
@@ -22,21 +22,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         {
             return new DesignNames {designId = id, designName = name};
         }
-
-        /// <summary>
-        /// Create example instance of MachineExecutionResult to display in Help documentation.
-        /// </summary>
-        public static DesignNames HelpSample
-        {
-            get
-            {
-                return new DesignNames
-                {
-                    designName = "The very best design",
-                    designId = 1024,
-                };
-            }
-        }
-
     }
 }

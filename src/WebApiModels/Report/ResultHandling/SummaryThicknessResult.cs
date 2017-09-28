@@ -1,5 +1,4 @@
 ﻿using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
@@ -47,31 +46,12 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     {
       return new SummaryThicknessResult
       {
-                 BoundingExtents = convertExtents,
-                 AboveTarget = aboveTarget,
-                 BelowTarget = belowTarget,
-                 NoCoverageArea = noCoverageArea,
-                 MatchTarget = matchTarget,
-             };
-    }
-
-    /// <summary>
-    /// Create example instance of SummaryVolumesResult to display in Help documentation.
-    /// </summary>
-    public static SummaryThicknessResult HelpSample
-    {
-      get
-      {
-        return new SummaryThicknessResult
-        {
-                   BoundingExtents = BoundingBox3DGrid.HelpSample,
-                   AboveTarget = 13.2,
-                   BelowTarget = 11.3,
-                   NoCoverageArea = 32,
-                   MatchTarget = 57.5
-               };
-      }
-
+        BoundingExtents = convertExtents,
+        AboveTarget = aboveTarget,
+        BelowTarget = belowTarget,
+        NoCoverageArea = noCoverageArea,
+        MatchTarget = matchTarget,
+      };
     }
   }
 }

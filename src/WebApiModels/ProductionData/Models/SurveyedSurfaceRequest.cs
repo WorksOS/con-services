@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 
@@ -58,16 +58,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
                 SurveyedUtc = surveyedUtc
               };
     }
-
-    /// <summary>
-    /// Creates a sample instance of the SurveyedSurfaceRequest class to be displayed in Help documentation.
-    /// </summary>
-    /// 
-    public new static SurveyedSurfaceRequest HelpSample
-    {
-      get { return new SurveyedSurfaceRequest { projectId = 1, SurveyedSurface = DesignDescriptor.HelpSample, SurveyedUtc = DateTime.UtcNow }; }
-    }
-
+    
     /// <summary>
     /// Validates all properties
     /// </summary>
@@ -76,6 +67,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       base.Validate();
       SurveyedSurface.Validate();
     }
-  
   }
 }

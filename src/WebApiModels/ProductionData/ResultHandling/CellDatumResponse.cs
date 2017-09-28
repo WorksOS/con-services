@@ -53,22 +53,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
                  timestamp = timestamp
              };
     }
-
-        /// <summary>
-        /// Create example instance of CellDatumResponse to display in Help documentation.
-        /// </summary>
-        public static CellDatumResponse HelpSample
-        {
-          get
-          {
-            return new CellDatumResponse
-            {
-              displayMode = DisplayMode.CutFill,
-              returnCode = 0,
-              value = 0.05,
-              timestamp = DateTime.UtcNow
-            };
-          }
-        }
     }
 }

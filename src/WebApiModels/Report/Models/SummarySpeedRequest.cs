@@ -1,12 +1,10 @@
+using Newtonsoft.Json;
 using System;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
@@ -83,23 +81,5 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
 
       };
     }
-
-
-    /// <summary>
-    /// Create example instance of PassCounts to display in Help documentation.
-    /// </summary>
-    public new static SummarySpeedRequest HelpSample
-    {
-      get
-      {
-        return new SummarySpeedRequest
-        {
-                   projectId = 34,
-                   callId = Guid.NewGuid(),
-                   liftBuildSettings = LiftBuildSettings.HelpSample,
-               };
-      }
-    }
-
   }
 }

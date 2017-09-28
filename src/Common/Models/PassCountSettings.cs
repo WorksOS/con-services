@@ -34,30 +34,13 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// Create instance of PassCountSettings
     /// </summary>
-    public static PassCountSettings CreatePassCountSettings(
-        int[] passCounts
-        )
+    public static PassCountSettings CreatePassCountSettings(int[] passCounts)
     {
       return new PassCountSettings
       {
         passCounts = passCounts,
       };
     }
-
-    /// <summary>
-    /// Create example instance of PassCountSettings to display in Help documentation.
-    /// </summary>
-    public static PassCountSettings HelpSample
-    {
-      get
-      {
-        return new PassCountSettings
-        {
-          passCounts = new int[] { 1, 2, 3, 5, 8, 12, 20 }
-        };
-      }
-    }
-
 
     /// <summary>
     /// Validates all properties

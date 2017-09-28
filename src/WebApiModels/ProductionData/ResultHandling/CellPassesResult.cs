@@ -1,7 +1,7 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SVOICDecls;
 using SVOSiteVisionDecls;
+using System;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 
@@ -17,9 +17,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
   public class CellPassesResult : ContractExecutionResult
   {
     public CellPassesResult(string message) : base(message)
-    {
-
-    }
+    { }
 
     /// <summary>
     /// Contains the information relating to a cell pass. All measurements are made at the center of the cell
@@ -86,27 +84,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
       /// A bit field stored used to hold the GPSMode recorded by the machine at the time the cell was passed over. The LSB four bits in the byte are used for this purpose.
       /// </summary>
       public byte gPSModeStore;
-
-        public static CellPassValue HelpSample {
-            get
-            {
-                return new CellPassValue
-                {
-                               amplitude = 10,
-                               cCV = 12,
-                               frequency = 100,
-                               gPSModeStore = 1,
-                               height = 10,
-                               mDP = 1,
-                               machineID = 2,
-                               machineSpeed = 10,
-                               materialTemperature = 150,
-                               rMV = 12,
-                               radioLatency = 1,
-                               time = DateTime.UtcNow
-                       };
-            }
-        }
     }
 
     /// <summary>
@@ -143,21 +120,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
       /// The lower bound of the asphalt temperature mat when being rolled. Values below this cause a warning to be issued on the machine. Expressed in degrees Celcius.
       /// </summary>
       public ushort tempWarningLevelMin;
-
-        public static CellTargetsValue HelpSample {
-            get
-            {
-                return new CellTargetsValue
-                {
-                               targetCCV = 10,
-                               targetMDP = 23,
-                               targetPassCount = 50,
-                               targetThickness = 4,
-                               tempWarningLevelMax = 200,
-                               tempWarningLevelMin = 1
-                       };
-            }
-        }
     }
 
     /// <summary>
@@ -244,31 +206,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
       /// The GCS machine control system is mapping minimum elevations; typically used by HEX (Hydraulic Excavator machines)
       /// </summary>
       public bool EventMinElevMapping;
-
-        public static CellEventsValue HelpSample {
-            get
-            {
-                return new CellEventsValue
-                {
-                               eventAutoVibrationState = TICAutoState.asAuto,
-                               EventInAvoidZoneState = 1,
-                               EventMinElevMapping = true,
-                               eventDesignNameID = 112,
-                               eventICFlags = 12,
-                               eventMachineAutomatics = TGCSAutomaticsMode.amAutomatics,
-                               eventMachineGear = TICMachineGear.mgForward3,
-                               eventMachineRMVThreshold = 12,
-                               eventOnGroundState = TICOnGroundState.ogYesLegacy,
-                               eventVibrationState = TICVibrationState.vsOn,
-                               gPSAccuracy = TICGPSAccuracy.gpsaFine,
-                               gPSTolerance = 1,
-                               layerID = 4,
-                               mapReset_DesignNameID = 3,
-                               mapReset_PriorDate = DateTime.UtcNow,
-                               positioningTech = TICPositioningTech.ptGPS
-                       };
-            }
-        }
     }
 
     /// <summary>
@@ -290,19 +227,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
       /// Values of attribute target values for the cell pass
       /// </summary>
       public CellTargetsValue targetsValue;
-
-        public static FilteredPassData HelpSample
-        {
-            get
-            {
-                return new FilteredPassData
-                {
-                               eventsValue = CellEventsValue.HelpSample,
-                               filteredPass = CellPassValue.HelpSample,
-                               targetsValue = CellTargetsValue.HelpSample,
-                       };
-            }
-        }
     }
 
       /// <summary>
@@ -472,53 +396,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
           /// The collection of filtered cell pass data that comprise this cell. This includes cell pass attributes, target value information and temporal event information for each cell pass.
           /// </summary>
           public FilteredPassData[] filteredPassData;
-
-          public static ProfileLayer HelpSample
-          {
-              get
-              {
-                  return new ProfileLayer
-                  {
-                                 amplitude = 2,
-                                 cCV = 32,
-                                 cCV_Elev = 43,
-                                 cCV_MachineID = 12,
-                                 cCV_Time = DateTime.UtcNow,
-                                 filteredHalfPassCount = 4,
-                                 filteredPassCount = 54,
-                                 firstPassHeight = 3,
-                                 frequency = 2,
-                                 height = 23,
-                                 lastLayerPassTime = DateTime.UtcNow,
-                                 lastPassHeight = 54,
-                                 mDP = 543,
-                                 mDP_Elev = 4,
-                                 mDP_MachineID = 2,
-                                 mDP_Time = DateTime.UtcNow,
-                                 machineID = 54,
-                                 materialTemperature = 100,
-                                 materialTemperature_Elev = 23,
-                                 materialTemperature_MachineID = 43,
-                                 materialTemperature_Time = DateTime.UtcNow,
-                                 maxThickness = 33,
-                                 maximumPassHeight = 54,
-                                 minimumPassHeight = 12,
-                                 rMV = 3,
-                                 radioLatency = 4,
-                                 targetCCV = 5,
-                                 targetMDP = 2,
-                                 targetPassCount = 23,
-                                 targetThickness = 2,
-                                 thickness = 1,
-                                 filteredPassData = new[] { FilteredPassData.HelpSample, FilteredPassData.HelpSample },
-                         };
-              }
-
-          }
       }
-
-
-
 
       /// <summary>
       /// The internal result code returned by the service for the request. Values documented elsewhere.
@@ -781,52 +659,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
         topLayerPassCountTargetRange = topLayerPassCountTargetRange,
         layers = layers
       };
-    }
-
-    /// <summary>
-    /// Create example instance of CellPassesResult to display in Help documentation.
-    /// </summary>
-    public static CellPassesResult HelpSample
-    {
-      get
-      {
-        return new CellPassesResult
-        {
-            
-            cellCCV = 2,
-            cellCCVElev = 3,
-            cellFirstCompositeElev = 5,
-            cellFirstElev = 12,
-            cellHighestCompositeElev = 11,
-            cellHighestElev = 13,
-            cellLastCompositeElev = 112,
-            cellLastElev = 121,
-            cellLowestCompositeElev = 113,
-            cellLowestElev = 3221,
-            cellMDP = 2,
-            cellMDPElev = 11,
-            cellMaterialTemperature = 322,
-            cellMaterialTemperatureElev = 1,
-            cellMaterialTemperatureWarnMax = 500,
-            cellMaterialTemperatureWarnMin = 10,
-            cellTargetCCV = 1,
-            cellTargetMDP = 1,
-            cellTopLayerThickness = 5,
-            filteredHalfPassCount = 10,
-            filteredPassCount = 23,
-            oTGCellX = 150,
-            oTGCellY = 200,
-            topLayerPassCount = 34,
-            topLayerPassCountTargetRange = TargetPassCountRange.HelpSample,
-            designElev = 45,
-            interceptLength = 12,
-            station = 10, includesProductionData = true, layers = new []{ProfileLayer.HelpSample, ProfileLayer.HelpSample},
-            
-
-            
-
-        };
-      }
     }
   }
 }

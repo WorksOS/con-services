@@ -168,11 +168,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           {
             if (result.data[0].station > 0)
             {
-              result.data.Insert(0, new CompactionProfileVertex { station = 0, elevation = float.NaN });
+              result.data.Insert(0, new CompactionProfileVertex { cellType = ProfileCellType.Gap, station = 0, elevation = float.NaN });
             }
             if (result.data[result.data.Count - 1].station < profile.gridDistanceBetweenProfilePoints)
             {
-              result.data.Add(new CompactionProfileVertex { station = profile.gridDistanceBetweenProfilePoints, elevation = float.NaN });
+              result.data.Add(new CompactionProfileVertex { cellType = ProfileCellType.Gap, station = profile.gridDistanceBetweenProfilePoints, elevation = float.NaN });
             }
           }
         }

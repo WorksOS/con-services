@@ -24,7 +24,5 @@
     /// </summary>
     /// 
     public double lng;
-
-    public static StationLLPoint HelpSample => new StationLLPoint {lat = 1.23234, lng = 1.3543, station = 1.1};
   }
 }

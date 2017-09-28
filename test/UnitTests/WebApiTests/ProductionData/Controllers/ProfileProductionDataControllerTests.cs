@@ -10,6 +10,7 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -28,6 +29,11 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     /// 
     private ProfileProductionDataRequest CreateRequest()
     {
+      var profileLLPoints = ProfileLLPoints.CreateProfileLLPoints(35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
+        -106.6040765 * ConversionConstants.DEGREES_TO_RADIANS,
+        35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
+        -104.28745 * ConversionConstants.DEGREES_TO_RADIANS);
+
       return ProfileProductionDataRequest.CreateProfileProductionData(
         PD_MODEL_ID,
         new Guid(),
@@ -36,14 +42,13 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         -1,
         null,
         null,
-        ProfileLLPoints.HelpSample,
+        profileLLPoints,
         1,
         120,
         null,
         true
         );
     }
-
 
     /// <summary>
     /// Uses the mock PDS client to post a request with a successful result...
@@ -100,16 +105,11 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     public void PD_PostProfileProductionDataFailed()
     {
       ProfileProductionDataRequest request = CreateRequest();
-
       MemoryStream raptorResult = null;
 
       Assert.IsTrue(RaptorConverters.DesignDescriptor(request.alignmentDesign).IsNull(), "A linear profile expected.");
 
-      VLPDDecls.TWGS84Point startPt, endPt;
-
-      bool positionsAreGrid;
-
-      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt, out positionsAreGrid);
+      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out VLPDDecls.TWGS84Point startPt, out var endPt, out bool positionsAreGrid);
 
       ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args
            = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args

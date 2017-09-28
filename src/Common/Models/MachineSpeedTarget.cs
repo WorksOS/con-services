@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -50,21 +48,5 @@ namespace VSS.Productivity3D.Common.Models
     {
       return new MachineSpeedTarget { MinTargetMachineSpeed = min, MaxTargetMachineSpeed = max };
     }
-
-    /// <summary>
-    /// Create example instance of LiftBuildSettings to display in Help documentation.
-    /// </summary>
-    public static MachineSpeedTarget HelpSample
-    {
-      get
-      {
-        return new MachineSpeedTarget
-        {
-          MinTargetMachineSpeed = 10,
-          MaxTargetMachineSpeed = 55
-        };
-      }
-    }
-
   }
 }

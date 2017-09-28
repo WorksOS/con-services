@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
@@ -134,28 +133,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         returnAllPassesAndLayers = returnAllPassesAndLayers
       };
     }
-
-    /// <summary>
-    /// Creates a sample instance of ProfileProductionDataRequest class to be displayed in the Help documentation.
-    /// </summary>
-    /// 
-    /// 
-    public new static ProfileProductionDataRequest HelpSample => new ProfileProductionDataRequest
-    {
-      projectId = 404,
-      callId = new Guid(),
-      profileType = ProductionDataType.All,
-      filter = Filter.HelpSample,
-      filterID = 1,
-      alignmentDesign = DesignDescriptor.HelpSample,
-      gridPoints = null,
-      wgs84Points = ProfileLLPoints.HelpSample,
-      startStation = 0,
-      endStation = 100,
-      liftBuildSettings = LiftBuildSettings.HelpSample,
-      returnAllPassesAndLayers = true
-    };
-
+    
     /// <summary>
     /// Returns whether this request is for an alignment design profile.
     /// </summary>

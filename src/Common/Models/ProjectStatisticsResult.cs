@@ -44,23 +44,8 @@ namespace VSS.Productivity3D.Common.Models
     }
 
     public ProjectStatisticsResult()
-        : base()
-    {
-    }
-
-    /// <summary>
-    /// Statistics parameters request help instance
-    /// </summary>
-    public static ProjectStatisticsResult HelpSample => new ProjectStatisticsResult
-    {
-      startTime = DateTime.Now,
-      endTime = DateTime.Now.AddDays(1),
-      cellSize = 10,
-      Code = ContractExecutionStatesEnum.ExecutedSuccessfully,
-      extents = BoundingBox3DGrid.HelpSample,
-      indexOriginOffset = 55,
-    };
-
+    { }
+    
     /// <summary>
     /// ToString override
     /// </summary>

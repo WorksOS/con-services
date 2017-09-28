@@ -1,6 +1,5 @@
 ﻿using ASNodeDecls;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 
 namespace VSS.Productivity3D.Common.ResultHandling
 {
@@ -26,19 +25,6 @@ namespace VSS.Productivity3D.Common.ResultHandling
         TileData = data,
         TileOutsideProjectExtents = raptorResult!=TASNodeErrorStatus.asneOK
       };
-    }
-
-    /// <summary>
-    /// Create example instance of TileResult to display in Help documentation.
-    /// </summary>
-    public static TileResult HelpSample
-    {
-      get
-      {
-        return new TileResult()
-        {
-        };
-      }
     }
   }
 }

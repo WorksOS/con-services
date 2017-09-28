@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
@@ -55,23 +55,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
              };
     }
 
-
-    /// <summary>
-    /// Create example instance of EditDataRequest to display in Help documentation.
-    /// </summary>
-    public new static EditDataRequest HelpSample
-    {
-      get
-      {
-        return new EditDataRequest
-        {
-                   projectId = 1523,
-                   undo = false,
-                   dataEdit = ProductionDataEdit.HelpSample
-               };
-      }
-    }
-
     /// <summary>
     /// Validates all properties
     /// </summary>
@@ -83,9 +66,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                     "Missing data edit for edit request"));
 
-      if (dataEdit != null)
-        dataEdit.Validate();
+      dataEdit?.Validate();
     }
-
   }
 }

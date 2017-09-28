@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.Linq;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
@@ -32,20 +32,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     {
       MachineStatuses = MachineStatuses.Where(m => m.assetID == machineId).ToArray();
     }
-
-    /// <summary>
-    /// Create example instance of MachineExecutionResult to display in Help documentation.
-    /// </summary>
-    public static MachineExecutionResult HelpSample
-    {
-      get
-      {
-        return new MachineExecutionResult
-        {
-            MachineStatuses = new []{MachineStatus.HelpSample}
-        };
-      }
-    }
-
   }
 }

@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -44,26 +42,13 @@ namespace VSS.Productivity3D.Common.Models
     [Required]
     public float BelowToleranceLiftThickness { get; set; }
 
-    public static LiftThicknessTarget HelpSample => new LiftThicknessTarget
-    {
-      AboveToleranceLiftThickness = (float)0.001,
-      BelowToleranceLiftThickness = (float)0.002,
-      TargetLiftThickness = (float)0.05
-    };
-
-    /// <summary>
-    /// Private constructor
-    /// </summary>
-    private LiftThicknessTarget()
-    { }
-
     public void Validate()
     {
       if ((TargetLiftThickness <= 0) || (TargetLiftThickness - BelowToleranceLiftThickness <0) || (BelowToleranceLiftThickness <0) || (AboveToleranceLiftThickness<0))
+      {
         throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Targte thickness settings must be positive."));      
-
-
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Targte thickness settings must be positive."));
+      }
     }
   }
 }

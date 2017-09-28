@@ -88,23 +88,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
           };
       }
 
-      public new static CellDatumRequest HelpSample {
-          get
-          {
-              return new CellDatumRequest
-                      {
-                              design = DesignDescriptor.HelpSample,
-                              projectId = 100,
-                              llPoint = WGSPoint.HelpSample,
-                              liftBuildSettings = LiftBuildSettings.HelpSample,
-                              filter = Filter.HelpSample,
-                              filterId = 0,
-                              displayMode = DisplayMode.CCV,
-                              gridPoint = null
-                      };
-          }
-      }
-
       public override void Validate()
       {
         base.Validate();

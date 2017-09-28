@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using VLPDDecls;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
@@ -37,20 +36,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     {
       return new CCAColorPaletteResult { palettes = colorPalettes };
     }
-
-    /// <summary>
-    /// Creates CCAColorPaletteResult class sample instance to be displayed in Help documantation.
-    /// </summary>
-    /// 
-    public static CCAColorPaletteResult HelpSample => new CCAColorPaletteResult
-    {
-      palettes = new[]
-      {
-        new TColourPalette(CCADataConstants.coverageColors[1], 1),  // 1st pass (Green)...
-        new TColourPalette(CCADataConstants.coverageColors[2], 2),  // 2nd pass (Cyan)...
-        new TColourPalette(CCADataConstants.coverageColors[3], 3),  // 3rd pass (Red)...
-        new TColourPalette(CCADataConstants.coverageColors[4], 4)   // On target (Yellow)...  
-      }
-    };
   }
 }

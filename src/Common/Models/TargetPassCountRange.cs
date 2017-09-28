@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -55,22 +53,6 @@ namespace VSS.Productivity3D.Common.Models
         max = max
       };
     }
-
-    /// <summary>
-    /// Create a sample instance of TargetPassCountRange class to display in Help documentation.
-    /// </summary>
-    public static TargetPassCountRange HelpSample
-    {
-      get
-      {
-        return new TargetPassCountRange
-        {
-          min = 2,
-          max = 12
-        };
-      }
-    }
-
 
     /// <summary>
     /// Validates all properties.

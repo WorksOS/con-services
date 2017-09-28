@@ -17,6 +17,11 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     [TestMethod]
     public void CPR_CanCreateCellPassesRequestTest()
     {
+      var liftThicknessTarget = new LiftThicknessTarget{
+        AboveToleranceLiftThickness = (float)0.001,
+        BelowToleranceLiftThickness = (float)0.002,
+        TargetLiftThickness = (float)0.05};
+
       var validator = new DataAnnotationsValidator();
 
       CellPassesRequest cpRequest = CellPassesRequest.CreateCellPassRequest(544, null, null, null, null, 0, 0,
@@ -34,7 +39,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
       LiftBuildSettings settings = LiftBuildSettings.CreateLiftBuildSettings(
         CCVRangePercentage.CreateCcvRangePercentage(30.0, 70.0), false, 0.0, 0.0, 0.2f, LiftDetectionType.Automatic,
         LiftThicknessType.Compacted, MDPRangePercentage.CreateMdpRangePercentage(35.0, 75.0),
-        false, 0.0f, 0, 0, null, null, null, LiftThicknessTarget.HelpSample, null);
+        false, 0.0f, 0, 0, null, null, null, liftThicknessTarget, null);
       Filter filter = Filter.CreateFilter(null, null, null, null, null, 1, new List<long>(), true, false, null,
           new List<WGSPoint>(),
           new List<Point>(),

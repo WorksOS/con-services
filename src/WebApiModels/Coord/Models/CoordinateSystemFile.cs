@@ -42,15 +42,6 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Models
         }
 
         /// <summary>
-        /// CoordinateSystemFile sample instance.
-        /// </summary>
-        /// 
-        public new static CoordinateSystemFile HelpSample
-        {
-            get { return new CoordinateSystemFile { projectId = 1, csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 }, csFileName = "CSD Test.DC" }; }
-        }
-
-        /// <summary>
         /// Creates an instance of the CoordinateSystemFile class.
         /// </summary>
         /// <param name="projectId">The project to process the file into.</param>

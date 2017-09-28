@@ -62,19 +62,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
         filterID = filterID
       };
     }
-
-    /// <summary>
-    /// Create example instance of CCARequest to display in Help documentation.
-    /// </summary>
-    public new static CCARequest HelpSample => new CCARequest
-    {
-      projectId = 735,
-      callId = null,
-      liftBuildSettings = LiftBuildSettings.HelpSample,
-      filter = Filter.HelpSample,
-      filterID = 0
-    };
-
+    
     /// <summary>
     /// Validates all properties
     /// </summary>

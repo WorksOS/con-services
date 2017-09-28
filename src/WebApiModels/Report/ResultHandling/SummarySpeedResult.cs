@@ -1,5 +1,4 @@
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 
 namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
@@ -45,29 +44,11 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     {
       return new SummarySpeedResult
       {
-                 AboveTarget = aboveTarget,
-                 BelowTarget = belowTarget,
-                 CoverageArea = CoverageArea,
-                 MatchTarget = matchTarget,
-             };
-    }
-
-    /// <summary>
-    /// Create example instance of SummaryVolumesResult to display in Help documentation.
-    /// </summary>
-    public static SummarySpeedResult HelpSample
-    {
-      get
-      {
-        return new SummarySpeedResult
-        {
-                   AboveTarget = 13.2,
-                   BelowTarget = 11.3,
-                   CoverageArea = 32,
-                   MatchTarget = 57.5
-               };
-      }
-
+        AboveTarget = aboveTarget,
+        BelowTarget = belowTarget,
+        CoverageArea = CoverageArea,
+        MatchTarget = matchTarget,
+      };
     }
   }
 }

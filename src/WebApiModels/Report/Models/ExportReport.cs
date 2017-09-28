@@ -170,35 +170,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
                  userPrefs = UserPrefs
              };
     }
-
-    /// <summary>
-    /// Create example instance of PassCounts to display in Help documentation.
-    /// </summary>
-    public new static ExportReport HelpSample => new ExportReport
-    {
-      projectId = 34,
-      liftBuildSettings = LiftBuildSettings.HelpSample,
-      filter = Filter.HelpSample,
-      filterID = 0,
-      machineList = new TMachine[2] {new TMachine(), new TMachine()},
-      projectExtents = new T3DBoundingWorldExtent(),
-      restrictSize = true,
-      tolerance = 0.1,
-      includeSurveydSurface = true,
-      cellSizeRequired = true,
-      rawData = true,
-      filename = "GoToSomwhere.csv",
-      coordType = CoordTypes.ptNORTHEAST,
-      exportType = ExportTypes.kPassCountExport,
-      outputType = OutputTypes.etVedaAllPasses,
-      precheckonly = false,
-      timeStampRequired = true,
-      dateToUTC = DateTime.UtcNow,
-      dateFromUTC = DateTime.MinValue,
-      callId = new Guid(),
-      callerId = "Myself"
-    };
-
+    
     /// <summary>
     /// Validates all properties
     /// </summary>
