@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.Common.Filters
           {"customerUid", principal.CustomerUid},
           {"userName", principal.userEmail},
           {"customerName", principal.customerName},
-          {"elapsedTime", watch.ElapsedMilliseconds.ToString()},
+          {"executionTime",(Single) Convert.ToDouble(watch.ElapsedMilliseconds)},
           {"projectUid",projectUid },
           {"origin",origin },
           {"result", context.Response.StatusCode.ToString() }
