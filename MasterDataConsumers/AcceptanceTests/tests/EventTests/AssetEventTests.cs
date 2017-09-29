@@ -17,6 +17,7 @@ namespace EventTests
       var eventArray = new[] {
          "| EventType        | EventDate   | AssetUID      | AssetName   | Make | SerialNumber | Model | IconKey | AssetType  | ",
         $"| CreateAssetEvent | 0d+09:00:00 | {ts.AssetUid} | AssetEvent1 | CAT  | XAT1         | 374D  | 10      | Excavators | "};
+      Console.WriteLine();
       ts.PublishEventCollection(eventArray);                                          
       mysql.VerifyTestResultDatabaseRecordCount("Asset","AssetUID",1,new Guid(ts.AssetUid));
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Asset", "AssetUID", "Name,MakeCode,SerialNumber,Model,IconKey,AssetType", "AssetEvent1,CAT,XAT1,374D,10,Excavators", new Guid(ts.AssetUid));

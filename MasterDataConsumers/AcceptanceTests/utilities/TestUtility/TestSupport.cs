@@ -18,7 +18,7 @@ namespace TestUtility
     public DateTime FirstEventDate { get; set; }
     public DateTime LastEventDate { get; set; }
     public bool IsPublishToKafka { get; set; }
-    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified, NullValueHandling = NullValueHandling.Ignore};
+    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified, NullValueHandling = NullValueHandling.Ignore };
     public readonly TestConfig tsCfg = new TestConfig();
     #endregion
 
@@ -67,9 +67,9 @@ namespace TestUtility
       var query = "SELECT max(LegacyAssetID) FROM Asset;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
-         { return 1000; }
+      { return 1000; }
       var legacyAssetId = Convert.ToInt32(result);
-      return legacyAssetId+1001;
+      return legacyAssetId + 1001;
     }
 
 
@@ -79,9 +79,9 @@ namespace TestUtility
       var query = "SELECT max(LegacyProjectID) FROM Project;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
-         { return 1000; }
+      { return 1000; }
       var legacyAssetId = Convert.ToInt32(result);
-      return legacyAssetId+1001;
+      return legacyAssetId + 1001;
     }
     /// <summary>
     /// Set to true if writing to kafka instead of the database
@@ -98,13 +98,13 @@ namespace TestUtility
     /// <param name="eventArray">string array with all the events we are going to publish</param>
     public void PublishEventCollection(string[] eventArray)
     {
-      msg.DisplayEventsToConsole(eventArray);      
+      msg.DisplayEventsToConsole(eventArray);
       var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
       var kafkaDriver = new RdKafkaDriver();
-      for (var rowCnt = 1; rowCnt <= eventArray.Length-1; rowCnt++)
+      for (var rowCnt = 1; rowCnt <= eventArray.Length - 1; rowCnt++)
       {
         var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
-        dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);        
+        dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
         var eventDate = eventObject.EventDate;
         LastEventDate = eventDate;
         if (IsPublishToKafka)
@@ -115,7 +115,7 @@ namespace TestUtility
         else
         {
           IsNotSameAsset(true);  // This can be added directly to tests
-          BuildMySqlInsertStringAndWriteToDatabase(eventObject);          
+          BuildMySqlInsertStringAndWriteToDatabase(eventObject);
         }
       }
     }
@@ -161,9 +161,9 @@ namespace TestUtility
     /// </summary>
     /// <param name="eventObject">event to be published</param>
     /// <param name="kafkaDriver">kafkadriver</param>
-    private void BuildEventAndPublishToKafka(dynamic eventObject, RdKafkaDriver kafkaDriver)
+    public void BuildEventAndPublishToKafka(dynamic eventObject, RdKafkaDriver kafkaDriver)
     {
-      var topicName= string.Empty;
+      var topicName = string.Empty;
       var jsonString = string.Empty;
       string eventType = eventObject.EventType;
       #region publish kafka events
@@ -180,7 +180,7 @@ namespace TestUtility
             SerialNumber = eventObject.SerialNumber,
             MakeCode = eventObject.Make,
             Model = eventObject.Model,
-            IconKey = Convert.ToInt32(eventObject.IconKey)            
+            IconKey = Convert.ToInt32(eventObject.IconKey)
           };
           if (HasProperty(eventObject, "OwningCustomerUID"))
           {
@@ -195,8 +195,8 @@ namespace TestUtility
             createAssetEvent.EquipmentVIN = eventObject.EquipmentVIN;
           }
 
-          jsonString = JsonConvert.SerializeObject(new {CreateAssetEvent = createAssetEvent}, jsonSettings );
-          
+          jsonString = JsonConvert.SerializeObject(new { CreateAssetEvent = createAssetEvent }, jsonSettings);
+
           break;
         case "UpdateAssetEvent":
           topicName = SetKafkaTopicName("IAssetEvent");
@@ -234,16 +234,16 @@ namespace TestUtility
             updateAssetEvent.EquipmentVIN = eventObject.EquipmentVIN;
           }
 
-          jsonString = JsonConvert.SerializeObject(new {UpdateAssetEvent = updateAssetEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { UpdateAssetEvent = updateAssetEvent }, jsonSettings);
           break;
         case "DeleteAssetEvent":
           topicName = SetKafkaTopicName("IAssetEvent");
           var deleteAssetEvent = new DeleteAssetEvent()
           {
             ActionUTC = eventObject.EventDate,
-            AssetUID = new Guid(AssetUid)     
+            AssetUID = new Guid(AssetUid)
           };
-          jsonString = JsonConvert.SerializeObject(new {DeleteAssetEvent = deleteAssetEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { DeleteAssetEvent = deleteAssetEvent }, jsonSettings);
           break;
         case "CreateDeviceEvent":
           topicName = SetKafkaTopicName("IDeviceEvent");
@@ -254,7 +254,7 @@ namespace TestUtility
             DeviceSerialNumber = eventObject.DeviceSerialNumber,
             DeviceState = eventObject.DeviceState,
             DeviceType = eventObject.DeviceType,
-            DeviceUID = new Guid(eventObject.DeviceUID)          
+            DeviceUID = new Guid(eventObject.DeviceUID)
           };
           if (HasProperty(eventObject, "DeregisteredUTC"))
           {
@@ -287,7 +287,7 @@ namespace TestUtility
           var updateDeviceEvent = new UpdateDeviceEvent()
           {
             ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate, 
+            ReceivedUTC = eventObject.EventDate,
             DeviceSerialNumber = eventObject.DeviceSerialNumber,
             DeviceState = eventObject.DeviceState,
             DeviceType = eventObject.DeviceType,
@@ -336,7 +336,7 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            AssetUID =  new Guid(eventObject.AssetUID),
+            AssetUID = new Guid(eventObject.AssetUID),
             DeviceUID = new Guid(eventObject.DeviceUID),
           };
           jsonString = JsonConvert.SerializeObject(new { DissociateDeviceAssetEvent = dissociateDeviceEvent }, jsonSettings);
@@ -352,7 +352,7 @@ namespace TestUtility
             CustomerType = eventObject.CustomerType,
             CustomerUID = new Guid(eventObject.CustomerUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {CreateCustomerEvent = createCustomerEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { CreateCustomerEvent = createCustomerEvent }, jsonSettings);
           break;
         case "UpdateCustomerEvent":
           topicName = SetKafkaTopicName("ICustomerEvent");
@@ -363,7 +363,7 @@ namespace TestUtility
             CustomerName = eventObject.CustomerName,
             CustomerUID = new Guid(eventObject.CustomerUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {UpdateCustomerEvent = updateCustomerEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { UpdateCustomerEvent = updateCustomerEvent }, jsonSettings);
           break;
         case "DeleteCustomerEvent":
           topicName = SetKafkaTopicName("ICustomerEvent");
@@ -373,7 +373,7 @@ namespace TestUtility
             ReceivedUTC = eventObject.EventDate,
             CustomerUID = new Guid(eventObject.CustomerUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {DeleteCustomerEvent = deleteCustomerEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { DeleteCustomerEvent = deleteCustomerEvent }, jsonSettings);
           break;
         case "AssociateCustomerUserEvent":
           topicName = SetKafkaTopicName("ICustomerEvent");
@@ -384,7 +384,7 @@ namespace TestUtility
             CustomerUID = new Guid(eventObject.CustomerUID),
             UserUID = new Guid(eventObject.UserUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {AssociateCustomerUserEvent = associateCustomerUserEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { AssociateCustomerUserEvent = associateCustomerUserEvent }, jsonSettings);
           break;
         case "DissociateCustomerUserEvent":
           topicName = SetKafkaTopicName("ICustomerEvent");
@@ -395,7 +395,7 @@ namespace TestUtility
             CustomerUID = new Guid(eventObject.CustomerUID),
             UserUID = new Guid(eventObject.UserUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {DissociateCustomerUserEvent = dissociateCustomerUserEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { DissociateCustomerUserEvent = dissociateCustomerUserEvent }, jsonSettings);
           break;
         case "CreateProjectSubscriptionEvent":
           topicName = SetKafkaTopicName("ISubscriptionEvent");
@@ -408,7 +408,7 @@ namespace TestUtility
             SubscriptionType = eventObject.SubscriptionType,
             SubscriptionUID = new Guid(eventObject.SubscriptionUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {CreateProjectSubscriptionEvent = createProjectSubscriptionEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { CreateProjectSubscriptionEvent = createProjectSubscriptionEvent }, jsonSettings);
           break;
         case "UpdateProjectSubscriptionEvent":
           topicName = SetKafkaTopicName("ISubscriptionEvent");
@@ -421,7 +421,7 @@ namespace TestUtility
             SubscriptionType = eventObject.SubscriptionType,
             SubscriptionUID = new Guid(eventObject.SubscriptionUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {UpdateProjectSubscriptionEvent = updateProjectSubscriptionEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = updateProjectSubscriptionEvent }, jsonSettings);
           break;
         case "AssociateProjectSubscriptionEvent":
           topicName = SetKafkaTopicName("ISubscriptionEvent");
@@ -433,7 +433,7 @@ namespace TestUtility
             ProjectUID = new Guid(eventObject.ProjectUID),
             SubscriptionUID = new Guid(eventObject.SubscriptionUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {AssociateProjectSubscriptionEvent = associateProjectSubscriptionEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { AssociateProjectSubscriptionEvent = associateProjectSubscriptionEvent }, jsonSettings);
           break;
         case "CreateProjectEvent":
           topicName = SetKafkaTopicName("IProjectEvent");
@@ -446,11 +446,11 @@ namespace TestUtility
             ProjectName = eventObject.ProjectName,
             ProjectStartDate = DateTime.Parse(eventObject.ProjectStartDate),
             ProjectTimezone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             ProjectUID = new Guid(eventObject.ProjectUID),
             ProjectBoundary = eventObject.GeometryWKT
           };
-          jsonString = JsonConvert.SerializeObject(new {CreateProjectEvent = createProjectEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent }, jsonSettings);
           break;
         case "UpdateProjectEvent":
           topicName = SetKafkaTopicName("IProjectEvent");
@@ -461,10 +461,10 @@ namespace TestUtility
             ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate),
             ProjectName = eventObject.ProjectName,
             ProjectTimezone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             ProjectUID = new Guid(eventObject.ProjectUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent }, jsonSettings);
           break;
         case "DeleteProjectEvent":
           topicName = SetKafkaTopicName("IProjectEvent");
@@ -474,7 +474,7 @@ namespace TestUtility
             ReceivedUTC = eventObject.EventDate,
             ProjectUID = new Guid(eventObject.ProjectUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {DeleteProjectEvent = deleteProjectEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { DeleteProjectEvent = deleteProjectEvent }, jsonSettings);
           break;
         case "AssociateProjectCustomer":
           topicName = SetKafkaTopicName("IProjectEvent");
@@ -485,7 +485,7 @@ namespace TestUtility
             ProjectUID = new Guid(eventObject.ProjectUID),
             CustomerUID = new Guid(eventObject.CustomerUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {AssociateProjectCustomer = associateCustomerProject}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { AssociateProjectCustomer = associateCustomerProject }, jsonSettings);
           break;
         case "AssociateProjectGeofence":
           topicName = SetKafkaTopicName("IProjectEvent");
@@ -496,7 +496,7 @@ namespace TestUtility
             ProjectUID = new Guid(eventObject.ProjectUID),
             GeofenceUID = new Guid(eventObject.GeofenceUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {AssociateProjectGeofence = associateProjectGeofence}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { AssociateProjectGeofence = associateProjectGeofence }, jsonSettings);
           break;
         case "CreateGeofenceEvent":
           topicName = SetKafkaTopicName("IGeofenceEvent");
@@ -514,7 +514,53 @@ namespace TestUtility
             IsTransparent = Boolean.Parse(eventObject.IsTransparent),
             UserUID = new Guid(eventObject.UserUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {CreateGeofenceEvent = createGeofenceEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { CreateGeofenceEvent = createGeofenceEvent }, jsonSettings);
+          break;
+        case "UpdateProjectSettingsEvent":
+          topicName = SetKafkaTopicName("IProjectEvent");
+          var updateProjectSettingsEvent = new UpdateProjectSettingsEvent()
+          {
+            ActionUTC = eventObject.EventDate,
+            ReceivedUTC = eventObject.EventDate,
+            Settings = eventObject.Settings,
+            ProjectUID = new Guid(eventObject.ProjectUID)
+          };
+          jsonString = JsonConvert.SerializeObject(new { UpdateProjectSettingsEvent = updateProjectSettingsEvent }, jsonSettings);
+          break;
+        case "CreateImportedFileEvent":
+          topicName = SetKafkaTopicName("IProjectEvent");
+          var createImportedFileEvent = new CreateImportedFileEvent()
+          {
+            ActionUTC = eventObject.EventDate,
+            ReceivedUTC = eventObject.EventDate,
+            ProjectUID = new Guid(eventObject.ProjectUID),
+            ImportedFileUID = new Guid(eventObject.ImportedFileUID),
+            ImportedFileID = long.Parse(eventObject.ImportedFileID),
+            CustomerUID = new Guid(eventObject.CustomerUID),
+            ImportedFileType = (ImportedFileType)Enum.Parse(typeof(ImportedFileType), eventObject.ImportedFileType),
+            Name = eventObject.Name,
+            FileDescriptor = eventObject.FileDescriptor,
+            FileCreatedUtc = DateTime.Parse(eventObject.FileCreatedUTC),
+            FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUTC),
+            ImportedBy = eventObject.ImportedBy,
+            SurveyedUTC = DateTime.Parse(eventObject.SurveyedUTC),
+          };
+          jsonString = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent }, jsonSettings);
+          break;
+        case "CreateFilterEvent":
+          topicName = SetKafkaTopicName("IFilterEvent");
+          var createFilterEvent = new CreateFilterEvent()
+          {
+            ActionUTC = eventObject.EventDate,
+            ReceivedUTC = eventObject.EventDate,
+            ProjectUID = new Guid(eventObject.ProjectUID),
+            CustomerUID = new Guid(eventObject.CustomerUID),
+            UserID = eventObject.UserID,
+            FilterUID = new Guid(eventObject.FilterUID),
+            Name = eventObject.Name,
+            FilterJson = eventObject.FilterJson,
+          };
+          jsonString = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent }, jsonSettings);
           break;
       }
       #endregion
@@ -615,17 +661,17 @@ namespace TestUtility
     private ExpandoObject ConvertToExpando(string[] allColumnNames, string[] singleEventRow)
     {
       var expObj = new ExpandoObject() as IDictionary<string, Object>;
-      var colIdx = -1; 
+      var colIdx = -1;
       foreach (var colName in allColumnNames)
       {
         colIdx++;
         if (colName.Trim() == string.Empty)
-         { continue; }
+        { continue; }
 
         dynamic obj = TransformObject(singleEventRow[colIdx].Trim());
         expObj.Add(colName.Trim(), obj);
       }
-      return (ExpandoObject) expObj;
+      return (ExpandoObject)expObj;
     }
 
     /// <summary>
@@ -638,14 +684,14 @@ namespace TestUtility
       dynamic obj;
       if (propertyValue == "null" || propertyValue == string.Empty)
       {
-        return null;  
+        return null;
       }
       if (Regex.IsMatch(propertyValue, @"^\s*\d+d\+\d+"))
       {
-        obj = ConvertTimeStampAndDayOffSetToDateTime(propertyValue ,FirstEventDate); 
+        obj = ConvertTimeStampAndDayOffSetToDateTime(propertyValue, FirstEventDate);
         return obj;
       }
-      obj = propertyValue; 
+      obj = propertyValue;
       return obj;
     }
 
@@ -670,7 +716,7 @@ namespace TestUtility
     /// <param name="timeStampAndDayOffSet">Date day off set and timestamp from first event date</param>
     /// <param name="startEventDateTime"></param>
     /// <returns>Datetime</returns>
-    public DateTime ConvertTimeStampAndDayOffSetToDateTime(string timeStampAndDayOffSet,DateTime startEventDateTime)
+    public DateTime ConvertTimeStampAndDayOffSetToDateTime(string timeStampAndDayOffSet, DateTime startEventDateTime)
     {
       var components = Regex.Split(timeStampAndDayOffSet, @"d+\+");
       var offset = double.Parse(components[0].Trim());

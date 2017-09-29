@@ -21,9 +21,12 @@ namespace RepositoryTests
     {
       SetupLogging();
 
-      new CustomerRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
-      _projectContext = new ProjectRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
-      new SubscriptionRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
+      new CustomerRepository(ServiceProvider.GetService<IConfigurationStore>(),
+        ServiceProvider.GetService<ILoggerFactory>());
+      _projectContext = new ProjectRepository(ServiceProvider.GetService<IConfigurationStore>(),
+        ServiceProvider.GetService<ILoggerFactory>());
+      new SubscriptionRepository(ServiceProvider.GetService<IConfigurationStore>(),
+        ServiceProvider.GetService<ILoggerFactory>());
     }
 
 
@@ -198,8 +201,10 @@ namespace RepositoryTests
       var g = _projectContext.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve ImportedFile from ProjectRepo");
-      Assert.AreEqual(updateImportedFileEvent.ActionUTC, g.Result.LastActionedUtc, "ImportedFile actionUtc was not updated");
-      Assert.AreEqual(updateImportedFileEvent.FileDescriptor, g.Result.FileDescriptor, "ImportedFile FileDescriptor was not updated");
+      Assert.AreEqual(updateImportedFileEvent.ActionUTC, g.Result.LastActionedUtc,
+        "ImportedFile actionUtc was not updated");
+      Assert.AreEqual(updateImportedFileEvent.FileDescriptor, g.Result.FileDescriptor,
+        "ImportedFile FileDescriptor was not updated");
     }
 
     /// <summary>
@@ -331,7 +336,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc.AddHours(1)
       };
 
-       _projectContext.StoreEvent(createImportedFileEvent).Wait();
+      _projectContext.StoreEvent(createImportedFileEvent).Wait();
 
       var g = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
       g.Wait();
