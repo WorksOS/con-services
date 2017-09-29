@@ -24,7 +24,7 @@ namespace VSS.KafkaConsumer
 
     private string topicName;
     private CancellationTokenSource stopToken;
-    private int requestTime = 2000;
+    private int requestTime = 1000;
 
     public KafkaConsumer(IConfigurationStore config, IKafka driver, IRepositoryFactory repositoryFactory,
       IMessageTypeResolver resolver, ILoggerFactory logger)

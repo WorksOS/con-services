@@ -51,13 +51,14 @@ namespace VSS.KafkaConsumer.Kafka
     {
       var payloads = new List<byte[]>();
 
-      Confluent.Kafka.Message result = null;
+      Confluent.Kafka.Message lastValidResult = null;
+
       int protectionCounter = 0;
       
       while (payloads.Count < batchSize && protectionCounter < 10) //arbitary number here for the perfomance testing
       {
-        log?.LogTrace($"Polling with {timeout.Milliseconds} ms and retries {protectionCounter}");
-        rdConsumer.Consume(out result, timeout);
+        log?.LogTrace($"Polling with retries {protectionCounter}");
+        rdConsumer.Consume(out var result, timeout);
         if (result == null)
         {
           protectionCounter++;
@@ -67,12 +68,14 @@ namespace VSS.KafkaConsumer.Kafka
         if (!result.Error.HasError)
         {
           payloads.Add(result.Value);
+          lastValidResult = result;
         }
         protectionCounter++;
       }
 
-      return result != null
-        ? new Message(payloads, Error.NO_ERROR, result.Offset, result.Partition)
+      log?.LogTrace($"Returning {payloads.Count} records with offset {lastValidResult?.Offset ?? -1} and partition {lastValidResult?.Partition ?? -1}");
+      return payloads.Count>0
+        ? new Message(payloads, Error.NO_ERROR, lastValidResult?.Offset ?? -1, lastValidResult?.Partition ?? -1)
         : new Message(payloads, Error.NO_DATA);
     }
 
