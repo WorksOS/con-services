@@ -101,7 +101,7 @@ namespace VSS.KafkaConsumer
             log.LogDebug("KafkaConsumer: " + typeof(T) + " : " + bytesAsString);
             var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString,
               messageResolver.GetConverter<T>());
-            log.LogDebug("KafkaConsumer: Saving");
+            log.LogDebug($"KafkaConsumer: Saving type {deserializedObject.GetType()}");
             await dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
           }
           catch (Exception ex)
@@ -127,7 +127,7 @@ namespace VSS.KafkaConsumer
 
     public void Dispose()
     {
-      kafkaDriver.Dispose();
+      kafkaDriver?.Dispose();
     }
 
   }

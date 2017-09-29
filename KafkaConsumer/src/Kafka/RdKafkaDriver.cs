@@ -83,20 +83,22 @@ namespace VSS.KafkaConsumer.Kafka
       Uri = configurationStore.GetValueString("KAFKA_URI");
       Port = configurationStore.GetValueInt("KAFKA_PORT");
       batchSize = configurationStore.GetValueInt("KAFKA_BATCH_SIZE");
+      var sessionTimeout = 179000;
+      if (configurationStore.GetValueInt("KAFKA_CONSUMER_SESSION_TIMEOUT") > -1)
+        sessionTimeout = configurationStore.GetValueInt("KAFKA_CONSUMER_SESSION_TIMEOUT");
+      var requestTimeout = 180000;
+      if (configurationStore.GetValueInt("KAFKA_REQUEST_TIMEOUT") > -1)
+        requestTimeout = configurationStore.GetValueInt("KAFKA_REQUEST_TIMEOUT");
 
-      Console.WriteLine("KAFKA_GROUP_NAME:" + ConsumerGroup);
-      Console.WriteLine("KAFKA_AUTO_COMMIT:" + EnableAutoCommit);
-      Console.WriteLine("KAFKA_OFFSET:" + OffsetReset);
-      Console.WriteLine("KAFKA_URI:" + Uri);
-      Console.WriteLine("KAFKA_PORT:" + Port);
-
+      Console.WriteLine($"InitConsumer: KAFKA_GROUP_NAME:{ConsumerGroup}  KAFKA_AUTO_COMMIT: {EnableAutoCommit}  KAFKA_OFFSET: {OffsetReset}  KAFKA_URI: {Uri}  KAFKA_PORT: {Port} KAFKA_CONSUMER_SESSION_TIMEOUT:{sessionTimeout}  KAFKA_REQUEST_TIMEOUT: {requestTimeout}");
+      
       consumerConfig = new Dictionary<string, object>
       {
         {"bootstrap.servers", Uri},
         {"enable.auto.commit", EnableAutoCommit},
         {"group.id", ConsumerGroup},
-        {"session.timeout.ms", "179000"},
-        {"request.timeout.ms", "180000"},
+        {"session.timeout.ms", sessionTimeout},
+        {"request.timeout.ms", requestTimeout},
         {"auto.offset.reset", OffsetReset},
       };
 
@@ -114,16 +116,19 @@ namespace VSS.KafkaConsumer.Kafka
     {
       Uri = configurationStore.GetValueString("KAFKA_URI");
       Port = configurationStore.GetValueInt("KAFKA_PORT");
+      var sessionTimeout = 10000;
+      if (configurationStore.GetValueInt("KAFKA_PRODUCER_SESSION_TIMEOUT") > -1)
+        sessionTimeout = configurationStore.GetValueInt("KAFKA_PRODUCER_SESSION_TIMEOUT");
+
+      Console.WriteLine($"InitProducer: KAFKA_URI:{Uri}  KAFKA_PORT: {Port}  KAFKA_PRODUCER_SESSION_TIMEOUT: {sessionTimeout}");
 
       producerConfig = new Dictionary<string, object>
       {
         {"bootstrap.servers", Uri},
-        {"session.timeout.ms", "10000"},
+        {"session.timeout.ms", sessionTimeout},
         {"retries", "3"},
-        {"batch.size", "1048576"},
         {"linger.ms", "20"},
-        {"acks", "all"},
-        {"block.on.buffer.full", "true"}
+        {"acks", "all"}
       };
 
       //socket.blocking.max.ms=1
@@ -169,8 +174,10 @@ namespace VSS.KafkaConsumer.Kafka
       {
         rdConsumer?.Unsubscribe();
         rdConsumer?.Dispose();
+        rdConsumer = null;
       }
       rdProducer?.Dispose();
+      rdProducer = null;
       IsInitializedProducer = false;
       IsInitializedConsumer = false;
 

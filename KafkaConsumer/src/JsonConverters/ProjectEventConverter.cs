@@ -55,6 +55,7 @@ namespace VSS.KafkaConsumer.JsonConverters
         return jObject["UpdateProjectSettingsEvent"].ToObject<UpdateProjectSettingsEvent>();
       }
 
+      // RestoreProjectEvent is there for rollback only and will never be put on the kafka que
       //if (jObject["RestoreProjectEvent"] != null)
       //{
       //  return jObject["RestoreProjectEvent"].ToObject<RestoreProjectEvent>();
