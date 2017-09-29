@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 
 namespace VSS.KafkaConsumer.Kafka
@@ -18,6 +19,7 @@ namespace VSS.KafkaConsumer.Kafka
     private Dictionary<string, object> consumerConfig;
     private Dictionary<string, object> producerConfig;
     private int batchSize;
+    private ILogger<IKafka> log;
 
 
     public string ConsumerGroup { get; set; }
@@ -38,8 +40,8 @@ namespace VSS.KafkaConsumer.Kafka
      // Console.WriteLine($"Comitting offsets");
       var comittedOffsets = rdConsumer.CommitAsync().ContinueWith(o =>
       {
-        Console.WriteLine(
-          $"Committed with result {o.Result.Error.Reason} {o.Result.Error.Code}");
+        log?.LogTrace(
+          $"Committed number of offsets {o.Result.Offsets.Count()} with result {o.Result.Error.Reason} {o.Result.Error.Code}");
         return o.Result;
       }).Result;
       return comittedOffsets;
@@ -49,34 +51,38 @@ namespace VSS.KafkaConsumer.Kafka
     {
       var payloads = new List<byte[]>();
 
-      Confluent.Kafka.Message result = null;
+      Confluent.Kafka.Message lastValidResult = null;
+
       int protectionCounter = 0;
       
       while (payloads.Count < batchSize && protectionCounter < 10) //arbitary number here for the perfomance testing
       {
-        //Console.WriteLine($"Polling with {timeout.Milliseconds} ms and retries {protectionCounter}");
-        rdConsumer.Consume(out result, timeout);
+        log?.LogTrace($"Polling with retries {protectionCounter}");
+        rdConsumer.Consume(out var result, timeout);
         if (result == null)
         {
           protectionCounter++;
           continue;
         }
+        log?.LogTrace($"Polled with the result {result.Error.Code}");
         if (!result.Error.HasError)
         {
           payloads.Add(result.Value);
+          lastValidResult = result;
         }
-        else
-          protectionCounter++;
+        protectionCounter++;
       }
 
-      return result != null
-        ? new Message(payloads, Error.NO_ERROR, result.Offset, result.Partition)
+      log?.LogTrace($"Returning {payloads.Count} records with offset {lastValidResult?.Offset ?? -1} and partition {lastValidResult?.Partition ?? -1}");
+      return payloads.Count>0
+        ? new Message(payloads, Error.NO_ERROR, lastValidResult?.Offset ?? -1, lastValidResult?.Partition ?? -1)
         : new Message(payloads, Error.NO_DATA);
     }
 
 
-    public void InitConsumer(IConfigurationStore configurationStore, string groupName = null)
+    public void InitConsumer(IConfigurationStore configurationStore, string groupName = null, ILogger<IKafka> logger = null)
     {
+      this.log = logger;
       ConsumerGroup = groupName ?? configurationStore.GetValueString("KAFKA_GROUP_NAME");
       EnableAutoCommit = configurationStore.GetValueBool("KAFKA_AUTO_COMMIT").Value;
       OffsetReset = configurationStore.GetValueString("KAFKA_OFFSET");

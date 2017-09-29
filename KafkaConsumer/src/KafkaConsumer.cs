@@ -16,6 +16,7 @@ namespace VSS.KafkaConsumer
   public class KafkaConsumer<T> : IKafkaConsumer<T>
   {
     private readonly ILogger log;
+    private readonly ILoggerFactory LoggerFactory;
     private readonly IKafka kafkaDriver;
     private readonly IConfigurationStore configurationStore;
     private readonly IRepositoryFactory dbRepositoryFactory;
@@ -23,7 +24,7 @@ namespace VSS.KafkaConsumer
 
     private string topicName;
     private CancellationTokenSource stopToken;
-    private int requestTime = 2000;
+    private int requestTime = 1000;
 
     public KafkaConsumer(IConfigurationStore config, IKafka driver, IRepositoryFactory repositoryFactory,
       IMessageTypeResolver resolver, ILoggerFactory logger)
@@ -35,13 +36,14 @@ namespace VSS.KafkaConsumer
       if (configurationStore.GetValueInt("KAFKA_REQUEST_TIME") > 0)
         requestTime = configurationStore.GetValueInt("KAFKA_REQUEST_TIME");
       log = logger.CreateLogger<KafkaConsumer<T>>();
+      LoggerFactory = logger;
     }
 
 
     public void SetTopic(string topic)
     {
       topicName = topic;
-      kafkaDriver.InitConsumer(configurationStore);
+      kafkaDriver.InitConsumer(configurationStore, logger: LoggerFactory.CreateLogger<IKafka>());
       log.LogDebug("KafkaConsumer: " + topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX"));
       kafkaDriver.Subscribe(new List<string>()
       {
