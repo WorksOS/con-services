@@ -56,12 +56,20 @@ namespace VSS.MasterData.Models.Models
     public string Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the project time zone.
+    /// Gets or sets the legacy project time zone.
     /// </summary>
     /// <value>
     /// The project time zone.
     /// </value>
     public string ProjectTimeZone { get; set; }
+
+    /// <summary>
+    /// Gets or sets the IANA project time zone.
+    /// </summary>
+    /// <value>
+    /// The project time zone.
+    /// </value>
+    public string LandfillTimeZone { get; set; }
 
     /// <summary>
     /// Gets or sets the start date.

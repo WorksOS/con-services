@@ -103,6 +103,7 @@ namespace VSS.MasterData.Models.Models
     public bool HasData() =>
       startUTC.HasValue ||
       endUTC.HasValue ||
+      DateRangeType.HasValue ||
       onMachineDesignID.HasValue ||
       vibeStateOn.HasValue ||
       elevationType.HasValue ||
