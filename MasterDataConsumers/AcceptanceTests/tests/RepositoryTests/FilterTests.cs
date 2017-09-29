@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RepositoryTests.Internal;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
@@ -101,22 +100,26 @@ namespace RepositoryTests
       var f = filterRepo.GetFilter(createTransientFilterEvent1.FilterUID.ToString());
       f.Wait();
       Assert.IsNotNull(f.Result, "Unable to retrieve filter from filterRepo");
-      Assert.AreEqual(createTransientFilterEvent1.FilterUID.ToString(), f.Result.FilterUid, "retrieved filter UId is incorrect");
+      Assert.AreEqual(createTransientFilterEvent1.FilterUID.ToString(), f.Result.FilterUid,
+        "retrieved filter UId is incorrect");
 
       f = filterRepo.GetFilter(createTransientFilterEvent2.FilterUID.ToString());
       f.Wait();
       Assert.IsNotNull(f.Result, "Unable to retrieve filter from filterRepo");
-      Assert.AreEqual(createTransientFilterEvent2.FilterUID.ToString(), f.Result.FilterUid, "retrieved filter UId is incorrect");
+      Assert.AreEqual(createTransientFilterEvent2.FilterUID.ToString(), f.Result.FilterUid,
+        "retrieved filter UId is incorrect");
 
       f = filterRepo.GetFilter(createPersistentFilterEvent1.FilterUID.ToString());
       f.Wait();
       Assert.IsNotNull(f.Result, "Unable to retrieve filter from filterRepo");
-      Assert.AreEqual(createPersistentFilterEvent1.FilterUID.ToString(), f.Result.FilterUid, "retrieved filter UId is incorrect");
+      Assert.AreEqual(createPersistentFilterEvent1.FilterUID.ToString(), f.Result.FilterUid,
+        "retrieved filter UId is incorrect");
 
       f = filterRepo.GetFilter(createPersistentFilterEvent2.FilterUID.ToString());
       f.Wait();
       Assert.IsNotNull(f.Result, "Unable to retrieve filter from filterRepo");
-      Assert.AreEqual(createPersistentFilterEvent2.FilterUID.ToString(), f.Result.FilterUid, "retrieved filter UId is incorrect");
+      Assert.AreEqual(createPersistentFilterEvent2.FilterUID.ToString(), f.Result.FilterUid,
+        "retrieved filter UId is incorrect");
     }
 
     /// <summary>
@@ -163,7 +166,8 @@ namespace RepositoryTests
       Assert.IsNotNull(f.Result, "Unable to retrieve filters from filterRepo");
       Assert.AreEqual(0, f.Result.Count(), "retrieved filter count is incorrect");
 
-      f = filterRepo.GetFiltersForProjectUser(createFilterEvent.CustomerUID.ToString(), createFilterEvent.ProjectUID.ToString(), createFilterEvent.UserID);
+      f = filterRepo.GetFiltersForProjectUser(createFilterEvent.CustomerUID.ToString(),
+        createFilterEvent.ProjectUID.ToString(), createFilterEvent.UserID);
       f.Wait();
       Assert.IsNotNull(f.Result, "Unable to retrieve user filters from filterRepo");
       Assert.AreEqual(0, f.Result.Count(), "retrieved user filter count is incorrect");
