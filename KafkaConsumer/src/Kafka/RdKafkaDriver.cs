@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 
 namespace VSS.KafkaConsumer.Kafka
@@ -18,6 +19,7 @@ namespace VSS.KafkaConsumer.Kafka
     private Dictionary<string, object> consumerConfig;
     private Dictionary<string, object> producerConfig;
     private int batchSize;
+    private ILogger<IKafka> log;
 
 
     public string ConsumerGroup { get; set; }
@@ -38,7 +40,7 @@ namespace VSS.KafkaConsumer.Kafka
      // Console.WriteLine($"Comitting offsets");
       var comittedOffsets = rdConsumer.CommitAsync().ContinueWith(o =>
       {
-        Console.WriteLine(
+        log?.LogTrace(
           $"Committed with result {o.Result.Error.Reason} {o.Result.Error.Code}");
         return o.Result;
       }).Result;
@@ -54,19 +56,19 @@ namespace VSS.KafkaConsumer.Kafka
       
       while (payloads.Count < batchSize && protectionCounter < 10) //arbitary number here for the perfomance testing
       {
-        //Console.WriteLine($"Polling with {timeout.Milliseconds} ms and retries {protectionCounter}");
+        log?.LogTrace($"Polling with {timeout.Milliseconds} ms and retries {protectionCounter}");
         rdConsumer.Consume(out result, timeout);
         if (result == null)
         {
           protectionCounter++;
           continue;
         }
+        log?.LogTrace($"Polled with the result {result.Error.Code}");
         if (!result.Error.HasError)
         {
           payloads.Add(result.Value);
         }
-        else
-          protectionCounter++;
+        protectionCounter++;
       }
 
       return result != null
@@ -75,8 +77,9 @@ namespace VSS.KafkaConsumer.Kafka
     }
 
 
-    public void InitConsumer(IConfigurationStore configurationStore, string groupName = null)
+    public void InitConsumer(IConfigurationStore configurationStore, string groupName = null, ILogger<IKafka> logger = null)
     {
+      this.log = logger;
       ConsumerGroup = groupName ?? configurationStore.GetValueString("KAFKA_GROUP_NAME");
       EnableAutoCommit = configurationStore.GetValueBool("KAFKA_AUTO_COMMIT").Value;
       OffsetReset = configurationStore.GetValueString("KAFKA_OFFSET");
