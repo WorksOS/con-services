@@ -41,7 +41,7 @@ namespace VSS.KafkaConsumer.Kafka
       var comittedOffsets = rdConsumer.CommitAsync().ContinueWith(o =>
       {
         log?.LogTrace(
-          $"Committed with result {o.Result.Error.Reason} {o.Result.Error.Code}");
+          $"Committed number of offsets {o.Result.Offsets.Count()} with result {o.Result.Error.Reason} {o.Result.Error.Code}");
         return o.Result;
       }).Result;
       return comittedOffsets;
