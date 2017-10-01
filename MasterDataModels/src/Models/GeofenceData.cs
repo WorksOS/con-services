@@ -1,5 +1,5 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
 using VSS.MasterData.Models.Interfaces;
 
 namespace VSS.MasterData.Models.Models
@@ -18,7 +18,7 @@ namespace VSS.MasterData.Models.Models
     public string GeometryWKT { get; set; }
 
     public int FillColor { get; set; }
-
+    
     public bool IsTransparent { get; set; }
 
     public Guid CustomerUID { get; set; }

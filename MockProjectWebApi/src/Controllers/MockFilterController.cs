@@ -61,7 +61,7 @@ namespace MockProjectWebApi.Controllers
         {
           FilterUid = "3d9086f2-3c04-4d92-9141-5134932b1523",
           Name = "Filter 1",
-          FilterJson = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"220e12e5-ce92-4645-8f01-1942a2d5a57f\",\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
+          FilterJson = "{\"startUTC\": null,\"endUTC\": null,\"designUid\": \"220e12e5-ce92-4645-8f01-1942a2d5a57f\",\"contributingMachines\": null,\"onMachineDesignID\": null,\"elevationType\": null,\"vibeStateOn\": null,\"polygonName\": null,\"polygonUid\": null,\"polygonLL\": null,\"forwardDirection\": null,\"layerNumber\": null,\"layerType\": null}"
         }
       },
       new FilterData
@@ -70,7 +70,7 @@ namespace MockProjectWebApi.Controllers
         {
           FilterUid = "81422acc-9b0c-401c-9987-0aedbf153f1d",
           Name = "Filter 2",
-          FilterJson = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\",\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
+          FilterJson = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\",\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonName\": null,\"polygonUid\": \"94dc0ec6-32ef-4b54-a7f8-e8e3eee65642\",\"polygonLL\": \"POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))\",\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
         }
       },
       new FilterData

@@ -272,26 +272,6 @@ namespace VSS.MasterData.Repositories
       );
     }
 
-    /// <summary>
-    /// Returns all project geofences for the Project.
-    /// </summary>
-    /// <returns>Returns a collection of <see cref="Geofence"/> objects for a given <see cref="Project"/>.</returns>
-    public async Task<IEnumerable<Geofence>> GetProjectGeofencesByProjectUID(string projectUid)
-    {
-      var queryResult = await QueryWithAsyncPolicy<Geofence>
-      (@"SELECT 
-                GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
-                IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
-                g.LastActionedUTC
-              FROM Geofence g
-                JOIN ProjectGeofence pg ON pg.fk_GeofenceUID = g.GeofenceUID 
-              WHERE fk_ProjectUID = @projectUid AND IsDeleted = 0",
-        new { projectUid }
-      );
-
-      return queryResult;
-    }
-
     public async Task<Geofence> GetGeofence(string geofenceUid)
     {
       return (await QueryWithAsyncPolicy<Geofence>

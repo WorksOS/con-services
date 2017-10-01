@@ -91,7 +91,8 @@ namespace VSS.MasterData.Repositories
     }
 
 
-    protected async Task<IEnumerable<T>> QueryWithAsyncPolicy<T>(string statement, object param = null)
+    protected async Task<IEnumerable<T>> 
+      QueryWithAsyncPolicy<T>(string statement, object param = null)
     {
       if (!isInTransaction)
         return await WithConnectionAsync(async conn => await conn.QueryAsync<T>(statement, param));

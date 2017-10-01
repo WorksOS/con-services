@@ -161,7 +161,8 @@ namespace VSS.MasterData.Models.Models
       return JsonConvert.SerializeObject(filter);
     }
 
-    public void Validate([FromServices] IServiceExceptionHandler serviceExceptionHandler)
+    public void 
+      Validate([FromServices] IServiceExceptionHandler serviceExceptionHandler)
     {
       //Check date range properties
       if (startUTC.HasValue || endUTC.HasValue)
