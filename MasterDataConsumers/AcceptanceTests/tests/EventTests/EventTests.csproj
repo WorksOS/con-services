@@ -21,13 +21,13 @@
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
-    <PackageReference Include="Confluent.Kafka" Version="0.11.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
-    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.0.25" />
+    <PackageReference Include="Confluent.Kafka" Version="0.11.0" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.0.*" />
   </ItemGroup>
 
   <ItemGroup>

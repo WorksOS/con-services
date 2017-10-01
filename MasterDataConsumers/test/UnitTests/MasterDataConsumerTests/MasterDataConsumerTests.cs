@@ -48,7 +48,6 @@ namespace MasterDataConsumerTests
           .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
           .AddTransient<IKafkaConsumer<IFilterEvent>, KafkaConsumer<IFilterEvent>>()
 
-
           .AddTransient<IMessageTypeResolver, MessageResolver>()
           .AddTransient<IRepositoryFactory, RepositoryFactory>()
 
