@@ -325,6 +325,63 @@ namespace EventTests
         geofenceGuid);
     }
 
+    [TestMethod]
+    public void CreateProjectSettingsEvent()
+    {
+      var msg = new Msg();
+      var testSupport = new TestSupport();
+      var mysql = new MySqlHelper();
+      var projectGuid = Guid.NewGuid();
+      string settings = @"<ProjectSettings>  
+        < CompactionSettings >
+        < OverrideTargetCMV > false </ OverrideTargetCMV >
+        </ CompactionSettings >
+        < VolumeSettings >       
+        < ExpiryPromptDismissed > false </ ExpiryPromptDismissed >
+        </ ProjectSettings > ";
 
+      msg.Title("Create Project Settings test 1", "Create one projectSettings");
+      var eventArray = new[] {
+        "| EventType                  | EventDate    | ProjectUID    | Settings   |" ,
+        $"| UpdateProjectSettingsEvent | 0d+09:00:00 | {projectGuid} | {settings}  |"};
+
+      testSupport.PublishEventCollection(eventArray);
+      mysql.VerifyTestResultDatabaseRecordCount("ProjectSettings", "fk_ProjectUID", 1, projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectSettings", "fk_ProjectUID",
+        "Settings", //Fields
+        $"{settings}", //Expected
+        projectGuid);
+    }
+
+    [TestMethod]
+    public void CreateImportedFileEvent()
+    {
+      var msg = new Msg();
+      var testSupport = new TestSupport();
+      var mysql = new MySqlHelper();
+      var projectGuid = Guid.NewGuid();
+      var importedFileGuid = Guid.NewGuid();
+      var importedFileId = new Random().Next(1, 1999999);
+      var customerGuid = Guid.NewGuid();
+      var importedFileType = ImportedFileType.SurveyedSurface;
+      var name = "Test SS type.ttm";
+      var fileDescriptor = "fd";
+      var fileCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var fileUpdatedUtc = fileCreatedUtc;
+      var importedBy = "JoeSmoe";
+      var surveyedUtc = new DateTime(2016, 12, 15, 2, 30, 3);
+
+      msg.Title("Create Imported File test 1", "Create one Imported File");
+      var eventArray = new[] {
+        "| EventType                | EventDate   | ProjectUID    | ImportedFileUID    | ImportedFileID   | CustomerUID    | ImportedFileType   | Name   | FileDescriptor   | FileCreatedUTC   | FileUpdatedUTC   | ImportedBy   | SurveyedUTC   |" ,
+        $"| CreateImportedFileEvent | 0d+09:00:00 | {projectGuid} | {importedFileGuid} | {importedFileId} | {customerGuid} | {importedFileType} | {name} | {fileDescriptor} | {fileCreatedUtc} | {fileUpdatedUtc} | {importedBy} | {surveyedUtc} |"};
+
+      testSupport.PublishEventCollection(eventArray);
+      mysql.VerifyTestResultDatabaseRecordCount("ImportedFile", "ImportedFileUID", 1, importedFileGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("ImportedFile", "ImportedFileUID",
+        "fk_ProjectUID, ImportedFileID, fk_CustomerUID,  fk_ImportedFileTypeID, Name, FileDescriptor, fileCreatedUtc, fileUpdatedUtc, importedBy,  surveyedUTC", //Fields
+        $"{projectGuid}, {importedFileId}, {customerGuid}, {(int)ImportedFileType.SurveyedSurface}, {name}, {fileDescriptor}, {fileCreatedUtc}, {fileUpdatedUtc}, {importedBy}, {surveyedUtc}", //Expected
+        importedFileGuid);
+    }
   }
 }

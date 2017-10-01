@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Interfaces;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Utilities;
-using VSS.Productivity3D.Common.Models;
 
 namespace VSS.MasterData.Models.Models
 {
@@ -31,10 +31,16 @@ namespace VSS.MasterData.Models.Models
     public DateTime? endUTC { get; private set; }
 
     /// <summary>
+    /// Gets the date range type for this filter, e.g. day, week, project extents.
+    /// </summary>
+    [JsonProperty(PropertyName = "dateRangeType", Required = Required.Default)]
+    public DateRangeType? DateRangeType { get; private set; }
+
+    /// <summary>
     /// A design file unique identifier. Used as a spatial filter.
     /// </summary>
-    [JsonProperty(PropertyName = "designUid", Required = Required.Default)]
-    public string designUid { get; protected set; }
+    [JsonProperty(PropertyName = "designUID", Required = Required.Default)]
+    public string designUID { get; protected set; }
 
     /// <summary>
     /// A comma-separated list of contributing machines.
@@ -65,8 +71,8 @@ namespace VSS.MasterData.Models.Models
     /// <summary>
     /// The boundary/geofence unique identifier. Used as a spatial filter.
     /// </summary>
-    [JsonProperty(PropertyName = "polygonUid", Required = Required.Default)]
-    public string polygonUid { get; protected set; }
+    [JsonProperty(PropertyName = "polygonUID", Required = Required.Default)]
+    public string polygonUID { get; protected set; }
 
     /// <summary>
     /// name of polygonLL 
@@ -94,19 +100,19 @@ namespace VSS.MasterData.Models.Models
     [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
     public int? layerNumber { get; private set; }
 
-    /// <summary>
-    /// layerType indicates the layer analysis method to be used for determining layers from cell passes. Some of the layer types are implemented as a 
-    /// 3D spatial volume inclusion implemented via 3D spatial filtering. Only cell passes whose three dimensional location falls within the bounds
-    /// 3D spatial volume are considered. If it is required to apply layer filter, lift analysis method and corresponding parameters should be specified here.
-    ///  Otherwise (build lifts but do not filter, only do production data analysis) Lift Layer Analysis setting should be specified in LiftBuildSettings.
-    /// </summary>
-    [JsonProperty(PropertyName = "layerType", Required = Required.Default)]
-    public FilterLayerMethod? layerType { get; private set; }
+    public bool HasData() =>
+      startUTC.HasValue ||
+      endUTC.HasValue ||
+      onMachineDesignID.HasValue ||
+      vibeStateOn.HasValue ||
+      elevationType.HasValue ||
+      layerNumber.HasValue ||
+      forwardDirection.HasValue ||
+      contributingMachines != null && contributingMachines.Count > 0;
 
-
-    public void AddBoundary(string polygonUid, string polygonName, List<WGSPoint> polygonLL)
+    public void AddBoundary(string polygonUID, string polygonName, List<WGSPoint> polygonLL)
     {
-      this.polygonUid = polygonUid;
+      this.polygonUID = polygonUID;
       this.polygonName = polygonName;
       this.polygonLL = polygonLL;
     }
@@ -118,7 +124,7 @@ namespace VSS.MasterData.Models.Models
       (
         DateTime? startUtc,
         DateTime? endUtc,
-        string designUid,
+        string designUID,
         List<MachineDetails> contributingMachines,
         long? onMachineDesignID,
         ElevationType? elevationType,
@@ -126,8 +132,7 @@ namespace VSS.MasterData.Models.Models
         List<WGSPoint> polygonLL,
         bool? forwardDirection,
         int? layerNumber,
-        FilterLayerMethod? layerType,
-        string polygonUid = null,
+        string polygonUID = null,
         string polygonName = null
       )
     {
@@ -135,7 +140,7 @@ namespace VSS.MasterData.Models.Models
       {
         startUTC = startUtc,
         endUTC = endUtc,
-        designUid = designUid,
+        designUID = designUID,
         contributingMachines = contributingMachines,
         onMachineDesignID = onMachineDesignID,
         elevationType = elevationType,
@@ -143,15 +148,14 @@ namespace VSS.MasterData.Models.Models
         polygonLL = polygonLL,
         forwardDirection = forwardDirection,
         layerNumber = layerNumber,
-        layerType = layerType,
-        polygonUid = polygonUid,
+        polygonUID = polygonUID,
         polygonName = polygonName
       };
     }
-    
+
     public string ToJsonString()
     {
-      var filter = CreateFilter(startUTC, endUTC, designUid, contributingMachines, onMachineDesignID, elevationType, vibeStateOn, polygonLL, forwardDirection, layerNumber, layerType, polygonUid, polygonName);
+      var filter = CreateFilter(startUTC, endUTC, designUID, contributingMachines, onMachineDesignID, elevationType, vibeStateOn, polygonLL, forwardDirection, layerNumber, polygonUID, polygonName);
 
       return JsonConvert.SerializeObject(filter);
     }
@@ -165,49 +169,41 @@ namespace VSS.MasterData.Models.Models
         if (startUTC.HasValue && endUTC.HasValue)
         {
           if (startUTC.Value > endUTC.Value)
+          {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 29);
+          }
         }
         else
+        {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 30);
+        }
       }
 
-      Guid designUidGuid;
-      if (designUid != null && Guid.TryParse(designUid, out designUidGuid) == false)
+      if (designUID != null && Guid.TryParse(designUID, out Guid designUIDGuid) == false)
+      {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 31);
+      }
 
       if (contributingMachines != null)
       {
         foreach (var machine in contributingMachines)
+        {
           machine.Validate();
-      }
-
-      //Check layer filter parts
-      if (layerNumber.HasValue && !layerType.HasValue)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 34);
-
-      if (layerType.HasValue)
-      {
-        if (layerType.Value == FilterLayerMethod.Invalid ||
-            (layerType.Value != FilterLayerMethod.None && layerType.Value != FilterLayerMethod.TagfileLayerNumber &&
-             layerType.Value != FilterLayerMethod.MapReset))
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 32);
-
-        if (layerType.Value == FilterLayerMethod.TagfileLayerNumber)
-        { 
-            if (!layerNumber.HasValue)
-              serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 33);
         }
       }
 
       //Check boundary if provided
       //Raptor handles any weird boundary you give it and automatically closes it if not closed already therefore we just need to check we have at least 3 points
       if (polygonLL != null && polygonLL.Count < 3)
+      {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 35);
+      }
 
-      if ((!string.IsNullOrEmpty(polygonUid) || !string.IsNullOrEmpty(polygonName) || polygonLL != null )
-            && (string.IsNullOrEmpty(polygonUid) || string.IsNullOrEmpty(polygonName) || polygonLL == null)
-        )
+      if ((!string.IsNullOrEmpty(polygonUID) || !string.IsNullOrEmpty(polygonName) || polygonLL != null)
+        && (string.IsNullOrEmpty(polygonUID) || string.IsNullOrEmpty(polygonName) || polygonLL == null))
+      {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
+      }
     }
   }
 }

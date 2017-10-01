@@ -188,6 +188,16 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
+    [TestMethod]
+    public void FilterSchemaExists()
+    {
+      const string tableName = "Filter";
+      List<string> columnNames = new List<string>
+      {
+        "ID", "FilterUID", "fk_CustomerUID", "fk_ProjectUID", "UserID" , "Name" , "FilterJson", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+      };
+      CheckSchema(tableName, columnNames);
+    }
 
     private void CheckSchema(string tableName, List<string> columnNames)
     {

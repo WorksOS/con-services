@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 
 namespace VSS.KafkaConsumer.Kafka
@@ -15,7 +16,7 @@ namespace VSS.KafkaConsumer.Kafka
     int Port { get; set; }
     void Subscribe(List<string> topics);
     Task<CommittedOffsets> Commit();
-    void InitConsumer(IConfigurationStore configurationStore, string groupName = null);
+    void InitConsumer(IConfigurationStore configurationStore, string groupName = null, ILogger<IKafka> logger = null);
     void InitProducer(IConfigurationStore configurationStore);
     void Send(string topic, IEnumerable<KeyValuePair<string, string>> messagesToSendWithKeys);
     void Send(IEnumerable<KeyValuePair<string, KeyValuePair<string, string>>> topicMessagesToSendWithKeys);

@@ -1,15 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using VSS.MasterData.Models.FIlters;
 
 namespace VSS.MasterData.Models.Models
 {
-    /// <summary>
-    /// A representation of a machine in a Raptor project
-    /// </summary>
-    public class MachineDetails
-    {
- 
+  /// <summary>
+  /// A representation of a machine in a Raptor project
+  /// </summary>
+  public class MachineDetails
+  {
     /// <summary>
     /// The ID of the machine/asset. This is the unique identifier, used by Raptor.
     /// </summary>
@@ -34,7 +33,7 @@ namespace VSS.MasterData.Models.Models
     /// Private constructor
     /// </summary>
     protected MachineDetails()
-    {}
+    { }
 
     /// <summary>
     /// Create instance of MachineDetails
@@ -46,27 +45,11 @@ namespace VSS.MasterData.Models.Models
         )
     {
       return new MachineDetails
-             {
-                 assetID = assetID,
-                 machineName = machineName,
-                 isJohnDoe = isJohnDoe
-             };
-    }
-
-    /// <summary>
-    /// Create example instance of MachineDetails to display in Help documentation.
-    /// </summary>
-    public static MachineDetails HelpSample
-    {
-      get
       {
-        return new MachineDetails
-        {
-          assetID = 1137642418461469,
-          machineName = "VOLVO G946B",
-          isJohnDoe = false
-        };
-      }
+        assetID = assetID,
+        machineName = machineName,
+        isJohnDoe = isJohnDoe
+      };
     }
 
     /// <summary>
@@ -78,5 +61,5 @@ namespace VSS.MasterData.Models.Models
     }
 
     private const int MAX_MACHINE_NAME = 256;
-    }
+  }
 }
