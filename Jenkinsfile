@@ -12,10 +12,13 @@ node('Jenkins-Win2016-Raptor') {
 
     if (branch.contains("release")) {
        versionPrefix = "1.0."
-       branchName = "release"
+       branchName = "Release"
     } else if (branch.contains("Dev")) {
        versionPrefix = "0.99."
        branchName = "Dev"
+    } else if (branch.contains("master")) {
+       versionPrefix = "1.0."
+       branchName = "master"
     } else {
        branchName = branch.substring(branch.lastIndexOf("/") + 1)
        suffix = "-" + branchName
@@ -90,7 +93,7 @@ node('Jenkins-Win2016-Raptor') {
                     bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion latest-release-${fullVersion}"
 				}
         } else if (branch.contains("master")) {
-		bat "7z a 3DPMWebApiNet47.zip -r ./artifacts/3DPMWebApiNet47/"
+		bat "7z a 3DPMWebApiNet47.zip -r ./artifacts/WebApi/"
                 archiveArtifacts artifacts: '3DPMWebApiNet47.zip', fingerprint: true
          	    stage ('Tag repository') {
                       bat 'git rev-parse HEAD > GIT_COMMIT'
