@@ -36,9 +36,8 @@
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.2.*" />
   </ItemGroup>
 
-  <!-- <ItemGroup>
+<ItemGroup>
     <ProjectReference Include="..\..\..\..\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
   </ItemGroup>
-  -->
 
 </Project>
