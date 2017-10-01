@@ -42,6 +42,6 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <summary>
     /// Gets or sets the IANA project time zone.
     /// </summary>
-    public string landfillTimeZone { get; set; }
+    public string ianaTimeZone { get; set; }
   }
 }

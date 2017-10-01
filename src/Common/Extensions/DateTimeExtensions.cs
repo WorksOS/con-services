@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.Common.Extensions
     }
 
     /// <summary>
-    /// Construct the Iso8601 formatted date time
+    /// Construct the Iso8601 formatted date time for a UTC date time.
     /// </summary>
     /// <param name="dateTimeUtc">The date time in UTC</param>
     /// <returns>Iso8601 formatted string</returns>

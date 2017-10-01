@@ -323,8 +323,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (filter.DateRangeType.Value != DateRangeType.ProjectExtents)
       {
         var utcNow = DateTime.UtcNow;
-        startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.landfillTimeZone, true);
-        endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.landfillTimeZone, false);
+        startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
+        endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
       }
       return MasterData.Models.Models.Filter.CreateFilter(
         startUtc, endUtc, filter.designUID, filter.contributingMachines, filter.onMachineDesignID, filter.elevationType, 
