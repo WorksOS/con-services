@@ -93,7 +93,7 @@ namespace VSS.MasterData.ProjectTests
         Name = "the Name",
         Description = "the Description",
         ProjectTimeZone = "NZ stuff",
-        LandfillTimeZone = "",
+        LandfillTimeZone = "Pacific stuff",
         StartDate = new DateTime(2017, 01, 20),
         EndDate = new DateTime(2017, 02, 15),
         CustomerUID = Guid.NewGuid().ToString(),
@@ -119,6 +119,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(project.Name, result.Name, "Name has not been mapped correctly");
       Assert.AreEqual(project.Description, result.Description, "Description has not been mapped correctly");
       Assert.AreEqual(project.ProjectTimeZone, result.ProjectTimeZone, "ProjectTimeZone has not been mapped correctly");
+      Assert.AreEqual(project.LandfillTimeZone, result.IanaTimeZone, "LandfillTimeZone has not been mapped correctly");
       Assert.AreEqual(project.StartDate.ToString("O"), result.StartDate, "StartDate has not been mapped correctly");
       Assert.AreEqual(project.EndDate.ToString("O"), result.EndDate, "EndDate has not been mapped correctly");
       Assert.AreEqual(project.CustomerUID, result.CustomerUid, "CustomerUID has not been mapped correctly");

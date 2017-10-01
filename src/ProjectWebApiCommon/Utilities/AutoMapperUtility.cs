@@ -58,6 +58,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           cfg.CreateMap<Repositories.DBModels.Project, ProjectV4Descriptor>()
             .ForMember(x => x.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
             .ForMember(x => x.ServiceType, opt => opt.MapFrom(src => src.ServiceTypeID))
+            .ForMember(x => x.IanaTimeZone, opt => opt.MapFrom(src => src.LandfillTimeZone))
             .ForMember(x => x.IsArchived,
               opt => opt.MapFrom(src => src.IsDeleted || src.SubscriptionEndDate < DateTime.UtcNow))
             .ForMember(x => x.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
