@@ -16,6 +16,7 @@
   }
 	"""
  
+@ignore
  Scenario: Notification Delete File - Good Request 
 	Given the Delete File Notification service URI "/api/v2/notification/deletefile"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
