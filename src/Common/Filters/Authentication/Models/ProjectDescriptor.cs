@@ -36,9 +36,12 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// </summary>
     public string projectGeofenceWKT { get; set; }
     /// <summary>
-    /// Gets or sets the project time zone.
+    /// Gets or sets the legacy project time zone.
     /// </summary>
    public string projectTimeZone { get; set; }
-
+    /// <summary>
+    /// Gets or sets the IANA project time zone.
+    /// </summary>
+    public string ianaTimeZone { get; set; }
   }
 }
