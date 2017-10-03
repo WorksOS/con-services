@@ -26,7 +26,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             // Construct the function to be used
             IComputeFunc<TileRenderRequestArgument, Bitmap> func = new TileRenderRequestComputeFunc();
 
-            // Decorate the supplied argument with the RaptorNodeID of the node currenrlt executing this code
+            // Decorate the supplied argument with the RaptorNodeID of the node currently executing this code
 
             // Get a reference to the Ignite cluster
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
