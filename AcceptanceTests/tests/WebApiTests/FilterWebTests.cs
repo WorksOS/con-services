@@ -122,17 +122,17 @@ namespace WebApiTests
       };
       ts.DeleteAllFiltersForProject(projectUid.ToString());
       var filterRequest = FilterRequest.Create("", filterName, "");
-      filterRequest.FilterJson = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}],\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true,\"polygonLL\":[{\"Lat\":38.8361907402694,\"Lon\":-121.349260032177},{\"Lat\":38.8361656688414,\"Lon\":-121.349217116833},{\"Lat\":38.8387897637231,\"Lon\":-121.347275197506},{\"Lat\":38.8387145521594,\"Lon\":-121.347189366818}],\"forwardDirection\":false,\"layerNumber\":null,\"layerType\":null}";
+      filterRequest.filterJson = "{\"startUTC\":null,\"endUTC\":null,\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}],\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true,\"polygonLL\":[{\"Lat\":38.8361907402694,\"Lon\":-121.349260032177},{\"Lat\":38.8361656688414,\"Lon\":-121.349217116833},{\"Lat\":38.8387897637231,\"Lon\":-121.347275197506},{\"Lat\":38.8387145521594,\"Lon\":-121.347189366818}],\"forwardDirection\":false,\"layerNumber\":null,\"layerType\":null}";
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.AreEqual(filterResponse.filterDescriptor.FilterJson, filterRequest.FilterJson, "JSON Filter doesn't match for PUT request");
-      Assert.AreEqual(filterResponse.filterDescriptor.Name, filterRequest.Name, "Filter name doesn't match for PUT request");
+      Assert.AreEqual(filterResponse.filterDescriptor.FilterJson, filterRequest.filterJson, "JSON Filter doesn't match for PUT request");
+      Assert.AreEqual(filterResponse.filterDescriptor.Name, filterRequest.name, "Filter name doesn't match for PUT request");
       var filterUid = filterResponse.filterDescriptor.FilterUid;
       var responseGet = ts.CallFilterWebApi($"api/v1/filter/{projectUid}?filterUid={filterUid}", "GET");
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.AreEqual(filterResponseGet.filterDescriptor.FilterJson, filterRequest.FilterJson, "JSON Filter doesn't match for GET request");
-      Assert.AreEqual(filterResponseGet.filterDescriptor.Name, filterRequest.Name, "Filter name doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.filterDescriptor.FilterJson, filterRequest.filterJson, "JSON Filter doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.filterDescriptor.Name, filterRequest.name, "Filter name doesn't match for GET request");
     }
 
     [TestMethod]
@@ -147,7 +147,7 @@ namespace WebApiTests
       };
       ts.DeleteAllFiltersForProject(projectUid.ToString());
       var filterRequest = FilterRequest.Create("", filterName, "");
-      filterRequest.FilterJson =
+      filterRequest.filterJson =
         "{\"startUTC\":null,\"designUid\":\"xxx\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}],\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true,\"forwardDirection\":false,\"layerNumber\":null,\"layerType\":null}";
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{projectUid}", "PUT", filter);

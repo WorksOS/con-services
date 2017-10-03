@@ -22,9 +22,9 @@ namespace VSS.Productivity3D.Filter.Common.Models
     {
       return new FilterRequestFull
       {
-        FilterUid = filterUid,
-        Name = name,
-        FilterJson = filterJson,
+        filterUid = filterUid,
+        name = name,
+        filterJson = filterJson,
         CustomerUid = customerUid,
         IsApplicationContext = isApplicationContext,
         UserId = userId,
@@ -49,31 +49,31 @@ namespace VSS.Productivity3D.Filter.Common.Models
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }
 
-      if (FilterUid == null || (FilterUid != string.Empty && Guid.TryParse(FilterUid, out Guid filterUidGuid) == false))
+      if (filterUid == null || (filterUid != string.Empty && Guid.TryParse(filterUid, out Guid filterUidGuid) == false))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
       }
 
-      if (Name == null)
+      if (name == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 3);
       }
 
-      if (FilterJson == null)
+      if (filterJson == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 4);
       }
 
-      if (FilterJson == "")
+      if (filterJson == "")
       {
         // Newtonsoft.JSON treats emtpy strings as invalid JSON but for our purposes it is valid.
         return;
       }
 
-      // Validate FilterJson...
+      // Validate filterJson...
       try
       {
-        var filter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(FilterJson);
+        var filter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
         filter.Validate(serviceExceptionHandler);
       }
       catch (JsonReaderException exception)

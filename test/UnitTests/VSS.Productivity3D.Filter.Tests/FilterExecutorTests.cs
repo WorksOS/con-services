@@ -69,11 +69,11 @@ namespace VSS.Productivity3D.Filter.Tests
 
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(filterToTest.filterDescriptor.FilterUid, result.filterDescriptor.FilterUid,
-        "executor returned incorrect filterDescriptor FilterUid");
+        "executor returned incorrect filterDescriptor filterUid");
       Assert.AreEqual(filterToTest.filterDescriptor.Name, result.filterDescriptor.Name,
         "executor returned incorrect filterDescriptor Name");
       Assert.AreEqual(filterToTest.filterDescriptor.FilterJson, result.filterDescriptor.FilterJson,
-        "executor returned incorrect filterDescriptor FilterJson");
+        "executor returned incorrect filterDescriptor filterJson");
     }
 
     [TestMethod]
@@ -176,11 +176,11 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterListToTest.filterDescriptors[0], filterListResult.filterDescriptors[0],
         "executor returned incorrect filterDescriptor");
       Assert.AreEqual(filterListToTest.filterDescriptors[0].FilterUid, filterListResult.filterDescriptors[0].FilterUid,
-        "executor returned incorrect filterDescriptor FilterUid");
+        "executor returned incorrect filterDescriptor filterUid");
       Assert.AreEqual(filterListToTest.filterDescriptors[0].Name, filterListResult.filterDescriptors[0].Name,
-        "executor returned incorrect filterDescriptor Name");
+        "executor returned incorrect filterDescriptor name");
       Assert.AreEqual(filterListToTest.filterDescriptors[0].FilterJson,
-        filterListResult.filterDescriptors[0].FilterJson, "executor returned incorrect filterDescriptor FilterJson");
+        filterListResult.filterDescriptors[0].FilterJson, "executor returned incorrect filterDescriptor filterJson");
     }
 
     [TestMethod]
@@ -298,11 +298,11 @@ namespace VSS.Productivity3D.Filter.Tests
 
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(filterToTest.filterDescriptor.FilterUid, result.filterDescriptor.FilterUid,
-        "executor returned incorrect filterDescriptor FilterUid");
+        "executor returned incorrect filterDescriptor filterUid");
       Assert.AreEqual(filterToTest.filterDescriptor.Name, result.filterDescriptor.Name,
-        "executor returned incorrect filterDescriptor Name");
+        "executor returned incorrect filterDescriptor name");
       Assert.AreEqual(filterToTest.filterDescriptor.FilterJson, result.filterDescriptor.FilterJson,
-        "executor returned incorrect filterDescriptor FilterJson");
+        "executor returned incorrect filterDescriptor filterJson");
     }
 
     [TestMethod]

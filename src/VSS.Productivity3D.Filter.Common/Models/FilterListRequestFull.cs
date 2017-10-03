@@ -44,10 +44,10 @@ namespace VSS.Productivity3D.Filter.Common.Models
 
       foreach (var request in filterRequests)
       {
-        if (!string.IsNullOrEmpty(request.Name))
+        if (!string.IsNullOrEmpty(request.name))
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 24);
 
-        if (!string.IsNullOrEmpty(request.FilterUid))
+        if (!string.IsNullOrEmpty(request.filterUid))
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 16);
 
         request.Validate(serviceExceptionHandler);
