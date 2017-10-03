@@ -14,7 +14,7 @@ namespace VSS.MasterData.Models.Models
     /// <value>
     /// The filter uid.
     /// </value>
-    [JsonProperty(PropertyName = "FilterUid")]
+    [JsonProperty(PropertyName = "filterUid")]
     public string FilterUid { get; set; }
 
     /// <summary>
@@ -24,7 +24,7 @@ namespace VSS.MasterData.Models.Models
     /// <value>
     /// The name.
     /// </value>
-    [JsonProperty(PropertyName = "Name")]
+    [JsonProperty(PropertyName = "name")]
     public string Name { get; set; }
 
     /// <summary>
@@ -33,7 +33,7 @@ namespace VSS.MasterData.Models.Models
     /// <value>
     /// The FilterJson.
     /// </value>
-    [JsonProperty(PropertyName = "FilterJson")]
+    [JsonProperty(PropertyName = "filterJson")]
     public string FilterJson { get; set; }
 
     public override bool Equals(object obj)
