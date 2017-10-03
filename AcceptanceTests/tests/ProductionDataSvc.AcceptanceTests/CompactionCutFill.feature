@@ -10,8 +10,6 @@ Scenario Outline: Compaction Get Cut-Fill Details - No Design Filter
   Then the result should match the "<ResultName>" from the repository
 	Examples: 
 	| RequestName     | ProjectUID                           | CutFillDesignUID                     | ResultName                |
-#	|                 | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | NoDesignFilter_Details    |
-# | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | NoDesignFilter_Details_PS |
   |                 | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | NoDesignFilter_Details    |
 	| ProjectSettings | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | NoDesignFilter_Details_PS |
 

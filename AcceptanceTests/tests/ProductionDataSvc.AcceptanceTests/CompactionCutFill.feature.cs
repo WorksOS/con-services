@@ -118,22 +118,22 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetCut_FillDetails(string requestName, string projectUID, string cutFillDesignUID, string filterUID, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Cut-Fill Details", exampleTags);
-#line 19
+#line 17
 this.ScenarioSetup(scenarioInfo);
-#line 20
+#line 18
   testRunner.Given("the Compaction service URI \"/api/v2/compaction/cutfill/details\" for operation \"Cu" +
                     "tFillDetails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 21
+#line 19
   testRunner.And("the result file \"CompactionGetCutFillDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 22
+#line 20
   testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 23
+#line 21
   testRunner.And("a cutfillDesignUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 24
+#line 22
  testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 25
+#line 23
  testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 26
+#line 24
  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
