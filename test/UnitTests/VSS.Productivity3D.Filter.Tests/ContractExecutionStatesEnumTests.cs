@@ -7,7 +7,7 @@ namespace VSS.Productivity3D.Filter.Tests
   [TestClass]
   public class ContractExecutionStatesEnumTests : ExecutorBaseTests
   {
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void DynamicAddwithOffsetTest()
     {
       var contractExecutionStatesEnum = serviceProvider.GetRequiredService<IErrorCodesProvider>();
