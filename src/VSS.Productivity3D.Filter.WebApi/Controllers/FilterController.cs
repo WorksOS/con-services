@@ -125,7 +125,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var requestFull =
         FilterRequestFull.Create((User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).IsApplication, ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-          projectUid, request.FilterUid, request.Name, request.FilterJson);
+          projectUid, request.filterUid, request.name, request.filterJson);
       requestFull.Validate(serviceExceptionHandler);
       await FilterValidation.ValidateProjectForCustomer(projectListProxy, log, serviceExceptionHandler, Request.Headers.GetCustomHeaders(),
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
@@ -185,8 +185,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         // todo once 56114 is complete
         //if (!string.IsNullOrEmpty(filter.BoundaryUid))
         //{
-        //  filter.FilterJson = await ValidationUtil
-        //    .HydrateJsonWithBoundary(geofenceRepo, log, serviceExceptionHandler, requestListFull.ProjectUid, filter.BoundaryUid, filter.FilterJson).ConfigureAwait(false);
+        //  filter.filterJson = await ValidationUtil
+        //    .HydrateJsonWithBoundary(geofenceRepo, log, serviceExceptionHandler, requestListFull.ProjectUid, filter.BoundaryUid, filter.filterJson).ConfigureAwait(false);
         //}
       }
 

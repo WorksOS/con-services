@@ -8,22 +8,22 @@ namespace VSS.Productivity3D.Filter.Common.Models
   public class FilterRequest
   {
     /// <summary>
-    /// The FilterUid whose filter is to be udpated, empty for create
+    /// The filterUid whose filter is to be udpated, empty for create
     /// </summary>
-    [JsonProperty(PropertyName = "FilterUid", Required = Required.Default)]
-    public string FilterUid { get; set; } = string.Empty;
+    [JsonProperty(PropertyName = "filterUid", Required = Required.Default)]
+    public string filterUid { get; set; } = string.Empty;
 
     /// <summary>
-    /// The Name to be upserted, if empty then filter is transient
+    /// The name to be upserted, if empty then filter is transient
     /// </summary>
-    [JsonProperty(PropertyName = "Name", Required = Required.Default)]
-    public string Name { get; set; } = string.Empty;
+    [JsonProperty(PropertyName = "name", Required = Required.Default)]
+    public string name { get; set; } = string.Empty;
 
     /// <summary>
     /// The filter containing the Json string. May be empty if all defaults
     /// </summary>
-    [JsonProperty(PropertyName = "FilterJson", Required = Required.Always)]
-    public string FilterJson { get; set; } = string.Empty;
+    [JsonProperty(PropertyName = "filterJson", Required = Required.Always)]
+    public string filterJson { get; set; } = string.Empty;
 
 
     /// <summary>
@@ -39,25 +39,25 @@ namespace VSS.Productivity3D.Filter.Common.Models
     {
       return new FilterRequest
       {
-        FilterUid = filterUid,
-        Name = name,
-        FilterJson = filterJson
+        filterUid = filterUid,
+        name = name,
+        filterJson = filterJson
       };
     }
 
     public virtual void Validate(IServiceExceptionHandler serviceExceptionHandler)
     {
-      if (FilterUid == null
-          || (FilterUid != string.Empty && Guid.TryParse(FilterUid, out Guid filterUidGuid) == false))
+      if (filterUid == null
+          || (filterUid != string.Empty && Guid.TryParse(filterUid, out Guid filterUidGuid) == false))
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
 
-      if (Name == null)
+      if (name == null)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 3);
 
-      if (FilterJson == null)
+      if (filterJson == null)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 4);
 
-      if (FilterJson == "")
+      if (filterJson == "")
       {
         // Newtonsoft.JSON treats emtpy strings as invalid JSON but for our purposes it is valid.
         return;
@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
       // Validate filterJson...
       try
       {
-        var filter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(FilterJson);
+        var filter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
         filter.Validate(serviceExceptionHandler);
       }
       catch (JsonReaderException exception)

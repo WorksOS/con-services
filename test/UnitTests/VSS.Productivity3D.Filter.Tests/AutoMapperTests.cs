@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.Filter.Tests
         ProjectUid = Guid.NewGuid().ToString(),
         FilterUid = Guid.NewGuid().ToString(),
 
-        Name = "the Name",
+        Name = "the name",
         FilterJson = "the Json",
 
         IsDeleted = false,
@@ -34,8 +34,8 @@ namespace VSS.Productivity3D.Filter.Tests
       };
 
       var result = AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter);
-      Assert.AreEqual(filter.FilterUid, result.FilterUid, "FilterUid has not been mapped correctly");
-      Assert.AreEqual(filter.Name, result.Name, "Name has not been mapped correctly");
+      Assert.AreEqual(filter.FilterUid, result.FilterUid, "filterUid has not been mapped correctly");
+      Assert.AreEqual(filter.Name, result.Name, "name has not been mapped correctly");
       Assert.AreEqual(filter.FilterJson, result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.Filter.Tests
         userId: Guid.NewGuid().ToString(),
         projectUid: Guid.NewGuid().ToString(),
         filterUid: Guid.NewGuid().ToString(),
-        name: "the Name",
+        name: "the name",
         filterJson: "the Json"
       );
 
@@ -59,9 +59,9 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.Name, result.Name, "Name has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.name, result.Name, "name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
     [TestMethod]
@@ -74,10 +74,10 @@ namespace VSS.Productivity3D.Filter.Tests
         userId: Guid.NewGuid().ToString(),
         projectUid: Guid.NewGuid().ToString(),
         filterUid: "",
-        name: "the Name",
+        name: "the name",
         filterJson: "the Json"
       );
-      filterRequest.FilterUid = Guid.NewGuid().ToString();
+      filterRequest.filterUid = Guid.NewGuid().ToString();
 
       var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
       Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
@@ -85,9 +85,9 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.Name, result.Name, "Name has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.name, result.Name, "name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
     [TestMethod]
@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.Filter.Tests
         "ApplicationName",
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-        "the Name",
+        "the name",
         "the Json"
       );
 
@@ -110,9 +110,9 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.Name, result.Name, "Name has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.name, result.Name, "name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
     [TestMethod]
@@ -125,10 +125,10 @@ namespace VSS.Productivity3D.Filter.Tests
         userId: "ApplicationName",
         projectUid: Guid.NewGuid().ToString(),
         filterUid: "",
-        name: "the Name",
+        name: "the name",
         filterJson: "the Json"
       );
-      filterRequest.FilterUid = Guid.NewGuid().ToString();
+      filterRequest.filterUid = Guid.NewGuid().ToString();
 
       var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
       Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
@@ -136,9 +136,9 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.Name, result.Name, "Name has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.name, result.Name, "name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
     [TestMethod]
@@ -151,7 +151,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-        "the Name",
+        "the name",
         "the Json"
       );
 
@@ -161,8 +161,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.Name, result.Name, "Name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.name, result.Name, "name has not been mapped correctly");
       Assert.IsNull(result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
@@ -176,7 +176,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-        "the Name",
+        "the name",
         "the Json"
       );
 
@@ -186,7 +186,7 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
     }
 
     [TestMethod]
@@ -199,7 +199,7 @@ namespace VSS.Productivity3D.Filter.Tests
         ProjectUid = Guid.NewGuid().ToString(),
         FilterUid = Guid.NewGuid().ToString(),
 
-        Name = "the Name",
+        Name = "the name",
         FilterJson = "the Json",
 
         IsDeleted = false,
@@ -212,7 +212,7 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filter.UserId, result.UserID, "UserId has not been mapped correctly");
       Assert.AreEqual(filter.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filter.FilterUid, result.FilterUID.ToString(), "FilterUid has not been mapped correctly");
+      Assert.AreEqual(filter.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
     }
   }
 }

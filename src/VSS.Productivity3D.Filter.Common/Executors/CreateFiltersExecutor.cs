@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       CreateFilterEvent filterEvent = null;
       try
       {
-        filterRequest.FilterUid = Guid.NewGuid().ToString();
+        filterRequest.filterUid = Guid.NewGuid().ToString();
         filterEvent = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
         filterEvent.CustomerUID = Guid.Parse(customerUid);
         filterEvent.UserID = userId;

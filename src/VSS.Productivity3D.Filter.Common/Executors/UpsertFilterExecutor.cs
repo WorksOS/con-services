@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
       }
 
-      if (string.IsNullOrEmpty(filterRequest.Name))
+      if (string.IsNullOrEmpty(filterRequest.name))
         result = await ProcessTransient(filterRequest).ConfigureAwait(false);
       else
         result = await ProcessPersistent(filterRequest).ConfigureAwait(false);
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     {
       // if filterUid supplied, then exception as cannot update a transient filter
       //   else create new one Note that can have duplicate transient name (i.e. "") per cust/prj/user
-      if (!string.IsNullOrEmpty(filterRequest.FilterUid))
+      if (!string.IsNullOrEmpty(filterRequest.filterUid))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 16);
       }
@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       var createdCount = 0;
       try
       {
-        filterRequest.FilterUid = Guid.NewGuid().ToString();
+        filterRequest.filterUid = Guid.NewGuid().ToString();
         var filterEvent = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
         filterEvent.ActionUTC = DateTime.UtcNow;
         createdCount = await filterRepo.StoreEvent(filterEvent).ConfigureAwait(false);
@@ -130,17 +130,17 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
 
       MasterData.Repositories.DBModels.Filter existingFilter = null;
-      if (!string.IsNullOrEmpty(filterRequest.FilterUid))
+      if (!string.IsNullOrEmpty(filterRequest.filterUid))
       {
         existingFilter = existingPersistentFilters.SingleOrDefault(
-          f => string.Equals(f.FilterUid, filterRequest.FilterUid, StringComparison.OrdinalIgnoreCase));
+          f => string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase));
         if (existingFilter == null)
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 21);
 
-        // don't allow update to Name to a Name which already exists (for a different filterUid)
+        // don't allow update to name to a name which already exists (for a different filterUid)
         var filterOfSameName = existingPersistentFilters
-          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase) 
-               && !string.Equals(f.FilterUid, filterRequest.FilterUid, StringComparison.OrdinalIgnoreCase));
+          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.name, StringComparison.OrdinalIgnoreCase) 
+               && !string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase));
         if (filterOfSameName != null)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
@@ -150,7 +150,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         try
         {
           updateFilterEvent = AutoMapperUtility.Automapper.Map<UpdateFilterEvent>(filterRequest);
-          // only Name can be updated, NOT filterJson. Do this here as well as in AutoMapper, just to be sure!
+          // only name can be updated, NOT filterJson. Do this here as well as in AutoMapper, just to be sure!
           updateFilterEvent.FilterJson = existingFilter.FilterJson;
           updateFilterEvent.ActionUTC = DateTime.UtcNow;
           var updatedCount = await filterRepo.StoreEvent(updateFilterEvent).ConfigureAwait(false);
@@ -183,7 +183,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       else // create
       {
         var filterOfSameName = existingPersistentFilters
-          .FirstOrDefault(f => (string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase)));
+          .FirstOrDefault(f => (string.Equals(f.Name, filterRequest.name, StringComparison.OrdinalIgnoreCase)));
         if (filterOfSameName != null)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
@@ -192,7 +192,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         CreateFilterEvent createFilterEvent = null;
         try
         {
-          filterRequest.FilterUid = Guid.NewGuid().ToString();
+          filterRequest.filterUid = Guid.NewGuid().ToString();
           createFilterEvent = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
           createFilterEvent.ActionUTC = DateTime.UtcNow;
           var createdCount = await filterRepo.StoreEvent(createFilterEvent).ConfigureAwait(false);
@@ -225,7 +225,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       var retrievedFilter = (await filterRepo
           .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId)
           .ConfigureAwait(false))
-          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase));
+          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.name, StringComparison.OrdinalIgnoreCase));
 
       if (retrievedFilter == null)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 24);
