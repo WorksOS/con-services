@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       TCutFillDetails cutFillDetails;
 
       bool success = raptorClient.GetCutFillDetails(request.projectId ?? -1,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtNull),
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCutfillDetailed),
         new TCutFillSettings
         {
           Offsets = request.CutFillTolerances,
