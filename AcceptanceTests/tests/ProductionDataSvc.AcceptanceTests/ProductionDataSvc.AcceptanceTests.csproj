@@ -697,7 +697,9 @@
     <None Include="TestData\CompactionGetCompactionPalettesResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetCutFillDataResponse.json" />
+    <None Include="TestData\CompactionGetCutFillDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\CompactionGetElevationAndProjectStatisticsDataResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
