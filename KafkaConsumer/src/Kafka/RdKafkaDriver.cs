@@ -58,6 +58,7 @@ namespace VSS.KafkaConsumer.Kafka
       while (payloads.Count < batchSize && protectionCounter < 10) //arbitary number here for the perfomance testing
       {
         log?.LogTrace($"Polling with retries {protectionCounter}");
+        log?.LogTrace($"Consumer is subscribed to {rdConsumer.Subscription.Aggregate((i,j)=>i+j)}");
         rdConsumer.Consume(out var result, timeout);
         if (result == null)
         {
@@ -96,7 +97,7 @@ namespace VSS.KafkaConsumer.Kafka
       if (configurationStore.GetValueInt("KAFKA_REQUEST_TIMEOUT") > -1)
         requestTimeout = configurationStore.GetValueInt("KAFKA_REQUEST_TIMEOUT");
 
-      Console.WriteLine($"InitConsumer: KAFKA_GROUP_NAME:{ConsumerGroup}  KAFKA_AUTO_COMMIT: {EnableAutoCommit}  KAFKA_OFFSET: {OffsetReset}  KAFKA_URI: {Uri}  KAFKA_PORT: {Port} KAFKA_CONSUMER_SESSION_TIMEOUT:{sessionTimeout}  KAFKA_REQUEST_TIMEOUT: {requestTimeout}");
+      log?.LogTrace($"InitConsumer: KAFKA_GROUP_NAME:{ConsumerGroup}  KAFKA_AUTO_COMMIT: {EnableAutoCommit}  KAFKA_OFFSET: {OffsetReset}  KAFKA_URI: {Uri}  KAFKA_PORT: {Port} KAFKA_CONSUMER_SESSION_TIMEOUT:{sessionTimeout}  KAFKA_REQUEST_TIMEOUT: {requestTimeout}");
       
       consumerConfig = new Dictionary<string, object>
       {
@@ -126,7 +127,7 @@ namespace VSS.KafkaConsumer.Kafka
       if (configurationStore.GetValueInt("KAFKA_PRODUCER_SESSION_TIMEOUT") > -1)
         sessionTimeout = configurationStore.GetValueInt("KAFKA_PRODUCER_SESSION_TIMEOUT");
 
-      Console.WriteLine($"InitProducer: KAFKA_URI:{Uri}  KAFKA_PORT: {Port}  KAFKA_PRODUCER_SESSION_TIMEOUT: {sessionTimeout}");
+      log.LogTrace($"InitProducer: KAFKA_URI:{Uri}  KAFKA_PORT: {Port}  KAFKA_PRODUCER_SESSION_TIMEOUT: {sessionTimeout}");
 
       producerConfig = new Dictionary<string, object>
       {
