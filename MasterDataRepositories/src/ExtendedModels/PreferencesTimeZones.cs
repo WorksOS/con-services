@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace VSS.MasterData.Repositories.Local.ExtendedModels
+namespace VSS.MasterData.Repositories.ExtendedModels
 {
   /// <summary>
   /// The collection of time zones used in the UI.  The services use this to validate project time zone names and to convert from a Windows time zone to an IANA time zone.

@@ -8,7 +8,6 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.MasterData.Repositories.Extensions;
-using VSS.MasterData.Repositories.Local.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
