@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.Local.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -86,8 +88,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
               new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(9),
                 contractExecutionStatesEnum.FirstNameWithOffset(9)));
           }
-          ProjectTimezone projectTimezone = new ProjectTimezone();
-          if (projectTimezone.timeZone.Contains(createEvent.ProjectTimezone) == false)
+          if (PreferencesTimeZones.WindowsTimeZoneNames().Contains(createEvent.ProjectTimezone) == false)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(10),
