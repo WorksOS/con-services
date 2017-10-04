@@ -84,7 +84,7 @@ namespace KafkaTests
     ///    read earliest 
     /// </summary>
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void AssetConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -113,7 +113,8 @@ namespace KafkaTests
       producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IAssetEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic,Guid.NewGuid().ToString());
 
       var assetContext = new AssetRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Asset> dbReturn = null;
@@ -122,7 +123,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+     //   Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"AssetKafkaTest iteration {i} of 10");
 
         dbReturn = assetContext.GetAsset(createAssetEvent.AssetUID.ToString());
@@ -139,7 +140,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void CustomerConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -168,7 +169,8 @@ namespace KafkaTests
       producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic,Guid.NewGuid().ToString());
 
       var customerContext = new CustomerRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Customer> dbReturn = null;
@@ -177,7 +179,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+       // Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"CustomerKafkaTest iteration {i} of 10");
 
         dbReturn = customerContext.GetCustomer(createCustomerEvent.CustomerUID);
@@ -194,7 +196,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void DeviceConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -224,7 +226,8 @@ namespace KafkaTests
       producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IDeviceEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var deviceContext = new DeviceRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Device> dbReturn = null;
@@ -233,7 +236,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+        //Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"DeviceKafkaTest iteration {i} of 10");
 
         dbReturn = deviceContext.GetDevice(createDeviceEvent.DeviceUID.ToString());
@@ -250,7 +253,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void ProjectConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -286,7 +289,8 @@ namespace KafkaTests
       producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IProjectEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var projectContext = new ProjectRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Project> dbReturn = null;
@@ -295,7 +299,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+       // Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"ProjectKafkaTest iteration {i} of 10");
 
         dbReturn = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
@@ -312,7 +316,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void ProjectConsumerWritesToDb_CreateProjectSettings()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -373,7 +377,8 @@ namespace KafkaTests
       producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IProjectEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var projectContext = new ProjectRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<ProjectSettings> dbReturn = null;
@@ -382,7 +387,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+       //Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"ProjectSettingsKafkaTest iteration {i} of 10");
 
         dbReturn = projectContext.GetProjectSettings(updateProjectSettingsEvent.ProjectUID.ToString());
@@ -399,7 +404,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void ProjectConsumerWritesToDb_CreateImportedFile()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -436,7 +441,8 @@ namespace KafkaTests
       producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IProjectEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var projectContext = new ProjectRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<ImportedFile> dbReturn = null;
@@ -445,7 +451,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+     //   Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"ImportedFileKafkaTest iteration {i} of 10");
 
         dbReturn = projectContext.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
@@ -464,7 +470,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void SubscriptionConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -498,7 +504,8 @@ namespace KafkaTests
       producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<ISubscriptionEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var subscriptionContext =
         new SubscriptionRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
@@ -508,7 +515,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+      //  Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"SubscriptionKafkaTest iteration {i} of 10");
 
         dbReturn =
@@ -528,7 +535,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+  //  [Ignore]
     public void GeofenceConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -565,7 +572,8 @@ namespace KafkaTests
       producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IGeofenceEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var geofenceContext = new GeofenceRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Geofence> dbReturn = null;
@@ -574,7 +582,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+      //  Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"GeofenceKafkaTest iteration {i} of 10");
 
         dbReturn = geofenceContext.GetGeofence_UnitTest(createGeofenceEvent.GeofenceUID.ToString());
@@ -623,7 +631,8 @@ namespace KafkaTests
       producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IFilterEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var filterContext = new FilterRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Filter> dbReturn = null;
@@ -632,7 +641,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+     //  Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"FilterKafkaTest iteration {i} of 10");
 
         dbReturn = filterContext.GetFilter(createFilterEvent.FilterUID.ToString());
