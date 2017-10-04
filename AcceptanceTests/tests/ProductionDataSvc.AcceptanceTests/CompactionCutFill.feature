@@ -18,7 +18,7 @@ Scenario Outline: Compaction Get Cut-Fill Details
   Given the Compaction service URI "/api/v2/compaction/cutfill/details" for operation "CutFillDetails"
   And the result file "CompactionGetCutFillDataResponse.json"
   And projectUid "<ProjectUID>"
-  And a cutfillDesignUid "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"
+  And a cutfillDesignUid "<CutFillDesignUID>"
 	And filterUid "<FilterUID>"
 	When I request result
 	Then the result should match the "<ResultName>" from the repository
