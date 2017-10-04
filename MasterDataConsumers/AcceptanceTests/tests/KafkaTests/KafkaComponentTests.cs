@@ -19,23 +19,9 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 
 /****
- * upgrading to confluent 0.11 results in delay when opening subsequent consumers on the same group:
- *            'preparing to restabilize group .... with old generation....
- *            
- * Tried:
- *     defining KafkaNames in appsettings rather than creating each test
- *     Disposing or not, the consumers. Ditto with producer. 
- *          Seems that in local debug you MUST dispose the providers else get an exception to do with libre on rubbish collection on exiting the test.
- *     using kafka 0.10.2.1 rather than latest 0.11.0
- *     make wait longer (seems to always require 7 consumer hits??? batching?)
- *     
- *     whether you have the producer/consumer local to test or global made no difference. This should be an issue I would have thought as not disposed between usage types.          
- *     creating a KafkaComponentTests IAbstractKafkaConsumer _consumer and assigning each new topic (was internal to test)
- *     creating a KafkaComponentTests IKafka producer and writing to each new topic (was internal to test)
- *     
- * Going back to "VSS.KafkaConsumer.netcore" Version="2.3.*" and "RdKafka" Version="0.9.2-ci-170" in KafkaTests and TestRun 
- *     reverts back to good behaviour of KafkaTests. Note that leaving EventTests and TestUtil as Confluent didn't seem to hurt anything.
- *     
+ *  temporarily ignored all but most recent test due to 
+ *     see #57802 KafkaConsumer rebalancing is slow in MasterDataConsumer kafkaTests
+ *        also about every 2nd test in a batch fails
  */
 
 namespace KafkaTests
@@ -98,7 +84,7 @@ namespace KafkaTests
     ///    read earliest 
     /// </summary>
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void AssetConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -124,9 +110,11 @@ namespace KafkaTests
           new KeyValuePair<string, string>(createAssetEvent.AssetUID.ToString(), messagePayload)
         });
       Thread.Sleep(_consumerWaitMs);
+      producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IAssetEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic,Guid.NewGuid().ToString());
 
       var assetContext = new AssetRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Asset> dbReturn = null;
@@ -135,13 +123,15 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+     //   Thread.Sleep(_consumerWaitMs);
+        _log.LogDebug($"AssetKafkaTest iteration {i} of 10");
 
         dbReturn = assetContext.GetAsset(createAssetEvent.AssetUID.ToString());
         dbReturn.Wait();
         if (dbReturn.Result != null)
           break;
       }
+      consumer.Dispose();
 
       Assert.IsNotNull(dbReturn, "Invalid result from AssetRepo");
       Assert.IsNotNull(dbReturn?.Result, "Unable to retrieve Asset from AssetRepo");
@@ -150,7 +140,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void CustomerConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -176,24 +166,28 @@ namespace KafkaTests
           new KeyValuePair<string, string>(createCustomerEvent.CustomerUID.ToString(), messagePayload)
         });
       Thread.Sleep(_consumerWaitMs);
+      producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic,Guid.NewGuid().ToString());
 
       var customerContext = new CustomerRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Customer> dbReturn = null;
       Thread.Sleep(_consumerWaitMs);
-
+      
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+       // Thread.Sleep(_consumerWaitMs);
+        _log.LogDebug($"CustomerKafkaTest iteration {i} of 10");
 
         dbReturn = customerContext.GetCustomer(createCustomerEvent.CustomerUID);
         dbReturn.Wait();
         if (dbReturn.Result != null)
           break;
       }
+      consumer.Dispose();
 
       Assert.IsNotNull(dbReturn, "Invalid result from CustomerRepo");
       Assert.IsNotNull(dbReturn?.Result, "Unable to retrieve Customer from CustomerRepo");
@@ -202,7 +196,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void DeviceConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -229,9 +223,11 @@ namespace KafkaTests
           new KeyValuePair<string, string>(createDeviceEvent.DeviceUID.ToString(), messagePayload)
         });
       Thread.Sleep(_consumerWaitMs);
+      producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IDeviceEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var deviceContext = new DeviceRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Device> dbReturn = null;
@@ -240,13 +236,15 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+        //Thread.Sleep(_consumerWaitMs);
+        _log.LogDebug($"DeviceKafkaTest iteration {i} of 10");
 
         dbReturn = deviceContext.GetDevice(createDeviceEvent.DeviceUID.ToString());
         dbReturn.Wait();
         if (dbReturn.Result != null)
           break;
       }
+      consumer.Dispose();
 
       Assert.IsNotNull(dbReturn, "Invalid result from DeviceRepo");
       Assert.IsNotNull(dbReturn?.Result, "Unable to retrieve Device from DeviceRepo");
@@ -255,7 +253,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void ProjectConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -288,9 +286,11 @@ namespace KafkaTests
           new KeyValuePair<string, string>(createProjectEvent.ProjectUID.ToString(), messagePayload)
         });
       Thread.Sleep(_consumerWaitMs);
+      producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IProjectEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var projectContext = new ProjectRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Project> dbReturn = null;
@@ -299,13 +299,15 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+       // Thread.Sleep(_consumerWaitMs);
+        _log.LogDebug($"ProjectKafkaTest iteration {i} of 10");
 
         dbReturn = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
         dbReturn.Wait();
         if (dbReturn.Result != null)
           break;
       }
+      consumer.Dispose();
 
       Assert.IsNotNull(dbReturn, "Invalid result from ProjectRepo");
       Assert.IsNotNull(dbReturn?.Result, "Unable to retrieve Project from ProjectRepo");
@@ -314,7 +316,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void ProjectConsumerWritesToDb_CreateProjectSettings()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -372,9 +374,11 @@ namespace KafkaTests
           new KeyValuePair<string, string>(updateProjectSettingsEvent.ProjectUID.ToString(), messagePayload)
         });
       Thread.Sleep(_consumerWaitMs);
+      producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IProjectEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var projectContext = new ProjectRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<ProjectSettings> dbReturn = null;
@@ -383,13 +387,15 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+       //Thread.Sleep(_consumerWaitMs);
+        _log.LogDebug($"ProjectSettingsKafkaTest iteration {i} of 10");
 
         dbReturn = projectContext.GetProjectSettings(updateProjectSettingsEvent.ProjectUID.ToString());
         dbReturn.Wait();
         if (dbReturn.Result != null)
           break;
       }
+      consumer.Dispose();
 
       Assert.IsNotNull(dbReturn, "Invalid result from ProjectRepo");
       Assert.IsNotNull(dbReturn?.Result, "Unable to retrieve ProjectSettings from ProjectRepo");
@@ -398,6 +404,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
+   // [Ignore]
     public void ProjectConsumerWritesToDb_CreateImportedFile()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -431,9 +438,11 @@ namespace KafkaTests
           new KeyValuePair<string, string>(createImportedFileEvent.ProjectUID.ToString(), messagePayload)
         });
       Thread.Sleep(_consumerWaitMs);
+      producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IProjectEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var projectContext = new ProjectRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<ImportedFile> dbReturn = null;
@@ -442,13 +451,15 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+     //   Thread.Sleep(_consumerWaitMs);
+        _log.LogDebug($"ImportedFileKafkaTest iteration {i} of 10");
 
         dbReturn = projectContext.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
         dbReturn.Wait();
         if (dbReturn.Result != null)
           break;
       }
+      consumer.Dispose();
 
       Assert.IsNotNull(dbReturn, "Invalid result from ProjectRepo");
       Assert.IsNotNull(dbReturn?.Result, "Unable to retrieve importedFile from ProjectRepo");
@@ -459,7 +470,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+   // [Ignore]
     public void SubscriptionConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -490,9 +501,11 @@ namespace KafkaTests
           new KeyValuePair<string, string>(createProjectSubscriptionEvent.SubscriptionUID.ToString(), messagePayload)
         });
       Thread.Sleep(_consumerWaitMs);
+      producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<ISubscriptionEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var subscriptionContext =
         new SubscriptionRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
@@ -502,7 +515,8 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+      //  Thread.Sleep(_consumerWaitMs);
+        _log.LogDebug($"SubscriptionKafkaTest iteration {i} of 10");
 
         dbReturn =
           subscriptionContext.GetSubscriptions_UnitTest(createProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -510,6 +524,7 @@ namespace KafkaTests
         if (dbReturn.Result != null && dbReturn?.Result?.Count() > 0)
           break;
       }
+      consumer.Dispose();
 
       Assert.IsNotNull(dbReturn, "Invalid result from SubscriptionRepo");
       Assert.IsNotNull(dbReturn?.Result, "Unable to retrieve Subscription from SubscriptionRepo");
@@ -520,7 +535,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-    [Ignore]
+  //  [Ignore]
     public void GeofenceConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -554,9 +569,11 @@ namespace KafkaTests
           new KeyValuePair<string, string>(createGeofenceEvent.GeofenceUID.ToString(), messagePayload)
         });
       Thread.Sleep(_consumerWaitMs);
+      producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IGeofenceEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var geofenceContext = new GeofenceRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Geofence> dbReturn = null;
@@ -565,13 +582,15 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+      //  Thread.Sleep(_consumerWaitMs);
+        _log.LogDebug($"GeofenceKafkaTest iteration {i} of 10");
 
         dbReturn = geofenceContext.GetGeofence_UnitTest(createGeofenceEvent.GeofenceUID.ToString());
         dbReturn.Wait();
         if (dbReturn.Result != null)
           break;
       }
+      consumer.Dispose();
 
       Assert.IsNotNull(dbReturn, "Invalid result from GeofenceRepo");
       Assert.IsNotNull(dbReturn?.Result, "Unable to retrieve Geofence from GeofenceRepo");
@@ -609,9 +628,11 @@ namespace KafkaTests
           new KeyValuePair<string, string>(createFilterEvent.FilterUID.ToString(), messagePayload)
         });
       Thread.Sleep(_consumerWaitMs);
+      producer.Dispose();
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IFilterEvent>>();
-      consumer.SetTopic(baseTopic);
+      consumer.OverrideLogger(_log);
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var filterContext = new FilterRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Filter> dbReturn = null;
@@ -620,13 +641,15 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-        Thread.Sleep(_consumerWaitMs);
+     //  Thread.Sleep(_consumerWaitMs);
+        _log.LogDebug($"FilterKafkaTest iteration {i} of 10");
 
         dbReturn = filterContext.GetFilter(createFilterEvent.FilterUID.ToString());
         dbReturn.Wait();
         if (dbReturn.Result != null)
           break;
       }
+      consumer.Dispose();
 
       Assert.IsNotNull(dbReturn, "Invalid result from FilterRepo");
       Assert.IsNotNull(dbReturn?.Result, "Unable to retrieve Filter from FilterRepo");

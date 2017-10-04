@@ -15,7 +15,7 @@ namespace VSS.KafkaConsumer
 {
   public class KafkaConsumer<T> : IKafkaConsumer<T>
   {
-    private readonly ILogger log;
+    private ILogger log;
     private readonly ILoggerFactory LoggerFactory;
     private readonly IKafka kafkaDriver;
     private readonly IConfigurationStore configurationStore;
@@ -39,11 +39,16 @@ namespace VSS.KafkaConsumer
       LoggerFactory = logger;
     }
 
+    public void OverrideLogger(ILogger logger)
+    {
+      log = logger;
+    }
 
-    public void SetTopic(string topic)
+
+    public void SetTopic(string topic, string consumerGroup = null)
     {
       topicName = topic;
-      kafkaDriver.InitConsumer(configurationStore, logger: LoggerFactory.CreateLogger<IKafka>());
+      kafkaDriver.InitConsumer(configurationStore, groupName: consumerGroup, logger: LoggerFactory.CreateLogger<IKafka>());
       log.LogDebug("KafkaConsumer: " + topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX"));
       kafkaDriver.Subscribe(new List<string>()
       {
@@ -86,11 +91,13 @@ namespace VSS.KafkaConsumer
     /// </summary>
     public void StartProcessingSync()
     {
-      ProcessMessage().Wait();
+      log.LogTrace("Processing synchronous poll");
+      int i= ProcessMessage().Result;
     }
 
-    private async Task ProcessMessage()
+    private async Task<int> ProcessMessage()
     {
+      log.LogTrace($"Polling with {requestTime} timeout");
       var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(requestTime));
       if (messages.message == Error.NO_ERROR)
       {
@@ -120,6 +127,7 @@ namespace VSS.KafkaConsumer
         log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
         await kafkaDriver.Commit();
       }
+      return 0;
     }
 
     public void StopProcessing()
