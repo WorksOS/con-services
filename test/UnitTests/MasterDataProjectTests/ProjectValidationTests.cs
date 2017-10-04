@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.MasterData.Repositories.Local.ExtendedModels;
+using VSS.MasterData.Repositories.ExtendedModels;
 
 namespace VSS.MasterData.ProjectTests
 {

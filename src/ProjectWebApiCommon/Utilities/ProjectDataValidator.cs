@@ -5,7 +5,7 @@ using System.Net;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.Local.ExtendedModels;
+using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
