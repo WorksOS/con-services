@@ -27,7 +27,7 @@ namespace VSS.MasterData.Proxies
       IDictionary<string, string> customHeaders = null)
     {
       var result = await GetContainedMasterDataList<FilterData>(filterUid, "FILTER_CACHE_LIFE", "FILTER_API_URL",
-        customHeaders, $"/{projectUid}?filterUid={filterUid}");
+        customHeaders, $"/{projectUid}?filterUid={filterUid}", "/filter");
       if (result.Code == 0)
       {
         return result.filterDescriptor;
@@ -49,7 +49,7 @@ namespace VSS.MasterData.Proxies
     public async Task<List<FilterDescriptor>> GetFilters(string projectUid, IDictionary<string, string> customHeaders = null)
     {
       var result = await GetContainedMasterDataList<FilterListData>(projectUid, "FILTER_CACHE_LIFE", "FILTER_API_URL",
-        customHeaders, $"/{projectUid}");
+        customHeaders, $"/{projectUid}", "/filters");
       if (result.Code == 0)
       {
         return result.filterDescriptors;

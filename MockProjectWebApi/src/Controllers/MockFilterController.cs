@@ -14,7 +14,7 @@ namespace MockProjectWebApi.Controllers
     /// Get a filter used in the 3D Productivity service acceptance tests.
     /// The data is mocked.
     /// </summary>
-    [Route("api/v4/mockfilter/{projectUid}")]
+    [Route("api/v1/mock/filter/{projectUid}")]
     [HttpGet]
     public FilterData GetMockFilter(string projectUid, [FromUri] string filterUid)
     {
@@ -27,7 +27,7 @@ namespace MockProjectWebApi.Controllers
     /// Gets the list of filters used in the 3D Productivity service acceptance tests.
     /// The data is mocked.
     /// </summary>
-    [Route("api/v4/mockfilter/{projectUid}")]
+    [Route("api/v1/mock/filters/{projectUid}")]
     [HttpGet]
     public FilterListData GetMockFilters(string projectUid)
     {
