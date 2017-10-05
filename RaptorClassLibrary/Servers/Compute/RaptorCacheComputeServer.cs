@@ -81,6 +81,11 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             };
 
             cfg.Logger = new IgniteLog4NetLogger(Log);
+
+            // Set an Ignite metrics heartbeat of 10 seconds 
+            cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10);
+
+            cfg.PublicThreadPoolSize = 50;            
         }
 
         public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)

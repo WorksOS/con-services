@@ -37,10 +37,13 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
 
             IClusterGroup group = ignite.GetCluster().ForRemotes().ForAttribute("Role", "ASNode");
             ICompute compute = group.GetCompute();
-            Bitmap result = compute.Apply(func, arg);
+
+            Task<Bitmap> taskResult = compute.ApplyAsync(func, arg);
+
+            //Bitmap result = compute.Apply(func, arg);
 
             // Send the appropriate response to the caller
-            return result;
+            return taskResult.Result;
         }
     }
 }

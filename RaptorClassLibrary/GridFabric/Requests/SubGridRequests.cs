@@ -5,6 +5,7 @@ using Apache.Ignite.Core.Messaging;
 using log4net;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -141,10 +142,25 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
 
             // Note: Broadcast will block until all compute nodes receiving the request have responded, or
             // until the internal Ignite timeout expires
-            ICollection<SubGridRequestsResponse> result = compute.Broadcast(func, arg);
+            //ICollection<SubGridRequestsResponse> result = compute.Broadcast(func, arg);
+            Task<ICollection<SubGridRequestsResponse>> taskResult = compute.BroadcastAsync(func, arg);
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            try
+            {
+                taskResult.Wait(120000);
+            }
+            finally
+            {
+                sw.Stop();
+                Log.InfoFormat("TaskResult {0}: SubgidRequests.Execute() for DM:{1} from node {2} for data type {3} took {4}ms", 
+                               taskResult.Status, Task.PipeLine.DataModelID, Task.RaptorNodeID, Task.GridDataType, sw.ElapsedMilliseconds);
+            }
 
             // Send the appropriate response to the caller
-            return result;
+            // return result;
+            return taskResult.Result;
         }
     }
 }

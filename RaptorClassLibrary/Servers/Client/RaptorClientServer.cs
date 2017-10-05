@@ -33,13 +33,15 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                 // If there was no connection obtained, attempt to create a new instance
                 if (raptorGrid == null)
-                {
+                {                    
                     RaptorNodeID = Guid.NewGuid().ToString();
 
                     Log.InfoFormat("Creating new Ignite node with Role = {0} & RaptorNodeID = {1}", role, RaptorNodeID);
 
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
+//                        SpringConfigUrl = @".\RaptorIgniteConfig.xml",
+
                         GridName = RaptorGrids.RaptorGridName(),
                         IgniteInstanceName = RaptorGrids.RaptorGridName(),
                         ClientMode = true,
@@ -76,7 +78,12 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                                  MaxSize = 1L * 1024 * 1024 * 1024  // 1 GB
                               }
                             }
-                        }
+                        },
+
+                        // Set an Ignite metrics heartbeat of 10 seconds 
+                        MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
+                       
+                        PublicThreadPoolSize = 50
                     };
 
                     try

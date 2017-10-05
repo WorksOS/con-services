@@ -15,7 +15,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
 {
     /// <summary>
     /// SubGridListener implements a listening post for subgrid results being sent by processing nodes back
-    /// to the local context for further processing. Subgrids are sent as serialised streams held in memory streams
+    /// to the local context for further processing. Subgrids are sent in groups as serialised streams held in memory streams
     /// to minimise serialization/deserialisation overhead
     /// </summary>
     [Serializable]
@@ -47,38 +47,50 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
             try
             {
                 // Decode the message into the appropriate client subgrid type
-                IClientLeafSubGrid ClientGrid = ClientLeafSubGridFactory.GetSubGrid(Task.GridDataType);
-
                 message.Position = 0;
-                ClientGrid.Read(new BinaryReader(message, Encoding.UTF8, true));
 
-                int thisResponseCount = ++responseCounter;
-
-                // Log.InfoFormat("Transferring response#{0} to processor (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
-
-                // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialised into the task
-                // (no assumption of thread safety within the task itself)
-                lock (Task)
+                using (BinaryReader reader = new BinaryReader(message, Encoding.UTF8, true))
                 {
-                    try
+                    // Read the number of subgrid presentin the stream
+                    int subgridCount = reader.ReadInt32();
+
+                    // Create a single instance of the client grid. The approach here is that TransferResponse does not move ownership 
+                    // to the called context (it may clone the passed in client grid if desired)
+                    IClientLeafSubGrid clientGrid = ClientLeafSubGridFactory.GetSubGrid(Task.GridDataType);
+
+                    for (int i = 0; i < subgridCount; i++)
                     {
-                        if (Task.TransferResponse(ClientGrid))
+                        clientGrid.Read(reader);
+
+                        int thisResponseCount = ++responseCounter;
+
+                        // Log.InfoFormat("Transferring response#{0} to processor (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+
+                        // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialised into the task
+                        // (no assumption of thread safety within the task itself)
+                        try
                         {
-                            Log.InfoFormat("Processed response#{0} (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+                            lock (Task)
+                            {
+                                if (Task.TransferResponse(clientGrid))
+                                {
+                                    // Log.DebugFormat("Processed response#{0} (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+                                }
+                                else
+                                {
+                                    Log.InfoFormat("Processing response#{0} FAILED (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+                                }
+                            }
                         }
-                        else
+                        finally
                         {
-                            Log.InfoFormat("Processing response#{0} FAILED (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+                            // Tell the pipeline that a subgrid has been completely processed
+                            Task.PipeLine.SubgridProcessed();
                         }
-                    }
-                    finally
-                    {
-                        // Tell the pipeline that a subgrid has been completely processed
-                        Task.PipeLine.SubgridProcessed();
                     }
                 }
-            }
-            catch ( Exception E )
+            }            
+            catch (Exception E)
             {
                 throw;
             }
