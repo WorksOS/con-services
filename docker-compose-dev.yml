@@ -9,12 +9,13 @@ services:
      - IMPORTED_FILE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
      - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
      - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/projectsettings
-     - FILTER_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-3Dfilter/1.0/filter
+     - FILTER_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-3Dfilter/1.0
      - GEOFENCE_CACHE_LIFE=00:15:00
      - PROJECT_CACHE_LIFE=00:15:00
      - IMPORTED_FILE_CACHE_LIFE=00:15:00
      - CUSTOMERSERVICE_CACHE_LIFE=00:15:00
      - PROJECT_SETTINGS_CACHE_LIFE=00:15:00
+     - FILTER_CACHE_LIFE=00:15:00
      - ELEVATION_EXTENTS_CACHE_LIFE=00:15:00
      - ASNODEIP=10.97.96.134
      - IONODEIP=10.97.96.92
