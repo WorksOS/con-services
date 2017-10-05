@@ -56,17 +56,17 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public static async Task NotifyRaptorFilterChange(IRaptorProxy raptorProxy,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, 
-      string filterUid)
+      string filterUid, string projectUid)
     {
       BaseDataResult notificationResult = null;
       try
       {
-        notificationResult = await raptorProxy.NotifyFilterChange(new Guid(filterUid));
+        notificationResult = await raptorProxy.NotifyFilterChange(new Guid(filterUid), new Guid(projectUid));
       }
       catch (Exception e)
       {
         log.LogError(
-          $"NotifyRaptorFilterChange: RaptorServices failed with exception. filterUid:{filterUid}. Exception Thrown: {e.Message}. ");
+          $"NotifyRaptorFilterChange: RaptorServices failed with exception. filterUid:{filterUid} projectUid:{projectUid}. Exception Thrown: {e.Message}. ");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 30, "raptorProxy.NotifyFilterChange", e.Message);
       }
 

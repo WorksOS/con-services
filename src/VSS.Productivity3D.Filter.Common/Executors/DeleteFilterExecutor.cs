@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         {
           if (deletedCount > 0)
             await FilterValidation
-              .NotifyRaptorFilterChange(raptorProxy, log, serviceExceptionHandler, projectFilter?.FilterUid)
+              .NotifyRaptorFilterChange(raptorProxy, log, serviceExceptionHandler, projectFilter?.FilterUid, filterRequest.ProjectUid)
               .ConfigureAwait(false);
 
         }
