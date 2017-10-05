@@ -69,7 +69,8 @@ namespace VSS.KafkaConsumer.Kafka
           payloads.Add(result.Value);
           lastValidResult = result;
         }
-        protectionCounter++;
+        else
+	  protectionCounter++;
       }
 
       log?.LogTrace($"Returning {payloads.Count} records with offset {lastValidResult?.Offset ?? -1} and partition {lastValidResult?.Partition ?? -1}");
