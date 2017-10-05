@@ -124,11 +124,12 @@ namespace VSS.MasterData.Proxies
     /// Validates that filterUid has changed i.e. updated/deleted but not inserted
     /// </summary>
     /// <param name="filterUid"></param>
-       /// <param name="customHeaders">The custom headers.</param>
-    public async Task<BaseDataResult> NotifyFilterChange(Guid filterUid, IDictionary<string, string> customHeaders = null)
+    /// <param name="projectUid"></param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<BaseDataResult> NotifyFilterChange(Guid filterUid, Guid projectUid, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.NotifyFilterChange: filterUid: {filterUid}");
-      var queryParams = $"?filterUid={filterUid}";
+      log.LogDebug($"RaptorProxy.NotifyFilterChange: filterUid: {filterUid}, projectUid: {projectUid}");
+      var queryParams = $"?filterUid={filterUid}&projectUid={projectUid}";
       BaseDataResult response = await GetMasterDataItem<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL", customHeaders, queryParams, "/filterchange");
       log.LogDebug("RaptorProxy.NotifyFilterChange: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 

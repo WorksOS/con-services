@@ -23,6 +23,6 @@ namespace VSS.MasterData.Proxies.Interfaces
 
     Task<BaseDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, IDictionary<string, string> customHeaders = null);
 
-    Task<BaseDataResult> NotifyFilterChange(Guid filterUid, IDictionary<string, string> customHeaders = null);
+    Task<BaseDataResult> NotifyFilterChange(Guid filterUid, Guid projectUid, IDictionary<string, string> customHeaders = null);
   }
 }

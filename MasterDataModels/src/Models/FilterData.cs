@@ -10,7 +10,6 @@ namespace VSS.MasterData.Models.Models
     /// <value>
     /// The filter descriptor.
     /// </value>
-    [JsonProperty(PropertyName = "filterDescriptor")]
     public FilterDescriptor filterDescriptor { get; set; }
   }
 }
