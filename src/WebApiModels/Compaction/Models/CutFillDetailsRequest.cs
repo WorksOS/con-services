@@ -13,25 +13,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// 3 cut values greater than zero, on-grade equal to zero and 3 fill values less than zero.
     /// Values are in meters.
     /// </summary>
-    [JsonProperty(PropertyName = "cutFillTolerances", Required = Required.Always)]
     public double[] CutFillTolerances { get; private set; }
     /// <summary>
     /// The filter instance to use in the request
     /// Value may be null.
     /// </summary>
-    [JsonProperty(PropertyName = "filter", Required = Required.Default)]
     public Filter filter { get; private set; }
 
     /// <summary>
     /// The set of parameters and configuration information relevant to analysis of compaction material layers information for related profile queries.
     /// </summary>
-    [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
     public LiftBuildSettings liftBuildSettings { get; private set; }
 
     /// <summary>
     /// The descriptor for the design for which to to generate the cut-fill data.
     /// </summary>
-    [JsonProperty(PropertyName = "designDescriptor", Required = Required.Always)]
     public DesignDescriptor designDescriptor { get; private set; }
 
     public static CutFillDetailsRequest CreateCutFillDetailsRequest(long projectId, double[] tolerances, Filter filter, LiftBuildSettings liftBuildSettings, DesignDescriptor designDescriptor)

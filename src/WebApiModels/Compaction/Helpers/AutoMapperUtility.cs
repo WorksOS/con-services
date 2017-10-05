@@ -48,91 +48,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         cfg =>
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
-          cfg.CreateMap<CompactionProjectSettings, CMVSettings>()
-            .ForMember(x => x.overrideTargetCMV,
-              opt => opt.MapFrom(ps => ps.OverrideMachineTargetCmv))
-            .ForMember(x => x.cmvTarget,
-              opt => opt.MapFrom(ps => ps.CustomTargetCmv))
-            .ForMember(x => x.minCMV,
-            opt => opt.MapFrom(ps => ps.CmvMinimum))
-            .ForMember(x => x.maxCMV,
-            opt => opt.MapFrom(ps => ps.CmvMaximum))
-            .ForMember(x => x.minCMVPercent,
-            opt => opt.MapFrom(ps => ps.CustomTargetCmvPercentMinimum))
-            .ForMember(x => x.maxCMVPercent,
-            opt => opt.MapFrom(ps => ps.CustomTargetCmvPercentMaximum));
-
-          cfg.CreateMap<CompactionProjectSettings, MDPSettings>()
-            .ForMember(x => x.overrideTargetMDP,
-              opt => opt.MapFrom(ps => ps.OverrideMachineTargetMdp))
-            .ForMember(x => x.mdpTarget,
-              opt => opt.MapFrom(ps => ps.CustomTargetMdp))
-            .ForMember(x => x.minMDP,
-              opt => opt.MapFrom(ps => ps.MdpMinimum))
-            .ForMember(x => x.maxMDP,
-              opt => opt.MapFrom(ps => ps.MdpMaximum))
-            .ForMember(x => x.minMDPPercent,
-              opt => opt.MapFrom(ps => ps.CustomTargetMdpPercentMinimum))
-            .ForMember(x => x.maxMDPPercent,
-              opt => opt.MapFrom(ps => ps.CustomTargetMdpPercentMaximum));
-
-          cfg.CreateMap<CompactionProjectSettings, TemperatureSettings>()
-            .ForMember(x => x.overrideTemperatureRange,
-              opt => opt.MapFrom(ps => ps.OverrideMachineTargetTemperature))
-            .ForMember(x => x.minTemperature,
-              opt => opt.MapFrom(ps => ps.CustomTargetTemperatureMinimum))
-            .ForMember(x => x.maxTemperature,
-              opt => opt.MapFrom(ps => ps.CustomTargetTemperatureMaximum));
-
-          cfg.CreateMap<CompactionProjectSettings, PassCountSettings>()
-            .ForMember(x => x.passCounts,
-              opt => opt.MapFrom(ps => ps.CustomPassCounts));
-
-          cfg.CreateMap<CompactionProjectSettings, CmvPercentChangeSettings>()
-            .ForMember(x => x.percents,
-              opt => opt.MapFrom(ps => ps.CmvPercentChange));
-
-          cfg.CreateMap<CompactionProjectSettings, CutFillSettings>()
-            .ForMember(x => x.percents,
-              opt => opt.MapFrom(ps => ps.CustomCutFillTolerances));
-
-          cfg.CreateMap<CompactionProjectSettings, LiftBuildSettings>()
-            .ForMember(x => x.cCVRange,
-              opt => opt.ResolveUsing<CustomCCVRangePercentageResolver>())
-            .ForMember(x => x.cCVSummarizeTopLayerOnly,
-              opt => opt.Ignore())//Raptor only uses this when using lifts (all layers)
-            .ForMember(x => x.CCvSummaryType,
-              opt => opt.Ignore())
-            .ForMember(x => x.deadBandLowerBoundary,
-              opt => opt.Ignore())
-            .ForMember(x => x.deadBandUpperBoundary,
-              opt => opt.Ignore())
-            .ForMember(x => x.firstPassThickness,
-              opt => opt.Ignore())
-            .ForMember(x => x.liftDetectionType,
-              opt => opt.UseValue(LiftDetectionType.None))
-            .ForMember(x => x.liftThicknessType,
-              opt => opt.UseValue(LiftThicknessType.Compacted))
-            .ForMember(x => x.mDPRange,
-              opt => opt.ResolveUsing<CustomMDPRangePercentageResolver>())
-            .ForMember(x => x.mDPSummarizeTopLayerOnly,
-              opt => opt.Ignore())//Raptor only uses this when using lifts (all layers)
-            .ForMember(x => x.overridingLiftThickness,
-              opt => opt.Ignore())
-            .ForMember(x => x.overridingMachineCCV,
-              opt => opt.MapFrom(ps => ps.NullableCustomTargetCmv))
-            .ForMember(x => x.overridingMachineMDP,
-              opt => opt.MapFrom(ps => ps.NullableCustomTargetMdp))
-            .ForMember(x => x.overridingTargetPassCountRange,
-              opt => opt.ResolveUsing<CustomTargetPassCountRangeResolver>())
-            .ForMember(x => x.overridingTemperatureWarningLevels,
-              opt => opt.ResolveUsing<CustomTemperatureWarningLevelsResolver>())
-            .ForMember(x => x.includeSupersededLifts,
-              opt => opt.Ignore())//Raptor only uses this when using lifts (all layers). For 'no lift' is always true.
-            .ForMember(x => x.liftThicknessTarget,
-              opt => opt.Ignore())
-            .ForMember(x => x.machineSpeedTarget,
-              opt => opt.ResolveUsing<CustomMachineSpeedTargetResolver>());
+          cfg.AddProfile<CmvSettingsProfile>();
+          cfg.AddProfile<MdpSettingsProfile>();
+          cfg.AddProfile<TemperatureSettingsProfile>();
+          cfg.AddProfile<PassCountSettingsProfile>();
+          cfg.AddProfile<CmvPercentChangeSettingsProfile>();
+          cfg.AddProfile<CutFillSettingsProfile>();
+          cfg.AddProfile<LiftBuildSettingsProfile>();
         }
       );
 
@@ -187,5 +109,132 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       }
     }
 
+    public class CmvSettingsProfile : Profile
+    {
+      public CmvSettingsProfile()
+      {
+        CreateMap<CompactionProjectSettings, CMVSettings>()
+          .ForMember(x => x.overrideTargetCMV,
+            opt => opt.MapFrom(ps => ps.OverrideMachineTargetCmv))
+          .ForMember(x => x.cmvTarget,
+            opt => opt.MapFrom(ps => ps.CustomTargetCmv))
+          .ForMember(x => x.minCMV,
+            opt => opt.MapFrom(ps => ps.CmvMinimum))
+          .ForMember(x => x.maxCMV,
+            opt => opt.MapFrom(ps => ps.CmvMaximum))
+          .ForMember(x => x.minCMVPercent,
+            opt => opt.MapFrom(ps => ps.CustomTargetCmvPercentMinimum))
+          .ForMember(x => x.maxCMVPercent,
+            opt => opt.MapFrom(ps => ps.CustomTargetCmvPercentMaximum));
+      }
+    }
+
+    public class MdpSettingsProfile : Profile
+    {
+      public MdpSettingsProfile()
+      {
+        CreateMap<CompactionProjectSettings, MDPSettings>()
+          .ForMember(x => x.overrideTargetMDP,
+            opt => opt.MapFrom(ps => ps.OverrideMachineTargetMdp))
+          .ForMember(x => x.mdpTarget,
+            opt => opt.MapFrom(ps => ps.CustomTargetMdp))
+          .ForMember(x => x.minMDP,
+            opt => opt.MapFrom(ps => ps.MdpMinimum))
+          .ForMember(x => x.maxMDP,
+            opt => opt.MapFrom(ps => ps.MdpMaximum))
+          .ForMember(x => x.minMDPPercent,
+            opt => opt.MapFrom(ps => ps.CustomTargetMdpPercentMinimum))
+          .ForMember(x => x.maxMDPPercent,
+            opt => opt.MapFrom(ps => ps.CustomTargetMdpPercentMaximum));
+      }
+    }
+
+    public class TemperatureSettingsProfile : Profile
+    {
+      public TemperatureSettingsProfile()
+      {
+        CreateMap<CompactionProjectSettings, TemperatureSettings>()
+          .ForMember(x => x.overrideTemperatureRange,
+            opt => opt.MapFrom(ps => ps.OverrideMachineTargetTemperature))
+          .ForMember(x => x.minTemperature,
+            opt => opt.MapFrom(ps => ps.CustomTargetTemperatureMinimum))
+          .ForMember(x => x.maxTemperature,
+            opt => opt.MapFrom(ps => ps.CustomTargetTemperatureMaximum));
+      }
+    }
+
+    public class PassCountSettingsProfile : Profile
+    {
+      public PassCountSettingsProfile()
+      {
+        CreateMap<CompactionProjectSettings, PassCountSettings>()
+          .ForMember(x => x.passCounts,
+            opt => opt.MapFrom(ps => ps.CustomPassCounts));
+      }
+    }
+
+    public class CmvPercentChangeSettingsProfile : Profile
+    {
+     public CmvPercentChangeSettingsProfile()
+      {
+        CreateMap<CompactionProjectSettings, CmvPercentChangeSettings>()
+          .ForMember(x => x.percents,
+            opt => opt.MapFrom(ps => ps.CmvPercentChange));
+      }
+    }
+
+    public class CutFillSettingsProfile : Profile
+    {
+      public CutFillSettingsProfile()
+      {
+        CreateMap<CompactionProjectSettings, CutFillSettings>()
+          .ForMember(x => x.percents,
+            opt => opt.MapFrom(ps => ps.CustomCutFillTolerances));
+      }
+    }
+
+    public class LiftBuildSettingsProfile : Profile
+    {
+      public LiftBuildSettingsProfile()
+      {
+        CreateMap<CompactionProjectSettings, LiftBuildSettings>()
+          .ForMember(x => x.cCVRange,
+            opt => opt.ResolveUsing<CustomCCVRangePercentageResolver>())
+          .ForMember(x => x.cCVSummarizeTopLayerOnly,
+            opt => opt.Ignore())//Raptor only uses this when using lifts (all layers)
+          .ForMember(x => x.CCvSummaryType,
+            opt => opt.Ignore())
+          .ForMember(x => x.deadBandLowerBoundary,
+            opt => opt.Ignore())
+          .ForMember(x => x.deadBandUpperBoundary,
+            opt => opt.Ignore())
+          .ForMember(x => x.firstPassThickness,
+            opt => opt.Ignore())
+          .ForMember(x => x.liftDetectionType,
+            opt => opt.UseValue(LiftDetectionType.None))
+          .ForMember(x => x.liftThicknessType,
+            opt => opt.UseValue(LiftThicknessType.Compacted))
+          .ForMember(x => x.mDPRange,
+            opt => opt.ResolveUsing<CustomMDPRangePercentageResolver>())
+          .ForMember(x => x.mDPSummarizeTopLayerOnly,
+            opt => opt.Ignore())//Raptor only uses this when using lifts (all layers)
+          .ForMember(x => x.overridingLiftThickness,
+            opt => opt.Ignore())
+          .ForMember(x => x.overridingMachineCCV,
+            opt => opt.MapFrom(ps => ps.NullableCustomTargetCmv))
+          .ForMember(x => x.overridingMachineMDP,
+            opt => opt.MapFrom(ps => ps.NullableCustomTargetMdp))
+          .ForMember(x => x.overridingTargetPassCountRange,
+            opt => opt.ResolveUsing<CustomTargetPassCountRangeResolver>())
+          .ForMember(x => x.overridingTemperatureWarningLevels,
+            opt => opt.ResolveUsing<CustomTemperatureWarningLevelsResolver>())
+          .ForMember(x => x.includeSupersededLifts,
+            opt => opt.Ignore())//Raptor only uses this when using lifts (all layers). For 'no lift' is always true.
+          .ForMember(x => x.liftThicknessTarget,
+            opt => opt.Ignore())
+          .ForMember(x => x.machineSpeedTarget,
+            opt => opt.ResolveUsing<CustomMachineSpeedTargetResolver>());
+      }
+    }
   }
 }

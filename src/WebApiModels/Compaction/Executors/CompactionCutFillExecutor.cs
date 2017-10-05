@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ContractExecutionResult result = null;
 
       CutFillDetailsRequest request = item as CutFillDetailsRequest;
-      var filter = RaptorConverters.ConvertFilter(-1, request.filter, request.projectId);
+      var filter = RaptorConverters.ConvertFilter(null, request.filter, request.projectId);
       var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
