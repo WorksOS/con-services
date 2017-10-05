@@ -46,6 +46,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       return AutoMapperUtility.Automapper.Map<PassCountSettings>(ps);
     }
 
+    public double[] CompactionCutFillSettings(CompactionProjectSettings ps)
+    {
+      return AutoMapperUtility.Automapper.Map<CutFillSettings>(ps).percents;
+    }
+
     public List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents, CompactionProjectSettings projectSettings)
     {
       const uint OVER_COLOR = 0xD50000;
@@ -105,9 +110,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           palette.Add(ColorPalette.CreateColorPalette(OVER_COLOR, ColorSettings.Default.passCountMaximum.value));
           break;
         case DisplayMode.CutFill:
-          //Note: cut-fill also requires a design for tile requests (make cut-fill compaction settings ?)
-          var cutFillTolerances = projectSettings.useDefaultCutFillTolerances.HasValue && !projectSettings.useDefaultCutFillTolerances.Value ?
-            projectSettings.customCutFillTolerances : CompactionProjectSettings.DefaultSettings.customCutFillTolerances;
+          //Note: cut-fill also requires a design for tile requests 
+          var cutFillTolerances = CompactionCutFillSettings(projectSettings);
           List<uint> cutFillColors = new List<uint> { 0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x039BE5,  0x01579B };
           for (int i = 0; i < cutFillColors.Count; i++)
           {
