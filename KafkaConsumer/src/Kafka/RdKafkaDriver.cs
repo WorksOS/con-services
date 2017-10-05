@@ -1,27 +1,25 @@
-﻿
+﻿using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Confluent.Kafka;
-using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 
 namespace VSS.KafkaConsumer.Kafka
 {
   public class RdKafkaDriver : IKafka
   {
-    Consumer rdConsumer = null;
-    Producer rdProducer = null;
+    private Consumer rdConsumer;
+    private Producer rdProducer;
 
     private readonly Object syncPollObject = new object();
     private Dictionary<string, object> consumerConfig;
     private Dictionary<string, object> producerConfig;
     private int batchSize;
     private ILogger<IKafka> log;
-
-
+    
     public string ConsumerGroup { get; set; }
 
     public string Uri { get; set; }
@@ -32,8 +30,8 @@ namespace VSS.KafkaConsumer.Kafka
 
     public int Port { get; set; }
 
-    public bool IsInitializedProducer { get; private set; } = false;
-    public bool IsInitializedConsumer { get; private set; } = false;
+    public bool IsInitializedProducer { get; private set; }
+    public bool IsInitializedConsumer { get; private set; }
 
     public async Task<CommittedOffsets> Commit()
     {
@@ -127,7 +125,7 @@ namespace VSS.KafkaConsumer.Kafka
       if (configurationStore.GetValueInt("KAFKA_PRODUCER_SESSION_TIMEOUT") > -1)
         sessionTimeout = configurationStore.GetValueInt("KAFKA_PRODUCER_SESSION_TIMEOUT");
 
-      log.LogTrace($"InitProducer: KAFKA_URI:{Uri}  KAFKA_PORT: {Port}  KAFKA_PRODUCER_SESSION_TIMEOUT: {sessionTimeout}");
+      log?.LogTrace($"InitProducer: KAFKA_URI:{Uri}  KAFKA_PORT: {Port}  KAFKA_PRODUCER_SESSION_TIMEOUT: {sessionTimeout}");
 
       producerConfig = new Dictionary<string, object>
       {
@@ -173,8 +171,7 @@ namespace VSS.KafkaConsumer.Kafka
       }
       Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(10));
     }
-
-
+    
     public void Dispose()
     {
       lock (syncPollObject)
@@ -187,7 +184,6 @@ namespace VSS.KafkaConsumer.Kafka
       rdProducer = null;
       IsInitializedProducer = false;
       IsInitializedConsumer = false;
-
     }
   }
 }

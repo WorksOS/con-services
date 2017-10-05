@@ -42,7 +42,7 @@ namespace VSS.MasterData.Repositories
         project.Description = projectEvent.Description;
         project.Name = projectEvent.ProjectName;
         project.ProjectTimeZone = projectEvent.ProjectTimezone;
-        project.LandfillTimeZone = TimeZone.WindowsToIana(projectEvent.ProjectTimezone);
+        project.LandfillTimeZone = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone);
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.EndDate = projectEvent.ProjectEndDate.Date;
         project.LastActionedUTC = projectEvent.ActionUTC;
@@ -85,7 +85,7 @@ namespace VSS.MasterData.Repositories
         project.LastActionedUTC = projectEvent.ActionUTC;
         project.ProjectType = projectEvent.ProjectType;
         project.ProjectTimeZone = projectEvent.ProjectTimezone;
-        project.LandfillTimeZone = TimeZone.WindowsToIana(projectEvent.ProjectTimezone);
+        project.LandfillTimeZone = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone);
 
         if (!string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName))
         {

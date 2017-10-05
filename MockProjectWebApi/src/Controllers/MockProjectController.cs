@@ -61,6 +61,16 @@ namespace MockProjectWebApi.Controllers
             ImportedFileUid = "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b",
             LegacyFileId = 2,
             IsActivated = true
+          },
+          new FileData
+          {
+            Name = "Large Sites Road - Trimble Road.TTM",
+            ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+            CustomerUid = "CutFillAcceptanceTest",
+            ImportedFileType = ImportedFileType.DesignSurface,
+            ImportedFileUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
+            LegacyFileId = 3,
+            IsActivated = true
           }
         };
       }

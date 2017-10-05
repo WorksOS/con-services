@@ -2,6 +2,7 @@
 using System;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MasterDataConsumerTests
@@ -28,7 +29,7 @@ namespace MasterDataConsumerTests
         IsDeleted = false,
 
         ProjectTimeZone = projectTimeZone,
-        LandfillTimeZone = TimeZone.WindowsToIana(projectTimeZone),
+        LandfillTimeZone = PreferencesTimeZones.WindowsToIana(projectTimeZone),
 
         LastActionedUTC = now,
         StartDate = new DateTime(2016, 02, 01),
@@ -85,7 +86,7 @@ namespace MasterDataConsumerTests
         // IsDeleted =  N/A
 
         ProjectTimeZone = kafkaProjectEvent.ProjectTimezone,
-        LandfillTimeZone = TimeZone.WindowsToIana(kafkaProjectEvent.ProjectTimezone),
+        LandfillTimeZone = PreferencesTimeZones.WindowsToIana(kafkaProjectEvent.ProjectTimezone),
 
         LastActionedUTC = kafkaProjectEvent.ActionUTC,
         StartDate = kafkaProjectEvent.ProjectStartDate,

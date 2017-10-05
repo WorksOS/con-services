@@ -4,6 +4,6 @@
     {
       public static string NewZealandStandardTime => "New Zealand Standard Time";
       public static string PacificAuckland => "Pacific/Auckland";
-      public static string Utc => "UTC";
+      public static string Utc => "Coordinated Universal Time";
     }
 }

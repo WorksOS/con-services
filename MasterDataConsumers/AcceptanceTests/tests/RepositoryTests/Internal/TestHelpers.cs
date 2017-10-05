@@ -1,5 +1,6 @@
 ﻿using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests.Internal
@@ -18,7 +19,7 @@ namespace RepositoryTests.Internal
         // IsDeleted =  N/A
 
         ProjectTimeZone = kafkaProjectEvent.ProjectTimezone,
-        LandfillTimeZone = TimeZone.WindowsToIana(kafkaProjectEvent.ProjectTimezone),
+        LandfillTimeZone = PreferencesTimeZones.WindowsToIana(kafkaProjectEvent.ProjectTimezone),
 
         LastActionedUTC = kafkaProjectEvent.ActionUTC,
         StartDate = kafkaProjectEvent.ProjectStartDate,
