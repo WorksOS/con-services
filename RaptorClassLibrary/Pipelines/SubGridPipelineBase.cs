@@ -208,7 +208,15 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public void WaitForCompletion()
         {
-            pipelineSignalEvent.WaitOne(120000); // Don't wait for more than two minutes...
+            if (pipelineSignalEvent.WaitOne(120000)) // Don't wait for more than two minutes...
+            {
+                Log.Info(String.Format("WaitForCompletion received signal with wait handle: {0}", pipelineSignalEvent.SafeWaitHandle.GetHashCode()));
+            }
+            else
+            {
+                // No signal was received, the wait timed out...
+                Log.Info(String.Format("WaitForCompletion timed out with wait handle: {0}", pipelineSignalEvent.SafeWaitHandle.GetHashCode()));
+            }
         }
     }
 }

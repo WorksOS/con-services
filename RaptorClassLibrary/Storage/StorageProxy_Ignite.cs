@@ -68,7 +68,7 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
-                Log.Info(String.Format("Getting key:{0}", StreamName));
+                // Log.Info(String.Format("Getting key:{0}", StreamName));
 
                 if (ReadFromImmutableDataCaches)
                 {
@@ -114,7 +114,7 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
-                Log.Info(String.Format("Getting key:{0}", cacheKey));
+                // Log.Info(String.Format("Getting key:{0}", cacheKey));
 
                 if (ReadFromImmutableDataCaches)
                 {

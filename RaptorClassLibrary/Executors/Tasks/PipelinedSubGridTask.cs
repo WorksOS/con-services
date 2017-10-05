@@ -29,7 +29,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
             }
             else
             {
-                Log.DebugFormat(" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
+                Log.InfoFormat(" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
                 return false;
             }
         }

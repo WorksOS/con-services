@@ -418,7 +418,7 @@ namespace VSS.VisionLink.Raptor.Executors
               new XYZ(BLPoint.X, BLPoint.Y),    // BL
               new XYZ(TRPoint.X, TRPoint.Y),    // TR
               new XYZ(BLPoint.X, TRPoint.Y),    // TL
-              new XYZ(TRPoint.X, BLPoint.Y)    // BR
+              new XYZ(TRPoint.X, BLPoint.Y)     // BR
             };
 
             if (CoordsAreGrid)

@@ -343,7 +343,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
         /// <summary>
         /// Scan all the bits in the bit mask subgrid tree treating each set bit as the address of a subgrid
-        /// call the suppled Action 'functor' with a leaf subgrid origin address calculated from each of the bits
+        /// call the supplied Action 'functor' with a leaf subgrid origin address calculated from each of the bits
         /// Note: As each bit represents an on-the-ground leaf subgrid, cell address of that bit needs to be transformed
         /// from the level 5 (node) layer to the level 6 (leaf) layer
         /// </summary>
