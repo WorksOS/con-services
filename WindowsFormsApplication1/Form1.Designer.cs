@@ -47,6 +47,9 @@
             this.btnZoomAll = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnMultiThreadTest = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.edtNumImages = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -56,6 +59,9 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.edtNumImages);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.btnMultiThreadTest);
             this.panel1.Controls.Add(this.editProjectID);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label1);
@@ -74,7 +80,7 @@
             this.panel1.Controls.Add(this.btnZoomAll);
             this.panel1.Location = new System.Drawing.Point(883, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(187, 510);
+            this.panel1.Size = new System.Drawing.Size(187, 539);
             this.panel1.TabIndex = 15;
             // 
             // editProjectID
@@ -237,7 +243,7 @@
             this.panel2.Controls.Add(this.pictureBox1);
             this.panel2.Location = new System.Drawing.Point(2, 2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(875, 510);
+            this.panel2.Size = new System.Drawing.Size(875, 539);
             this.panel2.TabIndex = 16;
             // 
             // pictureBox1
@@ -247,15 +253,42 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Location = new System.Drawing.Point(10, 9);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(862, 498);
+            this.pictureBox1.Size = new System.Drawing.Size(862, 527);
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
+            // 
+            // btnMultiThreadTest
+            // 
+            this.btnMultiThreadTest.Location = new System.Drawing.Point(17, 462);
+            this.btnMultiThreadTest.Name = "btnMultiThreadTest";
+            this.btnMultiThreadTest.Size = new System.Drawing.Size(152, 23);
+            this.btnMultiThreadTest.TabIndex = 31;
+            this.btnMultiThreadTest.Text = "Multithread Test";
+            this.btnMultiThreadTest.UseVisualStyleBackColor = true;
+            this.btnMultiThreadTest.Click += new System.EventHandler(this.btnMultiThreadTest_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(122, 494);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 13);
+            this.label3.TabIndex = 32;
+            this.label3.Text = "Images";
+            // 
+            // edtNumImages
+            // 
+            this.edtNumImages.Location = new System.Drawing.Point(17, 491);
+            this.edtNumImages.Name = "edtNumImages";
+            this.edtNumImages.Size = new System.Drawing.Size(100, 20);
+            this.edtNumImages.TabIndex = 33;
+            this.edtNumImages.Text = "10";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1072, 517);
+            this.ClientSize = new System.Drawing.Size(1072, 546);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
@@ -289,6 +322,9 @@
         private System.Windows.Forms.TextBox editProjectID;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button btnMultiThreadTest;
+        private System.Windows.Forms.TextBox edtNumImages;
+        private System.Windows.Forms.Label label3;
     }
 }
 

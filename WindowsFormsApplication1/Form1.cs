@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -44,36 +45,18 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             }
         }
 
-        private Bitmap PerformRender()
+        private Bitmap PerformRender(DisplayMode displayMode, int width, int height, bool returnEarliestFilteredCellPass, BoundingWorldExtent3D extents)
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
             // SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
             SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
 
             try
-            {
-                // Modify extents to match the shape of the panel it is being displayed in
-                if ((extents.SizeX / extents.SizeY) < (pictureBox1.Width / pictureBox1.Height))
-                {
-                    double pixelSize = extents.SizeX / pictureBox1.Width;
-                    extents = new BoundingWorldExtent3D(extents.CenterX - (pictureBox1.Width / 2) * pixelSize,
-                                                        extents.CenterY - (pictureBox1.Height / 2) * pixelSize,
-                                                        extents.CenterX + (pictureBox1.Width / 2) * pixelSize,
-                                                        extents.CenterY + (pictureBox1.Height / 2) * pixelSize);
-                }
-                else
-                {
-                    double pixelSize = extents.SizeY / pictureBox1.Height;
-                    extents = new BoundingWorldExtent3D(extents.CenterX - (pictureBox1.Width / 2) * pixelSize,
-                                                        extents.CenterY - (pictureBox1.Height / 2) * pixelSize,
-                                                        extents.CenterX + (pictureBox1.Width / 2) * pixelSize,
-                                                        extents.CenterY + (pictureBox1.Height / 2) * pixelSize);
-                }
-            
+            {           
                 CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter(siteModel)
                 {
-                    ReturnEarliestFilteredCellPass = chkSelectEarliestPass.Checked,
-                    ElevationType = chkSelectEarliestPass.Checked ? ElevationType.First : ElevationType.Last
+                    ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
+                    ElevationType = returnEarliestFilteredCellPass ? ElevationType.First : ElevationType.Last
                 };
 
                 CellSpatialFilter SpatialFilter = new CellSpatialFilter()
@@ -85,11 +68,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
                 return tileRender.RenderTile(new TileRenderRequestArgument
                 (ID(),
-                 (DisplayMode)displayMode.SelectedIndex, //DisplayMode.Height,
+                 displayMode,
                  extents,
                  true, // CoordsAreGrid
-                 (ushort)pictureBox1.Width, // PixelsX
-                 (ushort)pictureBox1.Height, // PixelsY
+                 (ushort)width, // PixelsX
+                 (ushort)Height, // PixelsY
                  new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
                  null // filter 2
                 ));
@@ -118,9 +101,32 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         {
         }
 
+        private void fitExtentsToView(int width, int height)
+        {
+            // Modify extents to match the shape of the panel it is being displayed in
+            if ((extents.SizeX / extents.SizeY) < (width / height))
+            {
+                double pixelSize = extents.SizeX / width;
+                extents = new BoundingWorldExtent3D(extents.CenterX - (width / 2) * pixelSize,
+                                                    extents.CenterY - (height / 2) * pixelSize,
+                                                    extents.CenterX + (width / 2) * pixelSize,
+                                                    extents.CenterY + (height / 2) * pixelSize);
+            }
+            else
+            {
+                double pixelSize = extents.SizeY / height;
+                extents = new BoundingWorldExtent3D(extents.CenterX - (width / 2) * pixelSize,
+                                                    extents.CenterY - (height / 2) * pixelSize,
+                                                    extents.CenterX + (width / 2) * pixelSize,
+                                                    extents.CenterY + (height / 2) * pixelSize);
+            }
+        }
+
         private void DoRender()
         {
-            Bitmap bmp = PerformRender();
+            fitExtentsToView(pictureBox1.Width, pictureBox1.Height);
+
+            Bitmap bmp = PerformRender((DisplayMode)displayMode.SelectedIndex, pictureBox1.Width, pictureBox1.Height, chkSelectEarliestPass.Checked, extents);
 
             if (bmp != null)
             {
@@ -194,6 +200,33 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 extents = ProjectExtents.ProductionDataOnly(ID());
                 DoUpdateLabels();
             }
+        }
+
+        private void btnMultiThreadTest_Click(object sender, EventArgs e)
+        {
+            int nImages = Convert.ToInt32(edtNumImages.Text);
+
+            DisplayMode displayMode = (DisplayMode)this.displayMode.SelectedIndex;
+            int width = pictureBox1.Width;
+            int height = pictureBox1.Height;
+            bool selectEarliestPass = chkSelectEarliestPass.Checked;
+
+//            Bitmap[] bitmaps = new Bitmap[nImages];
+
+            fitExtentsToView(width, height);
+
+            // Construct an array of identical bitmaps that are displayed on the form to see how well it multi-threads the requests
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            Parallel.For(0, nImages, x => 
+            { using (Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
+                {
+                }
+            });
+            sw.Stop();
+
+            MessageBox.Show(String.Format("Images:{0}, Time:{1}", nImages, sw.Elapsed));
         }
     }
 }
