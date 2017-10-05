@@ -19,6 +19,7 @@ namespace ThreeDAPIs.ProjectMasterData
   {
     private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodInfo.GetCurrentMethod().DeclaringType);
     private Producer producer;
+    public List<Task> tasks = new List<Task>();
 
     public ProjectSynchronizer()
     {
@@ -33,13 +34,14 @@ namespace ThreeDAPIs.ProjectMasterData
       producer = new Producer(config, Settings.Default.KAFKA_URI);
     }
 
+
     private async Task Send(string topic, KeyValuePair<string, string> messageToSendWithKey)
     {
       using (Topic myTopic = producer.Topic(topic))
       {
         byte[] data = Encoding.UTF8.GetBytes(messageToSendWithKey.Value);
         byte[] key = Encoding.UTF8.GetBytes(messageToSendWithKey.Key);
-        await myTopic.Produce(data, key);
+        tasks.Add(myTopic.Produce(data, key));
       }
     }
 
@@ -71,7 +73,7 @@ namespace ThreeDAPIs.ProjectMasterData
                           };
 
       var messagePayload = JsonConvert.SerializeObject(new { CreateProjectEvent = evt });
-      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1-Alpha",
+      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V2",
         new KeyValuePair<string, string>(evt.ProjectUID.ToString(), messagePayload)).Wait();
     }
 
@@ -87,7 +89,7 @@ namespace ThreeDAPIs.ProjectMasterData
                                     ReceivedUTC = actionUTC
                                 };
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectCustomer = evt });
-      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1-Alpha",
+      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V2",
         new KeyValuePair<string, string>(evt.ProjectUID.ToString(), messagePayload)).Wait();
     }
 
@@ -102,7 +104,7 @@ namespace ThreeDAPIs.ProjectMasterData
                                    ReceivedUTC = actionUTC
                                };
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = evt });
-      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1-Alpha",
+      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V2",
         new KeyValuePair<string, string>(evt.ProjectUID.ToString(), messagePayload)).Wait();
     }
 
@@ -117,7 +119,7 @@ namespace ThreeDAPIs.ProjectMasterData
         ReceivedUTC = actionUTC
       };
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = evt });
-      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V1-Alpha",
+      Send("VSS.Interfaces.Events.MasterData.IProjectEvent.V2",
         new KeyValuePair<string, string>(evt.ProjectUID.ToString(), messagePayload)).Wait();
     }
 
