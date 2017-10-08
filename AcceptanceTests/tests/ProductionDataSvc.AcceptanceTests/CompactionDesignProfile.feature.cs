@@ -154,11 +154,9 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Slicer Design Profile With Added Endpoints")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionDesignProfile")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void CompactionGetSlicerDesignProfileWithAddedEndpoints()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Design Profile With Added Endpoints", new string[] {
-                        "ignore"});
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Design Profile With Added Endpoints", ((string[])(null)));
 #line 65
 this.ScenarioSetup(scenarioInfo);
 #line 66
@@ -174,27 +172,62 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request a Compaction Design Profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 71
- testRunner.Then("the Compaction Design Profile should be", "{\n    \"gridDistanceBetweenProfilePoints\": 8.0405782488513378,\n    \"results\": [\n  " +
-                    "      {\n            \"designFileUid\": \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\",\n   " +
-                    "         \"data\": [\n                {\n                    \"x\": 0,\n               " +
-                    "     \"y\": \"NaN\"\n                },\n                {\n                    \"x\": 1." +
-                    "4989359768016426,\n                    \"y\": 597.107849\n                },\n       " +
-                    "         {\n                    \"x\": 2.4363884583427549,\n                    \"y\":" +
-                    " 597.317444\n                },\n                {\n                    \"x\": 3.0398" +
-                    "711084175734,\n                    \"y\": 597.4535\n                },\n             " +
-                    "   {\n                    \"x\": 3.8040219479024642,\n                    \"y\": 597.4" +
-                    "6875\n                },\n                {\n                    \"x\": 4.33875333089" +
-                    "93378,\n                    \"y\": 597.4797\n                },\n                {\n  " +
-                    "                  \"x\": 5.2303524427833983,\n                    \"y\": 597.466736\n " +
-                    "               },\n                {\n                    \"x\": 5.5624914376821266," +
-                    "\n                    \"y\": 597.4633\n                },\n                {\n        " +
-                    "            \"x\": 6.7969372754612811,\n                    \"y\": 597.4468\n         " +
-                    "       },\n                {\n                    \"x\": 7.7815432982108987,\n       " +
-                    "             \"y\": 597.437439\n                },\n                {\n              " +
-                    "      \"x\": 8.040578248851336,\n                    \"y\": 597.434265\n              " +
-                    "  },\n                {\n                    \"x\": 8.0405782488513378,\n            " +
-                    "        \"y\": \"NaN\"\n                }\n            ]\n        }\n    ],\n    \"Code\": " +
-                    "0,\n    \"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the Compaction Design Profile should be", @"{
+    ""gridDistanceBetweenProfilePoints"": 8.0405782488513378,
+    ""results"": [
+        {
+            ""designFileUid"": ""dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"",
+            ""data"": [
+        {
+          ""x"": 0.0,
+          ""y"": ""NaN""
+        },
+        {
+          ""x"": 1.4989359768016102,
+          ""y"": 597.107849
+        },
+        {
+          ""x"": 2.4363884583429867,
+          ""y"": 597.317444
+        },
+        {
+          ""x"": 3.0398711084176293,
+          ""y"": 597.4535
+        },
+        {
+          ""x"": 3.8040219479023807,
+          ""y"": 597.46875
+        },
+        {
+          ""x"": 4.3387533308993467,
+          ""y"": 597.4797
+        },
+        {
+          ""x"": 5.2303524427837829,
+          ""y"": 597.466736
+        },
+        {
+          ""x"": 5.5624914376816736,
+          ""y"": 597.4633
+        },
+        {
+          ""x"": 6.7969372754613335,
+          ""y"": 597.4468
+        },
+        {
+          ""x"": 7.78154329821046,
+          ""y"": 597.437439
+        },
+        {
+          ""x"": 8.040578248851336,
+          ""y"": 597.434265
+        }
+            ]
+        }
+    ],
+    ""Code"": 0,
+    ""Message"": ""success""
+}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
