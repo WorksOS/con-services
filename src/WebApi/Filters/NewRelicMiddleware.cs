@@ -1,15 +1,11 @@
 ﻿#if NET_4_7
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Filters
 {
@@ -84,16 +80,26 @@ namespace VSS.Productivity3D.Common.Filters
       {
         watch.Stop();
 
+        await context.Response.Body.CopyToAsync(responseBodyStream);
+        responseBodyStream.Seek(0, SeekOrigin.Begin);
+
+        var responseBodyText = new StreamReader(responseBodyStream).ReadToEnd();
+        obj = JObject.Parse(responseBodyText);
+
+        // Retrieve response properties for instrumentation recording.
         var responseEventAttributes = new Dictionary<string, object>
         {
           {"endpoint", context.Request.Path.ToString()},
           {"elapsedTime", (Single) watch.ElapsedMilliseconds},
-          {"result", context.Response.StatusCode.ToString()}
+          {"result", context.Response.StatusCode.ToString()},
+          // ContractExecutionResult response properties
+          {"code", obj.GetProperty("code")},
+          {"message", obj.GetProperty("message")}
         };
 
-        requestEventAttributes.ToList().ForEach(x => responseEventAttributes.Add(x.Key, x.Value));
-
-        NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileAuth_Request", responseEventAttributes);
+        responseEventAttributes.ToList().ForEach(x => requestEventAttributes.Add(x.Key, x.Value));
+        
+        NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileAuth_Request", requestEventAttributes);
 
         // Reset the response body stream.
         responseBodyStream.Seek(0, SeekOrigin.Begin);
