@@ -109,7 +109,8 @@ namespace VSS.MasterData.Models.Models
       elevationType.HasValue ||
       layerNumber.HasValue ||
       forwardDirection.HasValue ||
-      contributingMachines != null && contributingMachines.Count > 0;
+      (contributingMachines != null && contributingMachines.Count > 0) ||
+      (polygonLL != null && polygonLL.Count > 0);
 
     public void AddBoundary(string polygonUID, string polygonName, List<WGSPoint> polygonLL)
     {
