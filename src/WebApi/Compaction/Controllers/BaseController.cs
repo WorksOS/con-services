@@ -292,11 +292,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           {
             filterData = ApplyDateRange(projectUid, filterData);
 
+            var polygonPoints = filterData.polygonLL == null ? null : filterData.polygonLL.ConvertAll(p => { return VSS.Productivity3D.Common.Models.WGSPoint.CreatePoint(p.Lat, p.Lon ); });
+
             var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
             return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
               filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
-              null, null, filterData.forwardDirection, null, null, null, null, null, null,
+              polygonPoints, null, filterData.forwardDirection, null, null, null, null, null, null,
               layerMethod, designDescriptor, null, filterData.layerNumber, null, filterData.contributingMachines,
               excludedIds, null, null, null, null, null, null);
           }
