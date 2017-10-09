@@ -4,8 +4,9 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using VSS.Common.Exceptions;
 
 namespace VSS.Productivity3D.Common.Filters
 {
@@ -40,7 +41,7 @@ namespace VSS.Productivity3D.Common.Filters
       var requestBodyText = new StreamReader(requestBodyStream).ReadToEnd();
       var obj = JObject.Parse(requestBodyText);
 
-      var requestEventAttributes = new Dictionary<string, object>
+      this.EventAttributes = new Dictionary<string, object>
       {
         // Asset Id request properties
         {"projectId", obj.GetProperty("projectId")},
@@ -64,20 +65,10 @@ namespace VSS.Productivity3D.Common.Filters
       var responseBodyStream = new MemoryStream();
       context.Response.Body = responseBodyStream;
 
-      var watch = System.Diagnostics.Stopwatch.StartNew();
-
       try
       {
-        // Invoke the request and await it's response.
+        var watch = System.Diagnostics.Stopwatch.StartNew();
         await this.NextRequestDelegate.Invoke(context);
-      }
-      catch
-      {
-        // TODO The response body is being lost if a ServiceException is thrown during execution of the delegate.
-        // When this occurs the response returns 200, with no response body. 
-      }
-      finally
-      {
         watch.Stop();
 
         await context.Response.Body.CopyToAsync(responseBodyStream);
@@ -87,24 +78,23 @@ namespace VSS.Productivity3D.Common.Filters
         obj = JObject.Parse(responseBodyText);
 
         // Retrieve response properties for instrumentation recording.
-        var responseEventAttributes = new Dictionary<string, object>
-        {
-          {"endpoint", context.Request.Path.ToString()},
-          {"elapsedTime", (Single) watch.ElapsedMilliseconds},
-          {"result", context.Response.StatusCode.ToString()},
-          // ContractExecutionResult response properties
-          {"code", obj.GetProperty("code")},
-          {"message", obj.GetProperty("message")}
-        };
-
-        responseEventAttributes.ToList().ForEach(x => requestEventAttributes.Add(x.Key, x.Value));
-        
-        NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileAuth_Request", requestEventAttributes);
+        EventAttributes.Add("endpoint", context.Request.Path.ToString());
+        EventAttributes.Add("elapsedTime", (Single)watch.ElapsedMilliseconds);
+        EventAttributes.Add("result", context.Response.StatusCode.ToString());
+        // ContractExecutionResult response properties
+        EventAttributes.Add("code", obj.GetProperty("code"));
+        EventAttributes.Add("message", obj.GetProperty("message"));
 
         // Reset the response body stream.
         responseBodyStream.Seek(0, SeekOrigin.Begin);
         await responseBodyStream.CopyToAsync(bodyStream);
       }
+      catch (ServiceException exception)
+      {
+        await new MemoryStream(Encoding.UTF8.GetBytes(exception.GetContent)).CopyToAsync(bodyStream);
+      }
+
+      NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileAuth_Request", EventAttributes);
     }
   }
 
