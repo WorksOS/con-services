@@ -132,7 +132,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         false,
         fileName,
         exportType,
-        ConvertUserPreferences(userPreferences));
+        ConvertUserPreferences(userPreferences, exportType));
     }
 
     private static string StripInvalidCharacters(string str)
@@ -150,12 +150,12 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     }
 
     /// <summary>
-    /// Converts a set user preferences in the format understood by the Raptor for.
+    /// Converts a set user preferences in the format understood by Raptor.
     /// It is solely used by production data export WebAPIs.
     /// </summary>
     /// <param name="userPref">The set of user preferences.</param>
     /// <returns>The set of user preferences in Raptor's format</returns>
-    private static TASNodeUserPreferences ConvertUserPreferences(UserPreferenceData userPref)
+    private static TASNodeUserPreferences ConvertUserPreferences(UserPreferenceData userPref, ExportTypes exportType)
     {
       TimeZoneInfo projecTimeZone = TimeZoneInfo.FindSystemTimeZoneById(userPref.Timezone);
       double projectTimeZoneOffset = projecTimeZone.GetUtcOffset(DateTime.Now).TotalHours;
@@ -164,14 +164,16 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         userPref.Timezone,
         Preferences.DefaultDateSeparator,
         Preferences.DefaultTimeSeparator,
-        userPref.ThousandsSeparator,
-        userPref.DecimalSeparator,
+        //VETA export hardwire number format as "xxx,xxx.xx" or it causes problems with the CSV file as comma is the column separator.
+        //To respect user preferences requires Raptor to enclose formatted numbers in quotes.
+        exportType == ExportTypes.kVedaExport ? Preferences.DefaultThousandsSeparator : userPref.ThousandsSeparator,
+        exportType == ExportTypes.kVedaExport ? Preferences.DefaultDecimalSeparator : userPref.DecimalSeparator,
         projectTimeZoneOffset,
         Array.IndexOf(LanguageLocales.LanguageLocaleStrings, userPref.Language),
-        (int)UnitsTypeEnum.Metric,
+        (int)userPref.Units.UnitsType(),
         Preferences.DefaultDateTimeFormat,
         Preferences.DefaultNumberFormat,
-        Preferences.DefaultTemperatureUnit,
+        (int)userPref.TemperatureUnit.TemperatureUnitType(),
         Preferences.DefaultAssetLabelTypeId);
     }
   }
