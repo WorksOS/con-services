@@ -30,6 +30,10 @@ namespace VSS.TCCFileAccess
     private const string INVALID_TICKET_ERRORID = "NOT_AUTHENTICATED";
     private const string INVALID_TICKET_MESSAGE = "You have not authenticated, use login action";
 
+    //Reinvalidate tcc ticket every 30 min
+    private DateTime lastLoginTimestamp;
+
+
     private readonly ILogger<FileRepository> Log;
     private readonly ILoggerFactory logFactory;
 
@@ -57,9 +61,10 @@ namespace VSS.TCCFileAccess
     {
       get
       {
-        if (string.IsNullOrEmpty(ticket))
+        if (string.IsNullOrEmpty(ticket) || lastLoginTimestamp < DateTime.UtcNow.AddMinutes(-30))
         {
           ticket = Login().Result;
+          lastLoginTimestamp = DateTime.UtcNow;
         }
         return ticket;
       }
