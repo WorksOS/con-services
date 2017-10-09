@@ -15,7 +15,6 @@ namespace VSS.Productivity3D.Common.Filters
   /// </summary>
   public class NewRelicMiddleware
   {
-    private Dictionary<string, object> EventAttributes;
     private readonly RequestDelegate NextRequestDelegate;
 
     /// <summary>
@@ -41,7 +40,7 @@ namespace VSS.Productivity3D.Common.Filters
       var requestBodyText = new StreamReader(requestBodyStream).ReadToEnd();
       var obj = JObject.Parse(requestBodyText);
 
-      this.EventAttributes = new Dictionary<string, object>
+      var eventAttributes = new Dictionary<string, object>
       {
         // Asset Id request properties
         {"projectId", obj.GetProperty("projectId")},
@@ -77,13 +76,10 @@ namespace VSS.Productivity3D.Common.Filters
         var responseBodyText = new StreamReader(responseBodyStream).ReadToEnd();
         obj = JObject.Parse(responseBodyText);
 
-        // Retrieve response properties for instrumentation recording.
-        EventAttributes.Add("endpoint", context.Request.Path.ToString());
-        EventAttributes.Add("elapsedTime", (Single)watch.ElapsedMilliseconds);
-        EventAttributes.Add("result", context.Response.StatusCode.ToString());
+        eventAttributes.Add("elapsedTime", (Single)watch.ElapsedMilliseconds);
         // ContractExecutionResult response properties
-        EventAttributes.Add("code", obj.GetProperty("code"));
-        EventAttributes.Add("message", obj.GetProperty("message"));
+        eventAttributes.Add("code", obj.GetProperty("Code"));
+        eventAttributes.Add("message", obj.GetProperty("Message"));
 
         // Reset the response body stream.
         responseBodyStream.Seek(0, SeekOrigin.Begin);
@@ -94,7 +90,11 @@ namespace VSS.Productivity3D.Common.Filters
         await new MemoryStream(Encoding.UTF8.GetBytes(exception.GetContent)).CopyToAsync(bodyStream);
       }
 
-      NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileAuth_Request", EventAttributes);
+      // Retrieve response properties for instrumentation recording.
+      eventAttributes.Add("endpoint", context.Request.Path.ToString());
+      eventAttributes.Add("result", context.Response.StatusCode.ToString());
+
+      NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileAuth_Request", eventAttributes);
     }
   }
 
