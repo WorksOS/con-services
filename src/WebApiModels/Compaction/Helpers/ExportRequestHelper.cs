@@ -164,10 +164,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         userPref.Timezone,
         Preferences.DefaultDateSeparator,
         Preferences.DefaultTimeSeparator,
-        //VETA export hardwire number format as "xxx,xxx.xx" or it causes problems with the CSV file as comma is the column separator.
+        //Hardwire number format as "xxx,xxx.xx" or it causes problems with the CSV file as comma is the column separator.
         //To respect user preferences requires Raptor to enclose formatted numbers in quotes.
-        exportType == ExportTypes.kVedaExport ? Preferences.DefaultThousandsSeparator : userPref.ThousandsSeparator,
-        exportType == ExportTypes.kVedaExport ? Preferences.DefaultDecimalSeparator : userPref.DecimalSeparator,
+        //This bug is present in CG since it uses user preferences separators.
+        Preferences.DefaultThousandsSeparator,
+        Preferences.DefaultDecimalSeparator,
         projectTimeZoneOffset,
         Array.IndexOf(LanguageLocales.LanguageLocaleStrings, userPref.Language),
         (int)userPref.Units.UnitsType(),
