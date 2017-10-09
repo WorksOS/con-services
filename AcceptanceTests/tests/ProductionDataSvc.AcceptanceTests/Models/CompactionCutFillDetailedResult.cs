@@ -7,7 +7,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
 {
   public class CompactionCutFillDetailedResult : RequestResult, IEquatable<CompactionCutFillDetailedResult>
   {
-
+    const int DECIMAL_PLACES = 1;
     #region Members
     /// <summary>
     /// The Cut Fill details data results
@@ -30,7 +30,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
-      return Common.ArraysOfDoublesAreEqual(this.percents, other.percents) &&
+      return Common.ArraysOfDoublesAreEqual(this.percents, other.percents, DECIMAL_PLACES) &&
              this.Code == other.Code &&
              this.Message == other.Message;
     }
