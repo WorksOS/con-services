@@ -158,7 +158,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
 
   public class CompactionProfileVertex : IEquatable<CompactionProfileVertex>
   {
-    const int DECIMAL_PLACES = 1;
+    const int DECIMAL_PLACES = 2;
     #region members
     /// <summary>
     /// The station value, or distance from start of the profile line at which the profile line intersects the design surface.

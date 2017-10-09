@@ -7,7 +7,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
 {
   public class CompactionCutFillDetailedResult : RequestResult, IEquatable<CompactionCutFillDetailedResult>
   {
-    const int DECIMAL_PLACES = 1;
+    const int DECIMAL_PLACES = 2;
     #region Members
     /// <summary>
     /// The Cut Fill details data results
