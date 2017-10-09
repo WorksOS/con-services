@@ -21,6 +21,7 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Extensions;
+using VSS.Productivity3D.WebApiModels.Extensions;
 using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Filter = VSS.Productivity3D.Common.Models.Filter;
@@ -292,7 +293,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           {
             filterData = ApplyDateRange(projectUid, filterData);
 
-            var polygonPoints = filterData.polygonLL == null ? null : filterData.polygonLL.ConvertAll(p => { return VSS.Productivity3D.Common.Models.WGSPoint.CreatePoint(p.Lat, p.Lon ); });
+            var polygonPoints = filterData.polygonLL == null ? null : filterData.polygonLL.ConvertAll(p => { return VSS.Productivity3D.Common.Models.WGSPoint.CreatePoint(p.Lat.latDegreesToRadians() , p.Lon.lonDegreesToRadians() ); });
 
             var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
