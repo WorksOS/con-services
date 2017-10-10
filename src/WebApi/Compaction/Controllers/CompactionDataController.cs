@@ -15,6 +15,10 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApi.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
@@ -45,6 +49,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
+    /// The request factory
+    /// </summary>
+    private readonly IProductionDataRequestFactory requestFactory;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -55,14 +64,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="settingsManager">Compaction settings manager</param>
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
+    /// <param name="requestFactory">The request factory.</param>
     public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, 
-      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) 
+      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory) 
       : base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionDataController>();
+      this.requestFactory = requestFactory;
     }
 
 
@@ -414,6 +425,43 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
     }
 
+    /// <summary>
+    /// Get cut-fill details from Raptor for the specified project and date range.
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
+    /// <param name="cutfillDesignUid">Design UID</param>
+    /// <returns>Cut-fill details</returns>
+    [ProjectUidVerifier]
+    [Route("api/v2/compaction/cutfill/details")]
+    [HttpGet]
+    public async Task<CompactionCutFillDetailedResult> GetCutFillDetails(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
+      [FromQuery] Guid cutfillDesignUid)
+    {
+      log.LogInformation("GetCutFillDetails: " + Request.QueryString);
+
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var projectSettings = await GetProjectSettings(projectUid);
+      var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
+
+      var cutFillRequest = requestFactory.Create<CutFillRequestHelper>(r => r
+          .ProjectId(projectId)
+          .Headers(customHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter)
+          .DesignDescriptor(cutFillDesign))
+        .CreateCutFillDetailsRequest();
+
+      cutFillRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<CompactionCutFillExecutor>(logger, raptorClient)
+          .Process(cutFillRequest) as CompactionCutFillDetailedResult);
+    }
     #endregion
 
     #region privates

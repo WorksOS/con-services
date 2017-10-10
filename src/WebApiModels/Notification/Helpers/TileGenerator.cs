@@ -65,8 +65,9 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
         //Do we care if this fails?
       }
 
+      var timeout = GetJobTimeoutConfig();
       var fullGeneratedName = string.Format("{0}/{1}", fileDescr.path, generatedName);
-      var zoomResult = await CalculateTileZoomRange(fileDescr.filespaceId, fullGeneratedName);
+      var zoomResult = await CalculateTileZoomRange(fileDescr.filespaceId, fullGeneratedName, timeout);
       success = zoomResult.success;
       if (success)
       {
@@ -77,7 +78,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
         if (regenerate || ! await fileRepo.FolderExists(fileDescr.filespaceId, tilePath))
         {
           for (int zoomLevel = zoomResult.minZoom; zoomLevel <= zoomResult.maxZoom; zoomLevel++)
-            success = success && await GenerateDxfTiles(projectId, fullGeneratedName, tilePath, fileDescr.filespaceId, zoomLevel);
+            success = success && await GenerateDxfTiles(projectId, fullGeneratedName, tilePath, fileDescr.filespaceId, zoomLevel, timeout);
         }
         else
         {
@@ -86,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
             string zoomPath = FileUtils.ZoomPath(tilePath, zoomLevel);
 
             if (! await fileRepo.FolderExists(fileDescr.filespaceId, zoomPath))
-              success = success && await GenerateDxfTiles(projectId, fullGeneratedName, tilePath, fileDescr.filespaceId, zoomLevel);
+              success = success && await GenerateDxfTiles(projectId, fullGeneratedName, tilePath, fileDescr.filespaceId, zoomLevel, timeout);
           }
         }
       }
@@ -98,8 +99,9 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
     /// </summary>
     /// <param name="filespaceId">The filespace ID in TCC where the DXF file is located</param>
     /// <param name="fullGeneratedName">The full DXF file name, including path, which is a generated associated name for design and alignment files</param>
+    /// <param name="timeout">Maximum time to wait for the completion of the TCC job</param>
     /// <returns>Zoom range and success or failure</returns>
-    private async Task<ZoomRangeResult> CalculateTileZoomRange(string filespaceId, string fullGeneratedName)
+    private async Task<ZoomRangeResult> CalculateTileZoomRange(string filespaceId, string fullGeneratedName, TimeSpan timeout)
     {
       var result = new ZoomRangeResult { success = true };
 
@@ -127,7 +129,9 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       {
         bool done = false;
         string fileId = null;
-        while (!done)
+        DateTime now = DateTime.Now;
+        DateTime endJob = now + timeout;
+        while (!done && now <= endJob)
         {
           if (waitInterval > 0) await Task.Delay(waitInterval);
           log.LogDebug("Before CheckFileJobStatus: JobId={0}", jobId);
@@ -155,6 +159,16 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
 
               }
               log.LogDebug("After RenderOutputInfo.Count fileID={0}", fileId);
+            }
+          }
+          else
+          {
+            now = DateTime.Now;
+            if (now > endJob)
+            {
+              result.success = false;
+              log.LogDebug("Timeout CheckFileJobStatus: Status={0}",
+                checkStatusResult == null ? "null" : checkStatusResult.status);
             }
           }
         }
@@ -232,6 +246,32 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
     }
 
     /// <summary>
+    /// Get job timeout configuration parameter
+    /// </summary>
+    private TimeSpan GetJobTimeoutConfig()
+    {
+      const string DEFAULT_TIMESPAN_MESSAGE = "Using default 10 secs.";
+      const string TIMEOUT_KEY = "TILE_RENDER_JOB_TIMEOUT";
+
+      string timeout = configStore.GetValueString(TIMEOUT_KEY);
+      log.LogInformation($"JOB_TIMEOUT: {timeout}");
+
+      if (string.IsNullOrEmpty(timeout))
+      {
+        log.LogWarning($"Your application is missing an environment variable {TIMEOUT_KEY}. {DEFAULT_TIMESPAN_MESSAGE}");
+        timeout = "00:00:10";
+      }
+
+      TimeSpan result;
+      if (!TimeSpan.TryParse(timeout, out result))
+      {
+        log.LogWarning($"Invalid timespan for environment variable {TIMEOUT_KEY}. {DEFAULT_TIMESPAN_MESSAGE}");
+        result = new TimeSpan(0, 0, 10);
+      }
+      return result;
+    }
+
+    /// <summary>
     /// Delete the DXF tiles associated with the specified DXF file
     /// </summary>
     /// <param name="projectId">The id of the project to which the DXF file belongs</param>
@@ -254,7 +294,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       return success;
     }
 
- 
+
 
     /// <summary>
     /// Generates DXF tiles
@@ -264,8 +304,9 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
     /// <param name="tilePath">The full folder name of where the tiles are stored</param>
     /// <param name="filespaceId">The filespace ID in TCC where the DXF file is located</param>
     /// <param name="zoomLevel">The zoom level for which to generate the tiles</param>
+    /// <param name="timeout">Maximum time to wait for the completion of the TCC job</param>
     /// <param name="waitInterval">The time in milliseconds to wait between TCC job status requests</param>
-    private async Task<bool> GenerateDxfTiles(long projectId, string generatedName, string tilePath, string filespaceId, int zoomLevel, int waitInterval = -1)
+    private async Task<bool> GenerateDxfTiles(long projectId, string generatedName, string tilePath, string filespaceId, int zoomLevel, TimeSpan timeout, int waitInterval = -1)
     {
       bool success = true;
       //Check if tiles already exist
@@ -301,16 +342,21 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
             if (waitInterval > -1)
             {
               bool done = false;
+              DateTime now = DateTime.Now;
+              DateTime endJob = now + timeout;
 
-              while (!done)
+              while (!done && now <= endJob)
               {
                 if (waitInterval > 0) await Task.Delay(waitInterval);
                 log.LogDebug("Before CheckExportJob: JobId={0}", exportJobId);
                 var jobStatus = await fileRepo.CheckExportJob(exportJobId);
-                done = string.IsNullOrEmpty(jobStatus) || jobStatus == "COMPLETED";
-                if (string.IsNullOrEmpty(jobStatus))
+                now = DateTime.Now;
+                var failed = string.IsNullOrEmpty(jobStatus) || now > endJob;
+                done = failed || jobStatus == "COMPLETED";
+                if (failed)
                 {
                   success = false;
+                  log.LogDebug($"Timeout CheckExportJob: Status={jobStatus}");
                 }
               }
             }
