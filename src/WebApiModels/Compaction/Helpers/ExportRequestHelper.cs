@@ -132,7 +132,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         false,
         fileName,
         exportType,
-        ConvertUserPreferences(userPreferences, exportType));
+        ConvertUserPreferences(userPreferences));
     }
 
     private static string StripInvalidCharacters(string str)
@@ -155,7 +155,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// </summary>
     /// <param name="userPref">The set of user preferences.</param>
     /// <returns>The set of user preferences in Raptor's format</returns>
-    private static TASNodeUserPreferences ConvertUserPreferences(UserPreferenceData userPref, ExportTypes exportType)
+    private static TASNodeUserPreferences ConvertUserPreferences(UserPreferenceData userPref)
     {
       TimeZoneInfo projecTimeZone = TimeZoneInfo.FindSystemTimeZoneById(userPref.Timezone);
       double projectTimeZoneOffset = projecTimeZone.GetUtcOffset(DateTime.Now).TotalHours;
