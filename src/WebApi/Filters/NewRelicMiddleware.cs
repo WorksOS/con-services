@@ -12,7 +12,6 @@ namespace VSS.Productivity3D.Common.Filters
   public class NewRelicMiddleware
   {
     private readonly RequestDelegate _next;
-    private Dictionary<string, object> _eventAttributes;
 
     public NewRelicMiddleware(RequestDelegate next)
     {
@@ -21,6 +20,7 @@ namespace VSS.Productivity3D.Common.Filters
 
     public async Task Invoke(HttpContext context)
     {
+      Dictionary<string, object> _eventAttributes;
 
       var watch = System.Diagnostics.Stopwatch.StartNew();
 
