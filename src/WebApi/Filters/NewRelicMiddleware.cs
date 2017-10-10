@@ -81,6 +81,12 @@ namespace VSS.Productivity3D.Common.Filters
         eventAttributes.Add("code", obj.GetProperty("Code"));
         eventAttributes.Add("message", obj.GetProperty("Message"));
 
+        //Processing results
+        eventAttributes.Add("ProcessingResult", obj.GetProperty("Result"));
+        eventAttributes.Add("AssetIdResult", obj.GetProperty("assetId"));
+        eventAttributes.Add("MachineLevelResult", obj.GetProperty("machineLevel"));
+        eventAttributes.Add("ProjectIdResult", obj.GetProperty("projectId"));
+
         // Reset the response body stream.
         responseBodyStream.Seek(0, SeekOrigin.Begin);
         await responseBodyStream.CopyToAsync(bodyStream);
