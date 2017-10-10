@@ -523,13 +523,41 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .CreateTileRequest(mode, width, height, bbox,
           GetElevationExtents(projectSettings, filter, projectId, mode));
 
-      tileRequest.Validate();
+      //TileRequest is both v1 and v2 model so cannot change its validation directly.
+      //However for v2 we want to return a transparent empty tile for cut-fill if no design specified.
+      //So catch the validation exception for this case.
+      bool getTile = true;
+      try
+      {
+        tileRequest.Validate();
+      }
+      catch (ServiceException se)
+      {
+        if (tileRequest.mode == DisplayMode.CutFill && tileRequest.designDescriptor == null)
+        {
+          if (se.Code == HttpStatusCode.BadRequest &&
+              se.GetResult.Code == ContractExecutionStatesEnum.ValidationError &&
+              se.GetResult.Message ==
+              "Design descriptor required for cut/fill and design to filter or filter to design volumes display")
+          {
+            getTile = false;
+          }
+        }
+        //Rethrow any other exception
+        if (getTile)
+          throw se;
+      }
 
-      var tileResult = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<TilesExecutor>(logger, raptorClient)
-          .Process(tileRequest) as TileResult
-      );
+      TileResult tileResult = null;
+      if (getTile)
+      {
+        tileResult = WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainerFactory
+            .Build<TilesExecutor>(logger, raptorClient)
+            .Process(tileRequest) as TileResult
+        );
+      }
+
       if (tileResult == null)
       {
         //Return en empty tile
