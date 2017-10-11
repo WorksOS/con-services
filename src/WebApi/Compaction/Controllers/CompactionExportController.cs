@@ -159,6 +159,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
+
+      DateTime startUtc, endUtc;
+      GetDateRange(projectId, filter, out startUtc, out endUtc);
     
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
@@ -169,8 +172,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetUserPreferences(userPreferences)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
-          filter?.startUTC,
-          filter?.endUTC,
+          startUtc,
+          endUtc,
           CoordTypes.ptNORTHEAST,
           ExportTypes.kVedaExport,
           fileName,
@@ -218,6 +221,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
 
+      DateTime startUtc, endUtc;
+      GetDateRange(projectId, filter, out startUtc, out endUtc);
+
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
@@ -227,8 +233,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetRaptorClient(raptorClient)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
-          filter?.startUTC,
-          filter?.endUTC,
+          startUtc,
+          endUtc,
           (CoordTypes)coordType,
           ExportTypes.kPassCountExport,
           fileName,
@@ -260,6 +266,38 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             "Failed to retrieve preferences for current user"));
       }
       return userPreferences;
+    }
+
+    /// <summary>
+    /// Gets the date range for the export.
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="filter"></param>
+    /// <param name="startUtc"></param>
+    /// <param name="endUtc"></param>
+    private void GetDateRange(long projectId, Common.Models.Filter filter, out DateTime startUtc, out DateTime endUtc)
+    {
+      if (filter == null || !filter.startUTC.HasValue || !filter.endUTC.HasValue)
+      {
+        //Special case of project extents where start and end UTC not set in filter for Raptor peformance.
+        //But need to set here for export.
+        var excludedIds = filter?.surveyedSurfaceExclusionList?.ToArray() ?? new long[0];
+        ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds);
+        request.Validate();
+
+        var result =
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
+            .Process(request) as ProjectStatisticsResult;
+
+        startUtc = result.startTime;
+        endUtc = result.endTime;
+      }
+      else
+      {
+        startUtc = filter.startUTC.Value;
+        endUtc = filter.endUTC.Value;
+
+      }
     }
   }
 }
