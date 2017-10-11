@@ -132,6 +132,8 @@ node ('Jenkins-Win2016-Raptor')
            stage 'Build'
            bat "build47.bat"
            archiveArtifacts artifacts: 'MasterdataConsumerNet47.zip', fingerprint: true 
+		    bat "aws s3 cp MasterdataConsumerNet47.zip s3://vss-ci-builds/3dpm.msg.svc/${versionNumber}/ --profile vss-merino"
+            bat "aws s3 cp MasterdataConsumerDb.zip s3://vss-ci-builds/3dpm.msg.svc/${versionNumber}/ --profile vss-merino"
            }
 	    stage ('Tag repository') {
                 bat 'git rev-parse HEAD > GIT_COMMIT'
