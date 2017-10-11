@@ -1,11 +1,9 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.CommandLine;
-
 
 #if NET_4_7
-using Microsoft.AspNetCore.Hosting.WindowsServices;
+using Topshelf;
 using System.Diagnostics;
 #endif
 
@@ -23,36 +21,75 @@ namespace VSS.MasterData.Project.WebAPI
     public static void Main(string[] args)
     {
 
-      var config = new ConfigurationBuilder()
-        .AddCommandLine(args)
+      var kestrelConfig = new ConfigurationBuilder()
+        .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
         .Build();
 
 #if NET_4_7
-      //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
-      var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-      var pathToContentRoot = Path.GetDirectoryName(pathToExe);
+      HostFactory.Run(x =>
+      {
+        x.Service<ProjectContainer>(s =>
+        {
+          s.ConstructUsing(name => new ProjectContainer());
+          s.WhenStarted(tc => tc.Start(kestrelConfig));
+          s.WhenStopped(tc => tc.Stop());
+        });
+        x.RunAsLocalSystem();
 
-
-      var host = new WebHostBuilder()
-        .UseConfiguration(config)
-        .UseKestrel()
-        .UseContentRoot(pathToContentRoot)
-        .UseIISIntegration()
-        .UseStartup<Startup>()
-        .Build();
-
-      host.RunAsService();
+        x.SetDescription("Project WebAPI, containing various controllers. NET 4.7 port.");
+        x.SetDisplayName("ProjectWebAPINet47");
+        x.SetServiceName("ProjectWebAPINet47");
+        x.EnableServiceRecovery(c =>
+        {
+          c.RestartService(1);
+          c.OnCrashOnly();
+        });
+      });
 #else
-            var host = new WebHostBuilder()
-        	.UseConfiguration(config)
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();
+      var host = new WebHostBuilder()
+              .UseKestrel()
+              .UseContentRoot(Directory.GetCurrentDirectory())
+              .UseIISIntegration()
+              .UseStartup<Startup>()
+              .Build();
 
-            host.Run();
+          host.Run();
+
 #endif
     }
   }
+
+#if NET_4_7
+  internal class ProjectContainer
+  {
+    private IWebHost _webHost;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void Start(IConfiguration config)
+    {
+      var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+      var pathToContentRoot = Path.GetDirectoryName(pathToExe);
+
+      _webHost = new WebHostBuilder()
+        .UseKestrel()
+        .UseConfiguration(config)
+        .UseContentRoot(pathToContentRoot) 
+        .UseStartup<Startup>()
+        .Build();
+
+      _webHost.Start();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void Stop()
+    {
+      _webHost?.Dispose();
+    }
+  }
+#endif
 }
+

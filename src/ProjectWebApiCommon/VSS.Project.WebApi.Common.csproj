@@ -23,7 +23,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="2.2.0" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.0.*" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.6.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.3.*" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.1.*" />
