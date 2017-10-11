@@ -125,6 +125,8 @@ node ('Jenkins-Win2016-Raptor')
             }
           
             archiveArtifacts artifacts: 'ProjectWebApiNet47.zip', fingerprint: true
+	        bat "aws s3 cp ProjectWebApiNet47.zip s3://vss-ci-builds/project.service/${versionNumber}/ --profile vss-merino"
+            bat "aws s3 cp --recursive database s3://vss-ci-builds/project.service/${versionNumber}/Database --profile vss-merino"
 
 	    stage ('Tag repository') {
                 bat 'git rev-parse HEAD > GIT_COMMIT'
