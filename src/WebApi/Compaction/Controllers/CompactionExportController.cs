@@ -18,6 +18,8 @@ using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.Report.Executors;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -122,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           false,
           false,
           OutputTypes.etVedaAllPasses,
-          "",
+          string.Empty,
           tolerance.Value);
 
       exportRequest.Validate();
@@ -138,8 +140,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets an export of production data in cell grid format report for import to VETA.
     /// </summary>
     /// <param name="projectUid">Project unique identifier.</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC.</param>
     /// <param name="fileName">Output file name.</param>
     /// <param name="machineNames">Comma-separated list of machine names.</param>
     /// <param name="filterUid">The filter Uid to apply to the export results</param>
@@ -149,8 +149,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<ExportResult> GetExportReportVeta(
       [FromQuery] Guid projectUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
       [FromQuery] Guid? filterUid)
@@ -161,7 +159,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
-
+    
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
@@ -171,8 +169,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetUserPreferences(userPreferences)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
-          startUtc,
-          endUtc,
+          filter?.startUTC,
+          filter?.endUTC,
           CoordTypes.ptNORTHEAST,
           ExportTypes.kVedaExport,
           fileName,
@@ -194,8 +192,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets an export of production data in cell grid format report.
     /// </summary>
     /// <param name="projectUid">Project unique identifier.</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC.</param>
     /// <param name="coordType">Either Northing/Easting or Latitude/Longitude.</param>
     /// <param name="outputType">Either all passes/last for pass machine passes export or all passes/final pass for export for VETA</param>
     /// <param name="restrictOutput">Output .CSV file is restricted to 65535 rows if it is true.</param>
@@ -208,8 +204,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<ExportResult> GetExportReportMachinePasses(
       [FromQuery] Guid projectUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
       [FromQuery] int coordType,
       [FromQuery] int outputType,
       [FromQuery] bool restrictOutput,
@@ -224,7 +218,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
 
-
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
@@ -234,15 +227,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetRaptorClient(raptorClient)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
-          startUtc,
-          endUtc,
+          filter?.startUTC,
+          filter?.endUTC,
           (CoordTypes)coordType,
           ExportTypes.kPassCountExport,
           fileName,
           restrictOutput,
           rawDataOutput,
           (OutputTypes)outputType,
-          "");
+          string.Empty);
 
       exportRequest.Validate();
 
