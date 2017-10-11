@@ -37,17 +37,18 @@ Scenario Outline: ExportReportMachinePasses - Bad Request - NoProjectUID
 	| RequestName | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ErrorCode | ErrorMessage        |
 	|             | d15e65e0-3cb1-476f-8fc6-08507a14a269 | 0         | 0          | false          | false         | Test     |  -5       | Missing Project or project does not belong to specified customer or don't have access to the project |
 
-Scenario Outline: ExportReportMachinePasses - No Content - NoDateRange
+Scenario Outline: ExportReportMachinePasses - Good Request - NoDateRange
 	And projectUid "<ProjectUID>"
   And coordType "<CoordType>" 
   And outputType "<OutputType>"
   And restrictOutput "<RestrictOutput>"
   And rawDataOutput "<RawDataOutput>"
 	And fileName is "<FileName>"	
-	When I request an Export Report Machine Passes expecting NoContent
+	When I request an Export Report Machine Passes
+  Then the report result should match the "<ResultName>" from the repository
 	Examples:
-	| RequestName | ProjectUID                           | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 0         | 0          | false          | false         | Test     |
+	| RequestName | ProjectUID                           | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ResultName  |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 0         | 0          | false          | false         | Test     | NoDateRange |
 
 Scenario Outline: ExportReportMachinePasses - No Content with Filter
   And projectUid "<ProjectUID>"
@@ -74,7 +75,7 @@ Scenario Outline: ExportReportMachinePasses - Good Request with Filter
   Then the report result should match the "<ResultName>" from the repository
 	Examples:
   | RequestName | ProjectUID                           | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ResultName            |
-  |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | 1         | 1          | false          | false         | Test      | NELastPassFilterRaw  |
+  |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | 1         | 1          | false          | false         | Test     | NELastPassFilterRaw  |
 
 Scenario Outline: ExportReportMachinePasses - No Content - NoFileName
   And projectUid "<ProjectUID>"

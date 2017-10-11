@@ -36,14 +36,15 @@ Scenario Outline: ExportReportToVETA - Bad Request - NoProjectUID
 	| RequestName | FilterUID                            | MachineNames | FileName | ErrorCode | ErrorMessage        |
 	|             | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          | Test     |  -5       | Missing Project or project does not belong to specified customer or don't have access to the project |
 
-Scenario Outline: ExportReportToVETA - No Content - NoDateRange
+Scenario Outline: ExportReportToVETA - Good Request - NoDateRange
 	And projectUid "<ProjectUID>"
 	And machineNames "<MachineNames>"
 	And fileName is "<FileName>"
-	When I request an Export Report To VETA expecting NoContent
+	When I request an Export Report To VETA
+  Then the report result should match the "<ResultName>" from the repository
 	Examples:
-	| RequestName | ProjectUID                           | MachineNames | FileName | 
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | All          | Test     |
+	| RequestName | ProjectUID                           | MachineNames | FileName | ResultName  |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | All          | Test     | NoDateRange |
 
 Scenario Outline: ExportReportToVETA - No Content - NoFileName
 	And projectUid "<ProjectUID>"
