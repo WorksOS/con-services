@@ -29,7 +29,7 @@ namespace MigrateProjects
       string result = String.Empty;
 
       //First process all projects including archived\deleted
-      /* foreach (var project in projectsToSend)
+       foreach (var project in projectsToSend)
        {
          string coorIdName="";
          try
@@ -43,7 +43,7 @@ namespace MigrateProjects
          Console.WriteLine("Create Project {0}", project.Name);
 
          //Create project
-         synchronizer.SyncCreateProject(
+         /*synchronizer.SyncCreateProject(
            (int)project.ID, 
            project.ProjectUID, 
            project.StartKeyDate, 
@@ -55,27 +55,27 @@ namespace MigrateProjects
            project.CustomerUID,
            project.fk_CustomerID,
            coorIdName,
-           DateTime.UtcNow);
+           DateTime.UtcNow);*/
 
          //Associate geofence with the project
-         Console.WriteLine("Assign Site {0}", project.Name);
+         /*Console.WriteLine("Assign Site {0}", project.Name);
          synchronizer.SyncAssignSiteToProject(project.ProjectUID, project.SiteUID, DateTime.UtcNow);
 
          //Associate project to the customer
          Console.WriteLine("Assign Customer {0}", project.CustomerUID);
-         synchronizer.SyncAssignProjectToCustomer(project.ProjectUID, project.CustomerUID, project.fk_CustomerID,DateTime.UtcNow);
-       }*/
+         synchronizer.SyncAssignProjectToCustomer(project.ProjectUID, project.CustomerUID, project.fk_CustomerID,DateTime.UtcNow);*/
+       }
 
 
       
       //Now messup with deleted projects
-      var archPrj = projectsToSend.Where(p => p.Active == false).ToList();
+     /* var archPrj = projectsToSend.Where(p => p.Active == false).ToList();
       foreach (var projectRow in  archPrj)
       {
         synchronizer.SyncDeleteProject(projectRow.ProjectUID, DateTime.UtcNow);
 
       }
-      Task.WaitAll(synchronizer.tasks.ToArray());
+      Task.WaitAll(synchronizer.tasks.ToArray());*/
 
     }
 
