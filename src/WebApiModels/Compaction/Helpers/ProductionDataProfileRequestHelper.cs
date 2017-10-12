@@ -9,7 +9,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Extensions;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
+namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
   /// <summary>
   /// The request representation for a linear or alignment based profile request for all thematic types other than summary volumes.

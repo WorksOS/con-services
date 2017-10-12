@@ -129,8 +129,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       string coordSystem = projectDescr.coordinateSystemFileName;
       var customHeaders = Request.Headers.GetCustomHeaders();
       var userPrefs = await prefProxy.GetUserPreferences(customHeaders);
-      var units = userPrefs.Units == "US Standard" ? "US" : userPrefs.Units;
-      var userUnits = userPrefs == null ? UnitsTypeEnum.US : (UnitsTypeEnum)Enum.Parse(typeof(UnitsTypeEnum), units, true);
+      var userUnits = userPrefs.Units.UnitsType();
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, coordSystem, userUnits, fileId, fileType);
       request.Validate();
@@ -165,12 +164,29 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     {
       log.LogDebug("GetDeleteFile: " + Request.QueryString);
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
+      var customHeaders = Request.Headers.GetCustomHeaders();
+
+      //Cannot delete a design file that is used in a filter
+      //TODO: When scheduled reports are implemented, extend this check to them as well.
+      if (fileType == ImportedFileType.DesignSurface)
+      {
+        var filters = await GetFilters(projectUid, customHeaders);
+        if (filters != null)
+        {
+          if (filters.Any(f => f.designUID == fileUid.ToString()))
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Cannot delete a design surface used in a filter"));
+          }
+        }
+      }
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, UnitsTypeEnum.None, fileId, fileType);
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
-      await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, Request.Headers.GetCustomHeaders());
+      await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
       cacheBuilder.ClearMemoryCache(projectUid);
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
@@ -214,14 +230,16 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// Notifies Raptor that a filterUid has been updated/deleted so clear it from the queue
     /// </summary>
     /// <param name="filterUid"></param>
+    /// <param name="projectUid"></param>
     /// <returns>A code and message to indicate the result</returns>
     [Route("api/v2/notification/filterchange")]
     [HttpGet]
     public ContractExecutionResult GetNotifyFilterChange(
-      [FromQuery] Guid filterUid)
+      [FromQuery] Guid filterUid, [FromQuery] Guid projectUid)
     {
       log.LogDebug("GetNotifyFilterChange: " + Request.QueryString);
       filterServiceProxy.ClearCacheItem(filterUid.ToString());
+      filterServiceProxy.ClearCacheListItem(projectUid.ToString());
       log.LogInformation("GetNotifyFilterChange returned");
       return new ContractExecutionResult();
     }
@@ -264,6 +282,23 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
             ex.Message));
       }
       return fileDes;
+    }
+
+    /// <summary>
+    /// Get the list of filters for the project
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="customHeaders">The custom headers of the notification request</param>
+    /// <returns></returns>
+    private async Task<List<MasterData.Models.Models.Filter>> GetFilters(Guid projectUid, IDictionary<string, string> customHeaders)
+    {
+      var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
+      if (filterDescriptors == null || filterDescriptors.Count == 0)
+      {
+        return null;
+      }
+      
+      return filterDescriptors.Select(f => JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(f.FilterJson)).ToList();
     }
   }
 }

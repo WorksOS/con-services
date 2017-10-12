@@ -17,6 +17,8 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     PassCountSettings CompactionPassCountSettings(CompactionProjectSettings projectSettings);
 
+    double[] CompactionCutFillSettings(CompactionProjectSettings projectSettings);
+
     List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents,
       CompactionProjectSettings projectSettings);
   }

@@ -12,11 +12,10 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -100,8 +99,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetProfileProductionDataSlicer: " + Request.QueryString);
       var projectId = GetProjectId(projectUid);
 
-      var settings = CompactionProjectSettings.FromString(
-        await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders));
+      var settings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid, true);
 
@@ -163,8 +161,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetProfileDesignSlicer: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var settings = CompactionProjectSettings.FromString(
-        await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders));
+      var settings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
       if (importedFileUid.Length == 0)

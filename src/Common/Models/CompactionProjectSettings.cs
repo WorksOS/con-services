@@ -304,6 +304,12 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if default or custom pass count targets used for details
     /// </summary>
     public bool OverrideDefaultPassCountTargets => useDefaultPassCountTargets.HasValue && !useDefaultPassCountTargets.Value;
+
+    /// <summary>
+    /// Flag to determine if default or custom cut-fill tolerances used for details
+    /// </summary>
+    public bool OverrideDefaultCutFillTolerances => useDefaultCutFillTolerances.HasValue && !useDefaultCutFillTolerances.Value;
+
     /// <summary>
     /// Flag to determine if default or custom speed used
     /// </summary>
@@ -378,6 +384,13 @@ namespace VSS.Productivity3D.Common.Models
       ? customPassCountTargets.ToArray()
       : DefaultSettings.customPassCountTargets.ToArray();
     /// <summary>
+    /// Get the cut-fill details targets as a value for Raptor
+    /// </summary>
+    public double[] CustomCutFillTolerances => OverrideDefaultCutFillTolerances &&
+                                     customCutFillTolerances != null && customCutFillTolerances.Count > 0
+      ? customCutFillTolerances.ToArray()
+      : DefaultSettings.customCutFillTolerances.ToArray();
+    /// <summary>
     /// Get the minimum temperature warning level as a value for Raptor in 10ths of °C
     /// </summary>
     public ushort CustomTargetTemperatureWarningLevelMinimum => (ushort)Math.Round(CustomTargetTemperatureMinimum * 10);
@@ -406,33 +419,6 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     public short MdpMaximum => MAX_CMV_MDP_VALUE;
     #endregion
-
-    /// <summary>
-    /// Restore settings from a string
-    /// </summary>
-    /// <param name="json">The json.</param>
-    /// <returns></returns>
-    public static CompactionProjectSettings FromString(string json)
-    {
-      CompactionProjectSettings settings;
-      if (!string.IsNullOrEmpty(json))
-      {
-        try
-        {
-          settings = JsonConvert.DeserializeObject<CompactionProjectSettings>(json);
-          settings.Validate();
-        }
-        catch (Exception)
-        {
-          settings = DefaultSettings;
-        }
-      }
-      else
-      {
-        settings = DefaultSettings;
-      }
-      return settings;
-    }
 
     #region Validation
     /// <summary>

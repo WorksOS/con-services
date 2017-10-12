@@ -13,8 +13,8 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Velociraptor.PDSInterface;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 {
@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         else
         {
           //For convenience return empty list rather than null for easier manipulation
-          result = new CompactionProfileResult<CompactionProfileDataResult> {results = new List<CompactionProfileDataResult>()};
+          result = new CompactionProfileResult<Common.ResultHandling.CompactionProfileDataResult> {results = new List<CompactionProfileDataResult>()};
         }
       }
       finally
