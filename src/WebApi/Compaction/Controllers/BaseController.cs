@@ -7,13 +7,16 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using NodaTime;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -285,14 +288,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             designDescriptor = await GetDesignDescriptor(projectUid, designUidGuid);
           }
 
-          //TODO: Replace this with getter on Filter model class. Aaron is updating MasterData models nuget package.
-          //Also note missing some filter properties here e.g. forward direction
-          bool haveData = filterData.startUTC.HasValue || filterData.endUTC.HasValue || filterData.onMachineDesignID.HasValue ||
-                     filterData.vibeStateOn.HasValue || filterData.elevationType.HasValue || filterData.layerNumber.HasValue ||
-                     (filterData.contributingMachines != null && filterData.contributingMachines.Count > 0);
-
-          if (haveData || haveExcludedIds || designDescriptor != null)
+          if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
           {
+            filterData = ApplyDateRange(projectUid, filterData);
+
             var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
             return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
@@ -304,6 +303,32 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
       }
       return haveExcludedIds ? Filter.CreateFilter(excludedIds) : null;
+    }
+
+    /// <summary>
+    /// Dynamically set the date range according to the date range type.
+    /// Custom date range is unaltered. Project extents is always null.
+    /// Other types are calculated in the project time zone.
+    /// </summary>
+    /// <param name="filter">The filter containg the date range type</param>
+    /// <returns>The filter with the date range set</returns>
+    private MasterData.Models.Models.Filter ApplyDateRange(Guid projectUid, MasterData.Models.Models.Filter filter)
+    {
+      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
+        return filter;
+
+      var project = (User as RaptorPrincipal).GetProject(projectUid);
+      DateTime? startUtc = null;
+      DateTime? endUtc = null;
+      if (filter.DateRangeType.Value != DateRangeType.ProjectExtents)
+      {
+        var utcNow = DateTime.UtcNow;
+        startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
+        endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
+      }
+      return MasterData.Models.Models.Filter.CreateFilter(
+        startUtc, endUtc, filter.designUID, filter.contributingMachines, filter.onMachineDesignID, filter.elevationType, 
+        filter.vibeStateOn, filter.polygonLL, filter.forwardDirection, filter.layerNumber, filter.polygonUID, filter.polygonName);
     }
 
     private async Task<MasterData.Models.Models.Filter> GetFilter(Guid projectUid, Guid filterUid)

@@ -14,10 +14,12 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.Report.Executors;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -122,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           false,
           false,
           OutputTypes.etVedaAllPasses,
-          "",
+          string.Empty,
           tolerance.Value);
 
       exportRequest.Validate();
@@ -138,8 +140,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets an export of production data in cell grid format report for import to VETA.
     /// </summary>
     /// <param name="projectUid">Project unique identifier.</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC.</param>
     /// <param name="fileName">Output file name.</param>
     /// <param name="machineNames">Comma-separated list of machine names.</param>
     /// <param name="filterUid">The filter Uid to apply to the export results</param>
@@ -149,8 +149,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<ExportResult> GetExportReportVeta(
       [FromQuery] Guid projectUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
       [FromQuery] Guid? filterUid)
@@ -162,6 +160,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
 
+      DateTime startUtc, endUtc;
+      GetDateRange(projectId, filter, out startUtc, out endUtc);
+    
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(customHeaders)
@@ -194,8 +195,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets an export of production data in cell grid format report.
     /// </summary>
     /// <param name="projectUid">Project unique identifier.</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC.</param>
     /// <param name="coordType">Either Northing/Easting or Latitude/Longitude.</param>
     /// <param name="outputType">Either all passes/last for pass machine passes export or all passes/final pass for export for VETA</param>
     /// <param name="restrictOutput">Output .CSV file is restricted to 65535 rows if it is true.</param>
@@ -208,8 +207,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<ExportResult> GetExportReportMachinePasses(
       [FromQuery] Guid projectUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
       [FromQuery] int coordType,
       [FromQuery] int outputType,
       [FromQuery] bool restrictOutput,
@@ -224,6 +221,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
 
+      DateTime startUtc, endUtc;
+      GetDateRange(projectId, filter, out startUtc, out endUtc);
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
@@ -242,7 +241,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           restrictOutput,
           rawDataOutput,
           (OutputTypes)outputType,
-          "");
+          string.Empty);
 
       exportRequest.Validate();
 
@@ -267,6 +266,38 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             "Failed to retrieve preferences for current user"));
       }
       return userPreferences;
+    }
+
+    /// <summary>
+    /// Gets the date range for the export.
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="filter"></param>
+    /// <param name="startUtc"></param>
+    /// <param name="endUtc"></param>
+    private void GetDateRange(long projectId, Common.Models.Filter filter, out DateTime startUtc, out DateTime endUtc)
+    {
+      if (filter == null || !filter.startUTC.HasValue || !filter.endUTC.HasValue)
+      {
+        //Special case of project extents where start and end UTC not set in filter for Raptor peformance.
+        //But need to set here for export.
+        var excludedIds = filter?.surveyedSurfaceExclusionList?.ToArray() ?? new long[0];
+        ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds);
+        request.Validate();
+
+        var result =
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
+            .Process(request) as ProjectStatisticsResult;
+
+        startUtc = result.startTime;
+        endUtc = result.endTime;
+      }
+      else
+      {
+        startUtc = filter.startUTC.Value;
+        endUtc = filter.endUTC.Value;
+
+      }
     }
   }
 }

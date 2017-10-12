@@ -1,7 +1,6 @@
-﻿using System;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+﻿using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Helpers
+namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
   public interface IProductionDataProfileRequestHelper
   {

@@ -13,11 +13,11 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Velociraptor.PDSInterface;
 using ProfileCell = VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling.ProfileCell;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {

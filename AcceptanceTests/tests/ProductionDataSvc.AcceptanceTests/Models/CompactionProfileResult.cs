@@ -158,6 +158,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
 
   public class CompactionProfileVertex : IEquatable<CompactionProfileVertex>
   {
+    const int DECIMAL_PLACES = 2;
     #region members
     /// <summary>
     /// The station value, or distance from start of the profile line at which the profile line intersects the design surface.
@@ -177,7 +178,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         return false;
 
 
-      return Math.Round(this.x, 2) == Math.Round(other.x, 2) &&
+      return Math.Round(this.x, DECIMAL_PLACES) == Math.Round(other.x, DECIMAL_PLACES) &&
              FloatEquals(this.y, other.y);
     }
 
@@ -186,7 +187,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (float.IsNaN(f1) || float.IsNaN(f2))
         return float.IsNaN(f1) && float.IsNaN(f2);
 
-      return Math.Round(f1, 2) == Math.Round(f2, 2);
+      return Math.Round(f1, DECIMAL_PLACES) == Math.Round(f2, DECIMAL_PLACES);
     }
 
     public static bool operator ==(CompactionProfileVertex a, CompactionProfileVertex b)
