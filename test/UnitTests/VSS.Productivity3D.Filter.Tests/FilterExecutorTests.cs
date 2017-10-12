@@ -321,7 +321,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var projectListProxy = new Mock<IProjectListProxy>();
       var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
 
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
