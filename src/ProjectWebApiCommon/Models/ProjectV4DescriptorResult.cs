@@ -105,6 +105,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public string ProjectTimeZone { get; set; }
 
     /// <summary>
+    /// Gets or sets the IANA time zone.
+    /// </summary>
+    /// <value>
+    /// The IANA project time zone.
+    /// </value>
+    public string IanaTimeZone { get; set; }
+
+    /// <summary>
     /// Gets or sets the start date.
     /// </summary>
     /// <value>
@@ -211,6 +219,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
              && otherProject.Name == this.Name
              && otherProject.Description == this.Description
              && otherProject.ProjectTimeZone == this.ProjectTimeZone
+             && otherProject.IanaTimeZone == this.IanaTimeZone
              && otherProject.StartDate == this.StartDate
              && otherProject.EndDate == this.EndDate
              && otherProject.CustomerUid == this.CustomerUid

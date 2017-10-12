@@ -1,16 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterData.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Factories
 {
   /// <summary>
-  /// 
+  /// Factory for creating <see cref="DataRequestBase"/> instances.
   /// </summary>
   public class RequestFactory : IRequestFactory
   {
@@ -28,12 +24,8 @@ namespace VSS.MasterData.Project.WebAPI.Factories
       log = logger.CreateLogger<ProjectSettingsRequestHelper>();
       this.configStore = configStore;
     }
-
-    /// <summary>
-    /// Create instance of T.
-    /// </summary>
-    /// <typeparam name="T">Derived implementation of DataRequestBase</typeparam>
-    /// <returns>Returns instance of T with required attributes set.</returns>
+    
+    /// <inheritdoc />
     public T Create<T>(Action<RequestFactory> action) where T : DataRequestBase, new()
     {
       action(this);
@@ -43,16 +35,12 @@ namespace VSS.MasterData.Project.WebAPI.Factories
 
       return obj;
     }
-
-    /// <summary>
-    /// Sets the customerUid from the authentication header.
-    /// </summary>
-    /// <param name="customerUid"></param>
+    
+    /// <inheritdoc />
     public RequestFactory CustomerUid(string customerUid)
     {
       this.customerUid = customerUid;
       return this;
     }
-    
   }
 }

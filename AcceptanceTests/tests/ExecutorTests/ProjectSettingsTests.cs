@@ -17,8 +17,8 @@ namespace ExecutorTests
       string settings = "";
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings);
       var ex = Assert.ThrowsException<ServiceException>(() => projectSettingsRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2005", StringComparison.Ordinal), "executor threw exception but incorrect code");
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Missing ProjectUID.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("2005", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("Missing ProjectUID.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
     [TestMethod]
@@ -43,8 +43,8 @@ namespace ExecutorTests
           null, null, null,
           projectRepo);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal), "executor threw exception but incorrect code");
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("2001", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
     [TestMethod]
@@ -110,8 +110,8 @@ namespace ExecutorTests
       string settings = null;
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings);
       var ex = Assert.ThrowsException<ServiceException>(() => projectSettingsRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal), "executor threw exception but incorrect code");
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("ProjectSettings cannot be null.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("2073", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("ProjectSettings cannot be null.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
     [TestMethod]
@@ -141,8 +141,8 @@ namespace ExecutorTests
         null, raptorProxy, null,
         projectRepo);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal), "executor threw exception but incorrect code");
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("2001", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
     [TestMethod]

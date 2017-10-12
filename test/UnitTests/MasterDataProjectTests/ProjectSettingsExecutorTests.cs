@@ -117,7 +117,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>( async () =>
         await executor.ProcessAsync(projectSettingsRequest));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(1)));
+      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(1)));
     }
 
     [TestMethod]

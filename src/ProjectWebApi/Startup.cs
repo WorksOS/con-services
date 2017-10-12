@@ -22,6 +22,11 @@ using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
+#if NET_4_7
+  using VSS.Productivity3D.Common.Filters;
+#endif
+
+
 namespace VSS.MasterData.Project.WebAPI
 {
   /// <summary>
@@ -163,6 +168,12 @@ namespace VSS.MasterData.Project.WebAPI
       app.UseCors("VSS");
       //Enable TID here
       app.UseTIDAuthentication();
+
+#if NET_4_7
+      if (Configuration["newrelic"] == "true")
+        app.UseMiddleware<NewRelicMiddleware>();
+#endif
+
 
       app.UseMvc();
 

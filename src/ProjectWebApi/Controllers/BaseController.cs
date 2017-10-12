@@ -1,15 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
@@ -24,7 +22,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
-  /// Base for all Project v4 controller..
+  /// Base for all Project v4 controllers
   /// </summary>
   public abstract class BaseController : Controller
   {
@@ -57,7 +55,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets or sets the Kafka topic.
     /// </summary>
     protected readonly string kafkaTopicName;
-
 
     /// <summary>
     /// Gets or sets the Geofence proxy. 
@@ -94,7 +91,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected Guid geofenceUidCreated = Guid.Empty;
 
-
     /// <summary>
     /// Gets the custom headers for the request.
     /// </summary>
@@ -127,7 +123,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </value>
     protected string userEmailAddress => GetUserEmailAddress();
 
-
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseController"/> class.
     /// </summary>
@@ -143,26 +138,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected BaseController(ILogger log, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
-      IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo
-    )
+      IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo)
     {
       this.log = log;
       this.configStore = configStore;
       this.serviceExceptionHandler = serviceExceptionHandler;
       this.producer = producer;
+
       if (!this.producer.IsInitializedProducer)
+      {
         this.producer.InitProducer(configStore);
+      }
 
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
       this.projectRepo = projectRepo as ProjectRepository;
-      this.subscriptionRepo = subscriptionsRepo as SubscriptionRepository;
+      subscriptionRepo = subscriptionsRepo as SubscriptionRepository;
+
       this.subscriptionProxy = subscriptionProxy;
       this.geofenceProxy = geofenceProxy;
       this.raptorProxy = raptorProxy;
-
-
     }
 
     /// <summary>
@@ -171,23 +167,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns></returns>
-    protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action)
+    protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func
+      <Task<TResult>> action)
       where TResult : ContractExecutionResult
     {
       TResult result = default(TResult);
       try
       {
-        result = (await action.Invoke().ConfigureAwait(false)) as TResult;
+        result = await action.Invoke().ConfigureAwait(false);
         log.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
-
       }
-      catch (ServiceException se)
+      catch (ServiceException)
       {
-        // todo temp kludge (see Aaron) until a better solution can be found so that 
-        //    a SE thrown both here, and outside of this method, is consistant.
-        var temp = JsonConvert.DeserializeObject<ServiceExceptionKludge>(se.GetContent);
-        throw new ServiceException(se.Code,
-          new ContractExecutionResult(se.GetResult.Code, temp.Message));
+        throw;
       }
       catch (Exception ex)
       {
@@ -198,6 +190,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         log.LogInformation($"Executed {action.GetMethodInfo().Name} with the result {result?.Code}");
       }
+
       return result;
     }
 
@@ -209,7 +202,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private string GetCustomerUid()
     {
       if (User is TIDCustomPrincipal principal)
+      {
         return principal.CustomerUid;
+      }
+
       throw new ArgumentException("Incorrect customer in request context principal.");
     }
 
@@ -220,9 +216,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
     private string GetUserId()
     {
-      if (User is TIDCustomPrincipal principal
-          && (principal.Identity is GenericIdentity identity))
+      if (User is TIDCustomPrincipal principal && (principal.Identity is GenericIdentity identity))
+      {
         return identity.Name;
+      }
+
       throw new ArgumentException("Incorrect UserId in request context principal.");
     }
 
@@ -234,29 +232,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private string GetUserEmailAddress()
     {
       if (User is TIDCustomPrincipal principal)
+      {
         return principal.EmailAddress;
+      }
+
       throw new ArgumentException("Incorrect user email address in request context principal.");
     }
-
-
-    ///// <summary>
-    ///// Gets the project list for a customer
-    ///// </summary>
-    ///// <returns></returns>
-    //protected async Task<ImmutableList<Repositories.DBModels.Project>> GetProjectList()
-    //{
-    //  var customerUid = LogCustomerDetails("GetProjectList");
-    //  var projects = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
-
-    //  log.LogInformation($"Project list contains {projects.Count} projects");
-    //  return projects;
-    //}
 
     /// <summary>
     /// Gets the project.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
-    /// <returns></returns>
     protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
       var customerUid = LogCustomerDetails("GetProject", projectUid);
@@ -275,12 +261,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// 
+    /// Log the Customer and Project details.
     /// </summary>
-    /// <param name="functionName"></param>
-    /// <param name="projectUid"></param>
-
-    /// <returns></returns>
+    /// <param name="functionName">Calling function name</param>
+    /// <param name="projectUid">The Project Uid</param>
+    /// <returns>Returns <see cref="TIDCustomPrincipal.CustomerUid"/></returns>
     protected string LogCustomerDetails(string functionName, string projectUid = "")
     {
       log.LogInformation(
@@ -288,12 +273,5 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       return GetCustomerUid();
     }
-  }
-
-
-  public class ServiceExceptionKludge
-  {
-    public string Code;
-    public string Message;
   }
 }
