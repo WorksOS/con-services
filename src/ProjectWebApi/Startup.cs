@@ -26,7 +26,6 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
   using VSS.Productivity3D.Common.Filters;
 #endif
 
-
 namespace VSS.MasterData.Project.WebAPI
 {
   /// <summary>
