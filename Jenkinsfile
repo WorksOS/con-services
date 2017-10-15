@@ -133,7 +133,7 @@ node ('Jenkins-Win2016-Raptor')
            archiveArtifacts artifacts: 'FilterWebApiNet47.zip', fingerprint: true 
 		   
 		  stage ('Tag repository') {
-                sh 'git rev-parse HEAD > GIT_COMMIT'
+                bat 'git rev-parse HEAD > GIT_COMMIT'
                 def gitCommit=readFile('GIT_COMMIT').trim()
                 def tagParameters = [
                   new StringParameterValue("REPO_NAME", "VSS.Productivity3D.Filter.Service"),
