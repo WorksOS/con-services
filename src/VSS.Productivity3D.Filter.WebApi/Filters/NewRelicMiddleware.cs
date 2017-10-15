@@ -52,18 +52,18 @@ namespace VSS.Productivity3D.Common.Filters
 
         var eventAttributes = new Dictionary<string, object>
         {
-          {"endpoint", context.Request.Path},
-          {"userUid", principal.Identity.Name},
-          {"customerUid", principal.CustomerUid},
-          {"userName", principal.EmailAddress},
-          {"customerName", principal.CustomerName},
+          {"endpoint", context.Request.Path.ToString()},
+          {"userUid", principal.Identity.Name.ToString()},
+          {"customerUid", principal.CustomerUid.ToString()},
+          {"userName", principal.EmailAddress.ToString()},
+          {"customerName", principal.CustomerName.ToString()},
           {"elapsedTime", (Single) watch.ElapsedMilliseconds},
-          {"projectUid",projectUid },
-          {"origin",origin },
+          {"projectUid",projectUid.ToString() },
+          {"origin",origin.ToString() },
           {"result", context.Response.StatusCode.ToString() }
         };
 
-        NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Request", eventAttributes);
+        NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Filter_Request", eventAttributes);
       }
     }
   }
