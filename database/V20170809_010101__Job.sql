@@ -1,7 +1,3 @@
-CREATE SCHEMA IF NOT EXISTS `VSS-Productivity3D-Scheduler`;
-
-USE `VSS-Productivity3D-Scheduler`;
-
 CREATE TABLE IF NOT EXISTS Job (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `StateId` int(11) DEFAULT NULL,
