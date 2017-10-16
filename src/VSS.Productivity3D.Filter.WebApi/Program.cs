@@ -1,8 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-
-
+using Newtonsoft.Json;
 #if NET_4_7
 using Topshelf;
 using System.Diagnostics;
@@ -20,8 +19,15 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// </summary>
     public static void Main(string[] args)
     {
+#if  NET_4_7
+      var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+      var pathToContentRoot = Path.GetDirectoryName(pathToExe);
+#endif
 
       var kestrelConfig = new ConfigurationBuilder()
+#if NET_4_7
+        .SetBasePath(pathToContentRoot)
+#endif
         .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
         .Build();
 
@@ -74,6 +80,8 @@ namespace VSS.Productivity3D.Filter.WebApi
       _webHost = new WebHostBuilder()
         .UseKestrel()
         .UseConfiguration(config)
+        //TODO For some reason setting configuration for a topshelf service does not work
+        .UseUrls(config["server.urls"])
         .UseContentRoot(pathToContentRoot)
         .UseStartup<Startup>()
         .Build();
