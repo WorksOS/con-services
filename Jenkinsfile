@@ -78,11 +78,22 @@ node('Ubuntu_Slave') {
 
 	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest-release-${fullVersion}"
 		   
-               sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest-release-${fullVersion} ./database"
+           sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest-release-${fullVersion} ./database"
 
 	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest-release-${fullVersion}"
 
 	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest-release-${fullVersion}"
+		   
+		   	    stage ('Tag repository') {
+                sh 'git rev-parse HEAD > GIT_COMMIT'
+                def gitCommit=readFile('GIT_COMMIT').trim()
+                def tagParameters = [
+                  new StringParameterValue("REPO_NAME", "VSS.Productivity3D.Scheduler"),
+                  new StringParameterValue("COMMIT_ISH", gitCommit),
+                  new StringParameterValue("TAG", fullVersion)
+                ]
+                build job: "tag-vso-commit", parameters: tagParameters
+	    }
 
 	}
 	else
@@ -120,6 +131,16 @@ node ('Jenkins-Win2016-Raptor')
            bat "build47.bat"
           
            archiveArtifacts artifacts: 'SchedulerWebApiNet47.zip', fingerprint: true 
+		   	    stage ('Tag repository') {
+                bat 'git rev-parse HEAD > GIT_COMMIT'
+                def gitCommit=readFile('GIT_COMMIT').trim()
+                def tagParameters = [
+                  new StringParameterValue("REPO_NAME", "VSS.Productivity3D.Scheduler"),
+                  new StringParameterValue("COMMIT_ISH", gitCommit),
+                  new StringParameterValue("TAG", fullVersion+"-master")
+                ]
+                build job: "tag-vso-commit", parameters: tagParameters
+	    }
 
          }
         }

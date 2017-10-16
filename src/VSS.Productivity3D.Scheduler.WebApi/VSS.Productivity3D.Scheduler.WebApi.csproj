@@ -81,6 +81,9 @@
     <PackageReference Include="MySql.Data" Version="6.9.9" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.6.15" />
     <PackageReference Include="Hangfire.Core" Version="1.6.15" />
+    <PackageReference Include="Topshelf">
+      <Version>4.0.3</Version>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
