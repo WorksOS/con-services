@@ -9,28 +9,31 @@ using System.Diagnostics;
 
 namespace VSS.MasterData.Project.WebAPI
 {
-  /// <summary>
-  /// 
-  /// </summary>
-  public class Program
-  {
-    /// <summary>
-    /// Mains the specified arguments.
-    /// </summary>
-    /// <param name="args">The arguments.</param>
-    public static void Main(string[] args)
+    public class Program
     {
-
-      var kestrelConfig = new ConfigurationBuilder()
-        .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
-        .Build();
-
+      /// <summary>
+      /// VSS.Productivity3D.Filter main
+      /// </summary>
+      public static void Main(string[] args)
+      {
 #if NET_4_7
+      var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+      var pathToContentRoot = Path.GetDirectoryName(pathToExe);
+#endif
+
+        var kestrelConfig = new ConfigurationBuilder()
+#if NET_4_7
+        .SetBasePath(pathToContentRoot)
+#endif
+        .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
+          .Build();
+
+#if NET_4_7 //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
       HostFactory.Run(x =>
       {
-        x.Service<ProjectContainer>(s =>
+        x.Service<FilterContainer>(s =>
         {
-          s.ConstructUsing(name => new ProjectContainer());
+          s.ConstructUsing(name => new FilterContainer());
           s.WhenStarted(tc => tc.Start(kestrelConfig));
           s.WhenStopped(tc => tc.Stop());
         });
@@ -46,21 +49,20 @@ namespace VSS.MasterData.Project.WebAPI
         });
       });
 #else
-      var host = new WebHostBuilder()
-              .UseKestrel()
-              .UseContentRoot(Directory.GetCurrentDirectory())
-              .UseIISIntegration()
-              .UseStartup<Startup>()
-              .Build();
+        var host = new WebHostBuilder()
+          .UseKestrel()
+          .UseContentRoot(Directory.GetCurrentDirectory())
+          .UseIISIntegration()
+          .UseStartup<Startup>()
+          .Build();
 
-          host.Run();
-
+        host.Run();
 #endif
+      }
     }
-  }
 
 #if NET_4_7
-  internal class ProjectContainer
+  internal class FilterContainer
   {
     private IWebHost _webHost;
 
@@ -75,7 +77,9 @@ namespace VSS.MasterData.Project.WebAPI
       _webHost = new WebHostBuilder()
         .UseKestrel()
         .UseConfiguration(config)
-        .UseContentRoot(pathToContentRoot) 
+        //TODO For some reason setting configuration for a topshelf service does not work
+        .UseUrls(config["server.urls"])
+        .UseContentRoot(pathToContentRoot)
         .UseStartup<Startup>()
         .Build();
 
