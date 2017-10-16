@@ -130,8 +130,9 @@ node ('Jenkins-Win2016-Raptor')
            stage 'Build'
            bat "build47.bat"
           
-           archiveArtifacts artifacts: 'SchedulerWebApiNet47.zip', fingerprint: true 
-		   	    stage ('Tag repository') {
+           archiveArtifacts artifacts: 'VSS.Productivity3D.Scheduler.WebApiNet47.zip', fingerprint: true 
+
+           stage ('Tag repository') {
                 bat 'git rev-parse HEAD > GIT_COMMIT'
                 def gitCommit=readFile('GIT_COMMIT').trim()
                 def tagParameters = [
