@@ -150,7 +150,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     }
 
     /// <summary>
-    /// Converts a set user preferences in the format understood by the Raptor for.
+    /// Converts a set user preferences in the format understood by Raptor.
     /// It is solely used by production data export WebAPIs.
     /// </summary>
     /// <param name="userPref">The set of user preferences.</param>
@@ -164,14 +164,17 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         userPref.Timezone,
         Preferences.DefaultDateSeparator,
         Preferences.DefaultTimeSeparator,
-        userPref.ThousandsSeparator,
-        userPref.DecimalSeparator,
+        //Hardwire number format as "xxx,xxx.xx" or it causes problems with the CSV file as comma is the column separator.
+        //To respect user preferences requires Raptor to enclose formatted numbers in quotes.
+        //This bug is present in CG since it uses user preferences separators.
+        Preferences.DefaultThousandsSeparator,
+        Preferences.DefaultDecimalSeparator,
         projectTimeZoneOffset,
         Array.IndexOf(LanguageLocales.LanguageLocaleStrings, userPref.Language),
-        (int)UnitsTypeEnum.Metric,
+        (int)userPref.Units.UnitsType(),
         Preferences.DefaultDateTimeFormat,
         Preferences.DefaultNumberFormat,
-        Preferences.DefaultTemperatureUnit,
+        (int)userPref.TemperatureUnit.TemperatureUnitType(),
         Preferences.DefaultAssetLabelTypeId);
     }
   }

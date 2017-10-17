@@ -26,13 +26,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.QueryString.Add("ProjectUid", projectUid);
     }
 
-    [Given(@"startUtc ""(.*)"" and endUtc ""(.*)""")]
-    public void GivenStartUtcAndEndUtc(string startUtc, string endUtc)
-    {
-      exportReportRequester.QueryString.Add("startUtc", startUtc);
-      exportReportRequester.QueryString.Add("endUtc", endUtc);
-    }
-
     [Given(@"coordType ""(.*)""")]
     public void GivenCoordType(int coordType)
     {

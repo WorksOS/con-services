@@ -6,70 +6,69 @@ Background:
 
 Scenario Outline: ExportReportToVETA - Good Request
   And projectUid "<ProjectUID>"
-	And startUtc "<StartDate>" and endUtc "<EndDate>"
+	And filterUid "<FilterUID>"
 	And machineNames "<MachineNames>"
 	And fileName is "<FileName>"
 	When I request an Export Report To VETA
 	Then the report result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequestName       | ProjectUID                           | StartDate           | EndDate             | MachineNames                                                                                         | FileName | ResultName           |
-	| Selected Machines | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2012-11-05T00:00:00 | 2012-11-06T00:00:00 | D61 SATD PE,KOMATSU PC210,ACOM,LIEBHERR 924C,CAT CS56B,VOLVO G946B,CASE CX160C,LIEBHERR724,JD 764 CV | Test     | AllMachinesLongDates |
-	| All Machines      | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2012-11-05T00:00:00 | 2012-11-06T00:00:00 | All                                                                                                  | Test     | AllMachinesLongDates |
+	| RequestName       | ProjectUID                           | FilterUID                            | MachineNames                                                                                         | FileName | ResultName           |
+	| Selected Machines | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | D61 SATD PE,KOMATSU PC210,ACOM,LIEBHERR 924C,CAT CS56B,VOLVO G946B,CASE CX160C,LIEBHERR724,JD 764 CV | Test     | AllMachinesLongDates |
+	| All Machines      | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All                                                                                                  | Test     | AllMachinesLongDates |
 	 
 Scenario Outline: ExportReportToVETA - Good Request - No Machines
   And projectUid "<ProjectUID>"
-	And startUtc "<StartDate>" and endUtc "<EndDate>"
+	And filterUid "<FilterUID>"
 	And fileName is "<FileName>"
 	When I request an Export Report To VETA
 	Then the report result should match the "<ResultName>" from the repository
 	Examples: 
-	| RequestName | ProjectUID                           | StartDate           | EndDate             | FileName | ResultName          |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2012-11-05T00:00:00 | 2012-11-06T00:00:00 | Test     | NoMachinesLongDates |
+	| RequestName | ProjectUID                           | FilterUID                            | FileName | ResultName          |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | Test     | NoMachinesLongDates |
 
 Scenario Outline: ExportReportToVETA - Bad Request - NoProjectUID
-	And startUtc "<StartDate>" and endUtc "<EndDate>"
+	And filterUid "<FilterUID>"
 	And machineNames "<MachineNames>"
 	And fileName is "<FileName>"
 	When I request an Export Report To VETA expecting Unauthorized
 	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
-	| RequestName | StartDate  | EndDate    | MachineNames | FileName | ErrorCode | ErrorMessage        |
-	|             | 2005-01-01 | 2017-06-23 | All          | Test     |  -5       |Missing Project or project does not belong to specified customer or don't have access to the project |
+	| RequestName | FilterUID                            | MachineNames | FileName | ErrorCode | ErrorMessage        |
+	|             | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          | Test     |  -5       | Missing Project or project does not belong to specified customer or don't have access to the project |
 
-Scenario Outline: ExportReportToVETA - No Content - NoDateRange
+Scenario Outline: ExportReportToVETA - Good Request - NoDateRange
 	And projectUid "<ProjectUID>"
 	And machineNames "<MachineNames>"
 	And fileName is "<FileName>"
-	When I request an Export Report To VETA expecting NoContent
+	When I request an Export Report To VETA
+  Then the report result should match the "<ResultName>" from the repository
 	Examples:
-	| RequestName | ProjectUID                           | MachineNames | FileName | 
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | All          | Test     |
+	| RequestName | ProjectUID                           | MachineNames | FileName | ResultName  |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | All          | Test     | NoDateRange |
 
 Scenario Outline: ExportReportToVETA - No Content - NoFileName
 	And projectUid "<ProjectUID>"
-  And startUtc "<StartDate>" and endUtc "<EndDate>"
+  And filterUid "<FilterUID>"
 	And machineNames "<MachineNames>"
 	When I request an Export Report To VETA expecting NoContent
 	Examples:
-	| RequestName | ProjectUID                           | StartDate  | EndDate    | MachineNames |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 2005-01-01 | 2017-06-23 | All          |
+	| RequestName | ProjectUID                           | FilterUID                            | MachineNames |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          |
 
 Scenario Outline: ExportReportToVETA - No Content with Filter - No Machines
   And projectUid "<ProjectUID>"
   And filterUid "<FilterUID>"
-	And startUtc "<StartDate>" and endUtc "<EndDate>"
 	And fileName is "<FileName>"
 	When I request an Export Report To VETA expecting NoContent
 	Examples: 
-	| RequestName | ProjectUID                           | FilterUID                            | StartDate           | EndDate             | FileName |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | 2012-11-05T00:00:00 | 2012-11-06T00:00:00 | Test     |
+	| RequestName | ProjectUID                           | FilterUID                            | FileName |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | Test     |
 
 Scenario Outline: ExportReportToVETA - Good Request with Filter - No Machines
   And projectUid "<ProjectUID>"
   And filterUid "<FilterUID>"
-	And startUtc "<StartDate>" and endUtc "<EndDate>"
 	And fileName is "<FileName>"
 	When I request an Export Report To VETA
 	Examples: 
-	| RequestName | ProjectUID                           | FilterUID                            | StartDate           | EndDate             | FileName |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 81422acc-9b0c-401c-9987-0aedbf153f1d | 2012-11-05T00:00:00 | 2012-11-06T00:00:00 | Test     |
+	| RequestName | ProjectUID                           | FilterUID                            | FileName |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 81422acc-9b0c-401c-9987-0aedbf153f1d | Test     |
