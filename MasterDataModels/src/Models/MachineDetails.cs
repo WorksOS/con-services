@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using VSS.MasterData.Models.FIlters;
 
@@ -7,7 +8,7 @@ namespace VSS.MasterData.Models.Models
   /// <summary>
   /// A representation of a machine in a Raptor project
   /// </summary>
-  public class MachineDetails
+  public class MachineDetails : IEquatable<MachineDetails>
   {
     /// <summary>
     /// The ID of the machine/asset. This is the unique identifier, used by Raptor.
@@ -61,5 +62,41 @@ namespace VSS.MasterData.Models.Models
     }
 
     private const int MAX_MACHINE_NAME = 256;
+
+    public bool Equals(MachineDetails other)
+    {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return assetID == other.assetID && string.Equals(machineName, other.machineName) && isJohnDoe == other.isJohnDoe;
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((MachineDetails) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = assetID.GetHashCode();
+        hashCode = (hashCode * 397) ^ (machineName != null ? machineName.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ isJohnDoe.GetHashCode();
+        return hashCode;
+      }
+    }
+
+    public static bool operator ==(MachineDetails left, MachineDetails right)
+    {
+      return Equals(left, right);
+    }
+
+    public static bool operator !=(MachineDetails left, MachineDetails right)
+    {
+      return !Equals(left, right);
+    }
   }
 }

@@ -14,7 +14,7 @@ namespace VSS.MasterData.Models.Models
   /// <summary>
   /// Defines all the filter parameters that may be supplied and validates them.
   /// </summary>
-  public class Filter : IValidatable
+  public class Filter : IValidatable, IEquatable<Filter>
   {
     /// <summary>
     /// The 'start' time for a time based filter. Data recorded earlier to this time is not considered.
@@ -99,6 +99,8 @@ namespace VSS.MasterData.Models.Models
     [Range(ValidationConstants.MIN_LAYER_NUMBER, ValidationConstants.MAX_LAYER_NUMBER)]
     [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
     public int? layerNumber { get; private set; }
+
+
 
     public bool HasData() =>
       startUTC.HasValue ||
@@ -206,6 +208,57 @@ namespace VSS.MasterData.Models.Models
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
       }
+    }
+
+    public bool Equals(Filter other)
+    {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return startUTC.Equals(other.startUTC) && endUTC.Equals(other.endUTC) && DateRangeType == other.DateRangeType &&
+             string.Equals(designUID, other.designUID) && contributingMachines.ScrambledEquals(other.contributingMachines) &&
+             onMachineDesignID == other.onMachineDesignID && elevationType == other.elevationType &&
+             vibeStateOn == other.vibeStateOn && string.Equals(polygonUID, other.polygonUID) &&
+             string.Equals(polygonName, other.polygonName) && polygonLL.ScrambledEquals(other.polygonLL) &&
+             forwardDirection == other.forwardDirection && layerNumber == other.layerNumber;
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((Filter) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = startUTC.GetHashCode();
+        hashCode = (hashCode * 397) ^ endUTC.GetHashCode();
+        hashCode = (hashCode * 397) ^ DateRangeType.GetHashCode();
+        hashCode = (hashCode * 397) ^ (designUID != null ? designUID.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (contributingMachines != null ? contributingMachines.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ onMachineDesignID.GetHashCode();
+        hashCode = (hashCode * 397) ^ elevationType.GetHashCode();
+        hashCode = (hashCode * 397) ^ vibeStateOn.GetHashCode();
+        hashCode = (hashCode * 397) ^ (polygonUID != null ? polygonUID.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (polygonName != null ? polygonName.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (polygonLL != null ? polygonLL.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ forwardDirection.GetHashCode();
+        hashCode = (hashCode * 397) ^ layerNumber.GetHashCode();
+        return hashCode;
+      }
+    }
+
+    public static bool operator ==(Filter left, Filter right)
+    {
+      return Equals(left, right);
+    }
+
+    public static bool operator !=(Filter left, Filter right)
+    {
+      return !Equals(left, right);
     }
   }
 }

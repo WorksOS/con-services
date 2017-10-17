@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using VSS.MasterData.Models.Handlers;
@@ -9,7 +10,7 @@ namespace VSS.MasterData.Models.Models
   /// <summary>
   /// A point specified in WGS 84 latitude/longtitude coordinates
   /// </summary>
-  public class WGSPoint : IValidatable
+  public class WGSPoint : IValidatable, IEquatable<WGSPoint>
   {
     private WGSPoint()
     { }
@@ -47,6 +48,39 @@ namespace VSS.MasterData.Models.Models
     public void Validate([FromServices] IServiceExceptionHandler serviceExceptionHandler)
     {
       //nothign else to validate
+    }
+
+    public bool Equals(WGSPoint other)
+    {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return Lat.Equals(other.Lat) && Lon.Equals(other.Lon);
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((WGSPoint) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        return (Lat.GetHashCode() * 397) ^ Lon.GetHashCode();
+      }
+    }
+
+    public static bool operator ==(WGSPoint left, WGSPoint right)
+    {
+      return Equals(left, right);
+    }
+
+    public static bool operator !=(WGSPoint left, WGSPoint right)
+    {
+      return !Equals(left, right);
     }
   }
 }
