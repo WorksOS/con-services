@@ -257,7 +257,7 @@ namespace WebApiTests
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("ProjectSettings", "fk_ProjectUID", 1, new Guid(projectUid));
       projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectSettings", "fk_ProjectUID", "Settings", $"{projectSettings}", new Guid(projectUid));
 
-      var projectSettings1 = "{customTargetPassCountMaximum: 7,useMachineTargetTemperature: false,customTargetTemperatureMinimum: 75}";
+      var projectSettings1 = "{useMachineTargetPassCount: false,customTargetPassCountMinimum: 5}";
       var projSettings1 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings1);
       var configJson2 = JsonConvert.SerializeObject(projSettings1, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response1 = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString());

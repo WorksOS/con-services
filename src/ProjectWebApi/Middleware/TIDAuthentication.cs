@@ -10,10 +10,11 @@ using VSS.Authentication.JWT;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 
-namespace VSS.MasterData.Project.WebAPI.Filters
+namespace VSS.MasterData.Project.WebAPI.Middleware
 {
   /// <summary>
   /// authentication
@@ -44,11 +45,11 @@ namespace VSS.MasterData.Project.WebAPI.Filters
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler)
     {
-      log = logger.CreateLogger<TIDAuthentication>();
+      this.log = logger.CreateLogger<TIDAuthentication>();
       this.customerProxy = customerProxy;
-      _next = next;
+      this._next = next;
       this.store = store;
-      ServiceExceptionHandler = serviceExceptionHandler;
+      this.ServiceExceptionHandler = serviceExceptionHandler;
     }
 
     /// <summary>
@@ -77,7 +78,7 @@ namespace VSS.MasterData.Project.WebAPI.Filters
         // If no authorization header found, nothing to process further
         if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid) && requireCustomerUid))
         {
-          log.LogWarning("No account selected for the request");
+          this.log.LogWarning("No account selected for the request");
           await SetResult("No account selected", context);
           return;
         }
@@ -94,7 +95,7 @@ namespace VSS.MasterData.Project.WebAPI.Filters
         }
         catch (Exception e)
         {
-          log.LogWarning("Invalid JWT token with exception {0}", e.Message);
+          this.log.LogWarning("Invalid JWT token with exception {0}", e.Message);
           await SetResult("Invalid authentication", context);
           return;
         }
@@ -105,16 +106,16 @@ namespace VSS.MasterData.Project.WebAPI.Filters
         //If this is an application context do not validate user-customer
         if (isApplicationContext)
         {
-          log.LogInformation(
+          this.log.LogInformation(
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
 
           if (!requireCustomerUid)
-            await _next.Invoke(context);
+            await this._next.Invoke(context);
           else if (context.Request.Method == HttpMethod.Get.Method)
-            await _next.Invoke(context);
+            await this._next.Invoke(context);
           else
-            ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 60);
+            this.ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 60);
           return;
         }
 
@@ -124,31 +125,31 @@ namespace VSS.MasterData.Project.WebAPI.Filters
           try
           {
             CustomerDataResult customerResult =
-              await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
+              await this.customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
             if (customerResult.status != 200 || customerResult.customer == null ||
                 customerResult.customer.Count < 1 ||
                 !customerResult.customer.Exists(x => x.uid == customerUid))
             {
               var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
-              log.LogWarning(error);
+              this.log.LogWarning(error);
               await SetResult(error, context);
               return;
             }
           }
           catch (Exception e)
           {
-            log.LogWarning(
-              $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
+            this.log.LogWarning(
+              $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {this.store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
             await SetResult("Failed authentication", context);
             return;
           }
         }
 
-        log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,
+        this.log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,
           userEmail);
       }
 
-      await _next.Invoke(context);
+      await this._next.Invoke(context);
     }
 
     private async Task SetResult(string message, HttpContext context)

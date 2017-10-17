@@ -45,11 +45,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="1.1.2" />
     <PackageReference Include="Swashbuckle.SwaggerGen" Version="6.0.0-beta902" />
     <PackageReference Include="Swashbuckle.SwaggerUi" Version="6.0.0-beta902" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.0.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.6.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.7.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.3.*" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.1.*" />
   </ItemGroup>
@@ -68,7 +69,7 @@
     <PackageReference Include="System.Net.Security" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
     <PackageReference Include="NewRelic.Agent.Api" Version="6.16.178" />
-  </ItemGroup>  
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
@@ -91,6 +92,11 @@
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp1.1|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
 
 </Project>

@@ -1,12 +1,12 @@
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
@@ -16,15 +16,12 @@ using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Project.WebAPI.Filters;
+using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-
-#if NET_4_7
-  using VSS.Productivity3D.Common.Filters;
-#endif
 
 namespace VSS.MasterData.Project.WebAPI
 {
@@ -34,7 +31,7 @@ namespace VSS.MasterData.Project.WebAPI
   public class Startup
   {
     private const string loggerRepoName = "WebApi";
-    IServiceCollection serviceCollection;
+    private IServiceCollection serviceCollection;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -155,7 +152,7 @@ namespace VSS.MasterData.Project.WebAPI
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.AddSingleton(loggerFactory);
       //new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
       serviceCollection.BuildServiceProvider();
 
@@ -166,11 +163,13 @@ namespace VSS.MasterData.Project.WebAPI
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
       //Enable TID here
-      app.UseTIDAuthentication();
+      TIDAuthenticationExtensions.UseTIDAuthentication(app);
 
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
+      {
         app.UseMiddleware<NewRelicMiddleware>();
+      }
 #endif
 
 
