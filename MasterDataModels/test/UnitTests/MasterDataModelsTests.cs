@@ -88,10 +88,13 @@ namespace VSS.MasterData.Models.Tests
       var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, "design",
         new List<MachineDetails>() {MachineDetails.CreateMachineDetails(1, "test", true)}, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
+      var hash1 = filter1.GetHashCode();
       var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, "design",
         new List<MachineDetails>() { MachineDetails.CreateMachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
+      var hash2 = filter2.GetHashCode();
       Assert.IsTrue(filter1==filter2);
+      Assert.AreEqual(hash1, hash2);
     }
 
     [TestMethod]
@@ -100,10 +103,13 @@ namespace VSS.MasterData.Models.Tests
       var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, "design",
         new List<MachineDetails>() { MachineDetails.CreateMachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
+      var hash1 = filter1.GetHashCode();
       var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, "design",
         new List<MachineDetails>() { MachineDetails.CreateMachineDetails(1, "test2", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
+      var hash2 = filter2.GetHashCode();
       Assert.IsTrue(filter1 != filter2);
+      Assert.AreNotEqual(hash1,hash2);
     }
 
     [TestMethod]
@@ -112,10 +118,13 @@ namespace VSS.MasterData.Models.Tests
       var filter1 = Filter.CreateFilter(DateTime.MinValue, null, "design",
         new List<MachineDetails>() { MachineDetails.CreateMachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
+      var hash1 = filter1.GetHashCode();
       var filter2 = Filter.CreateFilter(DateTime.MinValue, null, "design",
         new List<MachineDetails>() { MachineDetails.CreateMachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
+      var hash2 = filter2.GetHashCode();
       Assert.IsTrue(filter1 == filter2);
+      Assert.AreEqual(hash1,hash2);
     }
 
     [TestMethod]

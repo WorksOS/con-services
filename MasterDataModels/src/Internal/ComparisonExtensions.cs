@@ -32,5 +32,18 @@ namespace VSS.MasterData.Models.Models
       }
       return cnt.Values.All(c => c == 0);
     }
+
+    public static int GetListHashCode<T>(this IEnumerable<T> list)
+    {
+      unchecked
+      {
+        int hash = 19;
+        foreach (var foo in list)
+        {
+          hash = hash * 31 + foo.GetHashCode();
+        }
+        return hash;
+      }
+    }
   }
 }

@@ -238,13 +238,13 @@ namespace VSS.MasterData.Models.Models
         hashCode = (hashCode * 397) ^ endUTC.GetHashCode();
         hashCode = (hashCode * 397) ^ DateRangeType.GetHashCode();
         hashCode = (hashCode * 397) ^ (designUID != null ? designUID.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (contributingMachines != null ? contributingMachines.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (contributingMachines != null ? contributingMachines.GetListHashCode() : 0);
         hashCode = (hashCode * 397) ^ onMachineDesignID.GetHashCode();
         hashCode = (hashCode * 397) ^ elevationType.GetHashCode();
         hashCode = (hashCode * 397) ^ vibeStateOn.GetHashCode();
         hashCode = (hashCode * 397) ^ (polygonUID != null ? polygonUID.GetHashCode() : 0);
         hashCode = (hashCode * 397) ^ (polygonName != null ? polygonName.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (polygonLL != null ? polygonLL.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (polygonLL != null ? polygonLL.GetListHashCode() : 0);
         hashCode = (hashCode * 397) ^ forwardDirection.GetHashCode();
         hashCode = (hashCode * 397) ^ layerNumber.GetHashCode();
         return hashCode;
