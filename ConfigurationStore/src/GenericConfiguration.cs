@@ -106,7 +106,7 @@ namespace VSS.ConfigurationStore
 
     public string GetValueString(string key)
     {
-      _log.LogDebug($"Served configuration value {key}:{_configuration[key]}");
+      _log.LogTrace($"Served configuration value {key}:{_configuration[key]}");
       return _configuration[key];
     }
 
@@ -118,7 +118,7 @@ namespace VSS.ConfigurationStore
         valueInt = -1;
       }
 
-      _log.LogDebug($"Served configuration value {key}:{valueInt}");
+      _log.LogTrace($"Served configuration value {key}:{valueInt}");
 
       return valueInt;
     }
@@ -131,7 +131,7 @@ namespace VSS.ConfigurationStore
         theBoolToReturn = theBool;
       }
 
-      _log.LogDebug($"Served configuration value {key}:{theBoolToReturn}");
+      _log.LogTrace($"Served configuration value {key}:{theBoolToReturn}");
 
       return theBoolToReturn;
     }
