@@ -32,8 +32,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\src\VSS.MasterData.Models.Local.csproj" />
     <ProjectReference Include="..\..\..\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
+    <ProjectReference Include="..\..\src\VSS.MasterData.Models.Local.csproj" />
   </ItemGroup>
 
   <ItemGroup>
