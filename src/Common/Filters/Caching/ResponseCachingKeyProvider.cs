@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.Productivity3D.Common.Filters
 {
@@ -18,11 +20,13 @@ namespace VSS.Productivity3D.Common.Filters
     // Use the record separator for delimiting components of the cache key to avoid possible collisions
     private static readonly char KeyDelimiter = '\x1e';
     internal static readonly char ProjectDelimiter = '\x1f';
+    internal static readonly char FilterDelimiter = '\x1d';
 
     private readonly ObjectPool<StringBuilder> _builderPool;
     private readonly ResponseCachingOptions _options;
+    private readonly IFilterServiceProxy filterServiceProxy;
 
-    public CustomResponseCachingKeyProvider(ObjectPoolProvider poolProvider, IOptions<ResponseCachingOptions> options)
+    public CustomResponseCachingKeyProvider(ObjectPoolProvider poolProvider, IFilterServiceProxy filterProxy, IOptions<ResponseCachingOptions> options)
     {
       if (poolProvider == null)
       {
@@ -35,6 +39,7 @@ namespace VSS.Productivity3D.Common.Filters
 
       _builderPool = poolProvider.CreateStringBuilderPool();
       _options = options.Value;
+      filterServiceProxy = filterProxy;
     }
 
     public IEnumerable<string> CreateLookupVaryByKeys(ResponseCachingContext context)
@@ -75,7 +80,14 @@ namespace VSS.Productivity3D.Common.Filters
         }
 
         if (request.Query.ContainsKey("projectUid"))
+        {
           builder.Append(ProjectDelimiter).Append(request.Query["projectUid"]);
+
+          if (request.Query.ContainsKey("filterUid"))
+            builder.Append(FilterDelimiter).Append(GenerateFilterHash(request.Query["projectUid"],
+              request.Query["filtertUid"], request.Headers.GetCustomHeaders()));
+        }
+
 
         return builder.ToString();
       }
@@ -139,19 +151,22 @@ namespace VSS.Productivity3D.Common.Filters
           if (varyByRules.QueryKeys.Count == 1 && string.Equals(varyByRules.QueryKeys[0], "*", StringComparison.Ordinal))
           {
             // Vary by all available query keys
-            foreach (var query in context.HttpContext.Request.Query.OrderBy(q => q.Key, StringComparer.OrdinalIgnoreCase))
+            foreach (var query in context.HttpContext.Request.Query.OrderBy(q => q.Key,
+              StringComparer.OrdinalIgnoreCase))
             {
-              builder.Append(KeyDelimiter)
-                .Append(query.Key.ToUpperInvariant())
-                .Append("=")
-                .Append(query.Value);
+              if (query.Key.ToUpperInvariant() != "FILTERUID")
+                builder.Append(KeyDelimiter)
+                  .Append(query.Key.ToUpperInvariant())
+                  .Append("=")
+                  .Append(query.Value);
             }
           }
           else
           {
             foreach (var queryKey in varyByRules.QueryKeys)
             {
-              builder.Append(KeyDelimiter)
+              if (queryKey.ToUpperInvariant() != "FILTERUID")
+                builder.Append(KeyDelimiter)
                 .Append(queryKey)
                 .Append("=")
                 // TODO: Perf - iterate the string values instead?
@@ -167,10 +182,18 @@ namespace VSS.Productivity3D.Common.Filters
         _builderPool.Return(builder);
       }
     }
+
+
+    private int GenerateFilterHash(string projectUid, string filterUid, IDictionary<string,string> headers)
+    {
+      return filterServiceProxy.GetFilter(projectUid, filterUid, headers).Result.GetHashCode();
+    }
+
   }
 
   public static class CachingKeyExtensions
   {
+
     public static Guid ExtractProjectGuidFromKey(this IResponseCachingKeyProvider cachingKeyProvider, string key)
     {
       if (key.IndexOf(CustomResponseCachingKeyProvider.ProjectDelimiter) <= 0) return Guid.Empty;
