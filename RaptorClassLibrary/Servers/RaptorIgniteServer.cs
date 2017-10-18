@@ -17,10 +17,10 @@ namespace VSS.VisionLink.Raptor.Servers
     public abstract class RaptorIgniteServer
     {
         protected IIgnite raptorGrid = null;
-        protected static ICache<String, MemoryStream> NonSpatialMutableCache = null;
-        protected static ICache<String, MemoryStream> NonSpatialImmutableCache = null;
-        protected static ICache<String, MemoryStream> SpatialMutableCache = null;
-        protected static ICache<String, MemoryStream> SpatialImmutableCache = null;
+        protected static ICache<String, byte[]> NonSpatialMutableCache = null;
+        protected static ICache<String, byte[]> NonSpatialImmutableCache = null;
+        protected static ICache<String, byte[]> SpatialMutableCache = null;
+        protected static ICache<String, byte[]> SpatialImmutableCache = null;
 
         /// <summary>
         /// A unique identifier for this server that may be used by business logic executing on other nodes in the grid to locate it if needed for messaging
@@ -55,7 +55,7 @@ namespace VSS.VisionLink.Raptor.Servers
         {
         }
 
-        public abstract ICache<String, MemoryStream> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg);
+        public abstract ICache<String, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg);
 
         public virtual void ConfigureMutableSpatialCache(CacheConfiguration cfg)
         {
@@ -65,6 +65,6 @@ namespace VSS.VisionLink.Raptor.Servers
         {
         }
 
-        public abstract ICache<String, MemoryStream> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg);
+        public abstract ICache<String, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg);
     }
 }

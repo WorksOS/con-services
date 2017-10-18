@@ -102,14 +102,14 @@ namespace VSS.VisionLink.Raptor.Servers.Client
             }
         }
 
-        public override ICache<String, MemoryStream> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<String, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
         {
-            return raptorGrid.GetCache<String, MemoryStream>(CacheCfg.Name);
+            return raptorGrid.GetCache<String, byte[]>(CacheCfg.Name);
         }
 
-        public override ICache<String, MemoryStream> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<String, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
         {
-            return raptorGrid.GetCache<String, MemoryStream>(CacheCfg.Name);
+            return raptorGrid.GetCache<String, byte[]>(CacheCfg.Name);
         }       
     }
 }

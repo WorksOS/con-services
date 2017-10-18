@@ -380,18 +380,22 @@ namespace VSS.VisionLink.Raptor.Events
 
         public void SaveToStream(Stream stream)
         {
-            BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true);
-            Write(writer);
+            using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true))
+            {
+                Write(writer);
+            }
         }
 
         public string EventChangeListPersistantFileName() => String.Format("Events-{0}-{1}", EventListType.ToString(), "Summary.evt");
 
         public void SaveToStore(IStorageProxy storageProxy)
         {
-            MemoryStream MS = new MemoryStream();
-            SaveToStream(MS);
+            using (MemoryStream MS = new MemoryStream())
+            {
+                SaveToStream(MS);
 
-            storageProxy.WriteStreamToPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), Types.FileSystemGranuleType.EventList, MS);
+                storageProxy.WriteStreamToPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), Types.FileSystemGranuleType.EventList, MS);
+            }
         }
 
         public IProductionEventChangeList LoadFromStore(IStorageProxy storageProxy)

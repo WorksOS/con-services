@@ -21,14 +21,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         private IStorageProxy storageProxyRaptor = null;
         private IStorageProxy[] storageProxySpatial = null;
 
-        public AggregatedDataIntegratorWorker() //(IStorageProxy storageProxy)
+        public AggregatedDataIntegratorWorker()
         {
-            storageProxyRaptor = StorageProxy.RaptorInstance(); // Instance();
+            storageProxyRaptor = StorageProxy.RaptorInstance();
             storageProxySpatial = Enumerable.Range(0, (int)RaptorConfig.numSpatialProcessingDivisions).Select(x => StorageProxy.SpatialInstance((uint)x)).ToArray();
         }
 
-        public AggregatedDataIntegratorWorker(//IStorageProxy storageProxy,
-                                              ConcurrentQueue<AggregatedDataIntegratorTask> tasksToProcess) : this(/*storageProxy*/)
+        public AggregatedDataIntegratorWorker(ConcurrentQueue<AggregatedDataIntegratorTask> tasksToProcess) : this()
         {
             TasksToProcess = tasksToProcess;
         }
@@ -350,7 +349,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                             WorkingModelUpdateMap.ID = SiteModelFromDM.ID;
 
                             // Integrate the cell pass data into the main sitemodel and commit each subgrid as it is updated
-                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxySpatial /* StorageProxy */);
+                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxySpatial);
 
                             if (!subGridIntegrator.IntegrateSubGridTree(//Task.AggregatedCellPasses,
                                                                         //SiteModelFromDM,

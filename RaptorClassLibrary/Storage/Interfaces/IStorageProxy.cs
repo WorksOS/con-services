@@ -20,7 +20,7 @@ namespace VSS.VisionLink.Raptor.Interfaces
         FileSystemErrorStatus WriteStreamToPersistentStoreDirect(long DataModelID,
                                               string StreamName,
                                               FileSystemGranuleType StreamType,
-                                                MemoryStream Stream);
+                                              MemoryStream Stream);
 
         FileSystemErrorStatus WriteSpatialStreamToPersistentStore(long DataModelID,
                                               string StreamName,

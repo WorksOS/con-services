@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.edtNumImages = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.btnMultiThreadTest = new System.Windows.Forms.Button();
             this.editProjectID = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -47,9 +50,7 @@
             this.btnZoomAll = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.btnMultiThreadTest = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.edtNumImages = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -59,6 +60,7 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.edtNumImages);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.btnMultiThreadTest);
@@ -82,6 +84,33 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(187, 539);
             this.panel1.TabIndex = 15;
+            // 
+            // edtNumImages
+            // 
+            this.edtNumImages.Location = new System.Drawing.Point(17, 491);
+            this.edtNumImages.Name = "edtNumImages";
+            this.edtNumImages.Size = new System.Drawing.Size(100, 20);
+            this.edtNumImages.TabIndex = 33;
+            this.edtNumImages.Text = "10";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(122, 494);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 13);
+            this.label3.TabIndex = 32;
+            this.label3.Text = "Images";
+            // 
+            // btnMultiThreadTest
+            // 
+            this.btnMultiThreadTest.Location = new System.Drawing.Point(17, 462);
+            this.btnMultiThreadTest.Name = "btnMultiThreadTest";
+            this.btnMultiThreadTest.Size = new System.Drawing.Size(152, 23);
+            this.btnMultiThreadTest.TabIndex = 31;
+            this.btnMultiThreadTest.Text = "Multithread Test";
+            this.btnMultiThreadTest.UseVisualStyleBackColor = true;
+            this.btnMultiThreadTest.Click += new System.EventHandler(this.btnMultiThreadTest_Click);
             // 
             // editProjectID
             // 
@@ -257,32 +286,15 @@
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
-            // btnMultiThreadTest
+            // button1
             // 
-            this.btnMultiThreadTest.Location = new System.Drawing.Point(17, 462);
-            this.btnMultiThreadTest.Name = "btnMultiThreadTest";
-            this.btnMultiThreadTest.Size = new System.Drawing.Size(152, 23);
-            this.btnMultiThreadTest.TabIndex = 31;
-            this.btnMultiThreadTest.Text = "Multithread Test";
-            this.btnMultiThreadTest.UseVisualStyleBackColor = true;
-            this.btnMultiThreadTest.Click += new System.EventHandler(this.btnMultiThreadTest_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(122, 494);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(41, 13);
-            this.label3.TabIndex = 32;
-            this.label3.Text = "Images";
-            // 
-            // edtNumImages
-            // 
-            this.edtNumImages.Location = new System.Drawing.Point(17, 491);
-            this.edtNumImages.Name = "edtNumImages";
-            this.edtNumImages.Size = new System.Drawing.Size(100, 20);
-            this.edtNumImages.TabIndex = 33;
-            this.edtNumImages.Text = "10";
+            this.button1.Location = new System.Drawing.Point(17, 520);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(152, 19);
+            this.button1.TabIndex = 34;
+            this.button1.Text = "Scan all keys...";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form1
             // 
@@ -325,6 +337,7 @@
         private System.Windows.Forms.Button btnMultiThreadTest;
         private System.Windows.Forms.TextBox edtNumImages;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button1;
     }
 }
 

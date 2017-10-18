@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Apache.Ignite.Core;
+using Apache.Ignite.Core.Cache;
+using Apache.Ignite.Core.Cache.Query;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,7 +16,10 @@ using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Executors;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.GridFabric.Caches;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Servers.Client;
@@ -227,6 +233,91 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             sw.Stop();
 
             MessageBox.Show(String.Format("Images:{0}, Time:{1}", nImages, sw.Elapsed));
+        }
+
+        private void writeCacheMetrics(StreamWriter writer, ICacheMetrics metrics)
+        {
+            writer.WriteLine(String.Format("Number of items in cache: {0}", metrics.Size));
+        }
+
+        private void writeKeys(string title, StreamWriter writer, ICache<String, byte[]> cache)
+        {
+            writer.WriteLine(title);
+            writer.WriteLine();
+
+            if (cache == null)
+            {
+                return;
+            }
+
+            writeCacheMetrics(writer, cache.GetMetrics());
+
+            var scanQuery = new ScanQuery<String, byte[]>();
+            IQueryCursor<ICacheEntry<String, byte[]>> queryCursor = cache.Query(scanQuery);
+            scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
+
+            foreach (ICacheEntry<String, byte[]> cacheEntry in queryCursor)
+            {
+                writer.WriteLine(cacheEntry.Key);
+                //cacheEntry.Value.Dispose();
+
+                writeCacheMetrics(writer, cache.GetMetrics());
+            }
+
+            writer.WriteLine();
+        }
+
+        private void writeKeysSpatial(string title, StreamWriter writer, ICache<SubGridSpatialAffinityKey, byte[]> cache)
+        {
+            writer.WriteLine(title);
+            writer.WriteLine();
+
+            if (cache == null)
+            {
+                return;
+            }
+
+            writeCacheMetrics(writer, cache.GetMetrics());
+
+            var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>();
+            scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
+
+            IQueryCursor<ICacheEntry<SubGridSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
+
+            foreach (ICacheEntry<SubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
+            {
+                writer.WriteLine(cacheEntry.Key.ToString());
+                //cacheEntry.Value.Dispose();
+
+                writeCacheMetrics(writer, cache.GetMetrics());
+            }
+
+            writer.WriteLine();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Obtain all the keys and write them into the file "C:\Temp\AllRaptorIgniteCacheKeys.txt"
+
+            try
+            {
+                using (var outFile = new FileStream(@"C:\Temp\AllRaptorIgniteCacheKeys.txt", FileMode.Create))
+                {
+                    using (var writer = new StreamWriter(outFile))
+                    {
+                        IIgnite ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
+
+                        // writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
+                        // writeKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+                        // writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
+                        writeKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show(ee.ToString());
+            }
         }
     }
 }

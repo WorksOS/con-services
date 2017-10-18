@@ -59,10 +59,10 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         /// </summary>
         /// <param name="CacheCfg"></param>
         /// <returns></returns>
-        public override ICache<String, MemoryStream> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<String, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
         {
             return base.InstantiateSpatialCacheReference(CacheCfg);
-            // return raptorGrid.GetCache<String, MemoryStream>(CacheCfg.Name);
+            // return raptorGrid.GetCache<String, byte[]>(CacheCfg.Name);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         /// </summary>
         /// <param name="CacheCfg"></param>
         /// <returns></returns>
-        public override ICache<String, MemoryStream> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<String, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
         {
             return base.InstantiateRaptorCacheReference(CacheCfg);
             // return raptorGrid.GetCache<String, MemoryStream>(CacheCfg.Name);

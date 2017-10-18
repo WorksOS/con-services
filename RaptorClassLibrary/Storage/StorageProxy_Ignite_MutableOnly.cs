@@ -63,7 +63,7 @@ namespace VSS.VisionLink.Raptor.Storage.Obsolete
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
-                Stream = mutableSpatialCache.Get(cacheKey);
+                Stream = new MemoryStream(mutableSpatialCache.Get(cacheKey));
                 Stream.Position = 0;
 
                 return FileSystemErrorStatus.OK;
@@ -89,7 +89,7 @@ namespace VSS.VisionLink.Raptor.Storage.Obsolete
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
-                Stream = mutableNonSpatialCache.Get(cacheKey);
+                Stream = new MemoryStream(mutableNonSpatialCache.Get(cacheKey));
 
                 Stream.Position = 0;
                 return FileSystemErrorStatus.OK;
@@ -183,7 +183,7 @@ namespace VSS.VisionLink.Raptor.Storage.Obsolete
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
-                mutableSpatialCache.Put(cacheKey, Stream);
+                mutableSpatialCache.Put(cacheKey, Stream.ToArray());
 
                 return FileSystemErrorStatus.OK;
             }
@@ -210,7 +210,7 @@ namespace VSS.VisionLink.Raptor.Storage.Obsolete
 
             try
             {
-                mutableNonSpatialCache.Put(ComputeNamedStreamCacheKey(DataModelID, StreamName), Stream);
+                mutableNonSpatialCache.Put(ComputeNamedStreamCacheKey(DataModelID, StreamName), Stream.ToArray());
 
                 return FileSystemErrorStatus.OK;
             }
@@ -232,7 +232,7 @@ namespace VSS.VisionLink.Raptor.Storage.Obsolete
         {
             try
             {
-                mutableNonSpatialCache.Put(ComputeNamedStreamCacheKey(DataModelID, StreamName), Stream);
+                mutableNonSpatialCache.Put(ComputeNamedStreamCacheKey(DataModelID, StreamName), Stream.ToArray());
 
                 return FileSystemErrorStatus.OK;
             }

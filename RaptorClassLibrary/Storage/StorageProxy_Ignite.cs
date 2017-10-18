@@ -75,7 +75,10 @@ namespace VSS.VisionLink.Raptor.Storage
                     try
                     {
                         // First look to see if the immutable item is in the cache
-                        Stream = MemoryStreamCompression.Decompress(immutableSpatialCache.Get(cacheKey));
+                        using (MemoryStream MS = new MemoryStream(immutableSpatialCache.Get(cacheKey)))
+                        {
+                            Stream = MemoryStreamCompression.Decompress(MS);
+                        }
                     }
                     catch (KeyNotFoundException e)
                     {
@@ -84,7 +87,10 @@ namespace VSS.VisionLink.Raptor.Storage
                 }
                 else
                 {
-                    Stream = MemoryStreamCompression.Decompress(mutableSpatialCache.Get(cacheKey));
+                    using (MemoryStream MS = new MemoryStream(mutableSpatialCache.Get(cacheKey)))
+                    {
+                        Stream = MemoryStreamCompression.Decompress(MS);
+                    }
                 }
 
                 Stream.Position = 0;
@@ -120,7 +126,10 @@ namespace VSS.VisionLink.Raptor.Storage
                 {
                     try
                     {
-                        Stream = MemoryStreamCompression.Decompress(immutableNonSpatialCache.Get(cacheKey));
+                        using (MemoryStream MS = new MemoryStream(immutableNonSpatialCache.Get(cacheKey)))
+                        {
+                            Stream = MemoryStreamCompression.Decompress(MS);
+                        }
                     }
                     catch (KeyNotFoundException e)
                     {
@@ -129,7 +138,10 @@ namespace VSS.VisionLink.Raptor.Storage
                 }
                 else
                 {
-                    Stream = MemoryStreamCompression.Decompress(mutableNonSpatialCache.Get(cacheKey));
+                    using (MemoryStream MS = new MemoryStream(mutableNonSpatialCache.Get(cacheKey)))
+                    {
+                        Stream = MemoryStreamCompression.Decompress(MS);
+                    }
                 }
 
                 Stream.Position = 0;
@@ -141,7 +153,6 @@ namespace VSS.VisionLink.Raptor.Storage
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
             }
         }
-
 
         /// <summary>
         /// Supports reading a named stream from the persistent store via the grid cache
@@ -243,7 +254,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 {
                     Log.Info(String.Format("Putting key:{0}, size:{1} -> {2}", cacheKey, Stream.Length, compressedStream.Length));
 
-                    mutableSpatialCache.Put(cacheKey, compressedStream);
+                    mutableSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
                 try
                 {
@@ -287,7 +298,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 {
                     Log.Info(String.Format("Putting key:{0}, size:{1} -> {2}", cacheKey, Stream.Length, compressedStream.Length));
 
-                    mutableNonSpatialCache.Put(cacheKey, compressedStream);
+                    mutableNonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
 
                 try
@@ -327,7 +338,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 {
                     Log.Info(String.Format("Putting key:{0}, size:{1} -> {2}", cacheKey, Stream.Length, compressedStream.Length));
 
-                    mutableNonSpatialCache.Put(cacheKey, compressedStream);
+                    mutableNonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
 
                 try

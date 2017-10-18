@@ -132,9 +132,9 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.Backups = 0;
         }
 
-        public override ICache<String, MemoryStream> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<String, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
         {
-            return raptorGrid.GetOrCreateCache<String, MemoryStream>(CacheCfg);
+            return raptorGrid.GetOrCreateCache<String, byte[]>(CacheCfg);
         }
 
         public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
@@ -187,9 +187,9 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.AffinityFunction = new RaptorSpatialAffinityFunction();
         }
 
-        public override ICache<String, MemoryStream> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<String, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
         {
-            return raptorGrid.GetOrCreateCache<String, MemoryStream>(CacheCfg);
+            return raptorGrid.GetOrCreateCache<String, byte[]>(CacheCfg);
         }
 
         public static bool SetGridActive(string gridName)
