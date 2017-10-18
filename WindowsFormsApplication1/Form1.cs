@@ -259,8 +259,6 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             foreach (ICacheEntry<String, byte[]> cacheEntry in queryCursor)
             {
                 writer.WriteLine(cacheEntry.Key);
-                //cacheEntry.Value.Dispose();
-
                 writeCacheMetrics(writer, cache.GetMetrics());
             }
 
@@ -287,8 +285,6 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             foreach (ICacheEntry<SubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
             {
                 writer.WriteLine(cacheEntry.Key.ToString());
-                //cacheEntry.Value.Dispose();
-
                 writeCacheMetrics(writer, cache.GetMetrics());
             }
 
@@ -307,9 +303,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     {
                         IIgnite ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
 
-                        // writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
-                        // writeKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
-                        // writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
+                        writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
+                        writeKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+                        writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
                         writeKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
                     }
                 }
