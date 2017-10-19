@@ -15,6 +15,8 @@ using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Caching;
 
@@ -44,6 +46,7 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.TryAdd(ServiceDescriptor.Singleton<ObjectPoolProvider,DefaultObjectPoolProvider>());
       serviceCollection.AddTransient<IOptions<ResponseCachingOptions>, FakeResponseCacheOptions>();
+      serviceCollection.AddTransient<IFilterServiceProxy, FakeFilterProxy>();
       serviceCollection.TryAdd(ServiceDescriptor.Singleton<IResponseCachingKeyProvider, CustomResponseCachingKeyProvider>());
       serviceProvider = serviceCollection.BuildServiceProvider();
     }
@@ -61,7 +64,7 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       var defaultRequest = new DefaultHttpRequest(defaultContext);
       defaultRequest.Method = "GET";
       defaultRequest.Path = "/MYPATH";
-      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeResponseCacheOptions());
+      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
       var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
 
       Assert.IsFalse(key.ToLowerInvariant().Contains("projectuid"));
@@ -76,7 +79,7 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       var projectGuid = Guid.NewGuid();
       defaultRequest.Path = $"/MYPATH";
       defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}");
-      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeResponseCacheOptions());
+      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
       var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
 
       Assert.IsTrue(key.ToLowerInvariant().Contains(projectGuid.ToString()));
@@ -91,10 +94,48 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       var projectGuid = Guid.NewGuid();
       defaultRequest.Path = $"/MYPATH";
       defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}");
-      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeResponseCacheOptions());
+      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
       var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
       var parsedGuid = serviceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractProjectGuidFromKey(key);
       Assert.AreEqual(projectGuid, parsedGuid);
+    }
+
+    [TestMethod]
+    public void CanFindFilterUidInBaseKey()
+    {
+      var defaultContext = new DefaultHttpContext();
+      var defaultRequest = new DefaultHttpRequest(defaultContext);
+      defaultRequest.Method = "GET";
+      var projectGuid = Guid.NewGuid();
+      defaultRequest.Path = $"/MYPATH";
+      defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}&filteruid={projectGuid}");
+      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
+      var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
+      var parsedHash = serviceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractFilterHashFromKey(key);
+      Assert.IsTrue(parsedHash!=-1);
+    }
+  }
+
+  public class FakeFilterProxy : IFilterServiceProxy
+  {
+    public void ClearCacheItem(string uid)
+    {
+      return;
+    }
+
+    public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid, IDictionary<string, string> customHeaders = null)
+    {
+      return new FilterDescriptor() { FilterJson = "{}", FilterUid = Guid.NewGuid().ToString() };
+    }
+
+    public async Task<List<FilterDescriptor>> GetFilters(string projectUid, IDictionary<string, string> customHeaders = null)
+    {
+      return new List<FilterDescriptor>() {new FilterDescriptor() {FilterJson = "{}", FilterUid = Guid.NewGuid().ToString()}};
+    }
+
+    public void ClearCacheListItem(string projectUid)
+    {
+      return;
     }
   }
 }
