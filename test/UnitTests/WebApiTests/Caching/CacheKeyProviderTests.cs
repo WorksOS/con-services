@@ -114,6 +114,28 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       var parsedHash = serviceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractFilterHashFromKey(key);
       Assert.IsTrue(parsedHash!=-1);
     }
+
+    [TestMethod]
+    public void CanFindFilterUidInBaseKeyCompareHash()
+    {
+      var defaultContext = new DefaultHttpContext();
+      var defaultRequest = new DefaultHttpRequest(defaultContext);
+      defaultRequest.Method = "GET";
+      var projectGuid = Guid.NewGuid();
+      defaultRequest.Path = $"/MYPATH";
+      defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}&filteruid={projectGuid}");
+
+      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
+      var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
+
+      var keyProvider1 = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
+      var key1 = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
+
+      var parsedHash = serviceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractFilterHashFromKey(key);
+      var parsedHash1 = serviceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractFilterHashFromKey(key1);
+
+      Assert.AreEqual(parsedHash,parsedHash1);
+    }
   }
 
   public class FakeFilterProxy : IFilterServiceProxy
@@ -125,12 +147,12 @@ namespace VSS.Productivity3D.WebApiTests.Caching
 
     public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid, IDictionary<string, string> customHeaders = null)
     {
-      return new FilterDescriptor() { FilterJson = "{}", FilterUid = Guid.NewGuid().ToString() };
+      return new FilterDescriptor() { FilterJson = "{\"designUID\":\"testDesign\"}", FilterUid = Guid.NewGuid().ToString() };
     }
 
     public async Task<List<FilterDescriptor>> GetFilters(string projectUid, IDictionary<string, string> customHeaders = null)
     {
-      return new List<FilterDescriptor>() {new FilterDescriptor() {FilterJson = "{}", FilterUid = Guid.NewGuid().ToString()}};
+      return new List<FilterDescriptor>() {new FilterDescriptor() {FilterJson = "{\"designUID\":\"testDesign\"}", FilterUid = Guid.NewGuid().ToString()}};
     }
 
     public void ClearCacheListItem(string projectUid)
