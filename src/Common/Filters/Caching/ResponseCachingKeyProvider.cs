@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 
@@ -186,7 +188,8 @@ namespace VSS.Productivity3D.Common.Filters
 
     private int GenerateFilterHash(string projectUid, string filterUid, IDictionary<string,string> headers)
     {
-      return filterServiceProxy.GetFilter(projectUid, filterUid, headers).Result.GetHashCode();
+      return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterServiceProxy
+        .GetFilter(projectUid, filterUid, headers).Result.FilterJson).GetHashCode();
     }
 
   }
@@ -199,6 +202,13 @@ namespace VSS.Productivity3D.Common.Filters
       if (key.IndexOf(CustomResponseCachingKeyProvider.ProjectDelimiter) <= 0) return Guid.Empty;
       var indexOfDelimiter = key.LastIndexOf(CustomResponseCachingKeyProvider.ProjectDelimiter);
       return Guid.Parse(key.Substring(indexOfDelimiter + 1, 36));
+    }
+
+    public static int ExtractFilterHashFromKey(this IResponseCachingKeyProvider cachingKeyProvider, string key)
+    {
+      if (key.IndexOf(CustomResponseCachingKeyProvider.FilterDelimiter) <= 0) return -1;
+      var indexOfDelimiter = key.LastIndexOf(CustomResponseCachingKeyProvider.FilterDelimiter);
+      return int.Parse(Regex.Match(key.Substring(indexOfDelimiter + 1), @"\d+").Value);
     }
   }
 }
