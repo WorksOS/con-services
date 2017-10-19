@@ -50,18 +50,19 @@ Scenario Outline: ExportReportMachinePasses - Good Request - NoDateRange
 	| RequestName | ProjectUID                           | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ResultName  |
 	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 0         | 0          | false          | false         | Test     | NoDateRange |
 
-Scenario Outline: ExportReportMachinePasses - No Content with Filter
+Scenario Outline: ExportReportMachinePasses - BadRequest with Filter
   And projectUid "<ProjectUID>"
 	And filterUid "<FilterUID>"
   And coordType "<CoordType>" 
   And outputType "<OutputType>"
   And restrictOutput "<RestrictOutput>"
   And rawDataOutput "<RawDataOutput>"
-  And fileName is "<FileName>"
-	When I request an Export Report Machine Passes expecting NoContent
+  And fileName is "<FileName>"	
+  When I request an Export Report Machine Passes expecting BadRequest
+  Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
-| RequestName | ProjectUID                           | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName |
-|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | 1         | 1          | false          | false         | Test     |
+| RequestName     | ProjectUID                           | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ErrorCode | ErrorMessage                        |
+|                 | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | 1         | 1          | false          | false         | Test     | -4        | Failed to get requested export data |
 
 Scenario Outline: ExportReportMachinePasses - Good Request with Filter
   And projectUid "<ProjectUID>"

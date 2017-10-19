@@ -168,12 +168,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "At least one importedFileUId must be specified"));
+            "At least one importedFileUid must be specified"));
       }
 
-      Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> results =
-        new Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>>();
-      foreach (var impFileUid in importedFileUid)
+      var results = new Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>>();
+
+      foreach (Guid impFileUid in importedFileUid)
       {
         var designDescriptor = await GetDesignDescriptor(projectUid, impFileUid, true);
 
@@ -196,6 +196,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var transformedResult = profileResultHelper.ConvertProfileResult(results);
       profileResultHelper.AddSlicerEndPoints(transformedResult);
+
       return transformedResult;
     }
   }

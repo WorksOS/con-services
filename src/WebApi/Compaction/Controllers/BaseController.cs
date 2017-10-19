@@ -105,10 +105,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
 
       }
-      catch (ServiceException se)
+      catch (ServiceException)
       {
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
+        throw;
       }
       catch (Exception ex)
       {
