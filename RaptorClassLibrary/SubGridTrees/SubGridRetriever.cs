@@ -28,7 +28,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 {
     public class SubGridRetriever
     {
-        [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         // Local state populated for the purpose of access from variosu local methods
@@ -215,7 +214,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             try
             {
                 CanUseGlobalLatestCells = Filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
-                /* TODO Readd when LiftBuildSettings in implemented
+                /* TODO Readd when LiftBuildSettings is implemented
                  &&
                  (!(ClientGrid.GridDataType in [icdtCCV, icdtCCVPercent]) && (LiftBuildSettings.CCVSummaryTypes<>[])) &&
                  (!(ClientGrid.GridDataType in [icdtMDP, icdtMDPPercent]) && (LiftBuildSettings.MDPSummaryTypes<>[])) &&
