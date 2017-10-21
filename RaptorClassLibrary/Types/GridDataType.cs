@@ -16,7 +16,7 @@ namespace VSS.VisionLink.Raptor.Types
     [Serializable]
     public enum GridDataType
     {
-        All = 0x00000000, // Could possilblyl remove this from the enumeration
+        All = 0x00000000, // Could possilbly remove this from the enumeration
         CCV = 0x00000001,
         Height = 0x00000002,
         Latency = 0x00000003,
