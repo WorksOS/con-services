@@ -211,6 +211,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         private void btnMultiThreadTest_Click(object sender, EventArgs e)
         {
             int nImages = Convert.ToInt32(edtNumImages.Text);
+            int nRuns = Convert.ToInt32(edtNumRuns.Text);
 
             DisplayMode displayMode = (DisplayMode)this.displayMode.SelectedIndex;
             int width = pictureBox1.Width;
@@ -223,16 +224,25 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             // Construct an array of identical bitmaps that are displayed on the form to see how well it multi-threads the requests
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            Parallel.For(0, nImages, x => 
-            { using (Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
-                {
-                }
-            });
-            sw.Stop();
+            StringBuilder results = new StringBuilder();
 
-            MessageBox.Show(String.Format("Images:{0}, Time:{1}", nImages, sw.Elapsed));
+            for (int i = 0; i < nRuns; i++)
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                Parallel.For(0, nImages, x =>
+                {
+                    using (Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
+                    {
+                    }
+                });
+                sw.Stop();
+
+                results.Append(String.Format("Run {0}: Images:{1}, Time:{2}\n", i, nImages, sw.Elapsed));
+            }
+
+            MessageBox.Show(String.Format("Results:\n{0}", results.ToString()));
+            //MessageBox.Show(String.Format("Images:{0}, Time:{1}", nImages, sw.Elapsed));
         }
 
         private void writeCacheMetrics(StreamWriter writer, ICacheMetrics metrics)
@@ -242,7 +252,10 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void writeKeys(string title, StreamWriter writer, ICache<String, byte[]> cache)
         {
+            int count = 0;
+
             writer.WriteLine(title);
+            writer.WriteLine("###############");
             writer.WriteLine();
 
             if (cache == null)
@@ -250,7 +263,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 return;
             }
 
-            writeCacheMetrics(writer, cache.GetMetrics());
+//            writeCacheMetrics(writer, cache.GetMetrics());
 
             var scanQuery = new ScanQuery<String, byte[]>();
             IQueryCursor<ICacheEntry<String, byte[]>> queryCursor = cache.Query(scanQuery);
@@ -258,8 +271,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             foreach (ICacheEntry<String, byte[]> cacheEntry in queryCursor)
             {
-                writer.WriteLine(cacheEntry.Key);
-                writeCacheMetrics(writer, cache.GetMetrics());
+                writer.WriteLine(String.Format("{0}:{1}", count++, cacheEntry.Key));
+//                writeCacheMetrics(writer, cache.GetMetrics());
             }
 
             writer.WriteLine();
@@ -267,7 +280,10 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void writeKeysSpatial(string title, StreamWriter writer, ICache<SubGridSpatialAffinityKey, byte[]> cache)
         {
+            int count = 0;
+
             writer.WriteLine(title);
+            writer.WriteLine("###############");
             writer.WriteLine();
 
             if (cache == null)
@@ -275,7 +291,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 return;
             }
 
-            writeCacheMetrics(writer, cache.GetMetrics());
+//            writeCacheMetrics(writer, cache.GetMetrics());
 
             var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>();
             scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
@@ -284,11 +300,35 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             foreach (ICacheEntry<SubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
             {
-                writer.WriteLine(cacheEntry.Key.ToString());
-                writeCacheMetrics(writer, cache.GetMetrics());
+                writer.WriteLine(String.Format("{0}:{1}", count++, cacheEntry.Key.ToString()));
+//                writeCacheMetrics(writer, cache.GetMetrics());
             }
 
             writer.WriteLine();
+        }
+
+        private void retriveAllItems(string title, StreamWriter writer, ICache<SubGridSpatialAffinityKey, byte[]> cache)
+        {
+            var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>();
+            scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
+
+            IQueryCursor<ICacheEntry<SubGridSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
+
+            List<SubGridSpatialAffinityKey> items = new List<SubGridSpatialAffinityKey>();
+
+            foreach (ICacheEntry<SubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
+            {
+                items.Add(cacheEntry.Key);
+            }
+
+            scanQuery = null;
+
+            foreach (SubGridSpatialAffinityKey item in items)
+            {
+                byte[] Entry = cache.Get(item);
+            }
+
+            scanQuery = null;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -303,10 +343,14 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     {
                         IIgnite ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
 
+                        retriveAllItems(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+
+/*
                         writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
                         writeKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
                         writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
                         writeKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
+*/
                     }
                 }
             }

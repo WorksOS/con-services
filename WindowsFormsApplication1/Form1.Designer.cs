@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.edtNumImages = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnMultiThreadTest = new System.Windows.Forms.Button();
@@ -50,7 +51,8 @@
             this.btnZoomAll = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.edtNumRuns = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -60,6 +62,8 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.edtNumRuns);
             this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.edtNumImages);
             this.panel1.Controls.Add(this.label3);
@@ -85,18 +89,28 @@
             this.panel1.Size = new System.Drawing.Size(187, 539);
             this.panel1.TabIndex = 15;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(17, 520);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(152, 19);
+            this.button1.TabIndex = 34;
+            this.button1.Text = "Scan all keys...";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // edtNumImages
             // 
             this.edtNumImages.Location = new System.Drawing.Point(17, 491);
             this.edtNumImages.Name = "edtNumImages";
-            this.edtNumImages.Size = new System.Drawing.Size(100, 20);
+            this.edtNumImages.Size = new System.Drawing.Size(34, 20);
             this.edtNumImages.TabIndex = 33;
             this.edtNumImages.Text = "10";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(122, 494);
+            this.label3.Location = new System.Drawing.Point(57, 494);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(41, 13);
             this.label3.TabIndex = 32;
@@ -118,7 +132,7 @@
             this.editProjectID.Name = "editProjectID";
             this.editProjectID.Size = new System.Drawing.Size(100, 20);
             this.editProjectID.TabIndex = 30;
-            this.editProjectID.Text = "2";
+            this.editProjectID.Text = "3";
             this.editProjectID.TextChanged += new System.EventHandler(this.editProjectID_TextChanged);
             // 
             // label2
@@ -286,15 +300,22 @@
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
-            // button1
+            // edtNumRuns
             // 
-            this.button1.Location = new System.Drawing.Point(17, 520);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(152, 19);
-            this.button1.TabIndex = 34;
-            this.button1.Text = "Scan all keys...";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.edtNumRuns.Location = new System.Drawing.Point(100, 491);
+            this.edtNumRuns.Name = "edtNumRuns";
+            this.edtNumRuns.Size = new System.Drawing.Size(34, 20);
+            this.edtNumRuns.TabIndex = 35;
+            this.edtNumRuns.Text = "10";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(143, 494);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(32, 13);
+            this.label4.TabIndex = 36;
+            this.label4.Text = "Runs";
             // 
             // Form1
             // 
@@ -338,6 +359,8 @@
         private System.Windows.Forms.TextBox edtNumImages;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox edtNumRuns;
     }
 }
 
