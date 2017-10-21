@@ -59,7 +59,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <summary>
         /// A map of flags indicating which grid data types are supported by the intermediary subgrid result cache
         /// </summary>
-        private bool[] SupportsAssignationFromCachedPreProcessedClientSubgrid = // GridDataType
+        private static bool[] SupportsAssignationFromCachedPreProcessedClientSubgrid = // GridDataType
         {
           false, // All = $00000000;
           true,  // CCV = $00000001;
