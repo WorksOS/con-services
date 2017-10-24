@@ -33,7 +33,7 @@ Scenario Outline: ExportReportToVETA - Bad Request - NoProjectUID
 	When I request an Export Report To VETA expecting Unauthorized
 	Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
-	| RequestName | FilterUID                            | MachineNames | FileName | ErrorCode | ErrorMessage        |
+	| RequestName | FilterUID                            | MachineNames | FileName | ErrorCode | ErrorMessage                                                                                         |
 	|             | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          | Test     |  -5       | Missing Project or project does not belong to specified customer or don't have access to the project |
 
 Scenario Outline: ExportReportToVETA - Good Request - NoDateRange
@@ -55,14 +55,15 @@ Scenario Outline: ExportReportToVETA - No Content - NoFileName
 	| RequestName | ProjectUID                           | FilterUID                            | MachineNames |
 	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          |
 
-Scenario Outline: ExportReportToVETA - No Content with Filter - No Machines
+Scenario Outline: ExportReportToVETA - Bad Request with Filter - No Machines
   And projectUid "<ProjectUID>"
   And filterUid "<FilterUID>"
 	And fileName is "<FileName>"
-	When I request an Export Report To VETA expecting NoContent
+	When I request an Export Report To VETA expecting BadRequest
+  Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples: 
-	| RequestName | ProjectUID                           | FilterUID                            | FileName |
-	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | Test     |
+	| RequestName | ProjectUID                           | FilterUID                            | FileName | ErrorCode | ErrorMessage                        |
+	|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | Test     | -4        | Failed to get requested export data |
 
 Scenario Outline: ExportReportToVETA - Good Request with Filter - No Machines
   And projectUid "<ProjectUID>"

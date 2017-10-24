@@ -60,9 +60,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         }
         catch (Exception ex)
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to get requested export data: " + ex.Message));
+          throw new ServiceException(HttpStatusCode.NoContent,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Failed to retrieve received export data: " + ex.Message));
         }
       }
       else
