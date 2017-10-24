@@ -1139,9 +1139,25 @@ namespace VSS.MasterData.Repositories
       return project;
     }
 
+    /// <summary>
+    /// Gets the list of geofence UIDs associated wih the specified project
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns>List of associations</returns>
+    public async Task<IEnumerable<ProjectGeofence>> GetAssociatedGeofences(string projectUid)
+    {
+      return await QueryWithAsyncPolicy<ProjectGeofence>
+      (@"SELECT 
+                fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
+              FROM ProjectGeofence 
+              WHERE fk_ProjectUID = @projectUid",
+        new { projectUid }
+      );
+    }
+
 
     /// <summary>
-   /// At this stage there is only 1 setting/project
+    /// At this stage there is only 1 setting/project
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns></returns>

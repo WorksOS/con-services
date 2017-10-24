@@ -272,6 +272,24 @@ namespace VSS.MasterData.Repositories
       );
     }
 
+    /// <summary>
+    /// Returns all geofences with given ids
+    /// </summary>
+    /// <param name="geofenceUids"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Geofence>> GetGeofences(IEnumerable<string> geofenceUids)
+    {
+      return await QueryWithAsyncPolicy<Geofence>
+      (@"SELECT 
+                GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
+                IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
+                LastActionedUTC
+              FROM Geofence 
+              WHERE GeofenceUID IN @geofenceUids AND IsDeleted = 0",
+        new { geofenceUids }
+      );
+    }
+
     public async Task<Geofence> GetGeofence(string geofenceUid)
     {
       return (await QueryWithAsyncPolicy<Geofence>

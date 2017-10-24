@@ -100,7 +100,60 @@ namespace VSS.MasterData.Models.Models
     [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
     public int? layerNumber { get; private set; }
 
-
+    #region For JSON Serialization
+    public bool ShouldSerializestartUTC()
+    {
+      return startUTC != null;
+    }
+    public bool ShouldSerializeendUTC()
+    {
+      return endUTC != null;
+    }
+    public bool ShouldSerializeDateRangeType()
+    {
+      return DateRangeType != null;
+    }
+    public bool ShouldSerializedesignUID()
+    {
+      return designUID != null;
+    }
+    public bool ShouldSerializecontributingMachines()
+    {
+      return contributingMachines != null;
+    }
+    public bool ShouldSerializeonMachineDesignID()
+    {
+      return onMachineDesignID != null;
+    }
+    public bool ShouldSerializeelevationType()
+    {
+      return elevationType != null;
+    }
+    public bool ShouldSerializevibeStateOn()
+    {
+      return vibeStateOn != null;
+    }
+    public bool ShouldSerializepolygonUID()
+    {
+      return polygonUID != null;
+    }
+    public bool ShouldSerializepolygonName()
+    {
+      return polygonName != null;
+    }
+    public bool ShouldSerializepolygonLL()
+    {
+      return polygonLL != null;
+    }
+    public bool ShouldSerializeforwardDirection()
+    {
+      return forwardDirection != null;
+    }
+    public bool ShouldSerializelayerNumber()
+    {
+      return layerNumber != null;
+    }
+    #endregion
 
     public bool HasData() =>
       startUTC.HasValue ||
@@ -201,12 +254,6 @@ namespace VSS.MasterData.Models.Models
       if (polygonLL != null && polygonLL.Count < 3)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 35);
-      }
-
-      if ((!string.IsNullOrEmpty(polygonUID) || !string.IsNullOrEmpty(polygonName) || polygonLL != null)
-        && (string.IsNullOrEmpty(polygonUID) || string.IsNullOrEmpty(polygonName) || polygonLL == null))
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
       }
     }
 
