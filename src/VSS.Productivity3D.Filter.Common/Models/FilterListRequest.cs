@@ -4,6 +4,6 @@ namespace VSS.Productivity3D.Filter.Common.Models
 {
   public class FilterListRequest
   {
-    public IEnumerable<FilterRequest> filterRequests { get; set; }
+    public IEnumerable<FilterRequest> FilterRequests { get; set; }
   }
 }

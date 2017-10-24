@@ -15,16 +15,13 @@ namespace VSS.Productivity3D.Filter.Common.Models
 
     public string ProjectUid { get; set; }
 
-    public static FilterRequestFull Create(string customerUid,
-      bool isApplicationContext, string userId,
-      string projectUid, string filterUid = "",
-      string name = "", string filterJson = "", string boundaryUid = "")
+    public static FilterRequestFull Create(string customerUid, bool isApplicationContext, string userId, string projectUid, FilterRequest request = null)
     {
       return new FilterRequestFull
       {
-        filterUid = filterUid,
-        name = name,
-        filterJson = filterJson,
+        FilterUid = request?.FilterUid ?? string.Empty,
+        Name = request?.Name ?? string.Empty,
+        FilterJson = request?.FilterJson ?? string.Empty,
         CustomerUid = customerUid,
         IsApplicationContext = isApplicationContext,
         UserId = userId,
@@ -49,37 +46,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }
 
-      if (filterUid == null || (filterUid != string.Empty && Guid.TryParse(filterUid, out Guid filterUidGuid) == false))
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
-      }
-
-      if (name == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 3);
-      }
-
-      if (filterJson == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 4);
-      }
-
-      if (filterJson == "")
-      {
-        // Newtonsoft.JSON treats emtpy strings as invalid JSON but for our purposes it is valid.
-        return;
-      }
-
-      // Validate filterJson...
-      try
-      {
-        var filter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
-        filter.Validate(serviceExceptionHandler);
-      }
-      catch (JsonReaderException exception)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 42, exception.Message);
-      }
+      base.Validate(serviceExceptionHandler);
     }
   }
 }

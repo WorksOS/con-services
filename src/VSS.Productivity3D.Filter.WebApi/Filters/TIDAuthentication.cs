@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
+using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling;
@@ -16,14 +15,14 @@ using VSS.MasterData.Proxies.Interfaces;
 namespace VSS.Productivity3D.Filter.WebApi.Filters
 {
   /// <summary>
-  /// authentication
+  /// Authentication middleware.
   /// </summary>
   public class TIDAuthentication
   {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<TIDAuthentication> log;
-    private readonly ICustomerProxy customerProxy;
-    private readonly IConfigurationStore store;
+    private readonly RequestDelegate NextRequestDelegate;
+    private readonly ILogger<TIDAuthentication> Log;
+    private readonly ICustomerProxy CustomerProxy;
+    private readonly IConfigurationStore Store;
 
     /// <summary>
     /// Service exception handler.
@@ -33,21 +32,21 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
     /// <summary>
     /// Initializes a new instance of the <see cref="TIDAuthentication"/> class.
     /// </summary>
-    /// <param name="next">The next.</param>
+    /// <param name="nextRequestDelegate">The nextRequestDelegate.</param>
     /// <param name="customerProxy">The customer proxy.</param>
     /// <param name="store">The store.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler"></param>
-    public TIDAuthentication(RequestDelegate next,
+    public TIDAuthentication(RequestDelegate nextRequestDelegate,
       ICustomerProxy customerProxy,
       IConfigurationStore store,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler)
     {
-      log = logger.CreateLogger<TIDAuthentication>();
-      this.customerProxy = customerProxy;
-      _next = next;
-      this.store = store;
+      this.Log = logger.CreateLogger<TIDAuthentication>();
+      this.CustomerProxy = customerProxy;
+      this.NextRequestDelegate = nextRequestDelegate;
+      this.Store = store;
       ServiceExceptionHandler = serviceExceptionHandler;
     }
 
@@ -60,23 +59,22 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
     {
       if (!context.Request.Path.Value.Contains("/swagger/"))
       {
-        bool isApplicationContext = false;
-        string applicationName = "";
-        string userUid = "";
-        string userEmail = "";
-        string customerUid = "";
+        bool isApplicationContext;
+        string applicationName;
+        string userUid;
+        string userEmail;
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
-        customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
+        string customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
 
         // If no authorization header found, nothing to process further
-        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid) ))
+        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid)))
         {
-          log.LogWarning("No account selected for the request");
+          this.Log.LogWarning("No account selected for the Request");
           await SetResult("No account selected", context);
           return;
         }
-        //log.LogTrace("JWT token used: {0}", authorization);
+
         try
         {
           var jwtToken = new TPaaSJWT(authorization);
@@ -89,81 +87,64 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
         }
         catch (Exception e)
         {
-          log.LogWarning("Invalid JWT token with exception {0}", e.Message);
+          this.Log.LogWarning("Invalid JWT token with exception {0}", e.Message);
           await SetResult("Invalid authentication", context);
           return;
         }
-
-
 
         //If this is an application context do not validate user-customer
         if (isApplicationContext)
         {
           //Set calling context Principal
-          context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail, "Application", isApplicationContext);
-          log.LogInformation(
+          context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail, "Application", isApplication: true);
+          this.Log.LogInformation(
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
 
-          await _next.Invoke(context);
+          await this.NextRequestDelegate.Invoke(context);
           return;
         }
         CustomerDataResult customerResult;
 
         // User must have be authenticated against this customer
-          try
+        try
+        {
+          customerResult =
+            await this.CustomerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
+          if (customerResult.status != 200 || customerResult.customer == null ||
+              customerResult.customer.Count < 1 ||
+              !customerResult.customer.Exists(
+                x => string.Equals(x.uid, customerUid, StringComparison.OrdinalIgnoreCase)))
           {
-            customerResult =
-              await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
-            if (customerResult.status != 200 || customerResult.customer == null ||
-                customerResult.customer.Count < 1 ||
-                !customerResult.customer.Exists(x => string.Equals(x.uid, customerUid, StringComparison.OrdinalIgnoreCase)))
-            {
-              var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
-              log.LogWarning(error);
-              await SetResult(error, context);
-              return;
-            }
-          }
-          catch (Exception e)
-          {
-            log.LogWarning(
-              $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
-            await SetResult("Failed authentication", context);
+            var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
+            this.Log.LogWarning(error);
+            await SetResult(error, context);
             return;
           }
+        }
+        catch (Exception e)
+        {
+          this.Log.LogWarning(
+            $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {this.Store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
+          await SetResult("Failed authentication", context);
+          return;
+        }
 
-        log.LogInformation("Authorization: for Customer: {0} UserId: {1} UserEmail: {2} allowed", customerUid, userUid,
+        this.Log.LogInformation("Authorization: for Customer: {0} UserUid: {1} UserEmail: {2} allowed", customerUid, userUid,
           userEmail);
         //Set calling context Principal
         context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail,
           customerResult.customer.First(x => string.Equals(x.uid, customerUid, StringComparison.OrdinalIgnoreCase))
-            .name, isApplicationContext);
+            .name, isApplication: true);
       }
 
-      await _next.Invoke(context);
+      await this.NextRequestDelegate.Invoke(context);
     }
 
     private async Task SetResult(string message, HttpContext context)
     {
-      context.Response.StatusCode = 403;
+      context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
       await context.Response.WriteAsync(message);
-    }
-  }
-
-  /// <summary>
-  /// 
-  /// </summary>
-  public static class TIDAuthenticationExtensions
-  {
-    /// <summary>
-    /// Uses the tid authentication.
-    /// </summary>
-    /// <param name="builder">The builder.</param>
-    /// <returns></returns>
-    public static IApplicationBuilder UseTIDAuthentication(this IApplicationBuilder builder)
-    {
-      return builder.UseMiddleware<TIDAuthentication>();
     }
   }
 }

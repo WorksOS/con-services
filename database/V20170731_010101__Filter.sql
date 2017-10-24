@@ -1,10 +1,10 @@
 
 CREATE TABLE IF NOT EXISTS Filter (
   ID bigint(20) NOT NULL AUTO_INCREMENT,
-  FilterUID varchar(36) NOT NULL,  
-  fk_CustomerUID varchar(36) NOT NULL,  
-  fk_ProjectUID varchar(36) NOT NULL,  
-  UserID varchar(36) NOT NULL,    
+  FilterUID varchar(36) NOT NULL,
+  fk_CustomerUID varchar(36) NOT NULL,
+  fk_ProjectUID varchar(36) NOT NULL,
+  UserID varchar(36) NOT NULL,
   Name varchar(200) DEFAULT NULL,
   FilterJson text NOT NULL,
   IsDeleted tinyint(4) DEFAULT 0,

@@ -1,25 +1,26 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Repositories;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
-using VSS.Productivity3D.Filter.Common.Utilities;
+using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Filter.Common.Validators;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
-  public class UpsertFilterExecutor : RequestExecutorContainer
+  public class UpsertFilterExecutor : FilterExecutorBase
   {
     /// <summary>
     /// This constructor allows us to mock raptorClient
@@ -27,41 +28,38 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     public UpsertFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
       IProjectListProxy projectListProxy, IRaptorProxy raptorProxy,
-      IFilterRepository filterRepo, IKafka producer, string kafkaTopicName)
+      RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
       : base(configStore, logger, serviceExceptionHandler,
         projectListProxy, raptorProxy,
-        filterRepo, producer, kafkaTopicName)
-    {
-    }
+        repository, producer, kafkaTopicName, auxRepository)
+    { }
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public UpsertFilterExecutor()
-    {
-    }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException();
-    }
+    { }
 
     /// <summary>
-    /// Processes the UpsertFilter request
+    /// Processes the UpsertFilter Request
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam Name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns>a FiltersResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
       var filterRequest = item as FilterRequestFull;
       if (filterRequest == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
       }
 
-      if (string.IsNullOrEmpty(filterRequest.name))
+      //Hydrate the polygon filter if present
+      filterRequest.FilterJson = await ValidationUtil
+          .HydrateJsonWithBoundary(auxRepository as GeofenceRepository, log, serviceExceptionHandler, filterRequest).ConfigureAwait(false);
+
+      if (string.IsNullOrEmpty(filterRequest.Name))
         result = await ProcessTransient(filterRequest).ConfigureAwait(false);
       else
         result = await ProcessPersistent(filterRequest).ConfigureAwait(false);
@@ -69,48 +67,22 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       return result;
     }
 
-
     private async Task<FilterDescriptorSingleResult> ProcessTransient(FilterRequestFull filterRequest)
     {
       // if filterUid supplied, then exception as cannot update a transient filter
       //   else create new one Note that can have duplicate transient name (i.e. "") per cust/prj/user
-      if (!string.IsNullOrEmpty(filterRequest.filterUid))
+      if (!string.IsNullOrEmpty(filterRequest.FilterUid))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 16);
       }
 
-      var createdCount = 0;
-      try
-      {
-        filterRequest.filterUid = Guid.NewGuid().ToString();
-        var filterEvent = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
-        filterEvent.ActionUTC = DateTime.UtcNow;
-        createdCount = await filterRepo.StoreEvent(filterEvent).ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 20, e.Message);
-      }
-
-      if (createdCount == 0)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 19);
-
-      var retrievedFilter = (await filterRepo
-          .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId, true)
-          .ConfigureAwait(false))
-        .OrderByDescending(f => f.LastActionedUtc)
-        .FirstOrDefault(f => string.IsNullOrEmpty(f.Name));
-
-      if (retrievedFilter == null)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 19);
-
-      return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
+      return await CreateFilter(filterRequest, true);
     }
 
     private async Task<FilterDescriptorSingleResult> ProcessPersistent(FilterRequestFull filterRequest)
     {
-      // if filterUid supplied, and it exists for customer/user/project, then update it
-      // if name exists, then exception
+      // if FilterUid supplied, and it exists for customer/user/project, then update it
+      // if Name exists, then exception
       // else create new filter
       // write to kafka (update or create)
       IList<MasterData.Repositories.DBModels.Filter> existingPersistentFilters =
@@ -118,7 +90,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       try
       {
         existingPersistentFilters =
-        (await filterRepo
+        (await ((IFilterRepository)Repository)
           .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId)
           .ConfigureAwait(false)).ToList();
         log.LogDebug(
@@ -129,112 +101,96 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 15, e.Message);
       }
 
-      MasterData.Repositories.DBModels.Filter existingFilter = null;
-      if (!string.IsNullOrEmpty(filterRequest.filterUid))
+      if (!string.IsNullOrEmpty(filterRequest.FilterUid))
       {
-        existingFilter = existingPersistentFilters.SingleOrDefault(
-          f => string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase));
-        if (existingFilter == null)
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 21);
+        var existingFilter = existingPersistentFilters.SingleOrDefault(
+          f => string.Equals(f.FilterUid, filterRequest.FilterUid, StringComparison.OrdinalIgnoreCase));
 
-        // don't allow update to name to a name which already exists (for a different filterUid)
+        if (existingFilter == null)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 21);
+        }
+
+        // don't allow update to Name to a Name which already exists (for a different filterUid)
         var filterOfSameName = existingPersistentFilters
-          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.name, StringComparison.OrdinalIgnoreCase) 
-               && !string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase));
+          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase) 
+               && !string.Equals(f.FilterUid, filterRequest.FilterUid, StringComparison.OrdinalIgnoreCase));
+
         if (filterOfSameName != null)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
         }
 
-        UpdateFilterEvent updateFilterEvent = null;
-        try
-        {
-          updateFilterEvent = AutoMapperUtility.Automapper.Map<UpdateFilterEvent>(filterRequest);
-          // only name can be updated, NOT filterJson. Do this here as well as in AutoMapper, just to be sure!
-          updateFilterEvent.FilterJson = existingFilter.FilterJson;
-          updateFilterEvent.ActionUTC = DateTime.UtcNow;
-          var updatedCount = await filterRepo.StoreEvent(updateFilterEvent).ConfigureAwait(false);
-          if (updatedCount == 0)
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 17);
-        }
-        catch (Exception e)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 18, e.Message);
-        }
+        // only Name can be updated, NOT FilterJson. Do this here as well as in AutoMapper, just to be sure!
+        filterRequest.FilterJson = existingFilter.FilterJson;
+        UpdateFilterEvent updateFilterEvent = await StoreFilterAndNotifyRaptor<UpdateFilterEvent>(filterRequest, new int[] { 17, 18 }); 
 
         if (updateFilterEvent != null)
         {
-          try
-          {
-            var payload = JsonConvert.SerializeObject(new {UpdateFilterEvent = updateFilterEvent});
-            producer.Send(kafkaTopicName,
-              new List<KeyValuePair<string, string>>
-              {
-                new KeyValuePair<string, string>(updateFilterEvent.FilterUID.ToString(), payload)
-              });
-          }
-          catch (Exception e)
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 26, e.Message);
-          }
+          var payload = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent });
+          SendToKafka(updateFilterEvent.FilterUID.ToString(), payload, 26);  
         }
+
+        return await RetrieveFilter(filterRequest, false);
 
       }
       else // create
       {
         var filterOfSameName = existingPersistentFilters
-          .FirstOrDefault(f => (string.Equals(f.Name, filterRequest.name, StringComparison.OrdinalIgnoreCase)));
+          .FirstOrDefault(f => (string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase)));
         if (filterOfSameName != null)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
         }
 
-        CreateFilterEvent createFilterEvent = null;
-        try
-        {
-          filterRequest.filterUid = Guid.NewGuid().ToString();
-          createFilterEvent = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
-          createFilterEvent.ActionUTC = DateTime.UtcNow;
-          var createdCount = await filterRepo.StoreEvent(createFilterEvent).ConfigureAwait(false);
-          if (createdCount == 0)
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 24);
-        }
-        catch (Exception e)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 25, e.Message);
-        }
+        return await CreateFilter(filterRequest, false);
+      }
+    }
 
+    /// <summary>
+    /// Creates the requested filter
+    /// </summary>
+    /// <param name="filterRequest"></param>
+    /// <param name="transient"></param>
+    /// <returns></returns>
+    private async Task<FilterDescriptorSingleResult> CreateFilter(FilterRequestFull filterRequest, bool transient)
+    {
+      filterRequest.FilterUid = Guid.NewGuid().ToString();
+      CreateFilterEvent createFilterEvent = await StoreFilterAndNotifyRaptor<CreateFilterEvent>(filterRequest, transient ? new int[] { 19, 20 } : new int[] {24, 25});
+
+      //Only write to kafka for persistent filters
+      if (!transient)
+      {
         if (createFilterEvent != null)
         {
-          try
-          {
-            var payload = JsonConvert.SerializeObject(new {CreateFilterEvent = createFilterEvent});
-            producer.Send(kafkaTopicName,
-              new List<KeyValuePair<string, string>>
-              {
-                new KeyValuePair<string, string>(createFilterEvent.FilterUID.ToString(), payload)
-              });
-          }
-          catch (Exception e)
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 26, e.Message);
-          }
+          var payload = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent });
+          SendToKafka(createFilterEvent.FilterUID.ToString(), payload, 26);
         }
       }
 
-      var retrievedFilter = (await filterRepo
-          .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId)
-          .ConfigureAwait(false))
-          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.name, StringComparison.OrdinalIgnoreCase));
-
-      if (retrievedFilter == null)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 24);
-
-      return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
+      return await RetrieveFilter(filterRequest, transient);
     }
 
-    protected override void ProcessErrorCodes()
+
+ 
+    /// <summary>
+    /// Retrieve the filter just saved
+    /// </summary>
+    /// <param name="filterRequest"></param>
+    /// <param name="transient"></param>
+    /// <returns></returns>
+    private async Task<FilterDescriptorSingleResult> RetrieveFilter(FilterRequestFull filterRequest, bool transient)
     {
+      var retrievedFilter = (await ((IFilterRepository)Repository)
+          .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId, transient)
+          .ConfigureAwait(false))
+        .OrderByDescending(f => f.LastActionedUtc)
+        .FirstOrDefault(f => string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase));
+        
+      if (retrievedFilter == null)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, transient ? 19 : 24);
+
+      return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
     }
   }
 }

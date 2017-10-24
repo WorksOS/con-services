@@ -1,9 +1,10 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Productivity3D.Filter.Common.Utilities;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Filter.Common.Models;
+using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Tests
 {
@@ -17,7 +18,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapDBModelToResult()
+    public void MapFilterDBModelToResult()
     {
       var filter = new MasterData.Repositories.DBModels.Filter
       {
@@ -44,24 +45,22 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterRequest = FilterRequestFull.Create
       (
-        customerUid: Guid.NewGuid().ToString(),
-        isApplicationContext: false,
-        userId: Guid.NewGuid().ToString(),
-        projectUid: Guid.NewGuid().ToString(),
-        filterUid: Guid.NewGuid().ToString(),
-        name: "the name",
-        filterJson: "the Json"
+        Guid.NewGuid().ToString(),
+        false,
+        Guid.NewGuid().ToString(),
+        Guid.NewGuid().ToString(),
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
 
       var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
       Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
         "CustomerUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
+      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserUid has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.name, result.Name, "name has not been mapped correctly");
-      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.Name, result.Name, "name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
     [TestMethod]
@@ -69,25 +68,23 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterRequest = FilterRequestFull.Create
       (
-        customerUid: Guid.NewGuid().ToString(),
-        isApplicationContext: false,
-        userId: Guid.NewGuid().ToString(),
-        projectUid: Guid.NewGuid().ToString(),
-        filterUid: "",
-        name: "the name",
-        filterJson: "the Json"
+        Guid.NewGuid().ToString(),
+        false,
+        Guid.NewGuid().ToString(),
+        Guid.NewGuid().ToString(),
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
-      filterRequest.filterUid = Guid.NewGuid().ToString();
+      filterRequest.FilterUid = Guid.NewGuid().ToString();
 
       var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
       Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
         "CustomerUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
+      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserUid has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.name, result.Name, "name has not been mapped correctly");
-      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.Name, result.Name, "name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
     [TestMethod]
@@ -99,20 +96,18 @@ namespace VSS.Productivity3D.Filter.Tests
         false,
         "ApplicationName",
         Guid.NewGuid().ToString(),
-        Guid.NewGuid().ToString(),
-        "the name",
-        "the Json"
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
 
       var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
       Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
         "CustomerUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
+      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserUid has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.name, result.Name, "name has not been mapped correctly");
-      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.Name, result.Name, "name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
     [TestMethod]
@@ -120,29 +115,27 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterRequest = FilterRequestFull.Create
       (
-        customerUid: Guid.NewGuid().ToString(),
-        isApplicationContext: false,
-        userId: "ApplicationName",
-        projectUid: Guid.NewGuid().ToString(),
-        filterUid: "",
-        name: "the name",
-        filterJson: "the Json"
+        Guid.NewGuid().ToString(),
+        false,
+        "ApplicationName",
+        Guid.NewGuid().ToString(),
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
-      filterRequest.filterUid = Guid.NewGuid().ToString();
+      filterRequest.FilterUid = Guid.NewGuid().ToString();
 
       var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
       Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
         "CustomerUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
+      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserUid has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.name, result.Name, "name has not been mapped correctly");
-      Assert.AreEqual(filterRequest.filterJson, result.FilterJson, "ProjectType has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.Name, result.Name, "name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "ProjectType has not been mapped correctly");
     }
 
     [TestMethod]
-    public void MapFilterRequestToUpdateKafkaEvent_OnlyNameUpdateable()
+    public void MapFilterRequestToUpdateKafkaEvent()
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -150,20 +143,18 @@ namespace VSS.Productivity3D.Filter.Tests
         false,
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-        Guid.NewGuid().ToString(),
-        "the name",
-        "the Json"
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
 
       var result = AutoMapperUtility.Automapper.Map<UpdateFilterEvent>(filterRequest);
       Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
         "CustomerUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
+      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserUid has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.name, result.Name, "name has not been mapped correctly");
-      Assert.IsNull(result.FilterJson, "ProjectType has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.Name, result.Name, "name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "JSON has not been mapped correctly");
     }
 
     [TestMethod]
@@ -175,22 +166,20 @@ namespace VSS.Productivity3D.Filter.Tests
         false,
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-        Guid.NewGuid().ToString(),
-        "the name",
-        "the Json"
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
 
       var result = AutoMapperUtility.Automapper.Map<DeleteFilterEvent>(filterRequest);
       Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
         "CustomerUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserId has not been mapped correctly");
+      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserUid has not been mapped correctly");
       Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.filterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
     }
 
     [TestMethod]
-    public void MapDBModelRequestToDeleteKafkaEvent()
+    public void MapFilterDBModelRequestToDeleteKafkaEvent()
     {
       var filter = new MasterData.Repositories.DBModels.Filter
       {
@@ -209,10 +198,111 @@ namespace VSS.Productivity3D.Filter.Tests
       var result = AutoMapperUtility.Automapper.Map<DeleteFilterEvent>(filter);
       Assert.AreEqual(filter.CustomerUid, result.CustomerUID.ToString(),
         "CustomerUid has not been mapped correctly");
-      Assert.AreEqual(filter.UserId, result.UserID, "UserId has not been mapped correctly");
+      Assert.AreEqual(filter.UserId, result.UserID, "UserUid has not been mapped correctly");
       Assert.AreEqual(filter.ProjectUid, result.ProjectUID.ToString(),
         "ProjectUid has not been mapped correctly");
       Assert.AreEqual(filter.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+    }
+
+    [TestMethod]
+    public void MapProjectGeofenceRequestToAssociateKafkaEvent()
+    {
+      var request = ProjectGeofenceRequest.Create(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+   
+      var result = AutoMapperUtility.Automapper.Map<AssociateProjectGeofence>(request);
+      Assert.AreEqual(request.ProjectUid, result.ProjectUID.ToString(),
+        "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(request.BoundaryUid, result.GeofenceUID.ToString(), "BoundaryUid has not been mapped correctly");
+    }
+
+    [TestMethod]
+    public void MapBoundaryDBModelToResult()
+    {
+      var geofence = new MasterData.Repositories.DBModels.Geofence
+      {      
+        CustomerUID = Guid.NewGuid().ToString(),
+        UserUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid().ToString(),
+        Name = "the name",
+        Description = string.Empty,
+        GeofenceType = GeofenceType.Filter,
+        GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
+        IsDeleted = false,
+        LastActionedUTC = new DateTime(2017, 01, 21)
+      };
+
+      var result = AutoMapperUtility.Automapper.Map<GeofenceData>(geofence);
+      Assert.AreEqual(geofence.GeofenceUID, result.GeofenceUID.ToString(), "GeofenceUID has not been mapped correctly");
+      Assert.AreEqual(geofence.Name, result.GeofenceName, "Name has not been mapped correctly");
+      Assert.AreEqual(geofence.GeometryWKT, result.GeometryWKT, "GeometryWKT has not been mapped correctly");
+      Assert.AreEqual(geofence.GeofenceType.ToString(), result.GeofenceType, "GeofenceType has not been mapped correctly");
+    }
+
+    [TestMethod]
+    public void MapBoundaryRequestToDeleteKafkaEvent()
+    {
+      var request = BoundaryUidRequestFull.Create
+      (
+        Guid.NewGuid().ToString(),
+        false,
+        Guid.NewGuid().ToString(),
+        Guid.NewGuid().ToString(),
+        Guid.NewGuid().ToString()
+      );
+
+      var result = AutoMapperUtility.Automapper.Map<DeleteGeofenceEvent>(request);
+      Assert.AreEqual(request.UserUid, result.UserUID.ToString(), "UserUid has not been mapped correctly");
+      Assert.AreEqual(request.BoundaryUid, result.GeofenceUID.ToString(),
+        "BoundaryUid has not been mapped correctly");
+    }
+
+    [TestMethod]
+    public void MapBoundaryRequestToCreateKafkaEvent()
+    {
+      var request = BoundaryRequestFull.Create
+      (
+        Guid.NewGuid().ToString(),
+        false,
+        Guid.NewGuid().ToString(),
+        Guid.NewGuid().ToString(),
+        new BoundaryRequest { BoundaryUid = Guid.NewGuid().ToString(), Name = "the name", BoundaryPolygonWKT = "the WKT" }
+      );
+
+      var result = AutoMapperUtility.Automapper.Map<CreateGeofenceEvent>(request);
+      Assert.AreEqual(request.CustomerUid, result.CustomerUID.ToString(), "CustomerUid has not been mapped correctly");
+      Assert.AreEqual(request.UserUid, result.UserUID.ToString(), "UserUid has not been mapped correctly");
+      Assert.AreEqual(request.Request.BoundaryUid, result.GeofenceUID.ToString(),
+        "BoundaryUid has not been mapped correctly");
+      Assert.AreEqual(request.Request.Name, result.GeofenceName,
+        "Name has not been mapped correctly");
+      Assert.AreEqual(request.Request.BoundaryPolygonWKT, result.GeometryWKT,
+        "BoundaryPolygonWKT has not been mapped correctly");
+      Assert.AreEqual(request.GeofenceType.ToString(), result.GeofenceType,
+        "GeofenceType has not been mapped correctly");
+    }
+
+    [TestMethod]
+    public void MapBoundaryRequestToUpdateKafkaEvent()
+    {
+      var request = BoundaryRequestFull.Create
+      (
+        Guid.NewGuid().ToString(),
+        false,
+        Guid.NewGuid().ToString(),
+        Guid.NewGuid().ToString(),
+        new BoundaryRequest { BoundaryUid = Guid.NewGuid().ToString(), Name = "the name", BoundaryPolygonWKT = "the WKT" }
+      );
+
+      var result = AutoMapperUtility.Automapper.Map<UpdateGeofenceEvent>(request);
+      Assert.AreEqual(request.UserUid, result.UserUID.ToString(), "UserUid has not been mapped correctly");
+      Assert.AreEqual(request.Request.BoundaryUid, result.GeofenceUID.ToString(),
+        "BoundaryUid has not been mapped correctly");
+      Assert.AreEqual(request.Request.Name, result.GeofenceName,
+        "Name has not been mapped correctly");
+      Assert.AreEqual(request.Request.BoundaryPolygonWKT, result.GeometryWKT,
+        "BoundaryPolygonWKT has not been mapped correctly");
+      Assert.AreEqual(request.GeofenceType.ToString(), result.GeofenceType,
+        "GeofenceType has not been mapped correctly");
     }
   }
 }

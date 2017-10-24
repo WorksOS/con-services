@@ -1,18 +1,17 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.IO;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.Filter.Tests
@@ -21,7 +20,7 @@ namespace VSS.Productivity3D.Filter.Tests
   public class ExecutorBaseTests
   {
     public IServiceProvider serviceProvider;
-    protected string kafkaTopicName;
+    public IServiceExceptionHandler serviceExceptionHandler;
 
     [TestInitialize]
     public virtual void InitTest()
@@ -41,7 +40,6 @@ namespace VSS.Productivity3D.Filter.Tests
       serviceCollection
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<ICustomerProxy, CustomerProxy>()
         .AddTransient<IProjectListProxy, ProjectListProxy>()
         .AddTransient<IRaptorProxy, RaptorProxy>()
@@ -49,8 +47,8 @@ namespace VSS.Productivity3D.Filter.Tests
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
-      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                       serviceProvider.GetRequiredService<IConfigurationStore>().GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+
+      this.serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
     }
   }
 }

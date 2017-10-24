@@ -1,6 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using ExecutorTests.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
@@ -10,71 +12,66 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace ExecutorTests
 {
   [TestClass]
-  public class UpsertFilterExecutorTests : TestControllerBase
+  public class UpsertFilterExecutorTests : FilterRepositoryBase
   {
-
     [TestInitialize]
-    public void Init()
+    public void ClassInit()
     {
-      SetupDI();
+      Setup();
     }
 
-
-
-    
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Transient_NoExisting()
+    public async Task UpsertFilterExecutor_Transient_NoExisting()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
-      string filterUid = null;
-      string name = "";
-      string filterJson = "theJsonString";
+      string name = string.Empty;
+      const string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
-      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson });
 
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
+      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
-      Assert.AreEqual(name, result.filterDescriptor.Name, "executor returned incorrect filter Name");
-      Assert.AreEqual(filterJson, result.filterDescriptor.FilterJson, "executor returned incorrect FilterJson");
+      Assert.IsNotNull(result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.AreEqual(name, result.FilterDescriptor.Name, "executor returned incorrect filter Name");
+      Assert.AreEqual(filterJson, result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Transient_NonExisting_FilterUidNotSupported()
+    public async Task UpsertFilterExecutor_Transient_NonExisting_FilterUidNotSupported()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
-      string name = "";
-      string filterJson = "theJsonString";
+      string name = string.Empty;
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
-      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson });
 
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2016", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Transient filter not updateable, should not have filterUid provided.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Transient_Existing_FilterUidNotSupported()
+    public async Task UpsertFilterExecutor_Transient_Existing_FilterUidNotSupported()
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
-      string name = "";
-      string filterJson = "theJsonString";
-      string filterJsonUpdated = "theJsonString updated";
+      string name = string.Empty;
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
-      var createFilterEvent = new CreateFilterEvent()
+      WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = Guid.Parse(custUid),
         UserID = userId,
@@ -84,66 +81,63 @@ namespace ExecutorTests
         FilterJson = filterJson,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
-      };
-      var s = filterRepo.StoreEvent(createFilterEvent);
-      s.Wait();
-      Assert.AreEqual(1, s.Result, "Filter event not written");
+      });
 
-      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
-      
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated });
+
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2016", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Transient filter not updateable, should not have filterUid provided.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Transient_DuplicateNamesShouldBeAllowed()
+    public async Task UpsertFilterExecutor_Transient_DuplicateNamesShouldBeAllowed()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
-      string name = "";
-      string filterJson1 = "theJsonString";
-      string filterJson2 = "theJsonString different";
+      string name = string.Empty;
+      string filterJson1 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson2 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
-      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, null, name, filterJson1);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson1 });
 
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result1 = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
+      var result1 = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
       Assert.IsNotNull(result1, "executor should always return a result");
-      Assert.IsNotNull(result1.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
-      Assert.AreEqual(name, result1.filterDescriptor.Name, "executor returned incorrect filter Name");
-      Assert.AreEqual(filterJson1, result1.filterDescriptor.FilterJson, "executor returned incorrect FilterJson");
+      Assert.IsNotNull(result1.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.AreEqual(name, result1.FilterDescriptor.Name, "executor returned incorrect filter Name");
+      Assert.AreEqual(filterJson1, result1.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
 
-      request = FilterRequestFull.Create(custUid, false, userUid, projectUid, null, name, filterJson2);
+      request = FilterRequestFull.Create(custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson2 });
       var result2 = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result2, "executor should always return a result");
-      Assert.AreNotEqual(result1.filterDescriptor.FilterUid, result2.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
-      Assert.AreEqual(name, result2.filterDescriptor.Name, "executor returned incorrect filter Name");
-      Assert.AreEqual(filterJson2, result2.filterDescriptor.FilterJson, "executor returned incorrect FilterJson");
+      Assert.AreNotEqual(result1.FilterDescriptor.FilterUid, result2.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.AreEqual(name, result2.FilterDescriptor.Name, "executor returned incorrect filter Name");
+      Assert.AreEqual(filterJson2, result2.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
 
-      var fr = filterRepo.GetFiltersForProjectUser(custUid, projectUid, userUid, true);
+      var fr = FilterRepo.GetFiltersForProjectUser(custUid, projectUid, userUid, true);
       fr.Wait();
       Assert.IsNotNull(fr, "should return the new filter");
       Assert.AreEqual(2, fr.Result.Count(), "should return 2 new filterUid");
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Transient_Existing_NoFilterUidProvided()
+    public async Task UpsertFilterExecutor_Transient_Existing_NoFilterUidProvided()
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
-      string name = "";
-      string filterJson = "theJsonString";
-      string filterJsonUpdated = "theJsonString updated";
+      string name = string.Empty;
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
-      var createFilterEvent = new CreateFilterEvent()
+      WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = Guid.Parse(custUid),
         UserID = userId,
@@ -153,79 +147,72 @@ namespace ExecutorTests
         FilterJson = filterJson,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
-      };
-      var s = filterRepo.StoreEvent(createFilterEvent);
-      s.Wait();
-      Assert.AreEqual(1, s.Result, "Filter event not written");
+      });
 
-      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, null, name, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, new FilterRequest { Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
+      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.AreNotEqual(filterUid, result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
-      Assert.AreEqual(name, result.filterDescriptor.Name, "executor returned incorrect filter Name");
-      Assert.AreEqual(filterJsonUpdated, result.filterDescriptor.FilterJson, "executor returned incorrect FilterJson");
+      Assert.AreNotEqual(filterUid, result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.AreEqual(name, result.FilterDescriptor.Name, "executor returned incorrect filter Name");
+      Assert.AreEqual(filterJsonUpdated, result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
     }
 
-
-
-
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_NoExisting()
+    public async Task UpsertFilterExecutor_Persistent_NoExisting()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
-      string filterUid = null;
       string name = "the Name";
-      string filterJson = "theJsonString";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
-      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson });
 
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
+      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
-      Assert.AreEqual(name, result.filterDescriptor.Name, "executor returned incorrect filter Name");
-      Assert.AreEqual(filterJson, result.filterDescriptor.FilterJson, "executor returned incorrect FilterJson");
+      Assert.IsNotNull(result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.AreEqual(name, result.FilterDescriptor.Name, "executor returned incorrect filter Name");
+      Assert.AreEqual(filterJson, result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_NoExisting_InvalidFilterUidProvided()
+    public async Task UpsertFilterExecutor_Persistent_NoExisting_InvalidFilterUidProvided()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "the Name";
-      string filterJson = "theJsonString";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
-      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid, name, filterJson);
+      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson });
 
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2021", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Unable to find persistent filterUid provided.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonIgnored()
+    public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonIgnored()
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
-      string filterJson = "theJsonString";
-      string filterJsonUpdated = "theJsonString updated";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
-      var createFilterEvent = new CreateFilterEvent()
+      WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = Guid.Parse(custUid),
         UserID = userId,
@@ -235,22 +222,21 @@ namespace ExecutorTests
         FilterJson = filterJson,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
-      };
-      filterRepo.StoreEvent(createFilterEvent).Wait();
+      });
 
-      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
+      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
-      Assert.AreEqual(filterUid, result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
-      Assert.AreEqual(name, result.filterDescriptor.Name, "executor returned incorrect filter Name");
-      Assert.AreEqual(filterJson, result.filterDescriptor.FilterJson, "executor returned incorrect FilterJson, should be the original");
+      Assert.IsNotNull(result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.AreEqual(filterUid, result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.AreEqual(name, result.FilterDescriptor.Name, "executor returned incorrect filter Name");
+      Assert.AreEqual(filterJson, result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson, should be the original");
 
-      var fr = filterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
+      var fr = FilterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
       fr.Wait();
       Assert.IsNotNull(fr, "should return the updated filter");
       Assert.AreEqual(1, fr.Result.Count(), "should return 1 updatedw filterUid");
@@ -260,7 +246,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonAndName()
+    public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonAndName()
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
@@ -268,10 +254,10 @@ namespace ExecutorTests
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = "theName updated";
-      string filterJson = "theJsonString";
-      string filterJsonUpdated = "theJsonString updated";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
-      var createFilterEvent = new CreateFilterEvent()
+      WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = Guid.Parse(custUid),
         UserID = userId,
@@ -281,22 +267,21 @@ namespace ExecutorTests
         FilterJson = filterJson,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
-      };
-      filterRepo.StoreEvent(createFilterEvent).Wait();
+      });
 
-      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid, nameUpdated, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonUpdated });
 
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
+      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsNotNull(result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
-      Assert.AreEqual(filterUid, result.filterDescriptor.FilterUid, "executor returned incorrect FilterUid");
-      Assert.AreEqual(nameUpdated, result.filterDescriptor.Name, "executor returned incorrect filter Name");
-      Assert.AreEqual(filterJson, result.filterDescriptor.FilterJson, "executor returned incorrect FilterJson, should return original");
-      
-      var fr = filterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
+      Assert.IsNotNull(result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.AreEqual(filterUid, result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.AreEqual(nameUpdated, result.FilterDescriptor.Name, "executor returned incorrect filter Name");
+      Assert.AreEqual(filterJson, result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson, should return original");
+
+      var fr = FilterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
       fr.Wait();
       Assert.IsNotNull(fr, "should return the updated filter");
       Assert.AreEqual(1, fr.Result.Count(), "should return 1 filter");
@@ -306,17 +291,18 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_ExistingName_AddNew_CaseInsensitive()
+    public async Task UpsertFilterExecutor_Persistent_ExistingName_AddNew_CaseInsensitive()
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
-      string filterJson = "theJsonString";
-      string filterJsonNew = "theJsonString updated"; // should be ignored
+      string nameUpdated = name.ToUpper();
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJsonNew = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";//should be ignored
 
-      var createFilterEvent = new CreateFilterEvent()
+      WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = Guid.Parse(custUid),
         UserID = userId,
@@ -326,39 +312,41 @@ namespace ExecutorTests
         FilterJson = filterJson,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
-      };
-      filterRepo.StoreEvent(createFilterEvent).Wait();
+      });
 
-      // try to add a new filterUid with same name but upper case
-      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, null, name.ToUpper(), filterJsonNew);
+      // try to update a filter with same name but upper case (allowed!)
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonNew });
 
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2039", StringComparison.Ordinal), "executor threw exception but incorrect code");
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Unable to add persistent filter as Name already exists.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
-      
-      var fr = filterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
+      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsNotNull(result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.AreEqual(filterUid, result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.AreEqual(nameUpdated, result.FilterDescriptor.Name, "executor returned incorrect filter Name");
+      Assert.AreEqual(filterJson, result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson - should return original");
+
+      var fr = FilterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
       fr.Wait();
       Assert.IsNotNull(fr, "should return the updated filter");
       Assert.AreEqual(1, fr.Result.Count(), "should return 1 filter");
       Assert.AreEqual(filterUid, fr.Result.ToList()[0].FilterUid, "should return same filterUid");
-      Assert.AreEqual(name, fr.Result.ToList()[0].Name, "should return new name");
-      Assert.AreEqual(filterJson, fr.Result.ToList()[0].FilterJson, "should return a new FilterJson");
+      Assert.AreEqual(nameUpdated, fr.Result.ToList()[0].Name, "should return new name");
+      Assert.AreEqual(filterJson, fr.Result.ToList()[0].FilterJson, "should return same FilterJson");
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_ExistingName_NoFilterUidProvided_ChangeJson()
+    public async Task UpsertFilterExecutor_Persistent_ExistingName_NoFilterUidProvided_ChangeJson()
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
-      string filterJson = "theJsonString";
-      string filterJsonUpdated = "theJsonString updated";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
-      var createFilterEvent = new CreateFilterEvent()
+      WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = Guid.Parse(custUid),
         UserID = userId,
@@ -368,20 +356,19 @@ namespace ExecutorTests
         FilterJson = filterJson,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
-      };
-      filterRepo.StoreEvent(createFilterEvent).Wait();
+      });
 
-      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, null, name, filterJsonUpdated);
- 
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, new FilterRequest { Name = name, FilterJson = filterJsonUpdated });
+
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2039", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Unable to add persistent filter as Name already exists.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_ExistingName_FilterUidProvided_ChangeJson()
+    public async Task UpsertFilterExecutor_Persistent_ExistingName_FilterUidProvided_ChangeJson()
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
@@ -389,10 +376,10 @@ namespace ExecutorTests
       string filterUid1 = Guid.NewGuid().ToString();
       string filterUid2 = Guid.NewGuid().ToString();
       string name = "theName";
-      string filterJson = "theJsonString";
-      string filterJsonUpdated = "theJsonString updated";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
-      var createFilterEvent = new CreateFilterEvent()
+      var filterEvent = new CreateFilterEvent
       {
         CustomerUID = Guid.Parse(custUid),
         UserID = userId,
@@ -403,50 +390,51 @@ namespace ExecutorTests
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
-      filterRepo.StoreEvent(createFilterEvent).Wait();
 
-      createFilterEvent.FilterUID = Guid.Parse(filterUid2);
-      createFilterEvent.Name = "something else";
-      filterRepo.StoreEvent(createFilterEvent).Wait();
+      WriteEventToDb(filterEvent);
+
+      filterEvent.FilterUID = Guid.Parse(filterUid2);
+      filterEvent.Name = "something else";
+
+      WriteEventToDb(filterEvent);
 
       // now try to change the 2nd filter to the name of the first
-      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid2, name, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid2, Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2039", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Unable to add persistent filter as Name already exists.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task UpsertFilterExecutor_Persistent_Existing_FilterUidProvidedBelongsToTransient()
+    public async Task UpsertFilterExecutor_Persistent_Existing_FilterUidProvidedBelongsToTransient()
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
-      string filterJson = "theJsonString";
-      string filterJsonUpdated = "theJsonString updated";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
-      var createTransientFilterEvent = new CreateFilterEvent()
+      WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = Guid.Parse(custUid),
         UserID = userId,
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid),
-        Name = "",
+        Name = string.Empty,
         FilterJson = filterJson,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
-      };
-      filterRepo.StoreEvent(createTransientFilterEvent).Wait();
+      });
 
-      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid, name, filterJsonUpdated);
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
-        RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo, projectListProxy, raptorProxy, producer, kafkaTopicName);
+        RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2021", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Unable to find persistent filterUid provided.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -12,25 +11,22 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
-  public class DeleteFilterExecutor : RequestExecutorContainer
+  public class DeleteFilterExecutor : FilterExecutorBase
   {
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    public DeleteFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, 
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, 
-      IFilterRepository filterRepo, IKafka producer, string kafkaTopicName) 
-      : base(configStore, logger, serviceExceptionHandler, 
-          projectListProxy, raptorProxy, 
-          filterRepo, producer, kafkaTopicName)
-    {
-    }
+    public DeleteFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy,
+      RepositoryBase repository, IKafka producer, string kafkaTopicName)
+      : base(configStore, logger, serviceExceptionHandler,
+          projectListProxy, raptorProxy,
+          repository, producer, kafkaTopicName, null)
+    { }
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
@@ -39,96 +35,42 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException();
-    }
 
     /// <summary>
-    /// Processes the DeleteFilter request
+    /// Processes the DeleteFilter Request
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns>a FiltersResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      ContractExecutionResult result = null;
-
       var filterRequest = item as FilterRequestFull;
-      if (filterRequest != null)
-      {
-        var projectFilter =
-          (await filterRepo.GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid,
-            filterRequest.UserId).ConfigureAwait(false))
-          .SingleOrDefault(f => string.Equals(f.FilterUid, filterRequest.filterUid, StringComparison.OrdinalIgnoreCase));
-        
-        if (projectFilter == null)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 11);
-        }
-        log.LogDebug($"DeleteFilter retrieved filter {JsonConvert.SerializeObject(projectFilter)}");
-
-        DeleteFilterEvent deleteFilterEvent = null;
-        int deletedCount = 0;
-        try
-        {
-          deleteFilterEvent = AutoMapperUtility.Automapper.Map<DeleteFilterEvent>(projectFilter);
-          deletedCount = await filterRepo.StoreEvent(deleteFilterEvent).ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 13, e.Message);
-        }
-
-        if (deletedCount == 0)
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 12);
-
-        // this just clears the cache, do we care i.e. fail and rollback?
-        try
-        {
-          if (deletedCount > 0)
-            await FilterValidation
-              .NotifyRaptorFilterChange(raptorProxy, log, serviceExceptionHandler, projectFilter?.FilterUid, filterRequest.ProjectUid)
-              .ConfigureAwait(false);
-
-        }
-        catch (Exception e)
-        {
-          log.LogError(
-            $"DeleteFilter failed to clear 3dp cache for {JsonConvert.SerializeObject(projectFilter)}. Exception: {e.Message}");
-        }
-
-        try
-        {
-          if (deleteFilterEvent != null)
-          {
-            var messagePayloadDeleteEvent =
-              JsonConvert.SerializeObject(new {DeleteFilterEvent = deleteFilterEvent});
-            producer.Send(kafkaTopicName,
-              new List<KeyValuePair<string, string>>
-              {
-                new KeyValuePair<string, string>(deleteFilterEvent.FilterUID.ToString(), messagePayloadDeleteEvent)
-              });
-          }
-        }
-        catch (Exception e)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 14, e.Message);
-        }
-
-        return new ContractExecutionResult();
-      }
-      else
+      if (filterRequest == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 37);
+
+        return null;
       }
 
-      return result;
-    }
+      var filter =
+        (await ((IFilterRepository)Repository).GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid,
+          filterRequest.UserId).ConfigureAwait(false))
+        .SingleOrDefault(f => string.Equals(f.FilterUid, filterRequest.FilterUid, StringComparison.OrdinalIgnoreCase));
 
-    protected override void ProcessErrorCodes()
-    {
-    }
+      if (filter == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 11);
+      }
+      log.LogDebug($"DeleteFilter retrieved filter {JsonConvert.SerializeObject(filter)}");
 
+      DeleteFilterEvent deleteEvent = await StoreFilterAndNotifyRaptor<DeleteFilterEvent>(filterRequest, new int[] { 12, 13 });
+      //Only write to kafka for persistent filters
+      if (deleteEvent != null && !string.IsNullOrEmpty(filter.Name))
+      {
+        var payload = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteEvent });
+        SendToKafka(deleteEvent.FilterUID.ToString(), payload, 14);
+      }
+ 
+      return new ContractExecutionResult();
+    }
   }
 }

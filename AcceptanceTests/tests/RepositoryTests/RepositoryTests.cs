@@ -16,9 +16,10 @@ namespace RepositoryTests
     [TestInitialize]
     public void Init()
     {
-      SetupLogging();
+      SetupLoggingAndRepos();
     }
 
+    #region Filters
     [TestMethod]
     public void FilterSchemaExists()
     {
@@ -48,7 +49,7 @@ namespace RepositoryTests
         ProjectUID = projUid,
         UserID = userId.ToString(),
         FilterUID = Guid.NewGuid(),
-        Name = "",
+        Name = string.Empty,
         FilterJson = "blah1",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
@@ -59,7 +60,7 @@ namespace RepositoryTests
         ProjectUID = projUid,
         UserID = userId.ToString(),
         FilterUID = Guid.NewGuid(),
-        Name = "",
+        Name = string.Empty,
         FilterJson = "blah2",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
@@ -139,7 +140,7 @@ namespace RepositoryTests
         UserID = Guid.NewGuid().ToString(),
         ProjectUID = Guid.NewGuid(),
         FilterUID = Guid.NewGuid(),
-        Name = "",
+        Name = string.Empty,
         FilterJson = "blah",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
@@ -193,7 +194,7 @@ namespace RepositoryTests
         ProjectUID = projUid,
         UserID = userUid.ToString(),
         FilterUID = Guid.NewGuid(),
-        Name = "",
+        Name = string.Empty,
         FilterJson = "blah1",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
@@ -205,7 +206,7 @@ namespace RepositoryTests
         ProjectUID = projUid,
         UserID = userUid.ToString(),
         FilterUID = Guid.NewGuid(),
-        Name = "",
+        Name = string.Empty,
         FilterJson = "blah2",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
@@ -279,7 +280,7 @@ namespace RepositoryTests
         ProjectUID = Guid.NewGuid(),
         UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
-        Name = "",
+        Name = string.Empty,
         FilterJson = "blah",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
@@ -291,7 +292,7 @@ namespace RepositoryTests
         ProjectUID = createFilterEvent.ProjectUID,
         UserID = createFilterEvent.UserID,
         FilterUID = createFilterEvent.FilterUID,
-        Name = "",
+        Name = string.Empty,
         FilterJson = "blahDeBlah",
         ActionUTC = firstCreatedUtc.AddMinutes(2),
         ReceivedUTC = firstCreatedUtc
@@ -333,7 +334,7 @@ namespace RepositoryTests
         ProjectUID = Guid.NewGuid(),
         UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
-        Name = "",
+        Name = string.Empty,
         FilterJson = "blah",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
@@ -345,7 +346,7 @@ namespace RepositoryTests
         ProjectUID = createFilterEvent.ProjectUID,
         UserID = createFilterEvent.UserID.ToString(),
         FilterUID = createFilterEvent.FilterUID,
-        Name = "",
+        Name = string.Empty,
         FilterJson = "blahDeBlah",
         ActionUTC = firstCreatedUtc.AddMinutes(2),
         ReceivedUTC = firstCreatedUtc
@@ -499,7 +500,7 @@ namespace RepositoryTests
         ProjectUID = Guid.NewGuid(),
         UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
-        Name = "",
+        Name = string.Empty,
         FilterJson = "blah",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
@@ -598,7 +599,253 @@ namespace RepositoryTests
       g.Wait();
       Assert.IsNull(g.Result, "Should not be able to retrieve filter from filterRepo");
     }
+    #endregion
 
+    #region Boundaries
+    [TestMethod]
+    public void GeofenceSchemaExists()
+    {
+      const string tableName = "Geofence";
+      List<string> columnNames = new List<string>
+      {
+        "ID", "GeofenceUID", "Name" , "fk_GeofenceTypeID", "GeometryWKT", "FillColor", "IsTransparent", "IsDeleted", "Description", "fk_CustomerUID", "UserUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+      };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void ProjectGeofenceSchemaExists()
+    {
+      const string tableName = "ProjectGeofence";
+      List<string> columnNames = new List<string>
+      {
+        "ID", "fk_GeofenceUID", "fk_ProjectUID" , "LastActionedUTC", "InsertUTC", "UpdateUTC"
+
+      };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void GetAssociatedProjectGeofences()
+    {
+      var projUid = Guid.NewGuid();
+
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createAssociateEvent1 = new AssociateProjectGeofence
+      {
+        ProjectUID = projUid,
+        GeofenceUID = Guid.NewGuid(),
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+      var createAssociateEvent2 = new AssociateProjectGeofence
+      {
+        ProjectUID = projUid,
+        GeofenceUID = Guid.NewGuid(),
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+      projectRepo.StoreEvent(createAssociateEvent1).Wait();
+      projectRepo.StoreEvent(createAssociateEvent2).Wait();
+      var a = projectRepo.GetAssociatedGeofences(projUid.ToString());
+      a.Wait();
+      Assert.IsNotNull(a.Result, "Failed to get associated boundaries");
+      Assert.AreEqual(2, a.Result.Count(), "Wrong number of boundaries retrieved");
+    }
+
+    [TestMethod]
+    public void CreateAssociatedProjectGeofence_HappyPath()
+    {
+      var projUid = Guid.NewGuid();
+
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createAssociateEvent = new AssociateProjectGeofence
+      {
+        ProjectUID = projUid,
+        GeofenceUID = Guid.NewGuid(),
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+      var p = projectRepo.StoreEvent(createAssociateEvent);
+      p.Wait();
+      Assert.AreEqual(1, p.Result, "Associate event not written");
+    }
+
+    [TestMethod]
+    public void GetGeofence_HappyPath()
+    {
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var geofenceType = GeofenceType.Filter;
+      var geofenceUid = Guid.NewGuid();
+      var createGeofenceEvent = new CreateGeofenceEvent
+      {
+        CustomerUID = Guid.NewGuid(),
+        UserUID = Guid.NewGuid(),
+        GeofenceUID = geofenceUid,
+        GeofenceName = "Boundary one",
+        GeofenceType = geofenceType.ToString(),
+        GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+      geofenceRepo.StoreEvent(createGeofenceEvent).Wait();
+
+      var g = geofenceRepo.GetGeofence(geofenceUid.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve geofence from geofenceRepo");
+      Assert.AreEqual(geofenceUid.ToString(), g.Result.GeofenceUID, "Wrong geofence retrieved");
+    }
+
+    [TestMethod]
+    public void GetGeofences_HappyPath()
+    {
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var geofenceType = GeofenceType.Filter.ToString();
+      var geofenceUId = Guid.NewGuid();
+      var createGeofenceEvent1 = new CreateGeofenceEvent
+      {
+        CustomerUID = custUid,
+        UserUID = userId,
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Boundary one",
+        GeofenceType = geofenceType,
+        GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+      var createGeofenceEvent2 = new CreateGeofenceEvent
+      {
+        CustomerUID = custUid,
+        UserUID = userId,
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Boundary two",
+        GeofenceType = geofenceType,
+        GeometryWKT = "POLYGON((81.257874 13.677856,80.856873 14.039345,81.375977 14.443052,81.257874 13.677856))",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+      var createGeofenceEvent3 = new CreateGeofenceEvent
+      {
+        CustomerUID = custUid,
+        UserUID = userId,
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Boundary three",
+        GeofenceType = geofenceType,
+        GeometryWKT = "POLYGON((82.257874 14.677856,81.856873 15.039345,82.375977 15.443052,82.257874 14.677856))",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+      var deleteGeofenceEvent = new DeleteGeofenceEvent
+      {
+        GeofenceUID = createGeofenceEvent1.GeofenceUID,
+        UserUID = userId,
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      geofenceRepo.StoreEvent(createGeofenceEvent1).Wait();
+      geofenceRepo.StoreEvent(createGeofenceEvent2).Wait();
+      geofenceRepo.StoreEvent(createGeofenceEvent3).Wait();
+      geofenceRepo.StoreEvent(deleteGeofenceEvent).Wait();
+
+      var ids = new List<string>
+      {
+        createGeofenceEvent1.GeofenceUID.ToString(),
+        createGeofenceEvent2.GeofenceUID.ToString(),
+        createGeofenceEvent3.GeofenceUID.ToString()
+      };
+      var g = geofenceRepo.GetGeofences(ids);
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve geofences from geofenceRepo");
+      Assert.AreEqual(2, g.Result.Count(), "Wrong number of geofences retrieved");
+    }
+
+    [TestMethod]
+    public void CreateGeofence_HappyPath()
+    {
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var geofenceType = GeofenceType.Filter;
+      var createGeofenceEvent = new CreateGeofenceEvent
+      {
+        CustomerUID = Guid.NewGuid(),
+        UserUID = Guid.NewGuid(),
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Boundary one",
+        GeofenceType = geofenceType.ToString(),
+        GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var boundary = new Geofence
+      {
+        CustomerUID = createGeofenceEvent.CustomerUID.ToString(),
+        UserUID = createGeofenceEvent.UserUID.ToString(),
+        GeofenceUID = createGeofenceEvent.GeofenceUID.ToString(),
+        Name = createGeofenceEvent.GeofenceName,
+        GeofenceType = geofenceType,
+        GeometryWKT = createGeofenceEvent.GeometryWKT,
+        LastActionedUTC = createGeofenceEvent.ActionUTC
+      };
+
+      var s = geofenceRepo.StoreEvent(createGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Geofence event not written");
+
+      var g = geofenceRepo.GetGeofence(createGeofenceEvent.GeofenceUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve geofence from geofenceRepo");
+      //Note: cannot compare objects as Geofence has nullables while CreateGeofenceEvent doesn't
+      Assert.AreEqual(boundary.CustomerUID, g.Result.CustomerUID, "Wrong CustomerUID");
+      Assert.AreEqual(boundary.UserUID, g.Result.UserUID, "Wrong UserUID");
+      Assert.AreEqual(boundary.GeofenceUID, g.Result.GeofenceUID, "Wrong GeofenceUID");
+      Assert.AreEqual(boundary.Name, g.Result.Name, "Wrong Name");
+      Assert.AreEqual(boundary.GeofenceType, g.Result.GeofenceType, "Wrong GeofenceType");
+      Assert.AreEqual(boundary.GeometryWKT, g.Result.GeometryWKT, "Wrong GeometryWKT");
+    }
+
+    [TestMethod]
+    public void DeleteGeofence_HappyPath()
+    {
+      DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var geofenceUid = Guid.NewGuid();
+      var userUid = Guid.NewGuid();
+      var geofenceType = GeofenceType.Filter;
+      var createGeofenceEvent = new CreateGeofenceEvent
+      {
+        CustomerUID = Guid.NewGuid(),
+        UserUID = userUid,
+        GeofenceUID = geofenceUid,
+        GeofenceName = "Boundary one",
+        GeofenceType = geofenceType.ToString(),
+        GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      var deleteGeofenceEvent = new DeleteGeofenceEvent
+      {
+        GeofenceUID = geofenceUid,
+        UserUID = userUid,
+        ActionUTC = firstCreatedUtc,
+        ReceivedUTC = firstCreatedUtc
+      };
+
+      geofenceRepo.StoreEvent(createGeofenceEvent).Wait();
+
+      var s = geofenceRepo.StoreEvent(deleteGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Geofence event not deleted");
+
+      var g = geofenceRepo.GetGeofence(geofenceUid.ToString());
+      g.Wait();
+      Assert.IsNull(g.Result, "Should not be able to retrieve geofence from geofenceRepo");
+    }
+
+    #endregion
 
     #region privates
 

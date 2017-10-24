@@ -15,8 +15,10 @@ namespace RepositoryTests
     protected IServiceProvider serviceProvider;
     protected IConfigurationStore configStore;
     protected FilterRepository filterRepo;
+    protected ProjectRepository projectRepo;
+    protected GeofenceRepository geofenceRepo;
 
-    public void SetupLogging()
+    public void SetupLoggingAndRepos()
     {
       const string loggerRepoName = "UnitTestLogTest";
       var logPath = Directory.GetCurrentDirectory();
@@ -32,11 +34,15 @@ namespace RepositoryTests
         .AddSingleton(loggerFactory)
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
           .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
+          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+          .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddMemoryCache() 
         .BuildServiceProvider();
 
       configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       filterRepo = serviceProvider.GetRequiredService<IRepository<IFilterEvent>>() as FilterRepository;
+      projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
+      geofenceRepo = serviceProvider.GetRequiredService<IRepository<IGeofenceEvent>>() as GeofenceRepository;
       Assert.IsNotNull(serviceProvider.GetService<ILoggerFactory>());
   
     }

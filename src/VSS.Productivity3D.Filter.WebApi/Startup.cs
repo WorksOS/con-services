@@ -18,8 +18,8 @@ using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Filter.Common.Utilities;
-using VSS.Productivity3D.Filter.WebApi.Filters;
+using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Filter.WebAPI.Internal.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 #if NET_4_7
   using VSS.Productivity3D.Common.Filters;
@@ -86,6 +86,8 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IProjectListProxy, ProjectListProxy>(); // used for customer/project validation
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
+      services.AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>();
+      services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
       services.AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
       services.AddMemoryCache();
 
@@ -130,7 +132,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     }
 
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+    // This method gets called by the runtime. Use this method to configure the HTTP Request pipeline
     /// <summary>
     /// Configures the specified application.
     /// </summary>
@@ -153,7 +155,6 @@ namespace VSS.Productivity3D.Filter.WebApi
 #endif
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
-      //Enable TID here
       app.UseTIDAuthentication();
 
       app.UseMvc();

@@ -1,44 +1,39 @@
-﻿using System;
+﻿using ExecutorTests.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Threading.Tasks;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.MasterData.Models.Models;
 
 namespace ExecutorTests
 {
   [TestClass]
-  public class GetFilterExecutorTests : TestControllerBase
+  public class GetFilterExecutorTests : FilterRepositoryBase
   {
-
     [TestInitialize]
-    public void Init()
+    public void ClassInit()
     {
-      SetupDI();
+      Setup();
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task GetFilterExecutor_NoExistingFilter()
+    public async Task GetFilterExecutor_NoExistingFilter()
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
-      string filterUid = Guid.NewGuid().ToString();
-
-      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid, filterUid);
-      request.Validate(serviceExceptionHandler);
+      var request = CreateAndValidateRequest();
 
       var executor =
-        RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
+        RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2036", StringComparison.Ordinal), "executor threw exception but incorrect code");
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user.", StringComparison.Ordinal), "executor threw exception but incorrect message");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("GetFilter By filterUid. The requested filter does not exist, or does not belong to the requesting customer; project or user.", StringComparison.Ordinal), "executor threw exception but incorrect message");
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task GetFilterExecutor_ExistingFilter()
+    public async Task GetFilterExecutor_ExistingFilter()
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
@@ -47,7 +42,7 @@ namespace ExecutorTests
       string name = "blah";
       string filterJson = "theJsonString";
 
-      var createFilterEvent = new CreateFilterEvent()
+      WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = Guid.Parse(custUid),
         UserID = userId,
@@ -57,21 +52,16 @@ namespace ExecutorTests
         FilterJson = filterJson,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
-      };
-      var s = filterRepo.StoreEvent(createFilterEvent);
-      s.Wait();
-      Assert.AreEqual(1, s.Result, "Filter event not written");
-      
+      });
 
-      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, filterUid);
-      request.Validate(serviceExceptionHandler);
-      
+      var request = FilterRequestFull.Create(custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid });
+
       var executor =
-        RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
+        RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
       var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       var filterToTest = new FilterDescriptorSingleResult(
-        new FilterDescriptor()
+        new FilterDescriptor
         {
           FilterUid = filterUid,
           Name = name,
@@ -79,17 +69,17 @@ namespace ExecutorTests
         }
       );
 
-      Assert.IsNotNull(result, "executor should always return a result");
-      Assert.AreEqual(filterToTest.filterDescriptor.FilterUid, result.filterDescriptor.FilterUid,
-        "executor returned incorrect filterDescriptor FilterUid");
-      Assert.AreEqual(filterToTest.filterDescriptor.Name, result.filterDescriptor.Name,
-        "executor returned incorrect filterDescriptor Name");
-      Assert.AreEqual(filterToTest.filterDescriptor.FilterJson, result.filterDescriptor.FilterJson,
-        "executor returned incorrect filterDescriptor FilterJson");
+      Assert.IsNotNull(result, Responses.ShouldReturnResult);
+      Assert.AreEqual(filterToTest.FilterDescriptor.FilterUid, result.FilterDescriptor.FilterUid,
+        Responses.IncorrectFilterDescriptorFilterUid);
+      Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name,
+        Responses.IncorrectFilterDescriptorName);
+      Assert.AreEqual(filterToTest.FilterDescriptor.FilterJson, result.FilterDescriptor.FilterJson,
+        Responses.IncorrectFilterDescriptorFilterJson);
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task GetFilterExecutor_ExistingFilter_CaseInsensitive()
+    public async Task GetFilterExecutor_ExistingFilter_CaseInsensitive()
     {
       string custUid = Guid.NewGuid().ToString().ToLower(); // actually Guid.Parse converts to lower anyway
       string userId = Guid.NewGuid().ToString().ToLower();
@@ -98,7 +88,7 @@ namespace ExecutorTests
       string name = "blah";
       string filterJson = "theJsonString";
 
-      var createFilterEvent = new CreateFilterEvent()
+      WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = Guid.Parse(custUid),
         UserID = userId,
@@ -108,22 +98,18 @@ namespace ExecutorTests
         FilterJson = filterJson,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
-      };
-      var s = filterRepo.StoreEvent(createFilterEvent);
-      s.Wait();
-      Assert.AreEqual(1, s.Result, "Filter event not written");
+      });
 
-      var request = FilterRequestFull.Create(custUid.ToUpper(), false, userId.ToUpper(), projectUid.ToUpper(), filterUid.ToUpper());
-      request.Validate(serviceExceptionHandler);
+      var request = CreateAndValidateRequest(customerUid: custUid.ToUpper(), userId: userId.ToUpper(), projectUid: projectUid.ToUpper(), filterUid: filterUid.ToUpper());
 
       var executor =
-        RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler, filterRepo);
-      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
+        RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
+      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
-      Assert.IsNotNull(result, "executor should always return a result");
-      Assert.AreEqual(filterUid, result.filterDescriptor.FilterUid,"executor returned incorrect filterDescriptor FilterUid");
-      Assert.AreEqual(name, result.filterDescriptor.Name,"executor returned incorrect filterDescriptor Name");
-      Assert.AreEqual(filterJson, result.filterDescriptor.FilterJson,"executor returned incorrect filterDescriptor FilterJson");
+      Assert.IsNotNull(result, Responses.ShouldReturnResult);
+      Assert.AreEqual(filterUid, result.FilterDescriptor.FilterUid, Responses.IncorrectFilterDescriptorFilterUid);
+      Assert.AreEqual(name, result.FilterDescriptor.Name, Responses.IncorrectFilterDescriptorName);
+      Assert.AreEqual(filterJson, result.FilterDescriptor.FilterJson, Responses.IncorrectFilterDescriptorFilterJson);
     }
   }
 }

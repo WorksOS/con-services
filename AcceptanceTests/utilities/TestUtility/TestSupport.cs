@@ -133,7 +133,7 @@ namespace TestUtility
     }
 
     public string GetBaseUri()
-    {
+    {      
       var baseUri = tsCfg.webApiUri;
 
       if (Debugger.IsAttached || tsCfg.operatingSystem == "Windows_NT")
@@ -212,6 +212,16 @@ namespace TestUtility
           sqlCmd += $@"(FilterUID,fk_CustomerUID,fk_ProjectUID,UserID,Name,FilterJson,IsDeleted,LastActionedUTC) VALUES 
                 ('{eventObject.FilterUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}','{eventObject.UserID}','{eventObject.Name}','{eventObject.FilterJson}',{eventObject.IsDeleted},'{eventObject.LastActionedUTC}');";
           break;
+        case "Geofence":
+          sqlCmd += $@"(GeofenceUID,Name,fk_GeofenceTypeID,GeometryWKT,FillColor,IsTransparent,IsDeleted,Description,fk_CustomerUID,UserUID,LastActionedUTC) VALUES 
+                ('{eventObject.GeofenceUID}','{eventObject.Name}','{eventObject.fk_GeofenceTypeID}','{eventObject.GeometryWKT}','{eventObject.FillColor}','{eventObject.IsTransparent}','{eventObject.IsDeleted}','{eventObject.Description}','{eventObject.fk_CustomerUID}','{eventObject.UserUID}','{eventObject.LastActionedUTC}');";
+            break;
+        case "ProjectGeofence":
+          sqlCmd += $@"(fk_GeofenceUID,fk_ProjectUID,LastActionedUTC) VALUES 
+                ('{eventObject.fk_GeofenceUID}','{eventObject.fk_ProjectUID}','{eventObject.LastActionedUTC}');";
+          break;
+        default:
+          throw new NotImplementedException($"Missing SQL code to insert row into table {dbTable}");
       }
       mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
     }
@@ -221,6 +231,15 @@ namespace TestUtility
     {
       var mysqlHelper = new MySqlHelper();
       var sqlCmd = $@"DELETE FROM `{tsCfg.dbSchema}`.Filter WHERE fk_ProjectUID = '{projectUid}' ";
+      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
+    }
+
+    public void DeleteAllBoundariesAndAssociations()
+    {
+      var mysqlHelper = new MySqlHelper();
+      var sqlCmd = $@"DELETE FROM `{tsCfg.dbSchema}`.ProjectGeofence";
+      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
+      sqlCmd = $@"DELETE FROM `{tsCfg.dbSchema}`.Geofence";
       mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
     }
 

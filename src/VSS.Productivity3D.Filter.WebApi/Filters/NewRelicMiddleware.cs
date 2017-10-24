@@ -56,7 +56,6 @@ namespace VSS.Productivity3D.Common.Filters
           {"userUid", principal.Identity.Name},
           {"customerUid", principal.CustomerUid},
           {"userName", principal.EmailAddress},
-          {"customerName", principal.CustomerName},
           {"elapsedTime", (Single) watch.ElapsedMilliseconds},
           {"projectUid",projectUid },
           {"origin",origin },
