@@ -47,7 +47,7 @@ namespace ExecutorTests
         producer, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.Result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
     }
   }
 }
