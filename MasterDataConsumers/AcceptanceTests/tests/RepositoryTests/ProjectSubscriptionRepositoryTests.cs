@@ -67,7 +67,7 @@ namespace RepositoryTests
     /// Create ProjectSubscription - unhandled subtype
     /// </summary>
     [TestMethod]
-    public void CreateSubscriptionWithProject_UnhandledSubscriptionType()
+    public void CreateSubscriptionWithProject_UnknownSubscriptionType()
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var customerUID = Guid.NewGuid();
@@ -84,7 +84,55 @@ namespace RepositoryTests
 
       var s = subscriptionContext.StoreEvent(createProjectSubscriptionEvent);
       s.Wait();
-      Assert.AreEqual(0, s.Result, "ProjectSubscription event not written");
+      Assert.AreEqual(0, s.Result, "ProjectSubscription event should not be written");
+    }
+
+    /// <summary>
+    /// Create ProjectSubscription - unhandled subtype
+    /// </summary>
+    [TestMethod]
+    public void CreateSubscriptionWithProject_UnhandledSubscriptionType()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUID = Guid.NewGuid();
+
+      var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = customerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Essentials",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createProjectSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "ProjectSubscription event should not be written");
+    }
+
+    /// <summary>
+    /// Create ProjectSubscription - wrong subscription family for Project
+    /// </summary>
+    [TestMethod]
+    public void CreateSubscriptionWithProject_WrongSubscriptionFamily()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUID = Guid.NewGuid();
+
+      var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = customerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "3D Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createProjectSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "ProjectSubscription event should not be written");
     }
 
     /// <summary>

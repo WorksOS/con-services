@@ -37,17 +37,19 @@ namespace VSS.MasterData.Repositories
       if (evt is CreateProjectEvent)
       {
         var projectEvent = (CreateProjectEvent) evt;
-        var project = new Project();
-        project.LegacyProjectID = projectEvent.ProjectID;
-        project.Description = projectEvent.Description;
-        project.Name = projectEvent.ProjectName;
-        project.ProjectTimeZone = projectEvent.ProjectTimezone;
-        project.LandfillTimeZone = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone);
-        project.ProjectUID = projectEvent.ProjectUID.ToString();
-        project.EndDate = projectEvent.ProjectEndDate.Date;
-        project.LastActionedUTC = projectEvent.ActionUTC;
-        project.StartDate = projectEvent.ProjectStartDate.Date;
-        project.ProjectType = projectEvent.ProjectType;
+        var project = new Project
+        {
+          LegacyProjectID = projectEvent.ProjectID,
+          Description = projectEvent.Description,
+          Name = projectEvent.ProjectName,
+          ProjectTimeZone = projectEvent.ProjectTimezone,
+          LandfillTimeZone = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone),
+          ProjectUID = projectEvent.ProjectUID.ToString(),
+          EndDate = projectEvent.ProjectEndDate.Date,
+          LastActionedUTC = projectEvent.ActionUTC,
+          StartDate = projectEvent.ProjectStartDate.Date,
+          ProjectType = projectEvent.ProjectType
+        };
 
         if (!string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName))
         {
@@ -77,15 +79,17 @@ namespace VSS.MasterData.Repositories
       {
         var projectEvent = (UpdateProjectEvent) evt;
 
-        var project = new Project();
-        project.ProjectUID = projectEvent.ProjectUID.ToString();
-        project.Name = projectEvent.ProjectName;
-        project.Description = projectEvent.Description;
-        project.EndDate = projectEvent.ProjectEndDate.Date;
-        project.LastActionedUTC = projectEvent.ActionUTC;
-        project.ProjectType = projectEvent.ProjectType;
-        project.ProjectTimeZone = projectEvent.ProjectTimezone;
-        project.LandfillTimeZone = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone);
+        var project = new Project
+        {
+          ProjectUID = projectEvent.ProjectUID.ToString(),
+          Name = projectEvent.ProjectName,
+          Description = projectEvent.Description,
+          EndDate = projectEvent.ProjectEndDate.Date,
+          LastActionedUTC = projectEvent.ActionUTC,
+          ProjectType = projectEvent.ProjectType,
+          ProjectTimeZone = projectEvent.ProjectTimezone,
+          LandfillTimeZone = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone)
+        };
 
         if (!string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName))
         {
@@ -97,9 +101,11 @@ namespace VSS.MasterData.Repositories
       else if (evt is DeleteProjectEvent)
       {
         var projectEvent = (DeleteProjectEvent) evt;
-        var project = new Project();
-        project.ProjectUID = projectEvent.ProjectUID.ToString();
-        project.LastActionedUTC = projectEvent.ActionUTC;
+        var project = new Project
+        {
+          ProjectUID = projectEvent.ProjectUID.ToString(),
+          LastActionedUTC = projectEvent.ActionUTC
+        };
         upsertedCount = await UpsertProjectDetail(project, "DeleteProjectEvent", projectEvent.DeletePermanently);
       }
       else if (evt is AssociateProjectCustomer)
@@ -115,19 +121,23 @@ namespace VSS.MasterData.Repositories
       else if (evt is DissociateProjectCustomer)
       {
         var projectEvent = (DissociateProjectCustomer) evt;
-        var customerProject = new CustomerProject();
-        customerProject.ProjectUID = projectEvent.ProjectUID.ToString();
-        customerProject.CustomerUID = projectEvent.CustomerUID.ToString();
-        customerProject.LastActionedUTC = projectEvent.ActionUTC;
+        var customerProject = new CustomerProject
+        {
+          ProjectUID = projectEvent.ProjectUID.ToString(),
+          CustomerUID = projectEvent.CustomerUID.ToString(),
+          LastActionedUTC = projectEvent.ActionUTC
+        };
         upsertedCount = await UpsertCustomerProjectDetail(customerProject, "DissociateProjectCustomerEvent");
       }
       else if (evt is AssociateProjectGeofence)
       {
         var projectEvent = (AssociateProjectGeofence) evt;
-        var projectGeofence = new ProjectGeofence();
-        projectGeofence.ProjectUID = projectEvent.ProjectUID.ToString();
-        projectGeofence.GeofenceUID = projectEvent.GeofenceUID.ToString();
-        projectGeofence.LastActionedUTC = projectEvent.ActionUTC;
+        var projectGeofence = new ProjectGeofence
+        {
+          ProjectUID = projectEvent.ProjectUID.ToString(),
+          GeofenceUID = projectEvent.GeofenceUID.ToString(),
+          LastActionedUTC = projectEvent.ActionUTC
+        };
         upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "AssociateProjectGeofenceEvent");
       }
       else if (evt is CreateImportedFileEvent)
@@ -383,6 +393,8 @@ namespace VSS.MasterData.Repositories
         // an update was processed before the create, even though it's actionUTC is later (due to kafka partioning issue)
         log.LogDebug(
           $"ProjectRepository/UpdateProject: project doesn't already exist, creating one. project={project.ProjectUID}");
+        if (String.IsNullOrEmpty(project.ProjectTimeZone))
+          project.ProjectTimeZone = "";
         string insert = BuildProjectInsertString(project);
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, project);
@@ -1139,9 +1151,25 @@ namespace VSS.MasterData.Repositories
       return project;
     }
 
+    /// <summary>
+    /// Gets the list of geofence UIDs associated wih the specified project
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns>List of associations</returns>
+    public async Task<IEnumerable<ProjectGeofence>> GetAssociatedGeofences(string projectUid)
+    {
+      return await QueryWithAsyncPolicy<ProjectGeofence>
+      (@"SELECT 
+                fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
+              FROM ProjectGeofence 
+              WHERE fk_ProjectUID = @projectUid",
+        new { projectUid }
+      );
+    }
+
 
     /// <summary>
-   /// At this stage there is only 1 setting/project
+    /// At this stage there is only 1 setting/project
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns></returns>

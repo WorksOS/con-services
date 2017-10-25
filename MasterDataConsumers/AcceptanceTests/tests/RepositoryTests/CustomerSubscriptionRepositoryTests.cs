@@ -59,7 +59,7 @@ namespace RepositoryTests
     /// Create CustomerSubscription - unhandled subtype
     /// </summary>
     [TestMethod]
-    public void CreateCustomerSubscription_UnhandledSubscriptionType()
+    public void CreateCustomerSubscription_UnknownSubscriptionType()
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
@@ -68,6 +68,76 @@ namespace RepositoryTests
         CustomerUID = Guid.NewGuid(),
         SubscriptionUID = Guid.NewGuid(),
         SubscriptionType = "Manual 3D Project Monitoring blah de blah",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createCustomerSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "CustomerSubscription event should not be written");
+    }
+
+    /// <summary>
+    /// Create CustomerSubscription - unhandled subtype
+    /// </summary>
+    [TestMethod]
+    public void CreateCustomerSubscription_UnhandledSubscriptionType()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Essentials",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createCustomerSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "CustomerSubscription event should not be written");
+    }
+
+    /// <summary>
+    /// Create CustomerSubscription - unhandled subtype
+    /// </summary>
+    [TestMethod]
+    public void CreateCustomerSubscription_WrongSubscriptionGroup()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Landfill",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createCustomerSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "CustomerSubscription event should not be written");
+    }
+
+
+    /// <summary>
+    /// Create CustomerSubscription - wrong subscription family for Customer
+    /// </summary>
+    [TestMethod]
+    public void CreateCustomerSubscription_WrongSubscriptionFamily()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "3D Project Monitoring",
         StartDate = new DateTime(2016, 02, 01),
         EndDate = new DateTime(9999, 12, 31),
         ActionUTC = actionUTC
@@ -251,7 +321,7 @@ namespace RepositoryTests
       {
         CustomerUID = Guid.NewGuid(),
         SubscriptionUID = Guid.NewGuid(),
-        SubscriptionType = "Essentials",
+        SubscriptionType = "3D Project Monitoring",
         StartDate = new DateTime(2016, 02, 01),
         EndDate = new DateTime(9999, 12, 31),
         ActionUTC = actionUTC
@@ -260,6 +330,52 @@ namespace RepositoryTests
       var s = subscriptionContext.StoreEvent(createAssetSubscriptionEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "AssetSubscription event not written");
+    }
+
+    /// <summary>
+    /// Create AssetSubscription 
+    /// </summary>
+    [TestMethod]
+    public void CreateAssetSubscription_UnsupportedType()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createAssetSubscriptionEvent = new CreateAssetSubscriptionEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Essentials",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createAssetSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "AssetSubscription event should not have been written");
+    }
+
+    /// <summary>
+    /// Create AssetSubscription 
+    /// </summary>
+    [TestMethod]
+    public void CreateAssetSubscription_WrongGroup()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createAssetSubscriptionEvent = new CreateAssetSubscriptionEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Manual 3D Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createAssetSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "AssetSubscription event should not have been written");
     }
 
     /// <summary>
@@ -284,6 +400,30 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(0, s.Result, "AssetSubscription event should not have been written");
     }
+
+    /// <summary>
+    /// Create AssetSubscription - wrong subscription family for Asset
+    /// </summary>
+    [TestMethod]
+    public void CreateAssetSubscription_WrongSubscriptionFamily()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createAssetSubscriptionEvent = new CreateAssetSubscriptionEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Manual 3D Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createAssetSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "AssetSubscription event should not have been written");
+    }
+
     #endregion AssetSubscriptions
 
     #region private
