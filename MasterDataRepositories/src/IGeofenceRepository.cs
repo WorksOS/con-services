@@ -10,5 +10,6 @@ namespace VSS.MasterData.Repositories
     Task<Geofence> GetGeofence(string geofenceUid);
     Task<int> StoreEvent(IGeofenceEvent evt);
     Task<IEnumerable<Geofence>> GetCustomerGeofences(string customerUid);
+    Task<IEnumerable<Geofence>> GetGeofences(IEnumerable<string> geofenceUids);
   }
 }

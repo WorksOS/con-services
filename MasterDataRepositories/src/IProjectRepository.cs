@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories
 {
@@ -25,6 +26,7 @@ namespace VSS.MasterData.Repositories
     Task<IEnumerable<Project>> GetProjectsForCustomer(string customerUid);
     Task<IEnumerable<Project>> GetProjectsForCustomerUser(string customerUid, string userUid);
     Task<IEnumerable<Project>> GetProjectsForUser(string userUid);
+    Task<IEnumerable<ProjectGeofence>> GetAssociatedGeofences(string projectUid);
     Task<IEnumerable<Project>> GetProjects_UnitTests();
     Task<Project> GetProject_UnitTest(string projectUid);
 
