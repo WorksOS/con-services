@@ -95,8 +95,7 @@ namespace WebApiTests
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       responseCreate = ts.CallFilterWebApi($"api/v1/filter/{this.ProjectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var hydratedFilterJson = CreateTestFilter(polygonUid: boundaryUid.ToString(), polygonName: boundaryName,
-        polygonPoints: GetPointsFromWkt(boundaryWKT));
+      var hydratedFilterJson = CreateTestFilter(polygonUid: boundaryUid.ToString(), polygonName: boundaryName,polygonPoints: GetPointsFromWkt(boundaryWKT));
       Assert.AreEqual(filterRequest.Name, filterResponse.FilterDescriptor.Name, "Filter name doesn't match for PUT request");
       Assert.AreEqual(hydratedFilterJson, filterResponse.FilterDescriptor.FilterJson, "JSON Filter doesn't match for PUT request");
       var filterUid = filterResponse.FilterDescriptor.FilterUid;
