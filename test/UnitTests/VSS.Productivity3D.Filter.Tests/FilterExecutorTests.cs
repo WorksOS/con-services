@@ -60,6 +60,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var request = FilterRequestFull.Create
       (
+        null,
         custUid,
         false,
         userUid,
@@ -111,6 +112,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var request = FilterRequestFull.Create
       (
+        null,
         custUid,
         false,
         requestingUserUid,
@@ -163,6 +165,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var request = FilterRequestFull.Create
       (
+        null,
         custUid,
         false,
         userUid,
@@ -227,6 +230,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var request =
         FilterRequestFull.Create
         (
+          null,
           custUid,
           false,
           userUid,
@@ -296,6 +300,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var request =
         FilterRequestFull.Create
         (
+          null,
           custUid,
           false,
           userUid,
@@ -373,6 +378,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var request =
         FilterRequestFull.Create(
+          null,
           custUid, 
           false, 
           userUid, 
@@ -431,7 +437,7 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.As<IFilterRepository>().Setup(ps => ps.StoreEvent(It.IsAny<DeleteFilterEvent>())).ReturnsAsync(1);
 
       var request =
-        FilterRequestFull.Create(custUid, false, userUid, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson });
+        FilterRequestFull.Create(null, custUid, false, userUid, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson });
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, null, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request);

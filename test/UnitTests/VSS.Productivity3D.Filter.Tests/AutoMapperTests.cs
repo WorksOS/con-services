@@ -45,6 +45,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterRequest = FilterRequestFull.Create
       (
+        null,
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
@@ -68,6 +69,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterRequest = FilterRequestFull.Create
       (
+        null,
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
@@ -92,6 +94,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterRequest = FilterRequestFull.Create
       (
+        null,
         Guid.NewGuid().ToString(),
         false,
         "ApplicationName",
@@ -115,6 +118,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterRequest = FilterRequestFull.Create
       (
+        null,
         Guid.NewGuid().ToString(),
         false,
         "ApplicationName",
@@ -139,6 +143,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterRequest = FilterRequestFull.Create
       (
+        null,
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
@@ -162,6 +167,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterRequest = FilterRequestFull.Create
       (
+        null,
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),

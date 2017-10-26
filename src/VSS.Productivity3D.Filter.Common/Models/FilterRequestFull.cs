@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using VSS.MasterData.Models.Handlers;
 
@@ -15,7 +16,9 @@ namespace VSS.Productivity3D.Filter.Common.Models
 
     public string ProjectUid { get; set; }
 
-    public static FilterRequestFull Create(string customerUid, bool isApplicationContext, string userId, string projectUid, FilterRequest request = null)
+    public IDictionary<string, string> CustomHeaders { get; set; }
+
+    public static FilterRequestFull Create(IDictionary<string, string> customHeaders, string customerUid, bool isApplicationContext, string userId, string projectUid, FilterRequest request = null)
     {
       return new FilterRequestFull
       {
@@ -25,7 +28,8 @@ namespace VSS.Productivity3D.Filter.Common.Models
         CustomerUid = customerUid,
         IsApplicationContext = isApplicationContext,
         UserId = userId,
-        ProjectUid = projectUid
+        ProjectUid = projectUid,
+        CustomHeaders = customHeaders
       };
     }
 

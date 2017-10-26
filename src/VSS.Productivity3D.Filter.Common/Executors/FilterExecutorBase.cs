@@ -86,7 +86,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
       try
       {
-        notificationResult = await raptorProxy.NotifyFilterChange(new Guid(filterRequest.FilterUid), new Guid(filterRequest.ProjectUid));
+        notificationResult = await raptorProxy.NotifyFilterChange(new Guid(filterRequest.FilterUid), new Guid(filterRequest.ProjectUid), filterRequest.CustomHeaders);
       }
       catch (Exception e)
       {

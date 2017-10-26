@@ -33,6 +33,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var requestFull =
         FilterRequestFull.Create
         (
+          null,
           "sfgsdfsf",
           false,
           userUid,
@@ -51,6 +52,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var requestFull =
         FilterRequestFull.Create
         (
+          null,
           custUid,
           false,
           string.Empty,
@@ -67,7 +69,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_MissingProjectUid()
     {
       var requestFull =
-        FilterRequestFull.Create(custUid, false, userUid, null,
+        FilterRequestFull.Create(null, custUid, false, userUid, null,
           new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = FilterJson});
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
@@ -79,7 +81,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidFilterUid()
     {
       var requestFull =
-        FilterRequestFull.Create(custUid, false, userUid, projectUid,
+        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
           new FilterRequest {FilterUid = "this is so wrong", Name = Name, FilterJson = FilterJson});
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
@@ -91,7 +93,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidFilterUid_Null()
     {
       var requestFull =
-        FilterRequestFull.Create(custUid, false, userUid, projectUid,
+        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
           new FilterRequest {FilterUid = null, Name = Name, FilterJson = string.Empty});
 
       requestFull.Validate(serviceExceptionHandler);
@@ -101,7 +103,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidName()
     {
       var requestFull =
-        FilterRequestFull.Create(custUid, false, userUid, projectUid,
+        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
           new FilterRequest {FilterUid = filterUid, Name = null, FilterJson = string.Empty});
 
       requestFull.Validate(serviceExceptionHandler);
@@ -111,7 +113,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidFilterJson()
     {
       var requestFull =
-        FilterRequestFull.Create(custUid, false, userUid, projectUid,
+        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
           new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = null});
 
       requestFull.Validate(serviceExceptionHandler);
@@ -123,7 +125,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_Should_succeed_When_supplied_json_is_valid(string filterJson)
     {
       var requestFull =
-        FilterRequestFull.Create(custUid, false, userUid, projectUid,
+        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
           new FilterRequest {FilterUid = filterUid, Name = "", FilterJson = filterJson});
       requestFull.Validate(serviceExceptionHandler);
     }
@@ -131,7 +133,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [TestMethod]
     public void FilterRequestValidation_Should_fail_When_supplied_string_is_invalid_json()
     {
-      var requestFull = FilterRequestFull.Create(custUid, false, userUid, projectUid,
+      var requestFull = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
         new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = "de blah"});
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
@@ -143,7 +145,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [TestMethod]
     public void FilterRequestValidation_PartialFill()
     {
-      var requestFull = FilterRequestFull.Create(custUid, false, userUid, projectUid);
+      var requestFull = FilterRequestFull.Create(null, custUid, false, userUid, projectUid);
 
       requestFull.Validate(serviceExceptionHandler);
     }
@@ -189,7 +191,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
       var geofenceRepo = new Mock<IGeofenceRepository>();
 
-      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid,
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
         new FilterRequest {FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true}", Name = "a filter"});
 
       var result = await ValidationUtil
@@ -205,7 +207,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofenceRepo = new Mock<IGeofenceRepository>();
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync((Geofence)null);
 
-      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid,
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
         new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + boundaryUid + "\"}", Name = "a filter" });
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await ValidationUtil
@@ -223,7 +225,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofence = new Geofence{GeometryWKT = "This is not a valid polygon WKT"};
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
 
-      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid,
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
         new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + boundaryUid + "\"}", Name = "a filter" });
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await ValidationUtil
@@ -241,7 +243,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofence = new Geofence { GeofenceUID = boundaryUid, Name = Name, GeometryWKT = GeometryWKT };
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
 
-      var request = FilterRequestFull.Create(custUid, false, userUid, projectUid,
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
         new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + geofence.GeofenceUID + "\"}", Name = "a filter" });
 
       var result = await ValidationUtil

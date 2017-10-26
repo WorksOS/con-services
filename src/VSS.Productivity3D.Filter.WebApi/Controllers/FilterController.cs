@@ -57,6 +57,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       Log.LogInformation($"{ToString()}.GetProjectFilters: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} isApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid}");
       var requestFull =
         FilterRequestFull.Create(
+          Request.Headers.GetCustomHeaders(),
           (User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).IsApplication,
           ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
@@ -87,6 +88,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       Log.LogInformation($"{ToString()}.GetProjectFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} IsApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} ProjectUid: {projectUid} FilterUid: {filterUid}");
       var requestFull =
         FilterRequestFull.Create(
+          Request.Headers.GetCustomHeaders(),
           (User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).IsApplication,
           ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
@@ -189,6 +191,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     private async Task<FilterDescriptorSingleResult> UpsertFilter(UpsertFilterExecutor filterExecutor, string projectUid, FilterRequest filterRequest)
     {
       var requestFull = FilterRequestFull.Create(
+        Request.Headers.GetCustomHeaders(),
        (User as TIDCustomPrincipal)?.CustomerUid,
        (User as TIDCustomPrincipal).IsApplication,
        ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
@@ -213,7 +216,9 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     {
       Log.LogInformation($"{ToString()}.DeleteFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} ProjectUid: {projectUid} FilterUid: {filterUid}");
 
+      var customHeaders = Request.Headers.GetCustomHeaders();
       var requestFull = FilterRequestFull.Create(
+        customHeaders,
         (User as TIDCustomPrincipal)?.CustomerUid,
         (User as TIDCustomPrincipal).IsApplication,
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
@@ -222,7 +227,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       requestFull.Validate(ServiceExceptionHandler);
 
-      await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, Request.Headers.GetCustomHeaders(),
+      await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, customHeaders,
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
