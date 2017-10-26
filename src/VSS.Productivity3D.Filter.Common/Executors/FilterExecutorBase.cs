@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -86,7 +87,15 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
       try
       {
-        notificationResult = await raptorProxy.NotifyFilterChange(new Guid(filterRequest.FilterUid), new Guid(filterRequest.ProjectUid), filterRequest.CustomHeaders);
+        notificationResult = await raptorProxy.NotifyFilterChange(new Guid(filterRequest.FilterUid),
+          new Guid(filterRequest.ProjectUid), filterRequest.CustomHeaders);
+      }
+      catch (ServiceException se)
+      {
+        log.LogError(
+          $"FilterExecutorBase: RaptorServices failed with service exception. FilterUid:{filterRequest.FilterUid}. Exception Thrown: {se.Message}. ");
+        //rethrow this to surface it
+        throw;
       }
       catch (Exception e)
       {
