@@ -34,6 +34,7 @@ namespace ExecutorTests.Internal
       string customerUid = null)
     {
       var request = FilterRequestFull.Create(
+        null,
         customerUid ?? Guid.NewGuid().ToString(),
         isApplicationContext,
         userId ?? Guid.NewGuid().ToString(),
