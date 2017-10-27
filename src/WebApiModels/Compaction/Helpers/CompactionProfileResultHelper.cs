@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 
 
@@ -39,14 +40,22 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// </summary>
     /// <param name="slicerProfileResult">The production data profile result with the cells</param>
     /// <param name="slicerDesignResult">The design profile result with the vertices</param>
+    /// <param name="type">The type of profile to do, either cut-fill or summary volumes</param>
+    /// <param name="calcType">The type of summary volumes calculation</param>
     public void FindCutFillElevations(CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult,
-      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult)
+      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult, string type, VolumeCalcType calcType)
     {
-      log.LogDebug("FindCutFillElevations: ");
+      log.LogDebug($"FindCutFillElevations: {type}");
+
+      if (type != CompactionDataPoint.CUT_FILL || type != CompactionDataPoint.SUMMARY_VOLUMES)
+        return;
+
+      if (calcType == VolumeCalcType.GroundToGround)
+        return;
 
       var vertices = slicerDesignResult.results;
       var cells = (from r in slicerProfileResult.results
-        where r.type == "cutFill"
+        where r.type == type
         select r).Single().data;
       if (cells != null && cells.Count > 0 && vertices != null && vertices.Count > 0)
       {
@@ -56,6 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           startIndx = FindVertexIndex(vertices, cell.x, startIndx);
           if (startIndx != -1)
           {
+            float newy = float.NaN;
             //Check for no design elevation
             if (float.IsNaN(vertices[startIndx].elevation) || float.IsNaN(vertices[startIndx + 1].elevation))
             {
@@ -64,11 +74,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
               const double THREE_MM = 0.003;
               if (Math.Abs(vertices[startIndx].station - cell.x) <= THREE_MM)
               {
-                cell.y2 = vertices[startIndx].elevation;
+                newy = vertices[startIndx].elevation;
               }
               else if (Math.Abs(vertices[startIndx + 1].station - cell.x) <= THREE_MM)
               {
-                cell.y2 = vertices[startIndx + 1].elevation;
+                newy = vertices[startIndx + 1].elevation;
               }
             }
             else
@@ -76,8 +86,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
               //Calculate elevation by interpolation
               var proportion = (cell.x - vertices[startIndx].station) /
                                (vertices[startIndx + 1].station - vertices[startIndx].station);
-              cell.y2 = (float) (vertices[startIndx].elevation +
+              newy = (float) (vertices[startIndx].elevation +
                                 proportion * (vertices[startIndx + 1].elevation - vertices[startIndx].elevation));
+            }
+            if (calcType == VolumeCalcType.DesignToGround)
+              cell.y = newy;
+            else
+            {
+              cell.y2 = newy;
             }
           }
         }
@@ -208,11 +224,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         {
           new CompactionProfileDataResult
           {
-            type = "firstPass",
+            type = CompactionDataPoint.FIRST_PASS,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "firstPass",
+                type = CompactionDataPoint.FIRST_PASS,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.firstPassHeight,
@@ -221,11 +237,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "highestPass",
+            type = CompactionDataPoint.HIGHEST_PASS,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "highestPass",
+                type = CompactionDataPoint.HIGHEST_PASS,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.highestPassHeight,
@@ -234,11 +250,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "lastPass",
+            type = CompactionDataPoint.LAST_PASS,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "lastPass",
+                type = CompactionDataPoint.LAST_PASS,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lastPassHeight,
@@ -247,11 +263,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "lowestPass",
+            type = CompactionDataPoint.LOWEST_PASS,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "lowestPass",
+                type = CompactionDataPoint.LOWEST_PASS,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lowestPassHeight,
@@ -260,11 +276,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "lastComposite",
+            type = CompactionDataPoint.LAST_COMPOSITE,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "lastComposite",
+                type = CompactionDataPoint.LAST_COMPOSITE,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lastCompositeHeight,
@@ -273,11 +289,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "cmvSummary",
+            type = CompactionDataPoint.CMV_SUMMARY,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "cmvSummary",
+                type = CompactionDataPoint.CMV_SUMMARY,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.cmvHeight,
@@ -287,11 +303,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "cmvDetail",
+            type = CompactionDataPoint.CMV_DETAIL,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "cmvDetail",
+                type = CompactionDataPoint.CMV_DETAIL,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.cmvHeight,
@@ -300,11 +316,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "cmvPercentChange",
+            type = CompactionDataPoint.CMV_PERCENT_CHANGE,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "cmvPercentChange",
+                type = CompactionDataPoint.CMV_PERCENT_CHANGE,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.cmvHeight,
@@ -313,11 +329,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "mdpSummary",
+            type = CompactionDataPoint.MDP_SUMMARY,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "mdpSummary",
+                type = CompactionDataPoint.MDP_SUMMARY,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.mdpHeight,
@@ -327,11 +343,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "temperatureSummary",
+            type = CompactionDataPoint.TEMPERATURE_SUMMARY,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "temperatureSummary",
+                type = CompactionDataPoint.TEMPERATURE_SUMMARY,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.temperatureHeight,
@@ -341,11 +357,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "speedSummary",
+            type = CompactionDataPoint.SPEED_SUMMARY,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "speedSummary",
+                type = CompactionDataPoint.SPEED_SUMMARY,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lastPassHeight,
@@ -356,11 +372,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "passCountSummary",
+            type = CompactionDataPoint.PASS_COUNT_SUMMARY,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "passCountSummary",
+                type = CompactionDataPoint.PASS_COUNT_SUMMARY,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lastPassHeight,
@@ -370,11 +386,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "passCountDetail",
+            type = CompactionDataPoint.PASS_COUNT_DETAIL,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "passCountDetail",
+                type = CompactionDataPoint.PASS_COUNT_DETAIL,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lastPassHeight,
@@ -383,21 +399,49 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
-            type = "cutFill",
+            type = CompactionDataPoint.CUT_FILL,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
               {
-                type = "cutFill",
+                type = CompactionDataPoint.CUT_FILL,
                 cellType = p.cellType,
                 x = p.station,
                 y = p.lastCompositeHeight,
                 value = p.cutFill,
-                y2 = p.cutFillHeight
+                y2 = float.NaN, //will be set later using the cut-fill design
               }).ToList()
           }
         }
       };
       return profile;
+    }
+
+    /// <summary>
+    /// Convert from one summary volumes profile representation to another. 
+    /// </summary>
+    /// <param name="slicerProfileResult">The profile result to convert from</param>
+    /// <param name="calcType">The type of summary volumes profile</param>
+    /// <returns>The new profile result representation</returns>
+    public CompactionProfileDataResult RearrangeProfileResult(
+      CompactionProfileResult<CompactionSummaryVolumesProfileCell> slicerProfileResult, VolumeCalcType? calcType)
+    {
+      log.LogDebug("ConvertProfileResult: Summary volumes profile");
+
+      return new CompactionProfileDataResult
+      {
+        type = CompactionDataPoint.SUMMARY_VOLUMES,
+        data = (from p in slicerProfileResult.results
+          select new CompactionDataPoint
+          {
+            type = CompactionDataPoint.SUMMARY_VOLUMES,
+            cellType = p.cellType,
+            x = p.station,
+            //y or y2 will be set later using the summary volumes design
+            y = calcType == VolumeCalcType.DesignToGround ? float.NaN : p.lastPassHeight1,
+            value = p.cutFill,
+            y2 = calcType == VolumeCalcType.GroundToDesign ? float.NaN : p.lastPassHeight2 
+          }).ToList()
+      };
     }
 
 
