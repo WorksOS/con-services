@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       log.LogDebug($"FindCutFillElevations: {type}");
 
-      if (type != CompactionDataPoint.CUT_FILL || type != CompactionDataPoint.SUMMARY_VOLUMES)
+      if (type != CompactionDataPoint.CUT_FILL && type != CompactionDataPoint.SUMMARY_VOLUMES)
         return;
 
       if (calcType == VolumeCalcType.GroundToGround)
@@ -427,6 +427,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       log.LogDebug("ConvertProfileResult: Summary volumes profile");
 
+      if (slicerProfileResult == null)
+        return null;
+
       return new CompactionProfileDataResult
       {
         type = CompactionDataPoint.SUMMARY_VOLUMES,
@@ -443,7 +446,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           }).ToList()
       };
     }
-
 
     /// <summary>
     /// The profiles for various types (CMV, temperature, pass count etc.) may have several points

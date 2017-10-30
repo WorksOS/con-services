@@ -17,6 +17,9 @@ using VSS.Velociraptor.PDSInterface;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using SVOICVolumeCalculationsDecls;
 using SVOICSummaryVolumesProfileCell;
+using SVOICFilterSettings;
+using VLPDDecls;
+using SVOICLiftBuildSettings;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 {
@@ -30,123 +33,15 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       ContractExecutionResult result;
       try
       {
-        MemoryStream memoryStream;
-
         CompactionProfileProductionDataRequest request = item as CompactionProfileProductionDataRequest;
-        var filter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
-        var designDescriptor = RaptorConverters.DesignDescriptor(request.cutFillDesignDescriptor);
-        var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
-        var liftBuildSettings =
-          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
-        var baseFilter = RaptorConverters.ConvertFilter(null, request.baseFilter, request.projectId);
-        var topFilter = RaptorConverters.ConvertFilter(null, request.topFilter, request.projectId);
-        var volumeDesignDescriptor = RaptorConverters.DesignDescriptor(request.volumeDesignDescriptor);
-        VLPDDecls.TWGS84Point startPt, endPt;
-        bool positionsAreGrid;
-        ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt,
-          out positionsAreGrid);
 
-        CompactionProfileResult<CompactionProfileDataResult> totalResult = null;
-        if (request.IsAlignmentDesign)
+        var totalResult = ProcessProductionData(request);
+        var summaryVolumesResult = ProcessSummaryVolumes(request, totalResult);
+        if (summaryVolumesResult != null)
         {
-          ASNode.RequestAlignmentProfile.RPC.TASNodeServiceRPCVerb_RequestAlignmentProfile_Args args
-            = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args
-            (request.projectId ?? -1,
-              ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
-              request.startStation ?? ValidationConstants.MIN_STATION,
-              request.endStation ?? ValidationConstants.MIN_STATION,
-              alignmentDescriptor,
-              filter,
-              liftBuildSettings,
-              designDescriptor,
-              request.returnAllPassesAndLayers);
-
-          memoryStream = raptorClient.GetAlignmentProfile(args);
+          totalResult.results.Add(summaryVolumesResult);
         }
-        else
-        {
-          ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args
-            = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args
-            (request.projectId ?? -1,
-              ProfilesHelper.PROFILE_TYPE_HEIGHT,
-              positionsAreGrid,
-              startPt,
-              endPt,
-              filter,
-              liftBuildSettings,
-              designDescriptor,
-              request.returnAllPassesAndLayers);
-
-          memoryStream = raptorClient.GetProfile(args);
-        }
-
-        if (memoryStream != null)
-        {
-          var profileResult = ConvertProfileResult(memoryStream, request.liftBuildSettings);
-          totalResult = profileResultHelper.RearrangeProfileResult(profileResult);
-        }
-        else
-        {
-          //For convenience return empty list rather than null for easier manipulation
-          totalResult = new CompactionProfileResult<CompactionProfileDataResult>
-          {
-            results = new List<CompactionProfileDataResult>()
-          };
-        }
-
-        //Summary volumes profile
-        CompactionProfileResult<CompactionSummaryVolumesProfileCell> volumesResult = null;
-        if (request.volumeCalcType.HasValue && request.volumeCalcType != VolumeCalcType.None)
-        {
-          if (request.IsAlignmentDesign)
-          {
-            ASNode.RequestSummaryVolumesAlignmentProfile.RPC.
-              TASNodeServiceRPCVerb_RequestSummaryVolumesAlignmentProfile_Args args
-                = ASNode.RequestSummaryVolumesAlignmentProfile.RPC.__Global
-                  .Construct_RequestSummaryVolumesAlignmentProfile_Args
-                  (request.projectId ?? -1,
-                    ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
-                    (TComputeICVolumesType) request.volumeCalcType,
-                    request.startStation ?? ValidationConstants.MIN_STATION,
-                    request.endStation ?? ValidationConstants.MIN_STATION,
-                    alignmentDescriptor,
-                    baseFilter,
-                    topFilter,
-                    liftBuildSettings,
-                    designDescriptor);
-
-            memoryStream = raptorClient.GetSummaryVolumesAlignmentProfile(args);
-          }
-          else
-          {
-            ASNode.RequestSummaryVolumesProfile.RPC.TASNodeServiceRPCVerb_RequestSummaryVolumesProfile_Args args
-              = ASNode.RequestSummaryVolumesProfile.RPC.__Global.Construct_RequestSummaryVolumesProfile_Args(
-                (request.projectId ?? -1),
-                ProfilesHelper.PROFILE_TYPE_HEIGHT,
-                (TComputeICVolumesType) request.volumeCalcType.Value,
-                startPt,
-                endPt,
-                false,
-                baseFilter,
-                topFilter,
-                liftBuildSettings,
-                designDescriptor);
-            memoryStream = raptorClient.GetSummaryVolumesProfile(args);
-          }
-          if (memoryStream != null)
-          {
-            volumesResult = ConvertSummaryVolumesProfileResult(memoryStream, request.volumeCalcType.Value);
-          }
-        }
-        if (volumesResult == null)
-        {
-          //For convenience return empty list rather than null for easier manipulation
-          volumesResult = new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
-          {
-            results = new List<CompactionSummaryVolumesProfileCell>()
-          };
-        }
-        totalResult.results.Add(profileResultHelper.RearrangeProfileResult(volumesResult, request.volumeCalcType));
+    
         profileResultHelper.RemoveRepeatedNoData(totalResult);
         profileResultHelper.AddMidPoints(totalResult);
         profileResultHelper.InterpolateEdges(totalResult);
@@ -158,6 +53,79 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         ContractExecutionStates.ClearDynamic();
       }
       return result;
+    }
+
+    #region Production Data
+
+    /// <summary>
+    /// Process the profile request to get production data profiles
+    /// </summary>
+    /// <param name="request">Profile request</param>
+    /// <returns>Profile for each production data type except summary volumes</returns>
+    private CompactionProfileResult<CompactionProfileDataResult> ProcessProductionData(
+      CompactionProfileProductionDataRequest request)
+    {
+      MemoryStream memoryStream;
+
+      var filter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
+      var designDescriptor = RaptorConverters.DesignDescriptor(request.cutFillDesignDescriptor);
+      var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
+      var liftBuildSettings =
+        RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
+      var volumeDesignDescriptor = RaptorConverters.DesignDescriptor(request.volumeDesignDescriptor);
+      TWGS84Point startPt, endPt;
+      bool positionsAreGrid;
+      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt,
+        out positionsAreGrid);
+
+      CompactionProfileResult<CompactionProfileDataResult> totalResult = null;
+      if (request.IsAlignmentDesign)
+      {
+        ASNode.RequestAlignmentProfile.RPC.TASNodeServiceRPCVerb_RequestAlignmentProfile_Args args
+          = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args
+          (request.projectId ?? -1,
+            ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
+            request.startStation ?? ValidationConstants.MIN_STATION,
+            request.endStation ?? ValidationConstants.MIN_STATION,
+            alignmentDescriptor,
+            filter,
+            liftBuildSettings,
+            designDescriptor,
+            request.returnAllPassesAndLayers);
+
+        memoryStream = raptorClient.GetAlignmentProfile(args);
+      }
+      else
+      {
+        ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args
+          = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args
+          (request.projectId ?? -1,
+            ProfilesHelper.PROFILE_TYPE_HEIGHT,
+            positionsAreGrid,
+            startPt,
+            endPt,
+            filter,
+            liftBuildSettings,
+            designDescriptor,
+            request.returnAllPassesAndLayers);
+
+        memoryStream = raptorClient.GetProfile(args);
+      }
+
+      if (memoryStream != null)
+      {
+        var profileResult = ConvertProfileResult(memoryStream, request.liftBuildSettings);
+        totalResult = profileResultHelper.RearrangeProfileResult(profileResult);
+      }
+      else
+      {
+        //For convenience return empty list rather than null for easier manipulation
+        totalResult = new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>()
+        };
+      }
+      return totalResult;
     }
 
     /// <summary>
@@ -396,6 +364,93 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       mdpIndex = ValueTargetType.NoData,
       speedIndex = ValueTargetType.NoData,
     };
+    #endregion
+
+    #region Summary Volumes
+    /// <summary>
+    /// Process profile request to get summary volumes profile
+    /// </summary>
+    /// <param name="request">Profile request</param>
+    /// <param name="totalResult">Results for other production data profile types</param>
+    /// <returns>Summary volumes profile</returns>
+    private CompactionProfileDataResult ProcessSummaryVolumes(CompactionProfileProductionDataRequest request, CompactionProfileResult<CompactionProfileDataResult> totalResult)
+    {
+      MemoryStream memoryStream;
+
+      var filter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
+      var designDescriptor = RaptorConverters.DesignDescriptor(request.cutFillDesignDescriptor);
+      var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
+      var liftBuildSettings =
+        RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
+      var baseFilter = RaptorConverters.ConvertFilter(null, request.baseFilter, request.projectId);
+      var topFilter = RaptorConverters.ConvertFilter(null, request.topFilter, request.projectId);
+      var volumeDesignDescriptor = RaptorConverters.DesignDescriptor(request.volumeDesignDescriptor);
+      TWGS84Point startPt, endPt;
+      bool positionsAreGrid;
+      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt,
+        out positionsAreGrid);
+
+      CompactionProfileResult<CompactionSummaryVolumesProfileCell> volumesResult = null;
+      if (request.volumeCalcType.HasValue && request.volumeCalcType != VolumeCalcType.None)
+      {
+        if (request.IsAlignmentDesign)
+        {
+          ASNode.RequestSummaryVolumesAlignmentProfile.RPC.
+            TASNodeServiceRPCVerb_RequestSummaryVolumesAlignmentProfile_Args args
+              = ASNode.RequestSummaryVolumesAlignmentProfile.RPC.__Global
+                .Construct_RequestSummaryVolumesAlignmentProfile_Args
+                (request.projectId ?? -1,
+                  ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
+                  (TComputeICVolumesType)request.volumeCalcType,
+                  request.startStation ?? ValidationConstants.MIN_STATION,
+                  request.endStation ?? ValidationConstants.MIN_STATION,
+                  alignmentDescriptor,
+                  baseFilter,
+                  topFilter,
+                  liftBuildSettings,
+                  designDescriptor);
+
+          memoryStream = raptorClient.GetSummaryVolumesAlignmentProfile(args);
+        }
+        else
+        {
+          ASNode.RequestSummaryVolumesProfile.RPC.TASNodeServiceRPCVerb_RequestSummaryVolumesProfile_Args args
+            = ASNode.RequestSummaryVolumesProfile.RPC.__Global.Construct_RequestSummaryVolumesProfile_Args(
+              (request.projectId ?? -1),
+              ProfilesHelper.PROFILE_TYPE_HEIGHT,
+              (TComputeICVolumesType)request.volumeCalcType.Value,
+              startPt,
+              endPt,
+              positionsAreGrid,
+              baseFilter,
+              topFilter,
+              liftBuildSettings,
+              designDescriptor);
+          memoryStream = raptorClient.GetSummaryVolumesProfile(args);
+        }
+        if (memoryStream != null)
+        {
+          volumesResult = ConvertSummaryVolumesProfileResult(memoryStream, request.volumeCalcType.Value);
+        }
+      }
+      //If we have other profile types but no summary volumes, add summary volumes with just slicer end points
+      if (volumesResult == null && totalResult.results.Count > 0)
+      {
+        var startSlicer = new CompactionSummaryVolumesProfileCell(SumVolGapCell);
+        var endSlicer = new CompactionSummaryVolumesProfileCell(SumVolGapCell);
+        endSlicer.station = totalResult.gridDistanceBetweenProfilePoints;
+        volumesResult =         
+            new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
+            {
+              results = new List<CompactionSummaryVolumesProfileCell>
+              {
+                startSlicer,
+                endSlicer
+              }
+            };
+      }
+      return profileResultHelper.RearrangeProfileResult(volumesResult, request.volumeCalcType); 
+    }
 
     /// <summary>
     /// Convert Raptor data to the data to return from the Web API
@@ -514,5 +569,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       lastPassHeight2 = float.NaN,
       cutFill = float.NaN
     };
+
+    #endregion
   }
 }
