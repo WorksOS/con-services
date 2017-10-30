@@ -51,7 +51,7 @@ namespace MockProjectWebApi.Controllers
       new GeofenceData
       {
         GeofenceName = "Dimensions boundary machine filter",
-        GeofenceUID = Guid.Parse("d7a15f59-7987-4b8c-8faf-22eed4ca48c0"),
+        GeofenceUID = Guid.Parse("ca9c91c3-513b-4082-b2d7-0568899e56d5"),
         GeometryWKT = "POLYGON((-115.018480 36.207118,-115.018394 36.207334,-115.019604 36.207492,-115.019641 36.207215,-115.018480 36.207118))"
       },
     };

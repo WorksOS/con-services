@@ -81,10 +81,10 @@ namespace MockProjectWebApi.Controllers
             },
             new FilterDescriptor
             {
-              FilterUid = "61b2a21d-a3ea-4510-83b1-134e50a1c86e",
+              FilterUid = "154470b6-15ae-4cca-b281-eae8ac1efa6c",
               Name = "Dimensions boundary filter",
               FilterJson =
-                "{\"polygonUID\":\"a23e8956-c3d7-4e14-a5c3-12be31dc098e\",\"polygonName\":\"Dimensions lower right boundary\",\"polygonLL\":[{\"Lat\":-115.01869,\"Lon\":36.206897},{\"Lat\":-115.018701,\"Lon\":36.206795},{\"Lat\":-115.018264,\"Lon\":36.206823},{\"Lat\":-115.01828,\"Lon\":36.206977}]}"
+                "{\"polygonUID\":\"7f2fb9ec-2384-420e-b2e3-72b9cea939a3\",\"polygonName\":\"Dimensions lower right bounday 2\",\"polygonLL\":[{\"Lat\":36.206897,\"Lon\":-115.01869},{\"Lat\":36.206795,\"Lon\":-115.018701},{\"Lat\":36.206823,\"Lon\":-115.018264},{\"Lat\":36.206977,\"Lon\":-115.01828}]}"
             }
           }
         };
@@ -142,10 +142,10 @@ namespace MockProjectWebApi.Controllers
       },
       new FilterDescriptor
       {
-        FilterUid = "61b2a21d-a3ea-4510-83b1-134e50a1c86e",
+        FilterUid = "154470b6-15ae-4cca-b281-eae8ac1efa6c",
         Name = "Dimensions boundary filter",
         FilterJson =
-          "{\"polygonUID\":\"a23e8956-c3d7-4e14-a5c3-12be31dc098e\",\"polygonName\":\"Dimensions lower right boundary\",\"polygonLL\":[{\"Lat\":-115.01869,\"Lon\":36.206897},{\"Lat\":-115.018701,\"Lon\":36.206795},{\"Lat\":-115.018264,\"Lon\":36.206823},{\"Lat\":-115.01828,\"Lon\":36.206977}]}"
+          "{\"polygonUID\":\"7f2fb9ec-2384-420e-b2e3-72b9cea939a3\",\"polygonName\":\"Dimensions lower right bounday 2\",\"polygonLL\":[{\"Lat\":36.206897,\"Lon\":-115.01869},{\"Lat\":36.206795,\"Lon\":-115.018701},{\"Lat\":36.206823,\"Lon\":-115.018264},{\"Lat\":36.206977,\"Lon\":-115.01828}]}"
       }
     };
   }
