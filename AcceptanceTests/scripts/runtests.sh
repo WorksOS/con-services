@@ -11,17 +11,9 @@ sleep 30s
 # Run the component tests
 echo "Run the component tests"
 
-#echo "WebApiTests starting...."
-#dotnet TestRun/TestRun.dll results=/testresults/WebApiTestsResults project=WebApiTests
-#echo "WebApiTests finished"
-
-#echo "Run Integration tests starting...."
-#dotnet TestRun/TestRun.dll results=/testresults/IntegrationTestResults project=IntegrationTests
-#echo "Integration tests finished"
-
-#echo "Run Executor tests starting...."
-#dotnet TestRun/TestRun.dll results=/testresults/ExecutorTestResults project=ExecutorTests
-#echo "Executor tests finished"
+echo "Run Scheduler tests starting...."
+dotnet TestRun/TestRun.dll results=/testresults/SchedulerTestResults project=SchedulerTests messages=false
+echo "Scheduler tests finished"
 
 echo "Run Repository tests starting...."
 dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestResults project=RepositoryTests messages=false
