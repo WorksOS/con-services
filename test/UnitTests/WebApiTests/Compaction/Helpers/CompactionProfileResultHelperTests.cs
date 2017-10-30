@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SVOICProfileCell;
-using VLPDDecls;
 using VSS.Common.Exceptions;
-using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -36,7 +31,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
     #region FindCutFillElevations tests
     [TestMethod]
-    public void NoProdDataAndNoDesignProfile()
+    [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    public void NoProdDataAndNoDesignProfile(string profileType, VolumeCalcType calcType)
     {
       CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -45,7 +42,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = CompactionDataPoint.CUT_FILL,
+              type = profileType,
               data = new List<CompactionDataPoint>()
             }
           }
@@ -55,7 +52,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
@@ -63,7 +60,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     }
 
     [TestMethod]
-    public void NoDesignProfileShouldNotChangeProdData()
+    [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void NoDesignProfileShouldNotChangeProdData(string profileType, VolumeCalcType calcType)
     {
       CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -72,12 +72,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = CompactionDataPoint.CUT_FILL,
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint {x = 0, y2 = float.NaN},
-                new CompactionDataPoint {x = 1, y2 = float.NaN},
-                new CompactionDataPoint {x = 2, y2 = float.NaN},
+                new CompactionDataPoint {x = 0, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint {x = 1, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint {x = 2, y = float.NaN, y2 = float.NaN},
               }
             }
           }
@@ -87,20 +87,23 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
       Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
       for (int i = 0; i < 3; i++)
       {
-        Assert.AreEqual(float.NaN, actualPoints[i].y2, $"{i}: Wrong cut-fill height");
+        Assert.AreEqual(float.NaN, actualPoints[i].y, $"{i}: Wrong y height");
+        Assert.AreEqual(float.NaN, actualPoints[i].y2, $"{i}: Wrong y2 height");
       }
-
     }
 
     [TestMethod]
-    public void CellStationsOutsideDesign()
+    [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void CellStationsOutsideDesign(string profileType, VolumeCalcType calcType)
     {
       CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -109,13 +112,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = CompactionDataPoint.CUT_FILL,
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint{ x = 0, y2 = float.NaN},
-                new CompactionDataPoint{ x = 1, y2 = float.NaN},
-                new CompactionDataPoint{ x = 2, y2 = float.NaN},
-                new CompactionDataPoint{ x = 3, y2 = float.NaN},
+                new CompactionDataPoint{ x = 0, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint{ x = 1, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint{ x = 2, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint{ x = 3, y = float.NaN, y2 = float.NaN},
               }
             }
           }
@@ -133,20 +136,22 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
       Assert.AreEqual(4, actualPoints.Count, "Wrong number of profile points");
-      Assert.AreEqual(float.NaN, actualPoints[0].y2, "0: Wrong cut-fill height");
-      Assert.AreEqual(15, actualPoints[1].y2, "1: Wrong cut-fill height");
-      Assert.AreEqual(30, actualPoints[2].y2, "2: Wrong cut-fill height");
-      Assert.AreEqual(float.NaN, actualPoints[3].y2, "3: Wrong cut-fill height");
+      Assert.AreEqual(float.NaN, calcType == VolumeCalcType.DesignToGround ? actualPoints[0].y : actualPoints[0].y2, "0: Wrong cut-fill height");
+      Assert.AreEqual(15, calcType == VolumeCalcType.DesignToGround ? actualPoints[1].y : actualPoints[1].y2, "1: Wrong cut-fill height");
+      Assert.AreEqual(30, calcType == VolumeCalcType.DesignToGround ? actualPoints[2].y : actualPoints[2].y2, "2: Wrong cut-fill height");
+      Assert.AreEqual(float.NaN, calcType == VolumeCalcType.DesignToGround ? actualPoints[3].y : actualPoints[3].y2, "3: Wrong cut-fill height");
     }
 
-
     [TestMethod]
-    public void CellStationsMatchDesign()
+    [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void CellStationsMatchDesign(string profileType, VolumeCalcType calcType)
     {
       CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -155,7 +160,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = CompactionDataPoint.CUT_FILL,
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ x = 0, y2 = float.NaN},
@@ -180,18 +185,21 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
       Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
-      Assert.AreEqual(10, actualPoints[0].y2, "0: Wrong cut-fill height");
-      Assert.AreEqual(20, actualPoints[1].y2, "1: Wrong cut-fill height");
-      Assert.AreEqual(40, actualPoints[2].y2, "2: Wrong cut-fill height");
+      Assert.AreEqual(10, calcType == VolumeCalcType.DesignToGround ? actualPoints[0].y : actualPoints[0].y2, "0: Wrong cut-fill height");
+      Assert.AreEqual(20, calcType == VolumeCalcType.DesignToGround ? actualPoints[1].y : actualPoints[1].y2, "1: Wrong cut-fill height");
+      Assert.AreEqual(40, calcType == VolumeCalcType.DesignToGround ? actualPoints[2].y : actualPoints[2].y2, "2: Wrong cut-fill height");
     }
 
     [TestMethod]
-    public void CellStationsWithNoDesignElevation()
+    [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void CellStationsWithNoDesignElevation(string profileType, VolumeCalcType calcType)
     {
       CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -200,7 +208,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = CompactionDataPoint.CUT_FILL,
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ x = 0, y2 = float.NaN},
@@ -227,15 +235,109 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
       Assert.AreEqual(4, actualPoints.Count, "Wrong number of profile points");
-      Assert.AreEqual(10, actualPoints[0].y2, "0: Wrong cut-fill height");
-      Assert.AreEqual(float.NaN, actualPoints[1].y2, "1: Wrong cut-fill height");
-      Assert.AreEqual(20, actualPoints[2].y2, "2: Wrong cut-fill height");
-      Assert.AreEqual(float.NaN, actualPoints[3].y2, "3: Wrong cut-fill height");
+      Assert.AreEqual(10, calcType == VolumeCalcType.DesignToGround ? actualPoints[0].y : actualPoints[0].y2, "0: Wrong cut-fill height");
+      Assert.AreEqual(float.NaN, calcType == VolumeCalcType.DesignToGround ? actualPoints[1].y : actualPoints[1].y2, "1: Wrong cut-fill height");
+      Assert.AreEqual(20, calcType == VolumeCalcType.DesignToGround ? actualPoints[2].y : actualPoints[2].y2, "2: Wrong cut-fill height");
+      Assert.AreEqual(float.NaN, calcType == VolumeCalcType.DesignToGround ? actualPoints[3].y : actualPoints[3].y2, "3: Wrong cut-fill height");
+    }
+
+    [TestMethod]
+    public void WrongProfileTypeShouldNotChangeData()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = CompactionDataPoint.CMV_SUMMARY,
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ x = 0, y2 = float.NaN},
+                new CompactionDataPoint{ x = 1, y2 = float.NaN},
+                new CompactionDataPoint{ x = 2, y2 = float.NaN},
+              }
+            }
+          }
+        };
+      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
+        new CompactionProfileResult<CompactionProfileVertex>
+        {
+          results = new List<CompactionProfileVertex>
+          {
+            new CompactionProfileVertex {station = 0, elevation = 10},
+            new CompactionProfileVertex {station = 0.5, elevation = 30},
+            new CompactionProfileVertex {station = 1.0, elevation = 20},
+            new CompactionProfileVertex {station = 1.5, elevation = 10},
+            new CompactionProfileVertex {station = 2.0, elevation = 40},
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, CompactionDataPoint.CMV_SUMMARY, VolumeCalcType.GroundToDesign);
+
+      Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = slicerProfileResult.results[0].data;
+      Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
+      for (int i = 0; i < 3; i++)
+      {
+        Assert.AreEqual(float.NaN, actualPoints[i].y2, $"{i}: Wrong cut-fill height");
+      }
+    }
+
+    [TestMethod]
+    public void GroundToGroundShouldNotChangeData()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = CompactionDataPoint.SUMMARY_VOLUMES,
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ x = 0, y = 10 , y2 = 11},
+                new CompactionDataPoint{ x = 1, y = 15, y2 = 17},
+                new CompactionDataPoint{ x = 2, y = 25, y2 = 30},
+              }
+            }
+          }
+        };
+      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
+        new CompactionProfileResult<CompactionProfileVertex>
+        {
+          results = new List<CompactionProfileVertex>
+          {
+            new CompactionProfileVertex {station = 0, elevation = 10},
+            new CompactionProfileVertex {station = 0.5, elevation = 30},
+            new CompactionProfileVertex {station = 1.0, elevation = 20},
+            new CompactionProfileVertex {station = 1.5, elevation = 10},
+            new CompactionProfileVertex {station = 2.0, elevation = 40},
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround);
+
+      Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = slicerProfileResult.results[0].data;
+      Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
+      Assert.AreEqual(10, actualPoints[0].y, "0: Wrong y height");
+      Assert.AreEqual(15, actualPoints[1].y, "1: Wrong y height");
+      Assert.AreEqual(25, actualPoints[2].y, "2: Wrong y height");
+      Assert.AreEqual(11, actualPoints[0].y2, "0: Wrong y2 height");
+      Assert.AreEqual(17, actualPoints[1].y2, "1: Wrong y2 height");
+      Assert.AreEqual(30, actualPoints[2].y2, "2: Wrong y2 height");
     }
     #endregion
 
@@ -477,6 +579,147 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(expectedY2, actualResult.y2, $"{j}: {expectedType} Wrong y2");
       Assert.AreEqual(expectedValue2, actualResult.value2, $"{j}: {expectedType} Wrong value2");
     }
+
+
+    [TestMethod]
+    public void RearrangeSummaryVolumesProfileResultWithNull()
+    {
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger); 
+      var result = helper.RearrangeProfileResult((CompactionProfileResult<CompactionSummaryVolumesProfileCell>)null, VolumeCalcType.None);
+      Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public void RearrangeSummaryVolumesProfileResultWithJustEndPoints()
+    {
+      CompactionProfileResult<CompactionSummaryVolumesProfileCell> slicerProfileResult =
+        new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
+        {
+          results = new List<CompactionSummaryVolumesProfileCell>
+          {
+            new CompactionSummaryVolumesProfileCell
+            {
+              cellType = ProfileCellType.Gap,
+              station = 0,
+              designHeight = float.NaN,
+              lastPassHeight1 = float.NaN,
+              lastPassHeight2 = float.NaN,
+              cutFill = float.NaN
+            },
+            new CompactionSummaryVolumesProfileCell
+            {
+              cellType = ProfileCellType.Gap,
+              station = 1234,
+              designHeight = float.NaN,
+              lastPassHeight1 = float.NaN,
+              lastPassHeight2 = float.NaN,
+              cutFill = float.NaN
+            }
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var result = helper.RearrangeProfileResult(slicerProfileResult, VolumeCalcType.GroundToGround);
+
+      ValidatePoint(CompactionDataPoint.SUMMARY_VOLUMES, 0, slicerProfileResult.results[0], result.data[0], float.NaN, float.NaN, float.NaN);
+      ValidatePoint(CompactionDataPoint.SUMMARY_VOLUMES, 1, slicerProfileResult.results[1], result.data[1], float.NaN, float.NaN, float.NaN);
+    }
+
+    [TestMethod]
+    [DataRow(VolumeCalcType.GroundToGround)]
+    [DataRow(VolumeCalcType.GroundToDesign)]
+    [DataRow(VolumeCalcType.DesignToGround)]
+    public void RearrangeSummaryVolumesProfileResultSuccess(VolumeCalcType calcType)
+    {
+      CompactionProfileResult<CompactionSummaryVolumesProfileCell> slicerProfileResult =
+        new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
+        {
+          gridDistanceBetweenProfilePoints = 1.234,
+          results = new List<CompactionSummaryVolumesProfileCell>
+          {
+            new CompactionSummaryVolumesProfileCell
+            {
+              cellType = ProfileCellType.MidPoint,
+              station = 0,
+              lastPassHeight1 = /*calcType == VolumeCalcType.DesignToGround ? float.NaN :*/ 0.7F,
+              lastPassHeight2 = /*calcType == VolumeCalcType.GroundToDesign ? float.NaN :*/ 0.6F,
+              designHeight = 0.8F,
+              cutFill = 0.1F
+            },
+            new CompactionSummaryVolumesProfileCell
+            {
+              cellType = ProfileCellType.Edge,
+              station = 1,
+              lastPassHeight1 = /*calcType == VolumeCalcType.DesignToGround ? float.NaN :*/ 0.8F,
+              lastPassHeight2 = /*calcType == VolumeCalcType.GroundToDesign ? float.NaN :*/ 0.65F,
+              designHeight = 1.2F,
+              cutFill = 0.15F
+            },
+            new CompactionSummaryVolumesProfileCell
+            {
+              cellType = ProfileCellType.MidPoint,
+              station = 2,
+              lastPassHeight1 = /*calcType == VolumeCalcType.DesignToGround ? float.NaN :*/ 0.9F,
+              lastPassHeight2 = /*calcType == VolumeCalcType.GroundToDesign ? float.NaN :*/ 0.7F,
+              designHeight = 0.9F,
+              cutFill = 0.2F,
+            }
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+
+      var result = helper.RearrangeProfileResult(slicerProfileResult, calcType);
+      Assert.IsNotNull(result);
+      ValidateList(slicerProfileResult.results, result, calcType);
+    }
+
+    private void ValidateList(List<CompactionSummaryVolumesProfileCell> expectedList,
+      CompactionProfileDataResult actualResult, VolumeCalcType calcType)
+    {
+      Assert.AreEqual(expectedList.Count, actualResult.data.Count, "Wrong number of points");
+
+      for (int j = 0; j < expectedList.Count; j++)
+      {
+        float expectedHeight = float.NaN;
+        float expectedValue = expectedList[j].cutFill;
+        float? expectedY2 = float.NaN;
+        switch (calcType)
+        {
+          case VolumeCalcType.None:
+            break;
+          case VolumeCalcType.GroundToGround:
+            expectedHeight = expectedList[j].lastPassHeight1;
+            expectedY2 = expectedList[j].lastPassHeight2;
+            break;
+          case VolumeCalcType.GroundToDesign:
+            expectedHeight = expectedList[j].lastPassHeight1;
+            expectedY2 = float.NaN;
+            break;
+          case VolumeCalcType.DesignToGround:
+            expectedHeight = float.NaN;
+            expectedY2 = expectedList[j].lastPassHeight2;
+            break;
+        }
+        ValidatePoint(CompactionDataPoint.SUMMARY_VOLUMES, j, expectedList[j], actualResult.data[j], expectedHeight, expectedValue, expectedY2);
+      }
+    }
+
+    private void ValidatePoint(string expectedType, int j, CompactionSummaryVolumesProfileCell expectedCell,
+      CompactionDataPoint actualResult, float expectedY, float expectedValue, float? expectedY2)
+    {
+      Assert.AreEqual(expectedCell.cellType, actualResult.cellType, $"{j}: {expectedType} Wrong cellType");
+      Assert.AreEqual(expectedCell.station, actualResult.x, $"{j}: {expectedType} Wrong x");
+      Assert.AreEqual(expectedY, actualResult.y, $"{j}: {expectedType} Wrong y");
+      Assert.AreEqual(expectedValue, actualResult.value, $"{j}: {expectedType} Wrong value");
+      Assert.AreEqual(null, actualResult.valueType, $"{j}: {expectedType} Wrong valueType");
+      Assert.AreEqual(expectedY2, actualResult.y2, $"{j}: {expectedType} Wrong y2");
+      Assert.AreEqual(null, actualResult.value2, $"{j}: {expectedType} Wrong value2");
+    }
+
     #endregion
 
     #region RemoveRepeatedNoData tests

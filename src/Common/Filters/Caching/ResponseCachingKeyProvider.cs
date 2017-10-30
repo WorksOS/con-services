@@ -186,20 +186,11 @@ namespace VSS.Productivity3D.Common.Filters
       }
     }
 
-
     private int GenerateFilterHash(string projectUid, string filterUid, IDictionary<string,string> headers)
     {
-      var filterJson = filterServiceProxy.GetFilter(projectUid, filterUid, headers).Result.FilterJson;
-
-      var filter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
-      return filter.GetHashCode();
- 
-      /*
       return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterServiceProxy
         .GetFilter(projectUid, filterUid, headers).Result.FilterJson).GetHashCode();
-        */
     }
-
   }
 
   public static class CachingKeyExtensions

@@ -519,6 +519,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
         profile.results.Add(new CompactionSummaryVolumesProfileCell
         {
+          cellType = prevCell == null ? ProfileCellType.MidPoint : ProfileCellType.Edge,
+
           station = currCell.station,
 
           lastPassHeight1 = lastPassHeight1,
