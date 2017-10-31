@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var FilterCleanupJob = "FilterCleanupJob";
       string filterDbConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "_FILTER");
       _log.LogInformation($"FilterCleanupTask: ageInMinutesToDelete: {ageInMinutesToDelete} taskIntervalSeconds: {taskIntervalMinutes} filterDbConnectionString: {filterDbConnectionString}.");
-      //Console.WriteLine($"FilterCleanupTask: ageInMinutesToDelete: {ageInMinutesToDelete} taskIntervalSeconds: {taskIntervalMinutes} filterDbConnectionString: {filterDbConnectionString}.");
+      Console.WriteLine($"FilterCleanupTask: ageInMinutesToDelete: {ageInMinutesToDelete} taskIntervalSeconds: {taskIntervalMinutes} filterDbConnectionString: {filterDbConnectionString}.");
 
       try
       {
@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     {
       var cutoffActionUtcToDelete = DateTime.UtcNow.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
       _log.LogTrace($"FilterCleanupJob.DatabaseCleanupJob: starting. cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
-      //Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: starting. cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
+      Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: starting. cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
 
       MySqlConnection dbConnection;
       try
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       catch (Exception ex)
       {
         _log.LogError($"FilterCleanupJob.DatabaseCleanupJob: open filter DB exeception {ex.Message}");
-        //Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: open filter DB exeception {ex.Message}");
+        Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: open filter DB exeception {ex.Message}");
         throw new Exception("FilterCleanupJob.DatabaseCleanupJob: open database exception");
       }
 
@@ -98,11 +98,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       try
       {
         deletedCount = dbConnection.Execute(deleteCommand, cutoffActionUtcToDelete);
-        //Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: deleteCommand {deleteCommand}");
+        Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: connectionString {dbConnection.ConnectionString} deleteCommand {deleteCommand} deletedCount {deletedCount}");
       }
       catch (Exception ex)
       {
         _log.LogError($"FilterCleanupJob.DatabaseCleanupJob: execute exeception {ex.Message}");
+        Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: execute exeception {ex.Message}");
         throw new Exception("FilterCleanupJob.DatabaseCleanupJob: delete from database exception");
       }
       finally

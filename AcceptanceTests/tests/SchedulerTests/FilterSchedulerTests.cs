@@ -16,16 +16,17 @@ namespace SchedulerTests
   [TestClass]
   public class FilterSchedulerTests : TestControllerBase
   {
-    protected ILogger log;
+    protected ILogger _log;
     string filterCleanupJob = "FilterCleanupJob";
+    private int _bufferForDBUpdateMs = 200;
 
     [TestInitialize]
     public void Init()
     {
       SetupDI();
 
-      log = loggerFactory.CreateLogger<FilterSchedulerTests>();
-      Assert.IsNotNull(log, "log is null");
+      _log = loggerFactory.CreateLogger<FilterSchedulerTests>();
+      Assert.IsNotNull(_log, "log is null");
     }
 
     [TestMethod]
@@ -53,7 +54,7 @@ namespace SchedulerTests
     {
       var theJob = GetJob(HangfireConnection(), filterCleanupJob);
 
-      string filterDbConnectionString = ConnectionUtils.GetConnectionString(configStore, log, "_FILTER");
+      string filterDbConnectionString = ConnectionUtils.GetConnectionString(configStore, _log, "_FILTER");
       var dbConnection = new MySqlConnection(filterDbConnectionString);
       dbConnection.Open();
 
@@ -76,13 +77,13 @@ namespace SchedulerTests
       Assert.AreEqual(1,insertedCount,"Filter Not Inserted");
 
       Debug.Assert(theJob.NextExecution != null, "theJob.NextExecution != null");
-      var msToWait = (int)(theJob.NextExecution.Value - DateTime.UtcNow).TotalMilliseconds + 50;
+      var msToWait = (int)(theJob.NextExecution.Value - DateTime.UtcNow).TotalMilliseconds + _bufferForDBUpdateMs;
       if (msToWait > 0 )
         Thread.Sleep(msToWait);
       
       string selectFilter = string.Format($"SELECT FilterUID FROM Filter WHERE FilterUID = {empty}{filterUid}{empty}");
       var response = dbConnection.Query(selectFilter);
-      Console.WriteLine($"FilterScheduleTask_WaitForCleanup: msToWait {msToWait} insertFilter {insertFilter} selectFilter {selectFilter} response {JsonConvert.SerializeObject(response)}");
+      Console.WriteLine($"FilterScheduleTask_WaitForCleanup: msToWait {msToWait} _bufferForDBUpdateMs {_bufferForDBUpdateMs} insertFilter {insertFilter} selectFilter {selectFilter} response {JsonConvert.SerializeObject(response)} connectionString {dbConnection.ConnectionString}");
 
       Assert.IsNotNull(response, "Should have a response.");
       Assert.AreEqual(0, response.Count(), "No filters should be returned.");
