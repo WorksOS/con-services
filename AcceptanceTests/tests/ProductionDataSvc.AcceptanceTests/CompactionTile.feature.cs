@@ -209,26 +209,94 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
             this.CompactionGetTiles("BoundaryFilterCMV", "ff91dd40-1569-4765-a2bc-014321f76ace", "a37f3008-65e5-44a8-b406-9a078ec62ece", "36.206883952552914, -115.0203323364258, 36.207160975535146, -115.01998901367188", "256", "256", "27", "BoundaryFilterCMV", ((string[])(null)));
         }
         
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BoundaryFilterMDP")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BoundaryFilterMDP")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BBox", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Width", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "20")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryFilterMDP")]
+        public virtual void CompactionGetTiles_BoundaryFilterMDP()
+        {
+            this.CompactionGetTiles("BoundaryFilterMDP", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "20", "BoundaryFilterMDP", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BoundaryFilterELV")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BoundaryFilterELV")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BBox", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Width", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryFilterELV")]
+        public virtual void CompactionGetTiles_BoundaryFilterELV()
+        {
+            this.CompactionGetTiles("BoundaryFilterELV", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "0", "BoundaryFilterELV", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BoundaryFilterSPD")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BoundaryFilterSPD")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BBox", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Width", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "26")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryFilterSPD")]
+        public virtual void CompactionGetTiles_BoundaryFilterSPD()
+        {
+            this.CompactionGetTiles("BoundaryFilterSPD", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "26", "BoundaryFilterSPD", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BoundaryFilterPCS")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BoundaryFilterPCS")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BBox", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Width", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "14")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryFilterPCS")]
+        public virtual void CompactionGetTiles_BoundaryFilterPCS()
+        {
+            this.CompactionGetTiles("BoundaryFilterPCS", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "14", "BoundaryFilterPCS", ((string[])(null)));
+        }
+        
         public virtual void CompactionGetTilesForCutfill(string requestName, string projectUID, string filterUID, string cutfillDesignUid, string bBox, string width, string height, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Tiles for cutfill", exampleTags);
-#line 33
-this.ScenarioSetup(scenarioInfo);
-#line 34
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 35
-testRunner.And("the result file \"CompactionGetProductionDataTilesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 36
-testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 37
-testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+this.ScenarioSetup(scenarioInfo);
 #line 38
-testRunner.And(string.Format("cutfillDesignUid \"{0}\"", cutfillDesignUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.Given("the Compaction service URI \"/api/v2/compaction/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 39
-testRunner.And(string.Format("displayMode \"8\" and bbox \"{0}\" and width \"{1}\" and height \"{2}\"", bBox, width, height), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("the result file \"CompactionGetProductionDataTilesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 40
-testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 41
+testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 42
+testRunner.And(string.Format("cutfillDesignUid \"{0}\"", cutfillDesignUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 43
+testRunner.And(string.Format("displayMode \"8\" and bbox \"{0}\" and width \"{1}\" and height \"{2}\"", bBox, width, height), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 44
+testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 45
 testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
