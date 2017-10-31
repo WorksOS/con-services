@@ -54,6 +54,18 @@ namespace MockProjectWebApi.Controllers
         GeofenceUID = Guid.Parse("ca9c91c3-513b-4082-b2d7-0568899e56d5"),
         GeometryWKT = "POLYGON((-115.018480 36.207118,-115.018394 36.207334,-115.019604 36.207492,-115.019641 36.207215,-115.018480 36.207118))"
       },
+      new GeofenceData
+      {
+        GeofenceName = "Dimensions boundary mdp",
+        GeofenceUID = Guid.Parse("318f0103-a0c3-4b50-88d4-d4fa12370a63"),
+        GeometryWKT = "POLYGON((-115.018943 36.207659,-115.018926 36.207265,-115.018471 36.207412,-115.018943 36.207659))"
+      },
+      new GeofenceData
+      {
+        GeofenceName = "Dimensions boundary CMV",
+        GeofenceUID = Guid.Parse("c910d127-5e3c-453f-82c3-e235848ac20e"),
+        GeometryWKT = "POLYGON((-115.020509 36.207183,-115.020187 36.206862,-115.019731 36.207174,-115.020509 36.207183))"
+      },
     };
   }
 }

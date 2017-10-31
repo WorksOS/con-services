@@ -85,6 +85,18 @@ namespace MockProjectWebApi.Controllers
               Name = "Dimensions boundary filter",
               FilterJson =
                 "{\"polygonUID\":\"7f2fb9ec-2384-420e-b2e3-72b9cea939a3\",\"polygonName\":\"Dimensions lower right bounday 2\",\"polygonLL\":[{\"Lat\":36.206897,\"Lon\":-115.01869},{\"Lat\":36.206795,\"Lon\":-115.018701},{\"Lat\":36.206823,\"Lon\":-115.018264},{\"Lat\":36.206977,\"Lon\":-115.01828}]}"
+            },
+            new FilterDescriptor
+            {
+              FilterUid = "3ef41e3c-d1f5-40cd-b012-99d11ff432ef",
+              Name = "Dimensions boundary mdp",
+              FilterJson = "{\"polygonUID\":\"318f0103-a0c3-4b50-88d4-d4fa12370a63\",\"polygonName\":\"Dimensions boundary mdp\",\"polygonLL\":[{\"Lat\":36.207659,\"Lon\":-115.018943},{\"Lat\":36.207265,\"Lon\":-115.018926},{\"Lat\":36.207412,\"Lon\":-115.018471}]}"
+            },
+            new FilterDescriptor
+            {
+              FilterUid = "a37f3008-65e5-44a8-b406-9a078ec62ece",
+              Name = "Dimensions boundary CMV",
+              FilterJson = "{\"polygonUID\":\"c910d127-5e3c-453f-82c3-e235848ac20e\",\"polygonName\":\"Dimensions boundary CMV\",\"polygonLL\":[{\"Lat\":36.207183,\"Lon\":-115.020509},{\"Lat\":36.206862,\"Lon\":-115.020187},{\"Lat\":36.207174,\"Lon\":-115.019731}]}"
             }
           }
         };
@@ -146,6 +158,18 @@ namespace MockProjectWebApi.Controllers
         Name = "Dimensions boundary filter",
         FilterJson =
           "{\"polygonUID\":\"7f2fb9ec-2384-420e-b2e3-72b9cea939a3\",\"polygonName\":\"Dimensions lower right bounday 2\",\"polygonLL\":[{\"Lat\":36.206897,\"Lon\":-115.01869},{\"Lat\":36.206795,\"Lon\":-115.018701},{\"Lat\":36.206823,\"Lon\":-115.018264},{\"Lat\":36.206977,\"Lon\":-115.01828}]}"
+      },
+      new FilterDescriptor
+      {
+        FilterUid = "3ef41e3c-d1f5-40cd-b012-99d11ff432ef",
+        Name = "Dimensions boundary mdp",
+        FilterJson = "{\"polygonUID\":\"318f0103-a0c3-4b50-88d4-d4fa12370a63\",\"polygonName\":\"Dimensions boundary mdp\",\"polygonLL\":[{\"Lat\":36.207659,\"Lon\":-115.018943},{\"Lat\":36.207265,\"Lon\":-115.018926},{\"Lat\":36.207412,\"Lon\":-115.018471}]}"
+      },
+      new FilterDescriptor
+      {
+        FilterUid = "a37f3008-65e5-44a8-b406-9a078ec62ece",
+        Name = "Dimensions boundary CMV",
+        FilterJson = "{\"polygonUID\":\"c910d127-5e3c-453f-82c3-e235848ac20e\",\"polygonName\":\"Dimensions boundary CMV\",\"polygonLL\":[{\"Lat\":36.207183,\"Lon\":-115.020509},{\"Lat\":36.206862,\"Lon\":-115.020187},{\"Lat\":36.207174,\"Lon\":-115.019731}]}"
       }
     };
   }
