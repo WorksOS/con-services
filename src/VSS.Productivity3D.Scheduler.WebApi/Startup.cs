@@ -148,6 +148,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       {
         filterCleanupTaskToRun = false;
       }
+      Console.WriteLine($"Scheduler.Startup: filterCleanupTaskToRun {filterCleanupTaskToRun}");
       if (filterCleanupTaskToRun)
       {
         var filterCleanupTask = new FilterCleanupTask(_configStore, _loggerFactory);
