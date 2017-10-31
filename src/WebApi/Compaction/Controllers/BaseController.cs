@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using NodaTime;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -21,8 +20,6 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Extensions;
-using VSS.Productivity3D.WebApiModels.Extensions;
-using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Filter = VSS.Productivity3D.Common.Models.Filter;
 
@@ -271,8 +268,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project Uid</param>
     /// <param name="filterUid">Filter UID</param>
+    /// <param name="returnEarliest"></param>
     /// <returns>An instance of the Filter class.</returns>
-    protected async Task<Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid)
+    protected async Task<Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid, bool? returnEarliest = null)
     {
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
@@ -292,7 +290,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           {
             filterData = ApplyDateRange(projectUid, filterData);
 
-            var polygonPoints = filterData.polygonLL == null ? null : filterData.polygonLL.ConvertAll(p => { return VSS.Productivity3D.Common.Models.WGSPoint.CreatePoint(p.Lat.latDegreesToRadians() , p.Lon.lonDegreesToRadians() ); });
+            var polygonPoints = filterData.polygonLL?.ConvertAll(p => Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
 
             var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
@@ -300,7 +298,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
               polygonPoints, null, filterData.forwardDirection, null, null, null, null, null, null,
               layerMethod, designDescriptor, null, filterData.layerNumber, null, filterData.contributingMachines,
-              excludedIds, null, null, null, null, null, null);
+              excludedIds, returnEarliest, null, null, null, null, null);
           }
         }
       }
@@ -329,7 +327,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
       }
       return MasterData.Models.Models.Filter.CreateFilter(
-        startUtc, endUtc, filter.designUID, filter.contributingMachines, filter.onMachineDesignID, filter.elevationType, 
+        startUtc, endUtc, filter.designUID, filter.contributingMachines, filter.onMachineDesignID, filter.elevationType,
         filter.vibeStateOn, filter.polygonLL, filter.forwardDirection, filter.layerNumber, filter.polygonUID, filter.polygonName);
     }
 

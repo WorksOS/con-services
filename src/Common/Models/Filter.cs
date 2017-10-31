@@ -197,7 +197,7 @@ namespace VSS.Productivity3D.Common.Models
     /// This value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "returnEarliest", Required = Required.Default)]
-    public bool? returnEarliest { get; private set; }
+    public bool? returnEarliest { get; set; }
 
     /// <summary>
     /// Sets the GPS accuracy filtering aspect.

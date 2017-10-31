@@ -4,21 +4,24 @@ using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using VSS.ConfigurationStore;
+using SVOICVolumeCalculationsDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.Models;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
@@ -65,9 +68,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
     /// <param name="requestFactory">The request factory.</param>
-    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
-      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, 
-      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory) 
+    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
+      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
+      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory)
       : base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
@@ -93,7 +96,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetCmvSummary: " + Request.QueryString);
-      CMVRequest request = await GetCMVRequest(projectUid, filterUid);
+      CMVRequest request = await GetCmvRequest(projectUid, filterUid);
       request.Validate();
       log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
       try
@@ -122,7 +125,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
-    /// when the filter layer method is OffsetFromDesign or OffsetFromProfile.</param>
+    /// when the filter layer method is OffsetFromDesign or OffsetFromProfile.
     /// <returns>MDP summary</returns>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/mdp/summary")]
@@ -132,7 +135,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       MDPSettings mdpSettings = settingsManager.CompactionMdpSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
@@ -215,7 +218,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       TemperatureSettings temperatureSettings = settingsManager.CompactionTemperatureSettings(projectSettings, false);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
@@ -260,7 +263,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetSpeedSummary: " + Request.QueryString);
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
@@ -268,7 +271,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
       SummarySpeedRequest request =
-        SummarySpeedRequest.CreateSummarySpeedRequestt(projectId, null, liftSettings, filter, -1);
+        SummarySpeedRequest.CreateSummarySpeedRequest(projectId, null, liftSettings, filter, -1);
       request.Validate();
       try
       {
@@ -305,7 +308,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await this.GetProjectSettings(projectUid);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
@@ -332,6 +335,94 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       finally
       {
         log.LogInformation("GetCmvPercentChange returned: " + Response.StatusCode);
+      }
+    }
+
+    /// <summary>
+    /// Get the summary volumes report from Raptor. Either legacy project ID or project UID must be provided.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="baseFilterUid"></param>
+    /// <param name="topFilterUid"></param>
+    /// <param name="baseDesignUid"></param>
+    /// <param name="topDesignUid"></param>
+    /// <param name="volumeCalcType"></param>
+    /// <returns></returns>
+    [ProjectUidVerifier]
+    [Route("api/v2/compaction/volumes/summary")]
+    [HttpGet]
+    public async Task<CompactionSummaryVolumesResult> GetSummaryVolumes(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? baseFilterUid,
+      [FromQuery] Guid? topFilterUid,
+      [FromQuery] Guid? baseDesignUid,
+      [FromQuery] Guid? topDesignUid,
+      [FromQuery] RaptorConverters.VolumesType volumeCalcType)
+    {
+      log.LogInformation("GetSummaryVolumes: " + Request.QueryString);
+
+      var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
+      Filter baseFilter = await GetCompactionFilter(projectUid, baseFilterUid, returnEarliest: true);
+      Filter topFilter = await GetCompactionFilter(projectUid, topFilterUid);
+
+      // TODO (Aaron) review whether these are mutually exclusive and one should be EmptyDesignDescriptor.
+      var baseDesign = await GetDesignDescriptor(projectUid, baseDesignUid, false);
+      var topDesign = await GetDesignDescriptor(projectUid, topDesignUid, false);
+
+      //switch (volumeCalcType)
+      //{
+      //  case (int)TComputeICVolumesType.ic_cvtBetweenDesignAndFilter: //DesignToGround          
+      //    topDesign = ProjectMonitoring.EmptyDesignDescriptor();
+      //    baseDesign = ProjectMonitoring.GetDesignDescriptor(ctx, baseDesignID, projectID);
+      //    break;
+
+      //  case (int)TComputeICVolumesType.ic_cvtBetweenFilterAndDesign: //GroundToDesign
+      //    baseDesign = ProjectMonitoring.EmptyDesignDescriptor();
+      //    topDesign = ProjectMonitoring.GetDesignDescriptor(ctx, topDesignID, projectID);
+      //    break;
+
+      //  case (int)TComputeICVolumesType.ic_cvtBetween2Filters: //GroundToGround
+      //    topDesign = ProjectMonitoring.EmptyDesignDescriptor();
+      //    baseDesign = ProjectMonitoring.EmptyDesignDescriptor();
+      //    break;
+
+      //  default:
+      //    topDesign = ProjectMonitoring.EmptyDesignDescriptor();
+      //    baseDesign = ProjectMonitoring.EmptyDesignDescriptor();
+      //    break;
+      //}
+
+
+
+      var request = SummaryVolumesRequest.CreateAndValidate(
+        projectId,
+        baseFilter,
+        topFilter,
+        baseDesign,
+        topDesign,
+        null,
+        null,
+        volumeCalcType);
+
+      try
+      {
+        var result = RequestExecutorContainerFactory
+          .Build<SummaryVolumesExecutor>(logger, raptorClient)
+          .Process(request) as SummaryVolumesResult;
+
+        var returnResult = CompactionSummaryVolumesResult.CreateInstance(result, await GetProjectSettings(projectUid));
+
+        log.LogInformation("GetSummaryVolumes result: " + JsonConvert.SerializeObject(returnResult));
+
+        return returnResult;
+      }
+      catch (ServiceException se)
+      {
+        throw new ServiceException(HttpStatusCode.NoContent, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
+      }
+      finally
+      {
+        log.LogInformation("GetSummaryVolumes returned: " + Response.StatusCode);
       }
     }
 
@@ -362,7 +453,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
-      CMVRequest request = await GetCMVRequest(projectUid, filterUid);
+      CMVRequest request = await GetCmvRequest(projectUid, filterUid);
       request.Validate();
 
       try
@@ -442,7 +533,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetCutFillDetails: " + Request.QueryString);
 
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -471,9 +562,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project Uid</param>
     /// <param name="filterUid">Filter UID</param>
     /// <returns>An instance of the CMVRequest class.</returns>
-    private async Task<CMVRequest> GetCMVRequest(Guid projectUid, Guid? filterUid)
+    private async Task<CMVRequest> GetCmvRequest(Guid projectUid, Guid? filterUid)
     {
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       CMVSettings cmvSettings = settingsManager.CompactionCmvSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
@@ -492,7 +583,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An instance of the PassCounts class.</returns>
     private async Task<PassCounts> GetPassCountRequest(Guid projectUid, Guid? filterUid, bool isSummary)
     {
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await this.GetProjectSettings(projectUid);
       PassCountSettings passCountSettings = isSummary ? null : settingsManager.CompactionPassCountSettings(projectSettings);
       LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);

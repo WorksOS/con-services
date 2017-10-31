@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// <summary>
     /// Create instance of SummarySpeedRequest
     /// </summary>
-    public static SummarySpeedRequest CreateSummarySpeedRequestt(
+    public static SummarySpeedRequest CreateSummarySpeedRequest(
       long projectID,
       Guid? callId,
       LiftBuildSettings liftBuildSettings,

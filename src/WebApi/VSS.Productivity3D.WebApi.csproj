@@ -33,12 +33,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
-    <WarningsAsErrors />
   </PropertyGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="log4net.netcore" Version="3.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="1.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.2" />
@@ -51,7 +49,8 @@
     <PackageReference Include="Swashbuckle.SwaggerGen" Version="6.0.0-beta902" />
     <PackageReference Include="Swashbuckle.SwaggerUi" Version="6.0.0-beta902" />
     <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" /> 
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
+    <PackageReference Include="log4net.netcore" Version="3.0.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
