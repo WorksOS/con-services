@@ -105,6 +105,21 @@
     "Code": 0,
     "Message": "success"
   },
+  "BoundaryFilter_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 4.327666151468315,
+      "percentGreaterThanTarget": 39.232354456465742,
+      "percentLessThanTarget": 56.439979392065943,
+      "totalAreaCoveredSqMeters": 448.75920000000008,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
   "DesignOutside_Details": {
     "passCountDetailsData": {
       "percents": [

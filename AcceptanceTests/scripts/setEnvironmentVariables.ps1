@@ -25,7 +25,7 @@
 <#
 To run tests from within Visual Studio against Raptor Services running in local containers) RAPTOR_WEBSERVICES_HOST needs to be set to the IP address of the container when run locally
 
-[Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../../tests/ProductionDataSvc.AcceptanceTests/bin/Debug/TestData/", "Machine")
+[Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../../ProductionDataSvc.AcceptanceTests/bin/Debug/TestData/", "Machine")
 [Environment]::SetEnvironmentVariable("COMPACTION_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("REPORT_SVC_BASE_URI", ":80", "Machine")
@@ -33,7 +33,7 @@ To run tests from within Visual Studio against Raptor Services running in local 
 [Environment]::SetEnvironmentVariable("COORD_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("PROD_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("FILE_ACCESS_SVC_BASE_URI", ":80", "Machine")
-[Environment]::SetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST", "172.17.187.96", "Machine")
+[Environment]::SetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST", "172.17.176.166", "Machine")
 #>
 
 
