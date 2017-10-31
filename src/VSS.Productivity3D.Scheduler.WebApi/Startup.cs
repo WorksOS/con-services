@@ -34,11 +34,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     public Startup(IHostingEnvironment env)
     {
-      Console.WriteLine("Startup");
+      int webAPIStartupWaitMs = 45000;
+      Console.WriteLine($"Scheduler.Startup: webAPIStartupWaitMs {webAPIStartupWaitMs}");
 
       // NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
       //    the webapi seems to go ahead anyways..
-      Thread.Sleep(20000); 
+      Thread.Sleep(webAPIStartupWaitMs); 
 
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
@@ -69,12 +70,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-      _log.LogDebug("ConfigureServices:");
+      _log.LogDebug("Scheduler.ConfigureServices.");
 
       services.AddMvc();
 
       var hangfireConnectionString = _configStore.GetConnectionString("VSPDB");
-      _log.LogDebug($"ConfigureServices: Scheduler database string: {hangfireConnectionString}.");
+      _log.LogDebug($"Scheduler.ConfigureServices: Scheduler database string: {hangfireConnectionString}.");
       _storage = new MySqlStorage(hangfireConnectionString,
         new MySqlStorageOptions
         {
@@ -92,7 +93,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        _log.LogError($"ConfigureServices: AddHangfire failed: {ex.Message}");
+        _log.LogError($"Scheduler.ConfigureServices: AddHangfire failed: {ex.Message}");
         throw new Exception($"ConfigureServices: AddHangfire failed: {ex.Message}");
       }
 
@@ -109,7 +110,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      _log.LogDebug("Configure:");
+      _log.LogDebug("Scheduler.Configure:");
 
       _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       _serviceCollection.BuildServiceProvider();
@@ -123,14 +124,14 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        _log.LogError($"Configure: UseHangfireServer failed: {ex.Message}");
-        throw new Exception($"Configure: UseHangfireServer failed: {ex.Message}");
+        _log.LogError($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
+        throw new Exception($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
       }
 
       try
       {
         List<RecurringJobDto> recurringJobs = Hangfire.JobStorage.Current.GetConnection().GetRecurringJobs();
-        _log.LogDebug($"Configure: PreJobsetup count of existing recurring jobs to be deleted {recurringJobs.Count()}");
+        _log.LogDebug($"Scheduler.Configure: PreJobsetup count of existing recurring jobs to be deleted {recurringJobs.Count()}");
         recurringJobs.ForEach(delegate (RecurringJobDto job)
         {
           RecurringJob.RemoveIfExists(job.Id);
@@ -138,8 +139,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        _log.LogError($"Configure: Unable to cleanup existing jobs: {ex.Message}");
-        throw new Exception("Configure: Unable to cleanup existing jobs");
+        _log.LogError($"Scheduler.Configure: Unable to cleanup existing jobs: {ex.Message}");
+        throw new Exception("Scheduler.Configure: Unable to cleanup existing jobs");
       }
 
       var expectedJobCount = 0;
@@ -157,11 +158,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
 
       var recurringJobsPost = JobStorage.Current.GetConnection().GetRecurringJobs();
-      _log.LogInformation($"Configure: PostJobSetup count of existing recurring jobs {recurringJobsPost.Count()}");
+      _log.LogInformation($"Scheduler.Configure: PostJobSetup count of existing recurring jobs {recurringJobsPost.Count()}");
       if (recurringJobsPost.Count < expectedJobCount)
       {
-        _log.LogError($"Configure: Incomplete list of recurring jobs {recurringJobsPost.Count}");
-        throw new Exception("Configure: Incorrect # jobs");
+        _log.LogError($"Scheduler.Configure: Incomplete list of recurring jobs {recurringJobsPost.Count}");
+        throw new Exception("Scheduler.Configure: Incorrect # jobs");
       }
     }
 
