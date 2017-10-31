@@ -110,11 +110,6 @@
     public float cutFill;
 
     /// <summary>
-    /// Elevation of the cell pass that contributed the cut-fill value.
-    /// </summary>
-    public float cutFillHeight;
-
-    /// <summary>
     /// The value in the pass count summary color palette to use for this cell. 
     /// </summary>
     public ValueTargetType passCountIndex;
@@ -167,7 +162,6 @@
       minSpeed = cell.minSpeed;
       maxSpeed = cell.maxSpeed;
       cutFill = cell.cutFill;
-      cutFillHeight = cell.cutFillHeight;
       passCountIndex = cell.passCountIndex;
       temperatureIndex = cell.temperatureIndex;
       cmvIndex = cell.cmvIndex;

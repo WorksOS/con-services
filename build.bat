@@ -3,8 +3,8 @@ RMDIR /S /Q Artifacts
 if exist Artifacts rd /s /q Artifacts
 
 rem echo %PATH%
-nuget restore VSS.Productivity3D.Service.sln
-dotnet publish ./src/WebApi/VSS.Productivity3D.WebApi.csproj -o ../../Artifacts/WebApi -f net47 -c Docker
+dotnet restore VSS.Productivity3D.Service.sln --no-cache
+dotnet publish ./src/WebApi/VSS.Productivity3D.WebApi.csproj -o ../../Artifacts/WebApi -f net47
 dotnet build ./test/UnitTests/WebApiTests/VSS.Productivity3D.WebApi.Tests.csproj
 copy src\WebApi\appsettings.json Artifacts\WebApi\
 copy src\WebApi\Dockerfile Artifacts\WebApi\

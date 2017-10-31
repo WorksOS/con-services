@@ -7,6 +7,22 @@ namespace VSS.Productivity3D.Common.ResultHandling
   /// </summary>
   public class CompactionDataPoint
   {
+    public const string FIRST_PASS = "firstPass";
+    public const string HIGHEST_PASS = "highestPass";
+    public const string LAST_PASS = "lastPass";
+    public const string LOWEST_PASS = "lowestPass";
+    public const string LAST_COMPOSITE = "lastComposite";
+    public const string CMV_SUMMARY = "cmvSummary";
+    public const string CMV_DETAIL = "cmvDetail";
+    public const string CMV_PERCENT_CHANGE = "cmvPercentChange";
+    public const string MDP_SUMMARY = "mdpSummary";
+    public const string TEMPERATURE_SUMMARY = "temperatureSummary";
+    public const string SPEED_SUMMARY = "speedSummary";
+    public const string PASS_COUNT_SUMMARY = "passCountSummary";
+    public const string PASS_COUNT_DETAIL = "passCountDetail";
+    public const string CUT_FILL = "cutFill";
+    public const string SUMMARY_VOLUMES = "summaryVolumes";
+
     /// <summary>
     /// The type of cell, either a cell edge intersection or the mid point of a segment cutting the cell. A edge can also be the start of a gap in the data.
     /// </summary>
@@ -53,7 +69,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
     /// </summary>
     public bool ShouldSerializey2()
     {
-      return type == "cutFill";
+      return type == CUT_FILL || type == SUMMARY_VOLUMES;
     }
 
     /// <summary>
@@ -61,7 +77,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
     /// </summary>
     public bool ShouldSerializevalue2()
     {
-      return type == "speedSummary";
+      return type == SPEED_SUMMARY;
     }
 
     /// <summary>
@@ -69,7 +85,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
     /// </summary>
     public bool ShouldSerializevalueType()
     {
-      return type.ToLower().Contains("summary");
+      return type.ToLower().EndsWith("summary");
     }
 
     /// <summary>

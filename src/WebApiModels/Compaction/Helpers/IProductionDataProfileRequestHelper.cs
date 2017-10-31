@@ -1,4 +1,5 @@
-﻿using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+﻿using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {

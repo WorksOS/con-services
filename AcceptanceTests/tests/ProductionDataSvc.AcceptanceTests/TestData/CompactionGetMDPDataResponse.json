@@ -62,5 +62,21 @@
     },
     "Code": 0,
     "Message": "success"
+  },
+  "BoundaryMDPFilter": {
+    "mdpSummaryData": {
+      "percentEqualsTarget": 82.068965517241381,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 17.931034482758619,
+      "totalAreaCoveredSqMeters": 519.62200000000007,
+      "mdpTarget": {
+        "mdpMachineTarget": 150.0,
+        "targetVaries": false
+      },
+      "minMDPPercent": 80.0,
+      "maxMDPPercent": 130.0
+    },
+    "Code": 0,
+    "Message": "success"
   }
 }

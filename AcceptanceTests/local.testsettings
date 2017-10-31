@@ -3,14 +3,10 @@
   <Description>These are default test settings for a local test run.</Description>
   <Deployment>
     <DeploymentItem filename="ProductionDataSvc.AcceptanceTests\TestData\" />
-    <DeploymentItem filename="RaptorSvcAcceptTestsCommon\RaptorSvcAcceptTestsCommon.dll.Dev.config" />
     <DeploymentItem filename="RaptorSvcAcceptTestsCommon\RaptorSvcAcceptTestsCommon.dll.config" />
     <DeploymentItem filename="TagFileProcessing.AcceptanceTests\TestData\" />
-    <DeploymentItem filename="RaptorSvcAcceptTestsCommon\RaptorSvcAcceptTestsCommon.dll.Tc.config" />
-    <DeploymentItem filename="RaptorSvcAcceptTestsCommon\RaptorSvcAcceptTestsCommon.dll.Local.config" />
     <DeploymentItem filename="ReportSvc.AcceptanceTests\TestData\" />
     <DeploymentItem filename="CoordSvc.AcceptanceTests\TestData\" />
-    <DeploymentItem filename="RaptorSvcAcceptTestsCommon\RaptorSvcAcceptTestsCommon.dll.T01.config" />
   </Deployment>
   <Execution>
     <TestTypeSpecific>
