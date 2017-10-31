@@ -150,5 +150,51 @@
     },
     "Code": 0,
     "Message": "success"
+  },
+  "BoundaryFilterPCDetails": {
+    "passCountDetailsData": {
+      "percents": [
+        28.910829990743597,
+        21.042887997531626,
+        15.705029311940761,
+        15.334773218142548,
+        10.089478556001234,
+        4.6899105214439993,
+        2.8694847269361308,
+        0.9873495834618945,
+        0.37025609379821045
+      ],
+      "totalCoverageArea": 0.0,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "BoundaryMachineFilterPCDetails": {
+    "passCountDetailsData": {
+      "percents": [
+        18.786449931753317,
+        8.214418662365059,
+        4.6159573148033255,
+        5.7451296686933864,
+        6.4400049633949612,
+        7.9538404268519676,
+        4.9758034495594989,
+        3.6729122719940435,
+        39.595483310584441
+      ],
+      "totalCoverageArea": 0.0,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
   }
 }
