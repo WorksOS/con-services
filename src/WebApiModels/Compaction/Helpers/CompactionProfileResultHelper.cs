@@ -453,18 +453,22 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// points and just keep the start of the gap and the next data point.
     /// </summary>
     /// <param name="result">The profile result to remove the repeated gaps from</param>
-    public void RemoveRepeatedNoData(CompactionProfileResult<CompactionProfileDataResult> result)
+    /// <param name="calcType">The type of summary volumes calculation</param>
+    public void RemoveRepeatedNoData(CompactionProfileResult<CompactionProfileDataResult> result, VolumeCalcType? calcType)
     {
       log.LogDebug("RemoveRepeatedNoData: Production data profile");
 
+      bool isDesignToGround = calcType.HasValue && calcType == VolumeCalcType.DesignToGround;
+
       foreach (var profileResult in result.results)
       {
-        //Identify all the gaps.
-        //All data with NaN elevation or value is effectively a gap
+        //Identify all the gaps. All data with NaN elevation or value is effectively a gap.
+        //The exception is a summary volumes profile that is design to ground where y is NaN as it will be set later using the design. In this case use y2.
         foreach (var point in profileResult.data)
         {
           bool noValue = point.type.StartsWith("passCount") ? point.value == -1 : float.IsNaN(point.value);
-          if (float.IsNaN(point.y) || noValue)
+          bool noY = point.type == CompactionDataPoint.SUMMARY_VOLUMES && isDesignToGround ? !point.y2.HasValue || float.IsNaN(point.y2.Value) : float.IsNaN(point.y);
+          if (noY || noValue)
             point.cellType = ProfileCellType.Gap;
         }
 
@@ -554,7 +558,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// Since the profile line will be drawn between line segment mid points we need to interpolate the cell edge points to lie on these line segments.
     /// </summary>
     /// <param name="profileResult">The profile containing the list of line segment points, both edges and mid points, for each profile type.</param>
-    public void InterpolateEdges(CompactionProfileResult<CompactionProfileDataResult> profileResult)
+    /// <param name="calcType">The type of summary volumes calculation</param>
+    public void InterpolateEdges(CompactionProfileResult<CompactionProfileDataResult> profileResult, VolumeCalcType? calcType)
     {
       log.LogDebug("Interpolating edges");
       foreach (var result in profileResult.results)
@@ -569,43 +574,65 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             if (result.data[i].cellType == ProfileCellType.MidPoint)
               continue;
 
-            int startIndx, endIndx;
-            FindMidPoints(i, result.data, out startIndx, out endIndx);
-            log.LogDebug($"Edge {i}: Midpoints: {startIndx}, {endIndx} for type {result.type}");
-            if (startIndx >= 0 && endIndx <= result.data.Count - 1)
+            //No y to interpolate for summary volumes design-ground
+            if (result.type != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround)
             {
-              InterpolateElevation(result.data[i], result.data[startIndx], result.data[endIndx]);
+              InterpolatePoint(i, result.data, result.type, false);
             }
-            //Special case: If all NaN to the LHS try and find 2 mid points to the RHS and extrapolate.
-            //This can happen if profile line starts in a gap.
-            else if (endIndx < result.data.Count - 1)
-            {
-              startIndx = endIndx;
-              int startIndx2, endIndx2;
-              FindMidPoints(endIndx + 1, result.data, out startIndx2, out endIndx2);
-              log.LogDebug($"Special Case Start Gap {i}: Midpoints: {startIndx}, {endIndx2} for type {result.type}");
-              if (endIndx2 <= result.data.Count - 1)
-              {
-                InterpolateElevation(result.data[i], result.data[startIndx], result.data[endIndx2]);
-              }
-            }
-            //Special case: If all NaN to the RHS try and find 2 mid points to the LHS and extrapolate.
-            //This can happen if profile line ends in a gap.
-            else if (startIndx > 0)
-            {
-              endIndx = startIndx;
-              int startIndx2, endIndx2;
-              FindMidPoints(startIndx - 1, result.data, out startIndx2, out endIndx2);
-              log.LogDebug($"Special Case End Gap {i}: Midpoints: {startIndx}, {endIndx2} for type {result.type}");
-              if (startIndx2 >= 0)
-              {
-                InterpolateElevation(result.data[i], result.data[startIndx2], result.data[endIndx]);
-              }
+
+            //y2 to interpolate for only summary volumes ground-ground and design-ground
+            if (result.type == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign)
+            {   
+              InterpolatePoint(i, result.data, result.type, true);             
             }
 
           }
         }
         log.LogDebug($"After interpolation for {result.type}");
+      }
+    }
+
+    /// <summary>
+    /// Interpolate the elevation(s) for the given point
+    /// </summary>
+    /// <param name="i">The index of the point to interpolate</param>
+    /// <param name="data">The list of points</param>
+    /// <param name="type">The profile type</param>
+    /// <param name="useY2">True if interpolating the second elevation</param>
+    private void InterpolatePoint(int i, List<CompactionDataPoint> data, string type, bool useY2)
+    {
+      int startIndx, endIndx;
+      FindMidPoints(i, data, out startIndx, out endIndx, useY2);
+      log.LogDebug($"Edge {i}: Midpoints: {startIndx}, {endIndx} for type {type}");
+      if (startIndx >= 0 && endIndx <= data.Count - 1)
+      {
+        InterpolateElevation(data[i], data[startIndx], data[endIndx], useY2);
+      }
+      //Special case: If all NaN to the LHS try and find 2 mid points to the RHS and extrapolate.
+      //This can happen if profile line starts in a gap.
+      else if (endIndx < data.Count - 1)
+      {
+        startIndx = endIndx;
+        int startIndx2, endIndx2;
+        FindMidPoints(endIndx + 1, data, out startIndx2, out endIndx2, useY2);
+        log.LogDebug($"Special Case Start Gap {i}: Midpoints: {startIndx}, {endIndx2} for type {type}");
+        if (endIndx2 <= data.Count - 1)
+        {
+          InterpolateElevation(data[i], data[startIndx], data[endIndx2], useY2);
+        }
+      }
+      //Special case: If all NaN to the RHS try and find 2 mid points to the LHS and extrapolate.
+      //This can happen if profile line ends in a gap.
+      else if (startIndx > 0)
+      {
+        endIndx = startIndx;
+        int startIndx2, endIndx2;
+        FindMidPoints(startIndx - 1, data, out startIndx2, out endIndx2, useY2);
+        log.LogDebug($"Special Case End Gap {i}: Midpoints: {startIndx}, {endIndx2} for type {type}");
+        if (startIndx2 >= 0)
+        {
+          InterpolateElevation(data[i], data[startIndx2], data[endIndx], useY2);
+        }
       }
     }
 
@@ -616,20 +643,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="points">The list of points</param>
     /// <param name="startIndx">The index of the mid point before the edge</param>
     /// <param name="endIndx">The index of the mid point after the edge</param>
-    private void FindMidPoints(int indx, List<CompactionDataPoint> points, out int startIndx, out int endIndx)
+    /// <param name="useY2">True if checking the second elevation</param>
+    private void FindMidPoints(int indx, List<CompactionDataPoint> points, out int startIndx, out int endIndx, bool useY2)
     {
       startIndx = indx;
       bool found = false;
       while (startIndx >= 0 && !found)
       {
-        found = MidPointCellHasHeightValue(points[startIndx]);
+        found = MidPointCellHasHeightValue(points[startIndx], useY2);
         if (!found) startIndx--;
       }
       endIndx = indx;
       found = false;
       while (endIndx < points.Count && !found)
       {
-        found = MidPointCellHasHeightValue(points[endIndx]);
+        found = MidPointCellHasHeightValue(points[endIndx], useY2);
         if (!found) endIndx++;
       }
     }
@@ -638,10 +666,23 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// Determine if the current point is a midpoint and has an elevation.
     /// </summary>
     /// <param name="point">The point to check</param>
+    /// <param name="useY2">True if checking the second elevation</param>
     /// <returns>True if the cell has a non-NaN elevation value for the specified height type</returns>
-    private bool MidPointCellHasHeightValue(CompactionDataPoint point)
+    private bool MidPointCellHasHeightValue(CompactionDataPoint point, bool useY2)
     {
-      return point.cellType == ProfileCellType.MidPoint ? !float.IsNaN(point.y) : false;
+      if (point.cellType == ProfileCellType.MidPoint)
+      {
+        if (useY2)
+        {
+          if (point.y2.HasValue)
+            return !float.IsNaN(point.y2.Value);
+        }
+        else
+        {
+          return !float.IsNaN(point.y);
+        }
+      }
+      return false;
     }
 
     /// <summary>
@@ -650,10 +691,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="point">The point to interpolate</param>
     /// <param name="startPoint">The start of the line segment</param>
     /// <param name="endPoint">The end of the line segment</param>
-    private void InterpolateElevation(CompactionDataPoint point, CompactionDataPoint startPoint, CompactionDataPoint endPoint)
+    /// <param name="useY2">True if interpolating the second elevation</param>
+    private void InterpolateElevation(CompactionDataPoint point, CompactionDataPoint startPoint, CompactionDataPoint endPoint, bool useY2)
     {
       var proportion = (point.x - startPoint.x) / (endPoint.x - startPoint.x);
-      point.y = InterpolateElevation(proportion, startPoint.y, endPoint.y);
+      if (useY2)
+      {
+        point.y2 = InterpolateElevation(proportion, startPoint.y2 ?? float.NaN, endPoint.y2 ?? float.NaN);
+      }
+      else
+      {
+        point.y = InterpolateElevation(proportion, startPoint.y, endPoint.y);
+      }
       log.LogDebug($"Interpolated station {point.x} of cell type {point.cellType} for type {point.type}");
     }
 

@@ -33,6 +33,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void NoProdDataAndNoDesignProfile(string profileType, VolumeCalcType calcType)
     {
       CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
@@ -579,8 +580,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(expectedY2, actualResult.y2, $"{j}: {expectedType} Wrong y2");
       Assert.AreEqual(expectedValue2, actualResult.value2, $"{j}: {expectedType} Wrong value2");
     }
+    #endregion
 
-
+    #region RearrangeProfileResult summary volumes profile tests
     [TestMethod]
     public void RearrangeSummaryVolumesProfileResultWithNull()
     {
@@ -643,8 +645,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             {
               cellType = ProfileCellType.MidPoint,
               station = 0,
-              lastPassHeight1 = /*calcType == VolumeCalcType.DesignToGround ? float.NaN :*/ 0.7F,
-              lastPassHeight2 = /*calcType == VolumeCalcType.GroundToDesign ? float.NaN :*/ 0.6F,
+              lastPassHeight1 = 0.7F,
+              lastPassHeight2 = 0.6F,
               designHeight = 0.8F,
               cutFill = 0.1F
             },
@@ -652,8 +654,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             {
               cellType = ProfileCellType.Edge,
               station = 1,
-              lastPassHeight1 = /*calcType == VolumeCalcType.DesignToGround ? float.NaN :*/ 0.8F,
-              lastPassHeight2 = /*calcType == VolumeCalcType.GroundToDesign ? float.NaN :*/ 0.65F,
+              lastPassHeight1 = 0.8F,
+              lastPassHeight2 = 0.65F,
               designHeight = 1.2F,
               cutFill = 0.15F
             },
@@ -661,8 +663,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             {
               cellType = ProfileCellType.MidPoint,
               station = 2,
-              lastPassHeight1 = /*calcType == VolumeCalcType.DesignToGround ? float.NaN :*/ 0.9F,
-              lastPassHeight2 = /*calcType == VolumeCalcType.GroundToDesign ? float.NaN :*/ 0.7F,
+              lastPassHeight1 = 0.9F,
+              lastPassHeight2 = 0.7F,
               designHeight = 0.9F,
               cutFill = 0.2F,
             }
@@ -766,7 +768,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
+      helper.RemoveRepeatedNoData(result, null);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
@@ -837,7 +839,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
+      helper.RemoveRepeatedNoData(result, null);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
@@ -907,7 +909,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
+      helper.RemoveRepeatedNoData(result, null);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
@@ -1039,7 +1041,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
+      helper.RemoveRepeatedNoData(result, null);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
@@ -1316,15 +1318,78 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
                 }
               }
             },
-
+            new CompactionProfileDataResult
+            {
+              type = CompactionDataPoint.SUMMARY_VOLUMES,
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.MidPoint,
+                  x = 0,
+                  y2 = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.Edge,
+                  x = 1,
+                  y2 = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.MidPoint,
+                  x = 2,
+                  y2 = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.Edge,
+                  x = 3,
+                  y2 = 1.3F
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.MidPoint,
+                  x = 4,
+                  y2 = 1.2F
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.Gap,
+                  x = 5,
+                  y2 = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.Edge,
+                  x = 6,
+                  y2 = 1.7F
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.MidPoint,
+                  x = 7,
+                  y2 = 1.6F
+                }
+              }
+            },
           }
         };
+      var calcType = VolumeCalcType.DesignToGround;
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
-      Assert.AreEqual(4, result.results.Count, "Wrong number of results");
-      for (int i=0; i<4; i++)
+      helper.RemoveRepeatedNoData(result, calcType);
+      Assert.AreEqual(5, result.results.Count, "Wrong number of results");
+      for (int i=0; i<5; i++)
       {
         var item = result.results[i];
         switch (i)
@@ -1370,6 +1435,16 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             ValidateItem(3, item.data[3], ProfileCellType.Gap, 5, float.NaN);
             ValidateItem(4, item.data[4], ProfileCellType.Edge, 6, 1.7F);
             ValidateItem(5, item.data[5], ProfileCellType.MidPoint, 7, 1.6F);
+            break;
+          case 4:
+            Assert.AreEqual(6, item.data.Count, $"{i}: Wrong number of data items");
+            Assert.AreEqual(CompactionDataPoint.SUMMARY_VOLUMES, item.type, $"{i}: Wrong type");
+            ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN, calcType != VolumeCalcType.DesignToGround);
+            ValidateItem(1, item.data[1], ProfileCellType.Edge, 3, 1.3F, calcType != VolumeCalcType.DesignToGround);
+            ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 4, 1.2F, calcType != VolumeCalcType.DesignToGround);
+            ValidateItem(3, item.data[3], ProfileCellType.Gap, 5, float.NaN, calcType != VolumeCalcType.DesignToGround);
+            ValidateItem(4, item.data[4], ProfileCellType.Edge, 6, 1.7F, calcType != VolumeCalcType.DesignToGround);
+            ValidateItem(5, item.data[5], ProfileCellType.MidPoint, 7, 1.6F, calcType != VolumeCalcType.DesignToGround);
             break;
         }
       }
@@ -1452,7 +1527,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
+      helper.RemoveRepeatedNoData(result, null);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
@@ -1464,11 +1539,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       }
     }
 
-    private void ValidateItem(int i, CompactionDataPoint actual, ProfileCellType expectedCellType, double expectedStation, float expectedElevation)
+    private void ValidateItem(int i, CompactionDataPoint actual, ProfileCellType expectedCellType, double expectedStation, float expectedElevation, bool useY = true)
     {
       Assert.AreEqual(expectedCellType, actual.cellType, $"{i}: Wrong cellType");
       Assert.AreEqual(expectedStation, actual.x, $"{i}: Wrong x");
-      Assert.AreEqual(expectedElevation, actual.y, $"{i}: Wrong y");
+      Assert.AreEqual(expectedElevation, useY ? actual.y : actual.y2, $"{i}: Wrong y");
     }
     #endregion
 
@@ -1923,7 +1998,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, null);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
@@ -1955,7 +2030,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, null);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
@@ -1989,7 +2064,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, null);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
@@ -2042,7 +2117,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, null);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
@@ -2097,7 +2172,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, null);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
@@ -2147,7 +2222,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, null);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
@@ -2211,7 +2286,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, null);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
@@ -2273,7 +2348,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, null);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
