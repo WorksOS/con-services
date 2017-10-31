@@ -71,6 +71,20 @@ namespace MockProjectWebApi.Controllers
               Name = "Elevation Range and Palette No Data Filter",
               FilterJson =
                 "{\"startUTC\":\"2017-01-01\",\"endUTC\":\"2017-01-01\",\"designUid\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
+            },
+            new FilterDescriptor
+            {
+              FilterUid = "9c27697f-ea6d-478a-a168-ed20d6cd9a20",
+              Name = "Dimensions boundary filter with machine",
+              FilterJson =
+                "{\"contributingMachines\":[{\"assetID\":4250986182719752,\"machineName\":\"VOLVO G946B\",\"isJohnDoe\":false}],\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":\"Dimensions boundary with machine 2\",\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}]}"
+            },
+            new FilterDescriptor
+            {
+              FilterUid = "154470b6-15ae-4cca-b281-eae8ac1efa6c",
+              Name = "Dimensions boundary filter",
+              FilterJson =
+                "{\"polygonUID\":\"7f2fb9ec-2384-420e-b2e3-72b9cea939a3\",\"polygonName\":\"Dimensions lower right bounday 2\",\"polygonLL\":[{\"Lat\":36.206897,\"Lon\":-115.01869},{\"Lat\":36.206795,\"Lon\":-115.018701},{\"Lat\":36.206823,\"Lon\":-115.018264},{\"Lat\":36.206977,\"Lon\":-115.01828}]}"
             }
           }
         };
@@ -118,7 +132,21 @@ namespace MockProjectWebApi.Controllers
         Name = "Filter 5",
         FilterJson =
           "{\"startUTC\":\"2017-11-05\",\"endUTC\":\"2017-11-06\",\"designUid\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
-      }  
+      },
+      new FilterDescriptor
+      {
+        FilterUid = "9c27697f-ea6d-478a-a168-ed20d6cd9a20",
+        Name = "Dimensions boundary filter with machine",
+        FilterJson =
+          "{\"contributingMachines\":[{\"assetID\":4250986182719752,\"machineName\":\"VOLVO G946B\",\"isJohnDoe\":false}],\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":\"Dimensions boundary with machine 2\",\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}]}"
+      },
+      new FilterDescriptor
+      {
+        FilterUid = "154470b6-15ae-4cca-b281-eae8ac1efa6c",
+        Name = "Dimensions boundary filter",
+        FilterJson =
+          "{\"polygonUID\":\"7f2fb9ec-2384-420e-b2e3-72b9cea939a3\",\"polygonName\":\"Dimensions lower right bounday 2\",\"polygonLL\":[{\"Lat\":36.206897,\"Lon\":-115.01869},{\"Lat\":36.206795,\"Lon\":-115.018701},{\"Lat\":36.206823,\"Lon\":-115.018264},{\"Lat\":36.206977,\"Lon\":-115.01828}]}"
+      }
     };
   }
 }
