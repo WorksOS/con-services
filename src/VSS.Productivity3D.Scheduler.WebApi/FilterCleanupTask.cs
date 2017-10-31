@@ -1,20 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using Dapper;
 using Hangfire;
-using Hangfire.MySql;
-using Hangfire.Storage;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 
@@ -27,9 +16,9 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   {
     private readonly ILogger _log;
     private readonly IConfigurationStore _configStore = null;
-    private const int _filterAgeDefaultMinutes = 4;
-    private const int _taskIntervalDefaultMinutes = 5;
-
+    private static int DefaultFilterAgeDefaultMinutes { get; } = 4;
+    private static int DefaultTaskIntervalDefaultMinutes { get; } = 5;
+  
     /// <summary>
     /// Initializes the FilterCleanupTask 
     /// </summary>
@@ -37,8 +26,9 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="loggerFactory"></param>
     public FilterCleanupTask(IConfigurationStore configStore, ILoggerFactory loggerFactory)
     {
+      Console.WriteLine($"FilterCleanupTask configStore {configStore} loggerFactory: {loggerFactory}");
       _log = loggerFactory.CreateLogger<FilterCleanupTask>();
-      _configStore = configStore;
+      _configStore = configStore;  
     }
 
     /// <summary>
@@ -46,25 +36,25 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     public void AddTask()
     {
-      _log.LogDebug($"FilterCleanupTask.AddTask");
-
+      _log.LogDebug($"FilterCleanupTask.AddTask. configStore: {_configStore}");
      
-      var ageInMinutesToDelete = _filterAgeDefaultMinutes;
+      int ageInMinutesToDelete;
       if (!int.TryParse(_configStore.GetValueString("SCHEDULER_FILTER_CLEANUP_TASK_AGE_MINUTES"), out ageInMinutesToDelete))
       {
-        ageInMinutesToDelete = _filterAgeDefaultMinutes;
+        ageInMinutesToDelete = DefaultFilterAgeDefaultMinutes;
        }
 
       // lowest interval is minutes 
-      var taskIntervalMinutes = _taskIntervalDefaultMinutes;
+      int taskIntervalMinutes;
       if (!int.TryParse(_configStore.GetValueString("SCHEDULER_FILTER_CLEANUP_TASK_INTERVAL_MINUTES"), out taskIntervalMinutes))
       {
-        taskIntervalMinutes = _taskIntervalDefaultMinutes;
+        taskIntervalMinutes = DefaultTaskIntervalDefaultMinutes;
       }
 
       var FilterCleanupJob = "FilterCleanupJob";
       string filterDbConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "_FILTER");
       _log.LogInformation($"FilterCleanupTask: ageInMinutesToDelete: {ageInMinutesToDelete} taskIntervalSeconds: {taskIntervalMinutes} filterDbConnectionString: {filterDbConnectionString}.");
+      //Console.WriteLine($"FilterCleanupTask: ageInMinutesToDelete: {ageInMinutesToDelete} taskIntervalSeconds: {taskIntervalMinutes} filterDbConnectionString: {filterDbConnectionString}.");
 
       try
       {
@@ -87,6 +77,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     {
       var cutoffActionUtcToDelete = DateTime.UtcNow.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
       _log.LogTrace($"FilterCleanupJob.DatabaseCleanupJob: starting. cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
+      //Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: starting. cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
 
       MySqlConnection dbConnection;
       try
@@ -97,15 +88,17 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       catch (Exception ex)
       {
         _log.LogError($"FilterCleanupJob.DatabaseCleanupJob: open filter DB exeception {ex.Message}");
+        //Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: open filter DB exeception {ex.Message}");
         throw new Exception("FilterCleanupJob.DatabaseCleanupJob: open database exception");
       }
 
       var empty = "\"";
-      string delete = $"DELETE FROM Filter WHERE (Name = {empty}{empty} OR Name IS NULL) AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
+      string deleteCommand = $"DELETE FROM Filter WHERE (Name = {empty}{empty} OR Name IS NULL) AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
       int deletedCount = 0;
       try
       {
-        deletedCount = dbConnection.Execute(delete, cutoffActionUtcToDelete);
+        deletedCount = dbConnection.Execute(deleteCommand, cutoffActionUtcToDelete);
+        //Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: deleteCommand {deleteCommand}");
       }
       catch (Exception ex)
       {
@@ -118,6 +111,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
 
       _log.LogTrace($"FilterCleanupJob.DatabaseCleanupJob: completed successfully. CutoffActionUtcDeleted: {cutoffActionUtcToDelete} deletedCount: {deletedCount}");
+      //Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: completed successfully. CutoffActionUtcDeleted: {cutoffActionUtcToDelete} deletedCount: {deletedCount}");
     }
   }
 }

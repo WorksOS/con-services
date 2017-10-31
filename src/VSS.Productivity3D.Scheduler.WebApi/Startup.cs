@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   {
     private const string LoggerRepoName = "Scheduler";
     private MySqlStorage _storage;
-    private ILoggerFactory _loggerFactory;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _log;
     private readonly IConfigurationStore _configStore;
     IServiceCollection _serviceCollection;
@@ -96,6 +96,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         throw new Exception($"ConfigureServices: AddHangfire failed: {ex.Message}");
       }
 
+      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       _serviceCollection = services;
     }
 
@@ -113,7 +114,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       _serviceCollection.BuildServiceProvider();
 
-      //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(LoggerRepoName);
 

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Dapper;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 //using VSS.Productivity3D.Scheduler.Common.Utilities;
@@ -55,8 +57,7 @@ namespace SchedulerTests
       var dbConnection = new MySqlConnection(filterDbConnectionString);
       dbConnection.Open();
 
-      //var filter = new Filter()
-      //{};
+      //var filter = new Filter(){}; //todo?
       var filterUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid().ToString();
       var projectUid = Guid.NewGuid().ToString();
@@ -78,11 +79,14 @@ namespace SchedulerTests
       var msToWait = (int)(theJob.NextExecution.Value - DateTime.UtcNow).TotalMilliseconds + 50;
       if (msToWait > 0 )
         Thread.Sleep(msToWait);
-
+      
       string selectFilter = string.Format($"SELECT FilterUID FROM Filter WHERE FilterUID = {empty}{filterUid}{empty}");
-      var retrievedFilter = dbConnection.Query(selectFilter);
+      var response = dbConnection.Query(selectFilter);
+      Console.WriteLine($"FilterScheduleTask_WaitForCleanup: msToWait {msToWait} insertFilter {insertFilter} selectFilter {selectFilter} response {JsonConvert.SerializeObject(response)}");
 
-      Assert.IsNull(retrievedFilter, "Filter should no longer exist.");
+      Assert.IsNotNull(response, "Should have a response.");
+      Assert.AreEqual(0, response.Count(), "No filters should be returned.");
+
       dbConnection.Close();
     }
   }
