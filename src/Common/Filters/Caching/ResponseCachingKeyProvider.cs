@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
@@ -185,13 +186,11 @@ namespace VSS.Productivity3D.Common.Filters
       }
     }
 
-
     private int GenerateFilterHash(string projectUid, string filterUid, IDictionary<string,string> headers)
     {
       return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterServiceProxy
         .GetFilter(projectUid, filterUid, headers).Result.FilterJson).GetHashCode();
     }
-
   }
 
   public static class CachingKeyExtensions

@@ -1,27 +1,27 @@
 ﻿Feature: CompactionElevation
-  I should be able to request compaction elevation and project statistics
+I should be able to request compaction elevation and project statistics
 
 ######################################################## Elevation Range ########################################################
 Scenario Outline: Compaction Get Elevation Range - No Design Filter
-	Given the Compaction service URI "/api/v2/compaction/elevationrange" for operation "ElevationRange"
-  And the result file "CompactionGetElevationAndProjectStatisticsDataResponse.json"
-	And projectUid "<ProjectUID>"
-	When I request result
-  Then the result should match the "<ResultName>" from the repository
-	Examples: 
-	| RequestName | ProjectUID                           | ResultName        |
-	|             | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_ER |
+Given the Compaction service URI "/api/v2/compaction/elevationrange" for operation "ElevationRange"
+And the result file "CompactionGetElevationAndProjectStatisticsDataResponse.json"
+And projectUid "<ProjectUID>"
+When I request result
+Then the result should match the "<ResultName>" from the repository
+Examples: 
+| RequestName | ProjectUID                           | ResultName        |
+|             | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_ER |
   
 Scenario Outline: Compaction Get Elevation Range - No Data
-	Given the Compaction service URI "/api/v2/compaction/elevationrange" for operation "ElevationRange"
-  And the result file "CompactionGetElevationAndProjectStatisticsDataResponse.json"
-	And projectUid "<ProjectUID>"
-  And filterUid "<FilterUid>"
-	When I request result
-  Then the result should match the "<ResultName>" from the repository
-	Examples: 
-	| RequestName | ProjectUID                           | FilterUid                            | ResultName |
-	|             | ff91dd40-1569-4765-a2bc-014321f76ace | 200c7b47-b5e6-48ee-a731-7df6623412da | NoData_ER  |
+Given the Compaction service URI "/api/v2/compaction/elevationrange" for operation "ElevationRange"
+And the result file "CompactionGetElevationAndProjectStatisticsDataResponse.json"
+And projectUid "<ProjectUID>"
+And filterUid "<FilterUid>"
+When I request result
+Then the result should match the "<ResultName>" from the repository
+Examples: 
+| RequestName | ProjectUID                           | FilterUid                            | ResultName |
+|             | ff91dd40-1569-4765-a2bc-014321f76ace | 200c7b47-b5e6-48ee-a731-7df6623412da | NoData_ER  |
 
 #Scenario Outline: Compaction Get Speed Summary
 #  Given the Compaction service URI "/api/v2/compaction/elevationrange" for operation "ElevationRange"
@@ -37,11 +37,11 @@ Scenario Outline: Compaction Get Elevation Range - No Data
 
 ######################################################## Project Statistics #####################################################
 Scenario Outline: Compaction Get Project Statistics - Good Request
-	Given the Compaction service URI "/api/v2/compaction/projectstatistics" for operation "ProjectStatistics"  
-  And the result file "CompactionGetElevationAndProjectStatisticsDataResponse.json"	
-  And projectUid "<ProjectUID>"
-	When I request result
-  Then the result should match the "<ResultName>" from the repository
-	Examples: 
-	| RequestName | ProjectUID                           | ResultName      |
-	|             | ff91dd40-1569-4765-a2bc-014321f76ace | GoodRequest_PRS |
+Given the Compaction service URI "/api/v2/compaction/projectstatistics" for operation "ProjectStatistics"  
+And the result file "CompactionGetElevationAndProjectStatisticsDataResponse.json"	
+And projectUid "<ProjectUID>"
+When I request result
+Then the result should match the "<ResultName>" from the repository
+Examples: 
+| RequestName | ProjectUID                           | ResultName      |
+|             | ff91dd40-1569-4765-a2bc-014321f76ace | GoodRequest_PRS |

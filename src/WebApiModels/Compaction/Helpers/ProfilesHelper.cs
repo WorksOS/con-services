@@ -7,14 +7,24 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
   public class ProfilesHelper
   {
     public const int PROFILE_TYPE_NOT_REQUIRED = -1;
+    public const int PROFILE_TYPE_HEIGHT = 2;
 
     public static bool CellGapExists(Velociraptor.PDSInterface.ProfileCell prevCell, Velociraptor.PDSInterface.ProfileCell currCell, out double prevStationIntercept)
     {
-      prevStationIntercept = prevCell == null
-        ? 0.0
-        : prevCell.station + prevCell.interceptLength;
+      return CellGapExists(prevCell?.station, prevCell?.interceptLength, currCell.station, out prevStationIntercept);
+    }
 
-      return prevCell != null && Math.Abs(currCell.station - prevStationIntercept) > 0.001;
+    public static bool CellGapExists(Velociraptor.PDSInterface.SummaryVolumesProfileCell prevCell, Velociraptor.PDSInterface.SummaryVolumesProfileCell currCell, out double prevStationIntercept)
+    {
+      return CellGapExists(prevCell?.station, prevCell?.interceptLength, currCell.station, out prevStationIntercept);
+    }
+
+    private static bool CellGapExists(double? prevStation, double? prevInterceptLength, double currStation, out double prevStationIntercept)
+    {
+      bool hasPrev = prevStation.HasValue && prevInterceptLength.HasValue;
+      prevStationIntercept = hasPrev ? prevStation.Value + prevInterceptLength.Value : 0.0;
+     
+      return hasPrev && Math.Abs(currStation - prevStationIntercept) > 0.001;
     }
 
     public static void ConvertProfileEndPositions(ProfileGridPoints gridPoints, ProfileLLPoints lLPoints,

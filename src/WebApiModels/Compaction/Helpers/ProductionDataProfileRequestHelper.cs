@@ -17,6 +17,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
   /// </summary>
   public class ProductionDataProfileRequestHelper : DataRequestBase, IProductionDataProfileRequestHelper
   {
+    private Filter baseFilter;
+    private Filter topFilter;
+    private VolumeCalcType? volCalcType;
+    private DesignDescriptor volumeDesign;
+
     public ProductionDataProfileRequestHelper()
     { }
 
@@ -28,6 +33,31 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       FileListProxy = fileListProxy;
       SettingsManager = settingsManager;
     }
+
+    public ProductionDataProfileRequestHelper SetVolumeCalcType(VolumeCalcType? calcType)
+    {
+      this.volCalcType = calcType;
+      return this;
+    }
+
+    public ProductionDataProfileRequestHelper SetVolumeDesign(DesignDescriptor volumeDesign)
+    {
+      this.volumeDesign = volumeDesign;
+      return this;
+    }
+
+    public ProductionDataProfileRequestHelper SetBaseFilter(Filter baseFilter)
+    {
+      this.baseFilter = baseFilter;
+      return this;
+    }
+
+    public ProductionDataProfileRequestHelper SetTopFilter(Filter topFilter)
+    {
+      this.topFilter = topFilter;
+      return this;
+    }
+
 
     /// <summary>
     /// Creates an instance of the CompactionProfileProductionDataRequest class and populate it with data needed for a production data slice profile.   
@@ -58,7 +88,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         ValidationConstants.MIN_STATION,
         liftBuildSettings,
         false,
-        DesignDescriptor);
+        DesignDescriptor,
+        baseFilter,
+        topFilter,
+        volCalcType,
+        volumeDesign);
     }
   }
 }

@@ -1,24 +1,32 @@
 To run acceptance tests on local machine.
- - dotnet restore VSS.Raptor.Service.sln --no-cache
  - run build.bat in repository root directory
  - run AcceptanceTests\scripts\runLocal.ps1
  
  
  ////////////////////////////// FOR RUNNING TESTS FROM VISUAL STUDIO //////////////////////
  
- after runLocal has finished run docker inspect on the newly built *webapi* container to find the ipaddress it has, update AcceptanceTests\scripts\setEnvironmentVariables.ps1 to reflect this new ip address.
+After runLocal has finished it displays an IP Address e.g
+
+Creating vssproductivity3dservice_mockprojectwebapi_1
+Creating vssproductivity3dservice_mockprojectwebapi_1 ... done
+Docker started successfully (Running in Detached mode)
+
+  Container Name: vssproductivity3dservice_webapi
+  Container ID: ceb5f335e5f9
+  IP Address: 172.17.187.96
+
+
+Update AcceptanceTests\scripts\setEnvironmentVariables.ps1 to reflect this new ip address.
  
- - run setEnvironmentVariables.ps1 (from an elevated prompt)
+Copy environment variables from setEnvironmentVariables.ps1 and from an elevated powershell prompt paste these in.
  
- open visual studio project and run tests
+Open visual studio project and run tests (note VS should not be running when setting environment variables.
  
  
  ////////////////////////////// RUNNING ALL TESTS FROM BAT FILE //////////////////////
  after runLocal has finished, update/create container.txt in root of project repository to contain the newly created container id.
  
  - run runacceptancetests.bat
- 
- 
  
  
 *****************************************************************************

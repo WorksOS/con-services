@@ -44,9 +44,6 @@
     <WarningsAsErrors />
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5</DefineConstants>
-  </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
     <Reference Include="System" />

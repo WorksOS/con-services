@@ -19,10 +19,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.3" />
     <PackageReference Include="NewRelic.Agent.Api" Version="6.16.178" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="NodaTime" Version="2.2.0" />
     <PackageReference Include="System.Xml.Linq" Version="3.5.21022.801" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.2.*" />
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
