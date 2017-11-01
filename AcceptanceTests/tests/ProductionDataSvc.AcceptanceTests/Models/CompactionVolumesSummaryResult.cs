@@ -11,7 +11,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
   public class CompactionVolumesSummaryResult : RequestResult, IEquatable<CompactionVolumesSummaryResult>
   {
     #region Members
-    public CompactionVolumesSummaryData compactionVolumesSummaryData { get; set; }
+    public CompactionVolumesSummaryData volumeSummaryData { get; set; }
     #endregion
 
     #region Constructors
@@ -29,7 +29,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
-      return this.compactionVolumesSummaryData.Equals(other.compactionVolumesSummaryData) &&
+      return this.volumeSummaryData.Equals(other.volumeSummaryData) &&
              this.Code == other.Code &&
              this.Message == other.Message;
     }
