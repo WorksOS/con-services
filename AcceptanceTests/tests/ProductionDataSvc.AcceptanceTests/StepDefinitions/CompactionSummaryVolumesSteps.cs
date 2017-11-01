@@ -45,7 +45,19 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"filterUid ""(.*)""")]
     public void GivenFilterUid(string filterUid)
     {
-      volumesSummaryRequester.QueryString.Add("filterUid", filterUid);
+      if (!string.IsNullOrEmpty(filterUid))
+        { volumesSummaryRequester.QueryString.Add("filterUid", filterUid);}
     }
+
+    [Given(@"volumeCalcType ""(.*)"" and baseFilterUid ""(.*)"" and topFilterUid ""(.*)""")]
+    public void GivenVolumeCalcTypeAndBaseFilterUidAndTopFilterUid(int volumeCalcType, string baseFilterUid, string topFilterUid)
+    {
+      volumesSummaryRequester.QueryString.Add("volumeCalcType", volumeCalcType.ToString());
+      if (!string.IsNullOrEmpty(baseFilterUid))
+      { volumesSummaryRequester.QueryString.Add("baseFilterUid", baseFilterUid); }
+      if (!string.IsNullOrEmpty(topFilterUid))
+      { volumesSummaryRequester.QueryString.Add("topFilterUid", topFilterUid); }
+    }
+
   }
 }
