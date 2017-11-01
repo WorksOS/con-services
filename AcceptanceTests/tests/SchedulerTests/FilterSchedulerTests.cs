@@ -9,16 +9,14 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 
-//using VSS.Productivity3D.Scheduler.Common.Utilities;
-
 namespace SchedulerTests
 {
   [TestClass]
   public class FilterSchedulerTests : TestControllerBase
   {
     protected ILogger _log;
-    string filterCleanupJob = "FilterCleanupJob";
-    private int _bufferForDBUpdateMs = 200;
+    string FilterCleanupTask = "FilterCleanupTask";
+    private int _bufferForDBUpdateMs = 1000;
 
     [TestInitialize]
     public void Init()
@@ -32,27 +30,27 @@ namespace SchedulerTests
     [TestMethod]
     public void FilterScheduleTaskExists()
     {
-      var theJob = GetJob(HangfireConnection(), filterCleanupJob);
+      var theJob = GetJob(HangfireConnection(), FilterCleanupTask);
     
-      Assert.IsNotNull(theJob,$"{filterCleanupJob} not found");
-      Assert.AreEqual(filterCleanupJob, theJob.Id, "wrong job selected");
+      Assert.IsNotNull(theJob,$"{FilterCleanupTask} not found");
+      Assert.AreEqual(FilterCleanupTask, theJob.Id, "wrong job selected");
     }
 
     [TestMethod]
     public void FilterScheduleTaskNextRuntime()
     {
-      var theJob = GetJob(HangfireConnection(), filterCleanupJob);
+      var theJob = GetJob(HangfireConnection(), FilterCleanupTask);
 
-      Assert.IsNotNull(theJob, $"{filterCleanupJob} not found");
-      Assert.AreEqual(filterCleanupJob, theJob.Id, "wrong job selected");
-      Assert.IsNotNull(theJob.NextExecution, $"{filterCleanupJob} nextExecutionTime not found");
-      Assert.IsTrue(theJob.NextExecution < DateTime.UtcNow.AddMinutes(1).AddSeconds(1), $"{filterCleanupJob} nextExecutionTime not within one minute");
+      Assert.IsNotNull(theJob, $"{FilterCleanupTask} not found");
+      Assert.AreEqual(FilterCleanupTask, theJob.Id, "wrong job selected");
+      Assert.IsNotNull(theJob.NextExecution, $"{FilterCleanupTask} nextExecutionTime not found");
+      Assert.IsTrue(theJob.NextExecution < DateTime.UtcNow.AddMinutes(1).AddSeconds(1), $"{FilterCleanupTask} nextExecutionTime not within one minute");
     }
 
     [TestMethod]
     public void FilterScheduleTask_WaitForCleanup()
     {
-      var theJob = GetJob(HangfireConnection(), filterCleanupJob);
+      var theJob = GetJob(HangfireConnection(), FilterCleanupTask);
 
       string filterDbConnectionString = ConnectionUtils.GetConnectionString(configStore, _log, "_FILTER");
       var dbConnection = new MySqlConnection(filterDbConnectionString);
@@ -77,13 +75,17 @@ namespace SchedulerTests
       Assert.AreEqual(1,insertedCount,"Filter Not Inserted");
 
       Debug.Assert(theJob.NextExecution != null, "theJob.NextExecution != null");
-      var msToWait = (int)(theJob.NextExecution.Value - DateTime.UtcNow).TotalMilliseconds + _bufferForDBUpdateMs;
+
+      // todo is the NextExecution datetime not accurate e.g. actually done on some boundary?
+      var nextExec = theJob.NextExecution.Value;
+      var nowUTC = DateTime.UtcNow;
+      var msToWait = (int)(nextExec - nowUTC).TotalMilliseconds + _bufferForDBUpdateMs;
       if (msToWait > 0 )
         Thread.Sleep(msToWait);
       
       string selectFilter = string.Format($"SELECT FilterUID FROM Filter WHERE FilterUID = {empty}{filterUid}{empty}");
       var response = dbConnection.Query(selectFilter);
-      Console.WriteLine($"FilterScheduleTask_WaitForCleanup: msToWait {msToWait} _bufferForDBUpdateMs {_bufferForDBUpdateMs} insertFilter {insertFilter} selectFilter {selectFilter} response {JsonConvert.SerializeObject(response)} connectionString {dbConnection.ConnectionString}");
+      Console.WriteLine($"FilterScheduleTask_WaitForCleanup: nextExec {nextExec} nowUTC {nowUTC} _bufferForDBUpdateMs {_bufferForDBUpdateMs} msToWait {msToWait}  insertFilter {insertFilter} selectFilter {selectFilter} response {JsonConvert.SerializeObject(response)} connectionString {dbConnection.ConnectionString}");
 
       Assert.IsNotNull(response, "Should have a response.");
       Assert.AreEqual(0, response.Count(), "No filters should be returned.");

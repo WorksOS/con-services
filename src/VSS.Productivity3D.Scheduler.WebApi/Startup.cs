@@ -157,6 +157,19 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         expectedJobCount += 1;
       }
 
+      var importedProjectFileSyncTaskToRun = false;
+      if (!bool.TryParse(_configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_TASK_RUN"), out importedProjectFileSyncTaskToRun))
+      {
+        importedProjectFileSyncTaskToRun = false;
+      }
+      Console.WriteLine($"Scheduler.Startup: importedProjectFileTaskToRun {importedProjectFileSyncTaskToRun}");
+      if (importedProjectFileSyncTaskToRun)
+      {
+        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(_configStore, _loggerFactory);
+        importedProjectFileSyncTask.AddTask();
+        expectedJobCount += 1;
+      }
+
       var recurringJobsPost = JobStorage.Current.GetConnection().GetRecurringJobs();
       _log.LogInformation($"Scheduler.Configure: PostJobSetup count of existing recurring jobs {recurringJobsPost.Count()}");
       if (recurringJobsPost.Count < expectedJobCount)

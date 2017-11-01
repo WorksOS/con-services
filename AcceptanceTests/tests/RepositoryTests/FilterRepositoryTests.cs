@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace RepositoryTests
 {
   [TestClass]
   public class FilterRepositoryTests : TestControllerBase
   {
-    protected ILogger log;
-
     [TestInitialize]
     public void Init()
     {
       SetupDI();
-
-      log = LoggerFactory.CreateLogger<FilterRepositoryTests>();
-      Assert.IsNotNull(log, "log is null");
     }
 
     [TestMethod]

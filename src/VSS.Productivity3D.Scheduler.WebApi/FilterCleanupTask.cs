@@ -51,20 +51,20 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         taskIntervalMinutes = DefaultTaskIntervalDefaultMinutes;
       }
 
-      var FilterCleanupJob = "FilterCleanupJob";
+      var FilterCleanupTask = "FilterCleanupTask";
       string filterDbConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "_FILTER");
       _log.LogInformation($"FilterCleanupTask: ageInMinutesToDelete: {ageInMinutesToDelete} taskIntervalSeconds: {taskIntervalMinutes} filterDbConnectionString: {filterDbConnectionString}.");
       Console.WriteLine($"FilterCleanupTask: ageInMinutesToDelete: {ageInMinutesToDelete} taskIntervalSeconds: {taskIntervalMinutes} filterDbConnectionString: {filterDbConnectionString}.");
 
       try
       {
-        RecurringJob.AddOrUpdate(FilterCleanupJob,
-          () => DatabaseCleanupJob(filterDbConnectionString, ageInMinutesToDelete), Cron.MinuteInterval(taskIntervalMinutes));
+        RecurringJob.AddOrUpdate(FilterCleanupTask,
+          () => DatabaseCleanupTask(filterDbConnectionString, ageInMinutesToDelete), Cron.MinuteInterval(taskIntervalMinutes));
       }
       catch (Exception ex)
       {
-        _log.LogError($"FilterCleanupJob: Unable to schedule recurring job: DatabaseCleanup {ex.Message}");
-        throw new Exception("FilterCleanupJob: Unable to schedule recurring job: DatabaseCleanup");
+        _log.LogError($"FilterCleanupTask: Unable to schedule recurring job: DatabaseCleanup {ex.Message}");
+        throw new Exception("FilterCleanupTask: Unable to schedule recurring job: DatabaseCleanup");
       }
     }
 
@@ -73,23 +73,22 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     /// <param name="filterDbConnectionString"></param>
     /// <param name="ageInMinutesToDelete"></param>
-    public void DatabaseCleanupJob(string filterDbConnectionString, int ageInMinutesToDelete)
+    public void DatabaseCleanupTask(string filterDbConnectionString, int ageInMinutesToDelete)
     {
       var cutoffActionUtcToDelete = DateTime.UtcNow.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
-      _log.LogTrace($"FilterCleanupJob.DatabaseCleanupJob: starting. cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
-      Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: starting. cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
+      _log.LogTrace($"FilterCleanupTask.DatabaseCleanupTask: starting. cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
+      Console.WriteLine($"FilterCleanupTask.DatabaseCleanupTask: starting. cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
 
-      MySqlConnection dbConnection;
+      MySqlConnection dbConnection = new MySqlConnection(filterDbConnectionString);
       try
       {
-        dbConnection =new MySqlConnection(filterDbConnectionString);
         dbConnection.Open();
       }
       catch (Exception ex)
       {
-        _log.LogError($"FilterCleanupJob.DatabaseCleanupJob: open filter DB exeception {ex.Message}");
-        Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: open filter DB exeception {ex.Message}");
-        throw new Exception("FilterCleanupJob.DatabaseCleanupJob: open database exception");
+        _log.LogError($"FilterCleanupTask.DatabaseCleanupTask: open filter DB exeception {ex.Message}");
+        Console.WriteLine($"FilterCleanupTask.DatabaseCleanupTask: open filter DB exeception {ex.Message}");
+        throw new Exception("FilterCleanupTask.DatabaseCleanupTask: open database exception");
       }
 
       var empty = "\"";
@@ -98,21 +97,21 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       try
       {
         deletedCount = dbConnection.Execute(deleteCommand, cutoffActionUtcToDelete);
-        Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: connectionString {dbConnection.ConnectionString} deleteCommand {deleteCommand} deletedCount {deletedCount}");
+        Console.WriteLine($"FilterCleanupTask.DatabaseCleanupTask: connectionString {dbConnection.ConnectionString} deleteCommand {deleteCommand} deletedCount {deletedCount}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"FilterCleanupJob.DatabaseCleanupJob: execute exeception {ex.Message}");
-        Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: execute exeception {ex.Message}");
-        throw new Exception("FilterCleanupJob.DatabaseCleanupJob: delete from database exception");
+        _log.LogError($"FilterCleanupTask.DatabaseCleanupTask: execute exeception {ex.Message}");
+        Console.WriteLine($"FilterCleanupTask.DatabaseCleanupTask: execute exeception {ex.Message}");
+        throw new Exception("FilterCleanupTask.DatabaseCleanupTask: delete from database exception");
       }
       finally
       {
-        dbConnection.Close(); 
+        dbConnection.Close();
+        Console.WriteLine($"FilterCleanupTask.DatabaseCleanupTask: dbConnection.Close");
       }
 
-      _log.LogTrace($"FilterCleanupJob.DatabaseCleanupJob: completed successfully. CutoffActionUtcDeleted: {cutoffActionUtcToDelete} deletedCount: {deletedCount}");
-      //Console.WriteLine($"FilterCleanupJob.DatabaseCleanupJob: completed successfully. CutoffActionUtcDeleted: {cutoffActionUtcToDelete} deletedCount: {deletedCount}");
+      _log.LogTrace($"FilterCleanupTask.DatabaseCleanupTask: completed successfully. CutoffActionUtcDeleted: {cutoffActionUtcToDelete} deletedCount: {deletedCount}");
     }
   }
 }

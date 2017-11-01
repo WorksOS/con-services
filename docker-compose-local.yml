@@ -11,6 +11,7 @@ services:
     depends_on:
       - schema
       - filterschema
+      - projectschema
       - db
   filterschema:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest
@@ -20,6 +21,14 @@ services:
      - MYSQL_DATABASE_NAME=VSS-Productivity3D-Filter
     depends_on:
       - db
+  projectschema:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    env_file:
+     - docker-compose-local.env
+    environment:
+     - MYSQL_DATABASE_NAME=VSS-Productivity3D-Project
+    depends_on:
+      - db      
   schema:
     build: ./database
     env_file:
