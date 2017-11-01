@@ -362,43 +362,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetSummaryVolumes: " + Request.QueryString);
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
-      Filter baseFilter = null;
-      Filter topFilter = null;
 
-      switch (volumeCalcType)
-      {
-        case RaptorConverters.VolumesType.BetweenDesignAndFilter: //DesignToGround
-          {
-            topFilter = topFilterUid.HasValue
-              ? await GetCompactionFilter(projectUid, topFilterUid)
-              : null;
-
-            break;
-          }
-        case RaptorConverters.VolumesType.BetweenFilterAndDesign: //GroundToDesign
-          {
-            baseFilter = baseFilterUid.HasValue
-              ? await GetCompactionFilter(projectUid, baseFilterUid, returnEarliest: true)
-              : null;
-
-            break;
-          }
-        case RaptorConverters.VolumesType.Between2Filters: //GroundToGround
-          {
-            topFilter = topFilterUid.HasValue
-              ? await GetCompactionFilter(projectUid, topFilterUid)
-              : null;
-
-            baseFilter = baseFilterUid.HasValue
-              ? await GetCompactionFilter(projectUid, baseFilterUid, returnEarliest: true)
-              : null;
-
-            break;
-          }
-      }
-
-      baseFilter = baseFilter ?? await GetCompactionFilter(projectUid, baseFilterUid, returnEarliest: true);
-      topFilter = topFilter ?? await GetCompactionFilter(projectUid, topFilterUid);
+      Filter baseFilter = await GetCompactionFilter(projectUid, baseFilterUid, returnEarliest: true);
+      Filter topFilter = await GetCompactionFilter(projectUid, topFilterUid);
 
       DesignDescriptor baseDesign = null;
       DesignDescriptor topDesign = null;
@@ -412,7 +378,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           }
         case RaptorConverters.VolumesType.BetweenFilterAndDesign: //GroundToDesign
           {
-            topDesign = await GetDesignDescriptor(projectUid, topDesignUid);
+            topDesign = await GetDesignDescriptor(projectUid, topDesignUid)
+              ;
             break;
           }
       }
@@ -617,6 +584,5 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     #endregion
-
   }
 }
