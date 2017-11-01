@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Productivity3D.Common.MapHandling;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 
 namespace VSS.Productivity3D.WebApiTests.Notification.Helpers

@@ -22,7 +22,6 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApiModels.Extensions;
-using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Filter = VSS.Productivity3D.Common.Models.Filter;
 
