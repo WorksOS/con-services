@@ -13,26 +13,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
     private CompactionSummaryVolumesResult()
     { }
 
-    [JsonProperty(PropertyName = "netVolume")]
-    public double NetVolume { get; private set; }
-
-    [JsonProperty(PropertyName = "totalVolume")]
-    public double TotalVolume { get; private set; }
-
-    [JsonProperty(PropertyName = "totalCutVolume")]
-    public double TotalCutVolume { get; private set; }
-
-    [JsonProperty(PropertyName = "totalFillVolume")]
-    public double TotalFillVolume { get; private set; }
-
-    [JsonProperty(PropertyName = "totalMachineCoveragePlanArea")]
-    public double TotalMachineCoveragePlanArea { get; private set; }
-
-    [JsonProperty(PropertyName = "shrinkage")]
-    public double Shrinkage { get; private set; }
-
-    [JsonProperty(PropertyName = "bulking")]
-    public double Bulking { get; private set; }
+    [JsonProperty(PropertyName = "volumeSummaryData")]
+    public SummaryVolumesData SummaryVolumeData { get; private set; }
 
     public static CompactionSummaryVolumesResult CreateInstance(SummaryVolumesResult resultObj, CompactionProjectSettings projectSettings)
     {
@@ -53,16 +35,42 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 
       return new CompactionSummaryVolumesResult
       {
+        SummaryVolumeData = new SummaryVolumesData{
         Bulking = totalCutVolume,
         Shrinkage = totalFillVolume,
         TotalCutVolume = totalCutVolume,
         TotalFillVolume = totalFillVolume,
         TotalMachineCoveragePlanArea = resultObj.TotalCoverageArea,
         TotalVolume = totalVolume,
-        NetVolume = surplusDeficitVolume,
+        NetVolume = surplusDeficitVolume
+        },
         Code = resultObj.Code,
         Message = resultObj.Message
       };
     }
+  }
+
+  public class SummaryVolumesData
+  {
+    [JsonProperty(PropertyName = "netVolume")]
+    public double NetVolume;
+
+    [JsonProperty(PropertyName = "totalVolume")]
+    public double TotalVolume;
+
+    [JsonProperty(PropertyName = "totalCutVolume")]
+    public double TotalCutVolume;
+
+    [JsonProperty(PropertyName = "totalFillVolume")]
+    public double TotalFillVolume;
+
+    [JsonProperty(PropertyName = "totalMachineCoveragePlanArea")]
+    public double TotalMachineCoveragePlanArea;
+
+    [JsonProperty(PropertyName = "shrinkage")]
+    public double Shrinkage;
+
+    [JsonProperty(PropertyName = "bulking")]
+    public double Bulking;
   }
 }
