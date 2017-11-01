@@ -264,27 +264,27 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public async Task AssetIDExecutor_ExistingProjectAndDeviceAndCustomerSub()
+    public async Task AssetIDExecutor_ExistingProjectAndDevice_WithProjectCustomerSub()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid? owningCustomerUID = Guid.NewGuid();
+      Guid? assetCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
-      var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID,
+      var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, assetCustomerUID, deviceUID,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
 
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      Guid customerUID = owningCustomerUID.Value;
-      CreateCustomer(customerUID, "");
-      isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID);
+      Guid projectCustomerUID = Guid.NewGuid();
+      CreateCustomer(projectCustomerUID, "");
+      isCreatedOk = CreateProject(projectUID, legacyProjectId, projectCustomerUID);
       Assert.IsTrue(isCreatedOk, "created project");
 
-      isCreatedOk = CreateCustomerSub(customerUID, "Manual 3D Project Monitoring");
-      Assert.IsTrue(isCreatedOk, "created Customer subscription");
+      isCreatedOk = CreateCustomerSub(projectCustomerUID, "Manual 3D Project Monitoring");
+      Assert.IsTrue(isCreatedOk, "created man3d sub on the Projects Customer");
 
       GetAssetIdRequest assetIdRequest =
         GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, (int) deviceType, deviceSerialNumber);
@@ -293,6 +293,85 @@ namespace ExecutorTests
       var executor =
         RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore, 
           assetRepo, deviceRepo, customerRepo, 
+          projectRepo, subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsTrue(result.Result, "successful");
+      Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
+      Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
+    }
+
+    [TestMethod]
+    public async Task AssetIDExecutor_ExistingProjectAndDevice_WithAssetCustomerSub()
+    {
+      Guid assetUID = Guid.NewGuid();
+      long legacyAssetId = new Random().Next(0, int.MaxValue);
+      Guid? assetCustomerUID = Guid.NewGuid();
+      Guid deviceUID = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUID;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, assetCustomerUID, deviceUID,
+        deviceSerialNumber, deviceType.ToString());
+      Assert.IsTrue(isCreatedOk, "created assetDevice association");
+
+      Guid projectUID = Guid.NewGuid();
+      int legacyProjectId = new Random().Next(0, int.MaxValue);
+      Guid projectCustomerUID = Guid.NewGuid();
+      CreateCustomer(projectCustomerUID, "");
+      isCreatedOk = CreateProject(projectUID, legacyProjectId, projectCustomerUID);
+      Assert.IsTrue(isCreatedOk, "created project");
+
+      isCreatedOk = CreateCustomerSub(assetCustomerUID.Value, "Manual 3D Project Monitoring");
+      Assert.IsTrue(isCreatedOk, "created man3d sub on the Assets Customer");
+
+      GetAssetIdRequest assetIdRequest =
+        GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, (int)deviceType, deviceSerialNumber);
+      assetIdRequest.Validate();
+
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore,
+          assetRepo, deviceRepo, customerRepo,
+          projectRepo, subscriptionRepo);
+      var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsTrue(result.Result, "successful");
+      Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
+      Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
+    }
+
+    [TestMethod]
+    public async Task AssetIDExecutor_ExistingProjectAndDevice_WithProjectAndAssetCustomerSub()
+    {
+      Guid assetUID = Guid.NewGuid();
+      long legacyAssetId = new Random().Next(0, int.MaxValue);
+      Guid? assetCustomerUID = Guid.NewGuid();
+      Guid deviceUID = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUID;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, assetCustomerUID, deviceUID,
+        deviceSerialNumber, deviceType.ToString());
+      Assert.IsTrue(isCreatedOk, "created assetDevice association");
+
+      Guid projectUID = Guid.NewGuid();
+      int legacyProjectId = new Random().Next(0, int.MaxValue);
+      Guid projectCustomerUID = Guid.NewGuid();
+      CreateCustomer(projectCustomerUID, "");
+      isCreatedOk = CreateProject(projectUID, legacyProjectId, projectCustomerUID);
+      Assert.IsTrue(isCreatedOk, "created project");
+
+      isCreatedOk = CreateCustomerSub(projectCustomerUID, "Manual 3D Project Monitoring");
+      Assert.IsTrue(isCreatedOk, "created man3d sub on the Projects Customer");
+
+      isCreatedOk = CreateCustomerSub(assetCustomerUID.Value, "Manual 3D Project Monitoring");
+      Assert.IsTrue(isCreatedOk, "created man3d sub on the Assets Customer");
+
+      GetAssetIdRequest assetIdRequest =
+        GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, (int)deviceType, deviceSerialNumber);
+      assetIdRequest.Validate();
+
+      var executor =
+        RequestExecutorContainer.Build<AssetIdExecutor>(logger, configStore,
+          assetRepo, deviceRepo, customerRepo,
           projectRepo, subscriptionRepo);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");

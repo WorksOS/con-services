@@ -37,8 +37,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       bool result = false;
 
       Project project = null;
-      IEnumerable<Subscriptions> customerSubs = null;
-      IEnumerable<Subscriptions> assetSubs = null;
+      IEnumerable<Subscriptions> projectCustomerSubs = new List<Subscriptions>();
+      IEnumerable<Subscriptions> assetCustomerSubs = new List<Subscriptions>();
+      IEnumerable<Subscriptions> assetSubs = new List<Subscriptions>(); 
 
       // legacyProjectId can exist with and without a radioSerial so set this up early
       if (request.projectId > 0)
@@ -48,8 +49,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         if (project != null)
         {
-          customerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow);
-          log.LogDebug("AssetIdExecutor: Loaded projectsCustomerSubs? {0}", JsonConvert.SerializeObject(customerSubs));
+          projectCustomerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow);
+          log.LogDebug("AssetIdExecutor: Loaded projectsCustomerSubs? {0}", JsonConvert.SerializeObject(projectCustomerSubs));
         }
       }
 
@@ -63,8 +64,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //If ok then set asset Id to -1 so Raptor knows it's a John Doe machine and set serviceType machineLevel to 18 "Manual 3D PM"
         if (project != null)
         {
-          CheckForManual3DCustomerBasedSub(request.projectId, customerSubs, assetSubs, out legacyAssetId,
-            out serviceType);
+          CheckForManual3DCustomerBasedSub(request.projectId, projectCustomerSubs, out legacyAssetId, out serviceType);
         }
       }
       else
@@ -87,20 +87,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           assetSubs = await dataRepository.LoadAssetSubs(assetDevice.AssetUID, DateTime.UtcNow);
           log.LogDebug("AssetIdExecutor: Loaded assetSubs? {0}", JsonConvert.SerializeObject(assetSubs));
 
-          // OwningCustomerUID should always be present, but bug in MD airlift means that most are missing.
-          customerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID, DateTime.UtcNow);
-          log.LogDebug("AssetIdExecutor: Loaded assetsCustomerSubs? {0}", JsonConvert.SerializeObject(customerSubs));
+          // should this append to any assetCustomerSubs which may have come from Project.CustomerUID above?
+          assetCustomerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID, DateTime.UtcNow);
+          log.LogDebug("AssetIdExecutor: Loaded assetsCustomerSubs? {0}", JsonConvert.SerializeObject(assetCustomerSubs));
 
-          serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project, customerSubs, assetSubs);
+          serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project, projectCustomerSubs, assetCustomerSubs, assetSubs);
           log.LogDebug(
             "AssetIdExecutor: after GetMostSignificantServiceType(). AssetUID {0} project{1} custSubs {2} assetSubs {3}",
-            assetDevice.AssetUID, JsonConvert.SerializeObject(project), JsonConvert.SerializeObject(customerSubs),
+            assetDevice.AssetUID, JsonConvert.SerializeObject(project), JsonConvert.SerializeObject(projectCustomerSubs),
             JsonConvert.SerializeObject(assetSubs));
         }
         else
         {
-          CheckForManual3DCustomerBasedSub(request.projectId, customerSubs, assetSubs, out legacyAssetId,
-            out serviceType);
+          CheckForManual3DCustomerBasedSub(request.projectId, projectCustomerSubs, out legacyAssetId, out serviceType);
         }
       }
 
@@ -127,19 +126,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
 
     private void CheckForManual3DCustomerBasedSub(long legacyProjectId,
-              IEnumerable<Subscriptions> customerSubs, IEnumerable<Subscriptions> assetSubs,
+              IEnumerable<Subscriptions> customerSubs, 
               out long legacyAssetId, out int serviceType)
     {
       // these are CustomerBased and no legacyAssetID will be returned
       legacyAssetId = -1;
       serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").CGEnum;
-      log.LogDebug("AssetIdExecutor: CheckForManual3DCustomerBasedSub(). projectId {0} custSubs {1} assetSubs {2}", legacyProjectId, JsonConvert.SerializeObject(customerSubs), JsonConvert.SerializeObject(assetSubs));
+      log.LogDebug("AssetIdExecutor: CheckForManual3DCustomerBasedSub(). projectId {0} custSubs {1}", legacyProjectId, JsonConvert.SerializeObject(customerSubs));
 
       if (legacyProjectId > 0)
       {
         log.LogDebug("AssetIdExecutor: project ID non-zero so manual import for project - about to check for manual 3D subscription. legacyProjectId {0}", legacyProjectId);
 
-        if (customerSubs != null && customerSubs.Count() > 0)
+        if (customerSubs != null && customerSubs.Any())
         {
           legacyAssetId = -1;   //Raptor needs to know it's a John Doe machine i.e. not a VL asset
           serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Manual 3D Project Monitoring").CGEnum;
@@ -149,21 +148,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     }
 
     private int GetMostSignificantServiceType(string assetUID, Project project,
-      IEnumerable<Subscriptions> customerSubs, IEnumerable<Subscriptions> assetSubs)
+      IEnumerable<Subscriptions> projectCustomerSubs, IEnumerable<Subscriptions> assetCustomerSubs, IEnumerable<Subscriptions> assetSubs)
     {
       log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() for asset UID {0} and project UID {1}", assetUID, JsonConvert.SerializeObject(project));
 
       int serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
 
       IEnumerable<Subscriptions> subs = new List<Subscriptions>();
-      if (customerSubs != null && customerSubs.Count() > 0) subs = subs.Concat(customerSubs.Select(s => s));
-      if (assetSubs != null && assetSubs.Count() > 0)
-      {
-        subs = subs.Concat(assetSubs.Select(s => s));
-      }
+      if (projectCustomerSubs != null && projectCustomerSubs.Any()) subs = subs.Concat(projectCustomerSubs.Select(s => s));
+      if (assetCustomerSubs != null && assetCustomerSubs.Any()) subs = subs.Concat(assetCustomerSubs.Select(s => s));
+      if (assetSubs != null && assetSubs.Any()) subs = subs.Concat(assetSubs.Select(s => s));
+
       log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() subs being checked {0}", JsonConvert.SerializeObject(subs));
 
-      if (subs != null && subs.Count() > 0)
+      if (subs.Any())
       {
         //Look for highest level machine subscription which is current
         int utcNowKeyDate = DateTime.UtcNow.KeyDate();
