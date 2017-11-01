@@ -152,6 +152,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CompactionSpeed.feature</DependentUpon>
     </Compile>
+    <Compile Include="CompactionSummaryVolumes.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionSummaryVolumes.feature</DependentUpon>
+    </Compile>
     <Compile Include="CompactionTagFile.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -289,6 +294,7 @@
     <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Models\CompactionTemperatureSummaryResult.cs" />
     <Compile Include="Models\CompactionTileRequest.cs" />
+    <Compile Include="Models\CompactionVolumesSummaryResult.cs" />
     <Compile Include="Models\ConfigResult.cs" />
     <Compile Include="Models\CoordinateConversion.cs" />
     <Compile Include="Models\CoordinateSystemFile.cs" />

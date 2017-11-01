@@ -2,7 +2,7 @@
 	I should be able to request Summary Volumes.
 
 Background: 
-	Given the Summary Volumes service URI "/api/v2/compaction/volumes/summary", request repo "CompactionSummaryVolumeRequest.json" and result repo "CompactionSummaryVolumeResponse.json"
+	Given the Summary Volumes service URI "/api/v1/volumes/summary", request repo "SummaryVolumeRequest.json" and result repo "SummaryVolumeResponse.json"
 
 @requireSurveyedSurface
 Scenario Outline: SummaryVolumes - Good Request

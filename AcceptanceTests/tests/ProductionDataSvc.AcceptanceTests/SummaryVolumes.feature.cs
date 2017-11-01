@@ -72,9 +72,8 @@ namespace ProductionDataSvc.AcceptanceTests
         {
 #line 4
 #line 5
- testRunner.Given("the Summary Volumes service URI \"/api/v2/compaction/volumes/summary\", request rep" +
-                    "o \"CompactionSummaryVolumeRequest.json\" and result repo \"CompactionSummaryVolume" +
-                    "Response.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Summary Volumes service URI \"/api/v1/volumes/summary\", request repo \"SummaryV" +
+                    "olumeRequest.json\" and result repo \"SummaryVolumeResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
         }
         
