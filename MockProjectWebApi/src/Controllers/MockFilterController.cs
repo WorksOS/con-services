@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using MockProjectWebApi.Json;
 using VSS.MasterData.Models.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -39,7 +40,8 @@ namespace MockProjectWebApi.Controllers
     private FilterData GetFilter(string projectUid, string filterUid)
     {
       var filters = GetFilters(projectUid);
-      var filter = filters.filterDescriptors.SingleOrDefault(f => f.FilterUid == filterUid);
+      var filter = filters.filterDescriptors.SingleOrDefault(s => string.Equals(s.FilterUid, filterUid, StringComparison.CurrentCultureIgnoreCase));
+
       if (filter == null)
       {
         return new FilterData
@@ -69,8 +71,7 @@ namespace MockProjectWebApi.Controllers
             {
               FilterUid = "200c7b47-b5e6-48ee-a731-7df6623412da",
               Name = "Elevation Range and Palette No Data Filter",
-              FilterJson =
-                "{\"startUTC\":\"2017-01-01\",\"endUTC\":\"2017-01-01\",\"designUid\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
+              FilterJson = JsonResourceHelper.GetFilterJson("ElevationRangeAndPaletteNoDataFilter")
             },
             new FilterDescriptor
             {
@@ -97,6 +98,18 @@ namespace MockProjectWebApi.Controllers
               FilterUid = "a37f3008-65e5-44a8-b406-9a078ec62ece",
               Name = "Dimensions boundary CMV",
               FilterJson = "{\"polygonUID\":\"c910d127-5e3c-453f-82c3-e235848ac20e\",\"polygonName\":\"Dimensions boundary CMV\",\"polygonLL\":[{\"Lat\":36.207183,\"Lon\":-115.020509},{\"Lat\":36.206862,\"Lon\":-115.020187},{\"Lat\":36.207174,\"Lon\":-115.019731}]}"
+            },
+            new FilterDescriptor
+            {
+              FilterUid = "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B",
+              Name = "Summary volumes BaseFilter",
+              FilterJson = JsonResourceHelper.GetFilterJson("SummaryVolumesBaseFilter")
+            },
+            new FilterDescriptor
+            {
+              FilterUid = "A40814AA-9CDB-4981-9A21-96EA30FFECDD",
+              Name = "Summary volumes TopFilter",
+              FilterJson = JsonResourceHelper.GetFilterJson("SummaryVolumesTopFilter")
             }
           }
         };
