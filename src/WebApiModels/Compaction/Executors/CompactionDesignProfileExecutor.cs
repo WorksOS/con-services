@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Logging;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -12,12 +12,10 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Velociraptor.PDSInterface.DesignProfile;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
   /// <summary>
   /// Get production data profile calculations executor.
@@ -44,7 +42,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
           positionsAreGrid);
 
-        var memoryStream = raptorClient.GetDesignProfile(designProfile);
+        var memoryStream = this.raptorClient.GetDesignProfile(designProfile);
 
         if (memoryStream != null)
         {
@@ -58,7 +56,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       }
       finally
       {
-        ContractExecutionStates.ClearDynamic();
+        this.ContractExecutionStates.ClearDynamic();
       }
 
       return result;
@@ -82,7 +80,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       }
       finally
       {
-        ContractExecutionStates.ClearDynamic();
+        this.ContractExecutionStates.ClearDynamic();
       }
 
       return result;
@@ -90,7 +88,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
     private CompactionProfileResult<CompactionProfileVertex> ConvertProfileResult(MemoryStream ms)
     {
-      log.LogDebug("Converting profile result");
+      this.log.LogDebug("Converting profile result");
 
       var profileResult = new CompactionProfileResult<CompactionProfileVertex>();
       var pdsiProfile = new DesignProfile();

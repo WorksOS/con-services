@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using SVOICVolumeCalculationsDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -20,6 +19,7 @@ using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
@@ -362,37 +362,60 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetSummaryVolumes: " + Request.QueryString);
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
-      Filter baseFilter = await GetCompactionFilter(projectUid, baseFilterUid, returnEarliest: true);
-      Filter topFilter = await GetCompactionFilter(projectUid, topFilterUid);
+      Filter baseFilter = null;
+      Filter topFilter = null;
 
-      // TODO (Aaron) review whether these are mutually exclusive and one should be EmptyDesignDescriptor.
-      var baseDesign = await GetDesignDescriptor(projectUid, baseDesignUid, false);
-      var topDesign = await GetDesignDescriptor(projectUid, topDesignUid, false);
+      switch (volumeCalcType)
+      {
+        case RaptorConverters.VolumesType.BetweenDesignAndFilter: //DesignToGround
+          {
+            topFilter = topFilterUid.HasValue
+              ? await GetCompactionFilter(projectUid, topFilterUid)
+              : null;
 
-      //switch (volumeCalcType)
-      //{
-      //  case (int)TComputeICVolumesType.ic_cvtBetweenDesignAndFilter: //DesignToGround          
-      //    topDesign = ProjectMonitoring.EmptyDesignDescriptor();
-      //    baseDesign = ProjectMonitoring.GetDesignDescriptor(ctx, baseDesignID, projectID);
-      //    break;
+            break;
+          }
+        case RaptorConverters.VolumesType.BetweenFilterAndDesign: //GroundToDesign
+          {
+            baseFilter = baseFilterUid.HasValue
+              ? await GetCompactionFilter(projectUid, baseFilterUid, returnEarliest: true)
+              : null;
 
-      //  case (int)TComputeICVolumesType.ic_cvtBetweenFilterAndDesign: //GroundToDesign
-      //    baseDesign = ProjectMonitoring.EmptyDesignDescriptor();
-      //    topDesign = ProjectMonitoring.GetDesignDescriptor(ctx, topDesignID, projectID);
-      //    break;
+            break;
+          }
+        case RaptorConverters.VolumesType.Between2Filters: //GroundToGround
+          {
+            topFilter = topFilterUid.HasValue
+              ? await GetCompactionFilter(projectUid, topFilterUid)
+              : null;
 
-      //  case (int)TComputeICVolumesType.ic_cvtBetween2Filters: //GroundToGround
-      //    topDesign = ProjectMonitoring.EmptyDesignDescriptor();
-      //    baseDesign = ProjectMonitoring.EmptyDesignDescriptor();
-      //    break;
+            baseFilter = baseFilterUid.HasValue
+              ? await GetCompactionFilter(projectUid, baseFilterUid, returnEarliest: true)
+              : null;
 
-      //  default:
-      //    topDesign = ProjectMonitoring.EmptyDesignDescriptor();
-      //    baseDesign = ProjectMonitoring.EmptyDesignDescriptor();
-      //    break;
-      //}
+            break;
+          }
+      }
 
+      baseFilter = baseFilter ?? await GetCompactionFilter(projectUid, baseFilterUid, returnEarliest: true);
+      topFilter = topFilter ?? await GetCompactionFilter(projectUid, topFilterUid);
 
+      DesignDescriptor baseDesign = null;
+      DesignDescriptor topDesign = null;
+
+      switch (volumeCalcType)
+      {
+        case RaptorConverters.VolumesType.BetweenDesignAndFilter: //DesignToGround
+          {
+            baseDesign = await GetDesignDescriptor(projectUid, baseDesignUid);
+            break;
+          }
+        case RaptorConverters.VolumesType.BetweenFilterAndDesign: //GroundToDesign
+          {
+            topDesign = await GetDesignDescriptor(projectUid, topDesignUid);
+            break;
+          }
+      }
 
       var request = SummaryVolumesRequest.CreateAndValidate(
         projectId,

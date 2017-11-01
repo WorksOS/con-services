@@ -1,10 +1,10 @@
-﻿using ASNode.Volumes.RPC;
+﻿using System;
+using System.Net;
+using ASNode.Volumes.RPC;
 using ASNodeDecls;
 using BoundingExtents;
 using SVOICOptionsDecls;
 using SVOICVolumeCalculationsDecls;
-using System;
-using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
@@ -13,7 +13,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   public class SummaryVolumesExecutor : RequestExecutorContainer
   {
@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 
       if (request.CutTolerance != null && request.FillTolerance != null)
       {
-        success = raptorClient.GetSummaryVolumes(request.projectId ?? -1,
+        success = this.raptorClient.GetSummaryVolumes(request.projectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtVolumeSummary),
           volType,
@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       }
       else
       {
-        success = raptorClient.GetSummaryVolumes(request.projectId ?? -1,
+        success = this.raptorClient.GetSummaryVolumes(request.projectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtVolumeSummary),
           volType,
