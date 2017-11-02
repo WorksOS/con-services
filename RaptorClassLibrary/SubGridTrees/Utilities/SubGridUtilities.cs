@@ -85,7 +85,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
                             {
                                 CreatedANewSubgrid = true;
 
-                                /* TODO ... Locking semantics not defined for Inite
+                                /* TODO ... Locking semantics not defined for Ignite
                                 SubGridLockAcquired = SubGrid.AcquireLock(LockToken);
                                 if (!SubGridLockAcquired)
                                 {
