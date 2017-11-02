@@ -110,8 +110,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var settings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      var baseFilter = await GetCompactionFilter(projectUid, baseFilterUid);
-      var topFilter = await GetCompactionFilter(projectUid, topFilterUid);
+      var baseFilter = await GetCompactionFilter(projectUid, baseFilterUid, true);
+      var topFilter = await GetCompactionFilter(projectUid, topFilterUid, false);
       var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid, true);
       var volumeDesign = await GetDesignDescriptor(projectUid, volumeDesignUid, true);
 
