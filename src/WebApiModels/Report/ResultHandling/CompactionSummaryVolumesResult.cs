@@ -35,14 +35,15 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 
       return new CompactionSummaryVolumesResult
       {
-        SummaryVolumeData = new SummaryVolumesData{
-        Bulking = totalCutVolume,
-        Shrinkage = totalFillVolume,
-        TotalCutVolume = totalCutVolume,
-        TotalFillVolume = totalFillVolume,
-        TotalMachineCoveragePlanArea = resultObj.TotalCoverageArea,
-        TotalVolume = totalVolume,
-        NetVolume = surplusDeficitVolume
+        SummaryVolumeData = new SummaryVolumesData
+        {
+          Bulking = projectSettings.VolumeBulkingPercent,
+          Shrinkage = projectSettings.VolumeShrinkagePercent,
+          TotalCutVolume = totalCutVolume,
+          TotalFillVolume = totalFillVolume,
+          TotalMachineCoveragePlanArea = resultObj.TotalCoverageArea,
+          TotalVolume = totalVolume,
+          NetVolume = surplusDeficitVolume
         },
         Code = resultObj.Code,
         Message = resultObj.Message
