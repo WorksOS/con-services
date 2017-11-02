@@ -987,20 +987,20 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       };
       var y2Values = new List<float?>
       {
-        (float?)null,
-        (float?)null,
-        (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
         useY2 ? 1.2F : (float?)null,
         useY2 ? 1.4F : (float?)null,
-        (float?)null,
-        (float?)null,
-        (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
         useY2 ? 1.4F : (float?)null,
         useY2 ? 1.9F : (float?)null,
-        (float?)null,
-        (float?)null,
-        (float?)null,
-        (float?)null
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null
       };
       CompactionProfileResult<CompactionProfileDataResult> result =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -1480,9 +1480,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       {
         useY2 ? 1.7F : (float?)null,
         useY2 ? 1.4F : (float?)null,
-        (float?)null,
+        useY2 ? float.NaN : (float?)null,
         useY2 ? 1.1F : (float?)null,
-        (float?)null,
+        useY2 ? float.NaN : (float?)null,
         useY2 ? 1.3F : (float?)null,
         useY2 ? 1.9F : (float?)null
       };

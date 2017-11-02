@@ -467,7 +467,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         foreach (var point in profileResult.data)
         {
           bool noValue = point.type.StartsWith("passCount") ? point.value == -1 : float.IsNaN(point.value);
-          bool noY = point.type == CompactionDataPoint.SUMMARY_VOLUMES && isDesignToGround ? !point.y2.HasValue || float.IsNaN(point.y2.Value) : float.IsNaN(point.y);
+          bool noY = point.type == CompactionDataPoint.SUMMARY_VOLUMES && isDesignToGround ? point.y2.HasValue && float.IsNaN(point.y2.Value) : float.IsNaN(point.y);
           if (noY || noValue)
             point.cellType = ProfileCellType.Gap;
         }
