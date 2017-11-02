@@ -462,48 +462,54 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       foreach (var profileResult in result.results)
       {
-        //Identify all the gaps. All data with NaN elevation or value is effectively a gap.
-        //The exception is a summary volumes profile that is design to ground where y is NaN as it will be set later using the design. In this case use y2.
-        foreach (var point in profileResult.data)
+        if (profileResult.data.Count > 0)
         {
-          bool noValue = point.type.StartsWith("passCount") ? point.value == -1 : float.IsNaN(point.value);
-          bool noY = point.type == CompactionDataPoint.SUMMARY_VOLUMES && isDesignToGround ? point.y2.HasValue && float.IsNaN(point.y2.Value) : float.IsNaN(point.y);
-          if (noY || noValue)
-            point.cellType = ProfileCellType.Gap;
-        }
-
-        //Now remove repeated gaps.
-        //Always keep first and last points as they are the slicer end points
-        CompactionDataPoint prevData = profileResult.data[0];
-        bool haveGap = prevData.cellType == ProfileCellType.Gap;
-        List<CompactionDataPoint> newList = new List<CompactionDataPoint> { prevData };
-        for (int i = 1; i < profileResult.data.Count - 1; i++)
-        {
-          if (profileResult.data[i].cellType == ProfileCellType.Gap)
+          //Identify all the gaps. All data with NaN elevation or value is effectively a gap.
+          //The exception is a summary volumes profile that is design to ground where y is NaN as it will be set later using the design. In this case use y2.
+          foreach (var point in profileResult.data)
           {
-            if (!haveGap)
+            bool noValue = point.type.StartsWith("passCount") ? point.value == -1 : float.IsNaN(point.value);
+            bool noY = point.type == CompactionDataPoint.SUMMARY_VOLUMES && isDesignToGround
+              ? point.y2.HasValue && float.IsNaN(point.y2.Value)
+              : float.IsNaN(point.y);
+            if (noY || noValue)
+              point.cellType = ProfileCellType.Gap;
+          }
+
+          //Now remove repeated gaps.
+          //Always keep first and last points as they are the slicer end points
+          CompactionDataPoint prevData = profileResult.data[0];
+          bool haveGap = prevData.cellType == ProfileCellType.Gap;
+          List<CompactionDataPoint> newList = new List<CompactionDataPoint> {prevData};
+          for (int i = 1; i < profileResult.data.Count - 1; i++)
+          {
+            if (profileResult.data[i].cellType == ProfileCellType.Gap)
             {
-              //This is the start of a gap - keep it
-              haveGap = true;
+              if (!haveGap)
+              {
+                //This is the start of a gap - keep it
+                haveGap = true;
+                newList.Add(profileResult.data[i]);
+              }
+              //else ignore it - repeated gap
+            }
+            else
+            {
+              //A data point - keep it
+              haveGap = false;
               newList.Add(profileResult.data[i]);
             }
-            //else ignore it - repeated gap
           }
-          else
+          newList.Add(profileResult.data[profileResult.data.Count - 1]);
+          //If the only 2 points are the slicer end points and they have no data then
+          //remove them and return an empty list to indicate no profile data at all.
+          if (newList.Count == 2 && newList[0].cellType == ProfileCellType.Gap &&
+              newList[1].cellType == ProfileCellType.Gap)
           {
-            //A data point - keep it
-            haveGap = false;
-            newList.Add(profileResult.data[i]);
+            newList.RemoveRange(0, 2);
           }
+          profileResult.data = newList;
         }
-        newList.Add(profileResult.data[profileResult.data.Count - 1]);
-        //If the only 2 points are the slicer end points and they have no data then
-        //remove them and return an empty list to indicate no profile data at all.
-        if (newList.Count == 2 && newList[0].cellType == ProfileCellType.Gap && newList[1].cellType == ProfileCellType.Gap)
-        {
-          newList.RemoveRange(0, 2);
-        }
-        profileResult.data = newList;
       }
     }
 
