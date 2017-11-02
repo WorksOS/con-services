@@ -339,13 +339,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Get the summary volumes report from Raptor. Either legacy project ID or project UID must be provided.
+    /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="baseUid">The Filter Uid that defines the base</param>
-    /// <param name="topUid">The Filter or Design Uid for the top</param>
-    /// <param name="volumeCalcType"></param>
-    /// <returns></returns>
+    /// <param name="projectUid">The project Uid.</param>
+    /// <param name="baseUid">The Uid for the base surface, either a filter or design.</param>
+    /// <param name="topUid">The Uid for the top surface, either a filter or design.</param>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/volumes/summary")]
     [HttpGet]
@@ -358,27 +356,52 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
 
-      Filter baseFilter = await GetCompactionFilter(projectUid, baseUid, returnEarliest: true);
-      Filter topFilter = await GetCompactionFilter(projectUid, topUid);
-
       DesignDescriptor baseDesign = null;
       DesignDescriptor topDesign = null;
 
-      //switch (volumeCalcType)
-      //{
-      //  case RaptorConverters.VolumesType.BetweenDesignAndFilter: //DesignToGround
-      //    {
-      //      topFilter = await GetCompactionFilter(projectUid, filterUid, returnEarliest: true);
+      var baseFilter = await GetCompactionFilter(projectUid, baseUid, returnEarliest: true);
+      if (baseFilter == null)
+      {
+        baseDesign = await GetDesignDescriptor(projectUid, baseUid);
 
-      //      baseDesign = await GetDesignDescriptor(projectUid, topUid);
-      //      break;
-      //    }
-      //  case RaptorConverters.VolumesType.BetweenFilterAndDesign: //GroundToDesign
-      //    {
-      //      topDesign = await GetDesignDescriptor(projectUid, topUid);
-      //      break;
-      //    }
-      //}
+        if (baseDesign == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No base surface found."));
+        }
+      }
+
+      var topFilter = await GetCompactionFilter(projectUid, topUid);
+      if (topFilter == null)
+      {
+        topDesign = await GetDesignDescriptor(projectUid, topUid);
+
+        if (topDesign == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No top surface found."));
+        }
+      }
+
+      // TODO (Aaron) move to volume summary helper service
+      RaptorConverters.VolumesType volumeType = RaptorConverters.VolumesType.None;
+
+      if (baseFilter != null && topFilter != null) // Ground to Ground
+      {
+        volumeType = RaptorConverters.VolumesType.Between2Filters;
+      }
+      else if (baseFilter != null)  // Ground to Design
+      {
+        volumeType = RaptorConverters.VolumesType.BetweenFilterAndDesign;
+      }
+      else if (topFilter != null) // Design to Ground
+      {
+        volumeType = RaptorConverters.VolumesType.BetweenDesignAndFilter;
+      }
+
+      if (volumeType == RaptorConverters.VolumesType.None)
+      {
+        throw new NotImplementedException();
+      }
+      // TODO END
 
       var request = SummaryVolumesRequest.CreateAndValidate(
         projectId,
@@ -388,7 +411,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         topDesign,
         null,
         null,
-        RaptorConverters.VolumesType.Between2Filters);
+        volumeType);
 
       try
       {
