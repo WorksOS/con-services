@@ -180,10 +180,22 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               "Project has no appropriate design files."));
         }
 
-        var file = fileList.SingleOrDefault(
-          f => f.ImportedFileUid == fileUid.ToString() &&
-               f.IsActivated &&
-               (!forProfile || f.IsProfileSupportedFileType()));
+        FileData file = null;
+
+        foreach (var f in fileList)
+        {
+          if (f.ImportedFileUid == fileUid.ToString() && f.IsActivated && (!forProfile || f.IsProfileSupportedFileType()))
+          {
+            file = f;
+
+            break;
+          }
+        }
+
+        //var file = fileList.SingleOrDefault(
+        //  f => f.ImportedFileUid == fileUid.ToString() &&
+        //       f.IsActivated &&
+        //       (!forProfile || f.IsProfileSupportedFileType()));
 
         if (file == null)
         {
