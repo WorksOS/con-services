@@ -13,7 +13,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 {
   /// <summary>
   /// The request representation for getting production data from Raptor for a grid report.

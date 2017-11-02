@@ -15,6 +15,7 @@ using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
@@ -95,9 +96,34 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
             reportPackager.ReadFromStream(responseData);
 
-            var jsonString = JsonConvert.SerializeObject(reportPackager.GridReport);
+            var gridRows = new GridRow[reportPackager.GridReport.NumberOfRows];
 
-            result = CompactionReportGridResult.CreateExportDataResult(jsonString, (short) returnedResult);
+            // Populate an array of grid rows from the data
+            //foreach (TGridRow row in reportPackager.GridReport.Rows)
+            for ( var i = 0; i < reportPackager.GridReport.NumberOfRows - 1; i++ )
+            {
+              gridRows[i] = GridRow.CreateGridRow(
+                reportPackager.GridReport.Rows[i].Northing,
+                reportPackager.GridReport.Rows[i].Easting,
+                reportPackager.GridReport.Rows[i].Elevation,
+                reportPackager.GridReport.Rows[i].CutFill,
+                reportPackager.GridReport.Rows[i].CMV,
+                reportPackager.GridReport.Rows[i].MDP,
+                reportPackager.GridReport.Rows[i].PassCount,
+                reportPackager.GridReport.Rows[i].Temperature);
+
+              gridRows[i].SetReportFlags(
+                request.ReportElevation,
+                request.ReportCutFill,
+                request.ReportCMV,
+                request.ReportMDP,
+                request.ReportPassCount,
+                request.ReportTemperature);
+            }
+
+            var gridReport = GridReport.CreateGridReport(gridRows);
+            
+            result = CompactionReportGridResult.CreateExportDataResult(gridReport.ToJsonString(), (short)returnedResult);
           }
           catch (Exception ex)
           {

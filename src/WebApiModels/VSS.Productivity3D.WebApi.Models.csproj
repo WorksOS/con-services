@@ -37,7 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Compaction\Models\Reports\" />
+    <Reference Include="Microsoft.AspNetCore.Server.Kestrel">
+      <HintPath>..\..\..\..\..\Users\akozoub\.nuget\packages\microsoft.aspnetcore.server.kestrel\1.1.2\lib\net451\Microsoft.AspNetCore.Server.Kestrel.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
