@@ -6,8 +6,8 @@
       "totalCutVolume": 0.017109985351562502,
       "totalFillVolume": 0.0091300292968750016,
       "totalMachineCoveragePlanArea": 0.46240000000000009,
-      "shrinkage": 0.0091300292968750016,
-      "bulking": 0.017109985351562502
+      "shrinkage": 0.0,
+      "bulking": 0.0
     },
     "Code": 0,
     "Message": "success"
@@ -19,8 +19,8 @@
       "totalCutVolume": 2872.9782598388715,
       "totalFillVolume": 32.581377392578133,
       "totalMachineCoveragePlanArea": 453.03640000000007,
-      "shrinkage": 32.581377392578133,
-      "bulking": 2872.9782598388715
+      "shrinkage": 0.0,
+      "bulking": 0.0
     },
     "Code": 0,
     "Message": "success"
@@ -32,8 +32,21 @@
       "totalCutVolume": 26.137876855468711,
       "totalFillVolume": 31.07984741210938,
       "totalMachineCoveragePlanArea": 903.76080000000024,
-      "shrinkage": 31.07984741210938,
-      "bulking": 26.137876855468711
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "CustomBulkingAndShrinkage": {
+    "volumeSummaryData": {
+      "netVolume": 0.0087326542968750032,
+      "totalVolume": 0.027540514648437507,
+      "totalCutVolume": 0.018136584472656255,
+      "totalFillVolume": 0.009403930175781252,
+      "totalMachineCoveragePlanArea": 0.46240000000000009,
+      "shrinkage": 3,
+      "bulking": 6
     },
     "Code": 0,
     "Message": "success"

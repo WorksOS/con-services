@@ -14,7 +14,7 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -341,6 +341,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results.
     /// </summary>
+    /// <param name="volumeSummaryHelper">Volume Summary helper.</param>
     /// <param name="projectUid">The project Uid.</param>
     /// <param name="baseUid">The Uid for the base surface, either a filter or design.</param>
     /// <param name="topUid">The Uid for the top surface, either a filter or design.</param>
@@ -348,6 +349,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [Route("api/v2/compaction/volumes/summary")]
     [HttpGet]
     public async Task<CompactionSummaryVolumesResult> GetSummaryVolumes(
+      [FromServices] IVolumeSummaryHelper volumeSummaryHelper,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid baseUid,
       [FromQuery] Guid topUid)
@@ -381,28 +383,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
       }
 
-      // TODO (Aaron) move to volume summary helper service
-      RaptorConverters.VolumesType volumeType = RaptorConverters.VolumesType.None;
-
-      if (baseFilter != null && topFilter != null) // Ground to Ground
-      {
-        volumeType = RaptorConverters.VolumesType.Between2Filters;
-      }
-      else if (baseFilter != null)  // Ground to Design
-      {
-        volumeType = RaptorConverters.VolumesType.BetweenFilterAndDesign;
-      }
-      else if (topFilter != null) // Design to Ground
-      {
-        volumeType = RaptorConverters.VolumesType.BetweenDesignAndFilter;
-      }
-
-      if (volumeType == RaptorConverters.VolumesType.None)
-      {
-        throw new NotImplementedException();
-      }
-      // TODO END
-
       var request = SummaryVolumesRequest.CreateAndValidate(
         projectId,
         baseFilter,
@@ -411,7 +391,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         topDesign,
         null,
         null,
-        volumeType);
+        volumeSummaryHelper.GetVolumesType(baseFilter, topFilter));
 
       try
       {

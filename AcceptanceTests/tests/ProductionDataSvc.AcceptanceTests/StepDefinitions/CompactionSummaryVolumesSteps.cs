@@ -49,12 +49,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         { volumesSummaryRequester.QueryString.Add("baseUid", filterUid);}
     }
 
-    [Given(@"volumeCalcType ""(.*)""")]
-    public void GivenVolumeCalcType(int volumeCalcType)
-    {
-      volumesSummaryRequester.QueryString.Add("volumeCalcType", volumeCalcType.ToString());
-    }
-
     [Given(@"design ""(.*)""")]
     public void GivenDesign(string designUid)
     {

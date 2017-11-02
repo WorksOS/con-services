@@ -10,6 +10,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
@@ -17,6 +18,7 @@ using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.TCCFileAccess;
 
+// ReSharper disable once CheckNamespace
 namespace VSS.Productivity3D.WebApi
 {
   /// <summary>
@@ -51,7 +53,10 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IErrorCodesProvider, RaptorResult>();
       services.AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
-     
+
+      // Action services
+      services.AddSingleton<IVolumeSummaryHelper, VolumeSummaryHelper>();
+
       serviceCollection = services;
     }
   }
