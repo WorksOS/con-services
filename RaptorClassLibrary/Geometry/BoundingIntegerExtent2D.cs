@@ -118,6 +118,8 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// <returns>A boolean indicating where the boundign extent includes the given position</returns>
         public bool Includes(Int32 x, Int32 y) => (x >= MinX) && (x <= MaxX) && (y >= MinY) && (y <= MaxY);
 
+        public bool Includes(uint x, uint y) => (x >= MinX) && (x <= MaxX) && (y >= MinY) && (y <= MaxY);
+
         /// <summary>
         /// Determing if the extent defined is valid in that it does not define a negative area
         /// </summary>
