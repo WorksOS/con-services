@@ -61,7 +61,7 @@ namespace MockProjectWebApi.Controllers
         return new FilterListData {filterDescriptors = _filterList};
       }
 
-      if (projectUid == ConstantsUtil.DIMENSIONS_PROJECT_UID)
+      if (projectUid == ConstantsUtil.DIMENSIONS_PROJECT_UID || projectUid == ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID)
       {
         return new FilterListData
         {
