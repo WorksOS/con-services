@@ -230,12 +230,23 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
+                
+                // Parallel
                 Parallel.For(0, nImages, x =>
                 {
-                    using (Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
-                    {
-                    }
-                });
+                     using (Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
+                     {
+                     }
+                 });
+                // Linear
+                //for(int count = 0; count < nImages; count++)
+                //{ 
+                //    using (Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
+                //    {
+                //    }
+                //};
+                
+
                 sw.Stop();
 
                 results.Append(String.Format("Run {0}: Images:{1}, Time:{2}\n", i, nImages, sw.Elapsed));
