@@ -24,7 +24,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       volumesSummaryRequester = new Getter<CompactionVolumesSummaryResult>(url, resultFileName);
     }
 
-    [Given(@"projectUid ""(.*)""")]
+    [Given(@"project ""(.*)""")]
     public void GivenProjectUid(string projectUid)
     {
       volumesSummaryRequester.QueryString.Add("ProjectUid", projectUid);
@@ -42,22 +42,31 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       Assert.AreEqual(volumesSummaryRequester.ResponseRepo[resultName], volumesSummaryRequester.CurrentResponse);
     }
 
-    [Given(@"filterUid ""(.*)""")]
+    [Given(@"filter ""(.*)""")]
     public void GivenFilterUid(string filterUid)
     {
       if (!string.IsNullOrEmpty(filterUid))
-        { volumesSummaryRequester.QueryString.Add("filterUid", filterUid);}
+        { volumesSummaryRequester.QueryString.Add("baseFilterUid", filterUid);}
     }
 
-    [Given(@"volumeCalcType ""(.*)"" and baseFilterUid ""(.*)"" and topFilterUid ""(.*)""")]
-    public void GivenVolumeCalcTypeAndBaseFilterUidAndTopFilterUid(int volumeCalcType, string baseFilterUid, string topFilterUid)
+    [Given(@"volumeCalcType ""(.*)""")]
+    public void GivenVolumeCalcType(int volumeCalcType)
     {
       volumesSummaryRequester.QueryString.Add("volumeCalcType", volumeCalcType.ToString());
-      if (!string.IsNullOrEmpty(baseFilterUid))
-      { volumesSummaryRequester.QueryString.Add("baseFilterUid", baseFilterUid); }
-      if (!string.IsNullOrEmpty(topFilterUid))
-      { volumesSummaryRequester.QueryString.Add("topFilterUid", topFilterUid); }
     }
 
+    [Given(@"design ""(.*)""")]
+    public void GivenDesign(string designUid)
+    {
+      if (!string.IsNullOrEmpty(designUid))
+      { volumesSummaryRequester.QueryString.Add("topFilterUid", designUid); }
+    }
+
+    [Given(@"to filter ""(.*)""")]
+    public void GivenToFilter(string filterUid)
+    {
+      if (!string.IsNullOrEmpty(filterUid))
+      { volumesSummaryRequester.QueryString.Add("topFilterUid", filterUid); }
+    }
   }
 }
