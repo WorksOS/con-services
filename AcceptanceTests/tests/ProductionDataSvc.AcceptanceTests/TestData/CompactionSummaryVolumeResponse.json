@@ -27,13 +27,13 @@
   },
   "FilterAndDesign": {
     "volumeSummaryData": {
-      "netVolume": -9.846115698242194,
-      "totalVolume": 57.349051342773429,
-      "totalCutVolume": 23.751467822265617,
-      "totalFillVolume": 33.597583520507811,
-      "totalMachineCoveragePlanArea": 931.62040000000013,
-      "shrinkage": 33.597583520507811,
-      "bulking": 23.751467822265617
+      "netVolume": -4.9419705566406691,
+      "totalVolume": 57.217724267578092,
+      "totalCutVolume": 26.137876855468711,
+      "totalFillVolume": 31.07984741210938,
+      "totalMachineCoveragePlanArea": 903.76080000000024,
+      "shrinkage": 31.07984741210938,
+      "bulking": 26.137876855468711
     },
     "Code": 0,
     "Message": "success"
