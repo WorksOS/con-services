@@ -146,11 +146,11 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "3335311a-f0e2-4dbe-8acd-f21135bafee4")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "A40814AA-9CDB-4981-9A21-96EA30FFECD")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "A40814AA-9CDB-4981-9A21-96EA30FFECDD")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "CustomBulkingAndShrinkage")]
         public virtual void CompactionGetSummaryVolumes_CustomBulkingAndShrinkage()
         {
-            this.CompactionGetSummaryVolumes("CustomBulkingAndShrinkage", "3335311a-f0e2-4dbe-8acd-f21135bafee4", "", "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B", "A40814AA-9CDB-4981-9A21-96EA30FFECD", "CustomBulkingAndShrinkage", ((string[])(null)));
+            this.CompactionGetSummaryVolumes("CustomBulkingAndShrinkage", "3335311a-f0e2-4dbe-8acd-f21135bafee4", "", "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B", "A40814AA-9CDB-4981-9A21-96EA30FFECDD", "CustomBulkingAndShrinkage", ((string[])(null)));
         }
     }
 }
