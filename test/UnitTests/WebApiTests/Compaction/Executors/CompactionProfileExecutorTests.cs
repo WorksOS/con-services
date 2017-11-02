@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
       var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty, ProductionDataType.Height, null, -1,
-        null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false, null);
+        null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false, null, null, null, null, null);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
@@ -906,8 +906,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
         var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty,
-          ProductionDataType.Height, null, -1,
-          null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false, null);
+          ProductionDataType.Height, null, -1, null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, 
+          liftBuildSettings, false, null, null, null, null, null);
 
         var executor = RequestExecutorContainerFactory
           .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
@@ -916,7 +916,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
 
         //NOTE: Tests all use "last pass" to test logic as it's the same for each type of data (last pass, composite, CMV, temperature etc.)
-        var lastPassResult = (from r in result.results where r.type == "lastPass" select r).SingleOrDefault();
+        var lastPassResult = (from r in result.results where r.type == CompactionDataPoint.LAST_PASS select r).SingleOrDefault();
         Assert.IsNotNull(lastPassResult, ExecutorFailed);
         return lastPassResult.data;
       }

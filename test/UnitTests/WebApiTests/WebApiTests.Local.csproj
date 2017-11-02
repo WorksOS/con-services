@@ -37,6 +37,26 @@
     <!-- END -->
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="1.1.2" />
+    <PackageReference Include="System.Net.Security" Version="4.1.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="app.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
+  </PropertyGroup>
+
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
     <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj" />

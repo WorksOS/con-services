@@ -37,6 +37,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       tileRequester.QueryString.Add("filterUid", filterUid);
     }
 
+    [Given(@"cutfillDesignUid ""(.*)""")]
+    public void GivenCutfillDesignUid(string cutfillDesignUid)
+    {
+      tileRequester.QueryString.Add("cutfillDesignUid", cutfillDesignUid);
+    }
+
+
     [Then(@"the result should match the ""(.*)"" from the repository")]
     public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
     {
