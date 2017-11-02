@@ -342,10 +342,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get the summary volumes report from Raptor. Either legacy project ID or project UID must be provided.
     /// </summary>
     /// <param name="projectUid"></param>
-    /// <param name="baseFilterUid"></param>
-    /// <param name="topFilterUid"></param>
-    /// <param name="baseDesignUid"></param>
-    /// <param name="topDesignUid"></param>
+    /// <param name="baseUid">The Filter Uid that defines the base</param>
+    /// <param name="topUid">The Filter or Design Uid for the top</param>
     /// <param name="volumeCalcType"></param>
     /// <returns></returns>
     [ProjectUidVerifier]
@@ -353,36 +351,34 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<CompactionSummaryVolumesResult> GetSummaryVolumes(
       [FromQuery] Guid projectUid,
-      [FromQuery] Guid? baseFilterUid,
-      [FromQuery] Guid? topFilterUid,
-      [FromQuery] Guid? baseDesignUid,
-      [FromQuery] Guid? topDesignUid,
-      [FromQuery] RaptorConverters.VolumesType volumeCalcType)
+      [FromQuery] Guid baseUid,
+      [FromQuery] Guid topUid)
     {
       log.LogInformation("GetSummaryVolumes: " + Request.QueryString);
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
 
-      Filter baseFilter = await GetCompactionFilter(projectUid, baseFilterUid, returnEarliest: true);
-      Filter topFilter = await GetCompactionFilter(projectUid, topFilterUid);
+      Filter baseFilter = await GetCompactionFilter(projectUid, baseUid, returnEarliest: true);
+      Filter topFilter = await GetCompactionFilter(projectUid, topUid);
 
       DesignDescriptor baseDesign = null;
       DesignDescriptor topDesign = null;
 
-      switch (volumeCalcType)
-      {
-        case RaptorConverters.VolumesType.BetweenDesignAndFilter: //DesignToGround
-          {
-            baseDesign = await GetDesignDescriptor(projectUid, baseDesignUid);
-            break;
-          }
-        case RaptorConverters.VolumesType.BetweenFilterAndDesign: //GroundToDesign
-          {
-            topDesign = await GetDesignDescriptor(projectUid, topDesignUid)
-              ;
-            break;
-          }
-      }
+      //switch (volumeCalcType)
+      //{
+      //  case RaptorConverters.VolumesType.BetweenDesignAndFilter: //DesignToGround
+      //    {
+      //      topFilter = await GetCompactionFilter(projectUid, filterUid, returnEarliest: true);
+
+      //      baseDesign = await GetDesignDescriptor(projectUid, topUid);
+      //      break;
+      //    }
+      //  case RaptorConverters.VolumesType.BetweenFilterAndDesign: //GroundToDesign
+      //    {
+      //      topDesign = await GetDesignDescriptor(projectUid, topUid);
+      //      break;
+      //    }
+      //}
 
       var request = SummaryVolumesRequest.CreateAndValidate(
         projectId,
@@ -392,7 +388,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         topDesign,
         null,
         null,
-        volumeCalcType);
+        RaptorConverters.VolumesType.Between2Filters);
 
       try
       {
