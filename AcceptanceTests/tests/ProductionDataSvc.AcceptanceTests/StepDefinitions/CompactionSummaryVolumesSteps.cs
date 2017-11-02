@@ -46,7 +46,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenFilterUid(string filterUid)
     {
       if (!string.IsNullOrEmpty(filterUid))
-        { volumesSummaryRequester.QueryString.Add("baseFilterUid", filterUid);}
+        { volumesSummaryRequester.QueryString.Add("baseUid", filterUid);}
     }
 
     [Given(@"volumeCalcType ""(.*)""")]
@@ -59,14 +59,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenDesign(string designUid)
     {
       if (!string.IsNullOrEmpty(designUid))
-      { volumesSummaryRequester.QueryString.Add("topFilterUid", designUid); }
+      { volumesSummaryRequester.QueryString.Add("topUid", designUid); }
     }
 
     [Given(@"to filter ""(.*)""")]
     public void GivenToFilter(string filterUid)
     {
       if (!string.IsNullOrEmpty(filterUid))
-      { volumesSummaryRequester.QueryString.Add("topFilterUid", filterUid); }
+      { volumesSummaryRequester.QueryString.Add("topUid", filterUid); }
     }
   }
 }
