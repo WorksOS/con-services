@@ -88,6 +88,36 @@ namespace VSS.VisionLink.Raptor.Common
         }
 
         /// <summary>
+        /// Add an array of elements to the bag. The first [count] elements of the array will be added.
+        /// </summary>
+        /// <param name="item"></param>
+        public void Add(T[] itemArray, int itemCount)
+        {
+            Monitor.Enter(Items);
+            try
+            {
+                for (int i = 0; i < itemCount; i++)
+                {
+                    if (count < Items.Count)
+                    {
+                        // Reuse an element in the list
+                        Items[count++] = itemArray[i]; // There is another element being stored; include it in count
+                    }
+                    else
+                    {
+                        // All list elements are occupied, add the item as a new element in the list
+                        Items.Add(itemArray[i]);
+                        count++;
+                    }
+                }
+            }
+            finally
+            {
+                Monitor.Exit(Items);
+            }
+        }
+
+        /// <summary>
         /// Remove an item from the concurrent bag. If no item is available to be removed then return falue, true otherwise
         /// </summary>
         /// <param name="item"></param>
