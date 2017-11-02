@@ -12,15 +12,28 @@
     "Code": 0,
     "Message": "success"
   },
-  "SimpleVolumeSummary2": {
+  "GroundToGround": {
     "volumeSummaryData": {
-      "netVolume": 0.0079799560546875009,
-      "totalVolume": 0.026240014648437504,
-      "totalCutVolume": 0.017109985351562502,
-      "totalFillVolume": 0.0091300292968750016,
-      "totalMachineCoveragePlanArea": 0.46240000000000009,
-      "shrinkage": 0.0091300292968750016,
-      "bulking": 0.017109985351562502
+      "netVolume": 2840.3968824462936,
+      "totalVolume": 2905.5596372314494,
+      "totalCutVolume": 2872.9782598388715,
+      "totalFillVolume": 32.581377392578133,
+      "totalMachineCoveragePlanArea": 453.03640000000007,
+      "shrinkage": 32.581377392578133,
+      "bulking": 2872.9782598388715
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterAndDesign": {
+    "volumeSummaryData": {
+      "netVolume": -9.846115698242194,
+      "totalVolume": 57.349051342773429,
+      "totalCutVolume": 23.751467822265617,
+      "totalFillVolume": 33.597583520507811,
+      "totalMachineCoveragePlanArea": 931.62040000000013,
+      "shrinkage": 33.597583520507811,
+      "bulking": 23.751467822265617
     },
     "Code": 0,
     "Message": "success"
