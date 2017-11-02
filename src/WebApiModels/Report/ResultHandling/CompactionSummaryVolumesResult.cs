@@ -33,12 +33,26 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
         totalVolume = totalCutVolume + totalFillVolume;
       }
 
+      double? bulking;
+      double? shrinkage;
+
+      if (projectSettings.useDefaultVolumeShrinkageBulking.HasValue && projectSettings.useDefaultVolumeShrinkageBulking.Value)
+      {
+        bulking = projectSettings.VolumeBulkingPercent;
+        shrinkage = projectSettings.VolumeShrinkagePercent;
+      }
+      else
+      {
+        bulking = projectSettings.customBulkingPercent;
+        shrinkage = projectSettings.customShrinkagePercent;
+      }
+
       return new CompactionSummaryVolumesResult
       {
         SummaryVolumeData = new SummaryVolumesData
         {
-          Bulking = projectSettings.VolumeBulkingPercent,
-          Shrinkage = projectSettings.VolumeShrinkagePercent,
+          Bulking = bulking ?? 0,
+          Shrinkage = shrinkage ?? 0,
           TotalCutVolume = totalCutVolume,
           TotalFillVolume = totalFillVolume,
           TotalMachineCoveragePlanArea = resultObj.TotalCoverageArea,
