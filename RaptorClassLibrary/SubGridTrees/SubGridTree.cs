@@ -87,6 +87,11 @@ namespace VSS.VisionLink.Raptor
         public const byte SubGridTreeDimension = 1 << SubGridIndexBitsPerLevel;
 
         /// <summary>
+        /// The number of cells that are in a sub grid X and Y dimension (square grid), minus 1
+        /// </summary>
+        public const byte SubGridTreeDimensionMinus1 = (1 << SubGridIndexBitsPerLevel) - 1;
+
+        /// <summary>
         /// The number of cells contained within a subgrid
         /// </summary>
         public const int SubGridTreeCellsPerSubgrid = SubGridTreeDimension * SubGridTreeDimension;
