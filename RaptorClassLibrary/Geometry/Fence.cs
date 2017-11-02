@@ -139,18 +139,24 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// <returns></returns>
         public bool IncludesPoint(double x, double y)
         {
-            FencePoint pt1, pt2, pt3;
-            int crosses;
-            bool result;
-
             try
             {
                 if ((x < MinX) || (x > MaxX) || (y < MinY) || (y > MaxY))
                 {
                     return false;
                 }
+                else
+                {
+                    if (IsRectangle)
+                    {
+                        // The point lies in the known rectangular area, so is contained in the filter
+                        return true;
+                    }
+                }
 
-                if (Points.Count < 3)
+                int pointsCount = Points.Count;
+
+                if (pointsCount < 3)
                 {
                     return false;
                 }
@@ -160,36 +166,41 @@ namespace VSS.VisionLink.Raptor.Geometry
                 //than the test x. 
                 // Get the last point of the fence. }
 
-                pt2 = Points.Last();
-                crosses = 0;
+                int crosses = 0;
+                FencePoint pt1; //, pt3;
+                FencePoint pt2 = Points.Last();
 
                 //  No intersections found yet 
-                for (int i = 0; i < Points.Count; i++)
+                for (int i = 0; i < pointsCount; i++)
                 {
                     // Load the segment 
                     pt1 = pt2;
                     pt2 = Points[i];
 
+                    double pt1X = pt1.X;
+                    double pt1Y = pt1.Y;
+                    double pt2Y = pt2.Y;
+
                     // Does the constant y line intersect the segment? 
-                    if ((((y >= pt1.Y) && (y < pt2.Y)) || ((y <= pt1.Y) && (y > pt2.Y)))
+                    if ((((y >= pt1Y) && (y < pt2Y)) || ((y <= pt1Y) && (y > pt2Y)))
                     // Test if the intersection is to the left of test_x 
-                    && ((pt1.X + (pt2.X - pt1.X) * (y - pt1.Y) / (pt2.Y - pt1.Y)) < x))
+                    && ((pt1X + (pt2.X - pt1X) * (y - pt1Y) / (pt2Y - pt1Y)) < x))
                     {
                         // Did we cross through a point where both neighbour points are on the
                         // same side of the line with constant height, if so DO NOT increment crosses
-                        if (y == pt1.Y)
+                        if (y == pt1Y)
                         {
-                            pt3 = Points[(Points.Count + i - 2) % Points.Count];
-                            if (Math.Sign(y - pt2.Y) == Math.Sign(y - pt3.Y))
+                            double pt3Y = Points[(pointsCount + i - 2) % pointsCount].Y;
+                            if (Math.Sign(y - pt2Y) == Math.Sign(y - pt3Y))
                             {
                                 continue;
                             }
                         }
 
-                        if (y == pt2.Y)
+                        if (y == pt2Y)
                         {
-                            pt3 = Points[(i + 1) % Points.Count];
-                            if ((Math.Sign(y - pt1.Y) == Math.Sign(y - pt3.Y)))
+                            double pt3Y = Points[(i + 1) % pointsCount].Y;
+                            if ((Math.Sign(y - pt1Y) == Math.Sign(y - pt3Y)))
                             {
                                 continue;
                             }
@@ -201,19 +212,17 @@ namespace VSS.VisionLink.Raptor.Geometry
                 }
 
                 // Point is included if the number of crosses is odd 
-                result = (crosses % 2) == 1;
+                return (crosses % 2) == 1;
             }
             catch (Exception)
             {
                 // SIGLogMessage.PublishNoODS(Nil, Format('Maths error in IncludesPoint. X:%f Y:%f MinX:%f MaxY:%f MinY:%f MaxY:%f Error:%s', [X, Y, MinX, MaxX, MinY, MaxY, e.Message]), TSigLogMessageClass.slmcError);
-                result = false;
+                return false;
             }
-
-            return result;
         }
 
         /// <summary>
-        /// Determing if the fence includes the given line
+        /// Determine if the fence includes the given line
         /// </summary>
         /// <param name="x1"></param>
         /// <param name="y1"></param>
@@ -231,16 +240,52 @@ namespace VSS.VisionLink.Raptor.Geometry
                 return true;
             }
 
-            pt2 = Points[Points.Count - 1];
-            for (int i = 0; i < Points.Count; i++)
+            int pointsCount = Points.Count;
+
+            pt2 = Points[pointsCount - 1];
+            for (int i = 0; i < pointsCount; i++)
             {
                 pt1 = pt2;
                 pt2 = Points[i];
 
                 if (LineIntersection.LinesIntersect(x1, y1, x2, y2,
-                                    pt1.X, pt1.Y, pt2.X, pt2.Y,
-                                    out X, out Y, true,
-                                    out LinesAreColinear))
+                                                    pt1.X, pt1.Y, pt2.X, pt2.Y,
+                                                    out X, out Y, true,
+                                                    out LinesAreColinear))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determine if the fence strictly intersects with the given line
+        /// </summary>
+        /// <param name="x1"></param>
+        /// <param name="y1"></param>
+        /// <param name="x2"></param>
+        /// <param name="y2"></param>
+        /// <returns></returns>
+        public bool BoundaryIntersectsLine(double x1, double y1, double x2, double y2)
+        {
+            FencePoint pt1, pt2;
+            double X, Y;
+            bool LinesAreColinear;
+
+            int pointsCount = Points.Count;
+
+            pt2 = Points[pointsCount - 1];
+            for (int i = 0; i < pointsCount; i++)
+            {
+                pt1 = pt2;
+                pt2 = Points[i];
+
+                if (LineIntersection.LinesIntersect(x1, y1, x2, y2,
+                                                    pt1.X, pt1.Y, pt2.X, pt2.Y,
+                                                    out X, out Y, true,
+                                                    out LinesAreColinear))
                 {
                     return true;
                 }
@@ -258,9 +303,9 @@ namespace VSS.VisionLink.Raptor.Geometry
         {
             // Check extent vertex inclusion in the fence
             if (IncludesPoint(extent.MinX, extent.MinY) ||
-               IncludesPoint(extent.MinX, extent.MaxY) ||
-               IncludesPoint(extent.MaxX, extent.MinY) ||
-               IncludesPoint(extent.MaxX, extent.MaxY))
+                IncludesPoint(extent.MinX, extent.MaxY) ||
+                IncludesPoint(extent.MaxX, extent.MinY) ||
+                IncludesPoint(extent.MaxX, extent.MaxY))
             {
                 return true;
             }
@@ -284,6 +329,51 @@ namespace VSS.VisionLink.Raptor.Geometry
             }
 
             // The fence and the square do not intersect
+            return false;
+        }
+
+        /// <summary>
+        /// Determines if the fence includes a supplied world coordinate bounding extent
+        /// </summary>
+        /// <param name="extent"></param>
+        /// <returns></returns>
+        public bool IncludesExtent(BoundingWorldExtent3D extent)
+        {
+            // Check extent vertex inclusion in the fence
+            if (!(IncludesPoint(extent.MinX, extent.MinY) &&
+                  IncludesPoint(extent.MinX, extent.MaxY) &&
+                  IncludesPoint(extent.MaxX, extent.MinY) &&
+                  IncludesPoint(extent.MaxX, extent.MaxY)))
+            {
+                return false;
+            }
+
+            if (IsRectangle || IsSquare)
+            {
+                // No Further checks are necessary, it is included
+                return true;
+            }
+
+            // Check fence vertex inclusion in Extents
+            foreach (FencePoint pt in Points)
+            {
+                if (extent.Includes(pt.X, pt.Y))
+                {
+                    // There must be some area of the extent that does not reside in the filter
+                    return false;
+                }
+            }
+
+            // Check for intersecting lines
+            if (BoundaryIntersectsLine(extent.MinX, extent.MinY, extent.MinX, extent.MaxY) ||
+                BoundaryIntersectsLine(extent.MinX, extent.MaxY, extent.MaxX, extent.MaxY) ||
+                BoundaryIntersectsLine(extent.MaxX, extent.MaxY, extent.MaxX, extent.MinY) ||
+                BoundaryIntersectsLine(extent.MaxX, extent.MinY, extent.MinX, extent.MinY))
+            {
+                return true;
+            }
+
+            // The fence does not include the square
             return false;
         }
 
