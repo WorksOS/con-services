@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -21,10 +22,10 @@ namespace SchedulerTests
     [TestInitialize]
     public void Init()
     {
-      SetupDI();
+      SetupDi();
 
-      _log = loggerFactory.CreateLogger<FilterSchedulerTests>();
-      Assert.IsNotNull(_log, "log is null");
+      _log = LoggerFactory.CreateLogger<FilterSchedulerTests>();
+      Assert.IsNotNull(_log, "Log is null");
     }
 
     [TestMethod]
@@ -52,7 +53,7 @@ namespace SchedulerTests
     {
       var theJob = GetJob(HangfireConnection(), FilterCleanupTask);
 
-      string filterDbConnectionString = ConnectionUtils.GetConnectionString(configStore, _log, "_FILTER");
+      string filterDbConnectionString = ConnectionUtils.GetConnectionString(ConfigStore, _log, "_FILTER");
       var dbConnection = new MySqlConnection(filterDbConnectionString);
       dbConnection.Open();
 
@@ -73,20 +74,31 @@ namespace SchedulerTests
       int insertedCount = 0;
       insertedCount = dbConnection.Execute(insertFilter);
       Assert.AreEqual(1,insertedCount,"Filter Not Inserted");
-
-      Debug.Assert(theJob.NextExecution != null, "theJob.NextExecution != null");
-
-      // todo is the NextExecution datetime not accurate e.g. actually done on some boundary?
-      var nextExec = theJob.NextExecution.Value;
-      var nowUTC = DateTime.UtcNow;
-      var msToWait = (int)(nextExec - nowUTC).TotalMilliseconds + _bufferForDBUpdateMs;
-      if (msToWait > 0 )
-        Thread.Sleep(msToWait);
+      Assert.IsNotNull(theJob.NextExecution, "theJob.NextExecution != null");
       
       string selectFilter = string.Format($"SELECT FilterUID FROM Filter WHERE FilterUID = {empty}{filterUid}{empty}");
-      var response = dbConnection.Query(selectFilter);
-      Console.WriteLine($"FilterScheduleTask_WaitForCleanup: nextExec {nextExec} nowUTC {nowUTC} _bufferForDBUpdateMs {_bufferForDBUpdateMs} msToWait {msToWait}  insertFilter {insertFilter} selectFilter {selectFilter} response {JsonConvert.SerializeObject(response)} connectionString {dbConnection.ConnectionString}");
+      Console.WriteLine($"FilterScheduleTask_WaitForCleanup: connectionString {dbConnection.ConnectionString} selectFilter {selectFilter} insertFilter {insertFilter}");
+      IEnumerable<object> response = null;
+      for (int i = 0; i < 10; i++)
+      {
+        // seems to be a bit of a delay when dealing with NextExecution datetime.
+        // It's not very accurate and NextExecution doesn't get updated in a timely fashion after executed.
+        // Also, doesn't seem to pick up the insert quickly - is the delay in the Insert or scheduler, I don't know...
+        var nextExec = theJob.NextExecution.Value;
+        var nowUtc = DateTime.UtcNow;
+        var msToWait = (int)(nextExec - nowUtc).TotalMilliseconds + _bufferForDBUpdateMs;
+        if (msToWait > 0)
+          Thread.Sleep(msToWait);
+        else
+          Thread.Sleep(10000);
 
+        response = dbConnection.Query(selectFilter);
+        Console.WriteLine($"FilterScheduleTask_WaitForCleanup: iteration {i} nextExec {nextExec} nowUTC {nowUtc} _bufferForDBUpdateMs {_bufferForDBUpdateMs} msToWait {msToWait} response {JsonConvert.SerializeObject(response)}");
+        
+        if (response != null && !response.Any() )
+          break;
+      }
+      
       Assert.IsNotNull(response, "Should have a response.");
       Assert.AreEqual(0, response.Count(), "No filters should be returned.");
 

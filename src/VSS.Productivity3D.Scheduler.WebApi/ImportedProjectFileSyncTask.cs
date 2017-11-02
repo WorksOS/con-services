@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       catch (Exception ex)
       {
         _log.LogError($"ImportedProjectFileSyncTask: Unable to schedule recurring job: DatabaseCleanup {ex.Message}");
-        throw new Exception("ImportedProjectFileSyncTask: Unable to schedule recurring job: DatabaseCleanup");
+        throw;
       }
     }
 
@@ -69,8 +69,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="importedProjectFile_MySQL_ConnectionString"></param>
     public void DatabaseSyncTask(string importedProjectFile_MySQL_ConnectionString)
     {
-       _log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. importedProjectFile_MySQL_ConnectionString {importedProjectFile_MySQL_ConnectionString}");
-      Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. importedProjectFile_MySQL_ConnectionString {importedProjectFile_MySQL_ConnectionString}");
+       _log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow} importedProjectFile_MySQL_ConnectionString {importedProjectFile_MySQL_ConnectionString}");
+      Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow} importedProjectFile_MySQL_ConnectionString {importedProjectFile_MySQL_ConnectionString}");
 
       MySqlConnection dbConnection = new MySqlConnection(importedProjectFile_MySQL_ConnectionString);
       try
@@ -81,12 +81,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       {
         _log.LogError($"ImportedProjectFileSyncTask.DatabaseSyncTask: open MySql DB exeception {ex.Message}");
         Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: open MySql DB exeception {ex.Message}");
-        throw new Exception("ImportedProjectFileSyncTask.DatabaseSyncTask: open MySql database exception");
-      }
-      finally // todo temp
-      {
-        dbConnection.Close();
-        Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: FailedToOpenDb dbConnection.Close");
+        throw;
       }
 
       //var empty = "\"";
@@ -101,11 +96,13 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       //{
       //  _log.LogError($"ImportedProjectFileSyncTask.DatabaseSyncTask: execute exeception {ex.Message}");
       //  Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: execute exeception {ex.Message}");
-      //  throw new Exception("ImportedProjectFileSyncTask.DatabaseSyncTask: delete from database exception");
+      //  throw;
       //}
       //finally
       //{
-      //  dbConnection.Close();
+      dbConnection.Close();
+      Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: dbConnection.Close");
+
       //Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: dbConnection.Close");
       //}
 

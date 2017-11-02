@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       catch (Exception ex)
       {
         _log.LogError($"FilterCleanupTask: Unable to schedule recurring job: DatabaseCleanup {ex.Message}");
-        throw new Exception("FilterCleanupTask: Unable to schedule recurring job: DatabaseCleanup");
+        throw;
       }
     }
 
@@ -76,8 +76,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     public void DatabaseCleanupTask(string filterDbConnectionString, int ageInMinutesToDelete)
     {
       var cutoffActionUtcToDelete = DateTime.UtcNow.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
-      _log.LogTrace($"FilterCleanupTask.DatabaseCleanupTask: starting. cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
-      Console.WriteLine($"FilterCleanupTask.DatabaseCleanupTask: starting. cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
+      _log.LogTrace($"FilterCleanupTask.DatabaseCleanupTask: starting. nowUtc {DateTime.UtcNow} cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
+      Console.WriteLine($"FilterCleanupTask.DatabaseCleanupTask: starting. nowUtc {DateTime.UtcNow} cutoffActionUtcToDelete: {cutoffActionUtcToDelete}");
 
       MySqlConnection dbConnection = new MySqlConnection(filterDbConnectionString);
       try
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       {
         _log.LogError($"FilterCleanupTask.DatabaseCleanupTask: open filter DB exeception {ex.Message}");
         Console.WriteLine($"FilterCleanupTask.DatabaseCleanupTask: open filter DB exeception {ex.Message}");
-        throw new Exception("FilterCleanupTask.DatabaseCleanupTask: open database exception");
+        throw;
       }
 
       var empty = "\"";
@@ -103,7 +103,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       {
         _log.LogError($"FilterCleanupTask.DatabaseCleanupTask: execute exeception {ex.Message}");
         Console.WriteLine($"FilterCleanupTask.DatabaseCleanupTask: execute exeception {ex.Message}");
-        throw new Exception("FilterCleanupTask.DatabaseCleanupTask: delete from database exception");
+        throw;
       }
       finally
       {

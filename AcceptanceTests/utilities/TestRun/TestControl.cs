@@ -153,7 +153,7 @@ namespace TestRun
         }
 
         /// <summary>
-        /// Write a results file when the DLL won't load
+        /// WriteToDb a results file when the DLL won't load
         /// </summary>
         /// <param name="ex"></param>
         private void WriteDllException(Exception ex)
@@ -166,7 +166,7 @@ namespace TestRun
             WriteResultFile();
         }
         /// <summary>
-        /// Write the results file to the 
+        /// WriteToDb the results file to the 
         /// </summary>
         private void WriteResultFile()
         {
@@ -390,7 +390,7 @@ namespace TestRun
         }
 
       /// <summary>
-      /// Write to a test results file
+      /// WriteToDb to a test results file
       /// </summary>
       /// <param name="message">test results to be logged</param>
       /// <param name="logfile">log file name</param>

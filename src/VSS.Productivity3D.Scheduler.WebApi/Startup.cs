@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       catch (Exception ex)
       {
         _log.LogError($"Scheduler.ConfigureServices: AddHangfire failed: {ex.Message}");
-        throw new Exception($"ConfigureServices: AddHangfire failed: {ex.Message}");
+        throw;
       }
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
@@ -125,7 +125,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       catch (Exception ex)
       {
         _log.LogError($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
-        throw new Exception($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
+        throw;
       }
 
       try
@@ -140,7 +140,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       catch (Exception ex)
       {
         _log.LogError($"Scheduler.Configure: Unable to cleanup existing jobs: {ex.Message}");
-        throw new Exception("Scheduler.Configure: Unable to cleanup existing jobs");
+        throw;
       }
 
       var expectedJobCount = 0;

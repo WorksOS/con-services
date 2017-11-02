@@ -2,27 +2,23 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Dapper;
 using Hangfire.MySql;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MySql.Data.MySqlClient;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
-using VSS.Productivity3D.Scheduler.Common.Utilities;
 using Hangfire.Storage;
 
 namespace SchedulerTests
 {
   public class TestControllerBase
   {
-    protected IServiceProvider serviceProvider;
-    protected IConfigurationStore configStore;
-    protected ILoggerFactory loggerFactory;
-    protected ILogger log;
+    protected IServiceProvider ServiceProvider;
+    protected IConfigurationStore ConfigStore;
+    protected ILoggerFactory LoggerFactory;
+    protected ILogger Log;
 
-    protected void SetupDI()
+    protected void SetupDi()
     {
       const string loggerRepoName = "UnitTestLogTest";
       var logPath = Directory.GetCurrentDirectory();
@@ -39,13 +35,13 @@ namespace SchedulerTests
         .AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>();
 
-      serviceProvider = serviceCollection.BuildServiceProvider();
-      configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      this.loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-      log = loggerFactory.CreateLogger<TestControllerBase>();
+      ServiceProvider = serviceCollection.BuildServiceProvider();
+      ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      this.LoggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      Log = loggerFactory.CreateLogger<TestControllerBase>();
 
-      Assert.IsNotNull(serviceProvider.GetService<IConfigurationStore>());
-      Assert.IsNotNull(serviceProvider.GetService<ILoggerFactory>());
+      Assert.IsNotNull(ServiceProvider.GetService<IConfigurationStore>());
+      Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
     }
 
 
@@ -53,8 +49,8 @@ namespace SchedulerTests
     {
       // todo doesn't seem to be a way to close connection....?
       MySqlStorage storage = null;
-      var hangfireConnectionString = configStore.GetConnectionString("VSPDB");
-      log.LogDebug($"ConfigureServices: Scheduler database string: {hangfireConnectionString}.");
+      var hangfireConnectionString = ConfigStore.GetConnectionString("VSPDB");
+      Log.LogDebug($"ConfigureServices: Scheduler database string: {hangfireConnectionString}.");
       storage = new MySqlStorage(hangfireConnectionString);
       IStorageConnection hangoutConnection = storage.GetConnection();
       return hangoutConnection;
