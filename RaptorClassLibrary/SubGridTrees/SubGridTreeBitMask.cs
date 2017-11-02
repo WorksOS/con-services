@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         }
 
         /// <summary>
-        /// Constructor that sets levels and cell size with a defaul factory
+        /// Constructor that sets levels and cell size with a default factory
         /// </summary>
         /// <param name="numLevels"></param>
         /// <param name="cellSize"></param>
