@@ -62,7 +62,6 @@ Scenario: Compaction Get Slicer Empty Design Profile
 }
 """
 
-@ignore
 Scenario: Compaction Get Slicer Design Profile With Added Endpoints
 	Given the Compaction Profile service URI "/api/v2/profiles/design/slicer"
   And a projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
