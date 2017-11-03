@@ -27,13 +27,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             writer.Write(tree.ID);
             writer.Write(SubgridCount);
 
+            byte[] buffer = new byte[10000];
+
             return tree.ScanAllSubGrids(subGrid =>
             {
                 // Write out the origin for the node
                 writer.Write(subGrid.OriginX);
                 writer.Write(subGrid.OriginY);
 
-                subGrid.Write(writer);
+                subGrid.Write(writer, buffer);
 
                 return true; // keep scanning
             });
@@ -112,6 +114,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 // Read in the number of subgrids
                 long SubGridCount = reader.ReadInt64();
 
+                byte[] buffer = new byte[10000];
+
                 // Read in each subgrid and add it to the tree
                 for (long I = 0; I < SubGridCount; I++)
                 {
@@ -121,7 +125,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
                     // Create a node to hold the bits
                     ISubGrid SubGrid = tree.ConstructPathToCell(OriginX, OriginY, Types.SubGridPathConstructionType.CreateLeaf);
-                    SubGrid.Read(reader);
+                    SubGrid.Read(reader, buffer);
                 }
 
                 return true;

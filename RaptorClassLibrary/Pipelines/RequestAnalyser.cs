@@ -104,8 +104,8 @@ namespace VSS.VisionLink.Raptor.Pipelines
             {
                 ScanMinXb = 0;
                 ScanMinYb = 0;
-                ScanMaxXb = SubGridTree.SubGridTreeDimension - 1;
-                ScanMaxYb = SubGridTree.SubGridTreeDimension - 1;
+                ScanMaxXb = SubGridTree.SubGridTreeDimensionMinus1;
+                ScanMaxYb = SubGridTree.SubGridTreeDimensionMinus1;
             }
             else
             {
@@ -128,8 +128,8 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
                 ScanMinX = Math.Max(CastSubGrid.OriginX, ScanMinX);
                 ScanMinY = Math.Max(CastSubGrid.OriginY, ScanMinY);
-                ScanMaxX = Math.Min(ScanMaxX, CastSubGrid.OriginX + SubGridTree.SubGridTreeDimension - 1);
-                ScanMaxY = Math.Min(ScanMaxY, CastSubGrid.OriginY + SubGridTree.SubGridTreeDimension - 1);
+                ScanMaxX = Math.Min(ScanMaxX, CastSubGrid.OriginX + SubGridTree.SubGridTreeDimensionMinus1);
+                ScanMaxY = Math.Min(ScanMaxY, CastSubGrid.OriginY + SubGridTree.SubGridTreeDimensionMinus1);
 
                 SubGrid.GetSubGridCellIndex(ScanMinX, ScanMinY, out ScanMinXb, out ScanMinYb);
                 SubGrid.GetSubGridCellIndex(ScanMaxX, ScanMaxY, out ScanMaxXb, out ScanMaxYb);

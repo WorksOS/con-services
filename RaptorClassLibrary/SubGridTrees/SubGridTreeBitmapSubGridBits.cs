@@ -31,12 +31,22 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <summary>
         /// Represents the individual bit in the bits representing left most cell in a row for the TSubGridBitMap leaf cell.
         /// </summary>
-        private const uint SubGridBitMapHighBitMask = (uint)1 << (SubGridTree.SubGridTreeDimension - 1);
+        private const uint SubGridBitMapHighBitMask = (uint)1 << (SubGridTree.SubGridTreeDimensionMinus1);
+
+        /// <summary>
+        /// The number obtained when summed values of bit rows when all bits in each bit row are set
+        /// </summary>
+        public const long SumBitRowsFullCount = ((((long)1) << SubGridTree.SubGridTreeDimension) - 1) * SubGridTree.SubGridTreeDimension;
 
         /// <summary>
         /// The array that stores the memory for the individual bit flags (of which there are 32x32 = 1024)
         /// </summary>
         public uint[] Bits;
+
+        /// <summary>
+        /// The number of byte occupied by the Bits array
+        /// </summary>
+        private const int BytesOccupiedByBits = SubGridTree.SubGridTreeDimension * sizeof(uint);
 
         /// <summary>
         /// Default indexer for bit values in the mask
@@ -164,6 +174,19 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         }
 
         /// <summary>
+        /// Performs the same logical operation as the '&' operator, but performs the AND inline on the called instance
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public void AndWith(SubGridTreeBitmapSubGridBits other)
+        {
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            {
+                Bits[i] &= other.Bits[i];
+            }
+        }
+
+        /// <summary>
         /// Defines an overloaded bitwise OR/| operator that ORs together the Bits from a and b and returns a 
         /// new SubGridTreeLeafBitmapSubGridBits instance with the result
         /// </summary>
@@ -183,6 +206,19 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         }
 
         /// <summary>
+        /// Performs the same logical operation as the '|' operator, but performs the OR inline on the called instance
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public void OrWith(SubGridTreeBitmapSubGridBits other)
+        {
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            {
+                Bits[i] |= other.Bits[i];
+            }
+        }
+
+        /// <summary>
         /// Defines an overloaded bitwise XOR/^ operator that XORs together the Bits from a and b and returns a 
         /// new SubGridTreeLeafBitmapSubGridBits instance with the result
         /// </summary>
@@ -199,6 +235,19 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Performs the same logical operation as the '^' operator, but performs the XOR inline on the called instance
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public void XorWith(SubGridTreeBitmapSubGridBits other)
+        {
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            {
+                Bits[i] ^= other.Bits[i];
+            }
         }
 
         /// <summary>
@@ -307,6 +356,21 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             return true;
         }
+
+        /// <summary>
+        /// Adds all the rows containing bits together as if they were numnbers. This provides fast determination of empty, full or partial bitsets
+        /// </summary>
+        /// <returns></returns>
+        public long SumBitRows()
+        {
+            long result = 0;
+
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+                result += Bits[i];
+
+            return result;
+        }
+
         /*
           // Not implemented in Next Gen. Any similar requriement can extract the bits and set them externally
                 class function TSubGridTreeLeafBitmapSubGridBits.FromVariant(const Vrnt: Variant): TSubGridTreeLeafBitmapSubGridBits;
@@ -341,7 +405,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
        end;
         */
 
-            /// <summary>
+        /// <summary>
         /// Set the bit at the location identified by [CellX, CellY] to set (1)
         /// </summary>
         /// <param name="CellX"></param>
@@ -366,22 +430,27 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Writes the contents of the mask in a binary form using the given binary write
         /// </summary>
         /// <param name="writer"></param>
-        public void Write(BinaryWriter writer)
+        public void Write(BinaryWriter writer, byte [] buffer)
         {
-            switch (CountBits())
+            switch (SumBitRows())
             {
                 case 0:
                     writer.Write(Serialisation_NoBitsSet);
                     break;
-                case SubGridTree.CellsPerSubgrid:
+                case SumBitRowsFullCount:
                     writer.Write(Serialisation_AllBitsSet);
                     break;
                 default:
                     writer.Write(Serialisation_ArbitraryBitsSet);
+
+                    Buffer.BlockCopy(Bits, 0, buffer, 0, BytesOccupiedByBits);
+                    writer.Write(buffer, 0, BytesOccupiedByBits);
+                    /*
                     foreach (uint u in Bits)
                     {
                         writer.Write(u);
                     }
+                    */
                     break;
             }
         }
@@ -390,7 +459,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Reads the contents of the mask from a binary form using the given binary reader
         /// </summary>
         /// <param name="reader"></param>
-        public void Read(BinaryReader reader)
+        public void Read(BinaryReader reader, byte[] buffer)
         {
             switch (reader.ReadByte())
             {
@@ -401,10 +470,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     Fill();
                     break;
                 case Serialisation_ArbitraryBitsSet:
+                    reader.Read(buffer, 0, BytesOccupiedByBits);
+                    Buffer.BlockCopy(buffer, 0, Bits, 0, BytesOccupiedByBits);
+                    /*
                     for (int i = 0; i < Bits.Length; i++)
                     {
                         Bits[i] = reader.ReadUInt32();
                     }
+                    */
                     break;
                 default:
                     Debug.Assert(false, "Unknown TSubGridTreeLeafBitmapSubGridBits control byte in read stream");
@@ -551,9 +624,17 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
        end;
        */
 
+        /// <summary>
+        /// Determines if this bitmask is equal to another bitmask
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(SubGridTreeBitmapSubGridBits other)
         {
-            if (other == null) return false;
+            if (other == null)
+            {
+                return false;
+            }
 
             for (int i = 0; i < Bits.Length; i++)
             {

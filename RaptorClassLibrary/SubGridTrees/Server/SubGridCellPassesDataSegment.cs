@@ -90,7 +90,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             Debug.Assert(HasAllPasses && HasLatestData && (PassesData != null) && (LatestPasses != null),
                    "Leaf subgrids being written to persistent store must be fully populated with pass stacks and latest pass grid");
 
-            LatestPasses.Write(writer);
+            LatestPasses.Write(writer, new byte[10000]);
 
             CellStacksOffset = (int)writer.BaseStream.Position;
 
@@ -129,7 +129,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     return false;
                 }
 
-                LatestPasses.Read(reader);
+                LatestPasses.Read(reader, new byte[10000]);
             }
 
             if (HasAllPasses && loadAllPasses)

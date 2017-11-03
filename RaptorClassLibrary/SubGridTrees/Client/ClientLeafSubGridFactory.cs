@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 {
     /// <summary>
-    /// Factory responsible for creating concrete 'gred data' specific client sub grid leaf instances
+    /// Factory responsible for creating concrete 'grid data' specific client sub grid leaf instances
     /// </summary>
     public class ClientLeafSubGridFactory : IClientLeafSubgridFactory
     {
@@ -17,6 +19,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Simple array to hold client leaf subgrid type map
         /// </summary>
         private static Type[] typeMap = null;
+
+        /// <summary>
+        /// Stores of cached client grids to reduce the object instantation and garbage collection overhead
+        /// </summary>
+//        private ConcurrentBag<IClientLeafSubGrid>[] ClientLeaves = Enumerable.Range(0, Enum.GetNames(typeof(GridDataType)).Length).Select(x => new ConcurrentBag<IClientLeafSubGrid>()).ToArray();
+        private SimpleConcurrentBag<IClientLeafSubGrid>[] ClientLeaves = Enumerable.Range(0, Enum.GetNames(typeof(GridDataType)).Length).Select(x => new SimpleConcurrentBag<IClientLeafSubGrid>()).ToArray();
 
         /// <summary>
         /// Static class constructor to initialise types
@@ -86,15 +94,49 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <returns>An appropriate instance derived from ClientLeafSubgrid</returns>
         public IClientLeafSubGrid GetSubGrid(GridDataType gridDataType)
         {
-            return (IClientLeafSubGrid)Activator.CreateInstance
-                (
-                typeMap[(int)gridDataType], // IClientLeafSubGrid type
-                null, // Subgrid tree owner
-                null, // Subgrid parent
-                SubGridTree.SubGridTreeLevels, // Level, default to standard tree levels
-                0.0, // Cell Size
-                SubGridTree.DefaultIndexOriginOffset // IndexOfiginOffset, default to tree default value
-                );
+            IClientLeafSubGrid result = null;
+
+            if (ClientLeaves[(int)gridDataType].TryTake(out result))
+            {
+                result.Clear();
+                return result;
+            }
+            else
+            {
+                return (IClientLeafSubGrid)Activator.CreateInstance(
+                            typeMap[(int)gridDataType], // IClientLeafSubGrid type
+                            null, // Subgrid tree owner
+                            null, // Subgrid parent
+                            SubGridTree.SubGridTreeLevels, // Level, default to standard tree levels
+                            0.0, // Cell Size
+                            SubGridTree.DefaultIndexOriginOffset // IndexOfiginOffset, default to tree default value
+                            );
+            }
+        }
+
+        /// <summary>
+        /// Return a client grid previous obtained from the factory so it may reuse it
+        /// </summary>
+        /// <param name="clientGrid"></param>
+        public void ReturnClientSubGrid(ref IClientLeafSubGrid clientGrid)
+        {
+            ClientLeaves[(int)clientGrid.GridDataType].Add(clientGrid);
+
+            clientGrid = null;
+        }
+
+        /// <summary>
+        /// Return an array of client grids (of the same type) previously obtained from the factory so it may reuse them
+        /// </summary>
+        /// <param name="clientGrid"></param>
+        public void ReturnClientSubGrids(GridDataType gridDataType, IClientLeafSubGrid[] clientGrids, int count)
+        {
+            ClientLeaves[(int)gridDataType].Add(clientGrids, count);
+
+            for (int i = 0; i < count; i++)
+            {
+                clientGrids[i] = null;
+            }
         }
     }
 }

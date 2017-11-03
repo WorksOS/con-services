@@ -46,12 +46,34 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             SubGridUtilities.SubGridDimensionalIterator((x, y) => PassData[x, y].Clear());
         }
 
-        public override void Read(BinaryReader reader)
+        public override void Read(BinaryReader reader, byte [] buffer)
         {
-            base.Read(reader);
+            base.Read(reader, buffer);
 
             // Read in the latest call passes themselves
             SubGridUtilities.SubGridDimensionalIterator((i, j) => PassData[i, j].Read(reader));
+        }
+
+        /// <summary>
+        /// ReadTime will read the Time from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public DateTime ReadTime(int Col, int Row)
+        {
+            return PassData[Col, Row].Time;
+        }
+
+        /// <summary>
+        /// ReadHeiht will read the Height from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public float ReadHeight(int Col, int Row)
+        {
+            return PassData[Col, Row].Height;
         }
 
         /// <summary>
@@ -141,9 +163,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// Writes the contents of the NonStatic latest passes using a supplied BinaryWriter
         /// </summary>
         /// <param name="writer"></param>
-        public override void Write(BinaryWriter writer)
+        public override void Write(BinaryWriter writer, byte [] buffer)
         {
-            base.Write(writer);
+            base.Write(writer, buffer);
 
             // Write out the latest call passes themselves
             SubGridUtilities.SubGridDimensionalIterator((i, j) => PassData[i, j].Write(writer));

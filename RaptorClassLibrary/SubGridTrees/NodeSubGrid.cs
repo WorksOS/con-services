@@ -152,8 +152,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         public void ForEachSubGrid(Func<ISubGrid, SubGridProcessNodeSubGridResult> functor,
             byte minSubGridCellX = 0,
             byte minSubGridCellY = 0,
-            byte maxSubGridCellX = SubGridTree.SubGridTreeDimension - 1,
-            byte maxSubGridCellY = SubGridTree.SubGridTreeDimension - 1)
+            byte maxSubGridCellX = SubGridTree.SubGridTreeDimensionMinus1,
+            byte maxSubGridCellY = SubGridTree.SubGridTreeDimensionMinus1)
         {
             if (minSubGridCellX >= SubGridTree.SubGridTreeDimension ||
                 minSubGridCellY >= SubGridTree.SubGridTreeDimension ||
@@ -179,8 +179,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         public void ForEachSubGrid(Func<byte, byte, ISubGrid, SubGridProcessNodeSubGridResult> functor,
             byte minSubGridCellX = 0, 
             byte minSubGridCellY = 0, 
-            byte maxSubGridCellX = SubGridTree.SubGridTreeDimension - 1, 
-            byte maxSubGridCellY = SubGridTree.SubGridTreeDimension - 1)
+            byte maxSubGridCellX = SubGridTree.SubGridTreeDimensionMinus1, 
+            byte maxSubGridCellY = SubGridTree.SubGridTreeDimensionMinus1)
         {
             if (minSubGridCellX >= SubGridTree.SubGridTreeDimension ||
                 minSubGridCellY >= SubGridTree.SubGridTreeDimension ||

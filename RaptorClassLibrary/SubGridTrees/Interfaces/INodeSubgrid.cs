@@ -17,14 +17,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
         void ForEachSubGrid(Func<ISubGrid, SubGridProcessNodeSubGridResult> functor,
             byte minSubGridCellX = 0,
             byte minSubGridCellY = 0,
-            byte maxSubGridCellX = SubGridTree.SubGridTreeDimension - 1,
-            byte maxSubGridCellY = SubGridTree.SubGridTreeDimension - 1);
+            byte maxSubGridCellX = SubGridTree.SubGridTreeDimensionMinus1,
+            byte maxSubGridCellY = SubGridTree.SubGridTreeDimensionMinus1);
 
         void ForEachSubGrid(Func<byte, byte, ISubGrid, SubGridProcessNodeSubGridResult> functor,
             byte minSubGridCellX = 0,
             byte minSubGridCellY = 0,
-            byte maxSubGridCellX = SubGridTree.SubGridTreeDimension - 1,
-            byte maxSubGridCellY = SubGridTree.SubGridTreeDimension - 1);
+            byte maxSubGridCellX = SubGridTree.SubGridTreeDimensionMinus1,
+            byte maxSubGridCellY = SubGridTree.SubGridTreeDimensionMinus1);
 
         bool ScanSubGrids(BoundingIntegerExtent2D Extent,
                           Func<ISubGrid, bool> leafFunctor = null,

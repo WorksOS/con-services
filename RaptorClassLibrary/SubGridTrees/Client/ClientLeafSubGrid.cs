@@ -139,7 +139,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// </summary>
         /// <param name="filteredValue"></param>
         /// <returns></returns>
-        public virtual bool AssignableFilteredValueIsNull(FilteredPassData filteredValue)
+        public virtual bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue)
         {
             Debug.Assert(false, "{0}AssignableFilteredValueIsNull may not be called directly. Not valid to check nullness against entire cell pass", MethodBase.GetCurrentMethod().DeclaringType.Name);
             return false;
@@ -286,16 +286,16 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
-        public override void Write(BinaryWriter writer)
+        public override void Write(BinaryWriter writer, byte [] buffer)
         {
-            base.Write(writer);
+            base.Write(writer, buffer);
 
             writer.Write((int)GridDataType);
             writer.Write(CellSize);
             writer.Write(IndexOriginOffset);
 
-            ProdDataMap.Write(writer);
-            FilterMap.Write(writer);
+            ProdDataMap.Write(writer, buffer);
+            FilterMap.Write(writer, buffer);
         }
 
         /// <summary>
@@ -304,16 +304,16 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
-        public override void Read(BinaryReader reader)
+        public override void Read(BinaryReader reader, byte [] buffer)
         {
-            base.Read(reader);
+            base.Read(reader, buffer);
 
             GridDataType = (GridDataType)reader.ReadInt32();
             CellSize = reader.ReadDouble();
             IndexOriginOffset = reader.ReadUInt32();
 
-            ProdDataMap.Read(reader);
-            FilterMap.Read(reader);
+            ProdDataMap.Read(reader, buffer);
+            FilterMap.Read(reader, buffer);
         }
     }
 

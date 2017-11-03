@@ -42,7 +42,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// </summary>
         /// <param name="filteredValue"></param>
         /// <returns></returns>
-        public override bool AssignableFilteredValueIsNull(FilteredPassData filteredValue) => filteredValue.FilteredPass.MaterialTemperature == CellPass.NullMaterialTemp;
+        public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.MaterialTemperature == CellPass.NullMaterialTemp;
 
         /// <summary>
         /// Assign filtered height value from a filtered pass to a cell
@@ -135,11 +135,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
-        public override void Write(BinaryWriter writer)
+        public override void Write(BinaryWriter writer, byte [] buffer)
         {
-            base.Write(writer);
+            base.Write(writer, buffer);
 
-            FirstPassMap.Write(writer);
+            FirstPassMap.Write(writer, buffer);
 
             SubGridUtilities.SubGridDimensionalIterator((x, y) => writer.Write(Cells[x, y]));
         }
@@ -150,11 +150,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
-        public override void Read(BinaryReader reader)
+        public override void Read(BinaryReader reader, byte[] buffer)
         {
-            base.Read(reader);
+            base.Read(reader, buffer);
 
-            FirstPassMap.Read(reader);
+            FirstPassMap.Read(reader, buffer);
 
             SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadUInt16());
         }

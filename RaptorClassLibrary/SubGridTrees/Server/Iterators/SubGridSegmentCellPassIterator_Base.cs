@@ -145,8 +145,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         // cell passes are being iterated over. The coordinates should be in the 0..DimensionSize-1 range
         public void SetCellCoordinatesInSubgrid(byte cellX, byte cellY)
         {
-            Debug.Assert(Range.InRange(cellX, (byte)0, (byte)(SubGridTree.SubGridTreeDimension - 1)) &&
-                         Range.InRange(cellY, (byte)0, (byte)(SubGridTree.SubGridTreeDimension - 1)),
+            Debug.Assert(Range.InRange(cellX, (byte)0, (byte)(SubGridTree.SubGridTreeDimensionMinus1)) &&
+                         Range.InRange(cellY, (byte)0, (byte)(SubGridTree.SubGridTreeDimensionMinus1)),
                          "Cell coordinates out of range in SetCellCoordinatesInSubgrid");
 
             this.cellX = cellX;
@@ -202,8 +202,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
                 return false; // No more cells to process
             }
 
-            Debug.Assert(Range.InRange(cellX, (byte)0, (byte)(SubGridTree.SubGridTreeDimension - 1)) &&
-                         Range.InRange(cellY, (byte)0, (byte)(SubGridTree.SubGridTreeDimension - 1)),
+            Debug.Assert(Range.InRange(cellX, (byte)0, (byte)(SubGridTree.SubGridTreeDimensionMinus1)) &&
+                         Range.InRange(cellY, (byte)0, (byte)(SubGridTree.SubGridTreeDimensionMinus1)),
                          "Cell coordinates out of range in GetNextCellPass");
 
             do

@@ -372,7 +372,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
-        public virtual void Write(BinaryWriter writer)
+        public virtual void Write(BinaryWriter writer, byte [] buffer)
         {
             writer.Write(Level);
             writer.Write(OriginX);
@@ -385,7 +385,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
-        public virtual void Read(BinaryReader reader)
+        public virtual void Read(BinaryReader reader, byte [] buffer)
         {
             Level = reader.ReadByte();
             OriginX = reader.ReadUInt32();

@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Messaging;
 using log4net;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Listeners
 {
@@ -19,7 +21,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
     /// to minimise serialization/deserialisation overhead
     /// </summary>
     [Serializable]
-    public class SubGridListener : IMessageListener<MemoryStream>
+    public class SubGridListener : IMessageListener<byte[]>
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -27,14 +29,105 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
         /// <summary>
         /// Count of the number of responses recieved by this listener
         /// </summary>
+        [NonSerialized]
         private int responseCounter = 0;
 
+        [NonSerialized]
         private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
 
         /// <summary>
         /// The reference to the task responsible for handling the returned subgrid information from the processing cluster
         /// </summary>
+        [NonSerialized]
         public ITask Task = null;
+
+        /// <summary>
+        /// The memory stream to be used for deserialising message packets when they arrive
+        /// </summary>
+        [NonSerialized]
+        [ThreadStaticAttribute]
+        private static MemoryStream MS = null; //= new MemoryStream();
+
+        private void ProcessResponse(byte[] message)
+        {
+            try
+            {
+                if (MS == null)
+                {
+                    MS = new MemoryStream();
+                }
+
+                // Decode the message into the appropriate client subgrid type
+                MS.Position = 0;
+                MS.Write(message, 0, message.Length);
+                MS.Position = 0;
+
+                using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
+                {
+                    // Read the number of subgrid present in the stream
+                    int subgridCount = reader.ReadInt32();
+
+                    // Create a single instance of the client grid. The approach here is that TransferResponse does not move ownership 
+                    // to the called context (it may clone the passed in client grid if desired)
+                    IClientLeafSubGrid [] clientGrids = new IClientLeafSubGrid[subgridCount];
+
+                    //IClientLeafSubGrid clientGrid = ClientLeafSubGridFactory.GetSubGrid(Task.GridDataType);
+
+                    try
+                    {
+                        byte[] buffer = new byte[10000];
+
+                        for (int i = 0; i < subgridCount; i++)
+                        {
+                            // ######################################
+                            // Task.PipeLine.SubgridProcessed();
+                            // continue;
+
+                            clientGrids[i] = ClientLeafSubGridFactory.GetSubGrid(Task.GridDataType);
+                            clientGrids[i].Read(reader, buffer);
+
+                            int thisResponseCount = ++responseCounter;
+
+                            // Log.InfoFormat("Transferring response#{0} to processor (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+
+                            // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialised into the task
+                            // (no assumption of thread safety within the task itself)
+                            try
+                            {
+                                lock (Task)
+                                {
+                                    if (Task.TransferResponse(clientGrids[i]))
+                                    {
+                                        // Log.DebugFormat("Processed response#{0} (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+                                    }
+                                    else
+                                    {
+                                        Log.InfoFormat("Processing response#{0} FAILED (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+                                    }
+                                }
+                            }
+                            finally
+                            {
+                                // Tell the pipeline that a subgrid has been completely processed
+                                Task.PipeLine.SubgridProcessed();
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        // Return the client grid to the factory for recycling now its role is complete here... when using ConcurrentBag
+                        // ClientLeafSubGridFactory.ReturnClientSubGrid(ref clientGrid);
+
+                        // Return the client grid to the factory for recycling now its role is complete here... when using SimpleConcurrentBag
+                        ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids[0].GridDataType, clientGrids, subgridCount);
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                throw;
+            }
+        }
 
         /// <summary>
         /// The method called to announce the arrival of a message from a remote context in the cluster
@@ -42,58 +135,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
         /// <param name="nodeId"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public bool Invoke(Guid nodeId, MemoryStream message)
+        public bool Invoke(Guid nodeId, byte[] message)
         {
-            try
-            {
-                // Decode the message into the appropriate client subgrid type
-                message.Position = 0;
-
-                using (BinaryReader reader = new BinaryReader(message, Encoding.UTF8, true))
-                {
-                    // Read the number of subgrid presentin the stream
-                    int subgridCount = reader.ReadInt32();
-
-                    // Create a single instance of the client grid. The approach here is that TransferResponse does not move ownership 
-                    // to the called context (it may clone the passed in client grid if desired)
-                    IClientLeafSubGrid clientGrid = ClientLeafSubGridFactory.GetSubGrid(Task.GridDataType);
-
-                    for (int i = 0; i < subgridCount; i++)
-                    {
-                        clientGrid.Read(reader);
-
-                        int thisResponseCount = ++responseCounter;
-
-                        // Log.InfoFormat("Transferring response#{0} to processor (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
-
-                        // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialised into the task
-                        // (no assumption of thread safety within the task itself)
-                        try
-                        {
-                            lock (Task)
-                            {
-                                if (Task.TransferResponse(clientGrid))
-                                {
-                                    // Log.DebugFormat("Processed response#{0} (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
-                                }
-                                else
-                                {
-                                    Log.InfoFormat("Processing response#{0} FAILED (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
-                                }
-                            }
-                        }
-                        finally
-                        {
-                            // Tell the pipeline that a subgrid has been completely processed
-                            Task.PipeLine.SubgridProcessed();
-                        }
-                    }
-                }
-            }            
-            catch (Exception E)
-            {
-                throw;
-            }
+            ProcessResponse(message);
 
             return true;
         }
@@ -101,6 +145,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
         public SubGridListener(ITask task)
         {
             Task = task;
-        }
+       }
     }
 }

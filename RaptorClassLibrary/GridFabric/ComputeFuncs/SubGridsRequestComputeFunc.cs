@@ -33,7 +33,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     [Serializable]
     class SubGridsRequestComputeFunc : IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse>
     {
-        private const int addressBucketSize = 50;
+        [NonSerialized]
+        private const int addressBucketSize = 20;
 
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -49,7 +50,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// </summary>
         [NonSerialized]
         private static uint spatialSubdivisionDescriptor = RaptorServerConfig.Instance().SpatialSubdivisionDescriptor;
-            
+
+        [NonSerialized]
         private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
 //        private static int requestCount = 0;
 
@@ -78,11 +80,16 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         private IMessaging rmtMsg = null;
 
         [NonSerialized]
-        AreaControlSet areaControlSet;
+        private AreaControlSet areaControlSet;
 
         [NonSerialized]
-        SiteModel siteModel = null;
+        private SiteModel siteModel = null;
 
+        [NonSerialized]
+        private MemoryStream MS = null; 
+
+        [NonSerialized]
+        private IClientLeafSubGrid[] clientGrids = null;
 
         /// <summary>
         /// Take the supplied argument to the compute func and perform any necessary unpacking of the
@@ -100,7 +107,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             // Unpack the mask from the argument
             mask = new SubGridTreeBitMask();
             arg.MaskStream.Position = 0;
-            SubGridTreePersistor.Read(mask, new BinaryReader(arg.MaskStream, Encoding.UTF8, true));
+
+            using (BinaryReader reader = new BinaryReader(arg.MaskStream, Encoding.UTF8, true))
+            {
+                SubGridTreePersistor.Read(mask, reader);
+            }
         }
 
         /// <summary>
@@ -114,8 +125,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 //Log.Info(String.Format("PerformSubgridRequest: {0} --> Examine spatial descriptor ({1} vs {2}) on {3} divisions", 
                 //    address.ToString(), address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions), 
                 //    spatialSubdivisionDescriptor, numSpatialProcessingDivisions));
-
-//                Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
+                // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
 
                 clientGrid = ClientLeafSubGridFactory.GetSubGrid(localArg.GridDataType);
                 clientGrid.CellSize = siteModel.Grid.CellSize;
@@ -151,10 +161,16 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             }
         }
 
+        /// <summary>
+        /// Process a subset of the full set of subgrids in the request
+        /// </summary>
+        /// <param name="addresses"></param>
+        /// <param name="count"></param>
         private void PerformSubgridRequestList(SubGridCellAddress[] addresses, int count)
         {
             int resultCount = 0;
-            IClientLeafSubGrid[] clientGrids = new IClientLeafSubGrid[count];
+
+            //Log.InfoFormat("Sending {0} subgrids to caller for processing", count);
 
             for (int i = 0; i < count; i++)
             {
@@ -167,73 +183,87 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 }
             }
 
-            // Package the resulting subgrids into a MemoryStream
-            using (MemoryStream MS = new MemoryStream())
+            // Package the resulting subgrids into the MemoryStream
+            MS.Position = 0;
+
+            using (BinaryWriter writer = new BinaryWriter(MS, Encoding.UTF8, true))
             {
-                using (BinaryWriter writer = new BinaryWriter(MS, Encoding.UTF8, true))
-                {
-                    writer.Write(resultCount);
+                byte[] buffer = new byte[10000];
 
-                    foreach (IClientLeafSubGrid clientGrid in clientGrids)
-                    {
-                        clientGrid.Write(writer);
-                    }
+                writer.Write(resultCount);
+
+                for (int i = 0; i < resultCount; i++)
+                {
+                    clientGrids[i].Write(writer, buffer);
+
+                    // Return the client grid to the factory for recycling now its role is complete here... when using ConcurrentBag
+                    //ClientLeafSubGridFactory.ReturnClientSubGrid(ref clientGrids[i]);
                 }
 
-                // ... and send it to the message topic in the compute func
-                try
-                {
-                    // Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
-                    //                localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
-                    //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("Role"),
-                    //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("RaptorNodeID"));
-                    rmtMsg.Send(MS, localArg.MessageTopic);
-                }
-                catch (Exception E)
-                {
-                    Log.Error("Exception sending message", E);
-                    throw;
-                }
+                // Return the client grid to the factory for recycling now its role is complete here... when using SimpleConcurrentBag
+                ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids[0].GridDataType, clientGrids, resultCount);
+            }
+
+            // ... and send it to the message topic in the compute func
+            try
+            {
+                // Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
+                //                localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
+                //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("Role"),
+                //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("RaptorNodeID"));
+                byte[] bytes = new byte[MS.Position];
+                MS.Position = 0;
+                MS.Read(bytes, 0, bytes.Length);
+                rmtMsg.Send(bytes, localArg.MessageTopic);
+            }
+            catch (Exception E)
+            {
+                Log.Error("Exception sending message", E);
+                throw;
             }
         }
 
+        /// <summary>
+        /// Process the full set of subgrids in the request
+        /// </summary>
         private void PerformSubgridRequests()
         {
-            // For now, pretend this context cares about all the subgrids...
-            // When we do care, the lambda function below needs to filter on the affinity predicate
-            // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
-            // noted with the 'set' bits in the bitmask
-
-            Log.Info("Scanning subgrids in request");
-
-            areaControlSet = AreaControlSet.Null();
-            siteModel = SiteModels.SiteModels.Instance().GetSiteModel(localArg.SiteModelID);
-
-            SubGridCellAddress[] addresses = new SubGridCellAddress[addressBucketSize];
-            int listCount = 0;
-
-            mask.ScanAllSetBitsAsSubGridAddresses(address =>
+            using (MS = new MemoryStream())
             {
-                if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor)
-                {
-                    return; // This subgrid is the responsibility of another server
-                }
+                clientGrids = new IClientLeafSubGrid[addressBucketSize];
 
-                addresses[listCount++] = address;
+                // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
+                // noted with the 'set' bits in the bitmask, processing only those that matter for this server
 
-                if (listCount == addressBucketSize)
+                Log.Info("Scanning subgrids in request");
+
+                areaControlSet = AreaControlSet.Null();
+                siteModel = SiteModels.SiteModels.Instance().GetSiteModel(localArg.SiteModelID);
+
+                SubGridCellAddress[] addresses = new SubGridCellAddress[addressBucketSize];
+                int listCount = 0;
+
+                mask.ScanAllSetBitsAsSubGridAddresses(address =>
                 {
-                    // Process the subgrids...
+                    if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) == spatialSubdivisionDescriptor)
+                    {
+                        // This subgrid is the responsibility of this server
+                        addresses[listCount++] = address;
+
+                        if (listCount == addressBucketSize)
+                        {
+                            // Process the subgrids...
+                            PerformSubgridRequestList(addresses, listCount);
+                            listCount = 0;
+                        }
+                    }
+                });
+
+                if (listCount > 0)
+                {
+                    // Process the remaining subgrids...
                     PerformSubgridRequestList(addresses, listCount);
-                    listCount = 0;
                 }
-            });
-
-            if (listCount > 0)
-            {
-                // Process the subgrids...
-                PerformSubgridRequestList(addresses, listCount);
-                listCount = 0;
             }
         }
 

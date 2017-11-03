@@ -65,7 +65,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             return YIdx < SubGridTree.SubGridTreeDimension;
         }
 
-        public bool AtLastCell() => (XIdx >= SubGridTree.SubGridTreeDimension - 1) && (YIdx >= SubGridTree.SubGridTreeDimension - 1);
+        public bool AtLastCell() => (XIdx >= SubGridTree.SubGridTreeDimensionMinus1) && (YIdx >= SubGridTree.SubGridTreeDimensionMinus1);
     }
 
     public class SubGridEnumerator

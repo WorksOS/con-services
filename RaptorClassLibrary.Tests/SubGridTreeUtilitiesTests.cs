@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             SubGridUtilities.GetOTGLeafSubGridCellIndex(0, 0, out SubGridCellX, out SubGridCellY);
             Assert.IsTrue(SubGridCellX == 0 && SubGridCellY == 0, "Subgrid cell indices incorrect");
 
-            SubGridUtilities.GetOTGLeafSubGridCellIndex(SubGridTree.SubGridTreeDimension - 1, SubGridTree.SubGridTreeDimension - 1, out SubGridCellX, out SubGridCellY);
+            SubGridUtilities.GetOTGLeafSubGridCellIndex(SubGridTree.SubGridTreeDimensionMinus1, SubGridTree.SubGridTreeDimensionMinus1, out SubGridCellX, out SubGridCellY);
             Assert.IsTrue(SubGridCellX == (SubGridTree.SubGridTreeDimension - 1) && SubGridCellY == (SubGridTree.SubGridTreeDimension - 1), "Subgrid cell indices incorrect");
 
             SubGridUtilities.GetOTGLeafSubGridCellIndex(SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension, out SubGridCellX, out SubGridCellY);

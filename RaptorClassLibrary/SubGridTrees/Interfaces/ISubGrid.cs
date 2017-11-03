@@ -70,9 +70,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
         int CountNonNullCells();
         void SetAbsoluteOriginPosition(uint originX, uint originY );
         void SetAbsoluteLevel(byte level);
-        void Write(BinaryWriter writer);
+        void Write(BinaryWriter writer, byte [] buffer);
         void Write(BinaryFormatter formatter, Stream stream);
-        void Read(BinaryReader reader);
+        void Read(BinaryReader reader, byte [] buffer);
         void Read(BinaryFormatter formatter, Stream stream);
         SubGridCellAddress OriginAsCellAddress();
     }

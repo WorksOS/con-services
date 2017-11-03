@@ -70,7 +70,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// </summary>
         /// <param name="functor"></param>
         /// <returns></returns>
-        public void ForEach(Action<byte, byte> functor)
+        public static void ForEach(Action<byte, byte> functor)
         {
             for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
             {

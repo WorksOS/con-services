@@ -62,7 +62,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
-        public override void Write(BinaryWriter writer)
+        public override void Write(BinaryWriter writer, byte [] buffer)
         {
             throw new Exception("Generic BinaryWriter based implementation not provided. Override to implement if needed.");
         }
@@ -73,7 +73,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
-        public override void Read(BinaryReader reader)
+        public override void Read(BinaryReader reader, byte[] buffer)
         {
             throw new Exception ("Generic BinaryReader based implementation not provided. Override to implement if needed.");
         }

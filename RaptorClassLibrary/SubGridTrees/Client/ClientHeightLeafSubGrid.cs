@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Filters;
+using log4net;
+using System.Reflection;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 {   
@@ -16,6 +18,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
     /// </summary>
     public class ClientHeightLeafSubGrid : GenericClientLeafSubGrid<float>
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// First pass map records which cells hold cell pass heights that were derived
         /// from the first pass a machine made over the corresponding cell
@@ -63,7 +67,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// </summary>
         /// <param name="filteredValue"></param>
         /// <returns></returns>
-        public override bool AssignableFilteredValueIsNull(FilteredPassData filteredValue) => filteredValue.FilteredPass.Height == Consts.NullSingle;
+        public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.Height == Consts.NullSingle;
 
         /// <summary>
         /// Assign filtered height value from a filtered pass to a cell
@@ -85,16 +89,34 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != Consts.NullHeight;
 
         /// <summary>
+        /// Ar array containing the content of a fully null subgrid
+        /// </summary>
+        public static float[,] nullCells = nullHeights();
+
+        /// <summary>
         /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
         /// </summary>
         public override void Clear()
         {
-            base.Clear();
+            if (Cells == null)
+            {
+                base.Clear();
+            }
 
-            ForEach((x, y) => Cells[x, y] = Consts.NullHeight); // TODO: Optimisation: Use PassData_Height_Null assignment as in current gen;
+            Buffer.BlockCopy(nullCells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+            // ForEach((x, y) => Cells[x, y] = Consts.NullHeight); // TODO: Optimisation: Use PassData_Height_Null assignment as in current gen;
 
             FirstPassMap.Clear();
             SurveyedSurfaceMap.Clear();
+        }
+
+        private static float[,] nullHeights()
+        {
+            float[,] result = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+            ForEach((x, y) => result[x, y] = Consts.NullHeight);
+
+            return result;
         }
 
         /// <summary>
@@ -159,20 +181,24 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
-        public override void Write(BinaryWriter writer)
+        public override void Write(BinaryWriter writer, byte [] buffer)
         {
-            base.Write(writer);
+            base.Write(writer, buffer);
 
-            FirstPassMap.Write(writer);
-            SurveyedSurfaceMap.Write(writer);
+            FirstPassMap.Write(writer, buffer);
+            SurveyedSurfaceMap.Write(writer, buffer);
 
-            for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+            writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+/*
+             for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
             {
                 for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                 {
                     writer.Write(Cells[I, J]);
                 }
             }
+*/
         }
 
         /// <summary>
@@ -181,20 +207,25 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
-        public override void Read(BinaryReader reader)
+        public override void Read(BinaryReader reader, byte[] buffer)
         {
-            base.Read(reader);
+            base.Read(reader, buffer);
 
-            FirstPassMap.Read(reader);
-            SurveyedSurfaceMap.Read(reader);
+            FirstPassMap.Read(reader, buffer);
+            SurveyedSurfaceMap.Read(reader, buffer);
 
-            for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
-            {
-                for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
-                {
-                    Cells[I, J] = reader.ReadSingle();
-                }
-            }
+            reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+            Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+
+            /*
+                        for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+                        {
+                            for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                            {
+                                Cells[I, J] = reader.ReadSingle();
+                            }
+                        }
+            */
         }
 
         /// <summary>

@@ -19,7 +19,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
 
         bool WantsLiftProcessingResults();
 
-        bool AssignableFilteredValueIsNull(FilteredPassData filteredValue);
+        bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue);
         void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context);
     }
 }

@@ -52,7 +52,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             /// Serialise all descriptors to the supplied writer
             /// </summary>
             /// <param name="writer"></param>
-            public void Write(BinaryWriter writer)
+            public void Write(BinaryWriter writer, byte [] buffer)
             {
                 Time.Write(writer);
                 Height.Write(writer);
@@ -67,7 +67,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             /// Deserialise all descriptors using the supplied reader
             /// </summary>
             /// <param name="reader"></param>
-            public void Read(BinaryReader reader)
+            public void Read(BinaryReader reader, byte [] buffer)
             {
                 Time.Read(reader);
                 Height.Read(reader);
@@ -204,7 +204,26 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
         }
 
-        // ReadHeight will read the height from the latest cell identified by the Row and Col
+        /// <summary>
+        /// ReadTime will read the time from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public DateTime ReadTime(int Col, int Row)
+        {
+            int BitLocation = (((Col * SubGridTree.SubGridTreeDimension) + Row) * NumBitsPerCellPass) + EncodedFieldDescriptors.Height.OffsetBits;
+
+            long IntegerTime = BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Time);
+            return IntegerTime == EncodedFieldDescriptors.Time.NativeNullValue ? DateTime.MinValue : FirstRealCellPassTime.AddSeconds(IntegerTime);
+        }
+
+        /// <summary>
+        /// ReadHeight will read the height from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
         public float ReadHeight(int Col, int Row)
         {
             int BitLocation = (((Col * SubGridTree.SubGridTreeDimension) + Row) * NumBitsPerCellPass) + EncodedFieldDescriptors.Height.OffsetBits;
@@ -335,46 +354,46 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return Result;
         }
 
-        public void Read(BinaryReader reader)
+        public void Read(BinaryReader reader, byte[] buffer)
         {
             Clear();
 
-            PassDataExistanceMap.Read(reader);
-            CCVValuesAreFromLastPass.Read(reader);
-            RMVValuesAreFromLastPass.Read(reader);
-            FrequencyValuesAreFromLastPass.Read(reader);
-            AmplitudeValuesAreFromLastPass.Read(reader);
-            GPSModeValuesAreFromLatestCellPass.Read(reader);
-            TemperatureValuesAreFromLastPass.Read(reader);
-            MDPValuesAreFromLastPass.Read(reader);
-            CCAValuesAreFromLastPass.Read(reader);
+            PassDataExistanceMap.Read(reader, buffer);
+            CCVValuesAreFromLastPass.Read(reader, buffer);
+            RMVValuesAreFromLastPass.Read(reader, buffer);
+            FrequencyValuesAreFromLastPass.Read(reader, buffer);
+            AmplitudeValuesAreFromLastPass.Read(reader, buffer);
+            GPSModeValuesAreFromLatestCellPass.Read(reader, buffer);
+            TemperatureValuesAreFromLastPass.Read(reader, buffer);
+            MDPValuesAreFromLastPass.Read(reader, buffer);
+            CCAValuesAreFromLastPass.Read(reader, buffer);
 
             FirstRealCellPassTime = DateTime.FromBinary(reader.ReadInt64());
 
             BF_CellPasses.Read(reader);
 
-            EncodedFieldDescriptors.Read(reader);
+            EncodedFieldDescriptors.Read(reader, buffer);
 
             NumBitsPerCellPass = reader.ReadInt32();
         }
 
-        public void Write(BinaryWriter writer)
+        public void Write(BinaryWriter writer, byte [] buffer)
         {
-            PassDataExistanceMap.Write(writer);
-            CCVValuesAreFromLastPass.Write(writer);
-            RMVValuesAreFromLastPass.Write(writer);
-            FrequencyValuesAreFromLastPass.Write(writer);
-            AmplitudeValuesAreFromLastPass.Write(writer);
-            GPSModeValuesAreFromLatestCellPass.Write(writer);
-            TemperatureValuesAreFromLastPass.Write(writer);
-            MDPValuesAreFromLastPass.Write(writer);
-            CCAValuesAreFromLastPass.Write(writer);
+            PassDataExistanceMap.Write(writer, buffer);
+            CCVValuesAreFromLastPass.Write(writer, buffer);
+            RMVValuesAreFromLastPass.Write(writer, buffer);
+            FrequencyValuesAreFromLastPass.Write(writer, buffer);
+            AmplitudeValuesAreFromLastPass.Write(writer, buffer);
+            GPSModeValuesAreFromLatestCellPass.Write(writer, buffer);
+            TemperatureValuesAreFromLastPass.Write(writer, buffer);
+            MDPValuesAreFromLastPass.Write(writer, buffer);
+            CCAValuesAreFromLastPass.Write(writer, buffer);
 
             writer.Write(FirstRealCellPassTime.ToBinary());
 
             BF_CellPasses.Write(writer);
 
-            EncodedFieldDescriptors.Write(writer);
+            EncodedFieldDescriptors.Write(writer, buffer);
 
             writer.Write(NumBitsPerCellPass);
         }

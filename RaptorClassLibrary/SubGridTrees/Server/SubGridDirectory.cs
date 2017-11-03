@@ -90,7 +90,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 Debug.Assert(GlobalLatestCells != null, "Cannot write subgrid directory without global latest values available");
 
-                GlobalLatestCells.Write(writer);
+                GlobalLatestCells.Write(writer, new byte[10000]);
 
                 // Write out the directoy of segments
                 SegmentCount = SegmentDirectory.Count;
@@ -117,7 +117,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 Debug.Assert(GlobalLatestCells != null, "Cannot read subgrid directory without global latest values available");
 
-                GlobalLatestCells.Read(reader);
+                GlobalLatestCells.Read(reader, new byte[10000]);
 
                 // Read in the directoy of segments
                 int SegmentCount = reader.ReadInt32();

@@ -63,7 +63,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             Assert.IsTrue(subgrid.CountNonNullCells() == SubGridTree.CellsPerSubgrid, "Not all cells set to non-null");
 
             int NumEqualZero = 0;
-            subgrid.ForEach((x, y) => { if (subgrid.Cells[x, y] == 0.0) NumEqualZero++; });
+            ClientHeightLeafSubGrid.ForEach((x, y) => { if (subgrid.Cells[x, y] == 0.0) NumEqualZero++; });
 
             Assert.IsTrue(NumEqualZero == SubGridTree.CellsPerSubgrid, "Not all cells set to zero");
         }

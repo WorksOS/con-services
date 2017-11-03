@@ -35,9 +35,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         /// <returns></returns>
         CellPass this[int x, int y] { get;  set; }
 
-        void Read(BinaryReader reader);
-        void Write(BinaryWriter writer);
+        void Read(BinaryReader reader, byte[] buffer);
+        void Write(BinaryWriter writer, byte [] buffer);
 
+        DateTime ReadTime(int Col, int Row);
+        float ReadHeight(int Col, int Row);
         short ReadCCV(int Col, int Row);
         short ReadRMV(int Col, int Row);
         ushort ReadFrequency(int Col, int Row);

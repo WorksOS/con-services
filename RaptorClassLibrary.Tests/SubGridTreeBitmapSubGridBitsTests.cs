@@ -113,12 +113,12 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             MemoryStream ms = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
-            bits.Write(bw);
+            bits.Write(bw, new byte[1000]);
             BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             ms.Position = 0;
 
             SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
-            bits2.Read(br);
+            bits2.Read(br, new byte[10000]);
 
             Assert.IsTrue(bits.Equals(bits2), "Bits not equal after serialisation with full mask");
         }
@@ -132,12 +132,12 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             MemoryStream ms = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
-            bits.Write(bw);
+            bits.Write(bw, new byte[1000]);
             BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             ms.Position = 0;
 
             SubGridTreeBitmapSubGridBits bits2 = SubGridTreeBitmapSubGridBits.FullMask;
-            bits2.Read(br);
+            bits2.Read(br, new byte[10000]);
 
             Assert.IsTrue(bits.Equals(bits2), "Bits not equal after serialisation with empty mask");
         }
@@ -155,12 +155,12 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             MemoryStream ms = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
-            bits.Write(bw);
+            bits.Write(bw, new byte[1000]);
             BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             ms.Position = 0;
 
             SubGridTreeBitmapSubGridBits bits2 = SubGridTreeBitmapSubGridBits.FullMask;
-            bits2.Read(br);
+            bits2.Read(br, new byte[10000]);
 
             Assert.IsTrue(bits.Equals(bits2), "Bits not equal after serialisation with arbitrary mask");
             Assert.IsTrue(bits.CountBits() == 4, "Count of bits in deserialised mask is not 4 as expect (result - {0}", bits.CountBits());
@@ -258,7 +258,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
 
             BoundingIntegerExtent2D boundsFull = bits.ComputeCellsExtents();
-            Assert.IsTrue(boundsFull.Equals(new BoundingIntegerExtent2D(0, 0, SubGridTree.SubGridTreeDimension - 1, SubGridTree.SubGridTreeDimension - 1)),
+            Assert.IsTrue(boundsFull.Equals(new BoundingIntegerExtent2D(0, 0, SubGridTree.SubGridTreeDimensionMinus1, SubGridTree.SubGridTreeDimensionMinus1)),
                 "ComputeCellsExtents is incorrect for full grid");
 
             bits.Clear();
@@ -467,6 +467,23 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             Assert.IsFalse(bits.IsEmpty(), "Bits empty after setting bit");
             bits[0, 0] = false;
             Assert.IsTrue(bits.IsEmpty(), "Bits not empty after clearing bit");
+        }
+
+        [TestMethod]
+        public void Test_SubGridTreeBitmapSubGridBitsTests_SumBitRows()
+        {
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+
+            Assert.IsTrue(bits.SumBitRows() == 0, "Non-zero number of bits for empty bit mask");
+
+            bits[0, 0] = true;
+            Assert.IsFalse(bits.SumBitRows()== (1 << SubGridTree.SubGridTreeDimension) - 1, "Incorrect number of bits when bits[0,0] set");
+
+            bits[0, SubGridTree.SubGridTreeDimensionMinus1] = true;
+            Assert.IsFalse(bits.SumBitRows() == (1 << SubGridTree.SubGridTreeDimension), "Incorrect number of bits when bits[0,0] and bits[0,31] set");
+
+            bits.Fill();
+            Assert.IsTrue(bits.SumBitRows() == SubGridTreeBitmapSubGridBits.SumBitRowsFullCount, "Non-full number of bits for full bit mask");
         }
     }
 }

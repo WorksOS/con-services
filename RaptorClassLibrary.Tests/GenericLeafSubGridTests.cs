@@ -39,7 +39,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             // This is not implemented and should throw an exception. Override to implement...
             try
             {
-                subgrid.Read(new BinaryReader(new MemoryStream(), Encoding.UTF8, true));
+                subgrid.Read(new BinaryReader(new MemoryStream(), Encoding.UTF8, true), new byte[10000]);
                 Assert.Fail("Read with BinaryReader did not throw an exception");
             }
             catch (Exception)
@@ -57,7 +57,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             // This is not implemented and should throw an exception. Override to implement...
             try
             {
-                subgrid.Write(new BinaryWriter(new MemoryStream()));
+                subgrid.Write(new BinaryWriter(new MemoryStream()), new byte[10000]);
                 Assert.Fail("Read with BinaryWrite did not throw an exception");
             }
             catch (Exception)

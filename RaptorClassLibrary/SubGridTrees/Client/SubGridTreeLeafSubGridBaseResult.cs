@@ -22,7 +22,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 
             if (SubGrid != null)
             {
-                SubGrid.Write(writer);
+                SubGrid.Write(writer, new byte[10000]);
 
                 writer.Write(SubgridResultCode);
             }
@@ -35,7 +35,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             {
                 SubGrid = ClientLeafSubGridFactory.GetSubGrid(GridDataType);
 
-                SubGrid.Read(reader);
+                SubGrid.Read(reader, new byte[10000]);
 
                 SubgridResultCode = reader.ReadInt32();
             }

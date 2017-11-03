@@ -35,6 +35,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private AreaControlSet AreaControlSet;
         private SiteModel SiteModel = null;
         private IClientLeafSubGrid ClientGrid = null;
+        private ClientLeafSubGrid ClientGridAsLeaf = null;
+        private GridDataType _GridDataType = GridDataType.All;
         private bool SeiveFilterInUse = false;
         private SubGridTreeBitmapSubGridBits SeiveBitmask;
         ISubGrid _SubGrid = null;
@@ -71,6 +73,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         FilteredPassData CurrentPass;
         FilteredPassData TempPass;
         bool PrepareGridForCacheStorageIfNoSeiving = false;
+
+        bool CanUseGlobalLatestCells = true;
+        ISubGridCellLatestPassDataWrapper _GlobalLatestCells = null;
+        bool UseLastPassGrid = false; // Assume we can't use last pass data
 
         private void AcquirePopulationFilterValuesInterlock()
         {
@@ -182,9 +188,58 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             }
         }
 
+        private void AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref CellPass cellPass, int x, int y)
+        {
+            switch (_GridDataType)
+            {
+                case GridDataType.Height:
+                    cellPass.Height = _GlobalLatestCells.ReadHeight(x, y);
+                    break;
+
+                case GridDataType.HeightAndTime:
+                    cellPass.Height = _GlobalLatestCells.ReadHeight(x, y);
+                    cellPass.Time = _GlobalLatestCells.ReadTime(x, y);
+                    break;
+
+                case GridDataType.CCV:
+                    cellPass.CCV = _GlobalLatestCells.ReadCCV(x, y);
+                    break;
+
+                case GridDataType.RMV:
+                    cellPass.RMV = _GlobalLatestCells.ReadRMV(x, y);
+                    break;
+
+                case GridDataType.Frequency:
+                    cellPass.Frequency = _GlobalLatestCells.ReadFrequency(x, y);
+                    break;
+
+                case GridDataType.Amplitude:
+                    cellPass.Amplitude = _GlobalLatestCells.ReadAmplitude(x, y);
+                    break;
+
+                case GridDataType.GPSMode:
+                    cellPass.gpsMode = _GlobalLatestCells.ReadGPSMode(x, y);
+                    break;
+
+                case GridDataType.MDP:
+                    cellPass.MDP = _GlobalLatestCells.ReadMDP(x, y);
+                    break;
+
+                case GridDataType.CCA:
+                    cellPass.CCA = _GlobalLatestCells.ReadCCA(x, y);
+                    break;
+
+                case GridDataType.Temperature:
+                    cellPass.MaterialTemperature = _GlobalLatestCells.ReadTemperature(x, y);
+                    break;
+
+                default: Debug.Assert(false, String.Format("Unsupported grid data type in AssignRequiredFilteredPassAttributesFromGlobalLatestCells: {0}", _GridDataType));
+                    break;
+            }
+        }
+
         public ServerRequestResult RetrieveSubGridStripe(//const PopulationControl: TFilteredValuePopulationControl;
                                byte StripeIndex,
-                               bool UseLastPassGrid,
                                uint CellX,
                                uint CellY
                                //LiftBuildSettings: TICLiftBuildSettings
@@ -194,7 +249,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             int TopMostLayerCompactionHalfPassCount = 0;
             bool FilteredValueIsFromLatestCellPass = false;
 
-            bool CanUseGlobalLatestCells;
             IterationDirection PreviousIterationDirection;
 
             /* TODO...
@@ -213,21 +267,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             try
             {
-                CanUseGlobalLatestCells = Filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
                 /* TODO Readd when LiftBuildSettings is implemented
                  &&
-                 (!(ClientGrid.GridDataType in [icdtCCV, icdtCCVPercent]) && (LiftBuildSettings.CCVSummaryTypes<>[])) &&
-                 (!(ClientGrid.GridDataType in [icdtMDP, icdtMDPPercent]) && (LiftBuildSettings.MDPSummaryTypes<>[])) &&
-                 (!(ClientGrid.GridDataType in [icdtCCA, icdtCCAPercent])) &&
-                 !(ClientGrid.GridDataType in [icdtCellProfile,
+                 (!(_GridDataType in [icdtCCV, icdtCCVPercent]) && (LiftBuildSettings.CCVSummaryTypes<>[])) &&
+                 (!(_GridDataType in [icdtMDP, icdtMDPPercent]) && (LiftBuildSettings.MDPSummaryTypes<>[])) &&
+                 (!(_GridDataType in [icdtCCA, icdtCCAPercent])) &&
+                 !(_GridDataType in [icdtCellProfile,
                                             icdtPassCount,
                                             icdtCellPasses,
                                             icdtMachineSpeed,
                                             icdtCCVPercentChange,
                                             icdtMachineSpeedTarget,
                                             icdtCCVPercentChangeIgnoredTopNullValue]); */
-
-                ISubGridCellLatestPassDataWrapper _GlobalLatestCells = _SubGridAsLeaf.Directory.GlobalLatestCells;
 
                 for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                 {
@@ -240,7 +291,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
                     if (SeiveFilterInUse || !PrepareGridForCacheStorageIfNoSeiving)
                     {
-                        if (!(ClientGrid as ClientLeafSubGrid).ProdDataMap.BitSet(StripeIndex, J)) // This cell does not match the filter mask and should not be processed
+                        if (!ClientGridAsLeaf.ProdDataMap.BitSet(StripeIndex, J)) // This cell does not match the filter mask and should not be processed
                         {
                             continue;
                         }
@@ -251,7 +302,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     // those attributes are null), check the global latest pass version of
                     // those values. If they are null, then no further work needs to be done
 
-                    switch (ClientGrid.GridDataType)
+                    switch (_GridDataType)
                     {
                         case GridDataType.CCV:
                             if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
@@ -298,7 +349,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                        }
                         */
 
-                        AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _SubGridAsLeaf.Directory.GlobalLatestCells[StripeIndex, J];
+                        AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, StripeIndex, J);
+
+                        // TODO: Review if line below replaced with line above in Ignite POC is good...
+                        // AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _GlobalLatestCells[StripeIndex, J];
 
                         HaveFilteredPass = true;
                         AssignmentContext.FilteredValue.PassCount = -1;
@@ -332,14 +386,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                             if (CanUseGlobalLatestCells)
                             {
                                 // Optimistically assume that the global latest value is acceptable
-                                AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _SubGridAsLeaf.Directory.GlobalLatestCells[StripeIndex, J];
+                                AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, StripeIndex, J);
+
+                                // TODO: Review if line below replaced with line above in Ignite POC is good...
+                                // AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _GlobalLatestCells[StripeIndex, J];
+
                                 AssignmentContext.FilteredValue.PassCount = -1;
 
                                 // Check to see if there is a non-null value for the requested field in the latest value.
                                 // If there is none, then there is no non-null value in any of the recorded cells passes
                                 // so the null value may be returned as the filtered value.
 
-                                if (ClientGrid.AssignableFilteredValueIsNull(AssignmentContext.FilteredValue.FilteredPassData))
+                                if (ClientGrid.AssignableFilteredValueIsNull(ref AssignmentContext.FilteredValue.FilteredPassData))
                                 {
                                     // There is no value available for the requested data field in any recorded
                                     // cell pass. Thus, there is no cell pass value to assign so abort
@@ -352,7 +410,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
                                 if (ClientGrid.WantsLiftProcessingResults())
                                 {
-                                    switch (ClientGrid.GridDataType)
+                                    switch (_GridDataType)
                                     {
                                         case GridDataType.CCV:
                                             FilteredValueIsFromLatestCellPass = _GlobalLatestCells.CCVValuesAreFromLastPass.BitSet(StripeIndex, J);
@@ -488,7 +546,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
                     if (HaveFilteredPass)
                     {
-                        if (ClientGrid.GridDataType == GridDataType.PassCount || ClientGrid.GridDataType == GridDataType.CellProfile)
+                        if (_GridDataType == GridDataType.PassCount || _GridDataType == GridDataType.CellProfile)
                         {
                             AssignmentContext.FilteredValue.PassCount = TopMostLayerCompactionHalfPassCount % 2;
                         }
@@ -509,10 +567,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                         }
                         else
                         {
-                            if (((ClientGrid.GridDataType in [icdtCCV, icdtCCVPercent]) && ((LiftBuildSettings.CCVSummaryTypes == []) || !LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
-                                ((ClientGrid.GridDataType in [icdtMDP, icdtMDPPercent]) && ((LiftBuildSettings.MDPSummaryTypes == []) || !LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
+                            if (((_GridDataType in [icdtCCV, icdtCCVPercent]) && ((LiftBuildSettings.CCVSummaryTypes == []) || !LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
+                                ((_GridDataType in [icdtMDP, icdtMDPPercent]) && ((LiftBuildSettings.MDPSummaryTypes == []) || !LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
                                 (CellProfile.Layers.Count > 0) ||
-                                (ClientGrid.GridDataType in [icdtCCA, icdtCCAPercent])) // no CCA settings
+                                (_GridDataType in [icdtCCA, icdtCCAPercent])) // no CCA settings
                             { 
                                 ClientGrid.AssignFilteredValue(StripeIndex, J, AssignmentContext);
                             }
@@ -546,18 +604,20 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         private bool PruneSubGridRetrievalHere()
         {
+/*
             if (_SubGridAsLeaf == null)
             {
                 Debug.Assert(false, "No available leaf subgrid");
                 return true;
             }
+*/
 
             // Obtain a reference to the base class from the interfaces implementation to access the flags below
-            SubGridCellLatestPassDataWrapperBase baseGlobalLatestCells = (SubGridCellLatestPassDataWrapperBase)_SubGridAsLeaf.Directory.GlobalLatestCells;
+            SubGridCellLatestPassDataWrapperBase baseGlobalLatestCells = (SubGridCellLatestPassDataWrapperBase)_GlobalLatestCells;
 
             // Check the subgrid global attribute presence flags that are tracked for optional
             // attribute values to see if there is anything at all that needs to be done here
-            switch (ClientGrid.GridDataType)
+            switch (_GridDataType)
             {
                 case GridDataType.CCV:
                     if (!baseGlobalLatestCells.HasCCVData)
@@ -599,15 +659,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private void SetupForCellPassStackExamination()
         {
             /* TODO readd when LiftBuldSettings is implemented
-            TICServerProfiler.CalculateFlags(ClientGrid.GridDataType, LiftBuildSettings,
+            TICServerProfiler.CalculateFlags(_GridDataType, LiftBuildSettings,
                                              CompactionSummaryInLiftBuildSettings,
                                              WorkInProgressSummaryInLiftBuildSettings,
                                              ThicknessInProgressInLiftBuildSettings);
 
-            PopulationControl = TICServerProfiler.PreparePopulationControl(ClientGrid.GridDataType, LiftBuildSettings, Filter.AttributeFilter, ClientGrid);
+            PopulationControl = TICServerProfiler.PreparePopulationControl(_GridDataType, LiftBuildSettings, Filter.AttributeFilter, ClientGrid);
             */
 
-            Filter.AttributeFilter.RequestedGridDataType = ClientGrid.GridDataType;
+            Filter.AttributeFilter.RequestedGridDataType = _GridDataType;
 
             // Create and configure the segment iterator to be used
 
@@ -823,8 +883,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     east_col = (int)Math.Floor((CurrentEast - SubgridMinX) / _CellSize);
                     north_row = (int)Math.Floor((CurrentNorth - SubgridMinY) / _CellSize);
 
-                    if (Range.InRange(east_col, 0, SubGridTree.SubGridTreeDimension - 1) &&
-                        Range.InRange(north_row, 0, SubGridTree.SubGridTreeDimension - 1))
+                    if (Range.InRange(east_col, 0, SubGridTree.SubGridTreeDimensionMinus1) &&
+                        Range.InRange(north_row, 0, SubGridTree.SubGridTreeDimensionMinus1))
                     {
                         SeiveBitmask.SetBit(east_col, north_row);
                         AssignmentContext.ProbePositions[east_col, north_row] = new ProbePoint(CurrentEast - SubgridMinX, CurrentNorth - SubgridMinY);
@@ -851,7 +911,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 return false;
             }
 
-            _CellSize = SiteModel.Grid.CellSize;
             StepX = AreaControlSet.PixelXWorldSize;
             StepY = AreaControlSet.PixelYWorldSize;
 
@@ -914,8 +973,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             this.Filter = filter == null ? new CombinedFilter(siteModel) : filter;
             this.AreaControlSet = areaControlSet;
             this.ClientGrid = clientGrid;
+            this.ClientGridAsLeaf = clientGrid as ClientLeafSubGrid;
+            this._GridDataType = clientGrid.GridDataType;
+
             this.SiteModel = siteModel;
             this.PrepareGridForCacheStorageIfNoSeiving = prepareGridForCacheStorageIfNoSeiving;
+
+            this.CanUseGlobalLatestCells = Filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
 
             try
             {
@@ -935,18 +999,16 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     }
                     */
 
-                    bool UseLastPassGrid = false; // Assume we can't use last pass data
-
                     // ... unless we if we can use the last pass grid to satisfy the query
-                    if (Filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter &&
+                    if (CanUseGlobalLatestCells &&
                         !Filter.AttributeFilter.HasElevationRangeFilter &&
                         !ClientGrid.WantsLiftProcessingResults() &&
                         !Filter.AttributeFilter.HasMinElevMappingFilter &&
                         !(Filter.AttributeFilter.HasElevationTypeFilter &&
                           (Filter.AttributeFilter.ElevationType == ElevationType.Highest || Filter.AttributeFilter.ElevationType == ElevationType.Lowest)) &&
-                        !(ClientGrid.GridDataType == GridDataType.PassCount || ClientGrid.GridDataType == GridDataType.Temperature ||
-                          ClientGrid.GridDataType == GridDataType.CellProfile || ClientGrid.GridDataType == GridDataType.CellPasses ||
-                          ClientGrid.GridDataType == GridDataType.MachineSpeed))
+                        !(_GridDataType == GridDataType.PassCount || _GridDataType == GridDataType.Temperature ||
+                          _GridDataType == GridDataType.CellProfile || _GridDataType == GridDataType.CellPasses ||
+                          _GridDataType == GridDataType.MachineSpeed))
                     {
                         UseLastPassGrid = true;
                     }
@@ -995,6 +1057,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     // SIGLogMessage.PublishNoODS(Nil, Format('Getting subgrid leaf at %dx%d', [CellX, CellY]), slmcDebug);
 
                     _SubGridAsLeaf = (ServerSubGridTreeLeaf)_SubGrid;
+                    this._GlobalLatestCells = _SubGridAsLeaf.Directory.GlobalLatestCells;
 
                     if (PruneSubGridRetrievalHere())
                     {
@@ -1003,8 +1066,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
                     // Determine the bitmask detailing which cells match the cell selection filter
                     if (!SubGridFilterMasks.ConstructSubgridCellFilterMask(_SubGridAsLeaf, SiteModel, Filter,
-                                                          cellOverrideMask, hasOverrideSpatialCellRestriction, overrideSpatialCellRestriction,
-                                                          ref (ClientGrid as ClientLeafSubGrid).ProdDataMap, ref (ClientGrid as ClientLeafSubGrid).FilterMap))
+                                                                           cellOverrideMask, 
+                                                                           hasOverrideSpatialCellRestriction, 
+                                                                           overrideSpatialCellRestriction,
+                                                                           ref ClientGridAsLeaf.ProdDataMap, 
+                                                                           ref ClientGridAsLeaf.FilterMap))
                     {
                         return ServerRequestResult.FailedToComputeDesignFilterPatch;
                     }
@@ -1068,7 +1134,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                         for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
                         {
                             RetrieveSubGridStripe(// TODO PopulationControl,
-                                                  I, UseLastPassGrid,
+                                                  I, 
                                                   CellX, CellY
                                                   // TODO LiftBuildSettings
                                                   );

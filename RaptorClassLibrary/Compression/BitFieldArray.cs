@@ -143,10 +143,16 @@ namespace VSS.VisionLink.Raptor.Compression
                 return;
             }
 
+            byte[] buffer = new byte[Storage.Count() * sizeof(ulong)];
+            Buffer.BlockCopy(Storage, 0, buffer, 0, Storage.Count() * sizeof(ulong));
+            writer.Write(buffer);
+
+            /*
             foreach (ulong item in Storage)
             {
                 writer.Write(item);
             }
+            */
         }
 
         /// <summary>
@@ -164,10 +170,17 @@ namespace VSS.VisionLink.Raptor.Compression
             }
 
             Storage = NewStorage();
+
+            byte[] buffer = new byte[Storage.Count() * sizeof(ulong)];
+            reader.Read(buffer, 0, buffer.Count());
+            Buffer.BlockCopy(buffer, 0, Storage, 0, buffer.Count());
+
+            /*
             for (int i = 0; i < NumStorageElements(); i++)
             {
                 Storage[i] = reader.ReadUInt64();
             }
+            */
         }
 
         /// <summary>

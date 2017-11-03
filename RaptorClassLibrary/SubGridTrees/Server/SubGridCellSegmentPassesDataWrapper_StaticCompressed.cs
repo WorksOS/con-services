@@ -257,13 +257,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             Result.FirstCellPass = PerColFirstCellPassIndex + PerCellFirstCellPassIndexOffset;
 
-            if (Row < SubGridTree.SubGridTreeDimension - 1)
+            if (Row < SubGridTree.SubGridTreeDimensionMinus1)
             {
                 Result.PassCount = (int)BF_PassCounts.ReadBitField(ref PerCellBitFieldLocation, PassCountEncodedFieldDescriptor.RequiredBits) - PerCellFirstCellPassIndexOffset;
             }
             else
             {
-                if (Col < SubGridTree.SubGridTreeDimension - 1)
+                if (Col < SubGridTree.SubGridTreeDimensionMinus1)
                 {
                     int NextPerColFirstCellPassIndex = (int)BF_PassCounts.ReadBitField(ref PerColBitFieldLocation, EncodedColPassCountsBits);
                     Result.PassCount = NextPerColFirstCellPassIndex - Result.FirstCellPass;
@@ -504,7 +504,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Construct the first cell pass index map for the segment
             // First calculate the values of the first cell pass index for each column in the segment
             ColFirstCellPassIndexes[0] = 0;
-            for (int Col = 0; Col < SubGridTree.SubGridTreeDimension - 1; Col++)
+            for (int Col = 0; Col < SubGridTree.SubGridTreeDimensionMinus1; Col++)
             {
                 ColFirstCellPassIndexes[Col + 1] = ColFirstCellPassIndexes[Col];
 

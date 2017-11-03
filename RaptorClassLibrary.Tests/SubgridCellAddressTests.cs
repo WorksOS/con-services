@@ -85,7 +85,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubgridCellAddress_ToSkipInterleavedDescriptor()
         {
-            SubGridCellAddress ca = null;
+            SubGridCellAddress ca;
             long correct;
 
             ca = new SubGridCellAddress(1, 1);
@@ -104,7 +104,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubgridCellAddress_ToSkipInterleavedSubgridOriginDescriptor()
         {
-            SubGridCellAddress ca = null;
+            SubGridCellAddress ca;
             long correct;
 
             ca = new SubGridCellAddress(1, 1);

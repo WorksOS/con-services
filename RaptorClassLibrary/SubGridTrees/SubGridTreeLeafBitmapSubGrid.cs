@@ -20,18 +20,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Writes the contents of the subgrid bit mask to the writer
         /// </summary>
         /// <param name="writer"></param>
-        public override void Write(BinaryWriter writer)
+        public override void Write(BinaryWriter writer, byte [] buffer)
         {
-            Bits.Write(writer);
+            Bits.Write(writer, buffer);
         }
 
         /// <summary>
         /// Reads the contents of the subgrid bit mask from the reader
         /// </summary>
         /// <param name="reader"></param>
-        public override void Read(BinaryReader reader)
+        public override void Read(BinaryReader reader, byte [] buffer)
         {
-            Bits.Read(reader);
+            Bits.Read(reader, buffer);
         }
 
         /// <summary>
