@@ -81,9 +81,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="endLonDegrees">End profileLine Lon</param>
     /// <param name="filterUid">Filter UID for all profiles except summary volumes</param>
     /// <param name="cutfillDesignUid">Design UID for cut-fill</param>
-    /// <param name="volumeDesignUid">Design UID for summary volumes</param>
-    /// <param name="baseFilterUid">Base filter for summary volumes</param>
-    /// <param name="topFilterUid">Top filter for summary volumes</param>
+    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>
     /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
@@ -101,9 +100,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double endLonDegrees,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutfillDesignUid,
-      [FromQuery] Guid? volumeDesignUid,
-      [FromQuery] Guid? baseFilterUid,
-      [FromQuery] Guid? topFilterUid,
+      [FromQuery] Guid? volumeBaseUid,
+      [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
       log.LogInformation("GetProfileProductionDataSlicer: " + Request.QueryString);
@@ -111,10 +109,29 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var settings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      var baseFilter = await GetCompactionFilter(projectUid, baseFilterUid);
-      var topFilter = await GetCompactionFilter(projectUid, topFilterUid);
       var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid, true);
-      var volumeDesign = await GetDesignDescriptor(projectUid, volumeDesignUid, true);
+
+      Filter baseFilter = null;
+      Filter topFilter = null;
+      DesignDescriptor volumeDesign = null;
+      if (volumeCalcType.HasValue)
+      {
+        switch (volumeCalcType.Value)
+        {
+          case VolumeCalcType.GroundToGround:
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            break;
+          case VolumeCalcType.GroundToDesign:
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            volumeDesign = await GetDesignDescriptor(projectUid, volumeTopUid, true);
+            break;
+          case VolumeCalcType.DesignToGround:
+            volumeDesign = await GetDesignDescriptor(projectUid, volumeBaseUid, true);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            break;
+        }
+      }
 
       //Get production data profile
       var slicerProductionDataProfileRequest = requestFactory.Create<ProductionDataProfileRequestHelper>(r => r
@@ -137,13 +154,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(slicerProductionDataProfileRequest) as CompactionProfileResult<CompactionProfileDataResult>
       );
 
-      if (cutfillDesignUid.HasValue)
+      if (cutFillDesign != null)
       {
         FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, 
           cutFillDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
       }
 
-      if (volumeDesignUid.HasValue && (volumeCalcType == VolumeCalcType.DesignToGround || volumeCalcType == VolumeCalcType.GroundToDesign))
+      if (volumeDesign != null && (volumeCalcType == VolumeCalcType.DesignToGround || volumeCalcType == VolumeCalcType.GroundToDesign))
       {
         FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
           volumeDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.SUMMARY_VOLUMES, volumeCalcType.Value);
