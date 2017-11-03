@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
     /// <summary>
     /// Identifies a cell address or location within a subgrid tree
     /// </summary>
-    public class SubGridCellAddress : IEquatable<SubGridCellAddress>
+    public struct SubGridCellAddress : IEquatable<SubGridCellAddress>
     {
         /// <summary>
         /// Storage for bit flags used for elements such as ProdDataRequested and SurveyedSurfaceDataRequested
