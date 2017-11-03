@@ -228,7 +228,6 @@ namespace VSS.VisionLink.Raptor.SiteModels
                 //FMachines.WriteToStream(Stream);
 
                 writer.Write(LastModifiedDate.ToBinary());
-
             }
             catch (Exception E)
             {
