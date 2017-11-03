@@ -112,7 +112,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
     /// <param name="fileType">Type of the file</param>
     /// <param name="fileId">A unique file identifier</param>
-    /// <param name="userUnits">A unique file identifier</param>
+    /// <param name="dxfUnitsType">A DXF file units type</param>
     /// <returns>A code and message to indicate the result</returns>
     /// <executor>AddFileExecutor</executor> 
     [ProjectUidVerifier]
@@ -130,8 +130,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
       string coordSystem = projectDescr.coordinateSystemFileName;
       var customHeaders = Request.Headers.GetCustomHeaders();
-      //var userPrefs = await prefProxy.GetUserPreferences(customHeaders);
-      //var userUnits = userPrefs.Units.UnitsType();
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
 
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
