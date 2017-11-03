@@ -1,1 +1,1 @@
-start C:\Dev\VSS.Raptor.IgnitePOC\RaptorServerApplication\bin\x64\release\RaptorServerApplication.exe
+start C:\Dev\VSS.Raptor.IgnitePOC\RaptorServerApplication\bin\x64\debug\RaptorServerApplication.exe
