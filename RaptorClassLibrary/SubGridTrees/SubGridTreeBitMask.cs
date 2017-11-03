@@ -350,12 +350,16 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="functor"></param>
         public void ScanAllSetBitsAsSubGridAddresses(Action<SubGridCellAddress> functor)
         {
+            SubGridCellAddress address = new SubGridCellAddress();
+
             ScanAllSubGrids(leaf =>
                 {
                     (leaf as SubGridTreeLeafBitmapSubGrid).Bits.ForEachSetBit((x, y) =>
                     {
-                        functor(new SubGridCellAddress((uint)(leaf.OriginX + x) << SubGridTree.SubGridIndexBitsPerLevel,
-                                                       (uint)(leaf.OriginY + y) << SubGridTree.SubGridIndexBitsPerLevel));
+                        address.X = (uint)(leaf.OriginX + x) << SubGridTree.SubGridIndexBitsPerLevel;
+                        address.Y = (uint)(leaf.OriginY + y) << SubGridTree.SubGridIndexBitsPerLevel;
+
+                        functor(address);
                     });
 
                     return true;
