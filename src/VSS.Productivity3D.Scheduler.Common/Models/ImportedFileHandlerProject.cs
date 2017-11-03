@@ -113,15 +113,15 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
           var importedFileProject = new ImportedFile
           {
             ProjectUid = nhOpImportedFile.ProjectUid,
-            // doesn't exist in CG ImportedFileUid = ?,
             CustomerUid = nhOpImportedFile.CustomerUid,
             ImportedFileType = nhOpImportedFile.ImportedFileType,
-            Name = nhOpImportedFile.Name,
-            FileDescriptor = nhOpImportedFile.FileDescriptor,
-            // doesn't exist in CG FileCreatedUtc = new DateTime(2017, 1, 1), 
-            // doesn't exist in CG FileUpdatedUtc = new DateTime(2017, 1, 1), 
-            // doesn't exist in CG ImportedBy = "whoever",
+            // todo DXFUnitsType not avail in NG yet
+            Name = nhOpImportedFile.Name, // todo strip off date
+            FileDescriptor = "todo",
             SurveyedUtc = nhOpImportedFile.SurveyedUtc,
+            FileCreatedUtc = nhOpImportedFile.FileCreatedUtc, 
+            FileUpdatedUtc = nhOpImportedFile.FileUpdatedUtc, 
+            ImportedBy = nhOpImportedFile.ImportedBy,
             LastActionedUtc = nhOpImportedFile.LastActionedUtc,
             IsActivated = true,
             IsDeleted = false

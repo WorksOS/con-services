@@ -7,69 +7,49 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
 {
   public class NhOpImportedFile
   {
-    public long LegacyProjectId; // CG=fk_ProjectID; NG=legacyProjectId
+    public long LegacyProjectId; 
 
-    // NA in CG table . 
-    // how do we obtain this for syncing join with Project and Customer?
-    // todo Will user be able to create Projects in NG which don't exist in CG, 
-    //    so that the Project needs syncing to NH_OP also?
-    public string ProjectUid { get; set; }
+    public string ProjectUid { get; set; } // from joined table
 
-    // public long ImportedFileId { get; set; } // CG=ID ; ImportedFileId NG. (just a unique code but DIFFERENT in both places)
+    public long LegacyCustomerId { get; set; } 
 
-    // NA in CG table . ditto to ProjectUid todo
-    //public string ImportedFileUid { get; set; }
+    public string CustomerUid { get; set; } // from joined table
 
-    // public long LegacyCustomerId { get; set; } // CG=fk_CustomerID; NG=legacyCustomerId
+    public ImportedFileType ImportedFileType { get; set; } // CG and NG use same enums
 
-    // NA in CG table . ditto to ProjectUid todo join Customer
-    public string CustomerUid { get; set; }
+    public int? DxfUnitsType { get; set; } // not included yet in NG, but very soon
 
-    // luckliy CG and NG use same enums
-    public ImportedFileType ImportedFileType { get; set; } // CG = fk_ImportedFileTypeID
-
-    public string Name { get; set; } // is this the same between CG and NG?
-
-    public string FileDescriptor { get; set; } // CG = SourcePath/SourceFilespaceID?
-
-    // CG N/A 
-    //public DateTime FileCreatedUtc { get; set; }
-
-    // CG N/A 
-    //public DateTime FileUpdatedUtc { get; set; }
-
-    // CG N/A
-    //public string ImportedBy { get; set; }
+    public string Name { get; set; } // CG includes SurveyedUtc
 
     public DateTime? SurveyedUtc { get; set; }
 
-    // CG N/A does actual delete (or rather moves to history)
-    //public bool IsDeleted { get; set; }
+    public DateTime FileCreatedUtc { get; set; }
 
-    // CG N/A 
-    //public bool IsActivated { get; set; }
+    public DateTime FileUpdatedUtc { get; set; }
 
-    public DateTime LastActionedUtc { get; set; } // CG =InsertUTC
+    public string ImportedBy { get; set; }
 
-    // other columns avail in CG but not avail in NG e.g. fk_ReferenceImportedFileID; Offset; minZoom
+    public DateTime LastActionedUtc { get; set; } 
 
+   
     public override bool Equals(object obj)
     {
       NhOpImportedFile importedFile = obj as NhOpImportedFile;
-      if (importedFile == null)
-        return false;
       if(
-          importedFile.ProjectUid != this.ProjectUid
-          || importedFile.ImportedFileType != this.ImportedFileType
+          importedFile?.LegacyProjectId != LegacyProjectId
+          || importedFile.ProjectUid != this.ProjectUid
+          || importedFile.LegacyCustomerId != this.LegacyCustomerId
           || importedFile.CustomerUid != this.CustomerUid
+          || importedFile.ImportedFileType != this.ImportedFileType
+          || importedFile.DxfUnitsType != this.DxfUnitsType
           || importedFile.Name != this.Name 
+          || importedFile.SurveyedUtc != this.SurveyedUtc
+          || importedFile.FileCreatedUtc != this.FileCreatedUtc
+          || importedFile.FileUpdatedUtc != this.FileUpdatedUtc
+          || importedFile.ImportedBy != this.ImportedBy
+          || importedFile.LastActionedUtc != this.LastActionedUtc
         )
         return false;
-      //DateTime? surveyedUtc1 = importedFile.SurveyedUtc;
-      //DateTime? surveyedUtc2 = this.SurveyedUtc;
-      //if ((surveyedUtc1.HasValue == surveyedUtc2.HasValue ? (surveyedUtc1.HasValue ? (surveyedUtc1.GetValueOrDefault() == surveyedUtc2.GetValueOrDefault() ? 1 : 0) : 1) : 0) != 0)
-      //  return importedFile.LastActionedUtc == this.LastActionedUtc;
-      //return false;
       return true;
     }
 

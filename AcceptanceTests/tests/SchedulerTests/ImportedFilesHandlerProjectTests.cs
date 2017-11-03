@@ -13,7 +13,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace SchedulerTests
 {
   [TestClass]
-  public class ImportedFilesHandlerTests : TestControllerBase
+  public class ImportedFilesHandlerProjectTests : TestControllerBase
   {
     private ILogger _log;
 
@@ -22,14 +22,14 @@ namespace SchedulerTests
     {
       SetupDi();
 
-      _log = LoggerFactory.CreateLogger<ImportedFilesHandlerTests>();
+      _log = LoggerFactory.CreateLogger<ImportedFilesHandlerProjectTests>();
       Assert.IsNotNull(_log, "Log is null");
     }
 
     [TestMethod]
-    public void ImportedFilesHandler_OneFileInProjectDb()
+    public void ImportedFilesHandlerProject_OneFileIn()
     {
-      string projectDbConnectionString = ConnectionUtils.GetConnectionString(ConfigStore, _log, "_PROJECT");
+      string projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
       var importedFileHandlerProject = new ImportedFileHandlerProject<ImportedFile>(ConfigStore, LoggerFactory, projectDbConnectionString);
 
       var importedFile = new ImportedFile
@@ -64,9 +64,9 @@ namespace SchedulerTests
     }
 
     [TestMethod]
-    public void ImportedFilesHandler_OneFileInProjectDb_WrongFileType()
+    public void ImportedFilesHandlerProject_OneFileIn_WrongFileType()
     {
-      string projectDbConnectionString = ConnectionUtils.GetConnectionString(ConfigStore, _log, "_PROJECT");
+      string projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
       var importedFileHandlerProject = new ImportedFileHandlerProject<ImportedFile>(ConfigStore, LoggerFactory, projectDbConnectionString);
 
       var importedFile = new ImportedFile
@@ -95,9 +95,9 @@ namespace SchedulerTests
     }
 
     [TestMethod]
-    public void ImportedFilesHandler_ProjectDbMergeAndWrite()
+    public void ImportedFilesHandlerProject_MergeAndWrite()
     {
-      string projectDbConnectionString = ConnectionUtils.GetConnectionString(ConfigStore, _log, "_PROJECT");
+      string projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
       var importedFileHandlerProject = new ImportedFileHandlerProject<ImportedFile>(ConfigStore, LoggerFactory, projectDbConnectionString);
 
       var importedFileProject = new ImportedFile
@@ -120,16 +120,18 @@ namespace SchedulerTests
       {
         new NhOpImportedFile()
         {
-          ProjectUid = importedFileProject.ProjectUid,
           LegacyProjectId = new Random().Next(100000, 1999999),
-          // ignore CG ImportedFileId 
-          // ignore CG LegacyCustomerId
+          ProjectUid = importedFileProject.ProjectUid,
+          LegacyCustomerId = new Random().Next(100000, 1999999),
           CustomerUid = importedFileProject.CustomerUid,
           ImportedFileType = importedFileProject.ImportedFileType,
+          DxfUnitsType = null,
           Name = importedFileProject.Name,
-          FileDescriptor = importedFileProject.FileDescriptor,
           SurveyedUtc = importedFileProject.SurveyedUtc,
-          // ignore CG? LastActionedUtc = importedFileProject.LastActionedUtc
+          FileCreatedUtc = importedFileProject.FileCreatedUtc,
+          FileUpdatedUtc = importedFileProject.FileUpdatedUtc,
+          ImportedBy = importedFileProject.ImportedBy,
+          LastActionedUtc = importedFileProject.LastActionedUtc
         }
      };
 

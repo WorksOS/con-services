@@ -13,6 +13,8 @@ services:
       - filterschema
       - projectschema
       - db
+      - dbmssql
+      - schemamssql
   filterschema:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest
     env_file:
@@ -20,7 +22,7 @@ services:
     environment:
      - MYSQL_DATABASE_NAME=VSS-Productivity3D-Filter
     depends_on:
-      - db
+      - db 
   projectschema:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
     env_file:
@@ -47,7 +49,28 @@ services:
     env_file:
      - docker-compose-local.env
     ports:
-      - "3306:3306" 
+      - "3306:3306"       
+  schemamssql:
+    build: ./databaseMsSql
+    env_file:
+     - docker-compose-local.env
+    environment:     
+     - MSSQL_SERVER_NAME=dbmssql,
+     - MSSQL_DATABASE_NAME=NH_OP,
+     - MSSQL_PORT=1433,
+     - MSSQL_USERNAME=root,
+     - MSSQL_ROOT_PASSWORD=abc123  
+    depends_on:
+     - dbmssql
+  dbmssql:
+    image: microsoft/mssql-server-linux:latest
+    environment:
+     - ACCEPT_EULA=Y
+     - SA_PASSWORD=d3vRDS1234_
+    env_file:
+     - docker-compose-local.env  
+    ports:
+      - "1433:1433"         
   accepttest:
     build: ./AcceptanceTests/deploy
     env_file:

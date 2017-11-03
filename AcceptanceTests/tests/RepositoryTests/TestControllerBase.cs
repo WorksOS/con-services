@@ -54,7 +54,7 @@ namespace RepositoryTests
     {
       string connectionString = string.IsNullOrEmpty(dbNameExtension)
         ? ConfigStore.GetConnectionString("VSPDB")
-        : ConnectionUtils.GetConnectionString(ConfigStore, _log, dbNameExtension);
+        : ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, dbNameExtension);
 
       using (var connection = new MySqlConnection(connectionString))
       {

@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
 
       var ImportedProjectFileSyncTask = "ImportedProjectFileSyncTask";
-      string importedProjectFile_MySQL_ConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "_Project");
+      string importedProjectFile_MySQL_ConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_Project");
       _log.LogInformation($"ImportedProjectFileSyncTask: taskIntervalSeconds: {taskIntervalMinutes} importedProjectFile_MySQL_ConnectionString: {importedProjectFile_MySQL_ConnectionString}.");
       Console.WriteLine($"ImportedProjectFileSyncTask: taskIntervalSeconds: {taskIntervalMinutes} importedProjectFile_MySQL_ConnectionString: {importedProjectFile_MySQL_ConnectionString}.");
 

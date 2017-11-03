@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
 
       var FilterCleanupTask = "FilterCleanupTask";
-      string filterDbConnectionString = ConnectionUtils.GetConnectionString(_configStore, _log, "_FILTER");
+      string filterDbConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_FILTER");
       _log.LogInformation($"FilterCleanupTask: ageInMinutesToDelete: {ageInMinutesToDelete} taskIntervalSeconds: {taskIntervalMinutes} filterDbConnectionString: {filterDbConnectionString}.");
       Console.WriteLine($"FilterCleanupTask: ageInMinutesToDelete: {ageInMinutesToDelete} taskIntervalSeconds: {taskIntervalMinutes} filterDbConnectionString: {filterDbConnectionString}.");
 

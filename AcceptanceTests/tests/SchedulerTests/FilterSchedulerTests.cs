@@ -53,7 +53,7 @@ namespace SchedulerTests
     {
       var theJob = GetJob(HangfireConnection(), FilterCleanupTask);
 
-      string filterDbConnectionString = ConnectionUtils.GetConnectionString(ConfigStore, _log, "_FILTER");
+      string filterDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_FILTER");
       var dbConnection = new MySqlConnection(filterDbConnectionString);
       dbConnection.Open();
 
