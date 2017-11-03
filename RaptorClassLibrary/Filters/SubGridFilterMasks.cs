@@ -8,6 +8,7 @@ using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
+using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
 namespace VSS.VisionLink.Raptor.Filters
 {
@@ -18,16 +19,16 @@ namespace VSS.VisionLink.Raptor.Filters
     public static class SubGridFilterMasks
     {
         public static void ConstructSubgridSpatialAndPositionalMask(ILeafSubGrid SubGridAsLeaf,
-                                                   SiteModel SiteModel,
-                                                   CombinedFilter Filter,
-                                                   bool AHasOverrideSpatialCellRestriction,
-                                                   BoundingIntegerExtent2D AOverrideSpatialCellRestriction,
-                                                   ref SubGridTreeBitmapSubGridBits PDMask,
-                                                   ref SubGridTreeBitmapSubGridBits FilterMask)
+                                                                    SiteModel SiteModel,
+                                                                    CombinedFilter Filter,
+                                                                    bool AHasOverrideSpatialCellRestriction,
+                                                                    BoundingIntegerExtent2D AOverrideSpatialCellRestriction,
+                                                                    ref SubGridTreeBitmapSubGridBits PDMask,
+                                                                    ref SubGridTreeBitmapSubGridBits FilterMask)
         {
+            double OX, OY;
             double CX, CY;
             uint OriginXPlusI;
-            bool SubGridAsLeaf_is_TICServerSubGridTreeLeaf;
 
             if ((Filter == null) || !Filter.SpatialFilter.HasSpatialOrPostionalFilters)
             {
@@ -36,33 +37,84 @@ namespace VSS.VisionLink.Raptor.Filters
                 return;
             }
 
-            FilterMask.Clear();
+            uint originX = SubGridAsLeaf.OriginX;
+            uint originY = SubGridAsLeaf.OriginY;
 
-            // Construct the filter mask based on the spatial and location (square/circle/polygonal) filtering
-            for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            double cellSize = SiteModel.Grid.CellSize;
+
+            // Get the world location of the origin position
+            SiteModel.Grid.GetCellCenterPosition(originX, originY, out OX, out OY);
+
+            CellSpatialFilter SpatialFilter = Filter.SpatialFilter;
+
+            // Attempt to satisfy the calculation below on the basis of the subgrid wholly resising in the overide and filter spatial restrictions
+            if (SpatialFilter.Fence.IncludesExtent(new BoundingWorldExtent3D(OX, OY,
+                                                                             OX + cellSize * SubGridTree.SubGridTreeDimension,
+                                                                             OY + cellSize * SubGridTree.SubGridTreeDimension)))
             {
-                OriginXPlusI = SubGridAsLeaf.OriginX + I;
+                // The extent of the subgrid is wholly contained in the filter, therefore there is no need to iterate though all the cells
+                // individually...
 
-                for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                FilterMask.Fill();
+
+                // ... unless there is an override spatial cell restriction that does not enclose the extent of the subgrid
+                if (AHasOverrideSpatialCellRestriction &&
+                    !AOverrideSpatialCellRestriction.Encloses(new BoundingIntegerExtent2D((int)originX, (int)originY,
+                                                                                          (int)originX + SubGridTree.SubGridTreeDimension,
+                                                                                          (int)originY + SubGridTree.SubGridTreeDimension)))
                 {
-                    if (AHasOverrideSpatialCellRestriction && !AOverrideSpatialCellRestriction.Includes((int)OriginXPlusI, (int)SubGridAsLeaf.OriginY + J))
+                    for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
                     {
-                        continue;
+                        for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                        {
+                            if (!AOverrideSpatialCellRestriction.Includes(originX + I, originY + J))
+                            {
+                                FilterMask.ClearBit(I, J);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Perform the calculation the long hand way
+                // ... Idea: Invert row and column order of calculation below to get and set bits based on an entire column of bits
+
+                FilterMask.Clear();
+
+                // Construct the filter mask based on the spatial and location (square/circle/polygonal) filtering
+                CX = OX;
+
+                for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+                {
+                    OriginXPlusI = originX + I;
+                    CY = OY; // Set to the first row in the column about to be processed
+
+                    for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                    {
+                        if (AHasOverrideSpatialCellRestriction && !AOverrideSpatialCellRestriction.Includes((int)OriginXPlusI, (int)(originY + J)))
+                        {
+                            // Do nothing
+                        }
+                        else
+                        {
+                            // SiteModel.Grid.GetCellCenterPosition(OriginXPlusI, originY + J, out CX, out CY);
+                            if (SpatialFilter.IsCellInSelection(CX, CY))
+                            {
+                                FilterMask.SetBit(I, J);
+                            }
+                        }
+
+                        CY += cellSize; // Move to next row
                     }
 
-                    SiteModel.Grid.GetCellCenterPosition(OriginXPlusI, SubGridAsLeaf.OriginY + J, out CX, out CY);
-                    if (!Filter.SpatialFilter.IsCellInSelection(CX, CY))
-                    {
-                        continue;
-                    }
-
-                    FilterMask.SetBit(I, J);
+                    CX += cellSize; // Move to bext column
                 }
             }
 
             // Handle the case when the passed in subgrid is a server leaf subgrid. In this case, construct the PDMask so that
             // it denotes the production data cells (only) that were selected by the spatial filter.
-            SubGridAsLeaf_is_TICServerSubGridTreeLeaf = SubGridAsLeaf is ServerSubGridTreeLeaf;
+            bool SubGridAsLeaf_is_TICServerSubGridTreeLeaf = SubGridAsLeaf is ServerSubGridTreeLeaf;
             if (SubGridAsLeaf_is_TICServerSubGridTreeLeaf)
             {
                 PDMask = FilterMask & ((ServerSubGridTreeLeaf)SubGridAsLeaf).Directory.GlobalLatestCells.PassDataExistanceMap;
@@ -95,7 +147,7 @@ namespace VSS.VisionLink.Raptor.Filters
 
             // Apply any override mask supplied by the caller. If all bits are required in the override,
             // then a filled mask should be supplied...
-            PDMask = PDMask & CellOverrideMask;
+            PDMask.AndWith(CellOverrideMask);
 
             /* TODO - Design/alignment masks not yet supported
             // If the filter contains a design mask filter then compute this and AND it with the
@@ -139,7 +191,7 @@ namespace VSS.VisionLink.Raptor.Filters
                 });
 
                 FilterMask = AlignMask; // update filtermask after design boundary filter applied
-                PDMask = PDMask & FilterMask;
+                PDMask.AndWith(FilterMask);
             }
             else
             {
