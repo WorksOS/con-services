@@ -60,7 +60,7 @@ namespace VSS.VisionLink.Raptor.Storage
                                                                           out MemoryStream Stream, 
                                                                           out uint StoreGranuleIndex, 
                                                                           out uint StoreGranuleCount)
-        {
+        {            
             StoreGranuleIndex = 0;
             StoreGranuleCount = 0;
 
@@ -99,7 +99,7 @@ namespace VSS.VisionLink.Raptor.Storage
             }
             catch (Exception e)
             {
-//                Log.Info(String.Format("Exception occurred: {0}", e));
+                Log.Info(String.Format("Exception occurred: {0}", e));
 
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;

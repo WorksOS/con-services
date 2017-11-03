@@ -212,10 +212,12 @@ namespace VSS.VisionLink.Raptor.Geometry
                 }
             }
             else
-              if (Extent.IsValidPlanExtent)
             {
-                Include(Extent.MinX, Extent.MinY);
-                Include(Extent.MaxX, Extent.MaxY);
+                if (Extent.IsValidPlanExtent)
+                {
+                    Include(Extent.MinX, Extent.MinY);
+                    Include(Extent.MaxX, Extent.MaxY);
+                }
             }
 
             if (TwoDOnlyValid)
@@ -230,10 +232,12 @@ namespace VSS.VisionLink.Raptor.Geometry
                 };
             }
             else
-              if (Extent.IsValidHeightExtent)
             {
-                Include(Extent.MinZ);
-                Include(Extent.MaxZ);
+                if (Extent.IsValidHeightExtent)
+                {
+                    Include(Extent.MinZ);
+                    Include(Extent.MaxZ);
+                }
             }
         }
 

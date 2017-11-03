@@ -243,9 +243,9 @@ namespace VSS.VisionLink.Raptor.Filters
                 if (IsSquare)
                 {
                     return (!((CellCenterX < (PositionX - PositionRadius)) ||
-                             (CellCenterX > (PositionX + PositionRadius)) ||
-                             (CellCenterY < (PositionY - PositionRadius)) ||
-                             (CellCenterY > (PositionY + PositionRadius))));
+                              (CellCenterX > (PositionX + PositionRadius)) ||
+                              (CellCenterY < (PositionY - PositionRadius)) ||
+                              (CellCenterY > (PositionY + PositionRadius))));
                 }
 
                 double Distance = Math.Sqrt(Math.Pow(CellCenterX - PositionX, 2) + Math.Pow(CellCenterY - PositionY, 2));
