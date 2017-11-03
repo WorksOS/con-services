@@ -242,7 +242,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 //for(int count = 0; count < nImages; count++)
                 //{ 
                 //    using (Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
-                //    {
+                //   {
                 //    }
                 //};
                 
