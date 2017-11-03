@@ -117,7 +117,7 @@ namespace VSS.VisionLink.Raptor.Filters
             bool SubGridAsLeaf_is_TICServerSubGridTreeLeaf = SubGridAsLeaf is ServerSubGridTreeLeaf;
             if (SubGridAsLeaf_is_TICServerSubGridTreeLeaf)
             {
-                PDMask = FilterMask & ((ServerSubGridTreeLeaf)SubGridAsLeaf).Directory.GlobalLatestCells.PassDataExistanceMap;
+                PDMask.SetAndOf(FilterMask, ((ServerSubGridTreeLeaf)SubGridAsLeaf).Directory.GlobalLatestCells.PassDataExistanceMap);
             }
             else
             {

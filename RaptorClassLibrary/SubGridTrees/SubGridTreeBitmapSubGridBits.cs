@@ -187,6 +187,20 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         }
 
         /// <summary>
+        /// Compute the AND of two bit masks and assign the result to this bitmask. This is more performant than the & operator
+        /// in that no intermedeiate bitmask instance is created and then assinged to the target bitmask
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        public void SetAndOf(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
+        {
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            {
+                Bits[i] = a.Bits[i] & b.Bits[i];
+            }
+        }
+
+        /// <summary>
         /// Defines an overloaded bitwise OR/| operator that ORs together the Bits from a and b and returns a 
         /// new SubGridTreeLeafBitmapSubGridBits instance with the result
         /// </summary>
@@ -215,6 +229,20 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
             {
                 Bits[i] |= other.Bits[i];
+            }
+        }
+
+        /// <summary>
+        /// Compute the OR of two bit masks and assign the result to this bitmask. This is more performant than the | operator
+        /// in that no intermedeiate bitmask instance is created and then assinged to the target bitmask
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        public void SetOrOf(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
+        {
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            {
+                Bits[i] = a.Bits[i] | b.Bits[i];
             }
         }
 
