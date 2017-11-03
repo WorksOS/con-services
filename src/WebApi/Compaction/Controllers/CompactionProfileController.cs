@@ -109,28 +109,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var settings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid, true);
-
-      Filter baseFilter = null;
-      Filter topFilter = null;
-      DesignDescriptor volumeDesign = null;
-      if (volumeCalcType.HasValue)
-      {
-        switch (volumeCalcType.Value)
-        {
-          case VolumeCalcType.GroundToGround:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
-            break;
-          case VolumeCalcType.GroundToDesign:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
-            volumeDesign = await GetDesignDescriptor(projectUid, volumeTopUid, true);
-            break;
-          case VolumeCalcType.DesignToGround:
-            volumeDesign = await GetDesignDescriptor(projectUid, volumeBaseUid, true);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
-            break;
-        }
-      }
+      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
 
       //Get production data profile
       var slicerProductionDataProfileRequest = requestFactory.Create<ProductionDataProfileRequestHelper>(r => r
@@ -139,10 +118,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectSettings(settings)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
-          .SetBaseFilter(baseFilter)
-          .SetTopFilter(topFilter)
+          .SetBaseFilter(sumVolParameters.Item1)
+          .SetTopFilter(sumVolParameters.Item2)
           .SetVolumeCalcType(volumeCalcType)
-          .SetVolumeDesign(volumeDesign)
+          .SetVolumeDesign(sumVolParameters.Item3)
           .CreateProductionDataProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
       slicerProductionDataProfileRequest.Validate();
@@ -159,10 +138,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           cutFillDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
       }
 
-      if (volumeDesign != null && (volumeCalcType == VolumeCalcType.DesignToGround || volumeCalcType == VolumeCalcType.GroundToDesign))
+      if (sumVolParameters.Item3 != null && (volumeCalcType == VolumeCalcType.DesignToGround || volumeCalcType == VolumeCalcType.GroundToDesign))
       {
         FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
-          volumeDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.SUMMARY_VOLUMES, volumeCalcType.Value);
+          sumVolParameters.Item3, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.SUMMARY_VOLUMES, volumeCalcType.Value);
       }
       return slicerProductionDataResult;
     }
