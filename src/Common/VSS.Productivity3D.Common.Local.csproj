@@ -35,6 +35,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="1.1.2" />
+    <PackageReference Include="AutoMapper" Version="6.1.1" />
   </ItemGroup>
 
   <ItemGroup>

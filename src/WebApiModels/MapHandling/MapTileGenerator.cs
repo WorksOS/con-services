@@ -9,7 +9,20 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
+using ASNodeDecls;
+using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
+using VSS.Productivity3D.Common.Executors;
+using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Helpers;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Factories.ProductionData;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.Common.MapHandling
@@ -19,6 +32,12 @@ namespace VSS.Productivity3D.Common.MapHandling
   {
     private readonly IConfigurationStore config;
     private readonly IFileRepository tccFileRepository;
+    private readonly IProductionDataRequestFactory requestFactory;
+    private readonly ILogger log;
+    private readonly ILoggerFactory logger;
+    private readonly IASNodeClient raptorClient;
+    private readonly IElevationExtentsProxy elevProxy;
+
     private readonly string alkKey;
     private readonly string tccFilespace;
 
@@ -29,10 +48,16 @@ namespace VSS.Productivity3D.Common.MapHandling
     public long ProjectId { get; private set; }
     public long CustomerId { get; private set; }
 
-    public MapTileGenerator(IConfigurationStore configuration, IFileRepository tccRepository)
+    public MapTileGenerator(IConfigurationStore configuration, IFileRepository tccRepository,
+      IProductionDataRequestFactory prodDataFactory, ILoggerFactory logger, IASNodeClient raptor, IElevationExtentsProxy extentsProxy)
     {
       config = configuration;
       tccFileRepository = tccRepository;
+      requestFactory = prodDataFactory;
+      log = logger.CreateLogger<MapTileGenerator>();
+      this.logger = logger;
+      raptorClient = raptor;
+      elevProxy = extentsProxy;
       alkKey = config.GetValueString("ALK_KEY");
       tccFilespace = config.GetValueString("TCCFILESPACEID");
     }
@@ -129,11 +154,42 @@ namespace VSS.Productivity3D.Common.MapHandling
       return mapImage;
     }
 
+    protected void GetMapData(MapReportData reportData, int displayType, bool gotZoomBounds)
+    {
+      if (!gotZoomBounds)
+        reportData.zoomLevel = CalculateZoomLevel(reportData.boundingBox);
+      reportData.numTiles = 1 << reportData.zoomLevel; //equivalent to 2 to the power of zoomLevel
+      //if (!gotZoomBounds)
+      CalculateWidthHeight(reportData.boundingBox, reportData.numTiles);
+
+      BE.Point latLngTopLeft = new BE.Point(reportData.boundingBox.maxLat, reportData.boundingBox.minLng);
+      reportData.pixelTopLeft = WebMercatorProjection.LatLngToPixel(latLngTopLeft, reportData.numTiles);
+
+      //Get the map data
+      reportData.mapImage = GetMapBitmap(reportData.boundingBox, reportData.zoomLevel);
+      if (displayType != ExportReportParameterXMLData.LOAD_DETAIL && displayType != ExportReportParameterXMLData.CYCLE_DETAIL)
+        reportData.wmsImage = GetRaptorBitmap(reportData.boundingBox, displayType);
+      reportData.sitesImage = GetSitesBitmap(reportData.boundingBox, displayType, reportData.pixelTopLeft, reportData.numTiles);
+      reportData.locationsImage = GetLocationsBitmap(reportData.pixelTopLeft, reportData.numTiles);
+      reportData.alignmentsImage = GetAlignmentsBitmap(reportData.pixelTopLeft, reportData.numTiles);
+      GetDxfBitmaps(reportData);
+      reportData.legendImage = GetLegendBitmap(displayType);
+    }
+
+
+
+    /// <summary>
+    /// Overlays the DXF tiles. This can not be resued from the execuor as it does merging of tiles into a single one
+    /// </summary>
+    /// <param name="dxfFileName">Name of the DXF file.</param>
+    /// <param name="bbox">The bbox.</param>
+    /// <param name="zoomLevel">The zoom level.</param>
+    /// <returns></returns>
     private async Task<byte[]> OverlayDxfTiles(string dxfFileName, MapBoundingBox bbox, int zoomLevel)
     {
       //Find the tiles that the bounding box fits into.
       Point tileTopLeft = WebMercatorProjection.PixelToTile(reportData.pixelTopLeft);
-      Point tileBottomRight = WebMercatorProjection.LatLngToTile(new Point(bbox.minLat, bbox.maxLng), reportData.numTiles);
+      Point tileBottomRight = WebMercatorProjection.LatLngToTile(new Point(bbox.minLat, bbox.maxLng), 1 << zoomLevel);
 
       int xnumTiles = (int)(tileBottomRight.x - tileTopLeft.x) + 1;
       int ynumTiles = (int)(tileBottomRight.y - tileTopLeft.y) + 1;
@@ -204,6 +260,89 @@ namespace VSS.Productivity3D.Common.MapHandling
       return data;
     }
 
+    /// <summary>
+    /// Gets the requested tile from Raptor
+    /// </summary>
+    /// <param name="projectSettings">Project settings to use for Raptor</param>
+    /// <param name="filter">Filter to use for Raptor</param>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="mode">Display mode; type of data requested</param>
+    /// <param name="width">Width of the tile</param>
+    /// <param name="height">Height of the tile in pixels</param>
+    /// <param name="bbox">Bounding box in radians</param>
+    /// <param name="cutFillDesign">Design descriptor for cut-fill design</param>
+    /// <returns>Tile result</returns>
+    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Common.Models.Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
+      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, IDictionary<string,string> customHeaders)
+    {
+      var tileRequest = requestFactory.Create<TileRequestHelper>(r => r
+          .ProjectId(projectId)
+          .Headers(customHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter)
+          .DesignDescriptor(cutFillDesign))
+        .CreateTileRequest(mode, width, height, bbox,
+          GetElevationExtents(projectSettings, filter, projectId, mode));
+
+      //TileRequest is both v1 and v2 model so cannot change its validation directly.
+      //However for v2 we want to return a transparent empty tile for cut-fill if no design specified.
+      //So catch the validation exception for this case.
+      bool getTile = true;
+      try
+      {
+        tileRequest.Validate();
+      }
+      catch (ServiceException se)
+      {
+        if (tileRequest.mode == DisplayMode.CutFill && tileRequest.designDescriptor == null)
+        {
+          if (se.Code == HttpStatusCode.BadRequest &&
+              se.GetResult.Code == ContractExecutionStatesEnum.ValidationError &&
+              se.GetResult.Message ==
+              "Design descriptor required for cut/fill and design to filter or filter to design volumes display")
+          {
+            getTile = false;
+          }
+        }
+        //Rethrow any other exception
+        if (getTile)
+          throw se;
+      }
+
+      TileResult tileResult = null;
+      if (getTile)
+      {
+        tileResult = RequestExecutorContainerFactory
+          .Build<TilesExecutor>(logger, raptorClient)
+          .Process(tileRequest) as TileResult;
+      }
+
+      if (tileResult == null)
+      {
+        //Return en empty tile
+        using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
+        {
+          tileResult = TileResult.CreateTileResult(bitmap.BitmapToByteArray(), TASNodeErrorStatus.asneOK);
+        }
+      }
+      return tileResult;
+    }
+
+    /// <summary>
+    /// Get the elevation extents for the palette for elevation tile requests
+    /// </summary>
+    /// <param name="projectSettings">Project settings to use for Raptor</param>
+    /// <param name="filter">Filter to use for Raptor</param>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="mode">Display mode; type of data requested</param>
+    /// <returns>Elevation extents to use</returns>
+    private ElevationStatisticsResult GetElevationExtents(CompactionProjectSettings projectSettings, Common.Models.Filter filter, long projectId, DisplayMode mode)
+    {
+      var elevExtents = mode == DisplayMode.Height ? elevProxy.GetElevationRange(projectId, filter, projectSettings) : null;
+      //Fix bug in Raptor - swap elevations if required
+      elevExtents?.SwapElevationsIfRequired();
+      return elevExtents;
+    }
 
   }
 
@@ -218,6 +357,10 @@ namespace VSS.Productivity3D.Common.MapHandling
   public interface IMapTileGenerator
   {
     string GetRegion(double lat, double lng);
+
+    TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Common.Models.Filter filter,
+      long projectId, DisplayMode mode, ushort width, ushort height,
+      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, IDictionary<string, string> customHeaders);
   }
 }
 

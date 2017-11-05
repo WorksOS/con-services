@@ -20,7 +20,9 @@ using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Helpers;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.MapHandling;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
@@ -47,6 +49,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IASNodeClient raptorClient;
 
+    /// <summary>
+    /// The tile generator
+    /// </summary>
+    private readonly IMapTileGenerator tileGenerator;
     /// <summary>
     /// Logger for logging
     /// </summary>
@@ -89,7 +95,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
       IFileRepository fileRepo, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
       IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
+      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tilesGenerator) : 
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
@@ -98,6 +104,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.fileRepo = fileRepo;
       this.elevProxy = elevProxy;
       this.requestFactory = requestFactory;
+      this.tileGenerator = tilesGenerator;
     }
 
     /// <summary>
@@ -148,9 +155,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
-
-      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
-        GetBoundingBox(BBOX), cutFillDesign);
+      
+      var tileResult = WithServiceExceptionTryExecute(()=>tileGenerator.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
+        GetBoundingBox(BBOX), cutFillDesign, customHeaders));
 
       return tileResult;
     }
@@ -210,7 +217,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
 
-      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX), cutFillDesign);
+      var tileResult = WithServiceExceptionTryExecute(() =>
+        tileGenerator.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
+          GetBoundingBox(BBOX), cutFillDesign,customHeaders));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
@@ -483,90 +492,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat);
     }
 
-    /// <summary>
-    /// Get the elevation extents for the palette for elevation tile requests
-    /// </summary>
-    /// <param name="projectSettings">Project settings to use for Raptor</param>
-    /// <param name="filter">Filter to use for Raptor</param>
-    /// <param name="projectId">Legacy project ID</param>
-    /// <param name="mode">Display mode; type of data requested</param>
-    /// <returns>Elevation extents to use</returns>
-    private ElevationStatisticsResult GetElevationExtents(CompactionProjectSettings projectSettings, Common.Models.Filter filter, long projectId, DisplayMode mode)
-    {
-      var elevExtents = mode == DisplayMode.Height ? elevProxy.GetElevationRange(projectId, filter, projectSettings) : null;
-      //Fix bug in Raptor - swap elevations if required
-      elevExtents?.SwapElevationsIfRequired();
-      return elevExtents;
-    }
-
-    /// <summary>
-    /// Gets the requested tile from Raptor
-    /// </summary>
-    /// <param name="projectSettings">Project settings to use for Raptor</param>
-    /// <param name="filter">Filter to use for Raptor</param>
-    /// <param name="projectId">Legacy project ID</param>
-    /// <param name="mode">Display mode; type of data requested</param>
-    /// <param name="width">Width of the tile</param>
-    /// <param name="height">Height of the tile in pixels</param>
-    /// <param name="bbox">Bounding box in radians</param>
-    /// <param name="cutFillDesign">Design descriptor for cut-fill design</param>
-    /// <returns>Tile result</returns>
-    private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Common.Models.Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
-      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign)
-    {
-      var tileRequest = requestFactory.Create<TileRequestHelper>(r => r
-          .ProjectId(projectId)
-          .Headers(customHeaders)
-          .ProjectSettings(projectSettings)
-          .Filter(filter)
-          .DesignDescriptor(cutFillDesign))
-        .CreateTileRequest(mode, width, height, bbox,
-          GetElevationExtents(projectSettings, filter, projectId, mode));
-
-      //TileRequest is both v1 and v2 model so cannot change its validation directly.
-      //However for v2 we want to return a transparent empty tile for cut-fill if no design specified.
-      //So catch the validation exception for this case.
-      bool getTile = true;
-      try
-      {
-        tileRequest.Validate();
-      }
-      catch (ServiceException se)
-      {
-        if (tileRequest.mode == DisplayMode.CutFill && tileRequest.designDescriptor == null)
-        {
-          if (se.Code == HttpStatusCode.BadRequest &&
-              se.GetResult.Code == ContractExecutionStatesEnum.ValidationError &&
-              se.GetResult.Message ==
-              "Design descriptor required for cut/fill and design to filter or filter to design volumes display")
-          {
-            getTile = false;
-          }
-        }
-        //Rethrow any other exception
-        if (getTile)
-          throw se;
-      }
-
-      TileResult tileResult = null;
-      if (getTile)
-      {
-        tileResult = WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainerFactory
-            .Build<TilesExecutor>(logger, raptorClient)
-            .Process(tileRequest) as TileResult
-        );
-      }
-
-      if (tileResult == null)
-      {
-        //Return en empty tile
-        using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
-        {
-          tileResult = TileResult.CreateTileResult(bitmap.BitmapToByteArray(), TASNodeErrorStatus.asneOK);
-        }
-      }
-      return tileResult;
-    }
+    
   }
 }
