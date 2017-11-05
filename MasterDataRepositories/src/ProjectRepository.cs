@@ -156,6 +156,7 @@ namespace VSS.MasterData.Repositories
           FileUpdatedUtc = projectEvent.FileUpdatedUtc,
           ImportedBy = projectEvent.ImportedBy,
           SurveyedUtc = projectEvent.SurveyedUTC,
+          DxfUnitsType = projectEvent.DxfUnitsType,
           LastActionedUtc = projectEvent.ActionUTC,
           IsActivated = true
         };
@@ -631,8 +632,9 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
               fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID,
               fk_ImportedFileTypeID as ImportedFileType, Name, 
-              FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated,
-              LastActionedUTC
+              FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, 
+              fk_DXFUnitsTypeID as DxfUnitsType,
+              IsDeleted, IsActivated, LastActionedUTC
             FROM ImportedFile
             WHERE ImportedFileUID = @importedFileUid", new {importedFileUid = importedFile.ImportedFileUid}
       )).FirstOrDefault();
@@ -663,9 +665,9 @@ namespace VSS.MasterData.Repositories
 
         var insert = string.Format(
           "INSERT ImportedFile " +
-          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated, LastActionedUTC) " +
+          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, IsDeleted, IsActivated, LastActionedUTC) " +
           "  VALUES " +
-          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, 0, 1, @LastActionedUtc)");
+          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, @DxfUnitsType, 0, 1, @LastActionedUtc)");
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
         log.LogDebug(
@@ -694,7 +696,8 @@ namespace VSS.MasterData.Repositories
                 FileCreatedUTC = @fileCreatedUTC,
                 FileUpdatedUTC = @fileUpdatedUTC,
                 ImportedBy = @importedBy, 
-                SurveyedUTC = @surveyedUTC
+                SurveyedUTC = @surveyedUTC,
+                fk_DXFUnitsTypeID = @dxfUnitsType
               WHERE ImportedFileUID = @ImportedFileUid";
 
         {
@@ -744,7 +747,7 @@ namespace VSS.MasterData.Repositories
       }
       else
       {
-        // can't create as don't know fk_ImportedFileTypeID or customerUID
+        // can't create as don't know fk_ImportedFileTypeID, fk_DXFUnitsTypeID or customerUID
         log.LogDebug(
           $"ProjectRepository/UpdateImportedFile: No ImportedFile exists {importedFile.ImportedFileUid}. Can't create one as don't have enough info e.g. customerUID/type");
       }
@@ -1193,8 +1196,8 @@ namespace VSS.MasterData.Repositories
       var importedFileList = await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
-            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated,
-            LastActionedUTC
+            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
+            IsDeleted, IsActivated, LastActionedUTC
           FROM ImportedFile
             WHERE fk_ProjectUID = @projectUid
               AND IsDeleted = 0",
@@ -1209,8 +1212,8 @@ namespace VSS.MasterData.Repositories
       var importedFile = (await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
-            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated,
-            LastActionedUTC
+            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType, 
+            IsDeleted, IsActivated, LastActionedUTC
           FROM ImportedFile
             WHERE importedFileUID = @importedFileUid",
         new {importedFileUid}

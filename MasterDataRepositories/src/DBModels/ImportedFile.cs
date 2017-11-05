@@ -16,6 +16,7 @@ namespace VSS.MasterData.Repositories.DBModels
     public DateTime FileUpdatedUtc { get; set; }
     public string ImportedBy { get; set; }
     public DateTime? SurveyedUtc { get; set; }
+    public DxfUnitsType DxfUnitsType { get; set; }
     public bool IsDeleted { get; set; }
     public bool IsActivated { get; set; }
     public DateTime LastActionedUtc { get; set; }
@@ -38,6 +39,7 @@ namespace VSS.MasterData.Repositories.DBModels
              && otherImportedFile.IsDeleted == IsDeleted
              && otherImportedFile.IsActivated == IsActivated
              && otherImportedFile.SurveyedUtc == SurveyedUtc
+             && otherImportedFile.DxfUnitsType == DxfUnitsType
              && otherImportedFile.LastActionedUtc == LastActionedUtc;
     }
 

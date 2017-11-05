@@ -421,6 +421,7 @@ namespace KafkaTests
         FileUpdatedUtc = actionUtc,
         ImportedBy = "JoeSmoe",
         SurveyedUTC = actionUtc.AddDays(-1),
+        DxfUnitsType = DxfUnitsType.UsSurveyFeet,
         ActionUTC = actionUtc
       };
 
