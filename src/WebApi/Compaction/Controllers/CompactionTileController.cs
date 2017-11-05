@@ -553,15 +553,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException se)
       {
-        if (tileRequest.mode == DisplayMode.CutFill && tileRequest.designDescriptor == null)
+        if (tileRequest.mode == DisplayMode.CutFill && 
+            se.Code == HttpStatusCode.BadRequest &&
+            se.GetResult.Code == ContractExecutionStatesEnum.ValidationError)
         {
-          if (se.Code == HttpStatusCode.BadRequest &&
-              se.GetResult.Code == ContractExecutionStatesEnum.ValidationError &&
+          if (se.GetResult.Message ==
+              "Design descriptor required for cut/fill and design to filter or filter to design volumes display" ||
               se.GetResult.Message ==
-              "Design descriptor required for cut/fill and design to filter or filter to design volumes display")
-          {
-            getTile = false;
-          }
+              "Two filters required for filter to filter volumes display" ||
+              se.GetResult.Message ==
+              "One filter required for design to filter or filter to design volumes display")
+            {
+              getTile = false;
+            }
         }
         //Rethrow any other exception
         if (getTile)

@@ -207,7 +207,12 @@ namespace VSS.Productivity3D.Common.Models
       //computeVolNoChangeTolerance and computeVolType must be provided but since not nullable types they always will have a value anyway
       ValidateDesign(designDescriptor, mode, computeVolType);
 
-      if (mode == DisplayMode.VolumeCoverage)
+      //Summary volumes: v1 has mode VolumeCoverage, v2 has mode CutFill but computeVolType is set
+      if (mode == DisplayMode.VolumeCoverage || 
+         (mode == DisplayMode.CutFill && 
+         (computeVolType == RaptorConverters.VolumesType.Between2Filters || 
+         computeVolType == RaptorConverters.VolumesType.BetweenDesignAndFilter || 
+         computeVolType == RaptorConverters.VolumesType.BetweenFilterAndDesign)))
       {
         ValidateVolumesFilters(computeVolType, filter1, filterId1, filter2, filterId2);
       }
