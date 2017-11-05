@@ -18,6 +18,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private long fileId;
     private string fileUid;
     private int fileTypeId = 0;
+    private int dxfUnitsType = -1;
 
     private Getter<RequestResult> fileNotificationRequester;
 
@@ -59,6 +60,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       this.fileUid = fileUid;
     }
 
+    [Given(@"a dxfUnitsType ""(.*)""")]
+    public void GivenADxfUnitsType(int dxfUnitsType)
+    {
+      this.dxfUnitsType = dxfUnitsType;
+    }
 
     [When(@"I request File Notification")]
     public void WhenIRequestFileNotification()
@@ -92,7 +98,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
     private void MakeUrl()
     {
-      this.url = string.Format("{0}?projectUid={1}&filedescriptor={2}&fileId={3}&fileUid={4}&fileType={5}", url, projectUid, fileDescriptor, fileId, fileUid, fileTypeId);
+      this.url = string.Format("{0}?projectUid={1}&filedescriptor={2}&fileId={3}&fileUid={4}&fileType={5}&dxfUnitsType={6}", url, projectUid, fileDescriptor, fileId, fileUid, fileTypeId, dxfUnitsType);
     }
 
   }
