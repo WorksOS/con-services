@@ -113,7 +113,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           if (fileType != ImportedFileType.Linework)
           {
             //Get alignment or surface boundary as DXF file from Raptor
-            await CreateDxfFile(request.projectId.Value, request.File, suffix, request.UserPreferenceUnits);    
+            await CreateDxfFile(request.projectId.Value, request.File, suffix, request.DXFUnitsType);    
           }
           //Generate DXF tiles
           await tileGenerator.CreateDxfTiles(request.projectId.Value, request.File, suffix, false).ConfigureAwait(false);
