@@ -1281,7 +1281,9 @@ FAvoidZoneUndergroundServiceZones = false;
         public void InitaliaseFilteringForCell(byte ASubgridCellX, byte ASubgridCellY)
         {
             if (!HasElevationRangeFilter)
+            {
                 return;
+            }
 
             if (ElevationRangeDesignElevations != null)
             {

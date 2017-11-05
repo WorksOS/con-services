@@ -212,7 +212,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                                        ref AAreaControlSet,
                                                        DesignElevations);
 
-                    /* TODO: General subgrid result cachign not yet supported
+                    /* TODO: General subgrid result caching not yet supported
                     // If a subgrid was retrieved and this is a supported data type in the cache
                     // then add it to the cache
                     if (Result = ServerRequestResult.NoError && (SubgridCache != null))
@@ -296,7 +296,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 return Result;
             }
 
-            /* TODO - SUrveyed surfaces not yet supported
+            /* TODO - Surveyed surfaces not yet supported
             ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime = ClientGrid is ClientHeightAndTimeLeafSubGrid;
             ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile = ClientGrid is TICClientSubGridTreeLeaf_CellProfile;
 

@@ -115,8 +115,8 @@ namespace VSS.VisionLink.Raptor.Rendering
             uint CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY;
 
             SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX, RotatedTileBoundingExtents.MinY,
-                                                                CellSize, SubGridTree.DefaultIndexOriginOffset,
-                                                                out CellExtents_MinX, out CellExtents_MinY);
+                                                               CellSize, SubGridTree.DefaultIndexOriginOffset,
+                                                               out CellExtents_MinX, out CellExtents_MinY);
             SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX, RotatedTileBoundingExtents.MaxY,
                                                                CellSize, SubGridTree.DefaultIndexOriginOffset,
                                                                out CellExtents_MaxX, out CellExtents_MaxY);
@@ -279,11 +279,11 @@ namespace VSS.VisionLink.Raptor.Rendering
 
                 PipelinedTask = new PVMRenderingTask(RequestDescriptor, RequestingRaptorNodeID, GridDataFromModeConverter.Convert(Mode), this);
 
-                //     ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.ASTasks.Add(PipelinedTask);
+                // ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.ASTasks.Add(PipelinedTask);
                 try
                 {
                     PipeLine = new SubGridPipelineBase(0, PipelinedTask);
-                    //         PipeLine = ASNodeImplInstance.SubgridPipelinePool.AcquirePipeline;
+                    // PipeLine = ASNodeImplInstance.SubgridPipelinePool.AcquirePipeline;
 
                     PipelinedTask.PipeLine = PipeLine;
                     try

@@ -515,7 +515,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
         /// <summary>
         /// Iterate over all the bits in the bit map that are set (1) and execute the given action/lambda expression
-        /// with the CellX, CellY location of the set bit
+        /// with the CellX, CellY (as integer indices) location of the set bit
         /// </summary>
         /// <param name="functor"></param>
         public void ForEachSetBit(Action<int, int> functor)
