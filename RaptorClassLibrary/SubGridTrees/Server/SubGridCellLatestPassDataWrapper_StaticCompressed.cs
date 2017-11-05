@@ -290,7 +290,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return Cells.CellPass.NullFrequency;
         }
 
-        // ReadAmplitude will read the Amplitude from the latest cell identified by the Row and Col
+        /// <summary>
+        /// ReadAmplitude will read the Amplitude from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
         public ushort ReadAmplitude(int Col, int Row)
         {
             return Cells.CellPass.NullAmplitude;
