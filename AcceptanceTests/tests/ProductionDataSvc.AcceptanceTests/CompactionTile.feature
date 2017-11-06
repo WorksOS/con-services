@@ -34,7 +34,6 @@ Examples:
 | BoundaryFilterSPD | ff91dd40-1569-4765-a2bc-014321f76ace | 3ef41e3c-d1f5-40cd-b012-99d11ff432ef | 36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624 | 256   | 256    | 26   | BoundaryFilterSPD |
 | BoundaryFilterPCS | ff91dd40-1569-4765-a2bc-014321f76ace | 3ef41e3c-d1f5-40cd-b012-99d11ff432ef | 36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624 | 256   | 256    | 14   | BoundaryFilterPCS |
 
-
 Scenario Outline: Compaction Get Tiles for cutfill
 Given the Compaction service URI "/api/v2/compaction/productiondatatiles"
 And the result file "CompactionGetProductionDataTilesResponse.json"

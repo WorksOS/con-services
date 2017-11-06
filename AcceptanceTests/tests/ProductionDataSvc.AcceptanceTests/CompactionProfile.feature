@@ -86,7 +86,7 @@ When I request a Compaction Profile
 Then the Compaction Profile should be
 """
 {
-  "gridDistanceBetweenProfilePoints": 1.6069349839892924,
+  "gridDistanceBetweenProfilePoints": 1.6069349835347946,
   "results": [
     {
       "type": "firstPass",
@@ -102,7 +102,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.085205803116539316,
+          "x": 0.085205803092608473,
           "y": 597.3581,
           "value": 597.359,
           "valueType": null,
@@ -111,7 +111,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.10001382450880753,
+          "x": 0.10001382414230234,
           "y": 597.359,
           "value": 597.359,
           "valueType": null,
@@ -120,7 +120,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.11482184590107573,
+          "x": 0.11482184519199619,
           "y": 597.36084,
           "value": 597.386,
           "valueType": null,
@@ -129,7 +129,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.31995441102981748,
+          "x": 0.31995441034733291,
           "y": 597.386,
           "value": 597.386,
           "valueType": null,
@@ -138,7 +138,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.52508697615855926,
+          "x": 0.52508697550266958,
           "y": 597.3832,
           "value": 597.382,
           "valueType": null,
@@ -147,7 +147,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.60891033073067113,
+          "x": 0.60891033030474173,
           "y": 597.382,
           "value": 597.382,
           "valueType": null,
@@ -156,7 +156,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.692733685302783,
+          "x": 0.69273368510681388,
           "y": 597.3828,
           "value": 597.384,
           "valueType": null,
@@ -165,7 +165,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.81404289585963441,
+          "x": 0.81404289546017272,
           "y": 597.384,
           "value": 597.384,
           "valueType": null,
@@ -174,7 +174,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.93535210641648581,
+          "x": 0.93535210581353156,
           "y": 597.3836,
           "value": 597.383,
           "valueType": null,
@@ -183,7 +183,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.117806836953072,
+          "x": 1.1178068364676852,
           "y": 597.383,
           "value": 597.383,
           "valueType": null,
@@ -192,7 +192,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.300261567489658,
+          "x": 1.3002615671218389,
           "y": 597.383,
           "value": 597.383,
           "valueType": null,
@@ -201,7 +201,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.3229394020819409,
+          "x": 1.3229394016228948,
           "y": 597.383,
           "value": 597.383,
           "valueType": null,
@@ -210,7 +210,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.3456172366742238,
+          "x": 1.3456172361239505,
           "y": 597.382935,
           "value": 597.382,
           "valueType": null,
@@ -219,7 +219,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6069349839892926,
+          "x": 1.6069349835347946,
           "y": 597.382,
           "value": 597.382,
           "valueType": null,
@@ -242,7 +242,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.085205803116539316,
+          "x": 0.085205803092608473,
           "y": 597.388367,
           "value": 597.387,
           "valueType": null,
@@ -251,7 +251,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.10001382450880753,
+          "x": 0.10001382414230234,
           "y": 597.387,
           "value": 597.387,
           "valueType": null,
@@ -260,7 +260,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.11482184590107573,
+          "x": 0.11482184519199619,
           "y": 597.386963,
           "value": 597.386,
           "valueType": null,
@@ -269,7 +269,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.31995441102981748,
+          "x": 0.31995441034733291,
           "y": 597.386,
           "value": 597.386,
           "valueType": null,
@@ -278,7 +278,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.52508697615855926,
+          "x": 0.52508697550266958,
           "y": 597.3832,
           "value": 597.382,
           "valueType": null,
@@ -287,7 +287,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.60891033073067113,
+          "x": 0.60891033030474173,
           "y": 597.382,
           "value": 597.382,
           "valueType": null,
@@ -296,7 +296,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.692733685302783,
+          "x": 0.69273368510681388,
           "y": 597.3828,
           "value": 597.384,
           "valueType": null,
@@ -305,7 +305,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.81404289585963441,
+          "x": 0.81404289546017272,
           "y": 597.384,
           "value": 597.384,
           "valueType": null,
@@ -314,7 +314,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.93535210641648581,
+          "x": 0.93535210581353156,
           "y": 597.3836,
           "value": 597.383,
           "valueType": null,
@@ -323,7 +323,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.117806836953072,
+          "x": 1.1178068364676852,
           "y": 597.383,
           "value": 597.383,
           "valueType": null,
@@ -332,7 +332,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.300261567489658,
+          "x": 1.3002615671218389,
           "y": 597.383,
           "value": 597.383,
           "valueType": null,
@@ -341,7 +341,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.3229394020819409,
+          "x": 1.3229394016228948,
           "y": 597.383,
           "value": 597.383,
           "valueType": null,
@@ -350,7 +350,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.3456172366742238,
+          "x": 1.3456172361239505,
           "y": 597.382935,
           "value": 597.382,
           "valueType": null,
@@ -359,7 +359,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6069349839892926,
+          "x": 1.6069349835347946,
           "y": 597.382,
           "value": 597.382,
           "valueType": null,
@@ -382,7 +382,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.085205803116539316,
+          "x": 0.085205803092608473,
           "y": 597.388367,
           "value": 597.387,
           "valueType": null,
@@ -391,7 +391,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.10001382450880753,
+          "x": 0.10001382414230234,
           "y": 597.387,
           "value": 597.387,
           "valueType": null,
@@ -400,7 +400,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.11482184590107573,
+          "x": 0.11482184519199619,
           "y": 597.386963,
           "value": 597.386,
           "valueType": null,
@@ -409,7 +409,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.31995441102981748,
+          "x": 0.31995441034733291,
           "y": 597.386,
           "value": 597.386,
           "valueType": null,
@@ -418,7 +418,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.52508697615855926,
+          "x": 0.52508697550266958,
           "y": 597.3832,
           "value": 597.382,
           "valueType": null,
@@ -427,7 +427,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.60891033073067113,
+          "x": 0.60891033030474173,
           "y": 597.382,
           "value": 597.382,
           "valueType": null,
@@ -436,7 +436,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.692733685302783,
+          "x": 0.69273368510681388,
           "y": 597.3828,
           "value": 597.384,
           "valueType": null,
@@ -445,7 +445,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.81404289585963441,
+          "x": 0.81404289546017272,
           "y": 597.384,
           "value": 597.384,
           "valueType": null,
@@ -454,7 +454,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.93535210641648581,
+          "x": 0.93535210581353156,
           "y": 597.376,
           "value": 597.364,
           "valueType": null,
@@ -463,7 +463,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.117806836953072,
+          "x": 1.1178068364676852,
           "y": 597.364,
           "value": 597.364,
           "valueType": null,
@@ -472,7 +472,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.300261567489658,
+          "x": 1.3002615671218389,
           "y": 597.374634,
           "value": 597.376,
           "valueType": null,
@@ -481,7 +481,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.3229394020819409,
+          "x": 1.3229394016228948,
           "y": 597.376,
           "value": 597.376,
           "valueType": null,
@@ -490,7 +490,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.3456172366742238,
+          "x": 1.3456172361239505,
           "y": 597.375549,
           "value": 597.371,
           "valueType": null,
@@ -499,7 +499,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6069349839892926,
+          "x": 1.6069349835347946,
           "y": 597.371,
           "value": 597.371,
           "valueType": null,
@@ -522,7 +522,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.085205803116539316,
+          "x": 0.085205803092608473,
           "y": 597.3581,
           "value": 597.359,
           "valueType": null,
@@ -531,7 +531,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.10001382450880753,
+          "x": 0.10001382414230234,
           "y": 597.359,
           "value": 597.359,
           "valueType": null,
@@ -540,7 +540,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.11482184590107573,
+          "x": 0.11482184519199619,
           "y": 597.36084,
           "value": 597.386,
           "valueType": null,
@@ -549,7 +549,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.31995441102981748,
+          "x": 0.31995441034733291,
           "y": 597.386,
           "value": 597.386,
           "valueType": null,
@@ -558,7 +558,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.52508697615855926,
+          "x": 0.52508697550266958,
           "y": 597.3832,
           "value": 597.382,
           "valueType": null,
@@ -567,7 +567,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.60891033073067113,
+          "x": 0.60891033030474173,
           "y": 597.382,
           "value": 597.382,
           "valueType": null,
@@ -576,7 +576,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.692733685302783,
+          "x": 0.69273368510681388,
           "y": 597.3828,
           "value": 597.384,
           "valueType": null,
@@ -585,7 +585,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.81404289585963441,
+          "x": 0.81404289546017272,
           "y": 597.384,
           "value": 597.384,
           "valueType": null,
@@ -594,7 +594,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.93535210641648581,
+          "x": 0.93535210581353156,
           "y": 597.376,
           "value": 597.364,
           "valueType": null,
@@ -603,7 +603,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.117806836953072,
+          "x": 1.1178068364676852,
           "y": 597.364,
           "value": 597.364,
           "valueType": null,
@@ -612,7 +612,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.300261567489658,
+          "x": 1.3002615671218389,
           "y": 597.374634,
           "value": 597.376,
           "valueType": null,
@@ -621,7 +621,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.3229394020819409,
+          "x": 1.3229394016228948,
           "y": 597.376,
           "value": 597.376,
           "valueType": null,
@@ -630,7 +630,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.3456172366742238,
+          "x": 1.3456172361239505,
           "y": 597.375549,
           "value": 597.371,
           "valueType": null,
@@ -639,7 +639,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6069349839892926,
+          "x": 1.6069349835347946,
           "y": 597.371,
           "value": 597.371,
           "valueType": null,
@@ -662,7 +662,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.085205803116539316,
+          "x": 0.085205803092608473,
           "y": 597.1135,
           "value": 597.1152,
           "valueType": null,
@@ -671,7 +671,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.10001382450880753,
+          "x": 0.10001382414230234,
           "y": 597.1152,
           "value": 597.1152,
           "valueType": null,
@@ -680,7 +680,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.11482184590107573,
+          "x": 0.11482184519199619,
           "y": 597.115234,
           "value": 597.1158,
           "valueType": null,
@@ -689,7 +689,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.31995441102981748,
+          "x": 0.31995441034733291,
           "y": 597.1158,
           "value": 597.1158,
           "valueType": null,
@@ -698,7 +698,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.52508697615855926,
+          "x": 0.52508697550266958,
           "y": 597.11676,
           "value": 597.1172,
           "valueType": null,
@@ -707,7 +707,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.60891033073067113,
+          "x": 0.60891033030474173,
           "y": 597.1172,
           "value": 597.1172,
           "valueType": null,
@@ -716,7 +716,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.692733685302783,
+          "x": 0.69273368510681388,
           "y": 597.1214,
           "value": 597.127441,
           "valueType": null,
@@ -725,7 +725,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.81404289585963441,
+          "x": 0.81404289546017272,
           "y": 597.127441,
           "value": 597.127441,
           "valueType": null,
@@ -734,7 +734,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.93535210641648581,
+          "x": 0.93535210581353156,
           "y": 597.128,
           "value": 597.128845,
           "valueType": null,
@@ -743,7 +743,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.117806836953072,
+          "x": 1.1178068364676852,
           "y": 597.128845,
           "value": 597.128845,
           "valueType": null,
@@ -752,7 +752,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.300261567489658,
+          "x": 1.3002615671218389,
           "y": 597.138062,
           "value": 597.1392,
           "valueType": null,
@@ -761,7 +761,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.3229394020819409,
+          "x": 1.3229394016228948,
           "y": 597.1392,
           "value": 597.1392,
           "valueType": null,
@@ -770,7 +770,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.3456172366742238,
+          "x": 1.3456172361239505,
           "y": 597.139343,
           "value": 597.1405,
           "valueType": null,
@@ -779,7 +779,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6069349839892926,
+          "x": 1.6069349835347946,
           "y": 597.1405,
           "value": 597.1405,
           "valueType": null,
@@ -822,7 +822,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.085205803116539316,
+          "x": 0.085205803092608473,
           "y": 597.388367,
           "value": 10.224,
           "valueType": 0,
@@ -831,7 +831,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.10001382450880753,
+          "x": 0.10001382414230234,
           "y": 597.387,
           "value": 10.224,
           "valueType": 0,
@@ -840,7 +840,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.11482184590107573,
+          "x": 0.11482184519199619,
           "y": 597.386963,
           "value": 11.34,
           "valueType": 0,
@@ -849,7 +849,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.31995441102981748,
+          "x": 0.31995441034733291,
           "y": 597.386,
           "value": 11.34,
           "valueType": 0,
@@ -858,7 +858,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.52508697615855926,
+          "x": 0.52508697550266958,
           "y": 597.3832,
           "value": 11.34,
           "valueType": 0,
@@ -867,7 +867,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.60891033073067113,
+          "x": 0.60891033030474173,
           "y": 597.382,
           "value": 11.34,
           "valueType": 0,
@@ -876,7 +876,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.692733685302783,
+          "x": 0.69273368510681388,
           "y": 597.3828,
           "value": 10.224,
           "valueType": 0,
@@ -885,7 +885,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.81404289585963441,
+          "x": 0.81404289546017272,
           "y": 597.384,
           "value": 10.224,
           "valueType": 0,
@@ -894,7 +894,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.93535210641648581,
+          "x": 0.93535210581353156,
           "y": 597.376,
           "value": 10.224,
           "valueType": 0,
@@ -903,7 +903,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.117806836953072,
+          "x": 1.1178068364676852,
           "y": 597.364,
           "value": 10.224,
           "valueType": 0,
@@ -912,7 +912,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.300261567489658,
+          "x": 1.3002615671218389,
           "y": 597.374634,
           "value": 10.224,
           "valueType": 0,
@@ -921,7 +921,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.3229394020819409,
+          "x": 1.3229394016228948,
           "y": 597.376,
           "value": 10.224,
           "valueType": 0,
@@ -930,7 +930,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.3456172366742238,
+          "x": 1.3456172361239505,
           "y": 597.375549,
           "value": 10.224,
           "valueType": 0,
@@ -939,7 +939,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6069349839892926,
+          "x": 1.6069349835347946,
           "y": 597.371,
           "value": 10.224,
           "valueType": 0,
@@ -962,7 +962,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.085205803116539316,
+          "x": 0.085205803092608473,
           "y": 597.388367,
           "value": 2.0,
           "valueType": 0,
@@ -971,7 +971,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.10001382450880753,
+          "x": 0.10001382414230234,
           "y": 597.387,
           "value": 2.0,
           "valueType": 0,
@@ -980,7 +980,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.11482184590107573,
+          "x": 0.11482184519199619,
           "y": 597.386963,
           "value": 1.0,
           "valueType": 0,
@@ -989,7 +989,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.31995441102981748,
+          "x": 0.31995441034733291,
           "y": 597.386,
           "value": 1.0,
           "valueType": 0,
@@ -998,7 +998,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.52508697615855926,
+          "x": 0.52508697550266958,
           "y": 597.3832,
           "value": 1.0,
           "valueType": 0,
@@ -1007,7 +1007,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.60891033073067113,
+          "x": 0.60891033030474173,
           "y": 597.382,
           "value": 1.0,
           "valueType": 0,
@@ -1016,7 +1016,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.692733685302783,
+          "x": 0.69273368510681388,
           "y": 597.3828,
           "value": 1.0,
           "valueType": 0,
@@ -1025,7 +1025,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.81404289585963441,
+          "x": 0.81404289546017272,
           "y": 597.384,
           "value": 1.0,
           "valueType": 0,
@@ -1034,7 +1034,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.93535210641648581,
+          "x": 0.93535210581353156,
           "y": 597.376,
           "value": 2.0,
           "valueType": 0,
@@ -1043,7 +1043,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.117806836953072,
+          "x": 1.1178068364676852,
           "y": 597.364,
           "value": 2.0,
           "valueType": 0,
@@ -1052,7 +1052,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.300261567489658,
+          "x": 1.3002615671218389,
           "y": 597.374634,
           "value": 2.0,
           "valueType": 0,
@@ -1061,7 +1061,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.3229394020819409,
+          "x": 1.3229394016228948,
           "y": 597.376,
           "value": 2.0,
           "valueType": 0,
@@ -1070,7 +1070,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.3456172366742238,
+          "x": 1.3456172361239505,
           "y": 597.375549,
           "value": 2.0,
           "valueType": 0,
@@ -1079,7 +1079,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6069349839892926,
+          "x": 1.6069349835347946,
           "y": 597.371,
           "value": 2.0,
           "valueType": 0,
@@ -1102,7 +1102,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.085205803116539316,
+          "x": 0.085205803092608473,
           "y": 597.388367,
           "value": 2.0,
           "valueType": null,
@@ -1111,7 +1111,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.10001382450880753,
+          "x": 0.10001382414230234,
           "y": 597.387,
           "value": 2.0,
           "valueType": null,
@@ -1120,7 +1120,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.11482184590107573,
+          "x": 0.11482184519199619,
           "y": 597.386963,
           "value": 1.0,
           "valueType": null,
@@ -1129,7 +1129,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.31995441102981748,
+          "x": 0.31995441034733291,
           "y": 597.386,
           "value": 1.0,
           "valueType": null,
@@ -1138,7 +1138,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.52508697615855926,
+          "x": 0.52508697550266958,
           "y": 597.3832,
           "value": 1.0,
           "valueType": null,
@@ -1147,7 +1147,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.60891033073067113,
+          "x": 0.60891033030474173,
           "y": 597.382,
           "value": 1.0,
           "valueType": null,
@@ -1156,7 +1156,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.692733685302783,
+          "x": 0.69273368510681388,
           "y": 597.3828,
           "value": 1.0,
           "valueType": null,
@@ -1165,7 +1165,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.81404289585963441,
+          "x": 0.81404289546017272,
           "y": 597.384,
           "value": 1.0,
           "valueType": null,
@@ -1174,7 +1174,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.93535210641648581,
+          "x": 0.93535210581353156,
           "y": 597.376,
           "value": 2.0,
           "valueType": null,
@@ -1183,7 +1183,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.117806836953072,
+          "x": 1.1178068364676852,
           "y": 597.364,
           "value": 2.0,
           "valueType": null,
@@ -1192,7 +1192,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.300261567489658,
+          "x": 1.3002615671218389,
           "y": 597.374634,
           "value": 2.0,
           "valueType": null,
@@ -1201,7 +1201,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.3229394020819409,
+          "x": 1.3229394016228948,
           "y": 597.376,
           "value": 2.0,
           "valueType": null,
@@ -1210,7 +1210,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.3456172366742238,
+          "x": 1.3456172361239505,
           "y": 597.375549,
           "value": 2.0,
           "valueType": null,
@@ -1219,7 +1219,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6069349839892926,
+          "x": 1.6069349835347946,
           "y": 597.371,
           "value": 2.0,
           "valueType": null,
@@ -1242,7 +1242,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.085205803116539316,
+          "x": 0.085205803092608473,
           "y": 597.1135,
           "value": -0.326843262,
           "valueType": null,
@@ -1251,7 +1251,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.10001382450880753,
+          "x": 0.10001382414230234,
           "y": 597.1152,
           "value": -0.326843262,
           "valueType": null,
@@ -1260,7 +1260,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.11482184590107573,
+          "x": 0.11482184519199619,
           "y": 597.115234,
           "value": -0.3222046,
           "valueType": null,
@@ -1269,7 +1269,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.31995441102981748,
+          "x": 0.31995441034733291,
           "y": 597.1158,
           "value": -0.3222046,
           "valueType": null,
@@ -1278,7 +1278,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.52508697615855926,
+          "x": 0.52508697550266958,
           "y": 597.11676,
           "value": -0.317810059,
           "valueType": null,
@@ -1287,7 +1287,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.60891033073067113,
+          "x": 0.60891033030474173,
           "y": 597.1172,
           "value": -0.317810059,
           "valueType": null,
@@ -1296,7 +1296,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.692733685302783,
+          "x": 0.69273368510681388,
           "y": 597.1214,
           "value": -0.310546875,
           "valueType": null,
@@ -1305,7 +1305,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.81404289585963441,
+          "x": 0.81404289546017272,
           "y": 597.127441,
           "value": -0.310546875,
           "valueType": null,
@@ -1314,7 +1314,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.93535210641648581,
+          "x": 0.93535210581353156,
           "y": 597.128,
           "value": -0.305175781,
           "valueType": null,
@@ -1323,7 +1323,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.117806836953072,
+          "x": 1.1178068364676852,
           "y": 597.128845,
           "value": -0.305175781,
           "valueType": null,
@@ -1332,7 +1332,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.300261567489658,
+          "x": 1.3002615671218389,
           "y": 597.138062,
           "value": -0.2998047,
           "valueType": null,
@@ -1341,7 +1341,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.3229394020819409,
+          "x": 1.3229394016228948,
           "y": 597.1392,
           "value": -0.2998047,
           "valueType": null,
@@ -1350,7 +1350,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.3456172366742238,
+          "x": 1.3456172361239505,
           "y": 597.139343,
           "value": -0.294494629,
           "valueType": null,
@@ -1359,11 +1359,11 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6069349839892926,
+          "x": 1.6069349835347946,
           "y": 597.1405,
           "value": -0.294494629,
           "valueType": null,
-          "y2": "NaN",
+          "y2": 597.434265,
           "value2": null
         }
       ]
@@ -1387,7 +1387,7 @@ When I request a Compaction Profile
 Then the Compaction Profile should be
 """
 {
-  "gridDistanceBetweenProfilePoints": 1.8309560385454204,
+  "gridDistanceBetweenProfilePoints": 1.8309560378419556,
   "results": [
     {
       "type": "firstPass",
@@ -1403,7 +1403,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 2.1954293741128293E-09,
+          "x": 2.1966538188278949E-09,
           "y": 618.241455,
           "value": 618.207,
           "valueType": null,
@@ -1412,7 +1412,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.18309560467706484,
+          "x": 0.18309560477664602,
           "y": 618.207,
           "value": 618.207,
           "valueType": null,
@@ -1421,7 +1421,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.36619120715870035,
+          "x": 0.36619120735663818,
           "y": 618.1725,
           "value": 618.138,
           "valueType": null,
@@ -1430,7 +1430,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.54928681061448725,
+          "x": 0.54928681082374053,
           "y": 618.138,
           "value": 618.138,
           "valueType": null,
@@ -1439,7 +1439,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 0.732382414070274,
+          "x": 0.73238241429084294,
           "y": 618.164246,
           "value": "NaN",
           "valueType": null,
@@ -1448,7 +1448,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.0985736209822277,
+          "x": 1.0985736212252588,
           "y": 618.216736,
           "value": 618.243,
           "valueType": null,
@@ -1457,7 +1457,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.2816692244380146,
+          "x": 1.2816692246923611,
           "y": 618.243,
           "value": 618.243,
           "valueType": null,
@@ -1466,7 +1466,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.4647648278938015,
+          "x": 1.4647648281594636,
           "y": 618.3275,
           "value": 618.412,
           "valueType": null,
@@ -1475,7 +1475,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604313496728,
+          "x": 1.6478604316232093,
           "y": 618.412,
           "value": 618.412,
           "valueType": null,
@@ -1484,7 +1484,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.830956034805544,
+          "x": 1.8309560350869549,
           "y": 618.49646,
           "value": "NaN",
           "valueType": null,
@@ -1493,7 +1493,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.8309560385454204,
+          "x": 1.8309560378419556,
           "y": "NaN",
           "value": "NaN",
           "valueType": null,
@@ -1516,7 +1516,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 2.1954293741128293E-09,
+          "x": 2.1966538188278949E-09,
           "y": 618.150452,
           "value": 618.207,
           "valueType": null,
@@ -1525,7 +1525,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.18309560467706484,
+          "x": 0.18309560477664602,
           "y": 618.207,
           "value": 618.207,
           "valueType": null,
@@ -1534,7 +1534,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.36619120715870035,
+          "x": 0.36619120735663818,
           "y": 618.2635,
           "value": 618.32,
           "valueType": null,
@@ -1543,7 +1543,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.54928681061448725,
+          "x": 0.54928681082374053,
           "y": 618.32,
           "value": 618.32,
           "valueType": null,
@@ -1552,7 +1552,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 0.732382414070274,
+          "x": 0.73238241429084294,
           "y": 618.3008,
           "value": "NaN",
           "valueType": null,
@@ -1561,7 +1561,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.0985736209822277,
+          "x": 1.0985736212252588,
           "y": 618.2622,
           "value": 618.243,
           "valueType": null,
@@ -1570,7 +1570,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.2816692244380146,
+          "x": 1.2816692246923611,
           "y": 618.243,
           "value": 618.243,
           "valueType": null,
@@ -1579,7 +1579,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.4647648278938015,
+          "x": 1.4647648281594636,
           "y": 618.3385,
           "value": 618.434,
           "valueType": null,
@@ -1588,7 +1588,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604313496728,
+          "x": 1.6478604316232093,
           "y": 618.434,
           "value": 618.434,
           "valueType": null,
@@ -1597,7 +1597,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.830956034805544,
+          "x": 1.8309560350869549,
           "y": 618.529541,
           "value": "NaN",
           "valueType": null,
@@ -1606,7 +1606,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.8309560385454204,
+          "x": 1.8309560378419556,
           "y": "NaN",
           "value": "NaN",
           "valueType": null,
@@ -1629,7 +1629,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 2.1954293741128293E-09,
+          "x": 2.1966538188278949E-09,
           "y": 618.201965,
           "value": 618.207,
           "valueType": null,
@@ -1638,7 +1638,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.18309560467706484,
+          "x": 0.18309560477664602,
           "y": 618.207,
           "value": 618.207,
           "valueType": null,
@@ -1647,7 +1647,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.36619120715870035,
+          "x": 0.36619120735663818,
           "y": 618.212,
           "value": 618.217,
           "valueType": null,
@@ -1656,7 +1656,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.54928681061448725,
+          "x": 0.54928681082374053,
           "y": 618.217,
           "value": 618.217,
           "valueType": null,
@@ -1665,7 +1665,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 0.732382414070274,
+          "x": 0.73238241429084294,
           "y": 618.2235,
           "value": "NaN",
           "valueType": null,
@@ -1674,7 +1674,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.0985736209822277,
+          "x": 1.0985736212252588,
           "y": 618.23645,
           "value": 618.243,
           "valueType": null,
@@ -1683,7 +1683,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.2816692244380146,
+          "x": 1.2816692246923611,
           "y": 618.243,
           "value": 618.243,
           "valueType": null,
@@ -1692,7 +1692,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.4647648278938015,
+          "x": 1.4647648281594636,
           "y": 618.2535,
           "value": 618.264,
           "valueType": null,
@@ -1701,7 +1701,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604313496728,
+          "x": 1.6478604316232093,
           "y": 618.264,
           "value": 618.264,
           "valueType": null,
@@ -1710,7 +1710,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.830956034805544,
+          "x": 1.8309560350869549,
           "y": 618.2745,
           "value": "NaN",
           "valueType": null,
@@ -1719,7 +1719,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.8309560385454204,
+          "x": 1.8309560378419556,
           "y": "NaN",
           "value": "NaN",
           "valueType": null,
@@ -1742,7 +1742,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 2.1954293741128293E-09,
+          "x": 2.1966538188278949E-09,
           "y": 618.2639,
           "value": 618.207,
           "valueType": null,
@@ -1751,7 +1751,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.18309560467706484,
+          "x": 0.18309560477664602,
           "y": 618.207,
           "value": 618.207,
           "valueType": null,
@@ -1760,7 +1760,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.36619120715870035,
+          "x": 0.36619120735663818,
           "y": 618.15,
           "value": 618.093,
           "valueType": null,
@@ -1769,7 +1769,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.54928681061448725,
+          "x": 0.54928681082374053,
           "y": 618.093,
           "value": 618.093,
           "valueType": null,
@@ -1778,7 +1778,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 0.732382414070274,
+          "x": 0.73238241429084294,
           "y": 618.1305,
           "value": "NaN",
           "valueType": null,
@@ -1787,7 +1787,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.0985736209822277,
+          "x": 1.0985736212252588,
           "y": 618.2055,
           "value": 618.243,
           "valueType": null,
@@ -1796,7 +1796,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.2816692244380146,
+          "x": 1.2816692246923611,
           "y": 618.243,
           "value": 618.243,
           "valueType": null,
@@ -1805,7 +1805,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.4647648278938015,
+          "x": 1.4647648281594636,
           "y": 618.246948,
           "value": 618.251,
           "valueType": null,
@@ -1814,7 +1814,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604313496728,
+          "x": 1.6478604316232093,
           "y": 618.251,
           "value": 618.251,
           "valueType": null,
@@ -1823,7 +1823,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.830956034805544,
+          "x": 1.8309560350869549,
           "y": 618.255,
           "value": "NaN",
           "valueType": null,
@@ -1832,7 +1832,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.8309560385454204,
+          "x": 1.8309560378419556,
           "y": "NaN",
           "value": "NaN",
           "valueType": null,
@@ -1855,7 +1855,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 2.1954293741128293E-09,
+          "x": 2.1966538188278949E-09,
           "y": 618.201965,
           "value": 618.207,
           "valueType": null,
@@ -1864,7 +1864,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.18309560467706484,
+          "x": 0.18309560477664602,
           "y": 618.207,
           "value": 618.207,
           "valueType": null,
@@ -1873,7 +1873,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.36619120715870035,
+          "x": 0.36619120735663818,
           "y": 618.212,
           "value": 618.217,
           "valueType": null,
@@ -1882,7 +1882,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.54928681061448725,
+          "x": 0.54928681082374053,
           "y": 618.217,
           "value": 618.217,
           "valueType": null,
@@ -1891,7 +1891,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 0.732382414070274,
+          "x": 0.73238241429084294,
           "y": 618.2235,
           "value": "NaN",
           "valueType": null,
@@ -1900,7 +1900,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.0985736209822277,
+          "x": 1.0985736212252588,
           "y": 618.23645,
           "value": 618.243,
           "valueType": null,
@@ -1909,7 +1909,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.2816692244380146,
+          "x": 1.2816692246923611,
           "y": 618.243,
           "value": 618.243,
           "valueType": null,
@@ -1918,7 +1918,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.4647648278938015,
+          "x": 1.4647648281594636,
           "y": 618.2535,
           "value": 618.264,
           "valueType": null,
@@ -1927,7 +1927,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604313496728,
+          "x": 1.6478604316232093,
           "y": 618.264,
           "value": 618.264,
           "valueType": null,
@@ -1936,7 +1936,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.830956034805544,
+          "x": 1.8309560350869549,
           "y": 618.2745,
           "value": "NaN",
           "valueType": null,
@@ -1945,7 +1945,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.8309560385454204,
+          "x": 1.8309560378419556,
           "y": "NaN",
           "value": "NaN",
           "valueType": null,
@@ -1988,7 +1988,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 2.1954293741128293E-09,
+          "x": 2.1966538188278949E-09,
           "y": 618.201965,
           "value": 1.836,
           "valueType": 2,
@@ -1997,7 +1997,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.18309560467706484,
+          "x": 0.18309560477664602,
           "y": 618.207,
           "value": 1.836,
           "valueType": 2,
@@ -2006,7 +2006,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.36619120715870035,
+          "x": 0.36619120735663818,
           "y": 618.212,
           "value": 0.0,
           "valueType": 2,
@@ -2015,7 +2015,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.54928681061448725,
+          "x": 0.54928681082374053,
           "y": 618.217,
           "value": 0.0,
           "valueType": 2,
@@ -2024,7 +2024,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 0.732382414070274,
+          "x": 0.73238241429084294,
           "y": 618.2235,
           "value": 2359.26,
           "valueType": -1,
@@ -2033,7 +2033,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.0985736209822277,
+          "x": 1.0985736212252588,
           "y": 618.23645,
           "value": 1.836,
           "valueType": 2,
@@ -2042,7 +2042,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.2816692244380146,
+          "x": 1.2816692246923611,
           "y": 618.243,
           "value": 1.836,
           "valueType": 2,
@@ -2051,7 +2051,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.4647648278938015,
+          "x": 1.4647648281594636,
           "y": 618.2535,
           "value": 0.0,
           "valueType": 2,
@@ -2060,7 +2060,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604313496728,
+          "x": 1.6478604316232093,
           "y": 618.264,
           "value": 0.0,
           "valueType": 2,
@@ -2069,7 +2069,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.830956034805544,
+          "x": 1.8309560350869549,
           "y": 618.2745,
           "value": 2359.26,
           "valueType": -1,
@@ -2078,7 +2078,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.8309560385454204,
+          "x": 1.8309560378419556,
           "y": "NaN",
           "value": 2359.26,
           "valueType": -1,
@@ -2101,7 +2101,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 2.1954293741128293E-09,
+          "x": 2.1966538188278949E-09,
           "y": 618.201965,
           "value": 1.0,
           "valueType": 0,
@@ -2110,7 +2110,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.18309560467706484,
+          "x": 0.18309560477664602,
           "y": 618.207,
           "value": 1.0,
           "valueType": 0,
@@ -2119,7 +2119,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.36619120715870035,
+          "x": 0.36619120735663818,
           "y": 618.212,
           "value": 68.0,
           "valueType": 0,
@@ -2128,7 +2128,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.54928681061448725,
+          "x": 0.54928681082374053,
           "y": 618.217,
           "value": 68.0,
           "valueType": 0,
@@ -2137,7 +2137,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 0.732382414070274,
+          "x": 0.73238241429084294,
           "y": 618.2235,
           "value": -1.0,
           "valueType": -1,
@@ -2146,7 +2146,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.0985736209822277,
+          "x": 1.0985736212252588,
           "y": 618.23645,
           "value": 1.0,
           "valueType": 0,
@@ -2155,7 +2155,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.2816692244380146,
+          "x": 1.2816692246923611,
           "y": 618.243,
           "value": 1.0,
           "valueType": 0,
@@ -2164,7 +2164,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.4647648278938015,
+          "x": 1.4647648281594636,
           "y": 618.2535,
           "value": 20.0,
           "valueType": 0,
@@ -2173,7 +2173,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604313496728,
+          "x": 1.6478604316232093,
           "y": 618.264,
           "value": 20.0,
           "valueType": 0,
@@ -2182,7 +2182,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.830956034805544,
+          "x": 1.8309560350869549,
           "y": 618.2745,
           "value": -1.0,
           "valueType": -1,
@@ -2191,7 +2191,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.8309560385454204,
+          "x": 1.8309560378419556,
           "y": "NaN",
           "value": -1.0,
           "valueType": -1,
@@ -2214,7 +2214,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 2.1954293741128293E-09,
+          "x": 2.1966538188278949E-09,
           "y": 618.201965,
           "value": 1.0,
           "valueType": null,
@@ -2223,7 +2223,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.18309560467706484,
+          "x": 0.18309560477664602,
           "y": 618.207,
           "value": 1.0,
           "valueType": null,
@@ -2232,7 +2232,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.36619120715870035,
+          "x": 0.36619120735663818,
           "y": 618.212,
           "value": 68.0,
           "valueType": null,
@@ -2241,7 +2241,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.54928681061448725,
+          "x": 0.54928681082374053,
           "y": 618.217,
           "value": 68.0,
           "valueType": null,
@@ -2250,7 +2250,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 0.732382414070274,
+          "x": 0.73238241429084294,
           "y": 618.2235,
           "value": -1.0,
           "valueType": null,
@@ -2259,7 +2259,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.0985736209822277,
+          "x": 1.0985736212252588,
           "y": 618.23645,
           "value": 1.0,
           "valueType": null,
@@ -2268,7 +2268,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.2816692244380146,
+          "x": 1.2816692246923611,
           "y": 618.243,
           "value": 1.0,
           "valueType": null,
@@ -2277,7 +2277,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.4647648278938015,
+          "x": 1.4647648281594636,
           "y": 618.2535,
           "value": 20.0,
           "valueType": null,
@@ -2286,7 +2286,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604313496728,
+          "x": 1.6478604316232093,
           "y": 618.264,
           "value": 20.0,
           "valueType": null,
@@ -2295,7 +2295,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.830956034805544,
+          "x": 1.8309560350869549,
           "y": 618.2745,
           "value": -1.0,
           "valueType": null,
@@ -2304,7 +2304,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 1.8309560385454204,
+          "x": 1.8309560378419556,
           "y": "NaN",
           "value": -1.0,
           "valueType": null,
@@ -2322,7 +2322,7 @@ Then the Compaction Profile should be
       "data": [
         {
           "cellType": 1,
-          "x": 2.1954293741128293E-09,
+          "x": 2.1966538188278949E-09,
           "y": 618.207,
           "value": 0.0,
           "valueType": null,
@@ -2331,7 +2331,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.36619120715870035,
+          "x": 0.36619120735663818,
           "y": 618.161,
           "value": 0.07897949,
           "valueType": null,
@@ -2340,7 +2340,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.54928681061448714,
+          "x": 0.54928681082374053,
           "y": 618.138,
           "value": 0.07897949,
           "valueType": null,
@@ -2349,7 +2349,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 0.73238241407027393,
+          "x": 0.73238241429084294,
           "y": 618.138,
           "value": 0.07897949,
           "valueType": null,
@@ -2358,7 +2358,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 0.73238241407027393,
+          "x": 0.73238241429084294,
           "y": 618.138,
           "value": 0.07897949,
           "valueType": null,
@@ -2367,7 +2367,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 2,
-          "x": 0.73238241407027393,
+          "x": 0.73238241429084294,
           "y": 618.138,
           "value": "NaN",
           "valueType": null,
@@ -2376,7 +2376,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.0985736209822277,
+          "x": 1.0985736212252588,
           "y": 618.208,
           "value": 0.0,
           "valueType": null,
@@ -2385,7 +2385,7 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.2816692244380146,
+          "x": 1.2816692246923611,
           "y": 618.243,
           "value": 0.0,
           "valueType": null,
@@ -2394,34 +2394,16 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 0,
-          "x": 1.4647648278938015,
-          "y": 618.3275,
+          "x": 1.4647648281594636,
+          "y": 618.2993,
           "value": -0.148010254,
           "valueType": null,
-          "y2": 618.2535,
+          "y2": 618.25,
           "value2": null
         },
         {
           "cellType": 1,
-          "x": 1.6478604313496728,
-          "y": 618.412,
-          "value": -0.148010254,
-          "valueType": null,
-          "y2": 618.264,
-          "value2": null
-        },
-        {
-          "cellType": 0,
-          "x": 1.830956034805544,
-          "y": 618.412,
-          "value": -0.148010254,
-          "valueType": null,
-          "y2": 618.264,
-          "value2": null
-        },
-        {
-          "cellType": 1,
-          "x": 1.830956034805544,
+          "x": 1.8309560350869552,
           "y": 618.412,
           "value": -0.148010254,
           "valueType": null,
