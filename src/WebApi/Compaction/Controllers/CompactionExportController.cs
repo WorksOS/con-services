@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
-          .Headers(customHeaders)
+          .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .SetUserPreferences(userPreferences)
@@ -131,7 +131,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
+          .Build<ExportReportExecutor>(logger, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
     }
@@ -165,7 +165,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
-          .Headers(customHeaders)
+          .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .SetRaptorClient(raptorClient)
@@ -186,7 +186,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
+          .Build<ExportReportExecutor>(logger, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
     }
@@ -226,7 +226,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
-          .Headers(customHeaders)
+          .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .SetUserPreferences(userPreferences)
@@ -247,7 +247,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
+          .Build<ExportReportExecutor>(logger, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
     }
@@ -258,7 +258,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns></returns>
     private async Task<UserPreferenceData> GetUserPreferences()
     {
-      var userPreferences = await prefProxy.GetUserPreferences(customHeaders);
+      var userPreferences = await prefProxy.GetUserPreferences(this.CustomHeaders);
       if (userPreferences == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

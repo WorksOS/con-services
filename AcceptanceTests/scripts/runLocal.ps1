@@ -9,6 +9,8 @@ function WriteMsg
     {
         Write-Host $message -ForegroundColor $color
     }
+    
+    [Console]::ResetColor()
 }
 
 function GetContainerIpAddress

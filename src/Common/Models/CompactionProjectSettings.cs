@@ -418,6 +418,12 @@ namespace VSS.Productivity3D.Common.Models
     /// Maximum MDP for Raptor (10ths)
     /// </summary>
     public short MdpMaximum => MAX_CMV_MDP_VALUE;
+
+    public double VolumeBulkingPercent => customBulkingPercent ?? 0;
+
+    public double VolumeShrinkagePercent => customShrinkagePercent ?? 0;
+
+
     #endregion
 
     #region Validation
@@ -612,8 +618,5 @@ namespace VSS.Productivity3D.Common.Models
 
     private const short MIN_CMV_MDP_VALUE = 0;
     private const short MAX_CMV_MDP_VALUE = 2000;
-
-
-
   }
 }

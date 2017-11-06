@@ -46,8 +46,6 @@ Scenario Outline: Tiles - Serialized
 	| CCVChangeNoneLiftDetection              | CCVChangeNoneLiftDetection              |
 	| CCVChangeNoChange                       | CCVChangeNoChange                       |
 
-# These have always ignored since going to compaction 
-@ignore 
 Scenario Outline: Tiles - PNG
 	When I request PNG Tiles supplying "<ParameterName>" paramters from the repository
 	Then the PNG Tiles response should match "<ResultName>" result from the repository
@@ -93,7 +91,7 @@ Scenario Outline: Tiles - PNG
 Scenario Outline: Tiles - Raw PNG
 	Given the PNG Tile service URI "/api/v1/tiles/png"
 	When I request PNG Tiles supplying "<ParameterName>" paramters from the repository
-	Then the PNG Tiles response should match "<ResultName>" result from the repository
+	Then the Raw PNG Tiles response should match "<ResultName>" result from the repository
 	And the X-Warning in the response header should be "<X-Warning>"
 	Examples: 
 	| ParameterName                           | ResultName                              | X-Warning |

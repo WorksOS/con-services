@@ -1,17 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using TechTalk.SpecFlow;
-using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json;
-using RestAPICoreTestFramework.Utils.Common;
-using RaptorSvcAcceptTestsCommon.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using ProductionDataSvc.AcceptanceTests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using XnaFan.ImageComparison;
-using System.Drawing;
+using System.Text;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
@@ -21,6 +16,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         private Poster<TileRequest, TileResult> tileRequester;
         private WebHeaderCollection header;
         private byte[] pngTile;
+        private string responseString;
 
         [Given(@"the Tile service URI ""(.*)"", request repo ""(.*)"" and result repo ""(.*)""")]
         public void GivenTheTileServiceURIRequestRepoAndResultRepo(string uri, string requestFile, string resultFile)
@@ -62,9 +58,9 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [When(@"I request PNG Tiles supplying ""(.*)"" paramters from the repository")]
         public void WhenIRequestPNGTilesSupplyingParamtersFromTheRepository(string paramName)
         {
-            string requestBodyString = JsonConvert.SerializeObject(tileRequester.RequestRepo[paramName]);
-
-            HttpWebResponse httpResponse = RaptorServicesClientUtil.DoHttpRequest(tileRequester.Uri,
+            var requestBodyString = JsonConvert.SerializeObject(tileRequester.RequestRepo[paramName]);
+            
+            var httpResponse = RaptorServicesClientUtil.DoHttpRequest(tileRequester.Uri,
                  "POST", "application/json", "image/png", requestBodyString);
 
             if(httpResponse != null)
@@ -86,8 +82,9 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
                             memoryStream.Write(buffer, 0, count);
 
                         } while (count != 0);
-
+                        
                         pngTile = memoryStream.ToArray();
+                        responseString = Encoding.Default.GetString(pngTile);
                     }
                 }
 
@@ -98,14 +95,23 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [Then(@"the PNG Tiles response should match ""(.*)"" result from the repository")]
         public void ThenThePNGTilesResponseShouldMatchResultFromTheRepository(string resultName)
         {
-            TileResult result = new TileResult() { 
-                TileData = pngTile,
-                TileOutsideProjectExtents = tileRequester.ResponseRepo[resultName].TileOutsideProjectExtents
-            };
-            Assert.AreEqual(tileRequester.ResponseRepo[resultName], result);
+            TileResult test = (TileResult)JsonConvert.DeserializeObject(responseString, typeof(TileResult));
+            Assert.AreEqual(tileRequester.ResponseRepo[resultName], test);
         }
 
-        [Then(@"the X-Warning in the response header should be ""(.*)""")]
+      [Then(@"the Raw PNG Tiles response should match ""(.*)"" result from the repository")]
+      public void ThenTheRawPNGTilesResponseShouldMatchResultFromTheRepository(string resultName)
+      {
+        TileResult result = new TileResult()
+        {
+          TileData = pngTile,
+          TileOutsideProjectExtents = tileRequester.ResponseRepo[resultName].TileOutsideProjectExtents
+        };
+        Assert.AreEqual(tileRequester.ResponseRepo[resultName], result);
+    }
+
+
+    [Then(@"the X-Warning in the response header should be ""(.*)""")]
         public void ThenTheX_WarningInTheResponseHeaderShouldBe(string xWarning)
         {
             Assert.AreEqual(xWarning, header.Get("X-Warning"));

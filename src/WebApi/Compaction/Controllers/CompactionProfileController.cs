@@ -15,6 +15,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
@@ -80,8 +81,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="endLonDegrees">End profileLine Lon</param>
     /// <param name="filterUid">Filter UID for all profiles except summary volumes</param>
     /// <param name="cutfillDesignUid">Design UID for cut-fill</param>
-    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
-    /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="baseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="topUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>
     /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
@@ -109,19 +110,40 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var settings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid, true);
-      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
+
+      Filter baseFilter = null;
+      Filter topFilter = null;
+      DesignDescriptor volumeDesign = null;
+      if (volumeCalcType.HasValue)
+      {
+        switch (volumeCalcType.Value)
+        {
+          case VolumeCalcType.GroundToGround:
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            break;
+          case VolumeCalcType.GroundToDesign:
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            volumeDesign = await GetDesignDescriptor(projectUid, volumeTopUid, true);
+            break;
+          case VolumeCalcType.DesignToGround:
+            volumeDesign = await GetDesignDescriptor(projectUid, volumeBaseUid, true);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            break;
+        }
+      }
 
       //Get production data profile
       var slicerProductionDataProfileRequest = requestFactory.Create<ProductionDataProfileRequestHelper>(r => r
           .ProjectId(projectId)
-          .Headers(customHeaders)
+          .Headers(this.CustomHeaders)
           .ProjectSettings(settings)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
-          .SetBaseFilter(sumVolParameters.Item1)
-          .SetTopFilter(sumVolParameters.Item2)
+          .SetBaseFilter(baseFilter)
+          .SetTopFilter(topFilter)
           .SetVolumeCalcType(volumeCalcType)
-          .SetVolumeDesign(sumVolParameters.Item3)
+          .SetVolumeDesign(volumeDesign)
           .CreateProductionDataProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
       slicerProductionDataProfileRequest.Validate();
@@ -134,18 +156,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (cutFillDesign != null)
       {
-        FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, 
+        FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
           cutFillDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
       }
 
-      if (sumVolParameters.Item3 != null && (volumeCalcType == VolumeCalcType.DesignToGround || volumeCalcType == VolumeCalcType.GroundToDesign))
+      if (volumeDesign != null && (volumeCalcType == VolumeCalcType.DesignToGround || volumeCalcType == VolumeCalcType.GroundToDesign))
       {
         FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
-          sumVolParameters.Item3, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.SUMMARY_VOLUMES, volumeCalcType.Value);
+          volumeDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.SUMMARY_VOLUMES, volumeCalcType.Value);
       }
       return slicerProductionDataResult;
     }
-
     /// <summary>
     /// Calculate the elevations for cut-fill or summary volumes cells from the design surface.
     /// </summary>
@@ -174,7 +195,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //Get design profile
       var slicerDesignProfileRequest = requestFactory.Create<DesignProfileRequestHelper>(r => r
           .ProjectId(projectId)
-          .Headers(customHeaders)
+          .Headers(this.CustomHeaders)
           .ProjectSettings(settings)
           .DesignDescriptor(design))
         .CreateDesignProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
@@ -226,7 +247,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         var profileRequest = requestFactory.Create<DesignProfileRequestHelper>(r => r
             .ProjectId(projectId)
-            .Headers(customHeaders)
+            .Headers(this.CustomHeaders)
             .ProjectSettings(settings)
             .Filter(filter)
             .DesignDescriptor(designDescriptor))

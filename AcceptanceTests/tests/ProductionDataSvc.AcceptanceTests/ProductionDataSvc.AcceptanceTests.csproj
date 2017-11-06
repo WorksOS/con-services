@@ -152,6 +152,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CompactionSpeed.feature</DependentUpon>
     </Compile>
+    <Compile Include="CompactionSummaryVolumes.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionSummaryVolumes.feature</DependentUpon>
+    </Compile>
     <Compile Include="CompactionTagFile.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -289,6 +294,7 @@
     <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Models\CompactionTemperatureSummaryResult.cs" />
     <Compile Include="Models\CompactionTileRequest.cs" />
+    <Compile Include="Models\CompactionVolumesSummaryResult.cs" />
     <Compile Include="Models\ConfigResult.cs" />
     <Compile Include="Models\CoordinateConversion.cs" />
     <Compile Include="Models\CoordinateSystemFile.cs" />
@@ -379,6 +385,7 @@
     <Compile Include="StepDefinitions\CompactionDesignProfileSteps.cs" />
     <Compile Include="StepDefinitions\CompactionProfileSteps.cs" />
     <Compile Include="StepDefinitions\CompactionSpeedSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionSummaryVolumesSteps.cs" />
     <Compile Include="StepDefinitions\CompactionTagFileSteps.cs" />
     <Compile Include="StepDefinitions\CompactionTemperatureSteps.cs" />
     <Compile Include="StepDefinitions\CompactionTileSteps.cs" />
@@ -650,6 +657,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>SummaryThickness.feature.cs</LastGenOutput>
     </None>
+    <None Include="CompactionSummaryVolumes.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionSummaryVolumes.feature.cs</LastGenOutput>
+    </None>
     <None Include="SummaryVolumes.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>SummaryVolumes.feature.cs</LastGenOutput>
@@ -798,6 +809,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\SummaryVolumeRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionSummaryVolumeResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\SummaryVolumeResponse.json">
