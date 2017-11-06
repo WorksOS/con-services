@@ -42,9 +42,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           totalResult.results.Add(summaryVolumesResult);
         }
     
-        profileResultHelper.RemoveRepeatedNoData(totalResult);
+        profileResultHelper.RemoveRepeatedNoData(totalResult, request.volumeCalcType);
         profileResultHelper.AddMidPoints(totalResult);
-        profileResultHelper.InterpolateEdges(totalResult);
+        profileResultHelper.InterpolateEdges(totalResult, request.volumeCalcType);
 
         result = totalResult;
       }
@@ -431,6 +431,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         if (memoryStream != null)
         {
           volumesResult = ConvertSummaryVolumesProfileResult(memoryStream, request.volumeCalcType.Value);
+          //If we have no other profile results apart from summary volumes, set the total grid distance
+          if (totalResult.results.Count == 0 && volumesResult != null)
+          {
+            totalResult.gridDistanceBetweenProfilePoints = volumesResult.gridDistanceBetweenProfilePoints;
+          }
         }
       }
       //If we have other profile types but no summary volumes, add summary volumes with just slicer end points
@@ -442,6 +447,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         volumesResult =         
             new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
             {
+              gridDistanceBetweenProfilePoints = totalResult.gridDistanceBetweenProfilePoints,
               results = new List<CompactionSummaryVolumesProfileCell>
               {
                 startSlicer,

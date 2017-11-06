@@ -61,7 +61,6 @@ Scenario: Compaction Get Slicer Empty Design Profile
     "Message": "success"
 }
 """
-
 @ignore
 Scenario: Compaction Get Slicer Design Profile With Added Endpoints
 	Given the Compaction Profile service URI "/api/v2/profiles/design/slicer"

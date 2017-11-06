@@ -30,10 +30,10 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
     public string CoordSystemFileName { get; private set; }
 
     /// <summary>
-    /// User units preference
+    /// DXF file units type
     /// </summary>
-    [JsonProperty(PropertyName = "userPreferenceUnits", Required = Required.Default)]
-    public UnitsTypeEnum UserPreferenceUnits { get; private set; }
+    [JsonProperty(PropertyName = "dxfUnitsType", Required = Required.Default)]
+    public UnitsTypeEnum DXFUnitsType { get; private set; }
 
     /// <summary>
     /// A unique file identifier
@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
       Guid? projectUId,
       FileDescriptor file,
       string coordSystemFileName,
-      UnitsTypeEnum userUnits,
+      UnitsTypeEnum dxfUnitsType,
       long fileId,
       ImportedFileType fileType = ImportedFileType.DesignSurface
     )
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
         projectUid = projectUId,
         File = file,
         CoordSystemFileName = coordSystemFileName,
-        UserPreferenceUnits = userUnits,
+        DXFUnitsType = dxfUnitsType,
         FileId = fileId,
         FileType = fileType
       };

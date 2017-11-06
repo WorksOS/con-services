@@ -16,11 +16,11 @@ namespace VSS.Productivity3D.Common.Interfaces
     CompactionProfileDataResult RearrangeProfileResult(
       CompactionProfileResult<CompactionSummaryVolumesProfileCell> slicerProfileResult, VolumeCalcType? calcType);
 
-    void RemoveRepeatedNoData(CompactionProfileResult<CompactionProfileDataResult> result);
+    void RemoveRepeatedNoData(CompactionProfileResult<CompactionProfileDataResult> result, VolumeCalcType? calcType);
 
     void AddMidPoints(CompactionProfileResult<CompactionProfileDataResult> profileResult);
 
-    void InterpolateEdges(CompactionProfileResult<CompactionProfileDataResult> profileResult);
+    void InterpolateEdges(CompactionProfileResult<CompactionProfileDataResult> profileResult, VolumeCalcType? calcType);
 
     CompactionProfileResult<CompactionDesignProfileResult> ConvertProfileResult(
       Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults);

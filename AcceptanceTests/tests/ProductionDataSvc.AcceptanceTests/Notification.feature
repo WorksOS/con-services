@@ -2,12 +2,13 @@
  I should be able to request file notifications
 
 #@ignore
-  Scenario: Notification Add File - Good Request 
+  Scenario: Notification Add DXF File - Good Request 
 	Given the Add File Notification service URI "/api/v2/notification/addfile"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
 	And a filespaceId "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01" and a path "/NotificationAcceptanceTest" and a fileName "Topcon Road - DesignMap.dxf"
 	And a fileId "1234"
   And a fileUid "314cdcdd-1002-4431-a621-f5aa77be6f79"
+  And a dxfUnitsType "1"
 	When I request File Notification
 	Then the File Notification result should be 
   """
@@ -16,7 +17,21 @@
     "Message": "Add file notification successful"
   }
 	"""
- 
+  Scenario: Notification Add TTM File - Good Request 
+	Given the Add File Notification service URI "/api/v2/notification/addfile"
+	And a projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
+	And a filespaceId "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01" and a path "/NotificationAcceptanceTest" and a fileName "Milling - Milling.TTM"
+	And a fileId "15175"
+  And a fileUid "220e12e5-ce92-4645-8f01-1942a2d5a57f"
+  When I request File Notification
+	Then the File Notification result should be 
+  """
+	{
+    "Code": 0,
+    "Message": "Add file notification successful"
+  }
+	"""
+
  Scenario: Notification Delete File - Good Request 
 	Given the Delete File Notification service URI "/api/v2/notification/deletefile"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
