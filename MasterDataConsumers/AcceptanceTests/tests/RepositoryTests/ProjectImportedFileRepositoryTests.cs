@@ -69,6 +69,48 @@ namespace RepositoryTests
       gList.Wait();
       Assert.IsNotNull(gList.Result, "Unable to retrieve ImportedFiles from ProjectRepo");
       Assert.AreEqual(1, gList.Result.Count(), "ImportedFile count is incorrect from ProjectRepo");
+      Assert.AreEqual(DxfUnitsType.Meters, g.Result.DxfUnitsType, "ImportedFile DXF units is incorrect from ProjectRepo");
+    }
+
+    /// <summary>
+    /// Create ImportedFile - Happy path i.e. 
+    ///   ImportedFile doesn't exist already.
+    ///   Alignment type has non-default Units
+    /// </summary>
+    [TestMethod]
+    public void CreateImportedFile_HappyPath_WithDXFUnits()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createImportedFileEvent = new CreateImportedFileEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ImportedFileUID = Guid.NewGuid(),
+        ImportedFileID = new Random().Next(1, 1999999),
+        CustomerUID = Guid.NewGuid(),
+        ImportedFileType = ImportedFileType.Alignment,
+        Name = "Test SS type.dxf",
+        FileDescriptor = "fd",
+        FileCreatedUtc = actionUtc,
+        FileUpdatedUtc = actionUtc,
+        ImportedBy = "JoeSmoe",
+        DxfUnitsType = DxfUnitsType.UsSurveyFeet,
+        ActionUTC = actionUtc
+      };
+
+      var s = _projectContext.StoreEvent(createImportedFileEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "ImportedFile event not written");
+
+      var g = _projectContext.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve ImportedFile from ProjectRepo");
+
+      var gList = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
+      gList.Wait();
+      Assert.IsNotNull(gList.Result, "Unable to retrieve ImportedFiles from ProjectRepo");
+      Assert.AreEqual(1, gList.Result.Count(), "ImportedFile count is incorrect from ProjectRepo");
+      Assert.AreEqual(DxfUnitsType.UsSurveyFeet, g.Result.DxfUnitsType, "ImportedFile DXF units is incorrect from ProjectRepo");
     }
 
     /// <summary>
@@ -206,6 +248,7 @@ namespace RepositoryTests
       Assert.AreEqual(updateImportedFileEvent.FileDescriptor, g.Result.FileDescriptor,
         "ImportedFile FileDescriptor was not updated");
     }
+
 
     /// <summary>
     /// Delete ImportedFile - Happy path i.e. 
