@@ -1,10 +1,8 @@
 ﻿using System;
-using Dapper;
 using Hangfire;
 using Microsoft.Extensions.Logging;
-using MySql.Data.MySqlClient;
 using VSS.ConfigurationStore;
-using VSS.Productivity3D.Scheduler.Common.Utilities;
+using VSS.Productivity3D.Scheduler.Common.Models;
 
 
 namespace VSS.Productivity3D.Scheduler.WebApi
@@ -16,20 +14,22 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   /// </summary>
   public class ImportedProjectFileSyncTask
   {
+    private readonly IConfigurationStore _configStore;
+    private readonly ILoggerFactory _logger;
     private readonly ILogger _log;
-    private readonly IConfigurationStore _configStore = null;
     private static int DefaultTaskIntervalDefaultMinutes { get; } = 5;
 
     /// <summary>
     /// Initializes the ImportedProjectFileSyncTask 
     /// </summary>
     /// <param name="configStore"></param>
-    /// <param name="loggerFactory"></param>
-    public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory loggerFactory)
+    /// <param name="logger"></param>
+    public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger)
     {
-      Console.WriteLine($"ImportedProjectFileSyncTask configStore {configStore} loggerFactory: {loggerFactory}");
-      _log = loggerFactory.CreateLogger<ImportedProjectFileSyncTask>();
-      _configStore = configStore;  
+      Console.WriteLine($"ImportedProjectFileSyncTask configStore {configStore} logger: {logger}");
+      _configStore = configStore;
+      _logger = logger;
+      _log = logger.CreateLogger<ImportedProjectFileSyncTask>();
     }
 
     /// <summary>
@@ -47,14 +47,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
 
       var ImportedProjectFileSyncTask = "ImportedProjectFileSyncTask";
-      string importedProjectFile_MySQL_ConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_Project");
-      _log.LogInformation($"ImportedProjectFileSyncTask: taskIntervalSeconds: {taskIntervalMinutes} importedProjectFile_MySQL_ConnectionString: {importedProjectFile_MySQL_ConnectionString}.");
-      Console.WriteLine($"ImportedProjectFileSyncTask: taskIntervalSeconds: {taskIntervalMinutes} importedProjectFile_MySQL_ConnectionString: {importedProjectFile_MySQL_ConnectionString}.");
+      _log.LogInformation($"ImportedProjectFileSyncTask: taskIntervalSeconds: {taskIntervalMinutes}.");
+      Console.WriteLine($"ImportedProjectFileSyncTask: taskIntervalSeconds: {taskIntervalMinutes}.");
 
       try
       {
-        RecurringJob.AddOrUpdate(ImportedProjectFileSyncTask,
-          () => DatabaseSyncTask(importedProjectFile_MySQL_ConnectionString), Cron.MinuteInterval(taskIntervalMinutes));
+        RecurringJob.AddOrUpdate(ImportedProjectFileSyncTask,() => DatabaseSyncTask(), Cron.MinuteInterval(taskIntervalMinutes));
       }
       catch (Exception ex)
       {
@@ -66,48 +64,16 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <summary>
     /// bi-sync between 2 db tables
     /// </summary>
-    /// <param name="importedProjectFile_MySQL_ConnectionString"></param>
-    public void DatabaseSyncTask(string importedProjectFile_MySQL_ConnectionString)
+    public void DatabaseSyncTask()
     {
-       _log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow} importedProjectFile_MySQL_ConnectionString {importedProjectFile_MySQL_ConnectionString}");
-      Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow} importedProjectFile_MySQL_ConnectionString {importedProjectFile_MySQL_ConnectionString}");
+      _log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow}");
+      Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow}");
 
-      MySqlConnection dbConnection = new MySqlConnection(importedProjectFile_MySQL_ConnectionString);
-      try
-      {
-        dbConnection.Open();
-      }
-      catch (Exception ex)
-      {
-        _log.LogError($"ImportedProjectFileSyncTask.DatabaseSyncTask: open MySql DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: open MySql DB exeception {ex.Message}");
-        throw;
-      }
+      var sync = new ImportedFileHandler(_configStore, _logger);
+      sync.SyncTables();
 
-      //var empty = "\"";
-      //string deleteCommand = $"SELECT FROM todo WHERE (Name = {empty}{empty} OR Name IS NULL) AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
-      //int deletedCount = 0;
-      //try
-      //{
-      //  deletedCount = dbConnection.Execute(deleteCommand, cutoffActionUtcToDelete);
-      //  Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: connectionString {dbConnection.ConnectionString} deleteCommand {deleteCommand} deletedCount {deletedCount}");
-      //}
-      //catch (Exception ex)
-      //{
-      //  _log.LogError($"ImportedProjectFileSyncTask.DatabaseSyncTask: execute exeception {ex.Message}");
-      //  Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: execute exeception {ex.Message}");
-      //  throw;
-      //}
-      //finally
-      //{
-      dbConnection.Close();
-      Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: dbConnection.Close");
-
-      //Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: dbConnection.Close");
-      //}
-
-      //_log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: completed successfully. CutoffActionUtcDeleted: {cutoffActionUtcToDelete} deletedCount: {deletedCount}");
-      ////Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: completed successfully. CutoffActionUtcDeleted: {cutoffActionUtcToDelete} deletedCount: {deletedCount}");
+      _log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: completed successfully.");
+      Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: completed successfully.");
     }
   }
 }

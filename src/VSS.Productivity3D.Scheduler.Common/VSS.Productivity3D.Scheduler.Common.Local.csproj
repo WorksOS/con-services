@@ -22,11 +22,19 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="AutoMapper" Version="6.1.1" />
+    <PackageReference Include="Dapper" Version="1.50.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
    </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>..\..\..\..\..\Users\jwalter\.nuget\packages\mysql.data\7.0.7-m61\lib\netstandard1.6\MySql.Data.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   
 </Project>

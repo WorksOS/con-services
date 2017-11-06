@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using Microsoft.Extensions.Logging;
 using Dapper;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Scheduler.Common.Interfaces;
-using VSS.MasterData.Repositories.DBModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 namespace VSS.Productivity3D.Scheduler.Common.Models
 {
@@ -16,35 +16,23 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
   {
     private IConfigurationStore _configStore;
     private ILogger _log;
-    private List<ImportedFile> _members = null;
-    private List<ImportedFile> _insertMembers = null;
-    private List<ImportedFile> _updateMembers = null;
     private string _dbConnectionString;
+    private List<ProjectImportedFile> _members;
 
-    public ImportedFileHandlerProject(IConfigurationStore configStore, ILoggerFactory logger,
-      string dbConnectionString)
+
+    public ImportedFileHandlerProject(IConfigurationStore configStore, ILoggerFactory logger)
     {
       _configStore = configStore;
       _log = logger.CreateLogger<ImportedFileHandlerProject<T>>();
-      _members = new List<ImportedFile>();
-      _insertMembers = new List<ImportedFile>();
-      _updateMembers = new List<ImportedFile>();
-      _dbConnectionString = dbConnectionString;
+      _dbConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_Project");
+      _members = new List<ProjectImportedFile>();
 
-      _log.LogDebug(
-        $"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
-      Console.WriteLine(
-        $"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
+      _log.LogDebug($"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
+      Console.WriteLine($"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
     }
 
-    /// <summary>
-    /// ReadFromDb from NGen Project.ImportedFile table
-    ///   May initially be limited to SurveyedSurface type
-    /// </summary>
-    public int ReadFromDb()
+    public int Read()
     {
-      // todo async
-      // todo use dbrepo
       MySqlConnection dbConnection = new MySqlConnection(_dbConnectionString);
       try
       {
@@ -52,34 +40,39 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.ReadFromDb: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.ReadFromDb: open DB exeception {ex.Message}");
+        _log.LogError($"ImportedFileHandlerProject.Read: open DB exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileHandlerProject.Read: open DB exeception {ex.Message}");
         throw;
       }
 
-      string selectCommand = @"SELECT 
-              fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID,
-              fk_ImportedFileTypeID as ImportedFileType, Name, 
-              FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated,
-              LastActionedUTC
-            FROM ImportedFile
+      string selectCommand = 
+        @"SELECT 
+              iff.fk_ProjectUID as ProjectUID, iff.ImportedFileUID, iff.ImportedFileID, iff.fk_CustomerUID as CustomerUID,
+              iff.fk_ImportedFileTypeID as ImportedFileType, iff.Name, 
+              iff.FileDescriptor, iff.FileCreatedUTC, iff.FileUpdatedUTC, iff.ImportedBy, iff.SurveyedUTC, iff.fk_DXFUnitsTypeID AS DxfUnitsType, 
+              iff.IsDeleted, iff.IsActivated, iff.LastActionedUTC,
+			        p.LegacyProjectID, cp.LegacyCustomerID
+            FROM ImportedFile iff
+				      INNER JOIN Project p ON p.ProjectUID = iff.fk_ProjectUID
+              INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
             WHERE fk_ImportedFileTypeID = 2";
-      List<ImportedFile> response;
+
+      List<ProjectImportedFile> response;
       try
       {
-        response = dbConnection.Query<ImportedFile>(selectCommand).ToList();
-        Console.WriteLine($"ImportedFileHandlerProject.ReadFromDb: selectCommand {selectCommand} response {JsonConvert.SerializeObject(response)}");
+        response = dbConnection.Query<ProjectImportedFile>(selectCommand).ToList();
+        Console.WriteLine($"ImportedFileHandlerProject.Read: selectCommand {selectCommand} response {JsonConvert.SerializeObject(response)}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.ReadFromDb:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.ReadFromDb:  execute exeception {ex.Message}");
+        _log.LogError($"ImportedFileHandlerProject.Read:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileHandlerProject.Read:  execute exeception {ex.Message}");
         throw;
       }
       finally
       {
         dbConnection.Close();
-        Console.WriteLine($"ImportedFileHandlerProject.ReadFromDb:  dbConnection.Close");
+        Console.WriteLine($"ImportedFileHandlerProject.Read:  dbConnection.Close");
       }
       _members.AddRange(response);
 
@@ -89,8 +82,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
     public void EmptyList()
     {
       _members.Clear();
-      _insertMembers.Clear();
-      _updateMembers.Clear();
     }
 
     public List<T> List() 
@@ -98,55 +89,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       return _members as List<T>;
     }
 
-    /// <summary>
-    /// Merge a list from e.g. NHOP.ImportedFile table into existing _members
-    /// i.e. resolving differences and removing duplicates to come up with a _members list with outstanding actions
-    /// </summary>
-    public int Merge( List<NhOpImportedFile> otherSourceMembers )
+    public int Create(List<T> memberList)
     {
-      // todo use AutoMapper
-      // todo how to match - up?
-      foreach (var nhOpImportedFile in otherSourceMembers)
-      {
-        if (nhOpImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface)
-        {
-          var importedFileProject = new ImportedFile
-          {
-            ProjectUid = nhOpImportedFile.ProjectUid,
-            CustomerUid = nhOpImportedFile.CustomerUid,
-            ImportedFileType = nhOpImportedFile.ImportedFileType,
-            // todo DXFUnitsType not avail in NG yet
-            Name = nhOpImportedFile.Name, // todo strip off date
-            FileDescriptor = "todo",
-            SurveyedUtc = nhOpImportedFile.SurveyedUtc,
-            FileCreatedUtc = nhOpImportedFile.FileCreatedUtc, 
-            FileUpdatedUtc = nhOpImportedFile.FileUpdatedUtc, 
-            ImportedBy = nhOpImportedFile.ImportedBy,
-            LastActionedUtc = nhOpImportedFile.LastActionedUtc,
-            IsActivated = true,
-            IsDeleted = false
-          };
-          _members.Add(importedFileProject);
-
-          // todo split inserts and updates
-          importedFileProject.ImportedFileUid = Guid.NewGuid().ToString();
-          importedFileProject.FileCreatedUtc =  DateTime.MinValue; 
-          importedFileProject.FileUpdatedUtc = DateTime.MinValue; 
-          importedFileProject.ImportedBy = "";
-          _insertMembers.Add(importedFileProject);
-        }
-      }
-      return _members.Count;
-    }
-
-    /// <summary>
-    ///  WriteToDb(insert/update) _members to NGen Project.ImportedFile table
-    /// Update includes potentially setting IsDeleted flag
-    /// </summary>
-    public int WriteToDb()
-    {
-      // todo async
-      // todo Upsert
       MySqlConnection dbConnection = new MySqlConnection(_dbConnectionString);
       try
       {
@@ -154,37 +98,101 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.WriteToDb: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.WriteToDb: open DB exeception {ex.Message}");
+        _log.LogError($"ImportedFileHandlerProject.Create: open DB exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileHandlerProject.Create: open DB exeception {ex.Message}");
         throw;
       }
 
-      // can't do upsert as importedFileId needs to be managed by DB
-      // todo Merge() to split _members into 2 lists: _insertMembers list and _toUpdateMembers
       var insertCommand = string.Format(
         "INSERT ImportedFile " +
-        "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated, LastActionedUTC) " +
+        "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, IsDeleted, IsActivated, LastActionedUTC) " +
         "  VALUES " +
-        "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, 0, 1, @LastActionedUtc)");
+        "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc,@DxfUnitsType, 0, 1, @LastActionedUtc)");
       int countInserted = 0;
       try
       {
-        countInserted = dbConnection.Execute(insertCommand, _insertMembers);
-        Console.WriteLine($"ImportedFileHandlerProject.WriteToDb: selectCommand {insertCommand} countInserted {JsonConvert.SerializeObject(countInserted)}");
+        // todo do multiple insert?
+        foreach (var member in memberList)
+        {
+          countInserted += dbConnection.Execute(insertCommand, member);
+          Console.WriteLine(
+            $"ImportedFileHandlerProject.Create: member {JsonConvert.SerializeObject(member)} countInsertedSoFar {JsonConvert.SerializeObject(countInserted)}");
+        }
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.WriteToDb:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.WriteToDb:  execute exeception {ex.Message}");
+        _log.LogError($"ImportedFileHandlerProject.Create:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileHandlerProject.Create:  execute exeception {ex.Message}");
         throw;
       }
       finally
       {
         dbConnection.Close();
-        Console.WriteLine($"ImportedFileHandlerProject.WriteToDb:  dbConnection.Close");
+        Console.WriteLine($"ImportedFileHandlerProject.Create:  dbConnection.Close");
       }
 
       return countInserted;
     }
+
+    public int Update(List<T> memberList)
+    {
+      MySqlConnection dbConnection = new MySqlConnection(_dbConnectionString);
+      try
+      {
+        dbConnection.Open();
+      }
+      catch (Exception ex)
+      {
+        _log.LogError($"ImportedFileHandlerProject.Update: open DB exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileHandlerProject.Update: open DB exeception {ex.Message}");
+        throw;
+      }
+
+      var updateCommand =
+          @"UPDATE ImportedFile
+                SET 
+                  FileDescriptor = @fileDescriptor,
+                  FileCreatedUTC = @fileCreatedUtc,
+                  FileUpdatedUTC = @fileUpdatedUtc,
+                  ImportedBy = @importedBy, 
+                  SurveyedUTC = @surveyedUTC,
+                  LastActionedUTC = @LastActionedUTC,
+                  IsActivated = @IsActivated,
+                  IsDeleted = @IsDeleted
+                WHERE ImportedFileUID = @ImportedFileUid";
+      int countUpdated = 0;
+      try
+      {
+        // todo do multiple update?
+        foreach (var member in memberList)
+        {
+          countUpdated += dbConnection.Execute(updateCommand, member);
+          Console.WriteLine(
+            $"ImportedFileHandlerProject.Update: member {JsonConvert.SerializeObject(member)} countUpdatedSoFar {JsonConvert.SerializeObject(countUpdated)}");
+        }
+      }
+      catch (Exception ex)
+      {
+        _log.LogError($"ImportedFileHandlerProject.Update:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileHandlerProject.Update:  execute exeception {ex.Message}");
+        throw;
+      }
+      finally
+      {
+        dbConnection.Close();
+        Console.WriteLine($"ImportedFileHandlerProject.Update:  dbConnection.Close");
+      }
+
+      return countUpdated;
+    }
+
+    public int Delete(List<T> memberList)
+    {
+      _log.LogError($"ImportedFileHandlerProject.Delete: ");
+      Console.WriteLine($"ImportedFileHandlerProject.Delete: ");
+
+      return Update(memberList);
+    }
+    
   }
 }

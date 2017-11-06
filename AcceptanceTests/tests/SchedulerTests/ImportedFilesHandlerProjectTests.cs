@@ -30,7 +30,7 @@ namespace SchedulerTests
     public void ImportedFilesHandlerProject_OneFileIn()
     {
       string projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
-      var importedFileHandlerProject = new ImportedFileHandlerProject<ImportedFile>(ConfigStore, LoggerFactory, projectDbConnectionString);
+      var importedFileHandlerProject = new ImportedFileHandlerProject<ProjectImportedFile>(ConfigStore, LoggerFactory);
 
       var importedFile = new ImportedFile
       {
@@ -51,7 +51,7 @@ namespace SchedulerTests
       var insertedCount = WriteImportedFileToProjectDb(projectDbConnectionString, importedFile);
       Assert.AreEqual(1, insertedCount, "should have been 1 file written to ProjectDb");
 
-      var readCount = importedFileHandlerProject.ReadFromDb();
+      var readCount = importedFileHandlerProject.Read();
       Assert.AreNotEqual(0, readCount, "should have been at least 1 file read from ProjectDb");
 
       var listOfProjectFiles = importedFileHandlerProject.List();
@@ -67,7 +67,7 @@ namespace SchedulerTests
     public void ImportedFilesHandlerProject_OneFileIn_WrongFileType()
     {
       string projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
-      var importedFileHandlerProject = new ImportedFileHandlerProject<ImportedFile>(ConfigStore, LoggerFactory, projectDbConnectionString);
+      var importedFileHandlerProject = new ImportedFileHandlerProject<ProjectImportedFile>(ConfigStore, LoggerFactory);
 
       var importedFile = new ImportedFile
       {
@@ -88,7 +88,7 @@ namespace SchedulerTests
       var insertedCount = WriteImportedFileToProjectDb(projectDbConnectionString, importedFile);
       Assert.AreEqual(1, insertedCount, "should have been 1 file written to ProjectDb");
 
-      importedFileHandlerProject.ReadFromDb();
+      importedFileHandlerProject.Read();
       var listOfProjectFiles = importedFileHandlerProject.List();
       ImportedFile importFileResponse = listOfProjectFiles.FirstOrDefault(x => x.ProjectUid == importedFile.ProjectUid);
       Assert.IsNull(importFileResponse, "should not find the invalid one we tried to inserted");
@@ -97,8 +97,9 @@ namespace SchedulerTests
     [TestMethod]
     public void ImportedFilesHandlerProject_MergeAndWrite()
     {
-      string projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
-      var importedFileHandlerProject = new ImportedFileHandlerProject<ImportedFile>(ConfigStore, LoggerFactory, projectDbConnectionString);
+      // string projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
+      var importedFileHandlerProject =
+        new ImportedFileHandlerProject<ProjectImportedFile>(ConfigStore, LoggerFactory);
 
       var importedFileProject = new ImportedFile
       {
@@ -116,16 +117,16 @@ namespace SchedulerTests
         IsActivated = true
       };
 
-      var nhOpImportedFileList = new List<NhOpImportedFile>()
+      var projectImportedFileList = new List<ProjectImportedFile>()
       {
-        new NhOpImportedFile()
+        new ProjectImportedFile()
         {
           LegacyProjectId = new Random().Next(100000, 1999999),
           ProjectUid = importedFileProject.ProjectUid,
           LegacyCustomerId = new Random().Next(100000, 1999999),
           CustomerUid = importedFileProject.CustomerUid,
           ImportedFileType = importedFileProject.ImportedFileType,
-          DxfUnitsType = null,
+          DxfUnitsType = DxfUnitsType.ImperialFeet,
           Name = importedFileProject.Name,
           SurveyedUtc = importedFileProject.SurveyedUtc,
           FileCreatedUtc = importedFileProject.FileCreatedUtc,
@@ -133,21 +134,19 @@ namespace SchedulerTests
           ImportedBy = importedFileProject.ImportedBy,
           LastActionedUtc = importedFileProject.LastActionedUtc
         }
-     };
+      };
 
-     var countMerged = importedFileHandlerProject.Merge(nhOpImportedFileList);
-     Assert.AreEqual(1, countMerged, "nhOpDb importFile not merged");
-
-     var countWritten = importedFileHandlerProject.WriteToDb();
-     Assert.AreEqual(1, countWritten, "ProjectDb importFile not written");
+      var countCreated = importedFileHandlerProject.Create(projectImportedFileList);
+      Assert.AreEqual(1, countCreated, "nhOpDb importFile not created");
 
       importedFileHandlerProject.EmptyList();
 
-      var countRead = importedFileHandlerProject.ReadFromDb();
+      var countRead = importedFileHandlerProject.Read();
       Assert.AreNotEqual(0, countRead, "ProjectDb importFile not read");
 
       var listOfProjectFiles = importedFileHandlerProject.List();
-      ImportedFile importFileResponse = listOfProjectFiles.FirstOrDefault(x => x.ProjectUid == importedFileProject.ProjectUid);
+      ImportedFile importFileResponse =
+        listOfProjectFiles.FirstOrDefault(x => x.ProjectUid == importedFileProject.ProjectUid);
       Assert.IsNotNull(importFileResponse, "should have found the ProjectDb one we just inserted");
     }
 

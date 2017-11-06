@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 
 namespace VSS.Productivity3D.Scheduler.WebApi
@@ -53,6 +54,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       _loggerFactory = GetLoggerFactory();
       _log = GetLogger();
       _configStore = new GenericConfiguration(GetLoggerFactory());
+
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
     /// <summary>

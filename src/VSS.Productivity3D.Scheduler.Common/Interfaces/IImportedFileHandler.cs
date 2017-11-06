@@ -5,10 +5,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Interfaces
 {
   public interface IImportedFileHandler<T>
   {
-    int ReadFromDb();
+    int Read();
+
     void EmptyList();
     List<T> List();
    
-    int WriteToDb();
+    int Create(List<T> memberList );
+    int Update(List<T> memberList);
+    int Delete(List<T> memberList);
   }
 }

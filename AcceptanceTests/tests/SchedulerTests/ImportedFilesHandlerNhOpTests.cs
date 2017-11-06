@@ -26,7 +26,7 @@ namespace SchedulerTests
     {
       // string projectDbConnectionString = string.Format($"Data Source=alpha-nh-raw.c31ahitxrkg7.us-west-2.rds.amazonaws.com;Initial Catalog=NH_OP;Integrated Security=False;User ID=root;Password=d3vRDS1234_;");
       string projectDbConnectionString = ConnectionUtils.GetConnectionStringMsSql(ConfigStore, Log, "NH_OP");
-      var importedFileHandlerProject = new ImportedFileHandlerNhOp<NhOpImportedFile>(ConfigStore, LoggerFactory, projectDbConnectionString);
+      var importedFileHandlerProject = new ImportedFileHandlerNhOp<NhOpImportedFile>(ConfigStore, LoggerFactory);
 
       var importedFile = new NhOpImportedFile()
       {
@@ -47,7 +47,7 @@ namespace SchedulerTests
       //var insertedCount = WriteImportedFileToProjectDb(projectDbConnectionString, importedFile);
       //Assert.AreEqual(1, insertedCount, "should have been 1 file written to ProjectDb");
 
-      var readCount = importedFileHandlerProject.ReadFromDb();
+      var readCount = importedFileHandlerProject.Read();
       Assert.AreNotEqual(0, readCount, "should have been at least 1 file read from ProjectDb");
 
       var listOfProjectFiles = importedFileHandlerProject.List();

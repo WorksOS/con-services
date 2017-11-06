@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       Assert.AreEqual(
         "server=localhost;port=3306;database=VSS-Productivity3D-Project;userid=root;password=abc123;Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4",
         projectDbConnectionString, "incorrect project dbConnectionString");
-      var importedFileHandlerProject = new ImportedFileHandlerProject<ImportedFile>(_configStore, _logger, projectDbConnectionString);
+      var importedFileHandlerProject = new ImportedFileHandlerProject<ProjectImportedFile>(_configStore, _logger);
       Assert.IsNotNull(importedFileHandlerProject, "unable to createimportedFileHandlerProject");
 
       var listOfProjectFiles = importedFileHandlerProject.List();
@@ -37,8 +37,8 @@ namespace VSS.Productivity3D.Scheduler.Tests
       _log = _logger.CreateLogger<ImportedFileTests>();
 
       string projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_PROJECT");
-      var importedFileHandlerProject = new ImportedFileHandlerProject<ImportedFile>(_configStore, _logger, projectDbConnectionString);
-      var readCount = importedFileHandlerProject.ReadFromDb();
+      var importedFileHandlerProject = new ImportedFileHandlerProject<ProjectImportedFile>(_configStore, _logger);
+      var readCount = importedFileHandlerProject.Read();
       Assert.AreEqual(1, readCount, "should have been 1 file written");
 
       var listOfProjectFiles = importedFileHandlerProject.List();
