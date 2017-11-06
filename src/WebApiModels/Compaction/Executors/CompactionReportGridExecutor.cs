@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
             // Populate an array of grid rows from the data
             //foreach (TGridRow row in reportPackager.GridReport.Rows)
-            for ( var i = 0; i < reportPackager.GridReport.NumberOfRows - 1; i++ )
+            for ( var i = 0; i < reportPackager.GridReport.NumberOfRows; i++ )
             {
               gridRows[i] = GridRow.CreateGridRow(
                 reportPackager.GridReport.Rows[i].Northing,

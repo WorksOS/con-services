@@ -120,13 +120,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = GetProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid, true);
-      //var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettings(projectUid);
       //var userPreferences = await GetUserPreferences();
 
       var reportGridRequest = await requestFactory.Create<CompactionReportGridRequestHelper>(r => r
         .ProjectId(projectId)
         .Headers(customHeaders)
-        //.ProjectSettings(projectSettings)
+        .ProjectSettings(projectSettings)
         .Filter(filter))
       .SetRaptorClient(raptorClient)
       .CreateCompactionReportGridRequest(

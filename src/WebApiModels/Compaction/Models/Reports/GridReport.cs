@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 using ASNodeRaptorReports;
 using Newtonsoft.Json;
 
@@ -106,17 +107,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     [JsonProperty(Required = Required.Default)]
     public short Temperature { get; private set; }
 
-        /// <summary>
+    /// <summary>
     /// Indicates whether Elevation values are included in the report.
     /// </summary>
-    /// 
-    [JsonProperty(Required = Required.Default)]
+    ///
+    [JsonIgnore]
+    [JsonProperty( Required = Required.Default)]
     public bool ElevationReport { get; private set; }
 
     /// <summary>
     /// Indicates whether Cut/Fill values are included in the report.
     /// </summary>
     /// 
+    [JsonIgnore]
     [JsonProperty(Required = Required.Default)]
     public bool CutFillReport { get; private set; }
 
@@ -124,6 +127,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// Indicates whether CMV values are included in the report.
     /// </summary>
     /// 
+    [JsonIgnore]
     [JsonProperty(Required = Required.Default)]
     public bool CMVReport { get; private set; }
 
@@ -131,13 +135,15 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// Indicates whether MDP values are included in the report.
     /// </summary>
     /// 
-    [JsonProperty(Required = Required.Default)]
+    [JsonIgnore]
+    [JsonProperty( Required = Required.Default)]
     public bool MDPReport { get; private set; }
 
     /// <summary>
     /// Indicates wehther Pass Count values are included in the report.
     /// </summary>
     /// 
+    [JsonIgnore]
     [JsonProperty(Required = Required.Default)]
     public bool PassCountReport { get; private set; }
 
@@ -145,6 +151,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// Indicates whether Temperature values are included in the report.
     /// </summary>
     /// 
+    [JsonIgnore]
     [JsonProperty(Required = Required.Default)]
     public bool TemperatureReport { get; private set; }
 

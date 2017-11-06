@@ -58,6 +58,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     [JsonProperty(Required = Required.Default)]
     public double Azimuth { get; protected set; }
 
+    protected CompactionReportGridRequest()
+    { }
+
     public static CompactionReportGridRequest CreateCompactionReportGridRequest(
       long projectId, 
       Filter filter, 

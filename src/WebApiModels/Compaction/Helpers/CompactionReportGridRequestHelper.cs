@@ -66,8 +66,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       return CompactionReportGridRequest.CreateCompactionReportGridRequest(
         ProjectId,
-        Filter, 
-        Filter.ID ?? -1,
+        Filter,
+        Filter != null ? Filter.ID ?? -1 : -1,
         liftBuildSettings,
         reportElevation,
         reportCMV,
