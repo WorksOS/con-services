@@ -38,10 +38,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       queryParameters += string.Format("&cutfillDesignUid={0}", cutfillDesignUid);
     }
 
-    [Given(@"a volumeCalcType ""(.*)"" and a volumeTopUid ""(.*)"" and a volumeBaseUid ""(.*)""")]
-    public void GivenAVolumeCalcTypeAndAVolumeTopUidAndAVolumeBaseUid(string volumeCalcType, string volumeTopUid, string volumeBaseUid)
+
+    [Given(@"a volumeCalcType ""(.*)"" and a topUid ""(.*)"" and a baseUid ""(.*)""")]
+    public void GivenAVolumeCalcTypeAndATopUidAndABaseUid(string volumeCalcType, string volumeTopUid, string volumeBaseUid)
     {
-      queryParameters += string.Format("&volumeCalcType={0}&volumeTopUid={1}&volumeBaseUid={2}", volumeCalcType, volumeTopUid, volumeBaseUid);
+      queryParameters += string.Format("&volumeCalcType={0}&topUid={1}&baseUid={2}", volumeCalcType, volumeTopUid, volumeBaseUid);
     }
     
     [When(@"I request a Compaction Profile")]
@@ -55,5 +56,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       profileRequester.CompareIt<CompactionProfileResult<CompactionProfileDataResult>>(multilineText);
     }
+
+
+
+
+
   }
 }

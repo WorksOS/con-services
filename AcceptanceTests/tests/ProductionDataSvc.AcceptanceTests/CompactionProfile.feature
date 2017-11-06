@@ -1382,7 +1382,7 @@ Scenario: Compaction Get Slicer Summary Volumes Profile
 Given the Compaction Profile service URI "/api/v2/profiles/productiondata/slicer"
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
 And a startLatDegrees "36.206627682520867" and a startLonDegrees "-115.0235567314591" and an endLatDegrees "36.206612363570869" And an endLonDegrees "-115.02356429221605"
-And a volumeCalcType "GroundToGround" and a volumeTopUid "A40814AA-9CDB-4981-9A21-96EA30FFECDD" and a volumeBaseUid "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B"
+And a volumeCalcType "GroundToGround" and a topUid "A40814AA-9CDB-4981-9A21-96EA30FFECDD" and a baseUid "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B"
 When I request a Compaction Profile 
 Then the Compaction Profile should be
 """
