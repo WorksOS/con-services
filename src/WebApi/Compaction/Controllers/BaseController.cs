@@ -37,27 +37,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Where to get environment variables, connection string etc. from
     /// </summary>
-    protected IConfigurationStore configStore;
+    protected IConfigurationStore ConfigStore;
 
     /// <summary>
     /// For getting list of imported files for a project
     /// </summary>
-    protected readonly IFileListProxy fileListProxy;
+    protected readonly IFileListProxy FileListProxy;
 
     /// <summary>
     /// For getting project settings for a project
     /// </summary>
-    protected readonly IProjectSettingsProxy projectSettingsProxy;
+    protected readonly IProjectSettingsProxy ProjectSettingsProxy;
 
     /// <summary>
     /// For getting list of persistent filters for a project
     /// </summary>
-    protected readonly IFilterServiceProxy filterServiceProxy;
+    protected readonly IFilterServiceProxy FilterServiceProxy;
 
     /// <summary>
     /// For getting compaction settings for a project
     /// </summary>
-    protected readonly ICompactionSettingsManager settingsManager;
+    protected readonly ICompactionSettingsManager SettingsManager;
 
     /// <summary>
     /// Gets the custom headers for the request.
@@ -65,18 +65,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <value>
     /// The custom headers.
     /// </value>
-    protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
+    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
 
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
     protected BaseController(ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy,
       IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager)
     {
       this.log = log;
       this.serviceExceptionHandler = serviceExceptionHandler;
-      this.configStore = configStore;
-      this.fileListProxy = fileListProxy;
-      this.projectSettingsProxy = projectSettingsProxy;
-      this.filterServiceProxy = filterServiceProxy;
-      this.settingsManager = settingsManager;
+      this.ConfigStore = configStore;
+      this.FileListProxy = fileListProxy;
+      this.ProjectSettingsProxy = projectSettingsProxy;
+      this.FilterServiceProxy = filterServiceProxy;
+      this.SettingsManager = settingsManager;
     }
 
     /// <summary>
@@ -134,7 +137,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
     protected async Task<List<long>> GetExcludedSurveyedSurfaceIds(Guid projectUid)
     {
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), this.CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         return null;
@@ -147,11 +150,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return results;
     }
 
+    /// <summary>
+    /// Gets the <see cref="DesignDescriptor"/> from a given project's fileUid.
+    /// </summary>
     protected async Task<DesignDescriptor> GetDesignDescriptor(Guid projectUid, Guid? fileUid, bool forProfile = false)
     {
       if (fileUid.HasValue)
       {
-        var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+        var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), this.CustomHeaders);
         if (fileList == null || fileList.Count == 0)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
@@ -186,7 +192,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
             Path.GetExtension(tccFileName);
         }
-        string fileSpaceId = FileDescriptor.GetFileSpaceId(configStore, log);
+        string fileSpaceId = FileDescriptor.GetFileSpaceId(this.ConfigStore, log);
         FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
         return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
@@ -202,7 +208,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<CompactionProjectSettings> GetProjectSettings(Guid projectUid)
     {
       CompactionProjectSettings ps;
-      var jsonSettings = await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders);
+      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), this.CustomHeaders);
       if (!string.IsNullOrEmpty(jsonSettings))
       {
         try
@@ -325,7 +331,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     private async Task<MasterData.Models.Models.Filter> GetFilter(Guid projectUid, Guid filterUid)
     {
-      var filterDescriptor = await filterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), customHeaders);
+      var filterDescriptor = await this.FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), this.CustomHeaders);
 
       return filterDescriptor == null
         ? null

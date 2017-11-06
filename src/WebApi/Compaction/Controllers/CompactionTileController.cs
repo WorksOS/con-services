@@ -260,7 +260,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
       request.Validate();
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, this.ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(request) as TileResult;
       return result;
     }
@@ -311,7 +311,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
       request.Validate();
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, this.ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(request) as TileResult;
             
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
@@ -406,7 +406,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       //Get all the imported files for the project
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
       if (fileList == null)
       {
         fileList = new List<FileData>();
@@ -516,7 +516,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       var tileRequest = requestFactory.Create<TileRequestHelper>(r => r
           .ProjectId(projectId)
-          .Headers(customHeaders)
+          .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
