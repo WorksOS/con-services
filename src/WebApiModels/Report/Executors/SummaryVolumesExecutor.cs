@@ -42,6 +42,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       SummaryVolumesRequest request = item as SummaryVolumesRequest;
+      if (request == null)
+      {
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "SummaryVolumesRequest cast failed."));
+      }
+
       TASNodeSimpleVolumesResult result;
 
       var baseFilter = RaptorConverters.ConvertFilter(request.baseFilterID, request.baseFilter, request.projectId);
@@ -51,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
       {
-        RaptorConverters.AdjustFilterToFilter(baseFilter, topFilter);
+           RaptorConverters.AdjustFilterToFilter(baseFilter, topFilter);
       }
 
       RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref baseFilter, ref topFilter, request.VolumeCalcType);
@@ -89,14 +96,15 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
           out result);
       }
+
       if (success)
       {
         return ConvertResult(result);
       }
 
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "Failed to get requested volumes summary data"));
+      throw new ServiceException(
+        HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Failed to get requested volumes summary data"));
     }
   }
 }

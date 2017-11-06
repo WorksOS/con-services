@@ -67,15 +67,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </value>
     protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
 
-    /// <summary>
-    /// Gets the customer uid form the current context
-    /// </summary>
-    /// <value>
-    /// The customer uid.
-    /// </value>
-    protected Guid customerUid => GetCustomerUid();
-
-
     protected BaseController(ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy,
       IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager)
     {
@@ -117,18 +108,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
       }
       return result;
-    }
-
-    /// <summary>
-    /// Gets the customer uid form the context.
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException">Incorrect customer uid value.</exception>
-    private Guid GetCustomerUid()
-    {
-      if (User is RaptorPrincipal principal)
-        return Guid.Parse(principal.CustomerUid);
-      throw new ArgumentException("Incorrect request context principal.");
     }
 
     /// <summary>
@@ -192,11 +171,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           }
         }
 
-        //var file = fileList.SingleOrDefault(
-        //  f => f.ImportedFileUid == fileUid.ToString() &&
-        //       f.IsActivated &&
-        //       (!forProfile || f.IsProfileSupportedFileType()));
-
         if (file == null)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
@@ -250,7 +224,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       return ps;
     }
-
 
     /// <summary>
     /// Gets the list of contributing machines from the query parameters
@@ -322,22 +295,29 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Custom date range is unaltered. Project extents is always null.
     /// Other types are calculated in the project time zone.
     /// </summary>
+    /// <param name="projectUid">The project uid.</param>
     /// <param name="filter">The filter containg the date range type</param>
     /// <returns>The filter with the date range set</returns>
     private MasterData.Models.Models.Filter ApplyDateRange(Guid projectUid, MasterData.Models.Models.Filter filter)
     {
-      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
-        return filter;
-
-      var project = (User as RaptorPrincipal).GetProject(projectUid);
-      DateTime? startUtc = null;
-      DateTime? endUtc = null;
-      if (filter.DateRangeType.Value != DateRangeType.ProjectExtents)
+      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom || filter.DateRangeType.Value == DateRangeType.ProjectExtents)
       {
-        var utcNow = DateTime.UtcNow;
-        startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
-        endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
+        return filter;
       }
+
+      var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
+      if (project == null)
+      {
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,"Failed to retrieve project."));
+      }
+
+      var utcNow = DateTime.UtcNow;
+
+      DateTime? startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
+      DateTime? endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
+
       return MasterData.Models.Models.Filter.CreateFilter(
         startUtc, endUtc, filter.designUID, filter.contributingMachines, filter.onMachineDesignID, filter.elevationType,
         filter.vibeStateOn, filter.polygonLL, filter.forwardDirection, filter.layerNumber, filter.polygonUID, filter.polygonName);
@@ -346,12 +326,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private async Task<MasterData.Models.Models.Filter> GetFilter(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await filterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), customHeaders);
-      if (filterDescriptor == null)
-      {
-        return null;
-      }
 
-      return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
+      return filterDescriptor == null
+        ? null
+        : JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
     }
   }
 }
