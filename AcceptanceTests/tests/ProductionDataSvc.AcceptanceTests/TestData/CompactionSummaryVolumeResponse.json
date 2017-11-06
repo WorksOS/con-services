@@ -50,5 +50,31 @@
     },
     "Code": 0,
     "Message": "success"
+  },
+  "VolumeSummaryToday": {
+    "volumeSummaryData": {
+      "netVolume": -3.49684355468753,
+      "totalVolume": 101.3237951171875,
+      "totalCutVolume": 48.913475781249986,
+      "totalFillVolume": 52.410319335937515,
+      "totalMachineCoveragePlanArea": 1203.6272000000004,
+      "shrinkage": 0,
+      "bulking": 0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "VolumeSummaryYesterday": {
+    "volumeSummaryData": {
+      "netVolume": -23.236679516601541,
+      "totalVolume": 66.681902758789022,
+      "totalCutVolume": 21.722611621093741,
+      "totalFillVolume": 44.959291137695281,
+      "totalMachineCoveragePlanArea": 1481.7608000000002,
+      "shrinkage": 0,
+      "bulking": 0
+    },
+    "Code": 0,
+    "Message": "success"
   }
 }
