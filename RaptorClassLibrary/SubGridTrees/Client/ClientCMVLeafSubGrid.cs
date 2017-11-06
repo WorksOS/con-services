@@ -141,7 +141,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 
             FirstPassMap.Write(writer, buffer);
 
-            SubGridUtilities.SubGridDimensionalIterator((x, y) => writer.Write(Cells[x, y]));
+            Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
+            writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
+
+            //SubGridUtilities.SubGridDimensionalIterator((x, y) => writer.Write(Cells[x, y]));
         }
 
         /// <summary>
@@ -156,7 +159,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 
             FirstPassMap.Read(reader, buffer);
 
-            SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadInt16());
+            reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
+            Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
+
+            //SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadInt16());
         }
     }
 }
