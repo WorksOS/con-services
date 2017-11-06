@@ -173,6 +173,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="file"></param>
     /// <param name="projectUid"></param>
     /// <param name="importedFileType"></param>
+    /// <param name="dxfUnitsType">A DXF file units type</param>
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="fileCreatedUtc"></param>
     /// <param name="surveyedUtc"></param>
@@ -187,18 +188,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
 
-    public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(FlowFile file,
-      [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
-      [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
+    public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(
+      FlowFile file,
+      [FromUri] Guid projectUid, 
+      [FromUri] ImportedFileType importedFileType,
+      [FromUri] DxfUnitsType dxfUnitsType,
+      [FromUri] DateTime fileCreatedUtc, 
+      [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       var userEmailAddress = (User as TIDCustomPrincipal).EmailAddress;
 
-      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
-        $"CreateImportedFileV4. file: {file.flowFilename} path {file.path} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+        $"CreateImportedFileV4. file: {file.flowFilename} path {file.path} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
+        $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (!System.IO.File.Exists(file.path))
       {
@@ -213,11 +219,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         importedFileDescriptor = importedFileList.FirstOrDefault(
           f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
                && f.ImportedFileType == importedFileType
-               && (
-                 importedFileType == ImportedFileType.SurveyedSurface &&
-                 f.SurveyedUtc == surveyedUtc ||
-                 importedFileType != ImportedFileType.SurveyedSurface
-               ));
+               && (importedFileType != ImportedFileType.SurveyedSurface || f.SurveyedUtc == surveyedUtc));
+
       if (importedFileDescriptor != null)
       {
         var message = $"CreateImportedFileV4. File: {file.flowFilename} has already been imported.";
@@ -232,11 +235,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
       CreateImportedFileEvent createImportedFileEvent = await CreateImportedFileinDb(Guid.Parse(customerUid), projectUid,
-          importedFileType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
+          importedFileType, dxfUnitsType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, fileDescriptor,
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, dxfUnitsType, fileDescriptor,
         createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true).ConfigureAwait(false);
 
 
@@ -269,6 +272,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="file"></param>
     /// <param name="projectUid"></param>
     /// <param name="importedFileType"></param>
+    /// <param name="dxfUnitsType">A DXF file units type</param>
     /// <param name="fileCreatedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="surveyedUtc"></param>
@@ -283,17 +287,21 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
 
-    public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(FlowFile file,
-      [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
-      [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
+    public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(
+      FlowFile file,
+      [FromUri] Guid projectUid, 
+      [FromUri] ImportedFileType importedFileType,
+      [FromUri] DxfUnitsType dxfUnitsType,
+      [FromUri] DateTime fileCreatedUtc, 
+      [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       var userEmailAddress = (User as TIDCustomPrincipal).EmailAddress;
-      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
-        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (!System.IO.File.Exists(file.path))
       {
@@ -334,14 +342,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
         createImportedFileEvent = await CreateImportedFileinDb(Guid.Parse(customerUid), projectUid,
-            importedFileType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
+            importedFileType, dxfUnitsType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
             fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
           .ConfigureAwait(false);
         importedFileUid = createImportedFileEvent.ImportedFileUID.ToString();
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, fileDescriptor, importedFileId.Value,
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, dxfUnitsType, fileDescriptor, importedFileId.Value,
           Guid.Parse(importedFileUid), (existing == null))
         .ConfigureAwait(false);
 

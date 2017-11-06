@@ -23,12 +23,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     /// <param name="file"></param>
     /// <param name="projectUid"></param>
     /// <param name="importedFileType"></param>
+    /// /// <param name="dxfUnitsType"></param>
     /// <param name="importedBy"></param>
     /// <param name="surveyedUtc"></param>
     /// <param name="fileCreatedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
     public static void ValidateUpsertImportedFileRequest(FlowFile file, Guid projectUid,
-      ImportedFileType importedFileType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
+      ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, 
+      DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
       string importedBy, DateTime? surveyedUtc)
     {
       // by the time we are here, the file has been uploaded and location is in file. Some validation:
@@ -88,6 +90,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(32),
             contractExecutionStatesEnum.FirstNameWithOffset(32)));
       }
+
+      if (!Enum.IsDefined(typeof(DxfUnitsType), dxfUnitsType))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(75),
+            contractExecutionStatesEnum.FirstNameWithOffset(75)));
+      }
+
+      if (importedFileType == ImportedFileType.Linework && (dxfUnitsType < DxfUnitsType.Meters || dxfUnitsType > DxfUnitsType.UsSurveyFeet))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(75),
+            contractExecutionStatesEnum.FirstNameWithOffset(76)));
+      }
+
 
       if (fileCreatedUtc < DateTime.UtcNow.AddYears(-30) || fileCreatedUtc > DateTime.UtcNow.AddDays(2))
       {

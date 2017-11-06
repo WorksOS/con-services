@@ -19,13 +19,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = null;
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.MassHaulPlan;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(27)));
     }
@@ -36,13 +37,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() {path = "", flowFilename = ""};
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.MassHaulPlan;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(28)));
     }
@@ -53,13 +55,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() {path = "", flowFilename = "deblah"};
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.MassHaulPlan;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(29)));
     }
@@ -70,13 +73,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() {path = "blahblah", flowFilename = "deblah"};
       Guid projectUid = Guid.Empty;
       ImportedFileType importedFileType = ImportedFileType.MassHaulPlan;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
       
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(5)));
     }
@@ -87,13 +91,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() {path = "blahblah", flowFilename = "deblah"};
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.MassHaulPlan;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(31)));
     }
@@ -104,13 +109,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() {path = "blahblah", flowFilename = "deblah.ttm"};
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.Alignment;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
     }
@@ -121,13 +127,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() { path = "blahblah", flowFilename = "deblah.svl" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.Alignment;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.MinValue;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(33)));
     }
@@ -138,13 +145,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() { path = "blahblah", flowFilename = "deblah.svl" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.Alignment;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.MinValue;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(34)));
     }
@@ -155,13 +163,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() { path = "blahblah", flowFilename = "deblah.svl" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.Alignment;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = null;
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(35)));
     }
@@ -172,12 +181,13 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() {path = "\\*", flowFilename = "deblah.dxf"};
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.Linework;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.Meters;
       DateTime? surfaceUtc = null;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
-      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
         fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
     }
 
@@ -187,13 +197,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.bbbb" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.Linework;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.Meters;
       DateTime? surfaceUtc = null;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
     }
@@ -204,12 +215,13 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.DesignSurface;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = null;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
-      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
         fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
     }
 
@@ -219,13 +231,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.bbbb" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.DesignSurface;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = null;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
     }
@@ -237,12 +250,13 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.DesignSurface;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
-      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
         fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
     }
 
@@ -252,13 +266,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.bbbb" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.DesignSurface;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
     }
@@ -269,13 +284,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.SurveyedSurface;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = null;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(36)));
     }
@@ -287,12 +303,13 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.svl" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.Alignment;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = null;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
-      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
         fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
     }
 
@@ -302,13 +319,14 @@ namespace VSS.MasterData.ProjectTests
       FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.Alignment;
+      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
       DateTime? surfaceUtc = null;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
     }

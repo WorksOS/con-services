@@ -100,6 +100,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public ImportedFileType ImportedFileType { get; set; }
 
     /// <summary>
+    /// Gets or sets the units type of the DXF file.
+    /// </summary>
+    /// <value>The units type of the DXF file.</value>
+    public DxfUnitsType DxfUnitsType { get; set; }
+
+    /// <summary>
     /// Gets the name of the file type.
     /// </summary>
     /// <value>
@@ -183,6 +189,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
              && otherImportedFile.CustomerUid == this.CustomerUid
              && otherImportedFile.ProjectUid == this.ProjectUid
              && otherImportedFile.ImportedFileType == this.ImportedFileType
+             && otherImportedFile.DxfUnitsType == this.DxfUnitsType
              && otherImportedFile.Name == this.Name
              && otherImportedFile.FileCreatedUtc == this.FileCreatedUtc
              && otherImportedFile.FileUpdatedUtc == this.FileUpdatedUtc
