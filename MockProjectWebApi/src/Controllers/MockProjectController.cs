@@ -291,7 +291,8 @@ namespace MockProjectWebApi.Controllers
       new ProjectData {LegacyProjectId = 1001544, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {
         LegacyProjectId = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_ID_1,
-        ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1
+        ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        ProjectTimeZone = "Mountain Standard Time"
       },
       new ProjectData {LegacyProjectId = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_ID_2, ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2},
       new ProjectData {LegacyProjectId = 1009999, ProjectUid = Guid.NewGuid().ToString()},
