@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.Extensions;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
   /// <summary>
   /// The request representation for a linear or alignment based profile request for a design surface.

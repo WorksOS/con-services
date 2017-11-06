@@ -6,7 +6,7 @@ using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.Common.MapHandling
+namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
   /// <summary>
   /// Utilities for imported files

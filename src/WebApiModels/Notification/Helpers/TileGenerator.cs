@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.MapHandling;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.TCCFileAccess;
-using Point = VSS.Productivity3D.Common.MapHandling.Point;
+using Point = VSS.Productivity3D.WebApi.Models.MapHandling.Point;
 
 namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
 {

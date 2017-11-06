@@ -1,9 +1,7 @@
-﻿using ASNodeDecls;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -16,19 +14,15 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
-using VSS.Productivity3D.Common.Helpers;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.MapHandling;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Factories.ProductionData;
-using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
+using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.TCCFileAccess;
@@ -92,10 +86,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="requestFactory">The request factory.</param>
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
+    /// <param name="tileGenerator">Map tile generator</param>
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
       IFileRepository fileRepo, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
       IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tilesGenerator) : 
+      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator) : 
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
@@ -104,7 +99,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.fileRepo = fileRepo;
       this.elevProxy = elevProxy;
       this.requestFactory = requestFactory;
-      this.tileGenerator = tilesGenerator;
+      this.tileGenerator = tileGenerator;
     }
 
     /// <summary>
@@ -156,8 +151,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       
-      var tileResult = WithServiceExceptionTryExecute(()=>tileGenerator.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
-        GetBoundingBox(BBOX), cutFillDesign, customHeaders));
+      var tileResult = WithServiceExceptionTryExecute(() => 
+        tileGenerator.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT, 
+          GetBoundingBox(BBOX), cutFillDesign, customHeaders));
 
       return tileResult;
     }

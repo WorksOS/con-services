@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.Common.MapHandling;
-using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
 {
@@ -13,6 +12,7 @@ namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
     [DataRow((double)42, 0.733038285837618)]
     public void Point_DegreesToRadians(double deg, double expectedResult)
     {
+      //TODO:  WebMercatorProjection.DegreesToRadians has been replaced by extension method larDegreesToRadians and lonDegreesToRadians
       Assert.AreEqual(expectedResult, WebMercatorProjection.DegreesToRadians(deg), 0.00000001);
     }
 
@@ -22,6 +22,7 @@ namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
     [DataRow((double)100, 5729.57795130823)]
     public void Point_RadianToDegreesPoint(double rad, double expectedResult)
     {
+      //TODO:  WebMercatorProjection.DegreesToRadians has been replaced by extension method larDegreesToRadians and lonDegreesToRadians
       Assert.AreEqual(expectedResult, WebMercatorProjection.RadiansToDegrees(rad), 0.00000001);
     }
 

@@ -25,6 +25,7 @@ using SVOICVolumeCalculationsDecls;
 using System;
 using System.IO;
 using System.Linq;
+using DesignProfiler.ComputeDesignFilterBoundary.RPC;
 using VLPDDecls;
 using VSS.Productivity3D.Common.Interfaces;
 
@@ -477,6 +478,19 @@ namespace VSS.Productivity3D.Common.Proxies
       return client.GetCutFillDetails(projectID, externalRequestDescriptor, cutFillSettings, filter,
                liftBuildSettings, out cutFillDetails) == TASNodeErrorStatus.asneOK;
     }
-    
+
+    public bool GetStationExtents(long projectID, TVLPDDesignDescriptor designDescriptor, out double startStation,
+      out double endStation)
+    {
+      return client.GetStationExtents(projectID, designDescriptor, out startStation, out endStation) ==
+             1; /*icsrrNoError*/
+    }
+
+    public bool GetDesignFilterBoundaryAsPolygon(TDesignProfilerServiceRPCVerb_ComputeDesignFilterBoundary_Args args,
+      out TWGS84Point[] fence)
+    {
+      return client.GetDesignFilterBoundaryAsPolygon(args, out fence) == 1;/*icsrrNoError*/
+    }
+
   }
 }

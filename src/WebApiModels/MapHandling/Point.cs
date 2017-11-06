@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.Common.MapHandling
+﻿namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
   public class Point
   {

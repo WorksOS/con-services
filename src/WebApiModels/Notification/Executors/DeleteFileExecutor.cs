@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
-using VSS.Productivity3D.Common.MapHandling;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Notification.Executors
+namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
 {
   /// <summary>
   /// Processes the request to delete a file.

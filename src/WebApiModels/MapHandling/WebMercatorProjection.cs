@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Productivity3D.Common.MapHandling
+namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
   public class WebMercatorProjection
   {
@@ -10,11 +10,13 @@ namespace VSS.Productivity3D.Common.MapHandling
     private const int ONE_HALF_CIRCLE = 180;
     private const int ONE_FULL_CIRCLE = 360;
 
+    [Obsolete("Use extension method latDegreesToRadians or lonDegreesToRadians")]
     public static double DegreesToRadians(double deg)
     {
       return deg * (Math.PI / ONE_HALF_CIRCLE);
     }
 
+    [Obsolete("Use extension method latRadiansToDegrees or lonRadiansToDegrees")]
     public static double RadiansToDegrees(double rad)
     {
       return rad / (Math.PI / ONE_HALF_CIRCLE);
