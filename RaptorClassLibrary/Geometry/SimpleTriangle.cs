@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         public XYZ V3 = XYZ.Null;
 
         /// <summary>
-        /// COnstructor takign the three vertices as XYZ 3D points
+        /// Constructor taking the three vertices as XYZ 3D points
         /// </summary>
         /// <param name="v1"></param>
         /// <param name="v2"></param>
