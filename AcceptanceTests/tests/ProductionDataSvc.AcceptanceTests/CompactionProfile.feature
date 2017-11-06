@@ -76,7 +76,6 @@ Then the Compaction Profile should be
     "Message": "success"
 }
 """
-@ignore
 Scenario: Compaction Get Slicer Profile
 Given the Compaction Profile service URI "/api/v2/profiles/productiondata/slicer"
 And a projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
@@ -1377,7 +1376,6 @@ Then the Compaction Profile should be
   "Message": "success"
 }
 """
-@ignore
 Scenario: Compaction Get Slicer Summary Volumes Profile
 Given the Compaction Profile service URI "/api/v2/profiles/productiondata/slicer"
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"

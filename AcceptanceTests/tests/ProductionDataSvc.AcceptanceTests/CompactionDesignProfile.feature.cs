@@ -154,26 +154,24 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Slicer Design Profile With Added Endpoints")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionDesignProfile")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void CompactionGetSlicerDesignProfileWithAddedEndpoints()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Design Profile With Added Endpoints", new string[] {
-                        "ignore"});
-#line 65
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Design Profile With Added Endpoints", ((string[])(null)));
+#line 64
 this.ScenarioSetup(scenarioInfo);
-#line 66
+#line 65
  testRunner.Given("the Compaction Profile service URI \"/api/v2/profiles/design/slicer\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 67
+#line 66
   testRunner.And("a projectUid \"7925f179-013d-4aaf-aff4-7b9833bb06d6\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 68
+#line 67
   testRunner.And("a startLatDegrees \"36.207250\" and a startLonDegrees \"-115.019584\" and an endLatDe" +
                     "grees \"36.207322\" And an endLonDegrees \"-115.019574\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 69
+#line 68
   testRunner.And("a importedFileUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 70
+#line 69
  testRunner.When("I request a Compaction Design Profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 71
+#line 70
  testRunner.Then("the Compaction Design Profile should be", @"{
 
   ""gridDistanceBetweenProfilePoints"": 8.0405782488513378,
