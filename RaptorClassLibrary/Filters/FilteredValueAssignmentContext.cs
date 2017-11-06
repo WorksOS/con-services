@@ -24,6 +24,12 @@ namespace VSS.VisionLink.Raptor.Filters
                 XOffset = xOffset;
                 YOffset = yOffset;
             }
+
+            public void SetOffsets(double xOffset, double yOffset)
+            {
+                XOffset = xOffset;
+                YOffset = yOffset;
+            }
         }
 
         public FilteredSinglePassInfo FilteredValue;
