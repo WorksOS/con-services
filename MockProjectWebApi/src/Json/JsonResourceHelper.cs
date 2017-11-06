@@ -7,13 +7,23 @@ namespace MockProjectWebApi.Json
 {
   public class JsonResourceHelper
   {
+    // Remember to set the Build Action of new .json resource files to 'Embedded Resource'.
+
     public static string GetFilterJson(string resourceName)
     {
-      // Remember to set the Build Action of new .json resource files to 'Embedded Resource'.
-
       return GetJsonFromEmbeddedResource($"MockProjectWebApi.Json.Filters.{resourceName}.json");
     }
-    
+
+    public static string GetGoldenDataFilterJson(string resourceName)
+    {
+      return GetJsonFromEmbeddedResource($"MockProjectWebApi.Json.Filters.GoldenData.{resourceName}.json");
+    }
+
+    public static string GetDimensionsFilterJson(string resourceName)
+    {
+      return GetJsonFromEmbeddedResource($"MockProjectWebApi.Json.Filters.Dimensions.{resourceName}.json");
+    }
+
     private static string GetJsonFromEmbeddedResource(string resourceName)
     {
       using (var stream = Assembly.GetEntryAssembly().GetManifestResourceStream(resourceName))

@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MockProjectWebApi.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using MockProjectWebApi.Json;
+using Microsoft.AspNetCore.Mvc;
+using MockProjectWebApi.Utils;
 using VSS.MasterData.Models.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -51,77 +50,52 @@ namespace MockProjectWebApi.Controllers
             "GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user."
         };
       }
-      return new FilterData {filterDescriptor = filter};
+      return new FilterData { filterDescriptor = filter };
     }
 
+    /// <summary>
+    /// Setup filters for the provided project.
+    /// </summary>
     private FilterListData GetFilters(string projectUid)
     {
-      if (projectUid == ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1)
+      switch (projectUid)
       {
-        return new FilterListData {filterDescriptors = _filterList};
-      }
-
-      if (projectUid == ConstantsUtil.DIMENSIONS_PROJECT_UID || projectUid == ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID)
-      {
-        return new FilterListData
-        {
-          filterDescriptors = new List<FilterDescriptor>
+        case ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1:
           {
-            new FilterDescriptor
-            {
-              FilterUid = "200c7b47-b5e6-48ee-a731-7df6623412da",
-              Name = "Elevation Range and Palette No Data Filter",
-              FilterJson = JsonResourceHelper.GetFilterJson("ElevationRangeAndPaletteNoDataFilter")
-            },
-            new FilterDescriptor
-            {
-              FilterUid = "9c27697f-ea6d-478a-a168-ed20d6cd9a20",
-              Name = "Dimensions boundary filter with machine",
-              FilterJson =
-                "{\"contributingMachines\":[{\"assetID\":4250986182719752,\"machineName\":\"VOLVO G946B\",\"isJohnDoe\":false}],\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":\"Dimensions boundary with machine 2\",\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}]}"
-            },
-            new FilterDescriptor
-            {
-              FilterUid = "154470b6-15ae-4cca-b281-eae8ac1efa6c",
-              Name = "Dimensions boundary filter",
-              FilterJson =
-                "{\"polygonUID\":\"7f2fb9ec-2384-420e-b2e3-72b9cea939a3\",\"polygonName\":\"Dimensions lower right bounday 2\",\"polygonLL\":[{\"Lat\":36.206897,\"Lon\":-115.01869},{\"Lat\":36.206795,\"Lon\":-115.018701},{\"Lat\":36.206823,\"Lon\":-115.018264},{\"Lat\":36.206977,\"Lon\":-115.01828}]}"
-            },
-            new FilterDescriptor
-            {
-              FilterUid = "3ef41e3c-d1f5-40cd-b012-99d11ff432ef",
-              Name = "Dimensions boundary mdp",
-              FilterJson = "{\"polygonUID\":\"318f0103-a0c3-4b50-88d4-d4fa12370a63\",\"polygonName\":\"Dimensions boundary mdp\",\"polygonLL\":[{\"Lat\":36.207659,\"Lon\":-115.018943},{\"Lat\":36.207265,\"Lon\":-115.018926},{\"Lat\":36.207412,\"Lon\":-115.018471}]}"
-            },
-            new FilterDescriptor
-            {
-              FilterUid = "a37f3008-65e5-44a8-b406-9a078ec62ece",
-              Name = "Dimensions boundary CMV",
-              FilterJson = "{\"polygonUID\":\"c910d127-5e3c-453f-82c3-e235848ac20e\",\"polygonName\":\"Dimensions boundary CMV\",\"polygonLL\":[{\"Lat\":36.207183,\"Lon\":-115.020509},{\"Lat\":36.206862,\"Lon\":-115.020187},{\"Lat\":36.207174,\"Lon\":-115.019731}]}"
-            },
-            new FilterDescriptor
-            {
-              FilterUid = "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B",
-              Name = "Summary volumes BaseFilter",
-              FilterJson = JsonResourceHelper.GetFilterJson("SummaryVolumesBaseFilter")
-            },
-            new FilterDescriptor
-            {
-              FilterUid = "A40814AA-9CDB-4981-9A21-96EA30FFECDD",
-              Name = "Summary volumes TopFilter",
-              FilterJson = JsonResourceHelper.GetFilterJson("SummaryVolumesTopFilter")
-            }
+            return new FilterListData { filterDescriptors = this.goldenDataFilterDescriptors };
           }
-        };
+        case ConstantsUtil.DIMENSIONS_PROJECT_UID:
+        case ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID:
+          {
+            return new FilterListData
+            {
+              filterDescriptors = new List<FilterDescriptor>
+              {
+                FilterDescriptors.Dimensions.ElevationRangeAndPaletteNoDataFilter,
+                FilterDescriptors.Dimensions.DimensionsBoundaryFilterWithMachine,
+                FilterDescriptors.Dimensions.DimensionsBoundaryFilter,
+                FilterDescriptors.Dimensions.DimensionsBoundaryMdp,
+                FilterDescriptors.Dimensions.DimensionsBoundaryCmv,
+                FilterDescriptors.Dimensions.SummaryVolumesBaseFilter,
+                FilterDescriptors.Dimensions.SummaryVolumesTopFilter,
+                FilterDescriptors.Dimensions.SummaryVolumesBaseFilterToday,
+                FilterDescriptors.Dimensions.SummaryVolumesTopFilterToday,
+                FilterDescriptors.Dimensions.SummaryVolumesBaseFilterYesterday,
+                FilterDescriptors.Dimensions.SummaryVolumesTopFilterYesterday
+              }
+            };
+          }
+        default:
+          {
+            return new FilterListData
+            {
+              filterDescriptors = new List<FilterDescriptor>()
+            };
+          }
       }
-
-      return new FilterListData
-      {
-        filterDescriptors = new List<FilterDescriptor>()
-      };
     }
 
-    private readonly List<FilterDescriptor> _filterList = new List<FilterDescriptor>
+    private readonly List<FilterDescriptor> goldenDataFilterDescriptors = new List<FilterDescriptor>
     {
       new FilterDescriptor
       {
