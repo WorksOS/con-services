@@ -80,7 +80,7 @@ namespace VSS.VisionLink.Raptor.Storage
                             Stream = MemoryStreamCompression.Decompress(MS);
                         }
                     }
-                    catch (KeyNotFoundException e)
+                    catch // (KeyNotFoundException e)
                     {
                         Stream = PerformSpatialImmutabilityConversion(mutableSpatialCache, immutableSpatialCache, cacheKey, StreamType);
                     }
@@ -131,7 +131,7 @@ namespace VSS.VisionLink.Raptor.Storage
                             Stream = MemoryStreamCompression.Decompress(MS);
                         }
                     }
-                    catch (KeyNotFoundException e)
+                    catch // (KeyNotFoundException e)
                     {
                         Stream = PerformNonSpatialImmutabilityConversion(mutableNonSpatialCache, immutableNonSpatialCache, cacheKey, StreamType);
                     }
@@ -147,7 +147,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 Stream.Position = 0;
                 return FileSystemErrorStatus.OK;
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -261,7 +261,7 @@ namespace VSS.VisionLink.Raptor.Storage
                     // Invalidate the immutable version
                     immutableSpatialCache.GetAndRemove(cacheKey);
                 }
-                catch (Exception e)
+                catch // (Exception e)
                 {
                     // Ignore any excpetion here which is typically thrown if the element in the
                     // cache does not exist, which is entirely possible
@@ -306,7 +306,7 @@ namespace VSS.VisionLink.Raptor.Storage
                     // Invalidate the immutable version
                     immutableNonSpatialCache.GetAndRemove(cacheKey);
                 }
-                catch (Exception e)
+                catch // (Exception e)
                 {
                     // Ignore any excpetion here which is typically thrown if the element in the
                     // cache does not exist, which is entirely possible
@@ -346,7 +346,7 @@ namespace VSS.VisionLink.Raptor.Storage
                     // Invalidate the immutable version if there is a cache reference
                     immutableNonSpatialCache.GetAndRemove(cacheKey);
                 }
-                catch (Exception e)
+                catch // (Exception e)
                 {
                     // Ignore any exception here which is typically thrown if the element in the
                     // cache does not exist, which is entirely possible
