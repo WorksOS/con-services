@@ -29,7 +29,7 @@ namespace VSS.VisionLink.Raptor.Events
 
         ProductionEventType EventListType { get; set; } = ProductionEventType.Unknown;
 
-        private bool EventsListIsOutOfDate = false;
+        private bool eventsListIsOutOfDate = false;
 
         public ProductionEventChangeList() : base()
         {
@@ -38,7 +38,7 @@ namespace VSS.VisionLink.Raptor.Events
         public ProductionEventChangeList(long machineID, long siteModelID,
                                          ProductionEventType eventListType) : this()
         {
-            EventsListIsOutOfDate = true;
+            eventsListIsOutOfDate = true;
 
             MachineID = machineID;
             SiteModelID = siteModelID;
@@ -111,7 +111,9 @@ namespace VSS.VisionLink.Raptor.Events
         //                                  const InternalStream: TMemoryStream;
         //                                  const FileMajorVersion, FileMinorVersion: Integer): Boolean; virtual;
 
-        protected void InvalidateEventList() => EventsListIsOutOfDate = true;
+        protected void InvalidateEventList() => eventsListIsOutOfDate = true;
+
+        public bool EventsListIsOutOfDate() => eventsListIsOutOfDate;
 
         // protected bool LoadedFromPersistentStore = false;
 
@@ -362,7 +364,7 @@ namespace VSS.VisionLink.Raptor.Events
             {
                 formatter.Serialize(writer.BaseStream, this);
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 throw;
             }

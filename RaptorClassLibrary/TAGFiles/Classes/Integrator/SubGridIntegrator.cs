@@ -188,7 +188,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                         return;
                     }
                 }
-                catch (Exception E)
+                catch // (Exception E)
                 {
                     throw;
                 }

@@ -142,7 +142,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 {
                     Header.Read(reader);
                 }
-                catch (Exception E)
+                catch // (Exception E)
                 {
                     // TODO add when logging available
                     // SIGLogMessage.Publish(Self, Format('Invalid tagfile. Exception in TTagFile.ReadStream - FHeader.LoadFromStream: %s', [E.Message]), slmcWarning);
@@ -167,7 +167,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                         DataEndPos = reader.GetSize();
                     }
                 }
-                catch (Exception E)
+                catch // (Exception E)
                 {
                     // TODO when logging is available
                     //SIGLogMessage.Publish(Self, Format('Exception in TagFile.ReadFile: %s', [E.Message]), slmcDebug);
@@ -247,7 +247,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                                 break;
                         }
                     }
-                    catch (Exception E)
+                    catch // (Exception E)
                     {
                         // TODO add when logging is available
                         //SIGLogMessage.PublishNoODS(Self, Format('Exception in TagFile.ReadFile while reading field value: %s', [E.Message]), E, slmcException);

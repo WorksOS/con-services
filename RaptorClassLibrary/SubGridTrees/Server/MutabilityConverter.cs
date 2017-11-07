@@ -98,7 +98,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 immutableStream = mutableStream;
 

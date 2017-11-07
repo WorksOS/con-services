@@ -729,7 +729,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     Result = Segment.Read(reader, loadLatestData, loadAllPasses /*, SiteModelReference*/);
                 }
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 //SIGLogMessage.Publish(Self, Format('Exception %S thrown in TICServerSubGridTreeLeaf.LoadFromFile reading file %S.',
                 //    [E.Message, FileName]), slmcError);
@@ -806,8 +806,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             SubGridStreamHeader Header = new SubGridStreamHeader(reader);
 
             // LatestPassData: TICSubGridCellLatestPassData;
-            long LatestCellPassDataSize;
-            long CellPassStacksDataSize;
+            // long LatestCellPassDataSize;
+            // long CellPassStacksDataSize;
 
             bool Result = false;
 

@@ -74,12 +74,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
 
                     ok = true;
                 }
-                catch (FileNotFoundException E)
+                catch (FileNotFoundException)
                 {
                     Console.WriteLine("Cache Get() for key {0}, filename {1} resulted in file not found, returning null", key.ToString(), fileName);
                     return null;
                 }
-                catch (Exception E)
+                catch (Exception)
                 {
                     Console.WriteLine("Cache Get() blocked on key {0}, waiting 1 second.", key.ToString());
                     System.Threading.Thread.Sleep(1000);

@@ -106,7 +106,7 @@ namespace VSS.VisionLink.Raptor.Executors
 
                 SetPublishedState(Processor);
             }
-            catch (Exception E) // make sure any exception is trapped to return correct response to caller
+            catch // (Exception E) // make sure any exception is trapped to return correct response to caller
             {
                 return false;
             }

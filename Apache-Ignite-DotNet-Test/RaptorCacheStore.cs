@@ -48,7 +48,7 @@ namespace Apache_Ignite_DotNet_Test
                     obj = bf.Deserialize(fs);
                     ok = true;
                 }
-                catch (Exception E)
+                catch // (Exception E)
                 {
                     Console.WriteLine("Cache Get() blocked on key {0}, waiting 1 second.", key.ToString());
                     System.Threading.Thread.Sleep(1000);
@@ -77,7 +77,7 @@ namespace Apache_Ignite_DotNet_Test
             {
                 bf.Serialize(ms, val);
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 throw;
             }

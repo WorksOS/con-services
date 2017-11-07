@@ -214,7 +214,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                     }
                 }
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 // TODO add when logging becomes available
                 // SIGLogMessage.Publish(Self, Format('Exception in ICTerrainSwather.PerformSwathing: %s', [E.Message]), slmcDebug);

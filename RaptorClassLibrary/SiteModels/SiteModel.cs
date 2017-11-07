@@ -229,7 +229,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
                 writer.Write(LastModifiedDate.ToBinary());
             }
-            catch (Exception E)
+            catch (Exception)
             {
                 throw;
             }
@@ -406,7 +406,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                     */
                 }
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 throw; // TODO
             }
@@ -453,7 +453,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
                 StorageProxy.RaptorInstance().WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemGranuleType.SubgridExistenceMap, MS);
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 return FileSystemErrorStatus.UnknownErrorWritingToFS;
             }

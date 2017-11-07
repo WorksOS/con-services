@@ -68,7 +68,7 @@ namespace VSS.VisionLink.Raptor.Storage.Obsolete
 
                 return FileSystemErrorStatus.OK;
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -94,7 +94,7 @@ namespace VSS.VisionLink.Raptor.Storage.Obsolete
                 Stream.Position = 0;
                 return FileSystemErrorStatus.OK;
             }
-            catch (Exception E)
+            catch (Exception)
             {
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;

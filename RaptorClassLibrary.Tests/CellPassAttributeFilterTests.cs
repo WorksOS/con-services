@@ -374,7 +374,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                             x => { x.HasPositioningTechFilter = true; x.PositioningTech = Types.PositioningTech.GPS; },
                                                             x => { return x.HasPositioningTechFilter; },
                                                             x => { x.ClearPositioningTech(); },
-                                                            x => { return !x.HasPositioningTechFilter; x.PositioningTech = Types.PositioningTech.Unknown; });
+                                                            x => { return !x.HasPositioningTechFilter; });
         }
 
         [TestMethod()]
