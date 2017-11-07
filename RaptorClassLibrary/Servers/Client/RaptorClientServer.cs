@@ -42,7 +42,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                     {
 //                        SpringConfigUrl = @".\RaptorIgniteConfig.xml",
 
-                        GridName = RaptorGrids.RaptorGridName(),
+                        // GridName = RaptorGrids.RaptorGridName(),
                         IgniteInstanceName = RaptorGrids.RaptorGridName(),
                         ClientMode = true,
 

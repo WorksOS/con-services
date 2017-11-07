@@ -412,5 +412,24 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// <param name="V"></param>
         /// <returns></returns>
         public static XYZ UnitVector(XYZ V) => V * (1 / VectorLength(V));
+
+        /// <summary>
+        /// Default override for the GetHashCode method. This returns the base GetHashCode() result.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        /// <summary>
+        /// Overloaded Equals() accepting generic object type parameter
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            return Equals((XYZ)obj);
+        }
     }
 }

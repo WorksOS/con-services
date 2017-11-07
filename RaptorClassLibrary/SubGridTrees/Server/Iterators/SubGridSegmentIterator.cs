@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         public bool RetrieveLatestData { get; set; } = false;
         public bool RetrieveAllPasses { get; set; } = true;
 
-        long MarkedCacheStamp = 0;
+        // long MarkedCacheStamp = 0;
 
         protected SubGridCellPassesDataSegment LocateNextSubgridSegmentInIteration()
         {

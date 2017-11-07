@@ -31,7 +31,7 @@ This structure is tended to provide the following capabilities:
 
 1.	Spatial index through which any designated on-the-ground grid cell may be
     located in no more than 6 steps (ie: O(6)). On-the-ground cells are thought
-    of as  entities that live in a virtual integerised space where the extents
+    of as entities that live in a virtual integerised space where the extents
     of the cell is represented by an integer quantity (either [X, Y] grid location
     or bit interleaved liner index etc). Index is capable of uniquely identifying,
     indexing, locating and storing approximately 1 sextillion cells in the grid
@@ -528,7 +528,7 @@ namespace VSS.VisionLink.Raptor
                 switch (pathType)
                 {
                     case SubGridPathConstructionType.CreateLeaf:
-                        Debug.Assert(subGrid is INodeSubGrid);
+                        //Debug.Assert(subGrid is INodeSubGrid);
 
                         // Get the local subgrid index in this subgrid that the leaf subgrid that
                         // contains the cell resides at
@@ -549,7 +549,7 @@ namespace VSS.VisionLink.Raptor
                         break;
 
                     case SubGridPathConstructionType.ReturnExistingLeafOnly:
-                        Debug.Assert(subGrid is INodeSubGrid);
+                        // Debug.Assert(subGrid is INodeSubGrid);
 
                         // Get the local subgrid index in this subgrid that the leaf subgrid that
                         // contains the cell resides at

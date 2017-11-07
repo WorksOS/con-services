@@ -359,19 +359,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return Result;
         }
 
-        public void Read(BinaryReader reader, byte[] buffer)
+        public override void Read(BinaryReader reader, byte[] buffer)
         {
             Clear();
 
-            PassDataExistanceMap.Read(reader, buffer);
-            CCVValuesAreFromLastPass.Read(reader, buffer);
-            RMVValuesAreFromLastPass.Read(reader, buffer);
-            FrequencyValuesAreFromLastPass.Read(reader, buffer);
-            AmplitudeValuesAreFromLastPass.Read(reader, buffer);
-            GPSModeValuesAreFromLatestCellPass.Read(reader, buffer);
-            TemperatureValuesAreFromLastPass.Read(reader, buffer);
-            MDPValuesAreFromLastPass.Read(reader, buffer);
-            CCAValuesAreFromLastPass.Read(reader, buffer);
+            base.Read(reader, buffer);
 
             FirstRealCellPassTime = DateTime.FromBinary(reader.ReadInt64());
 
@@ -382,17 +374,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             NumBitsPerCellPass = reader.ReadInt32();
         }
 
-        public void Write(BinaryWriter writer, byte [] buffer)
+        public override void Write(BinaryWriter writer, byte [] buffer)
         {
-            PassDataExistanceMap.Write(writer, buffer);
-            CCVValuesAreFromLastPass.Write(writer, buffer);
-            RMVValuesAreFromLastPass.Write(writer, buffer);
-            FrequencyValuesAreFromLastPass.Write(writer, buffer);
-            AmplitudeValuesAreFromLastPass.Write(writer, buffer);
-            GPSModeValuesAreFromLatestCellPass.Write(writer, buffer);
-            TemperatureValuesAreFromLastPass.Write(writer, buffer);
-            MDPValuesAreFromLastPass.Write(writer, buffer);
-            CCAValuesAreFromLastPass.Write(writer, buffer);
+            base.Write(writer, buffer);
 
             writer.Write(FirstRealCellPassTime.ToBinary());
 

@@ -23,8 +23,8 @@ namespace VSS.VisionLink.Raptor.Executors
         string RequestingRaptorNodeID { get; set; } = String.Empty;
 
         long DataModelID = -1;
-        long MachineID = -1;
-        //FExternalDescriptor :TASNodeRequestDescriptor;
+        // long MachineID = -1;
+        // FExternalDescriptor :TASNodeRequestDescriptor;
 
         DisplayMode Mode = DisplayMode.Height;
 
@@ -281,23 +281,23 @@ namespace VSS.VisionLink.Raptor.Executors
             XYZ[] NEECoords = null;
             XYZ[] LLHCoords = null;
             BoundingWorldExtent3D SpatialExtents;
-            double CellSize;
-            int IndexOriginOffset;
-            MemoryStream ResultStream = null;
+            // double CellSize;
+            // int IndexOriginOffset;
+            // MemoryStream ResultStream = null;
             //  WorkingColourPalette  : TICDisplayPaletteBase;
             //  CoordConversionResult : TCoordServiceErrorStatus;
             long RequestDescriptor;
-            bool ScheduledWithGovernor = false;
+            // bool ScheduledWithGovernor = false;
             // DesignProfilerResult  : TDesignProfilerRequestResult;
             SubGridTreeBitMask ProdDataExistenceMap = null; //: TProductionDataExistanceMap;
-            FileSystemErrorStatus ReturnCode;
+            // FileSystemErrorStatus ReturnCode;
             SubGridTreeBitMask DesignSubgridOverlayMap = null;
-            SubGridTreeBitMask LiftDesignSubgridOverlayMap = null;
+            // SubGridTreeBitMask LiftDesignSubgridOverlayMap = null;
             // GroundSurfaces: TICGroundSurfaceDetailsList;
             // Filter1GroundSurfaces : TICGroundSurfaceDetailsList;
             // Filter2GroundSurfaces : TICGroundSurfaceDetailsList;
-            bool ShouldFreeDesignSubgridIndexMap = false;
-            bool ShouldFreeLiftDesignSubgridIndexMap = false;
+            // bool ShouldFreeDesignSubgridIndexMap = false;
+            // bool ShouldFreeLiftDesignSubgridIndexMap = false;
             double TileRotation;
             double WorldTileWidth, WorldTileHeight;
             long[] SurveyedSurfaceExclusionList = new long[0];

@@ -32,6 +32,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
             //         "GetOTGLeafSubGridCellIndex given cell address out of bounds for this subgrid");
         }
 
+        /// <summary>
+        /// Locates the subgrid in the subgrid tree that contains the cell identified by CellX and CellY in the global 
+        /// sub grid tree cell address space. The tree level for the subgrid returned is specified in Level.
+        /// </summary>
+        /// <param name="ForSubGridTree"></param>
+        /// <param name="CellX"></param>
+        /// <param name="CellY"></param>
+        /// <param name="Level"></param>
+        /// <param name="LockToken"></param>
+        /// <param name="LookInCacheOnly"></param>
+        /// <param name="AcceptSpeculativeReadFailure"></param>
+        /// <returns></returns>
         public static ISubGrid LocateSubGridContaining(//IStorageProxy storageProxy,
                                  ServerSubGridTree ForSubGridTree,
                                  //const GridDataCache : TICDataStoreCache;
@@ -44,8 +56,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
         {
             ISubGrid SubGrid = null;
             ServerSubGridTreeLeaf LeafSubGrid = null;
-            bool SubGridLockAcquired = false;
-            bool IntentionLockCounterWound = false;
+            // bool SubGridLockAcquired = false;
+            // bool IntentionLockCounterWound = false;
             bool CreatedANewSubgrid = false;
 
             ISubGrid Result = null;

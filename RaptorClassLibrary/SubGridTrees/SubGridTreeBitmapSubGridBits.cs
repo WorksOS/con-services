@@ -674,5 +674,24 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             return true;
         }
+
+        /// <summary>
+        /// Default override for the GetHashCode method. This returns the base GetHashCode() result.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        /// <summary>
+        /// Overloaded Equals() accepting generic object type parameter
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            return Equals((SubGridTreeBitmapSubGridBits)obj);
+        }
     }
 }

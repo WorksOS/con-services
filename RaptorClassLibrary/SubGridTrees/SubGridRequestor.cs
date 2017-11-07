@@ -88,29 +88,29 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             uint CellX, CellY;
 
             // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
-            SubGridTreeBitmapSubGridBits ProcessingMap;
+            // SubGridTreeBitmapSubGridBits ProcessingMap;
 
             // FilteredGroundSurfaces: TICGroundSurfaceDetailsList;
-            ClientHeightAndTimeLeafSubGrid ClientGridAsHeightAndTime = null;
-            ClientHeightAndTimeLeafSubGrid SurfaceElevations = null;
-            SubGridCellHeightAndTime SurveyedSurfaceCell;
-            bool SurveyedSurfaceElevationWanted;
-            //TICClientSubGridTreeLeaf_CellProfile ClientGridAsCellProfile = null
-            float ProdHeight;
-            DateTime ProdTime;
-            bool ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime;
-            bool ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile;
-            ISubGrid CachedSubgrid = null;
-            ISubGrid ClientGrid2;
-            bool AddedSubgridToSubgridCache;
+            // ClientHeightAndTimeLeafSubGrid ClientGridAsHeightAndTime = null;
+            // ClientHeightAndTimeLeafSubGrid SurfaceElevations = null;
+            // SubGridCellHeightAndTime SurveyedSurfaceCell;
+            // bool SurveyedSurfaceElevationWanted;
+            // TICClientSubGridTreeLeaf_CellProfile ClientGridAsCellProfile = null
+            // float ProdHeight;
+            // DateTime ProdTime;
+            // bool ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime;
+            // bool ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile;
+            // ISubGrid CachedSubgrid = null;
+            // ISubGrid ClientGrid2;
+            // bool AddedSubgridToSubgridCache;
 
-            ILeafSubGrid TempClientGrid;
+            // ILeafSubGrid TempClientGrid;
 
-            CombinedFilter ClonedFilter = null;
+            // CombinedFilter ClonedFilter = null;
 
             ClientHeightLeafSubGrid DesignElevations = null;
 
-            bool SubgridAlreadyPresentInCache = false;
+            // bool SubgridAlreadyPresentInCache = false;
 
             ServerRequestResult Result = ServerRequestResult.UnknownError;
 

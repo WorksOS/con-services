@@ -123,7 +123,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
                     }
                 }
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 throw;
             }

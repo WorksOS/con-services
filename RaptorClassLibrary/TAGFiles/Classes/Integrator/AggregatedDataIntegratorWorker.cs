@@ -390,7 +390,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     //                                        [ProcessedTasks.Count, Task.TargetMachineID, Task.TargetSiteModelID]), slmcMessage);
                 }
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 // TODO add when logging available
                 // SIGLogMessage.PublishNoODS(Self, Format('Exception in %s.ProcessTask: %s', [Self.ClassName, E.Message]), slmcException);

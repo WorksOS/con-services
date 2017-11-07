@@ -131,7 +131,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     SegmentDirectory.Add(segmentInfo);
                 }
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 return false;
             }

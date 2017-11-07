@@ -20,9 +20,9 @@ namespace VSS.VisionLink.Raptor.Utilities
         /// <returns></returns>
         public static RequestErrorStatus PrepareFilterForUse(CombinedFilter Filter, long DataModelID)
         {
-            XYZ[] NEECoords = null;
+            // XYZ[] NEECoords = null;
             XYZ[] LLHCoords = null; //: TCSConversionCoordinates;
-            Fence DesignBoundary = null;
+            // Fence DesignBoundary = null;
             RequestErrorStatus Result = RequestErrorStatus.OK;
 
             //CoordConversionResult: TCoordServiceErrorStatus;
