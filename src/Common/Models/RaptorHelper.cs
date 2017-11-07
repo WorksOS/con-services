@@ -139,26 +139,27 @@ namespace VSS.Productivity3D.Common.Models
                  string.Format("Design descriptor required for cut/fill and design to filter or filter to design volumes display")));
       }
 
-     /* if (mode == DisplayMode.VolumeCoverage && computeVolType == RaptorConverters.VolumesType.None)
+      /* if (mode == DisplayMode.VolumeCoverage && computeVolType == RaptorConverters.VolumesType.None)
+       {
+         throw new ServiceException(HttpStatusCode.BadRequest,
+             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                 string.Format(
+                     "None volume detection method is not applicable.")));
+       }*/
+      if (computeVolType != RaptorConverters.VolumesType.Between2Filters)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
+        if (mode == DisplayMode.CutFill && designDescriptor == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                string.Format(
-                    "None volume detection method is not applicable.")));
-      }*/
+              string.Format(
+                "Design descriptor required for cut/fill and design to filter or filter to design volumes display")));
+        }
 
 
-      if (mode == DisplayMode.CutFill && designDescriptor == null)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                string.Format(
-                    "Design descriptor required for cut/fill and design to filter or filter to design volumes display")));
+        if (designDescriptor != null)
+          designDescriptor.Validate();
       }
-
-     
-      if (designDescriptor != null)
-        designDescriptor.Validate();
     }
 
     public void ValidateVolumesFilters(RaptorConverters.VolumesType computeVolType, Filter filter1, long filterId1, Filter filter2, long filterId2)
