@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IErrorCodesProvider, ErrorCodesProvider>()
-        .AddTransient<IMapTileGenerator,MapTileGenerator>();
+        .AddTransient<IMapTileService, MapTileService>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction
     [TestMethod]
     public void CanResolveRegion()
     {
-      var region = serviceProvider.GetRequiredService<IMapTileGenerator>().GetRegion(-43, 172);
+      var region = serviceProvider.GetRequiredService<IMapTileService>().GetRegion(-43, 172);
       Assert.AreEqual("OC",region);
     }
   }

@@ -84,44 +84,5 @@ namespace VSS.Productivity3D.Common.Models
                 "Invalid bounding box: corners are not bottom left and top right."));
       }
     }
-
-    //Convenience properties for map tiles for reports
-    [JsonIgnore]
-    public double centerLatInDecimalDegrees => (bottomLeftLat + (topRightLat - bottomLeftLat) / 2.0).latRadiansToDegrees();
-    [JsonIgnore]
-    public double centerLngInDecimalDegrees => (bottomLeftLon + (topRightLon - bottomLeftLon) / 2.0).lonRadiansToDegrees();
-    [JsonIgnore]
-    public double minLatInDecimalDegrees => Math.Min(bottomLeftLat, topRightLat).latRadiansToDegrees();
-    [JsonIgnore]
-    public double maxLatInDecimalDegrees => Math.Max(bottomLeftLat, topRightLat).latRadiansToDegrees();
-    [JsonIgnore]
-    public double minLngInDecimalDegrees => Math.Min(bottomLeftLon, topRightLon).lonRadiansToDegrees();
-    [JsonIgnore]
-    public double maxLngInDecimalDegrees => Math.Max(bottomLeftLon, topRightLon).lonRadiansToDegrees();
-
-    /// <summary>
-    /// Calculates the zoom level from the bounding box
-    /// </summary>
-    /// <returns>The zoom level</returns>
-    public int CalculateZoomLevel()
-    {
-      const int MAXZOOM = 24;
-
-      double selectionLatSize = Math.Abs(topRightLat - bottomLeftLat);
-      double selectionLongSize = Math.Abs(topRightLon - bottomLeftLon);
-
-      //Google maps zoom level starts at 0 for whole world (-90.0 to 90.0, -180.0 to 180.0)
-      //and doubles the precision both horizontally and vertically for each suceeding level.
-      int zoomLevel = 0;
-      double latSize = Math.PI; //180.0;
-      double longSize = 2 * Math.PI; //360.0;
-      while (latSize > selectionLatSize && longSize > selectionLongSize && zoomLevel < MAXZOOM)
-      {
-        zoomLevel++;
-        latSize /= 2;
-        longSize /= 2;
-      }
-      return zoomLevel;
-    }
   }
 }

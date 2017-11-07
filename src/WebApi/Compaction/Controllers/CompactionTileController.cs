@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// The tile generator
     /// </summary>
-    private readonly IMapTileGenerator tileGenerator;
+    private readonly IProductionDataTileService tileService;
     /// <summary>
     /// Logger for logging
     /// </summary>
@@ -62,16 +62,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IFileRepository fileRepo;
 
-    /// <summary>
-    /// Proxy for getting elevation statistics from Raptor
-    /// </summary>
-    private readonly IElevationExtentsProxy elevProxy;
-
-    /// <summary>
-    /// The request factory
-    /// </summary>
-    private readonly IProductionDataRequestFactory requestFactory;
-
+ 
     /// <summary>
     /// Constructor with injected raptor client, logger and authenticated projects
     /// </summary>
@@ -79,27 +70,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="logger">Logger</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileRepo">Imported file repository</param>
-    /// <param name="elevProxy">Elevation extents proxy</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="settingsManager">Compaction settings manager</param>
     /// <param name="requestFactory">The request factory.</param>
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
-    /// <param name="tileGenerator">Map tile generator</param>
+    /// <param name="tileService">Map tile generator</param>
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
-      IFileRepository fileRepo, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
+      IFileRepository fileRepo, IFileListProxy fileListProxy, 
       IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator) : 
+      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService) : 
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionTileController>();
       this.fileRepo = fileRepo;
-      this.elevProxy = elevProxy;
-      this.requestFactory = requestFactory;
-      this.tileGenerator = tileGenerator;
+      this.tileService = tileService;
     }
 
     /// <summary>
@@ -152,7 +140,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       
       var tileResult = WithServiceExceptionTryExecute(() => 
-        tileGenerator.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT, 
+        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT, 
           GetBoundingBox(BBOX), cutFillDesign, customHeaders));
 
       return tileResult;
@@ -214,7 +202,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
 
       var tileResult = WithServiceExceptionTryExecute(() =>
-        tileGenerator.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
+        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
           GetBoundingBox(BBOX), cutFillDesign,customHeaders));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");

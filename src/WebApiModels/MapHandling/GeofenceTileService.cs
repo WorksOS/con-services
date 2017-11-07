@@ -1,0 +1,77 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+
+namespace VSS.Productivity3D.WebApi.Models.MapHandling
+{
+  public class GeofenceTileService : IGeofenceTileService
+  {
+    private readonly ILogger log;
+    private readonly ILoggerFactory logger;
+
+    public GeofenceTileService(ILoggerFactory logger)
+    {
+      log = logger.CreateLogger<GeofenceTileService>();
+      this.logger = logger;
+    }
+
+    public byte[] GetSitesBitmap(MapParameters parameters, IEnumerable<GeofenceData> sites)
+    {
+      const int DEFAULT_SITE_COLOR = 0x0055FF;
+      const int FILL_TRANSPARENCY = 0x40; //0.25 of FF
+      const int STROKE_TRANSPARENCY = 0x73; //0.45 of FF
+      const int SITE_OUTLINE_WIDTH = 2;
+
+      // Exclude sites that are too small to be displayed in the current viewport. 
+      double viewPortArea = Math.Abs(parameters.bbox.minLat - parameters.bbox.maxLat) * Math.Abs(parameters.bbox.minLng - parameters.bbox.maxLng);
+      double minArea = viewPortArea / 10000;
+      //TODO: AreaSqMeters should be in GeoFence model but not our MasterDataModel GeofenceData.
+      //Need to update that and then select from 'sites' where site.area > minArea
+
+      byte[] sitesImage = null;
+
+      if (sites.Any())
+      {
+        using (Bitmap bitmap = new Bitmap(parameters.mapWidth, parameters.mapHeight))
+        using (Graphics g = Graphics.FromImage(bitmap))
+        {
+          foreach (var site in sites)
+          {
+            var sitePoints = TileServiceUtils.GeometryToPoints(site.GeometryWKT);
+
+            //Exclude site if outside bbox
+            bool outside = sitePoints.Min(p => p.Latitude) < parameters.bbox.minLat || sitePoints.Max(p => p.Latitude) > parameters.bbox.maxLat ||
+                           sitePoints.Min(p => p.Longitude) < parameters.bbox.minLng || sitePoints.Max(p => p.Longitude) > parameters.bbox.maxLng;
+           
+            if (!outside)
+            {
+              PointF[] pixelPoints = TileServiceUtils.LatLngToPixelOffset(sitePoints, parameters.pixelTopLeft, parameters.numTiles);
+              int siteColor = site.FillColor > 0 ? site.FillColor : DEFAULT_SITE_COLOR;
+              if (!site.IsTransparent)
+              {
+                Brush brush = new SolidBrush(Color.FromArgb(FILL_TRANSPARENCY, Color.FromArgb(siteColor)));
+                g.FillPolygon(brush, pixelPoints, FillMode.Alternate);
+              }
+              Pen pen = new Pen(Color.FromArgb(STROKE_TRANSPARENCY, Color.FromArgb(siteColor)), SITE_OUTLINE_WIDTH);
+              g.DrawPolygon(pen, pixelPoints);
+            }
+          }
+
+          sitesImage = bitmap.BitmapToByteArray();
+        }
+      }
+
+      return sitesImage;
+    }
+  }
+
+  public interface IGeofenceTileService
+  {
+    byte[] GetSitesBitmap(MapParameters parameters, IEnumerable<GeofenceData> sites);
+  }
+}

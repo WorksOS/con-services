@@ -206,7 +206,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
               zoomLevel <= MAX_MAP_ZOOM_LEVEL && result.maxZoom == 0;
               zoomLevel++)
             {
-              int numTiles = 1 << zoomLevel;
+              int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
               Point pixel1 = WebMercatorProjection.LatLngToPixel(latLng1, numTiles);
               Point pixel2 = WebMercatorProjection.LatLngToPixel(latLng2, numTiles);
               double width = Math.Abs(pixel2.x - pixel1.x);
