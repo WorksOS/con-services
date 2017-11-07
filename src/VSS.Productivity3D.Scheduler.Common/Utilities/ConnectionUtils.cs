@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
         ";userid=" + serverUserName +
         ";password=" + serverPassword +
         ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
-   
+
       return connString;
     }
 

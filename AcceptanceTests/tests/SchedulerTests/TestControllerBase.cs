@@ -60,7 +60,7 @@ namespace SchedulerTests
     {
       RecurringJobDto theJob = null;
       List<RecurringJobDto> recurringJobs = hangoutConnection.GetRecurringJobs();
-      recurringJobs.ForEach(delegate (RecurringJobDto job)
+      recurringJobs.ForEach(delegate(RecurringJobDto job)
       {
         if (job.Id == jobName)
         {

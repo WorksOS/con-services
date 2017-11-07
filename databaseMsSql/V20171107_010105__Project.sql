@@ -1,7 +1,9 @@
+USE [NH_OP];
+
 SET ANSI_NULLS, QUOTED_IDENTIFIER, ANSI_PADDING ON
 GO
 
-CREATE TABLE [dbo].[Project](
+CREATE TABLE dbo.Project(
 	[ID] [bigint] IDENTITY(1,1) NOT FOR REPLICATION NOT NULL,
 	[Name] [nvarchar](100) NOT NULL,
 	[fk_CustomerID] [bigint] NOT NULL,
@@ -12,8 +14,8 @@ CREATE TABLE [dbo].[Project](
 	[fk_CoordinateSystemID] [bigint] NULL,
 	[Restored] [bit] NOT NULL CONSTRAINT [DF_Project_Restored]  DEFAULT ((0)),
 	[DefaultJobSite] [varchar](100) NULL,
-	[StartKeyDate] [int] NOT NULL CONSTRAINT [DF_Project_StartKeyDate]  DEFAULT ([dbo].[fn_GetKeyDate](getutcdate())),
-	[EndKeyDate] [int] NOT NULL CONSTRAINT [DF_Project_EndKeyDate]  DEFAULT ([dbo].[fn_GetKeyDate](getutcdate())),
+	[StartKeyDate] [int] NOT NULL CONSTRAINT [DF_Project_StartKeyDate]  DEFAULT (dbo.fn_GetKeyDate(getutcdate())),
+	[EndKeyDate] [int] NOT NULL CONSTRAINT [DF_Project_EndKeyDate]  DEFAULT (dbo.fn_GetKeyDate(getutcdate())),
 	[TimezoneName] [nvarchar](50) NOT NULL,
 	[fk_ProjectTypeID] [int] NOT NULL CONSTRAINT [DF_Project_fk_ProjectTypeID]  DEFAULT ((0)),
 	[ProjectUID] [uniqueidentifier] ROWGUIDCOL  NOT NULL CONSTRAINT [DF_Project_ProjectUID]  DEFAULT (newsequentialid()),

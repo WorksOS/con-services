@@ -1,7 +1,9 @@
+USE [NH_OP];
+
 SET ANSI_NULLS, QUOTED_IDENTIFIER, ANSI_PADDING ON
 GO
 
-CREATE TABLE [dbo].[ImportedFileHistory](
+CREATE TABLE dbo.ImportedFileHistory(
 	[fk_ImportedFileID] [bigint] NOT NULL,
 	[InsertUTC] [datetime2](7) NOT NULL CONSTRAINT [DF_ImportedFileHistory_InsertUTC]  DEFAULT (getutcdate()),
 	[ID] [bigint] IDENTITY(1,1) NOT FOR REPLICATION NOT NULL,

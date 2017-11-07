@@ -32,7 +32,8 @@ namespace SchedulerTests
     public void FilterScheduleTaskExists()
     {
       var theJob = GetJob(HangfireConnection(), FilterCleanupTask);
-    
+
+      Assert.IsNotNull(theJob, "Unable to communicate with Hangfire Scheduler");
       Assert.IsNotNull(theJob,$"{FilterCleanupTask} not found");
       Assert.AreEqual(FilterCleanupTask, theJob.Id, "wrong job selected");
     }
@@ -41,6 +42,7 @@ namespace SchedulerTests
     public void FilterScheduleTaskNextRuntime()
     {
       var theJob = GetJob(HangfireConnection(), FilterCleanupTask);
+      Assert.IsNotNull(theJob, "Unable to communicate with Hangfire Scheduler");
 
       Assert.IsNotNull(theJob, $"{FilterCleanupTask} not found");
       Assert.AreEqual(FilterCleanupTask, theJob.Id, "wrong job selected");
@@ -52,6 +54,7 @@ namespace SchedulerTests
     public void FilterScheduleTask_WaitForCleanup()
     {
       var theJob = GetJob(HangfireConnection(), FilterCleanupTask);
+      Assert.IsNotNull(theJob, "Unable to communicate with Hangfire Scheduler");
 
       string filterDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_FILTER");
       var dbConnection = new MySqlConnection(filterDbConnectionString);

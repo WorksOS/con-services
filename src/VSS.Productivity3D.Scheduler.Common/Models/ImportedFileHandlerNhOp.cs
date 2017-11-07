@@ -17,16 +17,18 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
     private ILogger _log;
     private string _dbConnectionString;
     private List<NhOpImportedFile> _members;
- 
+
     public ImportedFileHandlerNhOp(IConfigurationStore configStore, ILoggerFactory logger)
     {
       _configStore = configStore;
       _log = logger.CreateLogger<ImportedFileHandlerNhOp<T>>();
-      _dbConnectionString = ConnectionUtils.GetConnectionStringMsSql(_configStore, _log, "_NH_OP"); ;
-      _members = new List<NhOpImportedFile>();
+      _dbConnectionString = ConnectionUtils.GetConnectionStringMsSql(_configStore, _log, "_NH_OP");
+     _members = new List<NhOpImportedFile>();
 
-      _log.LogDebug($"ImportedFileHandlerNhOp.ImportedFileHandlerNhOp() _configStore {JsonConvert.SerializeObject(_configStore)}");
-      Console.WriteLine($"ImportedFileHandlerNhOp.ImportedFileHandlerNhOp() _configStore {JsonConvert.SerializeObject(_configStore)}");
+      _log.LogDebug(
+        $"ImportedFileHandlerNhOp.ImportedFileHandlerNhOp() _configStore {JsonConvert.SerializeObject(_configStore)}");
+      Console.WriteLine(
+        $"ImportedFileHandlerNhOp.ImportedFileHandlerNhOp() _configStore {JsonConvert.SerializeObject(_configStore)}");
     }
 
 
@@ -56,7 +58,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       // MinLat...
       // IsNotifyUser
       string selectCommand = @"SELECT 
-              p.ID AS LegacyProjectId, CAST(p.ProjectUID AS varchar(100)) AS ProjectUid,
+              iff.ID AS LegacyImportedFileId, p.ID AS LegacyProjectId, CAST(p.ProjectUID AS varchar(100)) AS ProjectUid,
               c.ID AS LegacyCustomerId, CAST(c.CustomerUID AS varchar(100)) AS CustomerUid,
               fk_ImportedFileTypeID AS ImportedFileType, iff.Name,               
               SurveyedUtc, fk_DXFUnitsTypeID AS DxfUnitsType,
@@ -73,7 +75,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       try
       {
         response = dbConnection.Query<NhOpImportedFile>(selectCommand).ToList();
-        Console.WriteLine($"ImportedFileHandlerNhOp.Read: selectCommand {selectCommand} response {JsonConvert.SerializeObject(response)}");
+        Console.WriteLine(
+          $"ImportedFileHandlerNhOp.Read: selectCommand {selectCommand} response {JsonConvert.SerializeObject(response)}");
       }
       catch (Exception ex)
       {
@@ -96,7 +99,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       _members.Clear();
     }
 
-    public List<T> List() 
+    public List<T> List()
     {
       return _members as List<T>;
     }

@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using System.Data.SqlClient;
+using System.Linq;
+using Dapper;
 
 namespace SchedulerTests
 {
@@ -24,15 +28,15 @@ namespace SchedulerTests
     [TestMethod]
     public void ImportedFilesHandlerNhOp_OneFileIn()
     {
-      // string projectDbConnectionString = string.Format($"Data Source=alpha-nh-raw.c31ahitxrkg7.us-west-2.rds.amazonaws.com;Initial Catalog=NH_OP;Integrated Security=False;User ID=root;Password=d3vRDS1234_;");
       string projectDbConnectionString = ConnectionUtils.GetConnectionStringMsSql(ConfigStore, Log, "NH_OP");
-      var importedFileHandlerProject = new ImportedFileHandlerNhOp<NhOpImportedFile>(ConfigStore, LoggerFactory);
+      var importedFileHandlerNhOp = new ImportedFileHandlerNhOp<NhOpImportedFile>(ConfigStore, LoggerFactory);
 
       var importedFile = new NhOpImportedFile()
       {
-        LegacyProjectId = 123,
+        LegacyImportedFileId = new Random().Next(100000, 1999999),
+        LegacyProjectId = new Random().Next(100000, 1999999),
         ProjectUid = Guid.NewGuid().ToString(),
-        LegacyCustomerId = 456,
+        LegacyCustomerId = new Random().Next(100000, 1999999),
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         DxfUnitsType = 0,
@@ -44,121 +48,204 @@ namespace SchedulerTests
         LastActionedUtc = new DateTime(2017, 1, 1)
       };
 
-      //var insertedCount = WriteImportedFileToProjectDb(projectDbConnectionString, importedFile);
-      //Assert.AreEqual(1, insertedCount, "should have been 1 file written to ProjectDb");
+      var insertedCount = WriteImportedFileToNnOpDb(projectDbConnectionString, importedFile);
+      Assert.AreEqual(1, insertedCount, "should have been 1 file written to NhOpDb");
 
-      var readCount = importedFileHandlerProject.Read();
-      Assert.AreNotEqual(0, readCount, "should have been at least 1 file read from ProjectDb");
+      var readCount = importedFileHandlerNhOp.Read();
+      Assert.AreNotEqual(0, readCount, "should have been at least 1 file read from NhOpDb");
 
-      var listOfProjectFiles = importedFileHandlerProject.List();
-      Assert.IsNotNull(listOfProjectFiles, "should be valid list");
-      Assert.AreNotEqual(0, listOfProjectFiles.Count, "should be at least 1 file in ProjectDb list");
+      var listOfNhOpFiles = importedFileHandlerNhOp.List();
+      Assert.IsNotNull(listOfNhOpFiles, "should be valid list");
+      Assert.AreNotEqual(0, listOfNhOpFiles.Count, "should be at least 1 file in NhOpDb list");
 
-      //ImportedFile importFileResponse = listOfProjectFiles.FirstOrDefault(x => x.ProjectUid == importedFile.ProjectUid);
-      //Assert.IsNotNull(importFileResponse, "should have one we tried to inserted");
-      //Assert.AreEqual(importedFile.ProjectUid, importFileResponse?.ProjectUid, "unable to find the ProjectDb file we just inserted");
+      NhOpImportedFile importFileResponse = listOfNhOpFiles.FirstOrDefault(x => (String.Compare(x.ProjectUid, importedFile.ProjectUid, StringComparison.OrdinalIgnoreCase ) == 0)
+                                                                                && x.Name == importedFile.Name);
+      Assert.IsNotNull(importFileResponse, "should have one we tried to inserted");
+      Assert.IsTrue((String.Compare(importFileResponse.ProjectUid, importedFile.ProjectUid, StringComparison.OrdinalIgnoreCase) == 0), 
+        "unable to find the ProjectDb file we just inserted");
+
+      Assert.IsNotNull(importFileResponse.LegacyImportedFileId, "should have returned a generated ID");
+      Assert.IsTrue(importFileResponse.LegacyImportedFileId > 0, "should have returned the generated ID");
     }
 
     [TestMethod]
     public void ImportedFilesHandlerNhOp_OneFileIn_WrongFileType()
     {
-      //string projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
-      //var importedFileHandlerProject = new ImportedFileHandlerProject<ImportedFile>(ConfigStore, LoggerFactory, projectDbConnectionString);
+      string projectDbConnectionString = ConnectionUtils.GetConnectionStringMsSql(ConfigStore, Log, "NH_OP");
+      var importedFileHandlerNhOp = new ImportedFileHandlerNhOp<NhOpImportedFile>(ConfigStore, LoggerFactory);
 
-      //var importedFile = new ImportedFile
-      //{
-      //  ProjectUid = Guid.NewGuid().ToString(),
-      //  ImportedFileUid = Guid.NewGuid().ToString(),
-      //  CustomerUid = Guid.NewGuid().ToString(),
-      //  ImportedFileType = ImportedFileType.Alignment,
-      //  Name = "The File Name",
-      //  FileDescriptor = "wot?",
-      //  FileCreatedUtc = new DateTime(2017, 1, 1),
-      //  FileUpdatedUtc = new DateTime(2017, 1, 1),
-      //  ImportedBy = "whoever",
-      //  SurveyedUtc = new DateTime(2017, 1, 1),
-      //  LastActionedUtc = new DateTime(2017, 1, 1),
-      //  IsActivated = true
-      //};
+      var importedFile = new NhOpImportedFile()
+      {
+        LegacyProjectId = new Random().Next(100000, 1999999),
+        ProjectUid = Guid.NewGuid().ToString(),
+        LegacyCustomerId = new Random().Next(100000, 1999999),
+        CustomerUid = Guid.NewGuid().ToString(),
+        ImportedFileType = ImportedFileType.Alignment,
+        DxfUnitsType = 0,
+        Name = "The File Name_2014-05-21T210701Z.TTM",
+        SurveyedUtc = new DateTime(2017, 1, 1),
+        FileCreatedUtc = new DateTime(2017, 1, 1),
+        FileUpdatedUtc = new DateTime(2017, 1, 1),
+        ImportedBy = "blah@blahdeblah.com",
+        LastActionedUtc = new DateTime(2017, 1, 1)
+      };
 
-      //var insertedCount = WriteImportedFileToProjectDb(projectDbConnectionString, importedFile);
-      //Assert.AreEqual(1, insertedCount, "should have been 1 file written to ProjectDb");
+      var insertedCount = WriteImportedFileToNnOpDb(projectDbConnectionString, importedFile);
+      Assert.AreEqual(1, insertedCount, "should have been 1 file written to NhOpDb");
 
-      //importedFileHandlerProject.ReadFromDb();
-      //var listOfProjectFiles = importedFileHandlerProject.List();
-      //ImportedFile importFileResponse = listOfProjectFiles.FirstOrDefault(x => x.ProjectUid == importedFile.ProjectUid);
-      //Assert.IsNull(importFileResponse, "should not find the invalid one we tried to inserted");
+      importedFileHandlerNhOp.Read();
+      var listOfProjectFiles = importedFileHandlerNhOp.List();
+      NhOpImportedFile importFileResponse =
+        listOfProjectFiles.FirstOrDefault(x => x.ProjectUid == importedFile.ProjectUid
+                                               && x.Name == importedFile.Name);
+      Assert.IsNull(importFileResponse, "should not find the invalid one we tried to inserted");
+
     }
 
     [TestMethod]
-    [Ignore]
-    public void ImportedFilesHandlerNhOp_MergeAndWrite()
+    public void ImportedFilesHandlerNhOp_Create()
     {
-     // string projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
-     // var importedFileHandlerProject = new ImportedFileHandlerProject<ImportedFile>(ConfigStore, LoggerFactory, projectDbConnectionString);
+      var importedFileHandlerNhOp = new ImportedFileHandlerNhOp<NhOpImportedFile>(ConfigStore, LoggerFactory);
 
-     // var importedFileProject = new ImportedFile
-     // {
-     //   ProjectUid = Guid.NewGuid().ToString(),
-     //   ImportedFileUid = Guid.NewGuid().ToString(),
-     //   CustomerUid = Guid.NewGuid().ToString(),
-     //   ImportedFileType = ImportedFileType.SurveyedSurface,
-     //   Name = "The File Name",
-     //   FileDescriptor = "wot?",
-     //   FileCreatedUtc = new DateTime(2017, 1, 1),
-     //   FileUpdatedUtc = new DateTime(2017, 1, 1),
-     //   ImportedBy = "whoever",
-     //   SurveyedUtc = new DateTime(2017, 1, 1),
-     //   LastActionedUtc = new DateTime(2017, 1, 1),
-     //   IsActivated = true
-     // };
+      var importedFile = new NhOpImportedFile()
+      {
+        LegacyProjectId = new Random().Next(100000, 1999999),
+        ProjectUid = Guid.NewGuid().ToString(),
+        LegacyCustomerId = new Random().Next(100000, 1999999),
+        CustomerUid = Guid.NewGuid().ToString(),
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        DxfUnitsType = 0,
+        Name = "The File Name_2014-05-21T210701Z.TTM",
+        SurveyedUtc = new DateTime(2017, 1, 1),
+        FileCreatedUtc = new DateTime(2017, 1, 1),
+        FileUpdatedUtc = new DateTime(2017, 1, 1),
+        ImportedBy = "blah@blahdeblah.com",
+        LastActionedUtc = new DateTime(2017, 1, 1)
+      };
 
-     // var nhOpImportedFileList = new List<NhOpImportedFile>()
-     // {
-     //   new NhOpImportedFile()
-     //   {
-     //     ProjectUid = importedFileProject.ProjectUid,
-     //     LegacyProjectId = new Random().Next(100000, 1999999),
-     //     // ignore CG ImportedFileId 
-     //     // ignore CG LegacyCustomerId
-     //     CustomerUid = importedFileProject.CustomerUid,
-     //     ImportedFileType = importedFileProject.ImportedFileType,
-     //     Name = importedFileProject.Name,
-     //     FileDescriptor = importedFileProject.FileDescriptor,
-     //     SurveyedUtc = importedFileProject.SurveyedUtc,
-     //     // ignore CG? LastActionedUtc = importedFileProject.LastActionedUtc
-     //   }
-     //};
+      var nhOpImportedFileList = new List<NhOpImportedFile>()
+      {
+        importedFile
+      };
 
-     //var countMerged = importedFileHandlerProject.Merge(nhOpImportedFileList);
-     //Assert.AreEqual(1, countMerged, "nhOpDb importFile not merged");
+      var countCreated = importedFileHandlerNhOp.Create(nhOpImportedFileList);
+      Assert.AreEqual(1, countCreated, "nhOpDb importFile not created");
 
-     //var countWritten = importedFileHandlerProject.WriteToDb();
-     //Assert.AreEqual(1, countWritten, "ProjectDb importFile not written");
+      importedFileHandlerNhOp.EmptyList();
 
-     // importedFileHandlerProject.EmptyList();
+      var readCount = importedFileHandlerNhOp.Read();
+      Assert.AreNotEqual(0, readCount, "should have been at least 1 file read from NhOpDb");
 
-     // var countRead = importedFileHandlerProject.ReadFromDb();
-     // Assert.AreNotEqual(0, countRead, "ProjectDb importFile not read");
+      var listOfNhOpFiles = importedFileHandlerNhOp.List();
+      Assert.IsNotNull(listOfNhOpFiles, "should be valid list");
+      Assert.AreNotEqual(0, listOfNhOpFiles.Count, "should be at least 1 file in NhOpDb list");
 
-     // var listOfProjectFiles = importedFileHandlerProject.List();
-     // ImportedFile importFileResponse = listOfProjectFiles.FirstOrDefault(x => x.ProjectUid == importedFileProject.ProjectUid);
-     // Assert.IsNotNull(importFileResponse, "should have found the ProjectDb one we just inserted");
+      NhOpImportedFile importFileResponse = listOfNhOpFiles.FirstOrDefault(x => x.ProjectUid == importedFile.ProjectUid
+                                                                                && x.Name == importedFile.Name);
+      Assert.IsNotNull(importFileResponse, "should have one we tried to inserted");
+      Assert.AreEqual(importedFile.ProjectUid, importFileResponse?.ProjectUid,
+        "unable to find the ProjectDb file we just inserted");
+
+      Assert.IsNotNull(importFileResponse.LegacyImportedFileId, "should have returned a generated ID");
+
+      var deletedCount = importedFileHandlerNhOp.Delete(nhOpImportedFileList);
+      Assert.AreEqual(1, deletedCount, "nhOpDb importFile not deleted");
+
+      importedFileHandlerNhOp.EmptyList();
+      importedFileHandlerNhOp.Read();
+
+      listOfNhOpFiles = importedFileHandlerNhOp.List();
+      importFileResponse = listOfNhOpFiles.FirstOrDefault(x => x.ProjectUid == importedFile.ProjectUid
+                                                               && x.Name == importedFile.Name);
+      Assert.IsNull(importFileResponse, "should no longer find the one we created");
+
     }
 
-    //private int WriteImportedFileToProjectDb(string projectDbConnectionString, ImportedFile importedFile)
-    //{
-    //  var dbConnection = new MySqlConnection(projectDbConnectionString);
-    //  dbConnection.Open();
+    [TestMethod]
+    public void ImportedFilesHandlerNhOp_Delete()
+    {
+      var importedFileHandlerNhOp = new ImportedFileHandlerNhOp<NhOpImportedFile>(ConfigStore, LoggerFactory);
 
-    //  var insertCommand = string.Format(
-    //    "INSERT ImportedFile " +
-    //    "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated, LastActionedUTC) " +
-    //    "  VALUES " +
-    //    "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, 0, 1, @LastActionedUtc)");
+      var importedFile = new NhOpImportedFile()
+      {
+        LegacyProjectId = new Random().Next(100000, 1999999),
+        ProjectUid = Guid.NewGuid().ToString(),
+        LegacyCustomerId = new Random().Next(100000, 1999999),
+        CustomerUid = Guid.NewGuid().ToString(),
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        DxfUnitsType = 0,
+        Name = "The File Name_2014-05-21T210701Z.TTM",
+        SurveyedUtc = new DateTime(2017, 1, 1),
+        FileCreatedUtc = new DateTime(2017, 1, 1),
+        FileUpdatedUtc = new DateTime(2017, 1, 1),
+        ImportedBy = "blah@blahdeblah.com",
+        LastActionedUtc = new DateTime(2017, 1, 1)
+      };
 
-    //  int insertedCount = dbConnection.Execute(insertCommand, importedFile);
-    //  return insertedCount;
-    //}
+      var nhOpImportedFileList = new List<NhOpImportedFile>()
+      {
+        importedFile
+      };
+
+      var countCreated = importedFileHandlerNhOp.Create(nhOpImportedFileList);
+      Assert.AreEqual(1, countCreated, "nhOpDb importFile not created");
+
+      var readCount = importedFileHandlerNhOp.Read();
+      Assert.AreNotEqual(0, readCount, "should have been at least 1 file read from NhOpDb");
+
+      var listOfNhOpFiles = importedFileHandlerNhOp.List();
+      NhOpImportedFile importFileResponse = listOfNhOpFiles.FirstOrDefault(x => x.ProjectUid == importedFile.ProjectUid
+                                                                                && x.Name == importedFile.Name);
+      Assert.IsNotNull(importFileResponse, "should have one we tried to inserted");
+      Assert.AreEqual(importedFile.ProjectUid, importFileResponse?.ProjectUid,
+        "unable to find the ProjectDb file we just inserted");
+    }
+
+    private int WriteImportedFileToNnOpDb(string projectDbConnectionString, NhOpImportedFile importedFile)
+    {
+      var dbConnection = new SqlConnection(projectDbConnectionString);
+      dbConnection.Open();
+
+      int insertedCount = 0;
+       var insertCommand = string.Format(
+        $"INSERT Customer " +
+        "   (ID, CustomerUID, Name, fk_CustomerTypeID, BSSID, fk_DealerNetworkID) " +
+        "  VALUES (@LegacyCustomerId, @CustomerUid, @Name, 0, 'bssId', 0)");
+
+      dbConnection.Execute("SET IDENTITY_INSERT Customer ON");
+      insertedCount = dbConnection.Execute(insertCommand, importedFile);
+      dbConnection.Execute("SET IDENTITY_INSERT Customer OFF");
+
+      insertCommand = string.Format(
+        $"INSERT Project " +
+        "    (ID, ProjectUID, Name, fk_CustomerID, fk_ProjectTypeID, fk_SiteID, TimezoneName) " +
+        "  VALUES " +
+        "    (@LegacyProjectId, @ProjectUid, 'the project name', @LegacyCustomerId, 0, 0, 'whateverTZ')");
+
+      dbConnection.Execute("SET IDENTITY_INSERT Project ON");
+      insertedCount = dbConnection.Execute(insertCommand, importedFile);
+      dbConnection.Execute("SET IDENTITY_INSERT Project OFF");
+
+      insertCommand = string.Format(
+        "INSERT ImportedFileHistory " +
+        "    (fk_ImportedFileID, CreateUTC, InsertUTC) " +
+        "  VALUES " +
+        "    (@LegacyImportedFileId, @FileCreatedUtc, @FileUpdatedUtc)");
+
+      insertedCount = dbConnection.Execute(insertCommand, importedFile);
+
+      insertCommand = string.Format(
+        "INSERT ImportedFile " +
+        "    (ID, fk_CustomerID, fk_ProjectID, Name, fk_ImportedFileTypeID, SurveyedUTC, fk_DXFUnitsTypeID) " +
+        "  VALUES " +
+        "    (@LegacyImportedFileId, @LegacyCustomerId, @LegacyProjectId, @Name, @ImportedFileType, @SurveyedUtc, @DxfUnitsType)");
+
+      dbConnection.Execute("SET IDENTITY_INSERT ImportedFile ON");
+      insertedCount = dbConnection.Execute(insertCommand, importedFile);
+      dbConnection.Execute("SET IDENTITY_INSERT ImportedFile OFF");
+
+      dbConnection.Close();
+      return insertedCount;
+    }
   }
 }

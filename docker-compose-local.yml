@@ -44,22 +44,22 @@ services:
     depends_on:
      - db
   db:
-    image: mysql/mysql-server:5.7.15 
+    image: mysql/mysql-server:5.7.15
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci]
     env_file:
      - docker-compose-local.env
     ports:
-      - "3306:3306"       
+      - "3306:3306"
   schemamssql:
     build: ./databaseMsSql
     env_file:
      - docker-compose-local.env
-    environment:     
-     - MSSQL_SERVER_NAME=dbmssql,
-     - MSSQL_DATABASE_NAME=NH_OP,
-     - MSSQL_PORT=1433,
-     - MSSQL_USERNAME=root,
-     - MSSQL_ROOT_PASSWORD=abc123  
+    environment:
+     - MSSQL_SERVER_NAME=dbmssql
+     - MSSQL_DATABASE_NAME=NH_OP
+     - MSSQL_PORT=1433
+     - MSSQL_USERNAME=sa
+     - MSSQL_ROOT_PASSWORD=d3vRDS1234_
     depends_on:
      - dbmssql
   dbmssql:
@@ -68,9 +68,9 @@ services:
      - ACCEPT_EULA=Y
      - SA_PASSWORD=d3vRDS1234_
     env_file:
-     - docker-compose-local.env  
+     - docker-compose-local.env
     ports:
-      - "1433:1433"         
+      - "1433:1433"
   accepttest:
     build: ./AcceptanceTests/deploy
     env_file:

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using Microsoft.Extensions.Logging;
 using Dapper;
 using MySql.Data.MySqlClient;
@@ -27,8 +26,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       _dbConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_Project");
       _members = new List<ProjectImportedFile>();
 
-      _log.LogDebug($"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
-      Console.WriteLine($"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
+      _log.LogDebug(
+        $"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
+      Console.WriteLine(
+        $"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
     }
 
     public int Read()
@@ -45,7 +46,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         throw;
       }
 
-      string selectCommand = 
+      string selectCommand =
         @"SELECT 
               iff.fk_ProjectUID as ProjectUID, iff.ImportedFileUID, iff.ImportedFileID, iff.fk_CustomerUID as CustomerUID,
               iff.fk_ImportedFileTypeID as ImportedFileType, iff.Name, 
@@ -61,7 +62,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       try
       {
         response = dbConnection.Query<ProjectImportedFile>(selectCommand).ToList();
-        Console.WriteLine($"ImportedFileHandlerProject.Read: selectCommand {selectCommand} response {JsonConvert.SerializeObject(response)}");
+        Console.WriteLine(
+          $"ImportedFileHandlerProject.Read: selectCommand {selectCommand} response {JsonConvert.SerializeObject(response)}");
       }
       catch (Exception ex)
       {
@@ -84,7 +86,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       _members.Clear();
     }
 
-    public List<T> List() 
+    public List<T> List()
     {
       return _members as List<T>;
     }
@@ -149,7 +151,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
 
       var updateCommand =
-          @"UPDATE ImportedFile
+        @"UPDATE ImportedFile
                 SET 
                   FileDescriptor = @fileDescriptor,
                   FileCreatedUTC = @fileCreatedUtc,
@@ -193,6 +195,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
 
       return Update(memberList);
     }
-    
+
   }
 }

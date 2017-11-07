@@ -13,10 +13,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
     private ImportedFileHandlerNhOp<NhOpImportedFile> _nhOpRepo;
     private ImportedFileHandlerProject<ProjectImportedFile> _projectRepo;
 
-/// <summary>
-/// </summary>
-/// <param name="configStore"></param>
-/// <param name="logger"></param>
+    /// <summary>
+    /// </summary>
+    /// <param name="configStore"></param>
+    /// <param name="logger"></param>
     public ImportedFileHandler(IConfigurationStore configStore, ILoggerFactory logger)
     {
       _configStore = configStore;
@@ -50,8 +50,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       // b) remove all which are already syncd
       foreach (var ifp in ifsProject)
       {
-        var gotMatchingNhOp = ifsNhOp.First(o => 
-          o.ProjectUid == ifp.ProjectUid && o.Name == ifp.Name && o.SurveyedUtc == ifp.SurveyedUtc && o.FileCreatedUtc == ifp.FileCreatedUtc && o.FileUpdatedUtc == ifp.FileUpdatedUtc);
+        var gotMatchingNhOp = ifsNhOp.First(o =>
+          o.ProjectUid == ifp.ProjectUid && o.Name == ifp.Name && o.SurveyedUtc == ifp.SurveyedUtc &&
+          o.FileCreatedUtc == ifp.FileCreatedUtc && o.FileUpdatedUtc == ifp.FileUpdatedUtc);
 
         if (gotMatchingNhOp != null)
         {
@@ -71,7 +72,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       // a) insert into project
       foreach (var ifo in ifsNhOp)
       {
-        var gotMatchingProject = ifsProject.First(o => o.ProjectUid == ifo.ProjectUid && o.Name == ifo.Name && o.SurveyedUtc == ifo.SurveyedUtc);
+        var gotMatchingProject = ifsProject.First(o => o.ProjectUid == ifo.ProjectUid && o.Name == ifo.Name &&
+                                                       o.SurveyedUtc == ifo.SurveyedUtc);
         if (gotMatchingProject == null)
         {
           var projectImportedFile = AutoMapperUtility.Automapper.Map<ProjectImportedFile>(ifo);
@@ -85,7 +87,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       // b) else insert into NH_OP
       foreach (var ifp in ifsProject)
       {
-        var gotMatchingNhOp = ifsNhOp.FindAll(o => o.ProjectUid == ifp.ProjectUid && o.Name == ifp.Name && o.SurveyedUtc == ifp.SurveyedUtc);
+        var gotMatchingNhOp = ifsNhOp.FindAll(o => o.ProjectUid == ifp.ProjectUid && o.Name == ifp.Name &&
+                                                   o.SurveyedUtc == ifp.SurveyedUtc);
 
         // is nh_op missing because it needs to be created, or has it been deleted
         if (gotMatchingNhOp.Count == 0)
@@ -107,9 +110,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       //     but have been updated (FileCreatedUTC) in one and/or other
       //     i.e. file has been re-imported so new updateUtc
       foreach (var ifp in ifsProject)
-      { 
-        var gotMatchingNhOps = ifsNhOp.FindAll(o => o.ProjectUid == ifp.ProjectUid && o.Name == ifp.Name && o.SurveyedUtc == ifp.SurveyedUtc
-          && (o.FileCreatedUtc != ifp.FileCreatedUtc || o.FileUpdatedUtc != ifp.FileUpdatedUtc)).OrderBy(o => o.FileUpdatedUtc);
+      {
+        var gotMatchingNhOps = ifsNhOp.FindAll(o => o.ProjectUid == ifp.ProjectUid && o.Name == ifp.Name &&
+                                                    o.SurveyedUtc == ifp.SurveyedUtc
+                                                    && (o.FileCreatedUtc != ifp.FileCreatedUtc ||
+                                                        o.FileUpdatedUtc != ifp.FileUpdatedUtc))
+          .OrderBy(o => o.FileUpdatedUtc);
 
         // NH_OP stores each update fileCreated/Updated in ImportedFileHistory, however we will only have the latest one in project
         // to write to nh_Op must have a prior NH+OP one to get legacyProjectID and CustomerID
@@ -145,6 +151,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       // todo TCC and RaptorNotiications
       // todo rollback
     }
-   
+
   }
 }

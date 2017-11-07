@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace RepositoryTests
 {
   [TestClass]
-  public class ProjectRepositoryTests : TestControllerBase
+  public class NhOpRepositoryTests : TestControllerBase
   {
     [TestInitialize]
     public void Init()
@@ -13,8 +13,10 @@ namespace RepositoryTests
     }
 
     [TestMethod]
-    public void ProjectSchemaExists_ImportedFileTable()
+    [Ignore]
+    public void NhOpSchemaExists_ImportedFileTable()
     {
+      // todo make NH_OP.ImportedFile specific if we can
       const string tableName = "ImportedFile";
       List<string> columnNames = new List<string>
       {
@@ -36,7 +38,7 @@ namespace RepositoryTests
         "InsertUTC",
         "UpdateUTC"
       };
-      CheckSchema("_PROJECT", tableName, columnNames);
+      CheckSchema("_NH_OP", tableName, columnNames);
     }
   }
 }
