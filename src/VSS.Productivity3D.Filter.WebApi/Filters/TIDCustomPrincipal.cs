@@ -22,6 +22,7 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
       CustomerUid = customerUid;
       EmailAddress = emailAddress;
       IsApplication = isApplication;
+      CustomerName = customerName;
     }
 
     /// <summary>
@@ -31,6 +32,15 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
     /// The customer uid.
     /// </value>
     public string CustomerUid { get; }
+
+    /// <summary>
+    /// Gets the customer name.
+    /// </summary>
+    /// <value>
+    /// The customer name.
+    /// </value>
+    public string CustomerName { get; }
+
 
     /// <summary>
     /// Gets the email address.
