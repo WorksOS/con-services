@@ -277,11 +277,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="endUtc"></param>
     private void GetDateRange(long projectId, Common.Models.Filter filter, out DateTime startUtc, out DateTime endUtc)
     {
-      if (filter == null || !filter.startUTC.HasValue || !filter.endUTC.HasValue)
+      if (filter == null || !filter.StartUtc.HasValue || !filter.EndUtc.HasValue)
       {
         //Special case of project extents where start and end UTC not set in filter for Raptor peformance.
         //But need to set here for export.
-        var excludedIds = filter?.surveyedSurfaceExclusionList?.ToArray() ?? new long[0];
+        var excludedIds = filter?.SurveyedSurfaceExclusionList?.ToArray() ?? new long[0];
         ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds);
         request.Validate();
 
@@ -294,8 +294,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       else
       {
-        startUtc = filter.startUTC.Value;
-        endUtc = filter.endUTC.Value;
+        startUtc = filter.StartUtc.Value;
+        endUtc = filter.EndUtc.Value;
 
       }
     }

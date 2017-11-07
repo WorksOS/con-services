@@ -24,12 +24,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Logger for logging
     /// </summary>
     private readonly ILogger log;
-
-    /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory logger;
-
+    
     /// <summary>
     /// For getting project settings for a project
     /// </summary>
@@ -42,9 +37,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="logger">Logger</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
+    /// <param name="cacheBuilder">The memory cache for the controller</param>
     public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy, IMemoryCacheBuilder<Guid> cacheBuilder)
     {
-      this.logger = logger;
       this.log = logger.CreateLogger<CompactionSettingsController>();
       this.projectSettingsProxy = projectSettingsProxy;
       this.cacheBuilder = cacheBuilder;
