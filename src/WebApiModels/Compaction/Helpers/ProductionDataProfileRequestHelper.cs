@@ -6,8 +6,8 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.Extensions;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <returns>An instance of the CompactionProfileProductionDataRequest class.</returns>
     public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees)
     {
-      var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
+      var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.LatDegreesToRadians(), startLonDegrees.LonDegreesToRadians(), endLatDegrees.LatDegreesToRadians(), endLonDegrees.LonDegreesToRadians());
 
       var liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 

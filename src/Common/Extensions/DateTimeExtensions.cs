@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Common.Extensions
     public static string ToIso8601DateTimeString(this DateTime dateTimeUtc)
     {
       // CAUTION - this assumes the DateTime passed in is already UTC!!
-      return string.Format("{0:yyyy-MM-ddTHH:mm:ssZ}", dateTimeUtc);
+      return $"{dateTimeUtc:yyyy-MM-ddTHH:mm:ssZ}";
     }
 
     /// <summary>
@@ -137,15 +137,15 @@ namespace VSS.Productivity3D.Common.Extensions
     /// <returns>The start or end UTC for the range in the time zone</returns>
     public static DateTime? UtcForDateRangeType(this DateTime utcNow, DateRangeType dateRangeType, string timeZoneName, bool isStart)
     {
-      if (dateRangeType == DateRangeType.Custom || dateRangeType == DateRangeType.ProjectExtents)
+      if (dateRangeType == DateRangeType.Custom || dateRangeType == DateRangeType.ProjectExtents || string.IsNullOrEmpty(timeZoneName))
+      {
         return null;
+      }
 
       var offset = timeZoneName.TimeZoneOffsetFromUtc();
       DateTime nowInTimeZone = utcNow + offset;
 
       return nowInTimeZone.DateTimeForDateRangeType(dateRangeType, isStart) - offset;
     }
-
-
   }
 }

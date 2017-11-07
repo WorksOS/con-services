@@ -20,7 +20,8 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// The project to process the CS definition file into.
     /// </summary>
-    /// 
+    // TODO (Aaron) This property should be UpperCamelCased to avoid property conflict problems with method parameters in derived classes.
+    // TODO (Aaron) Because this is a base type for request DTOs we don't need PropertyName decoration on the JsonPropertyAttribute. Deserialization from JSON to POCO isn't case sensitive.
     [JsonProperty(PropertyName = "projectId", Required = Required.Default)]
     [ValidProjectId]
     public long? projectId { get; set; }
@@ -65,7 +66,7 @@ namespace VSS.Productivity3D.Common.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "At least one of the project identifiers must be defined!"));
+            "At least one of the project identifiers must be defined!")); // (Aaron) Is it appropriate to use exclaimation mark in this error msg?
       }
     }
   }

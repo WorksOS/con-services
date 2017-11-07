@@ -9,15 +9,14 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
   public class SummaryVolumesResult : ContractExecutionResult
   {
     protected SummaryVolumesResult(string message) : base(message)
-    {
-    }
+    { }
 
     /// <summary>
     /// Private constructor
     /// </summary>
     private SummaryVolumesResult()
-    {
-    }
+    { }
+
     /// <summary>
     /// Zone boundaries
     /// </summary>

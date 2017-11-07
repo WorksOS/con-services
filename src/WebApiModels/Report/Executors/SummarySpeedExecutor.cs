@@ -1,17 +1,17 @@
-﻿using ASNode.SpeedSummary.RPC;
-using ASNodeDecls;
-using SVOICOptionsDecls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using ASNode.SpeedSummary.RPC;
+using ASNodeDecls;
+using SVOICOptionsDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   /// <summary>
   /// Builds Summary speed report from Raptor
@@ -33,15 +33,15 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       SummarySpeedRequest request = item as SummarySpeedRequest;
-      TASNodeSpeedSummaryResult result = new TASNodeSpeedSummaryResult();
+      new TASNodeSpeedSummaryResult();
 
-      bool success = raptorClient.GetSummarySpeed(request.projectId ?? -1,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
+      bool success = this.raptorClient.GetSummarySpeed(request.projectId ?? -1,
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
           TASNodeCancellationDescriptorType.cdtVolumeSummary),
-        RaptorConverters.ConvertFilter(request.filterId, request.filter, request.projectId, null, null,
+        RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.projectId, null, null,
           new List<long>()),
-        RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
-        out result);
+        RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
+        out var result);
 
       if (success)
       {
