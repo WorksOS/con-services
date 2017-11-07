@@ -387,15 +387,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
       }
 
-      var request = SummaryVolumesRequest.CreateAndValidate(
-        projectId,
-        baseFilter,
-        topFilter,
-        baseDesign,
-        topDesign,
-        null,
-        null,
-        volumeSummaryHelper.GetVolumesType(baseFilter, topFilter));
+      var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeSummaryHelper.GetVolumesType(baseFilter, topFilter));
 
       try
       {
@@ -405,7 +397,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         var returnResult = CompactionSummaryVolumesResult.CreateInstance(result, await GetProjectSettings(projectUid));
 
-        log.LogInformation("GetSummaryVolumes result: " + JsonConvert.SerializeObject(returnResult));
+        log.LogTrace("GetSummaryVolumes result: " + JsonConvert.SerializeObject(returnResult));
 
         return returnResult;
       }
