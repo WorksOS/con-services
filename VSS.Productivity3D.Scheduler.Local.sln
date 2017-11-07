@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Schedule
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories.Local", "..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj", "{C737DF14-C0E4-4C44-9CE9-A8F69141B8FA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Tests.Local", "test\UnitTests\VSS.Productivity3D.Scheduler.Tests\VSS.Productivity3D.Scheduler.Tests.Local.csproj", "{B865D6FC-9AC3-4474-9A52-3CB2A78F7511}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{C737DF14-C0E4-4C44-9CE9-A8F69141B8FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C737DF14-C0E4-4C44-9CE9-A8F69141B8FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C737DF14-C0E4-4C44-9CE9-A8F69141B8FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B865D6FC-9AC3-4474-9A52-3CB2A78F7511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B865D6FC-9AC3-4474-9A52-3CB2A78F7511}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B865D6FC-9AC3-4474-9A52-3CB2A78F7511}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B865D6FC-9AC3-4474-9A52-3CB2A78F7511}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

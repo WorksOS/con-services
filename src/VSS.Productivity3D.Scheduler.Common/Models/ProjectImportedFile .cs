@@ -13,10 +13,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       ProjectImportedFile otherImportedFile = obj as ProjectImportedFile;
       if (
         otherImportedFile?.LegacyProjectId != LegacyProjectId
-        || otherImportedFile.LegacyCustomerId != this.LegacyCustomerId
+        || otherImportedFile.LegacyCustomerId != LegacyCustomerId
         || otherImportedFile.ProjectUid == ProjectUid
         || otherImportedFile.ImportedFileUid == ImportedFileUid
         || otherImportedFile.ImportedFileId == ImportedFileId
+        || otherImportedFile.LegacyImportedFileId == LegacyImportedFileId
         || otherImportedFile.CustomerUid == CustomerUid
         || otherImportedFile.ImportedFileType == ImportedFileType
         || otherImportedFile.Name == Name

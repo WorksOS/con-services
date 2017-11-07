@@ -6,6 +6,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
   public class NhOpImportedFile
   {
     public long LegacyImportedFileId { get; set; } // autoincrement value
+
     public long LegacyProjectId { get; set; }
 
     public string ProjectUid { get; set; } // from joined table
@@ -16,9 +17,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
 
     public ImportedFileType ImportedFileType { get; set; } // CG and NG use same enums
 
-    public int? DxfUnitsType { get; set; } // not included yet in NG, but very soon
+    public DxfUnitsType DxfUnitsType { get; set; }
 
-    public string Name { get; set; } // CG includes SurveyedUtc
+    public string Name { get; set; } // CG includes surveyedUtc
 
     public DateTime? SurveyedUtc { get; set; }
 
@@ -36,7 +37,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
     {
       NhOpImportedFile importedFile = obj as NhOpImportedFile;
       if (
-        importedFile?.LegacyProjectId != LegacyProjectId
+        importedFile?.LegacyImportedFileId != this.LegacyImportedFileId
+        || importedFile.LegacyProjectId != LegacyProjectId
         || importedFile.ProjectUid != this.ProjectUid
         || importedFile.LegacyCustomerId != this.LegacyCustomerId
         || importedFile.CustomerUid != this.CustomerUid

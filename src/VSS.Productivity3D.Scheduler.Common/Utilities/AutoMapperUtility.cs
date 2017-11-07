@@ -44,7 +44,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
           cfg.CreateMap<ProjectImportedFile, NhOpImportedFile>();
-          cfg.CreateMap<NhOpImportedFile, ProjectImportedFile>();
+          cfg.CreateMap<NhOpImportedFile, ProjectImportedFile>()
+            .ForMember(dest => dest.ImportedFileUid, opt => opt.Ignore())
+            .ForMember(dest => dest.ImportedFileId, opt => opt.Ignore())
+            .ForMember(dest => dest.FileDescriptor, opt => opt.Ignore())
+            .ForMember(dest => dest.IsDeleted, opt => opt.UseValue(false))
+            .ForMember(dest => dest.IsActivated, opt => opt.UseValue(true));
         }
       );
 

@@ -35,7 +35,6 @@ namespace VSS.Productivity3D.Scheduler.Tests
 
       _logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       _configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      //_configStore = new GenericConfiguration(_logger);
     }
   }
 }

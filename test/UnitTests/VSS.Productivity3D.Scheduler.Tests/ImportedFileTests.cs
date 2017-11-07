@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Scheduler.Common.Models;
-using Moq;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Scheduler.Tests
 {
@@ -11,6 +11,12 @@ namespace VSS.Productivity3D.Scheduler.Tests
   public class ImportedFileTests : BaseTests
   {
     protected ILogger _log;
+
+    [ClassInitialize]
+    public static void ClassInitialize(TestContext testContext)
+    {
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
+    }
 
     [TestMethod]
     public void GetImportedFileFromProject_NoneExists()
@@ -29,21 +35,162 @@ namespace VSS.Productivity3D.Scheduler.Tests
       Assert.AreEqual(0, listOfProjectFiles.Count, "should not be any files");
     }
 
+    [TestMethod]
+    public void MapProjectImportedFileToNhOpImportedFile()
+    {
+      var source = new ProjectImportedFile()
+      {
+        LegacyProjectId = new Random().Next(100000, 1999999),
+        LegacyCustomerId = new Random().Next(100000, 1999999),
+        ProjectUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        ImportedFileId = new Random().Next(100000, 1999999),
+        LegacyImportedFileId = new Random().Next(100000, 1999999),
+        CustomerUid = Guid.NewGuid().ToString(),
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        Name = "JB topo southern motorway.TTM",
+        FileDescriptor =
+          "{ \"filespaceId\":\"u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01\",\"path\":\"/87bdf851-44c5-e311-aa77-00505688274d/62a52e4f-faa2-e511-80e5-0050568821e6\",\"fileName\":\"DesignSVL13072017034205.svl\"}",
+        FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
+        FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
+        ImportedBy = "someoneElse@gmail.com",
+        IsDeleted = false,
+        IsActivated = true,
+        SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
+        DxfUnitsType = DxfUnitsType.UsSurveyFeet,
+        LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
+      };
+
+      NhOpImportedFile destination = AutoMapperUtility.Automapper.Map<NhOpImportedFile>(source);
+      Assert.AreEqual(source.LegacyImportedFileId, destination.LegacyImportedFileId,
+        "LegacyImportedFileId has not been mapped correctly");
+      Assert.AreEqual(source.LegacyProjectId, destination.LegacyProjectId,
+        "LegacyProjectId has not been mapped correctly");
+      Assert.AreEqual(source.ProjectUid, destination.ProjectUid, "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(source.LegacyCustomerId, destination.LegacyCustomerId,
+        "LegacyCustomerId has not been mapped correctly");
+      Assert.AreEqual(source.CustomerUid, destination.CustomerUid, "CustomerUid has not been mapped correctly");
+      Assert.AreEqual(source.ImportedFileType, destination.ImportedFileType,
+        "ImportedFileType has not been mapped correctly");
+      Assert.AreEqual(source.DxfUnitsType, destination.DxfUnitsType, "DxfUnitsType has not been mapped correctly");
+      Assert.AreEqual(source.Name, destination.Name, "Name has not been mapped correctly");
+      Assert.AreEqual(source.SurveyedUtc, destination.SurveyedUtc, "SurveyedUtc has not been mapped correctly");
+      Assert.AreEqual(source.FileCreatedUtc, destination.FileCreatedUtc,
+        "FileCreatedUtc has not been mapped correctly");
+      Assert.AreEqual(source.FileUpdatedUtc, destination.FileUpdatedUtc,
+        "FileUpdatedUtc has not been mapped correctly");
+      Assert.AreEqual(source.ImportedBy, destination.ImportedBy, "ImportedBy has not been mapped correctly");
+      Assert.AreEqual(source.LastActionedUtc, destination.LastActionedUtc,
+        "LastActionedUtc has not been mapped correctly");
+
+      // just make a copy
+      ProjectImportedFile copyOfSource = AutoMapperUtility.Automapper.Map<ProjectImportedFile>(source);
+      Assert.AreEqual(source.ProjectUid, copyOfSource.ProjectUid, "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(source.ImportedFileUid, copyOfSource.ImportedFileUid,
+        "ImportedFileUid has not been mapped correctly");
+    }
 
     [TestMethod]
-    [Ignore] // todo Moq
-    public void GetImportedFileFromProject_OneExists()
+    public void MapNhOpImportedFileToProjectImportedFile()
     {
-      _log = _logger.CreateLogger<ImportedFileTests>();
+      var source = new NhOpImportedFile()
+      {
+        LegacyImportedFileId = new Random().Next(100000, 1999999),
 
-      string projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_PROJECT");
-      var importedFileHandlerProject = new ImportedFileHandlerProject<ProjectImportedFile>(_configStore, _logger);
-      var readCount = importedFileHandlerProject.Read();
-      Assert.AreEqual(1, readCount, "should have been 1 file written");
+        LegacyProjectId = new Random().Next(100000, 1999999),
+        ProjectUid = Guid.NewGuid().ToString(),
 
-      var listOfProjectFiles = importedFileHandlerProject.List();
-      Assert.IsNotNull(listOfProjectFiles, "should be valid list");
-      Assert.AreEqual(1, listOfProjectFiles.Count, "should be 1 file");
+        LegacyCustomerId = new Random().Next(100000, 1999999),
+        CustomerUid = Guid.NewGuid().ToString(),
+
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        DxfUnitsType = DxfUnitsType.UsSurveyFeet,
+        Name = "JB topo southern motorway_2010-11-29T153300Z.TTM",
+        SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
+
+        FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
+        FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
+        ImportedBy = "someoneElse@gmail.com", // todo NhOp only includes fk_UserId
+        LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
+      };
+
+      ProjectImportedFile destination = AutoMapperUtility.Automapper.Map<ProjectImportedFile>(source);
+      Assert.AreEqual(source.LegacyImportedFileId, destination.LegacyImportedFileId,
+        "LegacyImportedFileId has not been mapped correctly");
+      Assert.AreEqual(source.LegacyProjectId, destination.LegacyProjectId,
+        "LegacyProjectId has not been mapped correctly");
+      Assert.AreEqual(source.ProjectUid, destination.ProjectUid, "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(source.LegacyCustomerId, destination.LegacyCustomerId,
+        "LegacyCustomerId has not been mapped correctly");
+      Assert.AreEqual(source.CustomerUid, destination.CustomerUid, "CustomerUid has not been mapped correctly");
+      Assert.AreEqual(source.ImportedFileType, destination.ImportedFileType,
+        "ImportedFileType has not been mapped correctly");
+      Assert.AreEqual(source.DxfUnitsType, destination.DxfUnitsType, "DxfUnitsType has not been mapped correctly");
+      Assert.AreEqual(source.Name, destination.Name, "Name has not been mapped correctly");
+      Assert.AreEqual(source.SurveyedUtc, destination.SurveyedUtc, "SurveyedUtc has not been mapped correctly");
+      Assert.AreEqual(source.FileCreatedUtc, destination.FileCreatedUtc,
+        "FileCreatedUtc has not been mapped correctly");
+      Assert.AreEqual(source.FileUpdatedUtc, destination.FileUpdatedUtc,
+        "FileUpdatedUtc has not been mapped correctly");
+      Assert.AreEqual(source.ImportedBy, destination.ImportedBy, "ImportedBy has not been mapped correctly");
+      Assert.AreEqual(source.LastActionedUtc, destination.LastActionedUtc,
+        "LastActionedUtc has not been mapped correctly");
+
+      // just make a copy
+      NhOpImportedFile copyOfSource = AutoMapperUtility.Automapper.Map<NhOpImportedFile>(source);
+      Assert.AreEqual(source.ProjectUid, copyOfSource.ProjectUid, "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(source.LegacyImportedFileId, copyOfSource.LegacyImportedFileId,
+        "LegacyImportedFileId has not been mapped correctly");
+    }
+
+    [TestMethod]
+    public void MapNhOpImportedFile_RemoveSurveyedUtcFromName()
+    {
+      // JB topo southern motorway_2010-11 - 29T153300Z.TTM   SS=2010-11-29 15:33:00.0000000
+
+      var nhOpName = "JB topo southern motorway_2010-11 - 29T153300Z.TTM";
+      var expectedProjectName = "JB topo southern motorway.TTM";
+      var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
+
+      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
+    }
+
+    [TestMethod]
+    public void MapNhOpImportedFile_RemoveSurveyedUtcFromName_DoubleUtc()
+    {
+      // Aerial Survey 120819_2012 - 08 - 19T035400Z_2016 - 08 - 16T003724Z.TTM ssUtc=2016-08-16 00:37:24.0000000
+
+      var nhOpName = "Aerial Survey 120819_2012 - 08 - 19T035400Z_2016 - 08 - 16T003724Z.TTM";
+      var expectedProjectName = "Aerial Survey 120819.TTM";
+      var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
+
+      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
+    }
+
+    [TestMethod]
+    public void MapNhOpImportedFile_IncludeSurveyedUtcInName()
+    {
+      // JB topo southern motorway_2010-11 - 29T153300Z.TTM   SS=2010-11-29 15:33:00.0000000
+
+      var projectName = "JB topo southern motorway.TTM";
+      var surveyUtc = new DateTime(2010, 11, 29, 15, 33, 00);
+      var expectedNhOpName = "JB topo southern motorway_2010-11-29T153300Z.TTM";
+      var nhOpName = ImportedFileUtils.IncludeSurveyedUtcInName(projectName, surveyUtc);
+
+      Assert.AreEqual(expectedNhOpName, nhOpName, "File name has not been converted correctly");
+    }
+
+    [TestMethod]
+    public void MapNhOpImportedFile_IncludeSurveyedUtcInName_Double()
+    {
+      // Aerial Survey 120819_2012 - 08 - 19T035400Z_2016 - 08 - 16T003724Z.TTM ssUtc=2016-08-16 00:37:24.0000000
+
+      var projectName = "Aerial Survey 120819_2012-08-19T035400Z.TTM";
+      var surveyUtc = new DateTime(2016, 8, 16, 0, 37, 24);
+      var expectedNhOpName = "Aerial Survey 120819_2012-08-19T035400Z_2016-08-16T003724Z.TTM";
+      var nhOpName = ImportedFileUtils.IncludeSurveyedUtcInName(projectName, surveyUtc);
+
+      Assert.AreEqual(expectedNhOpName, nhOpName, "File name has not been converted correctly");
     }
   }
 }
