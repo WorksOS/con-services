@@ -16,6 +16,7 @@ using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Filter.Common.Validators;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -65,7 +66,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         }
         else
         {
-          await NotifyRaptor(filterRequest);
+          if (!(filterEvent is DeleteFilterEvent))
+            await NotifyRaptor(filterRequest);
         }
       }
       catch (Exception e)
