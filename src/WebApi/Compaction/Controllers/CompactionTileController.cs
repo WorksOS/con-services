@@ -73,7 +73,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="settingsManager">Compaction settings manager</param>
-    /// <param name="requestFactory">The request factory.</param>
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
     /// <param name="tileService">Map tile generator</param>

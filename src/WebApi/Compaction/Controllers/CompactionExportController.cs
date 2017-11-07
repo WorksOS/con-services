@@ -66,6 +66,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="requestFactory">The request factory.</param>
     /// <param name="exceptionHandler">The exception handler.</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
+    /// <param name="prefProxy">User preferences proxy</param>
     public CompactionExportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IPreferenceProxy prefProxy) :
