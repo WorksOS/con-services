@@ -63,8 +63,6 @@ services:
      - SA_PASSWORD=d3vRDS1234_
     env_file:
      - docker-compose.env
-    ports:
-      - "1433:1433"
   accepttest:
     build: ./AcceptanceTests/deploy
     env_file:
