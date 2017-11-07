@@ -38,10 +38,10 @@ namespace VSS.VisionLink.Raptor.Rendering
         //    RePaintEntityCount : Integer;
         //    EntityDisplayCount : Integer;
 
-        int LastPtX = 0; // Updated by move_to, line_to, move_by etc 
-        int LastPtY = 0;
-        double WLastPtX; // World coordinate versions of lastptx/y 
-        double WLastPtY;
+        // int LastPtX = 0; // Updated by move_to, line_to, move_by etc 
+        // int LastPtY = 0;
+        // double WLastPtX; // World coordinate versions of lastptx/y 
+        // double WLastPtY;
 
         bool Rotating = false;
         public double Rotation = 0;
@@ -102,10 +102,10 @@ namespace VSS.VisionLink.Raptor.Rendering
         //procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
 
         //protected
-        double DQMScaleX = Consts.NullDouble; // Scale used in world to screen transform 
-        double DQMScaleY = Consts.NullDouble; // Scale used in world to screen transform 
-        int XOffset = 0;
-        int YOffset = 0;
+        protected double DQMScaleX = Consts.NullDouble; // Scale used in world to screen transform 
+        protected double DQMScaleY = Consts.NullDouble; // Scale used in world to screen transform 
+        protected int XOffset = 0;
+        protected int YOffset = 0;
 
         //    FZoomList : Contnrs.TObjectList;
 
@@ -425,8 +425,8 @@ namespace VSS.VisionLink.Raptor.Rendering
             /*We are given a scale value of the form 1:n where n = scale.
               We need to calculate a scale value that will convert the range of world
               coordinates that will be displayed on the canvas into the canvas pixel
-   coordinates.For the time being we will assume that n represents a distance
-   in world units that the X - axis is to represent. */
+              coordinates. For the time being we will assume that n represents a distance
+              in world units that the X - axis is to represent. */
             double MinX, MinY, MaxX, MaxY;
 
             MinX = OriginX;
@@ -823,14 +823,14 @@ double BorderSize)
 
         public void DrawNonRotatedRect(double x, double y, double w, double h, bool Fill, Color PenColor)
         {
-            int px1, py1, px2, py2;
+            //int px1, py1, px2, py2;
 
             try
             {
-                px1 = (int)Math.Truncate((x - OriginX) * DQMScaleX);
-                py1 = (int)Math.Truncate((y - OriginY) * DQMScaleY);
-                px2 = (int)Math.Truncate((x - OriginX + w) * DQMScaleX);
-                py2 = (int)Math.Truncate((y - OriginY + h) * DQMScaleY);
+                int px1 = (int)Math.Truncate((x - OriginX) * DQMScaleX);
+                int py1 = (int)Math.Truncate((y - OriginY) * DQMScaleY);
+                int px2 = (int)Math.Truncate((x - OriginX + w) * DQMScaleX);
+                int py2 = (int)Math.Truncate((y - OriginY + h) * DQMScaleY);
 
                 SetPenColor(PenColor);
 
@@ -854,10 +854,16 @@ double BorderSize)
             }
         }
 
+        /// <summary>
+        /// Contains a local store of Point structures to be used by the DrawRect function to remove the overhead 
+        /// of 5 memory allocations for each DrawRect invocation
+        /// </summary>
+        private Point[] DrawRectPoints = Enumerable.Range(0, 4).Select(x => new Point()).ToArray();
+
         public void DrawRect(double x, double y, double w, double h, bool Fill, Color PenColor)
         {
             double rx1, ry1, rx2, ry2, rx3, ry3, rx4, ry4;
-            const double Epsilon = 0;
+            // const double Epsilon = 0;
 
             try
             {
@@ -867,12 +873,27 @@ double BorderSize)
                     return;
                 }
 
-                rotate_point(x - Epsilon, y - Epsilon, out rx1, out ry1);
-                rotate_point(x - Epsilon, y + h + Epsilon, out rx2, out ry2);
-                rotate_point(x + w + Epsilon, y + h + Epsilon, out rx3, out ry3);
-                rotate_point(x + w + Epsilon, y - Epsilon, out rx4, out ry4);
+                //rotate_point(x - Epsilon, y - Epsilon, out rx1, out ry1);
+                //rotate_point(x - Epsilon, y + h + Epsilon, out rx2, out ry2);
+                //rotate_point(x + w + Epsilon, y + h + Epsilon, out rx3, out ry3);
+                //rotate_point(x + w + Epsilon, y - Epsilon, out rx4, out ry4);
+
+                rotate_point(x, y, out rx1, out ry1);
+                rotate_point(x, y + h, out rx2, out ry2);
+                rotate_point(x + w, y + h, out rx3, out ry3);
+                rotate_point(x + w, y, out rx4, out ry4);
 
                 //The coordinates are in world units. We must first transform them to pixel coordinates.
+                DrawRectPoints[0].X = XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx1 - OriginX) * DQMScaleX);
+                DrawRectPoints[0].Y = YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry1 - OriginY) * DQMScaleY);
+                DrawRectPoints[1].X = XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx2 - OriginX) * DQMScaleX);
+                DrawRectPoints[1].Y = YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry2 - OriginY) * DQMScaleY);
+                DrawRectPoints[2].X = XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx3 - OriginX) * DQMScaleX);
+                DrawRectPoints[2].Y = YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry3 - OriginY) * DQMScaleY);
+                DrawRectPoints[3].X = XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx4 - OriginX) * DQMScaleX);
+                DrawRectPoints[3].Y = YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry4 - OriginY) * DQMScaleY);
+
+/*
                 Point[] Points = new Point[4]
                 {
                   new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx1 - OriginX) * DQMScaleX),
@@ -884,20 +905,21 @@ double BorderSize)
                   new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx4 - OriginX) * DQMScaleX),
                             YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry4 - OriginY) * DQMScaleY))
                 };
+*/
 
                 if (Fill)
                 {
                     DrawCanvasBrush.Color = PenColor;
                     DrawCanvasPen.Color = PenColor;
                     DrawCanvasPen.Brush = DrawCanvasBrush;
-                    DrawCanvas.FillPolygon(DrawCanvasBrush, Points);
+                    DrawCanvas.FillPolygon(DrawCanvasBrush, DrawRectPoints);
                 }
                 else
                 {
                     DrawCanvasBrush.Color = Color.Empty;
                     DrawCanvasPen.Color = PenColor;
                     DrawCanvasPen.Brush = DrawCanvasBrush;
-                    DrawCanvas.DrawPolygon(DrawCanvasPen, Points);
+                    DrawCanvas.DrawPolygon(DrawCanvasPen, DrawRectPoints);
                 }
             }
             catch
