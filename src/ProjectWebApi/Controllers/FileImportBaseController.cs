@@ -416,7 +416,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         notificationResult = await raptorProxy
           .AddFile(projectUid, importedFileType, importedFileUid,
-            JsonConvert.SerializeObject(fileDescriptor), importedFileId, Request.Headers.GetCustomHeaders())
+            JsonConvert.SerializeObject(fileDescriptor), importedFileId, dxfUnitsType, Request.Headers.GetCustomHeaders())
           .ConfigureAwait(false);
       }
       catch (Exception e)
