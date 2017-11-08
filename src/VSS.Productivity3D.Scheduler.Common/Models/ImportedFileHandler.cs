@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
     public ImportedFileHandler(IConfigurationStore configStore, ILoggerFactory logger)
     {
       _configStore = configStore;
-      _log = logger.CreateLogger<ImportedFileHandlerProject<ImportedFileHandler>>();
+      _log = logger.CreateLogger<ImportedFileHandler>();
 
       _nhOpRepo = new ImportedFileHandlerNhOp<NhOpImportedFile>(configStore, logger);
       _projectRepo = new ImportedFileHandlerProject<ProjectImportedFile>(configStore, logger);
@@ -32,12 +32,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
     /// </summary>
     public void SyncTables()
     {
-      _projectRepo.Read();
-      var ifsProject = _projectRepo.List();
-      _nhOpRepo.Read();
-      var ifsNhOp = _nhOpRepo.List();
+      var ifsProjectList = _projectRepo.Read();
+      var ifsNhOpList = _nhOpRepo.Read();
 
-      // store these for reversal or just exec as we go?
+      // store these for reversal or TCC/Raptor stuff?
       var createProject = new List<ProjectImportedFile>();
       var updateProject = new List<ProjectImportedFile>();
       var deleteProject = new List<ProjectImportedFile>();
@@ -48,9 +46,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       // row in project and NH_OP
       // a) if deleteFlag has been set in project, then delete from NHOp
       // b) remove all which are already syncd
-      foreach (var ifp in ifsProject)
+      foreach (var ifp in ifsProjectList)
       {
-        var gotMatchingNhOp = ifsNhOp.First(o =>
+        var gotMatchingNhOp = ifsNhOpList.First(o =>
           o.ProjectUid == ifp.ProjectUid && o.Name == ifp.Name && o.SurveyedUtc == ifp.SurveyedUtc &&
           o.FileCreatedUtc == ifp.FileCreatedUtc && o.FileUpdatedUtc == ifp.FileUpdatedUtc);
 
@@ -63,31 +61,31 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
             deleteNhOp.Add(nhOpImportedFile);
           }
 
-          ifsProject.Remove(ifp);
-          ifsNhOp.Remove(gotMatchingNhOp);
+          ifsProjectList.Remove(ifp);
+          ifsNhOpList.Remove(gotMatchingNhOp);
         }
       }
 
       // row in  NH_OP but not in project
       // a) insert into project
-      foreach (var ifo in ifsNhOp)
+      foreach (var ifo in ifsNhOpList)
       {
-        var gotMatchingProject = ifsProject.First(o => o.ProjectUid == ifo.ProjectUid && o.Name == ifo.Name &&
+        var gotMatchingProject = ifsProjectList.First(o => o.ProjectUid == ifo.ProjectUid && o.Name == ifo.Name &&
                                                        o.SurveyedUtc == ifo.SurveyedUtc);
         if (gotMatchingProject == null)
         {
           var projectImportedFile = AutoMapperUtility.Automapper.Map<ProjectImportedFile>(ifo);
           createProject.Add(projectImportedFile);
-          ifsNhOp.Remove(ifo);
+          ifsNhOpList.Remove(ifo);
         }
       }
 
       // row in project but not in NH_OP
       // a) if it has since been deleted from NH_OP, then delete from project
       // b) else insert into NH_OP
-      foreach (var ifp in ifsProject)
+      foreach (var ifp in ifsProjectList)
       {
-        var gotMatchingNhOp = ifsNhOp.FindAll(o => o.ProjectUid == ifp.ProjectUid && o.Name == ifp.Name &&
+        var gotMatchingNhOp = ifsNhOpList.FindAll(o => o.ProjectUid == ifp.ProjectUid && o.Name == ifp.Name &&
                                                    o.SurveyedUtc == ifp.SurveyedUtc);
 
         // is nh_op missing because it needs to be created, or has it been deleted
@@ -102,16 +100,16 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
           else
             createNhOp.Add(nhOpImportedFile);
 
-          ifsProject.Remove(ifp);
+          ifsProjectList.Remove(ifp);
         }
       }
 
       // survey file name exists in both,
       //     but have been updated (FileCreatedUTC) in one and/or other
       //     i.e. file has been re-imported so new updateUtc
-      foreach (var ifp in ifsProject)
+      foreach (var ifp in ifsProjectList)
       {
-        var gotMatchingNhOps = ifsNhOp.FindAll(o => o.ProjectUid == ifp.ProjectUid && o.Name == ifp.Name &&
+        var gotMatchingNhOps = ifsNhOpList.FindAll(o => o.ProjectUid == ifp.ProjectUid && o.Name == ifp.Name &&
                                                     o.SurveyedUtc == ifp.SurveyedUtc
                                                     && (o.FileCreatedUtc != ifp.FileCreatedUtc ||
                                                         o.FileUpdatedUtc != ifp.FileUpdatedUtc))
@@ -132,24 +130,17 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
           ifp.LastActionedUtc = gotMatchingNhOps.Last().LastActionedUtc;
           updateProject.Add(ifp);
         }
-        ifsProject.Remove(ifp);
+        ifsProjectList.Remove(ifp);
         foreach (var gotMatchingNhOp in gotMatchingNhOps)
         {
-          ifsNhOp.Remove(gotMatchingNhOp);
+          ifsNhOpList.Remove(gotMatchingNhOp);
         }
       }
 
       // should be none left in either list now
 
-      // store these for reversal or just exec as we go?
-      _projectRepo.Create(createProject);
-      _projectRepo.Update(updateProject);
-      _nhOpRepo.Create(createNhOp);
-      _nhOpRepo.Update(createHistoryNhOp);
-      _nhOpRepo.Delete(deleteNhOp);
 
       // todo TCC and RaptorNotiications
-      // todo rollback
     }
 
   }

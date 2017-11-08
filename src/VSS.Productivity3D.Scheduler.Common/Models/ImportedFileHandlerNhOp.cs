@@ -11,19 +11,19 @@ using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 namespace VSS.Productivity3D.Scheduler.Common.Models
 {
-  public class ImportedFileHandlerNhOp<T> : IImportedFileHandler<T>
+  public class ImportedFileHandlerNhOp<T> : IImportedFileHandler<T> where T : NhOpImportedFile
   {
     private IConfigurationStore _configStore;
     private ILogger _log;
     private string _dbConnectionString;
-    private List<NhOpImportedFile> _members;
+    private SqlConnection _dbConnection;
 
     public ImportedFileHandlerNhOp(IConfigurationStore configStore, ILoggerFactory logger)
     {
       _configStore = configStore;
       _log = logger.CreateLogger<ImportedFileHandlerNhOp<T>>();
       _dbConnectionString = ConnectionUtils.GetConnectionStringMsSql(_configStore, _log, "_NH_OP");
-     _members = new List<NhOpImportedFile>();
+      _dbConnection = new SqlConnection(_dbConnectionString);
 
       _log.LogDebug(
         $"ImportedFileHandlerNhOp.ImportedFileHandlerNhOp() _configStore {JsonConvert.SerializeObject(_configStore)}");
@@ -31,13 +31,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         $"ImportedFileHandlerNhOp.ImportedFileHandlerNhOp() _configStore {JsonConvert.SerializeObject(_configStore)}");
     }
 
-
-    public int Read()
+    public List<T> Read()
     {
-      SqlConnection dbConnection = new SqlConnection(_dbConnectionString);
+      var members = new List<NhOpImportedFile>();
+      
       try
       {
-        dbConnection.Open();
+        _dbConnection.Open();
       }
       catch (Exception ex)
       {
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       List<NhOpImportedFile> response;
       try
       {
-        response = dbConnection.Query<NhOpImportedFile>(selectCommand).ToList();
+        response = _dbConnection.Query<NhOpImportedFile>(selectCommand).ToList();
         Console.WriteLine(
           $"ImportedFileHandlerNhOp.Read: selectCommand {selectCommand} response {JsonConvert.SerializeObject(response)}");
       }
@@ -86,30 +86,20 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       finally
       {
-        dbConnection.Close();
+        _dbConnection.Close();
         Console.WriteLine($"ImportedFileHandlerNhOp.Read:  dbConnection.Close");
       }
-      _members.AddRange(response);
+      members.AddRange(response);
 
-      return _members.Count;
+      return members as List<T>;
     }
-
-    public void EmptyList()
+    
+    public long Create(T member) 
     {
-      _members.Clear();
-    }
-
-    public List<T> List()
-    {
-      return _members as List<T>;
-    }
-
-    public int Create(List<T> memberList)
-    {
-      SqlConnection dbConnection = new SqlConnection(_dbConnectionString);
+      long returnedImportedFileId = 0;
       try
       {
-        dbConnection.Open();
+        _dbConnection.Open();
       }
       catch (Exception ex)
       {
@@ -119,99 +109,76 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
 
       var insertImportedFileCommand = string.Format(
-        "INSERT ImportedFile " +
+        " INSERT ImportedFile " +
         "    (fk_CustomerID, fk_ProjectID, Name, fk_ImportedFileTypeID, SurveyedUTC, fk_DXFUnitsTypeID) " +
+        " OUTPUT INSERTED.[Id] " +
         "  VALUES " +
-        "    (@CustomerUid, @LegacyProjectId, @Name, @ImportedFileType, @SurveyedUtc, @DxfUnitsType)");
+        "    (@LegacyCustomerId, @LegacyProjectId, @Name, @ImportedFileType, @SurveyedUtc, @DxfUnitsType);");
+
+      int countInserted = 0;
+      try
+      {
+        returnedImportedFileId = _dbConnection.QuerySingle<long>(insertImportedFileCommand, member);
+        if (returnedImportedFileId > 0)
+          countInserted++;
+        Console.WriteLine($"ImportedFileHandlerNhOp.Create: member {JsonConvert.SerializeObject(member)} countInsertedSoFar {countInserted}");
+      }
+      catch (Exception ex)
+      {
+        _log.LogError($"ImportedFileHandlerNhOp.Create:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileHandlerNhOp.Create:  execute exeception {ex.Message}");
+        throw;
+      }
+      finally
+      {
+        _dbConnection.Close();
+        Console.WriteLine($"ImportedFileHandlerNhOp.Create:  dbConnection.Close");
+      }
+      if (returnedImportedFileId > 0)
+      {
+        member.LegacyImportedFileId = returnedImportedFileId;
+        CreateHistory(member);
+      }
+      return returnedImportedFileId;
+    }
+
+    public int CreateHistory(T member)
+    {
+      try
+      {
+        _dbConnection.Open();
+      }
+      catch (Exception ex)
+      {
+        _log.LogError($"ImportedFileHandlerNhOp.CreateHistory: open DB exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileHandlerNhOp.CreateHistory: open DB exeception {ex.Message}");
+        throw;
+      }
 
       // todo don't know the legacy UserID
       var insertImportedFileHistoryeCommand = string.Format(
         "INSERT ImportedFileHistory " +
         "    (fk_ImportedFileID, InsertUTC, CreateUTC, fk_UserID) " +
         "  VALUES " +
-        "    (@returnedImportedFileID, @FileUpdatedUtc, @FileCreatedUtc, 0)");
+        "    (@LegacyImportedFileId, @FileUpdatedUtc, @FileCreatedUtc, 0)");
 
       int countInserted = 0;
       try
       {
-        // todo do multiple insert?
-        foreach (var member in memberList)
-        {
-          countInserted += dbConnection.Execute(insertImportedFileCommand, member);
-          // todo get the just inserted ImportedFile ID for the history
-          long @returnedImportedFileID = 0;
-          countInserted += dbConnection.Execute(insertImportedFileHistoryeCommand, member);
-          Console.WriteLine(
-            $"ImportedFileHandlerNhOp.Create: member {JsonConvert.SerializeObject(member)} countInsertedSoFar {JsonConvert.SerializeObject(countInserted)}");
-        }
+        countInserted += _dbConnection.Execute(insertImportedFileHistoryeCommand,
+          new { member.FileCreatedUtc, member.FileUpdatedUtc, member.LegacyImportedFileId });
+        Console.WriteLine($"ImportedFileHandlerNhOp.CreateHistory: countInserted {countInserted}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerNhOp.Create:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerNhOp.Create:  execute exeception {ex.Message}");
+        _log.LogError($"ImportedFileHandlerNhOp.CreateHistory:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileHandlerNhOp.CreateHistory:  execute exeception {ex.Message}");
         throw;
       }
       finally
       {
-        dbConnection.Close();
-        Console.WriteLine($"ImportedFileHandlerNhOp.Create:  dbConnection.Close");
-      }
-
-      InsertHistory(memberList);
-      return countInserted;
-    }
-
-    public int InsertHistory(List<T> memberList)
-    {
-      SqlConnection dbConnection = new SqlConnection(_dbConnectionString);
-      try
-      {
-        dbConnection.Open();
-      }
-      catch (Exception ex)
-      {
-        _log.LogError($"ImportedFileHandlerNhOp.Create: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerNhOp.Create: open DB exeception {ex.Message}");
-        throw;
-      }
-
-      var insertImportedFileCommand = string.Format(
-        "INSERT ImportedFile " +
-        "    (fk_CustomerID, fk_ProjectID, Name, fk_ImportedFileTypeID, SurveyedUTC, fk_DXFUnitsTypeID) " +
-        "  VALUES " +
-        "    (@CustomerUid, @LegacyProjectId, @Name, @ImportedFileType, @SurveyedUtc, @DxfUnitsType)");
-
-//// todo don't know the legacy UserID
-//      var insertImportedFileHistoryeCommand = string.Format(
-//        "INSERT ImportedFileHistory " +
-//        "    (fk_ImportedFileID, InsertUTC, CreateUTC, fk_UserID) " +
-//        "  VALUES " +
-//        "    (@returnedImportedFileID, @FileUpdatedUtc, @FileCreatedUtc, 0)");
-
-      int countInserted = 0;
-      try
-      {
-        // todo do multiple insert?
-        foreach (var member in memberList)
-        {
-          countInserted += dbConnection.Execute(insertImportedFileCommand, member);
-          //// todo get the just inserted ImportedFile ID for the history
-          //long @returnedImportedFileID = 0;
-          //countInserted += dbConnection.Execute(insertImportedFileHistoryeCommand, member);
-          Console.WriteLine(
-            $"ImportedFileHandlerNhOp.Create: member {JsonConvert.SerializeObject(member)} countInsertedSoFar {JsonConvert.SerializeObject(countInserted)}");
-        }
-      }
-      catch (Exception ex)
-      {
-        _log.LogError($"ImportedFileHandlerNhOp.Create:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerNhOp.Create:  execute exeception {ex.Message}");
-        throw;
-      }
-      finally
-      {
-        dbConnection.Close();
-        Console.WriteLine($"ImportedFileHandlerNhOp.Create:  dbConnection.Close");
+        _dbConnection.Close();
+        Console.WriteLine($"ImportedFileHandlerNhOp.CreateHistory:  dbConnection.Close");
       }
       return countInserted;
     }
@@ -219,19 +186,18 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
     /// <summary>
     ///  the only thing 'updateable' in a CG ImportFile is to add another history row
     /// </summary>
-    /// <param name="memberList"></param>
+    /// <param name="member"></param>
     /// <returns></returns>
-    public int Update(List<T> memberList)
+    public int Update(T member)
     {
-      return InsertHistory(memberList);
+      return CreateHistory(member);
     }
 
-    public int Delete(List<T> memberList)
+    public int Delete(T member)
     {
-      SqlConnection dbConnection = new SqlConnection(_dbConnectionString);
       try
       {
-        dbConnection.Open();
+        _dbConnection.Open();
       }
       catch (Exception ex)
       {
@@ -240,19 +206,21 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         throw;
       }
 
-      var deleteCommand =
+      var deleteImportedFileCommand =
         @"DELETE ImportedFile                
-                WHERE ImportedFileID = @ImportedFileId";
+                WHERE ID = @LegacyImportedFileId";
+
+      var deleteImportedFileHistoryCommand =
+        @"DELETE ImportedFileHistory                
+                WHERE fk_ImportedFileID = @LegacyImportedFileId";
+
       int countUpdated = 0;
       try
       {
-        // todo do multiple update?
-        foreach (var member in memberList)
-        {
-          countUpdated += dbConnection.Execute(deleteCommand, member);
-          Console.WriteLine(
-            $"ImportedFileHandlerProject.Update: member {JsonConvert.SerializeObject(member)} countUpdatedSoFar {JsonConvert.SerializeObject(countUpdated)}");
-        }
+        countUpdated += _dbConnection.Execute(deleteImportedFileCommand, member);
+        if (countUpdated > 0)
+          countUpdated += _dbConnection.Execute(deleteImportedFileHistoryCommand, member);
+        Console.WriteLine($"ImportedFileHandlerProject.Delete: member {JsonConvert.SerializeObject(member)} countUpdatedSoFar {countUpdated}");
       }
       catch (Exception ex)
       {
@@ -262,7 +230,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       finally
       {
-        dbConnection.Close();
+        _dbConnection.Close();
         Console.WriteLine($"ImportedFileHandlerProject.Delete:  dbConnection.Close");
       }
 

@@ -11,20 +11,19 @@ using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 namespace VSS.Productivity3D.Scheduler.Common.Models
 {
-  public class ImportedFileHandlerProject<T> : IImportedFileHandler<T>
+  public class ImportedFileHandlerProject<T> : IImportedFileHandler<T> where T : ProjectImportedFile
   {
     private IConfigurationStore _configStore;
     private ILogger _log;
     private string _dbConnectionString;
-    private List<ProjectImportedFile> _members;
-
+    private MySqlConnection _dbConnection;
 
     public ImportedFileHandlerProject(IConfigurationStore configStore, ILoggerFactory logger)
     {
       _configStore = configStore;
       _log = logger.CreateLogger<ImportedFileHandlerProject<T>>();
       _dbConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_Project");
-      _members = new List<ProjectImportedFile>();
+      _dbConnection = new MySqlConnection(_dbConnectionString);
 
       _log.LogDebug(
         $"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
@@ -32,12 +31,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         $"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
     }
 
-    public int Read()
+    public List<T> Read()
     {
-      MySqlConnection dbConnection = new MySqlConnection(_dbConnectionString);
+      var members = new List<ProjectImportedFile>();
       try
       {
-        dbConnection.Open();
+        _dbConnection.Open();
       }
       catch (Exception ex)
       {
@@ -48,11 +47,14 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
 
       string selectCommand =
         @"SELECT 
-              iff.fk_ProjectUID as ProjectUID, iff.ImportedFileUID, iff.ImportedFileID, iff.fk_CustomerUID as CustomerUID,
+              p.LegacyProjectID, cp.LegacyCustomerID, 
+              iff.fk_ProjectUID as ProjectUID, iff.ImportedFileUID, iff.ImportedFileID, 
+              iff.LegacyImportedFileId, iff.fk_CustomerUID as CustomerUID,
               iff.fk_ImportedFileTypeID as ImportedFileType, iff.Name, 
-              iff.FileDescriptor, iff.FileCreatedUTC, iff.FileUpdatedUTC, iff.ImportedBy, iff.SurveyedUTC, iff.fk_DXFUnitsTypeID AS DxfUnitsType, 
-              iff.IsDeleted, iff.IsActivated, iff.LastActionedUTC,
-			        p.LegacyProjectID, cp.LegacyCustomerID
+              iff.FileDescriptor, iff.FileCreatedUTC, iff.FileUpdatedUTC, iff.ImportedBy, 
+              iff.IsDeleted, iff.IsActivated, 
+              iff.SurveyedUTC, iff.fk_DXFUnitsTypeID AS DxfUnitsType, 
+              iff.LastActionedUTC			        
             FROM ImportedFile iff
 				      INNER JOIN Project p ON p.ProjectUID = iff.fk_ProjectUID
               INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
@@ -61,7 +63,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       List<ProjectImportedFile> response;
       try
       {
-        response = dbConnection.Query<ProjectImportedFile>(selectCommand).ToList();
+        response = _dbConnection.Query<ProjectImportedFile>(selectCommand).ToList();
         Console.WriteLine(
           $"ImportedFileHandlerProject.Read: selectCommand {selectCommand} response {JsonConvert.SerializeObject(response)}");
       }
@@ -73,30 +75,19 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       finally
       {
-        dbConnection.Close();
+        _dbConnection.Close();
         Console.WriteLine($"ImportedFileHandlerProject.Read:  dbConnection.Close");
       }
-      _members.AddRange(response);
+      members.AddRange(response);
 
-      return _members.Count;
+      return members as List<T>;
     }
 
-    public void EmptyList()
+    public long Create(T member)
     {
-      _members.Clear();
-    }
-
-    public List<T> List()
-    {
-      return _members as List<T>;
-    }
-
-    public int Create(List<T> memberList)
-    {
-      MySqlConnection dbConnection = new MySqlConnection(_dbConnectionString);
       try
       {
-        dbConnection.Open();
+        _dbConnection.Open();
       }
       catch (Exception ex)
       {
@@ -107,19 +98,15 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
 
       var insertCommand = string.Format(
         "INSERT ImportedFile " +
-        "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, IsDeleted, IsActivated, LastActionedUTC) " +
+        "    (fk_ProjectUID, ImportedFileUID, LegacyImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, IsDeleted, IsActivated, LastActionedUTC) " +
         "  VALUES " +
-        "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc,@DxfUnitsType, 0, 1, @LastActionedUtc)");
+        "    (@ProjectUid, @ImportedFileUid, @LegacyImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc,@DxfUnitsType, 0, 1, @LastActionedUtc)");
       int countInserted = 0;
       try
       {
-        // todo do multiple insert?
-        foreach (var member in memberList)
-        {
-          countInserted += dbConnection.Execute(insertCommand, member);
-          Console.WriteLine(
-            $"ImportedFileHandlerProject.Create: member {JsonConvert.SerializeObject(member)} countInsertedSoFar {JsonConvert.SerializeObject(countInserted)}");
-        }
+        countInserted += _dbConnection.Execute(insertCommand, member);
+        Console.WriteLine(
+          $"ImportedFileHandlerProject.Create: member {JsonConvert.SerializeObject(member)} countInsertedSoFar {JsonConvert.SerializeObject(countInserted)}");
       }
       catch (Exception ex)
       {
@@ -129,19 +116,18 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       finally
       {
-        dbConnection.Close();
+        _dbConnection.Close();
         Console.WriteLine($"ImportedFileHandlerProject.Create:  dbConnection.Close");
       }
 
       return countInserted;
     }
 
-    public int Update(List<T> memberList)
+    public int Update(T member)
     {
-      MySqlConnection dbConnection = new MySqlConnection(_dbConnectionString);
       try
       {
-        dbConnection.Open();
+        _dbConnection.Open();
       }
       catch (Exception ex)
       {
@@ -153,6 +139,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       var updateCommand =
         @"UPDATE ImportedFile
                 SET 
+                  LegacyImportedFileId = @LegacyImportedFileId,
                   FileDescriptor = @fileDescriptor,
                   FileCreatedUTC = @fileCreatedUtc,
                   FileUpdatedUTC = @fileUpdatedUtc,
@@ -165,13 +152,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       int countUpdated = 0;
       try
       {
-        // todo do multiple update?
-        foreach (var member in memberList)
-        {
-          countUpdated += dbConnection.Execute(updateCommand, member);
-          Console.WriteLine(
-            $"ImportedFileHandlerProject.Update: member {JsonConvert.SerializeObject(member)} countUpdatedSoFar {JsonConvert.SerializeObject(countUpdated)}");
-        }
+        countUpdated += _dbConnection.Execute(updateCommand, member);
+        Console.WriteLine(
+          $"ImportedFileHandlerProject.Update: member {JsonConvert.SerializeObject(member)} countUpdatedSoFar {JsonConvert.SerializeObject(countUpdated)}");
       }
       catch (Exception ex)
       {
@@ -181,19 +164,20 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       finally
       {
-        dbConnection.Close();
+        _dbConnection.Close();
         Console.WriteLine($"ImportedFileHandlerProject.Update:  dbConnection.Close");
       }
 
       return countUpdated;
     }
 
-    public int Delete(List<T> memberList)
+    public int Delete(T member)
     {
       _log.LogError($"ImportedFileHandlerProject.Delete: ");
       Console.WriteLine($"ImportedFileHandlerProject.Delete: ");
 
-      return Update(memberList);
+      member.IsDeleted = true;
+      return Update(member);
     }
 
   }
