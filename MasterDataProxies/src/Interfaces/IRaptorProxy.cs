@@ -15,7 +15,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     Task<CoordinateSystemSettingsResult> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent, string coordinateSystemFilename,
             IDictionary<string, string> customHeaders = null);
 
-    Task<BaseDataResult> AddFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null);
+    Task<BaseDataResult> AddFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders = null);
 
     Task<BaseDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null);
 
