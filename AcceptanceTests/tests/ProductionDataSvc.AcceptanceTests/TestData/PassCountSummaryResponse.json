@@ -33,11 +33,11 @@
       "max": 100
     },
     "isTargetPassCountConstant": true,
-    "percentEqualsTarget": 46.70803879664639,
-    "percentGreaterThanTarget": 0,
-    "percentLessThanTarget": 53.29196120335361,
+    "percentEqualsTarget": 41.933097723350045,
+    "percentGreaterThanTarget": 4.7628832086792148,
+    "percentLessThanTarget": 53.304019067970742,
     "returnCode": 0,
-    "totalAreaCoveredSqMeters": 2812.7792000000004,
+    "totalAreaCoveredSqMeters": 2813.0104000000006,
     "Code": 0,
     "Message": "success"
   }
