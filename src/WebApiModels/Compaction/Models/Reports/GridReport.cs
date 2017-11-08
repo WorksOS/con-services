@@ -16,6 +16,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
   public class GridReport
   {
     /// <summary>
+    /// The report's 'start' time from a time based filter.
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public DateTime? StartTime { get; private set; }
+
+    /// <summary>
+    /// The report's 'end' time from a time based filter.
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public DateTime? EndTime { get; private set; }
+
+    /// <summary>
     /// Grid report rows
     /// </summary>
     /// 
@@ -26,9 +38,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// Creates an instance of the GridReport class.
     /// </summary>
     /// <param name="rows">Grid rows.</param>
+    /// <param name="startTime">The report's 'start' time.</param>
+    /// <param name="endTime">The report's 'end' time.</param>
     /// <returns>An instance of the GridReport class.</returns>
     /// 
-    public static GridReport CreateGridReport(GridRow[] rows)
+    public static GridReport CreateGridReport(DateTime startTime, DateTime endTime, GridRow[] rows)
     {
       return new GridReport() { Rows = rows };
     }

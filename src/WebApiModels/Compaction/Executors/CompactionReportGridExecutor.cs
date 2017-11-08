@@ -121,7 +121,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
                 request.ReportTemperature);
             }
 
-            var gridReport = GridReport.CreateGridReport(gridRows);
+            var startTime = request.Filter.StartUtc ?? DateTime.Now;
+            var endTime = request.Filter.EndUtc ?? DateTime.Now;
+
+            var gridReport = GridReport.CreateGridReport(startTime, endTime, gridRows);
             
             result = CompactionReportGridResult.CreateExportDataResult(gridReport.ToJsonString(), (short)returnedResult);
           }
