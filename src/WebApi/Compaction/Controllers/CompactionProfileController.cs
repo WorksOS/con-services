@@ -100,8 +100,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double endLonDegrees,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutfillDesignUid,
-      [FromQuery] Guid? baseUid,
-      [FromQuery] Guid? topUid,
+      [FromQuery] Guid? volumeBaseUid,
+      [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
       log.LogInformation("GetProfileProductionDataSlicer: " + Request.QueryString);
@@ -119,16 +119,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         switch (volumeCalcType.Value)
         {
           case VolumeCalcType.GroundToGround:
-            baseFilter = await GetCompactionFilter(projectUid, baseUid, true);
-            topFilter = await GetCompactionFilter(projectUid, topUid, false);
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
             break;
           case VolumeCalcType.GroundToDesign:
-            baseFilter = await GetCompactionFilter(projectUid, baseUid, true);
-            volumeDesign = await GetDesignDescriptor(projectUid, topUid, true);
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            volumeDesign = await GetDesignDescriptor(projectUid, volumeTopUid, true);
             break;
           case VolumeCalcType.DesignToGround:
-            volumeDesign = await GetDesignDescriptor(projectUid, baseUid, true);
-            topFilter = await GetCompactionFilter(projectUid, topUid, false);
+            volumeDesign = await GetDesignDescriptor(projectUid, volumeBaseUid, true);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
             break;
         }
       }
@@ -156,7 +156,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (cutFillDesign != null)
       {
-        FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, 
+        FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
           cutFillDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
       }
 
@@ -167,7 +167,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       return slicerProductionDataResult;
     }
-
     /// <summary>
     /// Calculate the elevations for cut-fill or summary volumes cells from the design surface.
     /// </summary>

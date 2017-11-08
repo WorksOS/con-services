@@ -71,11 +71,9 @@ namespace ProductionDataSvc.AcceptanceTests
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("DotOnTheMap - Track a Machine")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "DotOnTheMap")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void DotOnTheMap_TrackAMachine()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("DotOnTheMap - Track a Machine", new string[] {
-                        "ignore"});
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("DotOnTheMap - Track a Machine", ((string[])(null)));
 #line 4
 this.ScenarioSetup(scenarioInfo);
 #line 5

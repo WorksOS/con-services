@@ -339,5 +339,39 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         ? null
         : JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
     }
+
+    /// <summary>
+    /// Gets the summary volumes parameters according to the calcultion type
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="volumeCalcType">The summary volumes calculation type</param>
+    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeTopUid">Top Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <returns>Tuple of base filter, top filter and volume design descriptor</returns>
+    protected async Task<Tuple<Filter,Filter,DesignDescriptor>> GetSummaryVolumesParameters(Guid projectUid, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
+    {
+      Filter baseFilter = null;
+      Filter topFilter = null;
+      DesignDescriptor volumeDesign = null;
+      if (volumeCalcType.HasValue)
+      {
+        switch (volumeCalcType.Value)
+        {
+          case VolumeCalcType.GroundToGround:
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            break;
+          case VolumeCalcType.GroundToDesign:
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            volumeDesign = await GetDesignDescriptor(projectUid, volumeTopUid, true);
+            break;
+          case VolumeCalcType.DesignToGround:
+            volumeDesign = await GetDesignDescriptor(projectUid, volumeBaseUid, true);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            break;
+        }
+      }
+      return new Tuple<Filter, Filter, DesignDescriptor>(baseFilter, topFilter, volumeDesign);
+    }
   }
 }

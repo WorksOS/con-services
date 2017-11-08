@@ -17,58 +17,58 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Binding, Scope(Feature = "DesignCache")]
     public class DesignCacheSteps
     {
-        //private Poster<DesignNameRequest, DummyRequestResult> designCacheDeleter;
-        //private ServiceResponse response;
+    //private Poster<DesignNameRequest, DummyRequestResult> designCacheDeleter;
+    //private ServiceResponse response;
 
-        //[Given(@"the design cache file delete uri ""(.*)"", a project (.*) and a file ""(.*)""")]
-        //public void GivenTheDesignCacheFileDeleteUriAProjectAndAFile(string uri, long projectID, string designName)
-        //{
-        //    designCacheDeleter = new Poster<DesignNameRequest, DummyRequestResult>(
-        //        RaptorClientConfig.ProdSvcBaseUri + uri,
-        //        new DesignNameRequest() { ProjectId = projectID, DesignFilename = designName });
-        //}
+    //[Given(@"the design cache file delete uri ""(.*)"", a project (.*) and a file ""(.*)""")]
+    //public void GivenTheDesignCacheFileDeleteUriAProjectAndAFile(string uri, long projectID, string designName)
+    //{
+    //  designCacheDeleter = new Poster<DesignNameRequest, DummyRequestResult>(
+    //      RaptorClientConfig.ProdSvcBaseUri + uri,
+    //      new DesignNameRequest() { ProjectId = projectID, DesignFilename = designName });
+    //}
 
-        //[Given(@"the following Summary Volumes request is sent to ""(.*)""")]
-        //public void GivenTheFollowingSummaryVolumesRequestIsSentTo(string sVuri, string svRequestStr)
-        //{
-        //    response = RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ReportSvcBaseUri + sVuri,
-        //        "POST", RestClientConfig.JsonMediaType, svRequestStr);
-        //}
+    //[Given(@"the following Summary Volumes request is sent to ""(.*)""")]
+    //public void GivenTheFollowingSummaryVolumesRequestIsSentTo(string sVuri, string svRequestStr)
+    //{
+    //    response = RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ReportSvcBaseUri + sVuri,
+    //        "POST", RestClientConfig.JsonMediaType, svRequestStr);
+    //}
 
-        //[Given(@"the response code is OK (.*)")]
-        //public void GivenTheResponseCodeIsOK(int code)
-        //{
-        //    if (response.HttpCode != (HttpStatusCode)code)
-        //    {
-        //        ScenarioContext.Current.Pending();
-        //    }
-        //}
+    //[Given(@"the response code is OK (.*)")]
+    //public void GivenTheResponseCodeIsOK(int code)
+    //{
+    //    if (response.HttpCode != (HttpStatusCode)code)
+    //    {
+    //        ScenarioContext.Current.Pending();
+    //    }
+    //}
 
-        //[When(@"I delete this file")]
-        //public void WhenIDeleteThisFile()
-        //{
-        //    designCacheDeleter.DoValidRequest();
-        //}
+    //[When(@"I delete this file")]
+    //public void WhenIDeleteThisFile()
+    //{
+    //    designCacheDeleter.DoValidRequest();
+    //}
 
-        //[When(@"the following Summary Volumes request is sent to ""(.*)""")]
-        //public void WhenTheFollowingSummaryVolumesRequestIsSentTo(string sVuri, string svRequestStr)
-        //{
-        //    response = RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ReportSvcBaseUri + sVuri,
-        //        "POST", RestClientConfig.JsonMediaType, svRequestStr);
-        //}
+    //[When(@"the following Summary Volumes request is sent to ""(.*)""")]
+    //public void WhenTheFollowingSummaryVolumesRequestIsSentTo(string sVuri, string svRequestStr)
+    //{
+    //    response = RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ReportSvcBaseUri + sVuri,
+    //        "POST", RestClientConfig.JsonMediaType, svRequestStr);
+    //}
 
-        //[Then(@"the response code should be BadRequest (.*)")]
-        //public void ThenTheResponseCodeShouldBeBadRequest(int code)
-        //{
-        //    Assert.AreEqual((HttpStatusCode)code, response.HttpCode);
-        //}
+    //[Then(@"the response code should be BadRequest (.*)")]
+    //public void ThenTheResponseCodeShouldBeBadRequest(int code)
+    //{
+    //    Assert.AreEqual((HttpStatusCode)code, response.HttpCode);
+    //}
 
-        private Poster<DesignNameRequest, DummyRequestResult> designCacheDeleter;
+    private Poster<DesignNameRequest, DummyRequestResult> designCacheDeleter;
 
         [Given(@"the DeleteDesignCacheFile service URI ""(.*)"", a project (.*) and a file named ""(.*)""")]
         public void GivenTheDeleteDesignCacheFileServiceURIAProjectAndAFileNamed(string uri, long projectID, string designName)
         {
-            if (!Directory.Exists("D:\\"))
+            if (!Directory.Exists("\\dev-iolv01.vssengg.com\\ProductionData\\DesignFileCache"))
                 ScenarioContext.Current.Pending();
 
             designCacheDeleter = new Poster<DesignNameRequest, DummyRequestResult>(
@@ -79,7 +79,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [Given(@"the following Summary Volumes request is sent to ""(.*)"" to make sure the design file is downloaded if required")]
         public void GivenTheFollowingSummaryVolumesRequestIsSentToToMakeSureTheDesignFileIsDownloadedIfRequired(string sVuri, string svRequestStr)
         {
-            string designFileCachePath = "D:\\ProductionData\\DesignFileCache";
+            string designFileCachePath = "\\dev-iolv01.vssengg.com\\ProductionData\\DesignFileCache";
             string fullDesignFileCachePath = Path.Combine(designFileCachePath,
                 designCacheDeleter.CurrentRequest.ProjectId.ToString(), designCacheDeleter.CurrentRequest.DesignFilename);
 
@@ -115,7 +115,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [Then(@"the file should no longer exist in the design cache")]
         public void ThenTheFileShouldNoLongerExistInTheDesignCache()
         {
-            string designFileCachePath = "D:\\ProductionData\\DesignFileCache";
+            string designFileCachePath = "\\dev-iolv01.vssengg.com\\ProductionData\\DesignFileCache";
             string fullDesignFileCachePath = Path.Combine(designFileCachePath,
                 designCacheDeleter.CurrentRequest.ProjectId.ToString(), designCacheDeleter.CurrentRequest.DesignFilename);
 
@@ -125,7 +125,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [Given(@"the file does not already exist in the design cache")]
         public void GivenTheFileDoesNotAlreadyExistInTheDesignCache()
         {
-            string designFileCachePath = "D:\\ProductionData\\DesignFileCache";
+            string designFileCachePath = "\\dev-iolv01.vssengg.com\\ProductionData\\DesignFileCache";
             string fullDesignFileCachePath = Path.Combine(designFileCachePath,
                 designCacheDeleter.CurrentRequest.ProjectId.ToString(), designCacheDeleter.CurrentRequest.DesignFilename);
 
@@ -168,7 +168,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [Then(@"the file should be automatically downloaded into the design cache")]
         public void ThenTheFileShouldBeAutomaticallyDownloadedIntoTheDesignCache()
         {
-            string designFileCachePath = "D:\\ProductionData\\DesignFileCache";
+            string designFileCachePath = "\\dev-iolv01.vssengg.com\\ProductionData\\DesignFileCache";
             string fullDesignFileCachePath = Path.Combine(designFileCachePath,
                 designCacheDeleter.CurrentRequest.ProjectId.ToString(), designCacheDeleter.CurrentRequest.DesignFilename);
 
