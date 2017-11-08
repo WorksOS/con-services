@@ -85,6 +85,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 72);
       DynamicAddwithOffset("ProjectSettings cannot be null.", 73);
       DynamicAddwithOffset("Landfill projects are not supported.", 74);
+      DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is an unrecognized type.", 75);
+      DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is not supported at present.", 76);
     }
 
     /// <summary>

@@ -169,7 +169,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <returns />
     protected async Task<CreateImportedFileEvent> CreateImportedFileinDb(Guid customerUid, Guid projectUid,
-      ImportedFileType importedFileType, string filename, DateTime? surveyedUtc,
+      ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string filename, DateTime? surveyedUtc,
       string fileDescriptor, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy)
     {
       log.LogDebug($"Creating the ImportedFile {filename} for project {projectUid}.");
@@ -180,6 +180,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ProjectUID = projectUid,
         ImportedFileUID = Guid.NewGuid(),
         ImportedFileType = importedFileType,
+        DxfUnitsType = dxfUnitsType,
         Name = filename,
         FileDescriptor = fileDescriptor,
         FileCreatedUtc = fileCreatedUtc,
@@ -408,14 +409,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, ImportedFileType importedFileType, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid, bool isCreate)
+    protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid, bool isCreate)
     {
       BaseDataResult notificationResult = null;
       try
       {
         notificationResult = await raptorProxy
           .AddFile(projectUid, importedFileType, importedFileUid,
-            JsonConvert.SerializeObject(fileDescriptor), importedFileId, Request.Headers.GetCustomHeaders())
+            JsonConvert.SerializeObject(fileDescriptor), importedFileId, dxfUnitsType, Request.Headers.GetCustomHeaders())
           .ConfigureAwait(false);
       }
       catch (Exception e)
