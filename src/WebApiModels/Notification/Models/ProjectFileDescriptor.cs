@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
     /// DXF file units type
     /// </summary>
     [JsonProperty(PropertyName = "dxfUnitsType", Required = Required.Default)]
-    public UnitsTypeEnum DXFUnitsType { get; private set; }
+    public DxfUnitsType DXFUnitsType { get; private set; }
 
     /// <summary>
     /// A unique file identifier
@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
       Guid? projectUId,
       FileDescriptor file,
       string coordSystemFileName,
-      UnitsTypeEnum dxfUnitsType,
+      DxfUnitsType dxfUnitsType,
       long fileId,
       ImportedFileType fileType = ImportedFileType.DesignSurface
     )
