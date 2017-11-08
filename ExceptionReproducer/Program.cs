@@ -13,29 +13,30 @@ namespace ExceptionReproducer
     {
         private const string PersistentCacheStoreLocation = "C:\\Temp\\RaptorIgniteData\\Persistence";
 
-        public static uint getDescriptor()
+        public static uint GetDescriptor()
         {
             return 0;
         }
 
-        private static void setupGridConfiguration(IgniteConfiguration cfg)
+        private static void SetupGridConfiguration(IgniteConfiguration cfg)
         {
             cfg.IgniteInstanceName = "Raptor";
             cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
             cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 2Gb
 
-            cfg.UserAttributes = new Dictionary<String, object>();
-            cfg.UserAttributes.Add("Owner", "Raptor");
-            cfg.UserAttributes.Add("Role", "PSNode");
-            cfg.UserAttributes.Add("Division", getDescriptor());
-
+            cfg.UserAttributes = new Dictionary<String, object>
+            {
+                { "Owner", "Raptor" },
+                { "Role", "PSNode" },
+                { "Division", GetDescriptor() }
+            };
             cfg.PersistentStoreConfiguration = new PersistentStoreConfiguration()
             {
                 PersistentStorePath = "C:\\Temp\\RaptorIgniteData\\Persistence" // PersistentCacheStoreLocation
             };
         }
 
-        private static void setupCacheConfiguration(CacheConfiguration cfg)
+        private static void SetupCacheConfiguration(CacheConfiguration cfg)
         {
             cfg.Name = "Cache";
             cfg.CopyOnRead = false;
@@ -58,7 +59,7 @@ namespace ExceptionReproducer
         {
             IgniteConfiguration cfg = new IgniteConfiguration();
 
-            setupGridConfiguration(cfg);
+            SetupGridConfiguration(cfg);
 
             IIgnite Grid = Ignition.Start(cfg);
 
@@ -73,7 +74,7 @@ namespace ExceptionReproducer
             }
 
             CacheConfiguration cacheCfg = new CacheConfiguration();
-            setupCacheConfiguration(cacheCfg);
+            SetupCacheConfiguration(cacheCfg);
 
             ICache<String, MemoryStream> cache = null;
             cache = Grid.GetOrCreateCache<String, MemoryStream>(cacheCfg);

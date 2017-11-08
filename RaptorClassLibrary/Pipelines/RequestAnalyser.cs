@@ -93,7 +93,6 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         protected bool SubGridEvent(ISubGrid SubGrid)
         {
-            uint ScanMinX, ScanMinY, ScanMaxX, ScanMaxY;
             byte ScanMinXb, ScanMinYb, ScanMaxXb, ScanMaxYb;
             bool SubgridSatisfiesFilter;
             bool Result = true; // Set to false if the scanning process needs to be aborted.
@@ -121,10 +120,10 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
                 SubGrid.Owner.CalculateIndexOfCellContainingPosition(WorldExtents.MinX - OTGCellSize,
                                                                      WorldExtents.MinY - OTGCellSize,
-                                                                     out ScanMinX, out ScanMinY);
+                                                                     out uint ScanMinX, out uint ScanMinY);
                 SubGrid.Owner.CalculateIndexOfCellContainingPosition(WorldExtents.MaxX + OTGCellSize,
                                                                      WorldExtents.MaxY + OTGCellSize,
-                                                                     out ScanMaxX, out ScanMaxY);
+                                                                     out uint ScanMaxX, out uint ScanMaxY);
 
                 ScanMinX = Math.Max(CastSubGrid.OriginX, ScanMinX);
                 ScanMinY = Math.Max(CastSubGrid.OriginY, ScanMinY);
@@ -179,8 +178,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
                                 {
                                     if (spatialFilter.IsPositional)
                                     {
-                                        double centerX, centerY;
-                                        CastSubGrid.Owner.GetCellCenterPosition(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, out centerX, out centerY);
+                                        CastSubGrid.Owner.GetCellCenterPosition(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, out double centerX, out double centerY);
 
                                         SubgridSatisfiesFilter = Math.Sqrt(Math.Pow(spatialFilter.PositionX - centerX, 2) + Math.Pow(spatialFilter.PositionY - centerY, 2)) < (spatialFilter.PositionRadius + (Math.Sqrt(2) * CastSubGrid.Owner.CellSize) / 2);
                                     }

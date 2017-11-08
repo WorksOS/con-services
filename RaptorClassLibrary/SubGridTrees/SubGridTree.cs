@@ -231,17 +231,11 @@ namespace VSS.VisionLink.Raptor
                 throw new ArgumentException("CellSize must be between 0.01 and 1000000", "cellSize");
             }
 
-            if (subGridfactory == null)
-            {
-                // Must have a subGridFactory
-                throw new ArgumentException("A subgrid factory must be specified", "subGridfactory");
-            }
-
             NumLevels = numLevels;
             SetCellSize(cellSize);
             IndexOriginOffset = (uint)1 << (NumBitsInKeys - 1);
 
-            SubgridFactory = subGridfactory;
+            SubgridFactory = subGridfactory ?? throw new ArgumentException("A subgrid factory must be specified", "subGridfactory");
 
             // Construct the root node for the tree
             InitialiseRoot();
@@ -351,19 +345,17 @@ namespace VSS.VisionLink.Raptor
         {
             try
             {
-                uint minX, minY, maxX, maxY;
-
                 // First calculate the leaf data cell indexes for the given real world extent
                 // If the world coorindates lie outside of the extent covered by the grid, then
                 // clamp them to the boundaries of the grid.
                 if (CalculateIndexOfCellContainingPosition(Range.EnsureRange(worldExtent.MinX, -MaxOrdinate, MaxOrdinate),
                                                          Range.EnsureRange(worldExtent.MinY, -MaxOrdinate, MaxOrdinate),
-                                                         out minX,
-                                                         out minY) &&
+                                                         out uint minX,
+                                                         out uint minY) &&
                          CalculateIndexOfCellContainingPosition(Range.EnsureRange(worldExtent.MaxX, -MaxOrdinate, MaxOrdinate),
                                                       Range.EnsureRange(worldExtent.MaxY, -MaxOrdinate, MaxOrdinate),
-                                                      out maxX,
-                                                      out maxY))
+                                                      out uint maxX,
+                                                      out uint maxY))
                 {
                     cellExtent = new BoundingIntegerExtent2D((int)minX, (int)minY, (int)maxX, (int)maxY);
                     return true;
@@ -420,10 +412,8 @@ namespace VSS.VisionLink.Raptor
                                  Func<ISubGrid, bool> leafFunctor = null,
                                  Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null)
         {
-            BoundingIntegerExtent2D cellExtent;
-
             // First calculate the leaf data cell indexes for the given real world extent
-            if (!CalculateRegionGridCoverage(extent, out cellExtent))
+            if (!CalculateRegionGridCoverage(extent, out BoundingIntegerExtent2D cellExtent))
             {
                 // TODO: Reinstate logging once it is set up
                 // The extents requested lie at least partially ouside the tree. Ignore this request.
@@ -590,13 +580,12 @@ namespace VSS.VisionLink.Raptor
         /// <returns></returns>
         public ISubGrid LocateSubGridContaining(uint cellX, uint cellY, byte level)
         {
-            byte subGridCellX, subGridCellY;
             ISubGrid subGrid = Root;
 
             // Walk down the tree looking for the subgrid that contains the cell with the given X, Y location
             while (subGrid != null && subGrid.Level < level)
             {
-                if (((INodeSubGrid)subGrid).GetSubGridContainingCell(cellX, cellY, out subGridCellX, out subGridCellY))
+                if (((INodeSubGrid)subGrid).GetSubGridContainingCell(cellX, cellY, out byte subGridCellX, out byte subGridCellY))
                 {
                     subGrid = subGrid.GetSubGrid(subGridCellX, subGridCellY);
                 }
@@ -629,7 +618,6 @@ namespace VSS.VisionLink.Raptor
         /// <returns></returns>
         public ISubGrid LocateClosestSubGridContaining(uint cellX, uint cellY, byte level)
         {
-            byte subGridCellX, subGridCellY;
 
             // Walk down the tree looking for the subgrid that contains the cell
             // with the given X, Y location. Stop when we reach the leaf subgrid level,
@@ -640,7 +628,7 @@ namespace VSS.VisionLink.Raptor
             while (subGrid.Level < level)
             {
                 //with TSubGridTreeNodeSubGrid(Result) do
-                if (((INodeSubGrid)subGrid).GetSubGridContainingCell(cellX, cellY, out subGridCellX, out subGridCellY))
+                if (((INodeSubGrid)subGrid).GetSubGridContainingCell(cellX, cellY, out byte subGridCellX, out byte subGridCellY))
                 {
                     subGrid = subGrid.GetSubGrid(subGridCellX, subGridCellY);
                 }

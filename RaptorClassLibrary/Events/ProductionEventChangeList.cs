@@ -127,9 +127,10 @@ namespace VSS.VisionLink.Raptor.Events
         /// <returns>The event instance that was added to the list</returns>
         public T PutValueAtDate(DateTime dateTime)
         {
-            T newEvent = new T();
-            newEvent.Date = dateTime;
-
+            T newEvent = new T()
+            {
+                Date = dateTime
+            };
             return PutValueAtDate(newEvent);
         }
 
@@ -291,9 +292,7 @@ namespace VSS.VisionLink.Raptor.Events
                 return -1;
             }
 
-            int LastIndex;
-
-            bool FindResult = Find(eventDate, out LastIndex);
+            bool FindResult = Find(eventDate, out int LastIndex);
 
             // We're looking for the event prior to the requested date.
             // If we didn't find an exact match for requested date, then
@@ -324,9 +323,7 @@ namespace VSS.VisionLink.Raptor.Events
                 return -1;
             }
 
-            int LastIndex;
-
-            Find(eventDate, out LastIndex);
+            Find(eventDate, out int LastIndex);
 
             if (LastIndex > -1 && eventType != ProductionEventType.Unknown)
             {
@@ -402,9 +399,7 @@ namespace VSS.VisionLink.Raptor.Events
 
         public IProductionEventChangeList LoadFromStore(IStorageProxy storageProxy)
         {
-            MemoryStream MS = null;
-
-            storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MS);
+            storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MemoryStream MS);
 
             if (MS != null)
             {
@@ -413,7 +408,7 @@ namespace VSS.VisionLink.Raptor.Events
                 using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
                 {
                     IProductionEventChangeList Result = Read(reader);
-                    return Result != null ? Result : this;
+                    return Result ?? this;
                 }
             }
             else
@@ -451,10 +446,11 @@ namespace VSS.VisionLink.Raptor.Events
         /// <returns>The event instance that was added to the list</returns>
         public virtual T PutValueAtDate(DateTime dateTime, V value)
         {
-            T newEvent = new T();
-            newEvent.Date = dateTime;
-            newEvent.State = value;
-
+            T newEvent = new T()
+            {
+                Date = dateTime,
+                State = value
+            };
             return PutValueAtDate(newEvent);
         }
 

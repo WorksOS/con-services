@@ -42,17 +42,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                                              bool HalfPass,
                                              PassType passType)
         {
-            double GridX, GridY;
-            BoundingIntegerExtent2D CellExtent;
             CellPass ProcessedCellPass;
             DateTime _TheTime = DateTime.MinValue;
             float _TheHeight = Consts.NullHeight;
 
             // FMinX/Y, FMaxX/Y describe the world coordinate rectangle the encompasses
             // the pair of epochs denoting a processing interval.
-            double fMinX, fMinY, fMaxX, fMaxY;
 
-            int StateChangeIndex;
             long CellCount;
             double MachineSpd;
 
@@ -61,7 +57,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                 // Calculate the grid coverage of the bounding rectangle for the
                 // quadritateral held in the fence
                 InterpolationFence.UpdateExtents();
-                InterpolationFence.GetExtents(out fMinX, out fMinY, out fMaxX, out fMaxY);
+                InterpolationFence.GetExtents(out double fMinX, out double fMinY, out double fMaxX, out double fMaxY);
 
                 // SIGLogMessage.PublishNoODS(Self,
                 //                            Format('Swathing over rectangle: (%.3f, %.3f) -> (%.3f, %.3f) [%.3f wide by %.3f tall]', {SKIP}
@@ -70,7 +66,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
 
                 // We assume that we have a pair of epochs to compute IC information between
                 // Determine the rectangle of cells that overlap the interval between the two epochs
-                if (!Grid.CalculateRegionGridCoverage(new BoundingWorldExtent3D(fMinX, fMinY, fMaxX, fMaxY), out CellExtent))
+                if (!Grid.CalculateRegionGridCoverage(new BoundingWorldExtent3D(fMinX, fMinY, fMaxX, fMaxY), out BoundingIntegerExtent2D CellExtent))
                 {
                     return true;
                 }
@@ -97,7 +93,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                 {
                     for (uint J = (uint)CellExtent.MinY; J < CellExtent.MaxY + 1; J++)
                     {
-                        Grid.GetCellCenterPosition((uint)I, (uint)J, out GridX, out GridY);
+                        Grid.GetCellCenterPosition((uint)I, (uint)J, out double GridX, out double GridY);
 
                         if (InterpolationFence.IncludesPoint(GridX, GridY))
                         {
@@ -169,7 +165,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
 
                                     // If VibeState is not On, then any CCV info etc is invalid, and should be recorded as appropriate null values
                                     // temp bug fix AJR
-                                    if (MachineTargetValueChanges.VibrationStateEvents.GetValueAtDate(ProcessedCellPass.Time, out StateChangeIndex, VibrationState.Invalid) == VibrationState.On)
+                                    if (MachineTargetValueChanges.VibrationStateEvents.GetValueAtDate(ProcessedCellPass.Time, out int StateChangeIndex, VibrationState.Invalid) == VibrationState.On)
                                     {
 
                                         ProcessedCellPass.CCV = Processor.ICCCVValues.GetCCVValueAtDateTime(_TheTime);

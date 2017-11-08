@@ -304,9 +304,6 @@ namespace VSS.VisionLink.Raptor.SiteModels
             MemoryStream MS = new MemoryStream();
             BinaryWriter writer = new BinaryWriter(MS, Encoding.UTF8, true);
 
-            uint StoreGranuleIndex = 0;
-            uint StoreGranuleCount = 0;
-
             bool Result = false;
 
             lock (this)
@@ -314,7 +311,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                 Write(writer);
             }
 
-            Result = storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemGranuleType.SiteModelInfo, out StoreGranuleIndex, out StoreGranuleCount, MS) == FileSystemErrorStatus.OK
+            Result = storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemGranuleType.SiteModelInfo, out uint StoreGranuleIndex, out uint StoreGranuleCount, MS) == FileSystemErrorStatus.OK
                      && SaveProductionDataExistanceMapToStorage() == FileSystemErrorStatus.OK;
 
             if (Result)
@@ -473,8 +470,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                 SubGridTreeBitMask localExistanceMap = new SubGridTreeBitMask();
 
                 // Read its content from storage
-                MemoryStream MS = null;
-                StorageProxy.RaptorInstance().ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MS);
+                StorageProxy.RaptorInstance().ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
                 SubGridTreePersistor.Read(localExistanceMap, "ExistanceMap", 1, new BinaryReader(MS, Encoding.UTF8, true));
 

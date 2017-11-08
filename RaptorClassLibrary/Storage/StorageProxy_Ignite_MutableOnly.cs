@@ -63,9 +63,10 @@ namespace VSS.VisionLink.Raptor.Storage.Obsolete
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
-                Stream = new MemoryStream(mutableSpatialCache.Get(cacheKey));
-                Stream.Position = 0;
-
+                Stream = new MemoryStream(mutableSpatialCache.Get(cacheKey))
+                {
+                    Position = 0
+                };
                 return FileSystemErrorStatus.OK;
             }
             catch // (Exception E)
@@ -89,9 +90,10 @@ namespace VSS.VisionLink.Raptor.Storage.Obsolete
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
-                Stream = new MemoryStream(mutableNonSpatialCache.Get(cacheKey));
-
-                Stream.Position = 0;
+                Stream = new MemoryStream(mutableNonSpatialCache.Get(cacheKey))
+                {
+                    Position = 0
+                };
                 return FileSystemErrorStatus.OK;
             }
             catch (Exception)

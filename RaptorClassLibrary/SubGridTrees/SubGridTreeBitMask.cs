@@ -62,8 +62,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             if (SubGrid != null)
             {
-                byte SubGridX, SubGridY;
-                SubGrid.GetSubGridCellIndex(CellX, CellY, out SubGridX, out SubGridY);
+                SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
                 return ((SubGridTreeLeafBitmapSubGrid)SubGrid).Bits.BitSet(SubGridX, SubGridY);
             }
@@ -82,13 +81,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>     
         public void SetCell(uint CellX, uint CellY, bool Value)
         {
-            byte SubGridX, SubGridY;
 
             ISubGrid SubGrid = ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.CreateLeaf);
 
             if (SubGrid != null)
             {
-                SubGrid.GetSubGridCellIndex(CellX, CellY, out SubGridX, out SubGridY);
+                SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
                 ((SubGridTreeLeafBitmapSubGrid)SubGrid).Bits.SetBitValue(SubGridX, SubGridY, Value);
 
@@ -125,8 +123,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             if (SubGrid != null)
             {
-                byte SubGridX, SubGridY;
-                SubGrid.GetSubGridCellIndex(CellX, CellY, out SubGridX, out SubGridY);
+                SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
                 return ((SubGridTreeNodeBitmapSubGrid)SubGrid).Bits.BitSet(SubGridX, SubGridY);
             }
             else
@@ -186,9 +183,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 return;
             }
 
-            byte SubGridX, SubGridY;
-
-            SubGrid.GetSubGridCellIndex(CellX, CellY, out SubGridX, out SubGridY);
+            SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
             SubGridTreeNodeBitmapSubGrid bitmapSubGrid = (SubGridTreeNodeBitmapSubGrid)SubGrid;
 
@@ -221,14 +216,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         public BoundingWorldExtent3D ComputeCellsWorldExtents()
         {
-            double MinCX, MinCY, MaxCX, MaxCY;
 
             BoundingIntegerExtent2D SubGridCellsExtents = ComputeCellsExtents();
 
             if (SubGridCellsExtents.IsValidExtent)
             {
-                GetCellCenterPosition((uint)SubGridCellsExtents.MinX, (uint)SubGridCellsExtents.MinY, out MinCX, out MinCY);
-                GetCellCenterPosition((uint)SubGridCellsExtents.MaxX, (uint)SubGridCellsExtents.MaxY, out MaxCX, out MaxCY);
+                GetCellCenterPosition((uint)SubGridCellsExtents.MinX, (uint)SubGridCellsExtents.MinY, out double MinCX, out double MinCY);
+                GetCellCenterPosition((uint)SubGridCellsExtents.MaxX, (uint)SubGridCellsExtents.MaxY, out double MaxCX, out double MaxCY);
 
                 return new BoundingWorldExtent3D(MinCX - CellSizeOver2, MinCY - CellSizeOver2,
                                                  MaxCX + CellSizeOver2, MaxCY + CellSizeOver2);
@@ -328,9 +322,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             }
 
             SubGridTreeLeafBitmapSubGrid bitmapSubGrid = (SubGridTreeLeafBitmapSubGrid)SubGrid;
-            byte SubGridX, SubGridY;
 
-            bitmapSubGrid.GetSubGridCellIndex(CellX, CellY, out SubGridX, out SubGridY);
+            bitmapSubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
             if (bitmapSubGrid.Bits.BitSet(SubGridX, SubGridY))
             {

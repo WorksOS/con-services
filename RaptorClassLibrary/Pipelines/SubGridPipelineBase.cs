@@ -22,7 +22,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// <summary>
         /// The event used to signal that the pipeline processing has completed, or aborted
         /// </summary>
-        public AutoResetEvent pipelineSignalEvent { get; } = new AutoResetEvent(false);
+        public AutoResetEvent PipelineSignalEvent { get; } = new AutoResetEvent(false);
 
         /// <summary>
         /// Records how may subgrid results there are pending to be processed through the Task assigned to this pipeline.
@@ -113,7 +113,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
             if (System.Threading.Interlocked.Decrement(ref SubgridsRemainingToProcess) <= 0)
             {
                 AllFinished = true;
-                pipelineSignalEvent.Set();
+                PipelineSignalEvent.Set();
             }
         }
 
@@ -160,7 +160,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         {
             PipelineAborted = true;
 
-            pipelineSignalEvent.Set();
+            PipelineSignalEvent.Set();
         }
 
         //              procedure Terminate; Virtual;
@@ -208,14 +208,14 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public void WaitForCompletion()
         {
-            if (pipelineSignalEvent.WaitOne(120000)) // Don't wait for more than two minutes...
+            if (PipelineSignalEvent.WaitOne(120000)) // Don't wait for more than two minutes...
             {
-                Log.Info(String.Format("WaitForCompletion received signal with wait handle: {0}", pipelineSignalEvent.SafeWaitHandle.GetHashCode()));
+                Log.Info(String.Format("WaitForCompletion received signal with wait handle: {0}", PipelineSignalEvent.SafeWaitHandle.GetHashCode()));
             }
             else
             {
                 // No signal was received, the wait timed out...
-                Log.Info(String.Format("WaitForCompletion timed out with wait handle: {0}", pipelineSignalEvent.SafeWaitHandle.GetHashCode()));
+                Log.Info(String.Format("WaitForCompletion timed out with wait handle: {0}", PipelineSignalEvent.SafeWaitHandle.GetHashCode()));
             }
         }
     }

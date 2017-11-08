@@ -345,8 +345,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                             // we have been given are with respect to the subgrid, we must transform them
                             // into coordinates relavant to the dirty bitmap subgrid tree.
 
-                            WorkingModelUpdateMap = new SubGridTreeBitMask((byte)(SiteModelFromDM.Grid.NumLevels - 1), SiteModelFromDM.Grid.CellSize);
-                            WorkingModelUpdateMap.ID = SiteModelFromDM.ID;
+                            WorkingModelUpdateMap = new SubGridTreeBitMask((byte)(SiteModelFromDM.Grid.NumLevels - 1), SiteModelFromDM.Grid.CellSize)
+                            {
+                                ID = SiteModelFromDM.ID
+                            };
 
                             // Integrate the cell pass data into the main sitemodel and commit each subgrid as it is updated
                             SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxySpatial);

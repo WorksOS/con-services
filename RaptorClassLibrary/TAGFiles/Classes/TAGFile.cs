@@ -128,8 +128,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public TAGReadResult Read(TAGReader reader, TAGValueSinkBase sink)
         {
             long StreamPos, DataEndPos;
-            short ValueTypeID;
-            TAGDictionaryItem DictionaryEntry;
 
             try
             {
@@ -182,14 +180,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
                 while (!sink.Aborting() && !sink.ProcessingTerminated && (reader.NybblePosition < DataEndPos))
                 {
-                    if (!reader.ReadVarInt(out ValueTypeID))
+                    if (!reader.ReadVarInt(out short ValueTypeID))
                     {
                         if (reader.NybblePosition >= DataEndPos)
-                        {                           
+                        {
                             break; // We have finished
                         }
                         else
-                        {                            
+                        {
                             return TAGReadResult.InvalidValueTypeID; // This is an invalid tag file
                         }
                     }
@@ -199,7 +197,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                         return TAGReadResult.InvalidDictionary;
                     }
 
-                    if (!Dictionary.Entries.TryGetValue(ValueTypeID, out DictionaryEntry))
+                    if (!Dictionary.Entries.TryGetValue(ValueTypeID, out TAGDictionaryItem DictionaryEntry))
                     {
                         return TAGReadResult.InvalidValueTypeID;
                     }

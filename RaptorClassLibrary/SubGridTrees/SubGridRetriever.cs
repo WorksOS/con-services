@@ -1037,7 +1037,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 return false;
             }
 
-            double SubGridWorldOriginX, SubGridWorldOriginY;
             double Temp;
 
             int north_row, east_col;
@@ -1085,7 +1084,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             // Calculate the world coordinate location of the origin (bottom left corner)
             // of this subgrid
-            SubGrid.CalculateWorldOrigin(out SubGridWorldOriginX, out SubGridWorldOriginY);
+            SubGrid.CalculateWorldOrigin(out double SubGridWorldOriginX, out double SubGridWorldOriginY);
 
             // Skip-Iterate through the cells marking those cells that require values
             // calculate for them in the bitmask
@@ -1127,7 +1126,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                                  double SubgridMinX, double SubgridMinY, 
                                                  double SubgridMaxX, double SubgridMaxY)
         {
-            double _X, _Y;
             double CosOfRotation, SinOfRotation;
 
             Fence RotatedSubgridBoundary = null;
@@ -1138,7 +1136,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
                 // Create the rotated boundary by 'unrotating' the subgrid world extents into a context
                 // where the grid is itself not rotated
-                GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMinY, out _X, out _Y, AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
+                GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMinY, out double _X, out double _Y, AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
                 RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
                 GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMaxY, out _X, out _Y, AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
                 RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
@@ -1217,7 +1215,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
         private bool ComputeSeiveBitmaskFloat(ISubGrid SubGrid)
         {
-            double SubGridWorldOriginX, SubGridWorldOriginY;
             double SubGridWorldLimitX, SubGridWorldLimitY;
 
             if (AreaControlSet.PixelXWorldSize == 0 || AreaControlSet.PixelYWorldSize == 0)
@@ -1242,7 +1239,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             // Calculate the world coordinate location of the origin (bottom left corner)
             // and limits (top right corner) of this subgrid
-            SubGrid.CalculateWorldOrigin(out SubGridWorldOriginX, out SubGridWorldOriginY);
+            SubGrid.CalculateWorldOrigin(out double SubGridWorldOriginX, out double SubGridWorldOriginY);
             SubGridWorldLimitX = SubGridWorldOriginX + (SubGridTree.SubGridTreeDimension * _CellSize);
             SubGridWorldLimitY = SubGridWorldOriginY + (SubGridTree.SubGridTreeDimension * _CellSize);
 
@@ -1289,7 +1286,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             // Set up class local state for other methods to access
             this._CellSize = siteModel.Grid.CellSize;
-            this.Filter = filter == null ? new CombinedFilter(siteModel) : filter;
+            this.Filter = filter ?? new CombinedFilter(siteModel);
             this.AreaControlSet = areaControlSet;
             this.ClientGrid = clientGrid;
             this.ClientGridAsLeaf = clientGrid as ClientLeafSubGrid;

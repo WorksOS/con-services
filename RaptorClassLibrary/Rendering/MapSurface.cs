@@ -111,7 +111,7 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         //    procedure SetParent(AParent: TWinControl); override;
 
-        private bool clip_edge(ref double out_a, ref double out_b, //Point on edge of window.
+        private bool Clip_edge(ref double out_a, ref double out_b, //Point on edge of window.
                                double bdy_a,      // Boundary value.         
                                double a1, double b1, double a2, double b2,    // Original line coords. Point 1 is outside, point 2 may be inside.  
                                bool end_inside) // Point 2 inside?         
@@ -126,7 +126,7 @@ namespace VSS.VisionLink.Raptor.Rendering
             return inside;
         }
 
-        public void clip_and_draw_line(double from_x, double from_y, double to_x, double to_y, Color PenColor)
+        public void Clip_and_draw_line(double from_x, double from_y, double to_x, double to_y, Color PenColor)
         {
             bool inside;     // Reset if all the line segment is outside the window.
             double x1, y1, x2, y2; // Original line coordinates
@@ -140,13 +140,13 @@ namespace VSS.VisionLink.Raptor.Rendering
 
             if (from_x < 0)
             {
-                inside = clip_edge(ref from_x, ref from_y, 0, x1, y1, x2, y2, to_x >= 0);
+                inside = Clip_edge(ref from_x, ref from_y, 0, x1, y1, x2, y2, to_x >= 0);
             }
             else
             {
                 if (to_x < 0)
                 {
-                    inside = clip_edge(ref to_x, ref to_y, 0, x2, y2, x1, y1, from_x >= 0);
+                    inside = Clip_edge(ref to_x, ref to_y, 0, x2, y2, x1, y1, from_x >= 0);
                 }
             }
 
@@ -154,13 +154,13 @@ namespace VSS.VisionLink.Raptor.Rendering
             {
                 if (from_x > ClipWidth)
                 {
-                    inside = clip_edge(ref from_x, ref from_y, ClipWidth, x1, y1, x2, y2, to_x <= ClipWidth);
+                    inside = Clip_edge(ref from_x, ref from_y, ClipWidth, x1, y1, x2, y2, to_x <= ClipWidth);
                 }
                 else
                 {
                     if (to_x > ClipWidth)
                     {
-                        inside = clip_edge(ref to_x, ref to_y, ClipWidth, x2, y2, x1, y1, from_x <= ClipWidth);
+                        inside = Clip_edge(ref to_x, ref to_y, ClipWidth, x2, y2, x1, y1, from_x <= ClipWidth);
                     }
                 }
             }
@@ -169,13 +169,13 @@ namespace VSS.VisionLink.Raptor.Rendering
             {
                 if (from_y < 0)
                 {
-                    inside = clip_edge(ref from_y, ref from_x, 0, y1, x1, y2, x2, to_y >= 0);
+                    inside = Clip_edge(ref from_y, ref from_x, 0, y1, x1, y2, x2, to_y >= 0);
                 }
                 else
                 {
                     if (to_y < 0)
                     {
-                        inside = clip_edge(ref to_y, ref to_x, 0, y2, x2, y1, x1, from_y >= 0);
+                        inside = Clip_edge(ref to_y, ref to_x, 0, y2, x2, y1, x1, from_y >= 0);
                     }
                 }
             }
@@ -184,13 +184,13 @@ namespace VSS.VisionLink.Raptor.Rendering
             {
                 if (from_y > ClipHeight)
                 {
-                    inside = clip_edge(ref from_y, ref from_x, ClipHeight, y1, x1, y2, x2, to_y <= ClipHeight);
+                    inside = Clip_edge(ref from_y, ref from_x, ClipHeight, y1, x1, y2, x2, to_y <= ClipHeight);
                 }
                 else
                 {
                     if (to_y > ClipHeight)
                     {
-                        inside = clip_edge(ref to_y, ref to_x, ClipHeight, y2, x2, y1, x1, from_y <= ClipHeight);
+                        inside = Clip_edge(ref to_y, ref to_x, ClipHeight, y2, x2, y1, x1, from_y <= ClipHeight);
                     }
                 }
 
@@ -213,19 +213,19 @@ namespace VSS.VisionLink.Raptor.Rendering
             }
         }
 
-        public void rotate_point(double fromX, double fromY, out double toX, out double toY)
+        public void Rotate_point(double fromX, double fromY, out double toX, out double toY)
         {
             toX = centerX + (fromX - centerX) * CosOfRotation - (fromY - centerY) * SinOfRotation;
             toY = centerY + (fromY - centerY) * CosOfRotation + (fromX - centerX) * SinOfRotation;
         }
 
-        public void rotate_point_about(double fromX, double fromY, out double toX, out double toY, double CX, double CY)
+        public void Rotate_point_about(double fromX, double fromY, out double toX, out double toY, double CX, double CY)
         {
             toX = CX + (fromX - CX) * CosOfRotation - (fromY - CY) * SinOfRotation;
             toY = CY + (fromY - CY) * CosOfRotation + (fromX - CX) * SinOfRotation;
         }
 
-        public void rotate_point_no_origin(double fromX, double fromY, out double toX, out double toY)
+        public void Rotate_point_no_origin(double fromX, double fromY, out double toX, out double toY)
         {
             double mid_E = WidthX / 2;
             double mid_N = WidthY / 2;
@@ -610,7 +610,7 @@ double BorderSize)
               view extents in rectangular world coordinates.
             */
 
-        private void bound_rect_set(double x, double y, ref double min_x, ref double min_y, ref double max_x, ref double max_y)
+        private void Bound_rect_set(double x, double y, ref double min_x, ref double min_y, ref double max_x, ref double max_y)
 
         {
             if (min_x > x)
@@ -626,7 +626,6 @@ double BorderSize)
         public void GetWorldBounds(out double X1, out double Y1, out double X2, out double Y2)
         {
             double min_x, min_y, max_x, max_y;
-            double rotatedX, rotatedY;
 
             GetOrigin(out X1, out Y1);
             X2 = LimitX;
@@ -640,17 +639,17 @@ double BorderSize)
                 max_x = X2;
                 max_y = Y2;
 
-                rotate_point(X1, Y1, out rotatedX, out rotatedY);
-                bound_rect_set(rotatedX, rotatedY, ref min_x, ref min_y, ref max_x, ref max_y);
+                Rotate_point(X1, Y1, out double rotatedX, out double rotatedY);
+                Bound_rect_set(rotatedX, rotatedY, ref min_x, ref min_y, ref max_x, ref max_y);
 
-                rotate_point(X1, Y2, out rotatedX, out rotatedY);
-                bound_rect_set(rotatedX, rotatedY, ref min_x, ref min_y, ref max_x, ref max_y);
+                Rotate_point(X1, Y2, out rotatedX, out rotatedY);
+                Bound_rect_set(rotatedX, rotatedY, ref min_x, ref min_y, ref max_x, ref max_y);
 
-                rotate_point(X2, Y1, out rotatedX, out rotatedY);
-                bound_rect_set(rotatedX, rotatedY, ref min_x, ref min_y, ref max_x, ref max_y);
+                Rotate_point(X2, Y1, out rotatedX, out rotatedY);
+                Bound_rect_set(rotatedX, rotatedY, ref min_x, ref min_y, ref max_x, ref max_y);
 
-                rotate_point(X2, Y2, out rotatedX, out rotatedY);
-                bound_rect_set(rotatedX, rotatedY, ref min_x, ref min_y, ref max_x, ref max_y);
+                Rotate_point(X2, Y2, out rotatedX, out rotatedY);
+                Bound_rect_set(rotatedX, rotatedY, ref min_x, ref min_y, ref max_x, ref max_y);
 
                 X1 = min_x;
                 Y1 = min_y;
@@ -704,8 +703,8 @@ double BorderSize)
 
             if (Rotating)
             {
-                rotate_point(x1, y1, out x1, out y1);
-                rotate_point(x2, y2, out x2, out y2);
+                Rotate_point(x1, y1, out x1, out y1);
+                Rotate_point(x2, y2, out x2, out y2);
             }
 
             px1 = (x1 - OriginX) * DQMScaleX;
@@ -716,7 +715,7 @@ double BorderSize)
             //This gives us coordinates in pixel space -we must now clip this line
             // to the pixel coordinate view 
 
-            clip_and_draw_line(px1, py1, px2, py2, PenColor);
+            Clip_and_draw_line(px1, py1, px2, py2, PenColor);
         }
 
         //    procedure DrawArrowHead(x1, y1, x2, y2, HeadSize : FLOAT; PenColor : TColor);
@@ -729,12 +728,11 @@ double BorderSize)
             //  coordinates before drawing the line *)
 
             int px1, py1, px2, py2;
-            double rx1, ry1, rx2, ry2;
 
             if (Rotating)
             {
-                rotate_point(x1, y1, out rx1, out ry1);
-                rotate_point(x2, y2, out rx2, out ry2);
+                Rotate_point(x1, y1, out double rx1, out double ry1);
+                Rotate_point(x2, y2, out double rx2, out double ry2);
                 px1 = XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx1 - OriginX) * DQMScaleX);
                 py1 = YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry1 - OriginY) * DQMScaleY);
                 px2 = XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx2 - OriginX) * DQMScaleX);
@@ -758,11 +756,11 @@ double BorderSize)
         {
             if (Rotating)
             {
-                rotate_point_no_origin(x1, y1, out x1, out y1);
-                rotate_point_no_origin(x2, y2, out x2, out y2);
+                Rotate_point_no_origin(x1, y1, out x1, out y1);
+                Rotate_point_no_origin(x2, y2, out x2, out y2);
             }
 
-            clip_and_draw_line(x1 * DQMScaleX, y1 * DQMScaleY,
+            Clip_and_draw_line(x1 * DQMScaleX, y1 * DQMScaleY,
                                x2 * DQMScaleX, y2 * DQMScaleY, PenColor);
         }
 
@@ -777,8 +775,8 @@ double BorderSize)
 
             if (Rotating)
             {
-                rotate_point_no_origin(x1, y1, out x1, out y1);
-                rotate_point_no_origin(x2, y2, out x2, out y2);
+                Rotate_point_no_origin(x1, y1, out x1, out y1);
+                Rotate_point_no_origin(x2, y2, out x2, out y2);
             }
 
             px1 = (int)Math.Truncate(x1 * DQMScaleX);
@@ -862,7 +860,6 @@ double BorderSize)
 
         public void DrawRect(double x, double y, double w, double h, bool Fill, Color PenColor)
         {
-            double rx1, ry1, rx2, ry2, rx3, ry3, rx4, ry4;
             // const double Epsilon = 0;
 
             try
@@ -878,10 +875,10 @@ double BorderSize)
                 //rotate_point(x + w + Epsilon, y + h + Epsilon, out rx3, out ry3);
                 //rotate_point(x + w + Epsilon, y - Epsilon, out rx4, out ry4);
 
-                rotate_point(x, y, out rx1, out ry1);
-                rotate_point(x, y + h, out rx2, out ry2);
-                rotate_point(x + w, y + h, out rx3, out ry3);
-                rotate_point(x + w, y, out rx4, out ry4);
+                Rotate_point(x, y, out double rx1, out double ry1);
+                Rotate_point(x, y + h, out double rx2, out double ry2);
+                Rotate_point(x + w, y + h, out double rx3, out double ry3);
+                Rotate_point(x + w, y, out double rx4, out double ry4);
 
                 //The coordinates are in world units. We must first transform them to pixel coordinates.
                 DrawRectPoints[0].X = XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx1 - OriginX) * DQMScaleX);
@@ -893,19 +890,19 @@ double BorderSize)
                 DrawRectPoints[3].X = XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx4 - OriginX) * DQMScaleX);
                 DrawRectPoints[3].Y = YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry4 - OriginY) * DQMScaleY);
 
-/*
-                Point[] Points = new Point[4]
-                {
-                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx1 - OriginX) * DQMScaleX),
-                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry1 - OriginY) * DQMScaleY)),
-                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx2 - OriginX) * DQMScaleX),
-                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry2 - OriginY) * DQMScaleY)),
-                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx3 - OriginX) * DQMScaleX),
-                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry3 - OriginY) * DQMScaleY)),
-                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx4 - OriginX) * DQMScaleX),
-                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry4 - OriginY) * DQMScaleY))
-                };
-*/
+                /*
+                                Point[] Points = new Point[4]
+                                {
+                                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx1 - OriginX) * DQMScaleX),
+                                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry1 - OriginY) * DQMScaleY)),
+                                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx2 - OriginX) * DQMScaleX),
+                                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry2 - OriginY) * DQMScaleY)),
+                                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx3 - OriginX) * DQMScaleX),
+                                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry3 - OriginY) * DQMScaleY)),
+                                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx4 - OriginX) * DQMScaleX),
+                                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry4 - OriginY) * DQMScaleY))
+                                };
+                */
 
                 if (Fill)
                 {

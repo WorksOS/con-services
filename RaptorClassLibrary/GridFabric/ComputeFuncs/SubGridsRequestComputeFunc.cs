@@ -174,8 +174,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
             for (int i = 0; i < count; i++)
             {
-                IClientLeafSubGrid clientGrid = null;
-                ServerRequestResult result = PerformSubgridRequest(addresses[i], out clientGrid);
+                ServerRequestResult result = PerformSubgridRequest(addresses[i], out IClientLeafSubGrid clientGrid);
 
                 if (result == ServerRequestResult.NoError)
                 {

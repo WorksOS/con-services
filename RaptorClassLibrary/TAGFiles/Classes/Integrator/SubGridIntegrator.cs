@@ -241,9 +241,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
             Iterator = new SubGridTreeIterator(SpatialStorageProxy, false);
 
-            SegmentIterator = new SubGridSegmentIterator(null);
-            SegmentIterator.IterationDirection = IterationDirection.Forwards;
-
+            SegmentIterator = new SubGridSegmentIterator(null)
+            {
+                IterationDirection = IterationDirection.Forwards
+            };
             IntegratingIntoIntermediaryGrid = integrationMode == SubGridTreeIntegrationMode.UsingInMemoryTarget;
 
             Iterator.Grid = Source;

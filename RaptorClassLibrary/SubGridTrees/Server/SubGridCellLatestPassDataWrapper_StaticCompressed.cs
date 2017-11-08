@@ -340,9 +340,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             int CellPassBitLocation = ((Col * SubGridTree.SubGridTreeDimension) + Row) * NumBitsPerCellPass;
 
-            CellPass Result = new CellPass();
-
-            Result.MachineID = -1; // No machine IDs supported in latest cell pass data.
+            CellPass Result = new CellPass()
+            {
+                MachineID = -1 // No machine IDs supported in latest cell pass data.
+            };
 
             long IntegerTime = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Time);
             Result.Time = IntegerTime == EncodedFieldDescriptors.Time.NativeNullValue ? DateTime.MinValue : FirstRealCellPassTime.AddSeconds(IntegerTime);

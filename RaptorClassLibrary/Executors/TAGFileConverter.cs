@@ -82,8 +82,10 @@ namespace VSS.VisionLink.Raptor.Executors
             SiteModel = new SiteModel(-1);
             Events = new ProductionEventChanges(SiteModel, 0 /*Machine.ID*/);
 
-            Machine = new Machine();
-            Machine.TargetValueChanges = Events;
+            Machine = new Machine()
+            {
+                TargetValueChanges = Events
+            };
 
             SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
             if (SiteModel.Grid != null)

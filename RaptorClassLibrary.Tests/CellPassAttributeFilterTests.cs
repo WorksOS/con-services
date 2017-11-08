@@ -254,11 +254,11 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         [TestMethod()]
         public void Test_CellPassAttributeFilter_ClearElevationRangeFilterInitialisation()
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter(null);
-
-            filter.ElevationRangeIsInitialised = true;
-            filter.ElevationRangeDesignElevations = new SubGridTrees.Client.ClientHeightLeafSubGrid(null, null, 6, 1, 0);
-
+            CellPassAttributeFilter filter = new CellPassAttributeFilter(null)
+            {
+                ElevationRangeIsInitialised = true,
+                ElevationRangeDesignElevations = new SubGridTrees.Client.ClientHeightLeafSubGrid(null, null, 6, 1, 0)
+            };
             filter.ClearElevationRangeFilterInitialisation();
 
             Assert.IsTrue(filter.ElevationRangeIsInitialised == false && filter.ElevationRangeDesignElevations == null);

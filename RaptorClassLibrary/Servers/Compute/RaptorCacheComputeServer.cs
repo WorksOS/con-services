@@ -41,11 +41,13 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.IgniteInstanceName = RaptorGrids.RaptorGridName();// + RaptorServerConfig.Instance().SpatialSubdivisionDescriptor.ToString();
             cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
             cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
-            cfg.UserAttributes = new Dictionary<String, object>();
-            cfg.UserAttributes.Add("Owner", RaptorGrids.RaptorGridName());
+            cfg.UserAttributes = new Dictionary<String, object>
+            {
+                { "Owner", RaptorGrids.RaptorGridName() }
+            };
 
             // Configure the Ignite 2.1 persistence layer to store our data
-            
+
             cfg.PersistentStoreConfiguration = new PersistentStoreConfiguration()
             {
                 //MetricsEnabled = true,

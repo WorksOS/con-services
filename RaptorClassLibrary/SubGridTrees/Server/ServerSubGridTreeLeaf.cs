@@ -123,7 +123,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public void AddPass(uint cellX, uint cellY, CellPass Pass)
         {
-            int PassIndex;
             SubGridCellPassesDataSegment Segment;
 
             Segment = Cells.SelectSegment(Pass.Time);
@@ -148,7 +147,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
             else
             {
-                if (Segment.PassesData.LocateTime(cellX, cellY, Pass.Time, out PassIndex))
+                if (Segment.PassesData.LocateTime(cellX, cellY, Pass.Time, out int PassIndex))
                 {
                     // Replace the existing cell pass with the new one. The assumption
                     // here is that more than one machine will never cross a cell center position
@@ -209,8 +208,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             if (Cells == null)
             {
                 //                Include(FLeafStorageClasses, icsscAllPasses);
-                Cells = new SubGridCellPassesDataWrapper();
-                Cells.Owner = this;
+                Cells = new SubGridCellPassesDataWrapper()
+                {
+                    Owner = this
+                };
 
                 //       FCachedMemorySizeOutOfDate:= True;
             }
@@ -419,14 +420,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                                       SubGridCellPassesDataSegment TemporallyPrecedingSegment)
         {
             bool UpdatedCell = false;
-            bool CCVFromLatestCellPass;
-            bool MDPFromLatestCellPass;
-            bool RMVFromLatestCellPass;
-            bool FrequencyFromLatestCellPass;
-            bool AmplitudeFromLatestCellPass;
-            bool GPSModeFromLatestCellPass;
-            bool TemperatureFromLatestCellPass;
-            bool CCAFromLatestCellPass;
 
             if (Segment.PassesData == null)
             {
@@ -483,14 +476,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     {
                         CalculateLatestPassDataForPassStack(Segment.PassesData.ExtractCellPasses(I, J),
                                                             ref ((SubGridCellLatestPassDataWrapper_NonStatic)(Segment).LatestPasses).PassData[I, J],
-                                                            out CCVFromLatestCellPass,
-                                                            out RMVFromLatestCellPass,
-                                                            out FrequencyFromLatestCellPass,
-                                                            out AmplitudeFromLatestCellPass,
-                                                            out TemperatureFromLatestCellPass,
-                                                            out GPSModeFromLatestCellPass,
-                                                            out MDPFromLatestCellPass,
-                                                            out CCAFromLatestCellPass);
+                                                            out bool CCVFromLatestCellPass,
+                                                            out bool RMVFromLatestCellPass,
+                                                            out bool FrequencyFromLatestCellPass,
+                                                            out bool AmplitudeFromLatestCellPass,
+                                                            out bool TemperatureFromLatestCellPass,
+                                                            out bool GPSModeFromLatestCellPass,
+                                                            out bool MDPFromLatestCellPass,
+                                                            out bool CCAFromLatestCellPass);
 
                         Segment.LatestPasses.CCVValuesAreFromLastPass.SetBitValue(I, J, CCVFromLatestCellPass);
                         Segment.LatestPasses.RMVValuesAreFromLastPass.SetBitValue(I, J, RMVFromLatestCellPass);
@@ -573,10 +566,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 return;
             }
 
-            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(this, Directory);
-            Iterator.IterationDirection = IterationDirection.Forwards;
-            Iterator.ReturnDirtyOnly = !fullRecompute;
-
+            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(this, Directory)
+            {
+                IterationDirection = IterationDirection.Forwards,
+                ReturnDirtyOnly = !fullRecompute
+            };
             int NumProcessedSegments = 0;
 
             // We are in the process of recalculating latest data, so don't ask the iterator to
@@ -680,8 +674,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public bool LoadSegmentFromStorage(IStorageProxy storageProxy, string FileName, SubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses /*, SiteModel SiteModelReference*/)
         {
             FileSystemErrorStatus FSError;
-            uint StoreGranuleIndex;
-            uint StoreGranuleCount;
 
             bool Result = false;
 
@@ -693,12 +685,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             try
             {
-                MemoryStream SMS = null; // = new MemoryStream();
-
                 FSError = storageProxy.ReadSpatialStreamFromPersistentStore
                             (Owner.ID, FileName, OriginX, OriginY, FileName,
-                             FileSystemStreamType.SubGridSegment, Segment.SegmentInfo.FSGranuleIndex, out SMS,
-                             out StoreGranuleIndex, out StoreGranuleCount);
+                             FileSystemStreamType.SubGridSegment, Segment.SegmentInfo.FSGranuleIndex, out MemoryStream SMS,
+                             out uint StoreGranuleIndex, out uint StoreGranuleCount);
 
                 Result = FSError == FileSystemErrorStatus.OK;
 
@@ -772,8 +762,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                                       /* const AInvalidatedSpatialStreams : TInvalidatedSpatialStreamArray*/)
         {
             MemoryStream MStream = new MemoryStream();
-            uint StoreGranuleIndex = 0;
-            uint StoreGranuleCount = 0;
 
             bool Result = false;
 
@@ -784,7 +772,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             Result = storage.WriteSpatialStreamToPersistentStore
              (Owner.ID, FileName, OriginX, OriginY, String.Empty, //AInvalidatedSpatialStreams,
-              FileSystemStreamType.SubGridDirectory, out StoreGranuleIndex, out StoreGranuleCount, MStream) == FileSystemErrorStatus.OK;
+              FileSystemStreamType.SubGridDirectory, out uint StoreGranuleIndex, out uint StoreGranuleCount, MStream) == FileSystemErrorStatus.OK;
             if (Result)
             {
                 // update new index location and size
@@ -890,14 +878,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public bool LoadDirectoryFromFile(/*IStorageProxy storage, */ string fileName)
         {
-            MemoryStream SMS = null;
-            uint StoreGranuleIndex = 0;
-            uint StoreGranuleCount = 0;
-
             IStorageProxy storage = StorageProxy.SpatialInstance(SubGridCellAddress.ToSpatialDivisionDescriptor(OriginX, OriginY, RaptorConfig.numSpatialProcessingDivisions));
 
             FileSystemErrorStatus FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, String.Empty,
-                                                                                         FileSystemStreamType.SubGridDirectory, 0, out SMS, out StoreGranuleIndex, out StoreGranuleCount);
+                                                                                         FileSystemStreamType.SubGridDirectory, 0, out MemoryStream SMS, out uint StoreGranuleIndex, out uint StoreGranuleCount);
 
             bool Result = FSError == FileSystemErrorStatus.OK;
 
@@ -941,8 +925,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             SubGridCellPassesDataSegment SourceSegment;
             uint StartIndex, EndIndex;
             DateTime EndTime;
-            int AddedCount;
-            int ModifiedCount;
             int PassCountMinusOne;
 
             if (Source.Cells.PassesData.Count == 0)
@@ -1008,7 +990,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                             EndIndex++;
                         }
 
-                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out AddedCount, out ModifiedCount);
+                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out int AddedCount, out int ModifiedCount);
 
                         if (AddedCount > 0 || ModifiedCount > 0)
                         {

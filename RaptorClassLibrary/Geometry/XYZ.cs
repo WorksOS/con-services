@@ -332,12 +332,11 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// <returns></returns>
         public static double GetTriangleHeight(XYZ P1, XYZ P2, XYZ P3, double X, double Y)
         {
-            double Y1, Y2, Y3, Z1, Z2, Z3;
             double Result = Consts.NullDouble;
 
-            bool GetInt1 = GetYInt(P1, P2, X, out Y1, out Z1);
-            bool GetInt2 = GetYInt(P2, P3, X, out Y2, out Z2);
-            bool GetInt3 = GetYInt(P1, P3, X, out Y3, out Z3);
+            bool GetInt1 = GetYInt(P1, P2, X, out double Y1, out double Z1);
+            bool GetInt2 = GetYInt(P2, P3, X, out double Y2, out double Z2);
+            bool GetInt3 = GetYInt(P1, P3, X, out double Y3, out double Z3);
 
             // Note: In some cases we may actually work out that we have intersects
             // with all three edges (yes, it can happen). Thus, if we fail to get a
