@@ -125,7 +125,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var reportGridRequest = await requestFactory.Create<CompactionReportGridRequestHelper>(r => r
         .ProjectId(projectId)
-        .Headers(customHeaders)
+        .Headers(CustomHeaders)
         .ProjectSettings(projectSettings)
         .Filter(filter))
       .SetRaptorClient(raptorClient)
@@ -150,7 +150,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionReportGridExecutor>(logger, raptorClient, null, configStore)
+          .Build<CompactionReportGridExecutor>(logger, raptorClient, null, ConfigStore)
           .Process(reportGridRequest) as CompactionReportGridResult
       );
     }
