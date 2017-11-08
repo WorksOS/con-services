@@ -51,8 +51,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       TASNodeSimpleVolumesResult result;
 
-      var baseFilter = RaptorConverters.ConvertFilter(request.baseFilterID, request.baseFilter, request.projectId);
-      var topFilter = RaptorConverters.ConvertFilter(request.topFilterID, request.topFilter, request.projectId);
+      var baseFilter = RaptorConverters.ConvertFilter(request.BaseFilterId, request.BaseFilter, request.projectId);
+      var topFilter = RaptorConverters.ConvertFilter(request.TopFilterId, request.TopFilter, request.projectId);
 
       TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.VolumeCalcType);
 
@@ -68,32 +68,32 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       if (request.CutTolerance != null && request.FillTolerance != null)
       {
         success = this.raptorClient.GetSummaryVolumes(request.projectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtVolumeSummary),
           volType,
           baseFilter,
           RaptorConverters.DesignDescriptor(request.BaseDesignDescriptor),
           topFilter,
           RaptorConverters.DesignDescriptor(request.TopDesignDescriptor),
-          RaptorConverters.ConvertFilter(request.additionalSpatialFilterID,
-            request.additionalSpatialFilter, request.projectId), (double)request.CutTolerance,
+          RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
+            request.AdditionalSpatialFilter, request.projectId), (double)request.CutTolerance,
           (double)request.FillTolerance,
-          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
           out result);
       }
       else
       {
         success = this.raptorClient.GetSummaryVolumes(request.projectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtVolumeSummary),
           volType,
           baseFilter,
           RaptorConverters.DesignDescriptor(request.BaseDesignDescriptor),
           topFilter,
           RaptorConverters.DesignDescriptor(request.TopDesignDescriptor),
-          RaptorConverters.ConvertFilter(request.additionalSpatialFilterID,
-            request.additionalSpatialFilter, request.projectId),
-          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
+          RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
+            request.AdditionalSpatialFilter, request.projectId),
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
           out result);
       }
 

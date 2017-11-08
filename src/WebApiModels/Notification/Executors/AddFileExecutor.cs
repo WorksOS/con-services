@@ -178,7 +178,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
     /// <param name="fileDescr">The original file for which the associated file is created</param>
     /// <param name="suffix">The suffix applied to the file name to get the generated file name</param>
     /// <param name="userUnits">The user units preference</param>
-    private async Task<bool> CreateDxfFile(long projectId, FileDescriptor fileDescr, string suffix, UnitsTypeEnum userUnits)
+    private async Task<bool> CreateDxfFile(long projectId, FileDescriptor fileDescr, string suffix, DxfUnitsType userUnits)
     {
       const double ImperialFeetToMetres = 0.3048;
       const double USFeetToMetres = 0.304800609601;
@@ -189,16 +189,16 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
       TVLPDDistanceUnits raptorUnits;
       switch (userUnits)
       {
-        case UnitsTypeEnum.Imperial:
+        case DxfUnitsType.ImperialFeet:
           raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduImperialFeet;
           interval = 300 * ImperialFeetToMetres;
           break;
 
-        case UnitsTypeEnum.Metric:
+        case DxfUnitsType.Meters:
           raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduMeters;
           interval = 100;
           break;
-        case UnitsTypeEnum.US:
+        case DxfUnitsType.UsSurveyFeet:
         default:
           raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduUSSurveyFeet;
           interval = 300 * USFeetToMetres;

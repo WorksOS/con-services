@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Models
 {
@@ -58,20 +57,18 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// Creates a <see cref="SummaryVolumesRequest"/> object for use with the v2 API.
     /// </summary>
     /// <returns>New instance of <see cref="SummaryVolumesRequest"/>.</returns>
-    public static SummaryVolumesRequest CreateAndValidate(long projectId, Filter baseFilter, Filter topFilter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, double? cutTolerance, double? fillTolerance, RaptorConverters.VolumesType volumeCalcType)
+    public static SummaryVolumesRequest CreateAndValidate(long projectId, Filter baseFilter, Filter topFilter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, RaptorConverters.VolumesType volumeCalcType)
     {
       var request = new SummaryVolumesRequest
       {
         projectId = projectId,
-        baseFilter = baseFilter,
-        topFilter = topFilter,
-        CutTolerance = cutTolerance,
-        FillTolerance = fillTolerance,
+        BaseFilter = baseFilter,
+        TopFilter = topFilter,
         BaseDesignDescriptor = baseDesignDescriptor,
         TopDesignDescriptor = topDesignDescriptor,
         VolumeCalcType = volumeCalcType,
-        baseFilterID = -1,
-        topFilterID = -1
+        BaseFilterId = -1,
+        TopFilterId = -1
       };
 
       request.Validate();
@@ -81,10 +78,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
 
     public override void Validate()
     {
-      this.liftBuildSettings?.Validate();
-      this.additionalSpatialFilter?.Validate();
-      this.topFilter?.Validate();
-      this.baseFilter?.Validate();
+      this.LiftBuildSettings?.Validate();
+      this.AdditionalSpatialFilter?.Validate();
+      this.TopFilter?.Validate();
+      this.BaseFilter?.Validate();
     }
   }
 }

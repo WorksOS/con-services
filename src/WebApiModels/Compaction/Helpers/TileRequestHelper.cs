@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       TileRequest tileRequest = TileRequest.CreateTileRequest(
         ProjectId, null, mode, palette, liftSettings, (RaptorConverters.VolumesType) computeVolType,
         0, design, filter1, 0, filter2, 0,
-        Filter == null || !Filter.layerType.HasValue ? FilterLayerMethod.None : Filter.layerType.Value,
+        Filter == null || !Filter.LayerType.HasValue ? FilterLayerMethod.None : Filter.LayerType.Value,
         bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, false);
 
       return tileRequest;

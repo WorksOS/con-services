@@ -452,9 +452,9 @@ namespace VSS.Productivity3D.Common.Proxies
         filter.StartTime = overrideStartUTC.Value;
         filter.SetTimeCellpassState(true);
       }
-      else if (pdf != null && pdf.startUTC.HasValue)
+      else if (pdf != null && pdf.StartUtc.HasValue)
       {
-        filter.StartTime = pdf.startUTC.Value;
+        filter.StartTime = pdf.StartUtc.Value;
         filter.SetTimeCellpassState(true);
       }
 
@@ -463,9 +463,9 @@ namespace VSS.Productivity3D.Common.Proxies
         filter.EndTime = overrideEndUTC.Value;
         filter.SetTimeCellpassState(true);
       }
-      else if (pdf != null && pdf.endUTC.HasValue)
+      else if (pdf != null && pdf.EndUtc.HasValue)
       {
-        filter.EndTime = pdf.endUTC.Value;
+        filter.EndTime = pdf.EndUtc.Value;
         filter.SetTimeCellpassState(true);
       }
 
@@ -481,22 +481,22 @@ namespace VSS.Productivity3D.Common.Proxies
       {
 
         // Currently the Raptor code only supports filtering on a single Machine Design
-        if (pdf.onMachineDesignID.HasValue)
+        if (pdf.OnMachineDesignId.HasValue)
         {
-          filter.DesignNameID = (int)pdf.onMachineDesignID.Value;
+          filter.DesignNameID = (int)pdf.OnMachineDesignId.Value;
           filter.SetDesignNameCellpassState(true);
         }
 
 
-        if (pdf.assetIDs != null && pdf.assetIDs.Count > 0)
+        if (pdf.AssetIDs != null && pdf.AssetIDs.Count > 0)
         {
-          assetList = (from a in pdf.assetIDs select new TMachineDetail { Name = string.Empty, ID = a, IsJohnDoeMachine = false }).ToList();
+          assetList = (from a in pdf.AssetIDs select new TMachineDetail { Name = string.Empty, ID = a, IsJohnDoeMachine = false }).ToList();
         }
 
         List<TMachineDetail> machineList = null;
-        if (pdf.contributingMachines != null && pdf.contributingMachines.Count > 0)
+        if (pdf.ContributingMachines != null && pdf.ContributingMachines.Count > 0)
         {
-          machineList = (from c in pdf.contributingMachines select new TMachineDetail { Name = c.machineName, ID = c.assetID, IsJohnDoeMachine = c.isJohnDoe }).ToList();
+          machineList = (from c in pdf.ContributingMachines select new TMachineDetail { Name = c.machineName, ID = c.assetID, IsJohnDoeMachine = c.isJohnDoe }).ToList();
           if (assetList == null)
             assetList = machineList;
           else
@@ -516,30 +516,30 @@ namespace VSS.Productivity3D.Common.Proxies
           }
         }
 
-        if (pdf.compactorDataOnly.HasValue)
+        if (pdf.CompactorDataOnly.HasValue)
         {
-          filter.SetCompactionMachinesOnlyState(pdf.compactorDataOnly.Value);
+          filter.SetCompactionMachinesOnlyState(pdf.CompactorDataOnly.Value);
         }
 
-        if (pdf.vibeStateOn.HasValue)
+        if (pdf.VibeStateOn.HasValue)
         {
-          filter.VibeState = pdf.vibeStateOn.Value ? TICVibrationState.vsOn : TICVibrationState.vsOff;
+          filter.VibeState = pdf.VibeStateOn.Value ? TICVibrationState.vsOn : TICVibrationState.vsOff;
           filter.SetVibeStateCellpassState(true);
         }
 
-        if (pdf.elevationType.HasValue)
+        if (pdf.ElevationType.HasValue)
         {
-          filter.ElevationType = ConvertElevationType(pdf.elevationType.Value);
+          filter.ElevationType = ConvertElevationType(pdf.ElevationType.Value);
           filter.SetElevationTypeCellpassState(true);
         }
 
         //Note: the SiteID is only used for the UI. The points of the site or user-defined polygon are in Polygon.
-        if (pdf.polygonLL != null && pdf.polygonLL.Count > 0)
+        if (pdf.PolygonLl != null && pdf.PolygonLl.Count > 0)
         {
           //NOTE: There is an inconsistency inherited from VL where the filter is passed to Raptor with decimal degrees.
           //All other lat/lngs in Shim calls are passed to Raptor as radians. Since we now have consistency in the Raptor
           //services where everything is radians we need to convert to decimal degrees here for the filter to match VL.
-          foreach (WGSPoint p in pdf.polygonLL)
+          foreach (WGSPoint p in pdf.PolygonLl)
           {
             filter.Fence.Add(new TFencePoint(p.Lon * RADIANS_TO_DEGREES, p.Lat * RADIANS_TO_DEGREES, 0));
           }
@@ -548,9 +548,9 @@ namespace VSS.Productivity3D.Common.Proxies
           filter.CoordsAreGrid = false;
         }
         else
-            if (pdf.polygonGrid != null && pdf.polygonGrid.Count > 0)
+            if (pdf.PolygonGrid != null && pdf.PolygonGrid.Count > 0)
         {
-          foreach (Point p in pdf.polygonGrid)
+          foreach (Point p in pdf.PolygonGrid)
           {
             filter.Fence.Add(new TFencePoint(p.x, p.y, 0));
           }
@@ -560,44 +560,44 @@ namespace VSS.Productivity3D.Common.Proxies
         }
 
 
-        if (pdf.forwardDirection.HasValue)
+        if (pdf.ForwardDirection.HasValue)
         {
-          filter.MachineDirection = pdf.forwardDirection.Value ? TICMachineDirection.mdForward : TICMachineDirection.mdReverse;
+          filter.MachineDirection = pdf.ForwardDirection.Value ? TICMachineDirection.mdForward : TICMachineDirection.mdReverse;
           filter.SetMachineDirectionCellpassState(true);
         }
 
-        if (pdf.alignmentFile != null && pdf.startStation.HasValue && pdf.endStation.HasValue && pdf.leftOffset.HasValue && pdf.rightOffset.HasValue)
+        if (pdf.AlignmentFile != null && pdf.StartStation.HasValue && pdf.EndStation.HasValue && pdf.LeftOffset.HasValue && pdf.RightOffset.HasValue)
         {
-          filter.ReferenceDesign = DesignDescriptor(pdf.alignmentFile);
-          filter.StartStation = pdf.startStation.Value;
-          filter.EndStation = pdf.endStation.Value;
-          filter.LeftOffset = pdf.leftOffset.Value;
-          filter.RightOffset = pdf.rightOffset.Value;
+          filter.ReferenceDesign = DesignDescriptor(pdf.AlignmentFile);
+          filter.StartStation = pdf.StartStation.Value;
+          filter.EndStation = pdf.EndStation.Value;
+          filter.LeftOffset = pdf.LeftOffset.Value;
+          filter.RightOffset = pdf.RightOffset.Value;
 
           filter.SetDesignMaskCellSelectionState(true);
         }
 
         // Layer Analysis
-        if (pdf.layerType.HasValue)
+        if (pdf.LayerType.HasValue)
         {
-          filter.LayerMethod = ConvertLayerMethod(pdf.layerType.Value);
+          filter.LayerMethod = ConvertLayerMethod(pdf.LayerType.Value);
           filter.LayerState = TICLayerState.lsOn;
 
           if (filter.LayerMethod == TFilterLayerMethod.flmOffsetFromDesign || filter.LayerMethod == TFilterLayerMethod.flmOffsetFromBench || filter.LayerMethod == TFilterLayerMethod.flmOffsetFromProfile)
           {
             if (filter.LayerMethod == TFilterLayerMethod.flmOffsetFromBench)
             {
-              filter.ElevationRangeLevel = pdf.benchElevation.HasValue ? pdf.benchElevation.Value : 0;
+              filter.ElevationRangeLevel = pdf.BenchElevation.HasValue ? pdf.BenchElevation.Value : 0;
             }
             else
             {
-              filter.ElevationRangeDesign = DesignDescriptor(pdf.designOrAlignmentFile);
+              filter.ElevationRangeDesign = DesignDescriptor(pdf.DesignOrAlignmentFile);
             }
-            if (pdf.layerNumber.HasValue && pdf.layerThickness.HasValue)
+            if (pdf.LayerNumber.HasValue && pdf.LayerThickness.HasValue)
             {
-              int layerNumber = pdf.layerNumber.Value < 0 ? pdf.layerNumber.Value + 1 : pdf.layerNumber.Value;
-              filter.ElevationRangeOffset = layerNumber * pdf.layerThickness.Value;
-              filter.ElevationRangeThickness = pdf.layerThickness.Value;
+              int layerNumber = pdf.LayerNumber.Value < 0 ? pdf.LayerNumber.Value + 1 : pdf.LayerNumber.Value;
+              filter.ElevationRangeOffset = layerNumber * pdf.LayerThickness.Value;
+              filter.ElevationRangeThickness = pdf.LayerThickness.Value;
             }
             else
             {
@@ -608,7 +608,7 @@ namespace VSS.Productivity3D.Common.Proxies
           }
           else if (filter.LayerMethod == TFilterLayerMethod.flmTagfileLayerNumber)
           {
-            filter.LayerID = pdf.layerNumber.Value;
+            filter.LayerID = pdf.LayerNumber.Value;
             filter.PassFilterSelections = filter.PassFilterSelections.Set(TICFilterPassSelection.icfsLayerID);
 
           }
@@ -616,49 +616,49 @@ namespace VSS.Productivity3D.Common.Proxies
         else
           filter.LayerState = TICLayerState.lsOff;
 
-        if (pdf.gpsAccuracy.HasValue)
+        if (pdf.GpsAccuracy.HasValue)
         {
           //TODO Do safe casting here
-          filter.GPSAccuracy = ((TICGPSAccuracy)pdf.gpsAccuracy);
-          filter.GPSAccuracyIsInclusive = pdf.gpsAccuracyIsInclusive ?? false;
+          filter.GPSAccuracy = ((TICGPSAccuracy)pdf.GpsAccuracy);
+          filter.GPSAccuracyIsInclusive = pdf.GpsAccuracyIsInclusive ?? false;
           filter.PassFilterSelections = filter.PassFilterSelections.Set(TICFilterPassSelection.icfsGPSAccuracy);
         }
 
 
-        if (pdf.bladeOnGround.HasValue && pdf.bladeOnGround.Value)
+        if (pdf.BladeOnGround.HasValue && pdf.BladeOnGround.Value)
         {
           filter.SetPassTypeState(true);
           filter.PassTypeSelections = filter.PassTypeSelections.Set(TICPassType.ptFront);
           filter.PassTypeSelections = filter.PassTypeSelections.Set(TICPassType.ptRear);
         }
-        if (pdf.trackMapping.HasValue && pdf.trackMapping.Value)
+        if (pdf.TrackMapping.HasValue && pdf.TrackMapping.Value)
         {
           filter.SetPassTypeState(true);
           filter.PassTypeSelections = filter.PassTypeSelections.Set(TICPassType.ptTrack);
         }
-        if (pdf.wheelTracking.HasValue && pdf.wheelTracking.Value)
+        if (pdf.WheelTracking.HasValue && pdf.WheelTracking.Value)
         {
           filter.SetPassTypeState(true);
           filter.PassTypeSelections = filter.PassTypeSelections.Set(TICPassType.ptWheel);
         }
 
-        if (pdf.designOrAlignmentFile != null)
+        if (pdf.DesignOrAlignmentFile != null)
         {
           filter.DesignFilter = VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(
-            pdf.designOrAlignmentFile.id,
+            pdf.DesignOrAlignmentFile.id,
             fileSpaceName,
-            pdf.designOrAlignmentFile.file.filespaceId,
-            pdf.designOrAlignmentFile.file.path,
-            pdf.designOrAlignmentFile.file.fileName,
-            pdf.designOrAlignmentFile.offset);
+            pdf.DesignOrAlignmentFile.file.filespaceId,
+            pdf.DesignOrAlignmentFile.file.path,
+            pdf.DesignOrAlignmentFile.file.fileName,
+            pdf.DesignOrAlignmentFile.offset);
           
           filter.SetDesignFilterMaskCellSelectionState(true);
         }
       }
 
-      if ((pdf != null) && (pdf.surveyedSurfaceExclusionList != null))
+      if ((pdf != null) && (pdf.SurveyedSurfaceExclusionList != null))
       {
-        filter.SurveyedSurfaceExclusionList = (from a in pdf.surveyedSurfaceExclusionList select new TSurveyedSurfaceID { SurveyedSurfaceID = a }).ToArray();
+        filter.SurveyedSurfaceExclusionList = (from a in pdf.SurveyedSurfaceExclusionList select new TSurveyedSurfaceID { SurveyedSurfaceID = a }).ToArray();
       }
 
       if (assetList != null)
@@ -667,7 +667,7 @@ namespace VSS.Productivity3D.Common.Proxies
         filter.SetDesignMachineCellpassState(true);
       }
 
-      filter.ReturnEarliestFilteredCellPass = (pdf != null) && pdf.returnEarliest.HasValue && pdf.returnEarliest.Value;
+      filter.ReturnEarliestFilteredCellPass = (pdf != null) && pdf.ReturnEarliest.HasValue && pdf.ReturnEarliest.Value;
 
       return filter;
     }

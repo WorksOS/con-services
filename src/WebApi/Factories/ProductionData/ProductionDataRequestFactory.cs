@@ -18,11 +18,11 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     private readonly IConfigurationStore configStore;
     private readonly IFileListProxy fileListProxy;
     private readonly ICompactionSettingsManager settingsManager;
-    private long _projectId;
-    private IDictionary<string, string> _headers;
-    private CompactionProjectSettings _projectSettings;
-    private Filter _filter;
-    private DesignDescriptor _designDescriptor;
+    private long projectId;
+    private IDictionary<string, string> headers;
+    private CompactionProjectSettings projectSettings;
+    private Filter filter;
+    private DesignDescriptor designDescriptor;
 
     /// <summary>
     /// Default constructor.
@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, fileListProxy, settingsManager, _projectId, _projectSettings, _headers, _filter, _designDescriptor);
+      obj.Initialize(log, configStore, fileListProxy, settingsManager, this.projectId, this.projectSettings, this.headers, this.filter, this.designDescriptor);
 
       return obj;
     }
@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     /// <param name="projectId"></param>
     public ProductionDataRequestFactory ProjectId(long projectId)
     {
-      _projectId = projectId;
+      this.projectId = projectId;
       return this;
     }
 
@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     /// <param name="headers"></param>
     public ProductionDataRequestFactory Headers(IDictionary<string, string> headers)
     {
-      _headers = headers;
+      this.headers = headers;
       return this;
     }
 
@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     /// <param name="projectSettings"></param>
     public ProductionDataRequestFactory ProjectSettings(CompactionProjectSettings projectSettings)
     {
-      _projectSettings = projectSettings;
+      this.projectSettings = projectSettings;
       return this;
     }
 
@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     /// <param name="filter">Filter model for the raptor query.</param>
     public ProductionDataRequestFactory Filter(Filter filter)
     {
-      _filter = filter;
+      this.filter = filter;
       return this;
     }
 
@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.Factories.ProductionData
     /// <param name="designDescriptor">Design for the raptor query.</param>
     public ProductionDataRequestFactory DesignDescriptor(DesignDescriptor designDescriptor)
     {
-      _designDescriptor = designDescriptor;
+      this.designDescriptor = designDescriptor;
       return this;
     }
   }

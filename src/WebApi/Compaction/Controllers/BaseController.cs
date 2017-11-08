@@ -155,49 +155,51 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected async Task<DesignDescriptor> GetDesignDescriptor(Guid projectUid, Guid? fileUid, bool forProfile = false)
     {
-      if (fileUid.HasValue)
+      if (!fileUid.HasValue)
       {
-        var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), this.CustomHeaders);
-        if (fileList == null || fileList.Count == 0)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Project has no appropriate design files."));
-        }
-
-        FileData file = null;
-
-        foreach (var f in fileList)
-        {
-          if (f.ImportedFileUid == fileUid.ToString() && f.IsActivated && (!forProfile || f.IsProfileSupportedFileType()))
-          {
-            file = f;
-
-            break;
-          }
-        }
-
-        if (file == null)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Unable to access design file."));
-        }
-
-        var tccFileName = file.Name;
-        if (file.ImportedFileType == ImportedFileType.SurveyedSurface)
-        {
-          //Note: ':' is an invalid character for filenames in Windows so get rid of them
-          tccFileName = Path.GetFileNameWithoutExtension(tccFileName) +
-            "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
-            Path.GetExtension(tccFileName);
-        }
-        string fileSpaceId = FileDescriptor.GetFileSpaceId(this.ConfigStore, log);
-        FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
-
-        return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
+        return null;
       }
-      return null;
+
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), this.CustomHeaders);
+      if (fileList == null || fileList.Count == 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Project has no appropriate design files."));
+      }
+
+      FileData file = null;
+
+      foreach (var f in fileList)
+      {
+        if (f.ImportedFileUid == fileUid.ToString() && f.IsActivated && (!forProfile || f.IsProfileSupportedFileType()))
+        {
+          file = f;
+
+          break;
+        }
+      }
+
+      if (file == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Unable to access design file."));
+      }
+
+      var tccFileName = file.Name;
+      if (file.ImportedFileType == ImportedFileType.SurveyedSurface)
+      {
+        //Note: ':' is an invalid character for filenames in Windows so get rid of them
+        tccFileName = Path.GetFileNameWithoutExtension(tccFileName) +
+                      "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
+                      Path.GetExtension(tccFileName);
+      }
+
+      string fileSpaceId = FileDescriptor.GetFileSpaceId(this.ConfigStore, this.log);
+      FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
+
+      return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
     }
 
     /// <summary>
@@ -269,7 +271,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DesignDescriptor designDescriptor = null;
       if (filterUid.HasValue)
       {
-        var filterData = await GetFilter(projectUid, filterUid.Value);
+        var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
         if (filterData != null)
         {
           if (filterData.designUID != null && Guid.TryParse(filterData.designUID, out Guid designUidGuid))
@@ -329,7 +331,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         filter.vibeStateOn, filter.polygonLL, filter.forwardDirection, filter.layerNumber, filter.polygonUID, filter.polygonName);
     }
 
-    private async Task<MasterData.Models.Models.Filter> GetFilter(Guid projectUid, Guid filterUid)
+    private async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await this.FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), this.CustomHeaders);
 

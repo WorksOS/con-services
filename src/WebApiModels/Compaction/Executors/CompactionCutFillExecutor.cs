@@ -19,15 +19,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
-
+      ContractExecutionResult result;
       CutFillDetailsRequest request = item as CutFillDetailsRequest;
+
       var filter = RaptorConverters.ConvertFilter(null, request.filter, request.projectId);
       var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
- 
-      TCutFillDetails cutFillDetails;
 
       bool success = raptorClient.GetCutFillDetails(request.projectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCutfillDetailed),
@@ -38,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         },
         filter,
         liftBuildSettings,
-        out cutFillDetails);
+        out var cutFillDetails);
 
       if (success)
       {
@@ -49,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           "Failed to get requested cut-fill details data"));
       }
-    
+
       return result;
     }
   }
