@@ -12,6 +12,7 @@ namespace SchedulerTests
   public class ImportedFileRepoNhOpTests : TestControllerBase
   {
     private ILogger _log;
+    private string _projectDbConnectionString;
     private string _nhOpDbConnectionString;
 
     [TestInitialize]
@@ -20,6 +21,7 @@ namespace SchedulerTests
       SetupDi();
 
       _log = LoggerFactory.CreateLogger<ImportedFileRepoNhOpTests>();
+      _projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
       _nhOpDbConnectionString = ConnectionUtils.GetConnectionStringMsSql(ConfigStore, Log, "NH_OP");
 
       Assert.IsNotNull(_log, "Log is null");
@@ -39,7 +41,7 @@ namespace SchedulerTests
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         DxfUnitsType = DxfUnitsType.UsSurveyFeet,
-        Name = "JB topo southern motorway_2010-11-29T153300Z.TTM",
+        Name = "ImportedFileRepoNhOp_OneFileIn.TTM",
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
         FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
         FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
@@ -49,6 +51,11 @@ namespace SchedulerTests
 
       var insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFile);
       Assert.AreEqual(2, insertedCount, "should have been customerProject written to NhOpDb");
+
+      // need this for when sync occurs
+      var importedFileProject = AutoMapperUtility.Automapper.Map<ImportedFileProject>(importedFile);
+      insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFileProject);
+      Assert.AreEqual(2, insertedCount, "should have written customer and project to ProjectDB");
 
       insertedCount = WriteNhOpDbImportedFileAndHistory(_nhOpDbConnectionString, importedFile);
       Assert.AreEqual(2, insertedCount, "should have been ImportedFile written to NhOpDb");
@@ -78,7 +85,7 @@ namespace SchedulerTests
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.Alignment,
         DxfUnitsType = DxfUnitsType.UsSurveyFeet,
-        Name = "JB topo southern motorway_2010-11-29T153300Z.TTM",
+        Name = "ImportedFileRepoNhOp_OneFileIn_WrongFileType.TTM",
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
         FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
         FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
@@ -88,6 +95,11 @@ namespace SchedulerTests
 
       var insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFile);
       Assert.AreEqual(2, insertedCount, "should have been customerETc written to NhOpDb");
+
+      // need this for when sync occurs
+      var importedFileProject = AutoMapperUtility.Automapper.Map<ImportedFileProject>(importedFile);
+      insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFileProject);
+      Assert.AreEqual(2, insertedCount, "should have written customer and project to ProjectDB");
 
       insertedCount = WriteNhOpDbImportedFileAndHistory(_nhOpDbConnectionString, importedFile);
       Assert.AreEqual(2, insertedCount, "should have been ImportedFile written to NhOpDb");
@@ -114,7 +126,7 @@ namespace SchedulerTests
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         DxfUnitsType = DxfUnitsType.UsSurveyFeet,
-        Name = "JB topo southern motorway_2010-11-29T153300Z.TTM",
+        Name = "ImportedFileRepoNhOp_Create.TTM",
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
         FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
         FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
@@ -124,6 +136,11 @@ namespace SchedulerTests
 
       var insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFile);
       Assert.AreEqual(2, insertedCount, "should have been customerProject written to NhOpDb");
+
+      // need this for when sync occurs
+      var importedFileProject = AutoMapperUtility.Automapper.Map<ImportedFileProject>(importedFile);
+      insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFileProject);
+      Assert.AreEqual(2, insertedCount, "should have written customer and project to ProjectDB");
 
       var createdLegacyImportedFileId = ImportedFileRepoNhOp.Create(importedFile);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "should return the Identity field from ImportedFile written to NhOpDb");
@@ -153,7 +170,7 @@ namespace SchedulerTests
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         DxfUnitsType = DxfUnitsType.UsSurveyFeet,
-        Name = "JB topo southern motorway_2010-11-29T153300Z.TTM",
+        Name = "ImportedFileRepoNhOp_Delete.TTM",
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
         FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
         FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
@@ -163,6 +180,11 @@ namespace SchedulerTests
 
       var insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFile);
       Assert.AreEqual(2, insertedCount, "should have been customerProject written to NhOpDb");
+
+      // need this for when sync occurs
+      var importedFileProject = AutoMapperUtility.Automapper.Map<ImportedFileProject>(importedFile);
+      insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFileProject);
+      Assert.AreEqual(2, insertedCount, "should have written customer and project to ProjectDB");
 
       var createdLegacyImportedFileId = ImportedFileRepoNhOp.Create(importedFile);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "should return the Identity field from ImportedFile written to NhOpDb");

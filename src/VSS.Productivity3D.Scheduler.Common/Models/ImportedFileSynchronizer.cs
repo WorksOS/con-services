@@ -137,8 +137,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
             {
               // (o)
               fileListProject.RemoveAt(0);
-              _log.LogWarning(
-                $"SyncTables: Project.IF is not in NH_OP. However it has no legacy customer/projectID so cannot be added to nhOp: {JsonConvert.SerializeObject(ifp)}");
+              //_log.LogWarning(
+              //  $"SyncTables: Project.IF is not in NH_OP. However it has no legacy customer/projectID so cannot be added to nhOp: {JsonConvert.SerializeObject(ifp)}");
             }
             else
             {

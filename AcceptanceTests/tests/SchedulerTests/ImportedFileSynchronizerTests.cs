@@ -28,21 +28,20 @@ namespace SchedulerTests
     }
 
     [TestMethod]
-    [Ignore]
     public void ImportedFileRepoProject_OneFileInProject()
     {
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
 
       var importedFileProject = new ImportedFileProject()
       {
-        LegacyProjectId = new Random().Next(1, 99999),
-        LegacyCustomerId = new Random().Next(1, 99999),
+        LegacyProjectId = new Random().Next(1, 1000000),
+        LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),
         LegacyImportedFileId = null,
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
-        Name = "JB topo southern motorway.TTM",
+        Name = "ImportedFileRepoProject_OneFileInProject.TTM",
         FileDescriptor =
           "{ \"filespaceId\":\"u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01\",\"path\":\"/87bdf851-44c5-e311-aa77-00505688274d/62a52e4f-faa2-e511-80e5-0050568821e6\",\"fileName\":\"DesignSVL13072017034205.svl\"}",
         FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),

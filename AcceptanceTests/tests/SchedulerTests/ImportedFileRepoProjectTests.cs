@@ -13,7 +13,8 @@ namespace SchedulerTests
   public class ImportedFileRepoProjectTests : TestControllerBase
   {
     private ILogger _log;
-    private string _projectDbConnectionString; 
+    private string _projectDbConnectionString;
+    private string _nhOpDbConnectionString;
 
     [TestInitialize]
     public void Init()
@@ -22,6 +23,8 @@ namespace SchedulerTests
 
       _log = LoggerFactory.CreateLogger<ImportedFileRepoProjectTests>();
       _projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
+      _nhOpDbConnectionString = ConnectionUtils.GetConnectionStringMsSql(ConfigStore, Log, "NH_OP");
+
       Assert.IsNotNull(_log, "Log is null");
     }
 
@@ -32,14 +35,13 @@ namespace SchedulerTests
 
       var importedFile = new ImportedFileProject()
       {
-        //LegacyProjectId = new Random().Next(100000, 1999999),
-        //LegacyCustomerId = new Random().Next(100000, 1999999),
+        LegacyProjectId = new Random().Next(1000000, 9999999),
+        LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),
-        //LegacyImportedFileId = new Random().Next(100000, 1999999),
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
-        Name = "JB topo southern motorway.TTM",
+        Name = "ImportedFileRepoProject_OneFileIn.TTM",
         FileDescriptor =
           "{ \"filespaceId\":\"u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01\",\"path\":\"/87bdf851-44c5-e311-aa77-00505688274d/62a52e4f-faa2-e511-80e5-0050568821e6\",\"fileName\":\"DesignSVL13072017034205.svl\"}",
         FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
@@ -54,6 +56,11 @@ namespace SchedulerTests
 
       var insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFile);
       Assert.AreEqual(2, insertedCount, "should have written customer and project");
+
+      // need this for when sync occurs
+      var importedFileNhOp = AutoMapperUtility.Automapper.Map<ImportedFileNhOp>(importedFile);
+      insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFileNhOp);
+      Assert.AreEqual(2, insertedCount, "should have written customer and project to NhOpDb");
 
       insertedCount = WriteToProjectDBImportedFile(_projectDbConnectionString, importedFile);
       Assert.AreEqual(1, insertedCount, "should have been 1 file written to ProjectDb");
@@ -77,14 +84,13 @@ namespace SchedulerTests
 
       var importedFile = new ImportedFileProject()
       {
-        //LegacyProjectId = new Random().Next(100000, 1999999),
-        //LegacyCustomerId = new Random().Next(100000, 1999999),
+        LegacyProjectId = new Random().Next(1000000, 9999999),
+        LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),
-        //LegacyImportedFileId = new Random().Next(100000, 1999999),
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.Alignment,
-        Name = "JB topo southern motorway.TTM",
+        Name = "ImportedFileRepoProject_OneFileIn_WrongFileType.TTM",
         FileDescriptor =
           "{ \"filespaceId\":\"u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01\",\"path\":\"/87bdf851-44c5-e311-aa77-00505688274d/62a52e4f-faa2-e511-80e5-0050568821e6\",\"fileName\":\"DesignSVL13072017034205.svl\"}",
         FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
@@ -99,6 +105,11 @@ namespace SchedulerTests
 
       var insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFile);
       Assert.AreEqual(2, insertedCount, "should have written customer and project");
+
+      // need this for when sync occurs
+      var importedFileNhOp = AutoMapperUtility.Automapper.Map<ImportedFileNhOp>(importedFile);
+      insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFileNhOp);
+      Assert.AreEqual(2, insertedCount, "should have written customer and project to NhOpDb");
 
       insertedCount = WriteToProjectDBImportedFile(_projectDbConnectionString, importedFile);
       Assert.AreEqual(1, insertedCount, "should have been 1 ImportedFile written to ProjectDb");
@@ -117,14 +128,13 @@ namespace SchedulerTests
 
       var importedFile = new ImportedFileProject()
       {
-        //LegacyProjectId = new Random().Next(100000, 1999999),
-        //LegacyCustomerId = new Random().Next(100000, 1999999),
+        LegacyProjectId = new Random().Next(1000000, 9999999),
+        LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),
-        //LegacyImportedFileId = new Random().Next(100000, 1999999),
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
-        Name = "JB topo southern motorway.TTM",
+        Name = "ImportedFileRepoProject_Create.TTM",
         FileDescriptor =
           "{ \"filespaceId\":\"u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01\",\"path\":\"/87bdf851-44c5-e311-aa77-00505688274d/62a52e4f-faa2-e511-80e5-0050568821e6\",\"fileName\":\"DesignSVL13072017034205.svl\"}",
         FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
@@ -139,6 +149,11 @@ namespace SchedulerTests
 
       var insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFile);
       Assert.AreEqual(2, insertedCount, "should have written customer and project");
+
+      // need this for when sync occurs
+      var importedFileNhOp = AutoMapperUtility.Automapper.Map<ImportedFileNhOp>(importedFile);
+      insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFileNhOp);
+      Assert.AreEqual(2, insertedCount, "should have written customer and project to NhOpDb");
 
       var createdCount = importedFileRepoProject.Create(importedFile);
       Assert.AreEqual(1, createdCount, "nhOpDb importFile not created");
@@ -158,14 +173,13 @@ namespace SchedulerTests
 
       var importedFile = new ImportedFileProject()
       {
-        //LegacyProjectId = new Random().Next(100000, 1999999),
-        //LegacyCustomerId = new Random().Next(100000, 1999999),
+        LegacyProjectId = new Random().Next(1000000, 9999999),
+        LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),
-        //LegacyImportedFileId = new Random().Next(100000, 1999999),
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
-        Name = "JB topo southern motorway.TTM",
+        Name = "ImportedFileRepoProject_Delete.TTM",
         FileDescriptor =
           "{ \"filespaceId\":\"u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01\",\"path\":\"/87bdf851-44c5-e311-aa77-00505688274d/62a52e4f-faa2-e511-80e5-0050568821e6\",\"fileName\":\"DesignSVL13072017034205.svl\"}",
         FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
