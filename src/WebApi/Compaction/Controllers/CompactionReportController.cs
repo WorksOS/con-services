@@ -16,9 +16,10 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using System.IO;
-using ASNodeDecls;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
+using VSS.Productivity3D.WebApiModels.MapHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -49,6 +50,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IGeofenceProxy geofenceProxy;
 
+    /// <summary>
+    /// The request factory
+    /// </summary>
+    private readonly IProductionDataRequestFactory requestFactory;
 
     /// <summary>
     /// The tile generator
@@ -68,9 +73,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterServiceProxy">Filter service proxy</param>
     /// <param name="tileGenerator">Tile generator</param>
     /// <param name="prefProxy">User preferences proxy</param>
+    /// <param name="requestFactory">The request factory.</param>
     public CompactionReportController(ILoggerFactory logger, IConfigurationStore configStore, IGeofenceProxy geofenceProxy,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator, IPreferenceProxy prefProxy) 
+      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator, 
+      IPreferenceProxy prefProxy, IProductionDataRequestFactory requestFactory) 
       : base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.logger = logger;
@@ -78,6 +85,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.tileGenerator = tileGenerator;
       this.prefProxy = prefProxy;
       this.geofenceProxy = geofenceProxy;
+      this.requestFactory = requestFactory;
     }
 
     /// <summary>
@@ -122,16 +130,29 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var dxfFiles = await GetFilesOfType(projectUid, ImportedFileType.Linework);
       var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
       var userPreferences = await GetUserPreferences();
-      var geofences = await geofenceProxy.GetGeofences(customHeaders);
-      //TODO: Add GetGeofences to geofence proxy
+      var geofences = await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, customHeaders);
 
-      //TODO: make a request helper and validate query parameters
+      var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
+          .ProjectId(project.projectId)
+          .Headers(customHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter)
+          .DesignDescriptor(cutFillDesign))
+        .SetBaseFilter(sumVolParameters.Item1)
+        .SetTopFilter(sumVolParameters.Item2)
+        .SetVolumeCalcType(volumeCalcType)
+        .SetVolumeDesign(sumVolParameters.Item3)
+        .SetGeofences(geofences)
+        .SetAlignmentDescriptors(alignmentDescriptors)
+        .SetDxfFiles(dxfFiles)
+        .CreateTileGenerationRequest(overlays, width, height, mapType, mode, userPreferences.Language);
 
-      //TODO: lamba with async - look up internet
-      var result = WithServiceExceptionTryExecute(() =>
-        await tileGenerator.GetMapData(overlays, width, height, mapType, mode, userPreferences.Language, geofences, alignmentDescriptors, dxfFiles, project, projectSettings, filter, sumVolParameters, cutFillDesign, customHeaders));
+      request.Validate();
+
+      var tileResult = await WithServiceExceptionTryExecute(async () =>
+        await tileGenerator.GetMapData(request));
     
-      return TileResult.CreateTileResult(result, TASNodeErrorStatus.asneOK);
+      return tileResult;
     }
 
     /// <summary>
@@ -177,18 +198,29 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var dxfFiles = await GetFilesOfType(projectUid, ImportedFileType.Linework);
       var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
       var userPreferences = await GetUserPreferences();
-      var geofences = await geofenceProxy.GetGeofences(customHeaders);
-      //TODO: Add GetGeofences to geofence proxy
+      var geofences = await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, customHeaders);
+      var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
+          .ProjectId(project.projectId)
+          .Headers(customHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter)
+          .DesignDescriptor(cutFillDesign))
+        .SetBaseFilter(sumVolParameters.Item1)
+        .SetTopFilter(sumVolParameters.Item2)
+        .SetVolumeCalcType(volumeCalcType)
+        .SetVolumeDesign(sumVolParameters.Item3)
+        .SetGeofences(geofences)
+        .SetAlignmentDescriptors(alignmentDescriptors)
+        .SetDxfFiles(dxfFiles)
+        .CreateTileGenerationRequest(overlays, width, height, mapType, mode, userPreferences.Language);
 
-      //TODO: make a request helper and validate query parameters
+      request.Validate();
 
-      //TODO: lamba with async - look up internet
-      var result = WithServiceExceptionTryExecute(() =>
-        await tileGenerator.GetMapData(overlays, width, height, mapType, mode, userPreferences.Language, geofences, alignmentDescriptors, dxfFiles, project, projectSettings, filter, sumVolParameters, cutFillDesign, customHeaders));
-      var tileResult = TileResult.CreateTileResult(result, TASNodeErrorStatus.asneOK);
+      var tileResult = await WithServiceExceptionTryExecute(async () =>
+        await tileGenerator.GetMapData(request));
 
       Response.Headers.Add("X-Warning", "false");
-      return new FileStreamResult(new MemoryStream(result), "image/png");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
 
     private async Task<List<FileData>> GetFilesOfType(Guid projectUid, ImportedFileType fileType)

@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       this.logger = logger;
     }
 
-    public byte[] GetProjectBitmap(MapParameters parameters, ProjectData project)
+    public byte[] GetProjectBitmap(MapParameters parameters, ProjectDescriptor project)
     {
       const int PROJECT_BOUNDARY_COLOR = 0xFF8000;
       const int STROKE_TRANSPARENCY = 0x73; //0.45 of FF
@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         using (Bitmap bitmap = new Bitmap(parameters.mapWidth, parameters.mapHeight))
         using (Graphics g = Graphics.FromImage(bitmap))
         {
-          var projectPoints = TileServiceUtils.GeometryToPoints(project.ProjectGeofenceWKT);
+          var projectPoints = TileServiceUtils.GeometryToPoints(project.projectGeofenceWKT);
           PointF[] pixelPoints = TileServiceUtils.LatLngToPixelOffset(projectPoints, parameters.pixelTopLeft, parameters.numTiles);
 
           Pen pen = new Pen(Color.FromArgb(STROKE_TRANSPARENCY, Color.FromArgb(PROJECT_BOUNDARY_COLOR)),
@@ -51,6 +51,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
   public interface IProjectTileService
   {
-    byte[] GetProjectBitmap(MapParameters parameters, ProjectData project);
+    byte[] GetProjectBitmap(MapParameters parameters, ProjectDescriptor project);
   }
 }
