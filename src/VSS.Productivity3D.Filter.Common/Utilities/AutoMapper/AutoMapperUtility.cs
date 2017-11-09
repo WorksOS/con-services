@@ -1,22 +1,24 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper.Profiles;
 
 namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper
 {
   public class AutoMapperUtility
   {
-    private static MapperConfiguration _automapperConfiguration;
+    [ThreadStatic]
+    private static MapperConfiguration automapperConfiguration;
 
     public static MapperConfiguration AutomapperConfiguration
     {
       get
       {
-        if (_automapperConfiguration == null)
+        if (automapperConfiguration == null)
         {
           ConfigureAutomapper();
         }
 
-        return _automapperConfiguration;
+        return automapperConfiguration;
       }
     }
 
@@ -26,7 +28,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper
     {
       get
       {
-        if (_automapperConfiguration == null)
+        if (automapperConfiguration == null)
         {
           ConfigureAutomapper();
         }
@@ -37,7 +39,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper
 
     public static void ConfigureAutomapper()
     {
-      _automapperConfiguration = new MapperConfiguration(
+      automapperConfiguration = new MapperConfiguration(
         cfg =>
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
@@ -47,7 +49,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper
         }
       );
 
-      _automapper = _automapperConfiguration.CreateMapper();
+      _automapper = automapperConfiguration.CreateMapper();
     }
   }
 }
