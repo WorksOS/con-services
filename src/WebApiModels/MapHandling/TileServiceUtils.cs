@@ -6,14 +6,17 @@ using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
+  /// <summary>
+  /// Utilities for map tiles for reports
+  /// </summary>
   public class TileServiceUtils
   {
     /// <summary>
     /// Converts the lat/lng points to pixels and offsets them from the top left corner of the tile.
     /// </summary>
-    /// <param name="latLngs"></param>
-    /// <param name="pixelTopLeft"></param>
-    /// <param name="numTiles"></param>
+    /// <param name="latLngs">The list of points to convert in degrees</param>
+    /// <param name="pixelTopLeft">The top left corner of the tile in pixels</param>
+    /// <param name="numTiles">The number of tiles for the zoom level</param>
     /// <returns>The points in pixels relative to the top left corner of the tile.</returns>
     public static PointF[] LatLngToPixelOffset(IEnumerable<Point> latLngs, Point pixelTopLeft, int numTiles)
     {
@@ -29,9 +32,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <summary>
     /// Overlays the collection of tiles on top of each other and returns a single tile
     /// </summary>
-    /// <param name="parameters"></param>
-    /// <param name="tileList"></param>
-    /// <returns></returns>
+    /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
+    /// <param name="tileList">The list of tiles to overlay</param>
+    /// <returns>A single bitmap of the overlayed tiles</returns>
     public static byte[] OverlayTiles(MapParameters parameters, IEnumerable<byte[]> tileList)
     {
       byte[] overlayData = null;

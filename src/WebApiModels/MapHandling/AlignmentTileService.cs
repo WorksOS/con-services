@@ -11,6 +11,9 @@ using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
+  /// <summary>
+  /// Provides alignemnt tile functionality for reports
+  /// </summary>
   public class AlignmentTileService : IAlignmentTileService
   {
     private readonly ILogger log;
@@ -23,8 +26,17 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       raptorClient = raptor;
     }
 
+    /// <summary>
+    /// Gets a map tile with alignment center lines drawn on it.
+    /// </summary>
+    /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="alignmentDescriptors">Design descriptors for the project's alignment files</param>
+    /// <returns>A bitmap</returns>
     public byte[] GetAlignmentsBitmap(MapParameters parameters, long projectId, IEnumerable<DesignDescriptor> alignmentDescriptors)
     {
+      log.LogInformation("GetAlignmentsBitmap");
+
       byte[] alignmentsImage = null;
       if (alignmentDescriptors.Any())
       {
@@ -48,6 +60,12 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       return alignmentsImage;
     }
 
+    /// <summary>
+    /// Gets the list of points making up the alignment center line. 
+    /// </summary>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="alignDescriptor">Design descriptor for the alignment file</param>
+    /// <returns></returns>
     private IEnumerable<Point> GetAlignmentPoints(long projectId, DesignDescriptor alignDescriptor)
     {
       List<Point> alignmentPoints = null;

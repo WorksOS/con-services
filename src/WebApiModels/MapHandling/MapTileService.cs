@@ -7,6 +7,9 @@ using VSS.ConfigurationStore;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
+  /// <summary>
+  /// Provides base map tile functionality for reports. Provider is ALK maps.
+  /// </summary>
   public class MapTileService : IMapTileService
   {
     private readonly IConfigurationStore config;
@@ -32,6 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>ALK map tile</returns>
     public byte[] GetMapBitmap(MapParameters parameters, MapType mapType, string locale)
     {
+      log.LogInformation("GetMapBitmap");
       string mapURL = null;
 
       string alkMapType;

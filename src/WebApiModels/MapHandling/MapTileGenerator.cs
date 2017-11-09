@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ASNodeDecls;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.MapHandling;
@@ -39,8 +40,16 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       boundingBoxService = bboxService;
     }
 
+    /// <summary>
+    /// Gets a single tile with various types of data overlayed on it according to what is requested.
+    /// </summary>
+    /// <param name="request">The tile request</param>
+    /// <returns>A TileResult</returns>
     public async Task<TileResult> GetMapData(TileGenerationRequest request)
     {
+      log.LogInformation("Getting map tile for reports");
+      log.LogDebug("TileGenerationRequest: " + JsonConvert.SerializeObject(request));
+
       MapBoundingBox bbox = boundingBoxService.GetBoundingBox(request.project, request.filter, request.mode, request.baseFilter, request.topFilter);
 
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
@@ -56,12 +65,14 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         mapHeight = request.height,
         pixelTopLeft = pixelTopLeft,
       };
+      log.LogDebug("MapParameters: " + JsonConvert.SerializeObject(parameters));
 
       List<byte[]> tileList = new List<byte[]>();
       if (request.overlays.Contains(TileOverlayType.BaseMap))
         tileList.Add(mapTileService.GetMapBitmap(parameters, request.mapType.Value, request.language.Substring(0, 2)));
       if (request.overlays.Contains(TileOverlayType.ProductionData))
       {
+        log.LogInformation("GetProductionDataTile");
         BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(bbox.minLng, bbox.minLat, bbox.maxLng, bbox.maxLat);
         var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.filter, request.project.projectId,
           request.mode.Value, (ushort)request.width, (ushort)request.height, prodDataBox, request.designDescriptor, request.baseFilter, 

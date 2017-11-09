@@ -11,6 +11,9 @@ using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
+  /// <summary>
+  /// Provides DXF tile functionality for reports
+  /// </summary>
   public class DxfTileService : IDxfTileService
   {
     private readonly IConfigurationStore config;
@@ -29,8 +32,16 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       tccFilespaceId = config.GetValueString("TCCFILESPACEID");
     }
 
+    /// <summary>
+    /// Gets a map tile with DXF linework on it. 
+    /// </summary>
+    /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
+    /// <param name="dxfFiles">The list of DXF files to overlay tiles for</param>
+    /// <returns>A bitmap</returns>
     public async Task<byte[]> GetDxfBitmap(MapParameters parameters, IEnumerable<FileData> dxfFiles)
     {
+      log.LogInformation("GetDxfBitmap");
+
       byte[] overlayData = null;
 
       if (dxfFiles.Any())

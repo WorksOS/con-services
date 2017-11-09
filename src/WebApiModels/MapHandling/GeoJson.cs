@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
+  /// <summary>
+  /// Classes that are the model for the GeoJSON for design boundaries.
+  /// </summary>
+  /// 
   public class Geometry
   {
     public string type { get; set; }

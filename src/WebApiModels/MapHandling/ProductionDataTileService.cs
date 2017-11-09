@@ -17,6 +17,9 @@ using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
+  /// <summary>
+  /// Provides production data tile functionality for reports
+  /// </summary>
   public class ProductionDataTileService : IProductionDataTileService
   {
     private readonly IProductionDataRequestFactory requestFactory;
@@ -24,7 +27,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     private readonly IASNodeClient raptorClient;
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
-
 
     public ProductionDataTileService(IProductionDataRequestFactory prodDataFactory, ILoggerFactory logger, IElevationExtentsProxy extentsProxy, IASNodeClient raptor)
     {

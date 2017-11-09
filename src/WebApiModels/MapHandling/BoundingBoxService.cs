@@ -22,7 +22,10 @@ using VSS.Productivity3D.WebApiModels.Report.Executors;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
-  public class BoundingBoxService
+  /// <summary>
+  /// Used to calculate the map bounding box for the report.
+  /// </summary>
+  public class BoundingBoxService : IBoundingBoxService
   {
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
@@ -34,7 +37,15 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       this.logger = logger;
       raptorClient = raptor;
     }
-
+    /// <summary>
+    /// Gets the map bounding box to use for the report.
+    /// </summary>
+    /// <param name="project">The project for the report</param>
+    /// <param name="filter">The filter for production data tiles</param>
+    /// <param name="mode">The display mode for production data tiles</param>
+    /// <param name="baseFilter">The base filter for summary volumes</param>
+    /// <param name="topFilter">The top filter for summary volumes</param>
+    /// <returns>A bounding box in latitude/longitude (degrees)</returns>
     public MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, DisplayMode? mode, Filter baseFilter, Filter topFilter)
     {
       MapBoundingBox bbox = null;
@@ -148,7 +159,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// </summary>
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="filter">The filter</param>
-    /// <returns>A list of points</returns>
+    /// <returns>A list of latitude/longitude points in degrees</returns>
     private List<WGSPoint> GetFilterPoints(long projectId, Filter filter)
     {
       List<WGSPoint> points = new List<WGSPoint>();
@@ -166,6 +177,12 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       return points;
     }
 
+    /// <summary>
+    /// Gets a list of points representing thye design surface boundary
+    /// </summary>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="designDescriptor">The design ro get the boundary of</param>
+    /// <returns>A list of latitude/longitude points in degrees</returns>
     private List<WGSPoint> GetDesignBoundaryPoints(long projectId, DesignDescriptor designDescriptor)
     {
       List<WGSPoint> points = new List<WGSPoint>();
@@ -192,7 +209,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// </summary>
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="designDescriptor">The design to get the boundary for</param>
-    /// <returns></returns>
+    /// <returns>A GeoJSON representation of the design boundary</returns>
     private string GetDesignBoundary(long projectId, DesignDescriptor designDescriptor)
     {
       MemoryStream memoryStream;

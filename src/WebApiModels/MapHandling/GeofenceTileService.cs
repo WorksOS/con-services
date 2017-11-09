@@ -9,6 +9,9 @@ using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
+  /// <summary>
+  /// Provides geofence tile functionality for reports
+  /// </summary>
   public class GeofenceTileService : IGeofenceTileService
   {
     private readonly ILogger log;
@@ -20,8 +23,16 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       this.logger = logger;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
+    /// <param name="sites">List of geofences for the customer</param>
+    /// <returns>A bitmap</returns>
     public byte[] GetSitesBitmap(MapParameters parameters, IEnumerable<GeofenceData> sites)
     {
+      log.LogInformation("GetSitesBitmap");
+
       const int DEFAULT_SITE_COLOR = 0x0055FF;
       const int FILL_TRANSPARENCY = 0x40; //0.25 of FF
       const int STROKE_TRANSPARENCY = 0x73; //0.45 of FF
