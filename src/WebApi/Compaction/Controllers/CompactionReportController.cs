@@ -170,6 +170,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
 
+    /// <summary>
+    /// Get the generated tile for the request
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="filterUid"></param>
+    /// <param name="cutFillDesignUid"></param>
+    /// <param name="volumeBaseUid"></param>
+    /// <param name="volumeTopUid"></param>
+    /// <param name="volumeCalcType"></param>
+    /// <param name="overlays"></param>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="mapType"></param>
+    /// <param name="mode"></param>
+    /// <returns></returns>
     private async Task<TileResult> GetGeneratedTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, Guid? volumeBaseUid, Guid? volumeTopUid, VolumeCalcType? volumeCalcType,
       TileOverlayType[] overlays, int width, int height, MapType? mapType, DisplayMode? mode)
     {
@@ -206,6 +221,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         await tileGenerator.GetMapData(request));
     }
 
+    /// <summary>
+    /// Gets the imported files of the specified type in a project
+    /// </summary>
+    /// <param name="projectUid">The project UID</param>
+    /// <param name="fileType">The type of files to retrieve</param>
+    /// <returns>List of active imported files of specified type</returns>
     private async Task<List<FileData>> GetFilesOfType(Guid projectUid, ImportedFileType fileType)
     {
       var fileList = await FileListProxy.GetFiles(projectUid.ToString(), CustomHeaders);
@@ -217,6 +238,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return fileList.Where(f => f.ImportedFileType == fileType && f.IsActivated).ToList();
     }
 
+    /// <summary>
+    /// Gets alignments descriptors of all active alignment files for the project
+    /// </summary>
+    /// <param name="projectUid">The project UID</param>
+    /// <returns>A list of alignment design descriptors</returns>
     private async Task<List<DesignDescriptor>> GetAlignmentDescriptors(Guid projectUid)
     {
       var alignmentFiles = await GetFilesOfType(projectUid, ImportedFileType.Alignment);
