@@ -74,7 +74,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       {
         BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(bbox.minLng, bbox.minLat, bbox.maxLng, bbox.maxLat);
         var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.filter, request.project.projectId,
-          request.mode.Value, (ushort)request.width, (ushort)request.height, prodDataBox, request.designDescriptor, null);//custom headers not used
+          request.mode.Value, (ushort)request.width, (ushort)request.height, prodDataBox, request.designDescriptor, request.baseFilter, 
+          request.topFilter, request.volumeDesign, null);//custom headers not used
         tileList.Add(tileResult.TileData);
       }
       if (request.overlays.Contains(TileOverlayType.ProjectBoundary))
@@ -99,20 +100,20 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       //Summary volumes potentially has 2 filters
       if (mode == DisplayMode.CutFill && (baseFilter != null || topFilter != null))
       {
-        if (baseFilter != null && baseFilter.polygonLL != null && baseFilter.polygonLL.Count > 0)
+        if (baseFilter != null && baseFilter.PolygonLL != null && baseFilter.PolygonLL.Count > 0)
         {
-          filterPoints.AddRange(baseFilter.polygonLL);
+          filterPoints.AddRange(baseFilter.PolygonLL);
         }
-        if (topFilter != null && topFilter.polygonLL != null && topFilter.polygonLL.Count > 0)
+        if (topFilter != null && topFilter.PolygonLL != null && topFilter.PolygonLL.Count > 0)
         {
-          filterPoints.AddRange(topFilter.polygonLL);
+          filterPoints.AddRange(topFilter.PolygonLL);
         }
       }
       else
       {
-        if (filter != null && filter.polygonLL != null && filter.polygonLL.Count > 0)
+        if (filter != null && filter.PolygonLL != null && filter.PolygonLL.Count > 0)
         {
-          filterPoints.AddRange(filter.polygonLL);
+          filterPoints.AddRange(filter.PolygonLL);
         }
       }
      
@@ -185,7 +186,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns></returns>
     private async Task<CoordinateConversionResult> GetProductionDataExtents(long projectId, Productivity3D.Common.Models.Filter filter)
     {
-      ProjectStatisticsRequest statsRequest = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, filter?.surveyedSurfaceExclusionList?.ToArray());
+      ProjectStatisticsRequest statsRequest = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, filter?.SurveyedSurfaceExclusionList?.ToArray());
       var statsResult =
         RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
           .Process(statsRequest) as ProjectStatisticsResult;

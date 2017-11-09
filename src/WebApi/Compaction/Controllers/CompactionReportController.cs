@@ -130,11 +130,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var dxfFiles = await GetFilesOfType(projectUid, ImportedFileType.Linework);
       var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
       var userPreferences = await GetUserPreferences();
-      var geofences = await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, customHeaders);
+      var geofences = await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders);
 
       var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
           .ProjectId(project.projectId)
-          .Headers(customHeaders)
+          .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
@@ -198,10 +198,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var dxfFiles = await GetFilesOfType(projectUid, ImportedFileType.Linework);
       var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
       var userPreferences = await GetUserPreferences();
-      var geofences = await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, customHeaders);
+      var geofences = await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders);
       var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
           .ProjectId(project.projectId)
-          .Headers(customHeaders)
+          .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
@@ -225,7 +225,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     private async Task<List<FileData>> GetFilesOfType(Guid projectUid, ImportedFileType fileType)
     {
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         return null;
@@ -255,7 +255,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns></returns>
     private async Task<UserPreferenceData> GetUserPreferences()
     {
-      var userPreferences = await prefProxy.GetUserPreferences(customHeaders);
+      var userPreferences = await prefProxy.GetUserPreferences(CustomHeaders);
       if (userPreferences == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

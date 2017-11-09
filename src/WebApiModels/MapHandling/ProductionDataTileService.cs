@@ -45,10 +45,15 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="width">Width of the tile</param>
     /// <param name="height">Height of the tile in pixels</param>
     /// <param name="bbox">Bounding box in radians</param>
-    /// <param name="cutFillDesign">Design descriptor for cut-fill design</param>
+    /// <param name="cutFillDesign">Design descriptor for cut-fill</param>
+    /// <param name="baseFilter">Base filter for  summary volumes</param>
+    /// <param name="topFilter">Top filter for  summary volumes</param>
+    /// <param name="volumeDesign">Design descriptor for summary volumes design</param>
     /// <returns>Tile result</returns>
-    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
-      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, IDictionary<string, string> customHeaders)
+    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings,
+      Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
+      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, Filter baseFilter,
+      Filter topFilter, DesignDescriptor volumeDesign, IDictionary<string, string> customHeaders)
     {
       var tileRequest = requestFactory.Create<TileRequestHelper>(r => r
           .ProjectId(projectId)
@@ -126,6 +131,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   {
     TileResult GetProductionDataTile(CompactionProjectSettings projectSettings,
       Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
-      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, IDictionary<string, string> customHeaders);
+      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, Filter baseFilter, 
+      Filter topFilter, DesignDescriptor volumeDesign, IDictionary<string, string> customHeaders);
   }
 }

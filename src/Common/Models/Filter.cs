@@ -86,7 +86,7 @@ namespace VSS.Productivity3D.Common.Models
     /// A polygon to be used as a spatial filter boundary. The vertices are WGS84 positions
     /// </summary>
     [JsonProperty(PropertyName = "polygonLL", Required = Required.Default)]
-    public List<WGSPoint> PolygonLl { get; private set; }
+    public List<WGSPoint> PolygonLL { get; private set; }
 
     /// <summary>
     /// A polygon to be used as a spatial filter boundary. The vertices are grid positions within the project grid coordinate system
@@ -299,7 +299,7 @@ namespace VSS.Productivity3D.Common.Models
         VibeStateOn = vibeStateOn,
         CompactorDataOnly = compactorDataOnly,
         ElevationType = elevationType,
-        PolygonLl = polygonLl,
+        PolygonLL = polygonLl,
         PolygonGrid = polygonGrid,
         ForwardDirection = forwardDirection,
         AlignmentFile = alignmentFile,
@@ -341,9 +341,9 @@ namespace VSS.Productivity3D.Common.Models
     public void Validate()
     {
       //Validate individual properties first
-      if (this.PolygonLl != null)
+      if (this.PolygonLL != null)
       {
-        foreach (var ll in this.PolygonLl)
+        foreach (var ll in this.PolygonLL)
           ll.Validate();
       }
       if (this.PolygonGrid != null)
@@ -449,7 +449,7 @@ namespace VSS.Productivity3D.Common.Models
 
       //Check boundary if provided
       //Raptor handles any weird boundary you give it and automatically closes it if not closed already therefore we just need to check we have at least 3 points
-      if (this.PolygonLl != null && this.PolygonLl.Count < 3)
+      if (this.PolygonLL != null && this.PolygonLL.Count < 3)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -463,7 +463,7 @@ namespace VSS.Productivity3D.Common.Models
                  "Too few points for filter polygon"));
       }
 
-      if (this.PolygonLl != null && this.PolygonLl.Count > 0 && this.PolygonGrid != null && this.PolygonGrid.Count > 0)
+      if (this.PolygonLL != null && this.PolygonLL.Count > 0 && this.PolygonGrid != null && this.PolygonGrid.Count > 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
                  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

@@ -348,26 +348,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeTopUid">Top Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <returns>Tuple of base filter, top filter and volume design descriptor</returns>
-    protected async Task<Tuple<Filter,Filter,DesignDescriptor>> GetSummaryVolumesParameters(Guid projectUid, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
-    {
-      Filter baseFilter = null;
-      Filter topFilter = null;
-      DesignDescriptor volumeDesign = null;
-      if (volumeCalcType.HasValue)
-      {
-      }
-
-      return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
-    }
-
-    /// <summary>
-    /// Gets the summary volumes parameters according to the calcultion type
-    /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="volumeCalcType">The summary volumes calculation type</param>
-    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
-    /// <param name="volumeTopUid">Top Design or Filter UID for summary volumes determined by volumeCalcType</param>
-    /// <returns>Tuple of base filter, top filter and volume design descriptor</returns>
     protected async Task<Tuple<Filter, Filter, DesignDescriptor>> GetSummaryVolumesParameters(Guid projectUid, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
     {
       Filter baseFilter = null;
