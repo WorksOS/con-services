@@ -957,7 +957,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 */
 
             // Obtain a reference to the base class from the interfaces implementation to access the flags below
-            SubGridCellLatestPassDataWrapperBase baseGlobalLatestCells = (SubGridCellLatestPassDataWrapperBase)_GlobalLatestCells;
+            SubGridCellLatestPassDataWrapperBase baseGlobalLatestCells = _GlobalLatestCells as SubGridCellLatestPassDataWrapperBase;
 
             // Check the subgrid global attribute presence flags that are tracked for optional
             // attribute values to see if there is anything at all that needs to be done here

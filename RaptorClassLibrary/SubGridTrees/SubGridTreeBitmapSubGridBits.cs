@@ -125,6 +125,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             Buffer.BlockCopy(SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Fill, 0, Bits, 0, (int)SubgridBitsHelper.BytesInBitsArray);
         }
 
+        /// <summary>
+        /// Assigns the contents of one SubGridTreeBitmapSubGridBits to another
+        /// </summary>
+        /// <param name="source"></param>
         public void Assign(SubGridTreeBitmapSubGridBits source)
         {
             Buffer.BlockCopy(source.Bits, 0, Bits, 0, (int)SubgridBitsHelper.BytesInBitsArray);
