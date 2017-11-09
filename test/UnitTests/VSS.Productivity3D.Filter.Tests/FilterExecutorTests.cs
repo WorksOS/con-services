@@ -247,6 +247,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
+    [ExpectedException(typeof(ServiceException))]
     public async Task UpsertFilterExecutor_FilterWithBoundary()
     {
       string custUid = Guid.NewGuid().ToString();
