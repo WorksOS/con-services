@@ -7,7 +7,7 @@ namespace VSS.MasterData.Models.Models
   /// <summary>
   /// Describes geofence data returned by the geofence master data service.
   /// </summary>
-  public class GeofenceData : IData
+  public class GeofenceData 
   {
     public string GeofenceName { get; set; }
 
@@ -29,10 +29,5 @@ namespace VSS.MasterData.Models.Models
 
     public DateTime ActionUTC => DateTime.UtcNow;
 
-    /// <summary>
-    /// Key to use for caching geofence master data.
-    /// </summary>
-    [JsonIgnore]
-    public string CacheKey => GeofenceUID.ToString();
   }
 }

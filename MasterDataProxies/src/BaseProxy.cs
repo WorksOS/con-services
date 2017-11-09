@@ -151,41 +151,6 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
-    /// Gets a master data item. If the item is not in the cache then requests items from the relevant service and adds them to the cache.
-    /// The items to be retrieved must implement IData so that they can be cached with the correct cache keys.
-    /// </summary>
-    /// <param name="uid">The UID of the item to retrieve</param>
-    /// <param name="cacheLifeKey">The configuration store key for how long to cache items</param>
-    /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
-    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
-    /// <param name="route">Additional routing to add to the base URL (optional)</param>
-    /// <returns>Master data item</returns>
-    protected async Task<T> GetMasterDataItemWithList<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) where T : IData
-    {
-      if (cache == null)
-      {
-        throw new InvalidOperationException("This method requires a cache; use the correct constructor");
-      }
-      ClearCacheIfRequired<T>(uid, customHeaders);
-      var cacheKey = GetCacheKey<T>(uid);
-      T cacheData;
-      if (!cache.TryGetValue(cacheKey, out cacheData))
-      {
-        var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
-
-        var list = await GetMasterDataList<T>(urlKey, customHeaders, route);
-        foreach (var item in list)
-        {
-          var data = item as IData;
-          cache.Set(GetCacheKey<T>(data.CacheKey), item, opts);
-        }
-               
-        cache.TryGetValue(cacheKey, out cacheData);
-      }
-      return cacheData;
-    }
-
-    /// <summary>
     /// Gets a master data item. If the item is not in the cache then requests the item from the relevant service and adds it to the cache.
     /// </summary>
     /// <param name="uid">The UID of the item to retrieve. Also the cache key</param>
