@@ -14,6 +14,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
     private ILogger _log;
     private ImportedFileRepoNhOp<ImportedFileNhOp> _repoNhOp;
     private ImportedFileRepoProject<ImportedFileProject> _repoProject;
+    private string _fileSpaceId;
 
     /// <summary>
     /// </summary>
@@ -26,6 +27,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
 
       _repoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(configStore, logger);
       _repoProject = new ImportedFileRepoProject<ImportedFileProject>(configStore, logger);
+
+      _fileSpaceId = _configStore.GetValueString("TCCFILESPACEID");
+      if (string.IsNullOrEmpty(_fileSpaceId))
+      {
+        throw new InvalidOperationException(
+          "ImportedFileSynchroniser unable to establish filespaceId");
+      }
     }
 
     /// <summary>
@@ -56,10 +64,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         {
           // (d)
           var projectEvent = AutoMapperUtility.Automapper.Map<ImportedFileProject>(ifo);
+          projectEvent.Name = ImportedFileUtils.RemoveSurveyedUtcFromName(projectEvent.Name);
           projectEvent.ImportedFileUid = Guid.NewGuid().ToString();
-          // todo create FileDescriptor and ImportedBy
-          projectEvent.FileDescriptor = "todo";
-          projectEvent.ImportedBy = "todo";
+          projectEvent.FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(_fileSpaceId, projectEvent.CustomerUid, projectEvent.ProjectUid, projectEvent.Name));
+          projectEvent.ImportedBy = "";
           _repoProject.Create(projectEvent);
           fileListNhOp.RemoveAt(0);
           _log.LogTrace(
@@ -71,34 +79,39 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
           {
             // (b)
             _repoNhOp.Delete(ifo);
-            fileListNhOp.RemoveAt(0);
             _log.LogTrace(
               $"SyncTables: nhOp.IF is in nh_Op but was deleted in project. Deleted from NhOp: {JsonConvert.SerializeObject(ifo)}");
           }
           else
           {
-            // todo can surveyName change?
-            // todo determine which is more recent and update the other to match
-            if (gotMatchingProject.SurveyedUtc != ifo.SurveyedUtc
-                || gotMatchingProject.FileCreatedUtc != ifo.FileCreatedUtc
+            if (gotMatchingProject.FileCreatedUtc != ifo.FileCreatedUtc
                 || gotMatchingProject.FileUpdatedUtc != ifo.FileUpdatedUtc)
             {
               // (c)
-              gotMatchingProject.SurveyedUtc = ifo.SurveyedUtc;
-              gotMatchingProject.FileCreatedUtc = ifo.FileCreatedUtc;
-              gotMatchingProject.FileUpdatedUtc = ifo.FileUpdatedUtc;
-              _repoProject.Update(gotMatchingProject);
-              fileListNhOp.RemoveAt(0);
+              if (gotMatchingProject.FileCreatedUtc > ifo.FileCreatedUtc
+                  || gotMatchingProject.FileUpdatedUtc > ifo.FileUpdatedUtc)
+              {
+                // project is more recent, update nh_op
+                ifo.FileCreatedUtc = gotMatchingProject.FileCreatedUtc;
+                ifo.FileUpdatedUtc = gotMatchingProject.FileUpdatedUtc;
+                ifo.LastActionedUtc = DateTime.UtcNow;
+                _repoNhOp.Update(ifo);
+              }
+              else
+              {
+                // nh_op is more recent, update project
+                gotMatchingProject.FileCreatedUtc = ifo.FileCreatedUtc;
+                gotMatchingProject.FileUpdatedUtc = ifo.FileUpdatedUtc;
+                gotMatchingProject.LastActionedUtc = DateTime.UtcNow;
+                _repoProject.Update(gotMatchingProject);
+              }
               _log.LogTrace(
                 $"SyncTables: nhOp.IF is in Project and nhOp but some aspect has changed. Update in both Project and NhOp: {JsonConvert.SerializeObject(gotMatchingProject)}");
             }
-            else
-            {
-              // (a)
-              fileListProjectToRemove.Add(gotMatchingProject);
-              fileListNhOp.Remove(ifo);
-            }
           }
+          // (a) plus all of those having found gotMatchingProject
+          fileListProjectToRemove.Add(gotMatchingProject);
+          fileListNhOp.Remove(ifo);
         }
       }
 
@@ -144,11 +157,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
             {
               // (n)
               var nhOpEvent = AutoMapperUtility.Automapper.Map<ImportedFileNhOp>(ifp);
+              nhOpEvent.Name = ImportedFileUtils.IncludeSurveyedUtcInName(nhOpEvent.Name, nhOpEvent.SurveyedUtc.Value);
               var legacyImportedFileId = _repoNhOp.Create(nhOpEvent);
               ifp.LegacyImportedFileId = legacyImportedFileId;
               _repoProject.Update(ifp);
-              fileListProject
-                .RemoveAt(0); // Remove doesn't work as item changed, even if you make a copy using Automapper
+              fileListProject.RemoveAt(0); 
               _log.LogTrace(
                 $"SyncTables: Project.IF is not in NH_OP. Added to nhOp: {JsonConvert.SerializeObject(nhOpEvent)}");
             }

@@ -13,13 +13,15 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       ImportedFileProject other = obj as ImportedFileProject;
       if (
         other?.LegacyProjectId != LegacyProjectId
+        || other.ProjectUid == ProjectUid 
         || other.LegacyCustomerId != LegacyCustomerId
-        || other.ProjectUid == ProjectUid
+        || other.CustomerUid == CustomerUid
         || other.ImportedFileUid == ImportedFileUid
         || other.ImportedFileId == ImportedFileId
         || other.LegacyImportedFileId == LegacyImportedFileId
-        || other.CustomerUid == CustomerUid
         || other.ImportedFileType == ImportedFileType
+        || other.DxfUnitsType == DxfUnitsType
+        || other.SurveyedUtc == SurveyedUtc
         || other.Name == Name
         || other.FileDescriptor == FileDescriptor
         || other.FileCreatedUtc == FileCreatedUtc
@@ -27,8 +29,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         || other.ImportedBy == ImportedBy
         || other.IsDeleted == IsDeleted
         || other.IsActivated == IsActivated
-        || other.SurveyedUtc == SurveyedUtc
-        || other.DxfUnitsType == DxfUnitsType
         || other.LastActionedUtc == LastActionedUtc
       )
         return false;

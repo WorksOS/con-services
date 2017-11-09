@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
 
       try
       {
-        _dbConnection.Open(); // todo do this once-only?
+        _dbConnection.Open(); 
       }
       catch (Exception ex)
       {
@@ -41,11 +41,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         throw;
       }
 
-      // todo :
-      // Name: strip off date for e.g. StockPile_2014-05-21T210701Z.TTM
-      // FileDescription: form this from FileSpaceID, CustomerUID, ProjectUID
-
-      // missing here are:
+      // We don't need:
       // SourcePath, SourceFilespaceID - ignore
       // fk_ReferenceImportedFileID, Offset
       // fk_MassHaulPlanID
@@ -130,6 +126,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       {
         _dbConnection.Close();
       }
+
       if (returnedImportedFileId > 0)
       {
         member.LegacyImportedFileId = returnedImportedFileId;
@@ -151,7 +148,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         throw;
       }
 
-      // todo don't know the legacy UserID
       var insertImportedFileHistoryeCommand = string.Format(
         "INSERT ImportedFileHistory " +
         "    (fk_ImportedFileID, InsertUTC, CreateUTC, fk_UserID) " +
@@ -210,17 +206,17 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         @"DELETE ImportedFileHistory                
                 WHERE fk_ImportedFileID = @LegacyImportedFileId";
 
-      int countUpdated = 0;
+      int countDeleted = 0;
       try
       {
-        countUpdated += _dbConnection.Execute(deleteImportedFileCommand, member);
-        _log.LogTrace($"ImportedFileRepoNhOp.Delete(ImportedFile): countUpdatedSoFar {countUpdated}");
-        Console.WriteLine($"ImportedFileRepoNhOp.Delete(ImportedFile): countUpdatedSoFar {countUpdated}");
+        countDeleted += _dbConnection.Execute(deleteImportedFileHistoryCommand, member);
+        _log.LogTrace($"ImportedFileRepoNhOp.Delete(ImportedFileHistory): countUpdatedSoFar {countDeleted}");
+        Console.WriteLine($"ImportedFileRepoNhOp.Delete(ImportedFileHistory): countUpdatedSoFar {countDeleted}");
 
-        if (countUpdated > 0)
-          countUpdated += _dbConnection.Execute(deleteImportedFileHistoryCommand, member);
-        _log.LogTrace($"ImportedFileRepoNhOp.Delete(ImportedFileHistory): countUpdatedFinal {countUpdated}");
-        Console.WriteLine($"ImportedFileRepoNhOp.Delete(ImportedFileHistory): countUpdatedFinal {countUpdated}");
+        if (countDeleted > 0)
+          countDeleted += _dbConnection.Execute(deleteImportedFileCommand, member);
+        _log.LogTrace($"ImportedFileRepoNhOp.Delete(ImportedFile): countUpdatedFinal {countDeleted}");
+        Console.WriteLine($"ImportedFileRepoNhOp.Delete(ImportedFile): countUpdatedFinal {countDeleted}");
       }
       catch (Exception ex)
       {
@@ -233,7 +229,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         _dbConnection.Close();
       }
 
-      return countUpdated;
+      return countDeleted;
     }
   }
 }

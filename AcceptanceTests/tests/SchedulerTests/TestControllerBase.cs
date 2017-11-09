@@ -21,7 +21,8 @@ namespace SchedulerTests
     protected IConfigurationStore ConfigStore;
     protected ILoggerFactory LoggerFactory;
     protected ILogger Log;
-    
+    protected string FileSpaceId;
+
     protected void SetupDi()
     {
       const string loggerRepoName = "UnitTestLogTest";
@@ -44,6 +45,13 @@ namespace SchedulerTests
       this.LoggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
       Log = loggerFactory.CreateLogger<TestControllerBase>();
 
+      FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
+      if (string.IsNullOrEmpty(FileSpaceId))
+      {
+        throw new InvalidOperationException(
+          "ImportedFileSynchroniser unable to establish FileSpaceId");
+      }
+
       Assert.IsNotNull(ServiceProvider.GetService<IConfigurationStore>());
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
     }
@@ -51,7 +59,7 @@ namespace SchedulerTests
 
     protected IStorageConnection HangfireConnection()
     {
-      // todo doesn't seem to be a way to close connection....?
+      // doesn't seem to be a way to close the hangouts connection.
       MySqlStorage storage = null;
       var hangfireConnectionString = ConfigStore.GetConnectionString("VSPDB");
       Log.LogDebug($"ConfigureServices: Scheduler database string: {hangfireConnectionString}.");

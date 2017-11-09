@@ -133,13 +133,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         @"UPDATE ImportedFile
                 SET 
                   LegacyImportedFileId = @LegacyImportedFileId,
-                  FileDescriptor = @fileDescriptor,
                   FileCreatedUTC = @fileCreatedUtc,
                   FileUpdatedUTC = @fileUpdatedUtc,
-                  ImportedBy = @importedBy, 
-                  SurveyedUTC = @surveyedUTC,
                   LastActionedUTC = @LastActionedUTC,
-                  IsActivated = @IsActivated,
                   IsDeleted = @IsDeleted
                 WHERE ImportedFileUID = @ImportedFileUid";
       int countUpdated = 0;

@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     }
 
     /// <summary>
-    /// bi-sync between 2 db tables
+    /// bi-sync between 2 databases, 1 table in each
     /// </summary>
     public void DatabaseSyncTask()
     {

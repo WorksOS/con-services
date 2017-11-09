@@ -50,7 +50,7 @@ namespace SchedulerTests
         IsDeleted = false,
         IsActivated = true,
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
-        DxfUnitsType = DxfUnitsType.UsSurveyFeet,
+        // DxfUnitsType N/A for SurveyedSurface
         LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
       };
 
@@ -99,7 +99,6 @@ namespace SchedulerTests
         IsDeleted = false,
         IsActivated = true,
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
-        DxfUnitsType = DxfUnitsType.UsSurveyFeet,
         LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
       };
 
@@ -143,7 +142,6 @@ namespace SchedulerTests
         IsDeleted = false,
         IsActivated = true,
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
-        DxfUnitsType = DxfUnitsType.UsSurveyFeet,
         LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
       };
 
@@ -188,7 +186,6 @@ namespace SchedulerTests
         IsDeleted = false,
         IsActivated = true,
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
-        DxfUnitsType = DxfUnitsType.UsSurveyFeet,
         LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
       };
 

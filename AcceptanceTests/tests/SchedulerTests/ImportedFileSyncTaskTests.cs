@@ -38,9 +38,5 @@ namespace SchedulerTests
       Assert.IsNotNull(theJob.NextExecution, $"{ImportedProjectFileSyncTask} nextExecutionTime not found");
       Assert.IsTrue(theJob.NextExecution < DateTime.UtcNow.AddMinutes(1).AddSeconds(1), $"{ImportedProjectFileSyncTask} nextExecutionTime not within one minute");
     }
-
-    // todo test scheduler merges both ways
-
-    
   }
 }

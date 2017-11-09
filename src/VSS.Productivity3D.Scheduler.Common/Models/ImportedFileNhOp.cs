@@ -27,7 +27,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
 
     public DateTime FileUpdatedUtc { get; set; }
 
-    // todo NHOp has fk+UserID
     public string ImportedBy { get; set; }
 
     public DateTime LastActionedUtc { get; set; }
