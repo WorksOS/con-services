@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -34,6 +35,7 @@ namespace VSS.MasterData.Models.Models
     /// Gets the date range type for this filter, e.g. day, week, project extents.
     /// </summary>
     [JsonProperty(PropertyName = "dateRangeType", Required = Required.Default)]
+    [JsonConverter(typeof(StringEnumConverter))]
     public DateRangeType? DateRangeType { get; private set; }
 
     /// <summary>
