@@ -36,7 +36,7 @@ namespace VSS.Velociraptor.Designs.TTM
 
         private Triangle FindNeighbour(List<List<Triangle>> Trianglelists, Triangle Triangle, TriVertex FromVertex, TriVertex ToVertex)
         {
-            for (int i = 0; i < Trianglelists[FromVertex.Tag].Count - 1; i++)
+            for (int i = 0; i < Trianglelists[FromVertex.Tag].Count; i++)
             {
                 Triangle Result = Trianglelists[FromVertex.Tag][i];
 
@@ -71,7 +71,7 @@ namespace VSS.Velociraptor.Designs.TTM
             // Add a dummy list to make the indices of the lists agree with the indices in the tag property
             Trianglelists.Add(new List<Triangle>());
 
-            for (int i = 0; i < Vertices.Count - 1; i++)
+            for (int i = 0; i < Vertices.Count; i++)
             {
                 Trianglelists.Add(new List<Triangle>());
             }
@@ -79,7 +79,7 @@ namespace VSS.Velociraptor.Designs.TTM
             //    Vertices.DumpVertexList('c:\VertexList_AfterTriangleListCreate.txt');
 
             // Associate triangles with points
-            for (int i = 0; i < Triangles.Count - 1; i++)
+            for (int i = 0; i < Triangles.Count; i++)
             {
                 for (int Side = 0; Side < 3; i++)
                 {
@@ -88,7 +88,7 @@ namespace VSS.Velociraptor.Designs.TTM
             }
 
             // Find the neighbour for each triangle side
-            for (int i = 0; i < Triangles.Count - 1; i++)
+            for (int i = 0; i < Triangles.Count; i++)
             {
                 for (int Side = 0; Side < 3; i++)
                 {
@@ -121,7 +121,7 @@ namespace VSS.Velociraptor.Designs.TTM
         {
             Z = 0;
 
-            for (int i = 0; i < Triangles.Count - 1; i++)
+            for (int i = 0; i < Triangles.Count; i++)
             {
                 Triangle Result = Triangles[i];
 

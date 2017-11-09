@@ -16,7 +16,7 @@ namespace VSS.Velociraptor.Designs.TTM
         public void Write(BinaryWriter writer, TTMHeader header)
         {
             // Assume triangles have been numbered
-            for (int i = 0; i < Count - 1; i++)
+            for (int i = 0; i < Count; i++)
             {
                 Utilities.WriteInteger(writer, this[i].Tag, header.TriangleNumberSize);
             }
@@ -30,7 +30,7 @@ namespace VSS.Velociraptor.Designs.TTM
 
             Capacity = header.NumberOfEdgeRecords;
 
-            for (int i = 0; i < header.NumberOfEdgeRecords - 1; i++)
+            for (int i = 0; i < header.NumberOfEdgeRecords; i++)
             {
                 try
                 {

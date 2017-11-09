@@ -28,7 +28,7 @@ namespace VSS.Velociraptor.Designs.TTM
 
             for (int i = 0; i < 3; i++)
             {
-                int NeighbourIndex  = Neighbours[i] == null ? Consts.NoNeighbour : Neighbours[i].Tag;
+                int NeighbourIndex = Neighbours[i] == null ? Consts.NoNeighbour : Neighbours[i].Tag;
 
                 Utilities.WriteInteger(writer, NeighbourIndex, header.TriangleNumberSize);
             }

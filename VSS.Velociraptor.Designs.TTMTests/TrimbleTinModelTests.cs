@@ -18,7 +18,7 @@ namespace VSS.Velociraptor.Designs.TTM.Tests
         }
 
         [TestMethod()]
-        public void TrimbleTinModelTest()
+        public void TrimbleTinModelTest_Creation()
         {
             TrimbleTinModel TTM = new TrimbleTinModel();
 
@@ -52,7 +52,12 @@ namespace VSS.Velociraptor.Designs.TTM.Tests
         [TestMethod()]
         public void LoadFromFileTest()
         {
-            Assert.Fail();
+            TrimbleTinModel TTM = new TrimbleTinModel();
+
+            TTM.LoadFromFile(@"C:\Temp\Bug36372.ttm");
+
+            Assert.IsTrue(TTM.Vertices.Count > 0, "No vertices loaded from TTM file");
+            Assert.IsTrue(TTM.Triangles.Count > 0, "No triangles loaded from TTM file");
         }
 
         [TestMethod()]

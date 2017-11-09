@@ -87,6 +87,7 @@ namespace VSS.Velociraptor.Designs.TTM
                     FHeader = TTMHeader.NewHeader();
                     FHeader.Read(reader);
 
+                    // Commented out for now...
                     //if (FileSignatureToANSIString(FHeader.FileSignature) != kTTMFileIdentifier)
                     //{
                     //    Raise ETTMReadError.Create('File is not a Trimble TIN Model.');
@@ -101,7 +102,8 @@ namespace VSS.Velociraptor.Designs.TTM
 
                     Clear();
 
-                    // ModelName := String(InternalNameToANSIString(fHeader.DTMModelInternalName));
+                    // ModelName = (String)(InternalNameToANSIString(fHeader.DTMModelInternalName));
+                    // Not handled for now
                     ModelName = "Reading not implemented";
 
                     LoadErrMsg = "Error reading vertices";
@@ -269,7 +271,7 @@ namespace VSS.Velociraptor.Designs.TTM
         public void BuildEdgeList()
         {
             Edges.Clear();
-            for (int TriNumber = 0; TriNumber < Triangles.Count - 1; TriNumber++)
+            for (int TriNumber = 0; TriNumber < Triangles.Count; TriNumber++)
             {
                 if (Triangles[TriNumber].IsEdgeTriangle())
                 {
@@ -291,7 +293,7 @@ namespace VSS.Velociraptor.Designs.TTM
 
             // Use the centre points of this number of triangles evenly spaced throughout the job
             int TriNumOffset = (Triangles.Count / NumStartPoints) / 2;
-            for (int StPtNum = 0; StPtNum < NumStartPoints - 1; StPtNum++)
+            for (int StPtNum = 0; StPtNum < NumStartPoints; StPtNum++)
             {
                 int TriangleNum = (StPtNum * Triangles.Count) / NumStartPoints + TriNumOffset;
 
