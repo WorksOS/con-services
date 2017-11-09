@@ -188,13 +188,13 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, transient ? 19 : 24);
       }
 
-      this.log.LogTrace("retrievedFilter pre mapping:");
-      this.log.LogTrace(JsonConvert.SerializeObject(retrievedFilter));
+      log.LogDebug("retrievedFilter pre mapping:");
+      log.LogDebug(JsonConvert.SerializeObject(retrievedFilter));
 
       var mappingResult = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
 
-      this.log.LogTrace("retrievedFilter post mapping:");
-      this.log.LogTrace(JsonConvert.SerializeObject(mappingResult));
+      log.LogDebug("retrievedFilter post mapping:");
+      log.LogDebug(JsonConvert.SerializeObject(mappingResult));
 
       return mappingResult;
     }
