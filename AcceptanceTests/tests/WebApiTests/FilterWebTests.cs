@@ -39,6 +39,29 @@ namespace WebApiTests
     }
 
     [TestMethod]
+    public void CreateFilterThenGetListOfFilters()
+    {
+      const string filterName = "Filter Web test 2";
+      this.Msg.Title(filterName, "Create filter then get a list of filters");
+      var ts = new TestSupport
+      {
+        IsPublishToWebApi = true,
+        CustomerUid = this.CustomerUid
+      };
+      ts.DeleteAllFiltersForProject(this.ProjectUid.ToString());
+      var filterJson = CreateTestFilter(ElevationType.Last, null, null, 1, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
+      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson);
+      var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var response = ts.CallFilterWebApi($"api/v1/filter/{this.ProjectUid}", "PUT", filter);
+      var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var filterUid = filterResponse.FilterDescriptor.FilterUid;
+
+      var responseGet = ts.CallFilterWebApi($"api/v1/filters/{this.ProjectUid}?filterUid={filterUid}", "GET");
+      var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorListResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.AreEqual(filterJson, filterResponseGet.FilterDescriptors[0].FilterJson, "JSON Filter doesn't match for GET request");
+    }
+
+    [TestMethod]
     public void CreateThenUpdateFilter()
     {
       const string filterName = "Filter Web test 3";
@@ -189,6 +212,33 @@ namespace WebApiTests
       var respGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(respGet.Message, "GetFilter By filterUid. The requested filter does not exist, or does not belong to the requesting customer; project or user.",
                       "Expecting an error message to say the filter does not exist.");
+    }
+
+    [TestMethod] [Ignore]
+    public void PostMultipleFiltersThenGetListOfFilters()
+    {
+      const string filterName = "Filter Web test 8";
+      this.Msg.Title(filterName, "Post filters then get a list of filters");
+      var ts = new TestSupport
+      {
+        IsPublishToWebApi = true,
+        CustomerUid = this.CustomerUid
+      };
+      ts.DeleteAllFiltersForProject(this.ProjectUid.ToString());
+      var filterJson1 = CreateTestFilter(ElevationType.Last, null, null, 1, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
+      var filterRequest1 = FilterRequest.Create(string.Empty, filterName, filterJson1);
+      var filterJson2 = CreateTestFilter(ElevationType.First,true, true, 3, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
+      var filterRequest2 = FilterRequest.Create(string.Empty, filterName, filterJson2);
+      FilterListRequest filterListRequest = new FilterListRequest();
+      //{ filterRequest1, filterRequest2};
+      var filter = JsonConvert.SerializeObject(filterListRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var response = ts.CallFilterWebApi($"api/v1/filters/{this.ProjectUid}", "POST", filter);
+      var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorListResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var filterUid = filterResponse.FilterDescriptors[0].FilterUid;
+
+      var responseGet = ts.CallFilterWebApi($"api/v1/filters/{this.ProjectUid}?filterUid={filterUid}", "GET");
+      var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorListResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.AreEqual(filterJson1, filterResponseGet.FilterDescriptors[0].FilterJson, "JSON Filter doesn't match for GET request");
     }
 
 
