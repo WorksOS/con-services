@@ -181,7 +181,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId, transient)
           .ConfigureAwait(false))
         .OrderByDescending(f => f.LastActionedUtc)
-        .FirstOrDefault(f => string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase));
+        .FirstOrDefault(f => string.Equals(f.FilterUid, filterRequest.FilterUid, StringComparison.OrdinalIgnoreCase));
 
       if (retrievedFilter == null)
       {
