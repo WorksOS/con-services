@@ -48,43 +48,36 @@ namespace MockProjectWebApi.Utils
       public static FilterDescriptor SummaryVolumesBaseFilter => new FilterDescriptor
       {
         FilterUid = "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B",
-        Name = "Summary volumes BaseFilter",
         FilterJson = JsonResourceHelper.GetFilterJson("SummaryVolumesBaseFilter")
       };
 
       public static FilterDescriptor SummaryVolumesTopFilter => new FilterDescriptor
       {
         FilterUid = "A40814AA-9CDB-4981-9A21-96EA30FFECDD",
-        Name = "Summary volumes TopFilter",
         FilterJson = JsonResourceHelper.GetFilterJson("SummaryVolumesTopFilter")
       };
 
-      public static FilterDescriptor SummaryVolumesBaseFilterToday => new FilterDescriptor
-      {
-        FilterUid = "3E2A21B2-D66E-44D4-A590-4F4B7C7FBA7B",
-        Name = "Summary volumes BaseFilter Today",
-        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesBaseFilterToday")
-      };
-
-      public static FilterDescriptor SummaryVolumesTopFilterToday => new FilterDescriptor
+      public static FilterDescriptor SummaryVolumesFilterToday => new FilterDescriptor
       {
         FilterUid = "A54E5945-1AAA-4921-9CC1-C9D8C0A343D3",
-        Name = "Summary volumes TopFilter Today",
-        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesTopFilterToday")
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterToday")
       };
 
-      public static FilterDescriptor SummaryVolumesBaseFilterYesterday => new FilterDescriptor
+      public static FilterDescriptor SummaryVolumesFilterYesterday => new FilterDescriptor
       {
         FilterUid = "A325F48A-3F3D-489A-976A-B4780EF84045",
-        Name = "Summary volumes BaseFilter Yesterday",
-        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesBaseFilterYesterday")
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterYesterday")
       };
 
-      public static FilterDescriptor SummaryVolumesTopFilterYesterday => new FilterDescriptor
+      public static FilterDescriptor SummaryVolumesFilterNoLatLonToday => new FilterDescriptor
       {
-        FilterUid = "A5FD6B6F-CA88-42F2-8AD8-F37E0635CF80",
-        Name = "Summary volumes TopFilter Yesterday",
-        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesTopFilterYesterday")
+        FilterUid = "F9D55290-27F2-4B70-BC63-9FD23218E6E6",
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterNoLatLonToday")
+      };
+      public static FilterDescriptor SummaryVolumesFilterNoLatLonYesterday => new FilterDescriptor
+      {
+        FilterUid = "D6B254A0-C047-4805-9CCD-F847FAB05B14",
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterNoLatLonYesterday")
       };
     }
   }
