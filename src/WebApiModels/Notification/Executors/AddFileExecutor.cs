@@ -80,10 +80,13 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           var suffix = FileUtils.GeneratedFileSuffix(fileType);
           //Get PRJ file contents from Raptor
           log.LogDebug("Getting projection file from Raptor");
+          var dxfUnitsType = fileType == ImportedFileType.Linework
+            ? (TVLPDDistanceUnits)request.DXFUnitsType
+            : TVLPDDistanceUnits.vduMeters; //always metric for design surface and alignment as we generate the DXF file.
 
           string prjFile;
           var result2 = raptorClient.GetCoordinateSystemProjectionFile(request.projectId.Value,
-            TVLPDDistanceUnits.vduMeters, out prjFile);
+            dxfUnitsType, out prjFile);
           if (result2 != TASNodeErrorStatus.asneOK)
           {
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
@@ -98,7 +101,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           log.LogDebug("Getting horizontal adjustment file from Raptor");
           string haFile;
           var result3 = raptorClient.GetCoordinateSystemHorizontalAdjustmentFile(request.CoordSystemFileName,
-            request.projectId.Value, TVLPDDistanceUnits.vduMeters, out haFile);
+            request.projectId.Value, dxfUnitsType, out haFile);
           if (result3 != TASNodeErrorStatus.asneOK)
           {
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
