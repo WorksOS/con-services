@@ -59,7 +59,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// Is this point null in the plan (X & Y) dimensions
         /// </summary>
         public bool IsNullInPlan => (X == Consts.NullDouble) || (Y == Consts.NullDouble);
-        
+
         /// <summary>
         /// Display human readable version of the XYZ fields
         /// </summary>
@@ -182,7 +182,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <returns></returns>
-        public static double Get2DLength(XYZ p1, XYZ p2) => Math.Sqrt(Math.Pow(p2.X-p1.X, 2) + Math.Pow(p2.Y-p1.Y, 2));
+        public static double Get2DLength(XYZ p1, XYZ p2) => Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2));
 
         /// <summary>
         /// Calculate 3D length between two XYZ points
@@ -235,7 +235,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// <param name="Line2"></param>
         /// <param name="Pt"></param>
         /// <returns></returns>
-        public static double GetPointOffset (XYZ Line1, XYZ Line2, XYZ Pt)
+        public static double GetPointOffset(XYZ Line1, XYZ Line2, XYZ Pt)
         {
             double Len = Get3DLength(Line1, Line2);
             return Len == 0 ? Get3DLength(Line1, Pt) : PerpDotProduct(Line1, Line2, Pt) / Len;
@@ -265,7 +265,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         public static double VectorLength(XYZ V) => Math.Sqrt(V.X * V.X + V.Y * V.Y + V.Z * V.Z);
 
         /// <summary>
-        /// Calcualte the are of a triangle defined by three XYZ points
+        /// Calculate the are of a triangle defined by three XYZ points
         /// </summary>
         /// <param name="P1"></param>
         /// <param name="P2"></param>
@@ -429,6 +429,20 @@ namespace VSS.VisionLink.Raptor.Geometry
         public override bool Equals(object obj)
         {
             return Equals((XYZ)obj);
+        }
+
+        /// <summary>
+        /// Returns the triangle centroid
+        /// </summary>
+        /// <param name="P1"></param>
+        /// <param name="P2"></param>
+        /// <param name="P3"></param>
+        /// <returns></returns>
+        public static XYZ GetTriCentroid(XYZ P1, XYZ P2, XYZ P3)
+        {
+            return new XYZ((P1.X + P2.X + P3.X) / 3,
+                           (P1.Y + P2.Y + P3.Y) / 3,
+                           (P1.Z + P2.Z + P3.Z) / 3);
         }
     }
 }
