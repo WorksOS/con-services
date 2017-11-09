@@ -15,8 +15,8 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Productivity3D.Filter.Common.Validators;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -93,8 +93,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         (await ((IFilterRepository)Repository)
           .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId)
           .ConfigureAwait(false)).ToList();
-        log.LogDebug(
-          $"ProcessPersistent retrieved filter count for projectUID {filterRequest.ProjectUid} of {existingPersistentFilters?.Count()}");
       }
       catch (Exception e)
       {
@@ -113,7 +111,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
         // don't allow update to Name to a Name which already exists (for a different filterUid)
         var filterOfSameName = existingPersistentFilters
-          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase) 
+          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase)
                && !string.Equals(f.FilterUid, filterRequest.FilterUid, StringComparison.OrdinalIgnoreCase));
 
         if (filterOfSameName != null)
@@ -123,12 +121,12 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
         // only Name can be updated, NOT FilterJson. Do this here as well as in AutoMapper, just to be sure!
         filterRequest.FilterJson = existingFilter.FilterJson;
-        UpdateFilterEvent updateFilterEvent = await StoreFilterAndNotifyRaptor<UpdateFilterEvent>(filterRequest, new int[] { 17, 18 }); 
+        UpdateFilterEvent updateFilterEvent = await StoreFilterAndNotifyRaptor<UpdateFilterEvent>(filterRequest, new int[] { 17, 18 });
 
         if (updateFilterEvent != null)
         {
           var payload = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent });
-          SendToKafka(updateFilterEvent.FilterUID.ToString(), payload, 26);  
+          SendToKafka(updateFilterEvent.FilterUID.ToString(), payload, 26);
         }
 
         return await RetrieveFilter(filterRequest, false);
@@ -156,7 +154,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     private async Task<FilterDescriptorSingleResult> CreateFilter(FilterRequestFull filterRequest, bool transient)
     {
       filterRequest.FilterUid = Guid.NewGuid().ToString();
-      CreateFilterEvent createFilterEvent = await StoreFilterAndNotifyRaptor<CreateFilterEvent>(filterRequest, transient ? new int[] { 19, 20 } : new int[] {24, 25});
+      CreateFilterEvent createFilterEvent = await StoreFilterAndNotifyRaptor<CreateFilterEvent>(filterRequest, transient ? new int[] { 19, 20 } : new int[] { 24, 25 });
 
       //Only write to kafka for persistent filters
       if (!transient)
@@ -171,8 +169,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       return await RetrieveFilter(filterRequest, transient);
     }
 
-
- 
     /// <summary>
     /// Retrieve the filter just saved
     /// </summary>
@@ -186,11 +182,21 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           .ConfigureAwait(false))
         .OrderByDescending(f => f.LastActionedUtc)
         .FirstOrDefault(f => string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase));
-        
-      if (retrievedFilter == null)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, transient ? 19 : 24);
 
-      return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
+      if (retrievedFilter == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, transient ? 19 : 24);
+      }
+
+      this.log.LogTrace("retrievedFilter pre mapping:");
+      this.log.LogTrace(JsonConvert.SerializeObject(retrievedFilter));
+
+      var mappingResult = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
+
+      this.log.LogTrace("retrievedFilter post mapping:");
+      this.log.LogTrace(JsonConvert.SerializeObject(mappingResult));
+
+      return mappingResult;
     }
   }
 }
