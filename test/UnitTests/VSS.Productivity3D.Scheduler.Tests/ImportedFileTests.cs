@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void MapProjectImportedFileToNhOpImportedFile()
     {
-      var source = new ProjectImportedFile()
+      var source = new ImportedFileProject()
       {
         LegacyProjectId = new Random().Next(100000, 1999999),
         LegacyCustomerId = new Random().Next(100000, 1999999),
@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
         LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
       };
 
-      NhOpImportedFile destination = AutoMapperUtility.Automapper.Map<NhOpImportedFile>(source);
+      ImportedFileNhOp destination = AutoMapperUtility.Automapper.Map<ImportedFileNhOp>(source);
       Assert.AreEqual(source.LegacyImportedFileId, destination.LegacyImportedFileId,
         "LegacyImportedFileId has not been mapped correctly");
       Assert.AreEqual(source.LegacyProjectId, destination.LegacyProjectId,
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
         "LastActionedUtc has not been mapped correctly");
 
       // just make a copy
-      ProjectImportedFile copyOfSource = AutoMapperUtility.Automapper.Map<ProjectImportedFile>(source);
+      ImportedFileProject copyOfSource = AutoMapperUtility.Automapper.Map<ImportedFileProject>(source);
       Assert.AreEqual(source.ProjectUid, copyOfSource.ProjectUid, "ProjectUid has not been mapped correctly");
       Assert.AreEqual(source.ImportedFileUid, copyOfSource.ImportedFileUid,
         "ImportedFileUid has not been mapped correctly");
@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void MapNhOpImportedFileToProjectImportedFile()
     {
-      var source = new NhOpImportedFile()
+      var source = new ImportedFileNhOp()
       {
         LegacyImportedFileId = new Random().Next(100000, 1999999),
 
@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
         LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
       };
 
-      ProjectImportedFile destination = AutoMapperUtility.Automapper.Map<ProjectImportedFile>(source);
+      ImportedFileProject destination = AutoMapperUtility.Automapper.Map<ImportedFileProject>(source);
       Assert.AreEqual(source.LegacyImportedFileId, destination.LegacyImportedFileId,
         "LegacyImportedFileId has not been mapped correctly");
       Assert.AreEqual(source.LegacyProjectId, destination.LegacyProjectId,
@@ -120,7 +120,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
         "LastActionedUtc has not been mapped correctly");
 
       // just make a copy
-      NhOpImportedFile copyOfSource = AutoMapperUtility.Automapper.Map<NhOpImportedFile>(source);
+      ImportedFileNhOp copyOfSource = AutoMapperUtility.Automapper.Map<ImportedFileNhOp>(source);
       Assert.AreEqual(source.ProjectUid, copyOfSource.ProjectUid, "ProjectUid has not been mapped correctly");
       Assert.AreEqual(source.LegacyImportedFileId, copyOfSource.LegacyImportedFileId,
         "LegacyImportedFileId has not been mapped correctly");

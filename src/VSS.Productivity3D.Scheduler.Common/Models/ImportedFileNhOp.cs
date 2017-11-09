@@ -3,7 +3,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Scheduler.Common.Models
 {
-  public class NhOpImportedFile
+  public class ImportedFileNhOp
   {
     public long LegacyImportedFileId { get; set; } // autoincrement value
 
@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
 
     public override bool Equals(object obj)
     {
-      NhOpImportedFile importedFile = obj as NhOpImportedFile;
+      ImportedFileNhOp importedFile = obj as ImportedFileNhOp;
       if (
         importedFile?.LegacyImportedFileId != this.LegacyImportedFileId
         || importedFile.LegacyProjectId != LegacyProjectId

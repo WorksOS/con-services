@@ -11,37 +11,32 @@ using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 namespace VSS.Productivity3D.Scheduler.Common.Models
 {
-  public class ImportedFileHandlerProject<T> : IImportedFileHandler<T> where T : ProjectImportedFile
+  public class ImportedFileRepoProject<T> : IImportedFileRepo<T> where T : ImportedFileProject
   {
     private IConfigurationStore _configStore;
     private ILogger _log;
     private string _dbConnectionString;
     private MySqlConnection _dbConnection;
 
-    public ImportedFileHandlerProject(IConfigurationStore configStore, ILoggerFactory logger)
+    public ImportedFileRepoProject(IConfigurationStore configStore, ILoggerFactory logger)
     {
       _configStore = configStore;
-      _log = logger.CreateLogger<ImportedFileHandlerProject<T>>();
+      _log = logger.CreateLogger<ImportedFileRepoProject<T>>();
       _dbConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_Project");
       _dbConnection = new MySqlConnection(_dbConnectionString);
-
-      _log.LogDebug(
-        $"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
-      Console.WriteLine(
-        $"ImportedFileHandlerProject.ImportedFileHandlerProject() _configStore {JsonConvert.SerializeObject(_configStore)}");
     }
 
     public List<T> Read()
     {
-      var members = new List<ProjectImportedFile>();
+      var members = new List<ImportedFileProject>();
       try
       {
         _dbConnection.Open();
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.Read: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.Read: open DB exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoProject.Read: open DB exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoProject.Read: open DB exeception {ex.Message}");
         throw;
       }
 
@@ -60,23 +55,22 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
               INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
             WHERE fk_ImportedFileTypeID = 2";
 
-      List<ProjectImportedFile> response;
+      List<ImportedFileProject> response;
       try
       {
-        response = _dbConnection.Query<ProjectImportedFile>(selectCommand).ToList();
-        Console.WriteLine(
-          $"ImportedFileHandlerProject.Read: selectCommand {selectCommand} response {JsonConvert.SerializeObject(response)}");
+        response = _dbConnection.Query<ImportedFileProject>(selectCommand).ToList();
+        _log.LogTrace($"ImportedFileRepoProject.Read: responseCount {response.Count}");
+        Console.WriteLine($"ImportedFileRepoProject.Read: responseCount {response.Count}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.Read:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.Read:  execute exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoProject.Read:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoProject.Read:  execute exeception {ex.Message}");
         throw;
       }
       finally
       {
         _dbConnection.Close();
-        Console.WriteLine($"ImportedFileHandlerProject.Read:  dbConnection.Close");
       }
       members.AddRange(response);
 
@@ -91,8 +85,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.Create: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.Create: open DB exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoProject.Create: open DB exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoProject.Create: open DB exeception {ex.Message}");
         throw;
       }
 
@@ -105,19 +99,18 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       try
       {
         countInserted += _dbConnection.Execute(insertCommand, member);
-        Console.WriteLine(
-          $"ImportedFileHandlerProject.Create: member {JsonConvert.SerializeObject(member)} countInsertedSoFar {JsonConvert.SerializeObject(countInserted)}");
+        _log.LogTrace($"ImportedFileRepoProject.Create: countInserted {countInserted}");
+        Console.WriteLine($"ImportedFileRepoProject.Create: countInserted {countInserted}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.Create:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.Create:  execute exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoProject.Create:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoProject.Create:  execute exeception {ex.Message}");
         throw;
       }
       finally
       {
         _dbConnection.Close();
-        Console.WriteLine($"ImportedFileHandlerProject.Create:  dbConnection.Close");
       }
 
       return countInserted;
@@ -131,8 +124,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.Update: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.Update: open DB exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoProject.Update: open DB exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoProject.Update: open DB exeception {ex.Message}");
         throw;
       }
 
@@ -153,19 +146,18 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       try
       {
         countUpdated += _dbConnection.Execute(updateCommand, member);
-        Console.WriteLine(
-          $"ImportedFileHandlerProject.Update: member {JsonConvert.SerializeObject(member)} countUpdatedSoFar {JsonConvert.SerializeObject(countUpdated)}");
+        _log.LogTrace($"ImportedFileRepoProject.Update: countUpdated {countUpdated}");
+        Console.WriteLine($"ImportedFileRepoProject.Update: countUpdated {countUpdated}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.Update:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.Update:  execute exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoProject.Update:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoProject.Update:  execute exeception {ex.Message}");
         throw;
       }
       finally
       {
         _dbConnection.Close();
-        Console.WriteLine($"ImportedFileHandlerProject.Update:  dbConnection.Close");
       }
 
       return countUpdated;
@@ -173,8 +165,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
 
     public int Delete(T member)
     {
-      _log.LogError($"ImportedFileHandlerProject.Delete: ");
-      Console.WriteLine($"ImportedFileHandlerProject.Delete: ");
+      _log.LogTrace($"ImportedFileRepoProject.Delete: ");
+      Console.WriteLine($"ImportedFileRepoProject.Delete: ");
 
       member.IsDeleted = true;
       return Update(member);

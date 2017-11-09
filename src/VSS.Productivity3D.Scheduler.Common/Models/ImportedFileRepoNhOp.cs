@@ -11,38 +11,33 @@ using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 namespace VSS.Productivity3D.Scheduler.Common.Models
 {
-  public class ImportedFileHandlerNhOp<T> : IImportedFileHandler<T> where T : NhOpImportedFile
+  public class ImportedFileRepoNhOp<T> : IImportedFileRepo<T> where T : ImportedFileNhOp
   {
     private IConfigurationStore _configStore;
     private ILogger _log;
     private string _dbConnectionString;
     private SqlConnection _dbConnection;
 
-    public ImportedFileHandlerNhOp(IConfigurationStore configStore, ILoggerFactory logger)
+    public ImportedFileRepoNhOp(IConfigurationStore configStore, ILoggerFactory logger)
     {
       _configStore = configStore;
-      _log = logger.CreateLogger<ImportedFileHandlerNhOp<T>>();
+      _log = logger.CreateLogger<ImportedFileRepoNhOp<T>>();
       _dbConnectionString = ConnectionUtils.GetConnectionStringMsSql(_configStore, _log, "_NH_OP");
       _dbConnection = new SqlConnection(_dbConnectionString);
-
-      _log.LogDebug(
-        $"ImportedFileHandlerNhOp.ImportedFileHandlerNhOp() _configStore {JsonConvert.SerializeObject(_configStore)}");
-      Console.WriteLine(
-        $"ImportedFileHandlerNhOp.ImportedFileHandlerNhOp() _configStore {JsonConvert.SerializeObject(_configStore)}");
     }
 
     public List<T> Read()
     {
-      var members = new List<NhOpImportedFile>();
-      
+      var members = new List<ImportedFileNhOp>();
+
       try
       {
-        _dbConnection.Open();
+        _dbConnection.Open(); // todo do this once-only?
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerNhOp.Read: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerNhOp.Read: open DB exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoNhOp.Read: open DB exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoNhOp.Read: open DB exeception {ex.Message}");
         throw;
       }
 
@@ -67,34 +62,33 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
             FROM ImportedFile iff
               INNER JOIN Customer c ON c.ID = fk_CustomerID
               INNER JOIN Project p ON p.ID = fk_ProjectID 
-              OUTER APPLY (SELECT TOP 1 CreateUTC AS FileUpdatedUtc, fk_UserID FROM ImportedFileHistory WHERE fk_ImportedFileID = iff.ID ORDER BY InsertUTC desc) ifhLast
-              OUTER APPLY (SELECT TOP 1 CreateUTC AS FileCreatedUtc FROM ImportedFileHistory WHERE fk_ImportedFileID = iff.ID ORDER BY InsertUTC asc) ifhFirst
+              OUTER APPLY (SELECT TOP 1 CreateUTC AS FileCreatedUtc, InsertUtc AS FileUpdatedUtc, fk_UserID FROM ImportedFileHistory WHERE fk_ImportedFileID = iff.ID ORDER BY InsertUTC desc) ifhLast
+              -- OUTER APPLY (SELECT TOP 1 CreateUTC AS FileCreatedUtc FROM ImportedFileHistory WHERE fk_ImportedFileID = iff.ID ORDER BY InsertUTC asc) ifhFirst
               LEFT OUTER JOIN [User] u on u.id = ifhLast.fk_UserID
             WHERE fk_ImportedFileTypeID = 2";
-      List<NhOpImportedFile> response;
+      List<ImportedFileNhOp> response;
       try
       {
-        response = _dbConnection.Query<NhOpImportedFile>(selectCommand).ToList();
-        Console.WriteLine(
-          $"ImportedFileHandlerNhOp.Read: selectCommand {selectCommand} response {JsonConvert.SerializeObject(response)}");
+        response = _dbConnection.Query<ImportedFileNhOp>(selectCommand).ToList();
+        _log.LogTrace($"ImportedFileRepoNhOp.Read: responseCount {response.Count}");
+        Console.WriteLine($"ImportedFileRepoNhOp.Read: responseCount {response.Count}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerNhOp.Read:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerNhOp.Read:  execute exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoNhOp.Read:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoNhOp.Read:  execute exeception {ex.Message}");
         throw;
       }
       finally
       {
         _dbConnection.Close();
-        Console.WriteLine($"ImportedFileHandlerNhOp.Read:  dbConnection.Close");
       }
       members.AddRange(response);
 
       return members as List<T>;
     }
-    
-    public long Create(T member) 
+
+    public long Create(T member)
     {
       long returnedImportedFileId = 0;
       try
@@ -103,8 +97,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerNhOp.Create: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerNhOp.Create: open DB exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoNhOp.Create: open DB exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoNhOp.Create: open DB exeception {ex.Message}");
         throw;
       }
 
@@ -121,18 +115,20 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         returnedImportedFileId = _dbConnection.QuerySingle<long>(insertImportedFileCommand, member);
         if (returnedImportedFileId > 0)
           countInserted++;
-        Console.WriteLine($"ImportedFileHandlerNhOp.Create: member {JsonConvert.SerializeObject(member)} countInsertedSoFar {countInserted}");
+        _log.LogTrace(
+          $"ImportedFileRepoNhOp.Create: member {JsonConvert.SerializeObject(member)} countInserted {countInserted}");
+        Console.WriteLine(
+          $"ImportedFileRepoNhOp.Create: member {JsonConvert.SerializeObject(member)} countInserted {countInserted}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerNhOp.Create:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerNhOp.Create:  execute exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoNhOp.Create:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoNhOp.Create:  execute exeception {ex.Message}");
         throw;
       }
       finally
       {
         _dbConnection.Close();
-        Console.WriteLine($"ImportedFileHandlerNhOp.Create:  dbConnection.Close");
       }
       if (returnedImportedFileId > 0)
       {
@@ -150,8 +146,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerNhOp.CreateHistory: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerNhOp.CreateHistory: open DB exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoNhOp.CreateHistory: open DB exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoNhOp.CreateHistory: open DB exeception {ex.Message}");
         throw;
       }
 
@@ -166,19 +162,19 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       try
       {
         countInserted += _dbConnection.Execute(insertImportedFileHistoryeCommand,
-          new { member.FileCreatedUtc, member.FileUpdatedUtc, member.LegacyImportedFileId });
-        Console.WriteLine($"ImportedFileHandlerNhOp.CreateHistory: countInserted {countInserted}");
+          new {member.FileCreatedUtc, member.FileUpdatedUtc, member.LegacyImportedFileId});
+        _log.LogTrace($"ImportedFileRepoNhOp.CreateHistory: countInserted {countInserted}");
+        Console.WriteLine($"ImportedFileRepoNhOp.CreateHistory: countInserted {countInserted}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerNhOp.CreateHistory:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerNhOp.CreateHistory:  execute exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoNhOp.CreateHistory:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoNhOp.CreateHistory:  execute exeception {ex.Message}");
         throw;
       }
       finally
       {
         _dbConnection.Close();
-        Console.WriteLine($"ImportedFileHandlerNhOp.CreateHistory:  dbConnection.Close");
       }
       return countInserted;
     }
@@ -201,8 +197,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.Delete: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.Delete: open DB exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoNhOp.Delete: open DB exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoNhOp.Delete: open DB exeception {ex.Message}");
         throw;
       }
 
@@ -218,31 +214,26 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       try
       {
         countUpdated += _dbConnection.Execute(deleteImportedFileCommand, member);
+        _log.LogTrace($"ImportedFileRepoNhOp.Delete(ImportedFile): countUpdatedSoFar {countUpdated}");
+        Console.WriteLine($"ImportedFileRepoNhOp.Delete(ImportedFile): countUpdatedSoFar {countUpdated}");
+
         if (countUpdated > 0)
           countUpdated += _dbConnection.Execute(deleteImportedFileHistoryCommand, member);
-        Console.WriteLine($"ImportedFileHandlerProject.Delete: member {JsonConvert.SerializeObject(member)} countUpdatedSoFar {countUpdated}");
+        _log.LogTrace($"ImportedFileRepoNhOp.Delete(ImportedFileHistory): countUpdatedFinal {countUpdated}");
+        Console.WriteLine($"ImportedFileRepoNhOp.Delete(ImportedFileHistory): countUpdatedFinal {countUpdated}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileHandlerProject.Delete:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileHandlerProject.Delete:  execute exeception {ex.Message}");
+        _log.LogError($"ImportedFileRepoNhOp.Delete:  execute exeception {ex.Message}");
+        Console.WriteLine($"ImportedFileRepoNhOp.Delete:  execute exeception {ex.Message}");
         throw;
       }
       finally
       {
         _dbConnection.Close();
-        Console.WriteLine($"ImportedFileHandlerProject.Delete:  dbConnection.Close");
       }
 
       return countUpdated;
     }
-
-    public bool IsImportedFileDeleted(T member)
-    {
-      // todo how can we identify an Imported file from it's history when it doesn't save its ImportedFile.ID 
-      // by FileCreatedUtc?????
-      throw new NotImplementedException();
-    }
-
   }
 }

@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       _log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow}");
       Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow}");
 
-      var sync = new ImportedFileHandler(_configStore, _logger);
+      var sync = new ImportedFileSynchronizer(_configStore, _logger);
       sync.SyncTables();
 
       _log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: completed successfully.");

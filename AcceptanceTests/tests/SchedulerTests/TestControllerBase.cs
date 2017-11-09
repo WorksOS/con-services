@@ -75,7 +75,7 @@ namespace SchedulerTests
     }
 
 
-    protected int WriteToProjectDBImportedFile(string projectDbConnectionString, ProjectImportedFile importedFile)
+    protected int WriteToProjectDBImportedFile(string projectDbConnectionString, ImportedFileProject importedFile)
     {
       var dbConnection = new MySqlConnection(projectDbConnectionString);
       dbConnection.Open();
@@ -91,7 +91,7 @@ namespace SchedulerTests
       return insertedCount;
     }
 
-    protected int WriteToProjectDBCustomerProjectAndProject(string projectDbConnectionString, ProjectImportedFile importedFile)
+    protected int WriteToProjectDBCustomerProjectAndProject(string projectDbConnectionString, ImportedFileProject importedFile)
     {
       // importedFile table depends on a project (for legacyProjectID) and CustomerProject (for legacyCustomerId) rows existing
       var dbConnection = new MySqlConnection(projectDbConnectionString);
@@ -112,13 +112,13 @@ namespace SchedulerTests
         insertCommand = string.Format(
           $"INSERT Project (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, ProjectTimeZone, LandfillTimeZone, StartDate, EndDate) VALUES (@ProjectUid, {importedFile.LegacyProjectId}, \"the project name\", 0, \"\", \"\", 20170101, 20180101)");
 
-        insertedCount = dbConnection.Execute(insertCommand, importedFile);
+        insertedCount += dbConnection.Execute(insertCommand, importedFile);
       }
 
       dbConnection.Close();
       return insertedCount;
     }
-    protected int WriteNhOpDbImportedFileAndHistory(string projectDbConnectionString, NhOpImportedFile importedFile)
+    protected int WriteNhOpDbImportedFileAndHistory(string projectDbConnectionString, ImportedFileNhOp importedFile)
     {
       var dbConnection = new SqlConnection(projectDbConnectionString);
       dbConnection.Open();
@@ -143,14 +143,14 @@ namespace SchedulerTests
           "  VALUES " +
           "    (@LegacyImportedFileId, @FileCreatedUtc, @FileUpdatedUtc)");
 
-        insertedCount = dbConnection.Execute(insertCommand, importedFile);
+        insertedCount += dbConnection.Execute(insertCommand, importedFile);
       }
 
       dbConnection.Close();
       return insertedCount;
     }
 
-    protected int WriteNhOpDbCustomerProject(string projectDbConnectionString, NhOpImportedFile importedFile)
+    protected int WriteNhOpDbCustomerAndProject(string projectDbConnectionString, ImportedFileNhOp importedFile)
     {
       var dbConnection = new SqlConnection(projectDbConnectionString);
       dbConnection.Open();
@@ -176,7 +176,7 @@ namespace SchedulerTests
           "    (@LegacyProjectId, @ProjectUid, 'the project name', @LegacyCustomerId, 0, 0, 'whateverTZ');" +
           " SET IDENTITY_INSERT Project OFF;");
         
-        insertedCount = dbConnection.Execute(insertCommand, importedFile);
+        insertedCount += dbConnection.Execute(insertCommand, importedFile);
       }
 
       dbConnection.Close();

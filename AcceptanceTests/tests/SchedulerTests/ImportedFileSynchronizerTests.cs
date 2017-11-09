@@ -9,36 +9,37 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace SchedulerTests
 {
   [TestClass]
-  public class ImportedFilesHandlerTests : TestControllerBase
+  public class ImportedFileSynchronizerTests : TestControllerBase
   {
     private ILogger _log;
     private string _projectDbConnectionString;
+    private string _nhOpDbConnectionString;
 
     [TestInitialize]
     public void Init()
     {
       SetupDi();
 
-      _log = LoggerFactory.CreateLogger<ImportedFilesHandlerTests>();
+      _log = LoggerFactory.CreateLogger<ImportedFileSynchronizerTests>();
       _projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
+      _nhOpDbConnectionString = ConnectionUtils.GetConnectionStringMsSql(ConfigStore, Log, "NH_OP");
 
       Assert.IsNotNull(_log, "Log is null");
     }
 
     [TestMethod]
-    public void ImportedFilesHandler_OneFileInProject()
+    [Ignore]
+    public void ImportedFileRepoProject_OneFileInProject()
     {
-      var importedFileHandlerProject =
-        new ImportedFileHandlerProject<ProjectImportedFile>(ConfigStore, LoggerFactory);
+      var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
 
-      var importedFile = new ProjectImportedFile()
+      var importedFileProject = new ImportedFileProject()
       {
-        LegacyProjectId = new Random().Next(100000, 1999999),
-        LegacyCustomerId = new Random().Next(100000, 1999999),
+        LegacyProjectId = new Random().Next(1, 99999),
+        LegacyCustomerId = new Random().Next(1, 99999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),
-        ImportedFileId = new Random().Next(100000, 1999999),
-        LegacyImportedFileId = new Random().Next(100000, 1999999),
+        LegacyImportedFileId = null,
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         Name = "JB topo southern motorway.TTM",
@@ -54,25 +55,30 @@ namespace SchedulerTests
         LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
       };
 
-      var insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFile);
-      Assert.AreEqual(1, insertedCount, "should have written customer and project");
+      var insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFileProject);
+      Assert.AreEqual(2, insertedCount, "should have written customer and project to ProjectDB");
 
-      var createdCount = importedFileHandlerProject.Create(importedFile);
+      // need this for when sync occurs
+      var importedFileNhOp = AutoMapperUtility.Automapper.Map<ImportedFileNhOp>(importedFileProject);
+      insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFileNhOp);
+      Assert.AreEqual(2, insertedCount, "should have written customer and project to NhOpDb");
+
+      var createdCount = importedFileRepoProject.Create(importedFileProject);
       Assert.AreEqual(1, createdCount, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileHandler(ConfigStore, LoggerFactory);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory);
       sync.SyncTables();
 
       // now lets see if it synced to NhOp
-      var importedFileHandlerNhOp =
-        new ImportedFileHandlerNhOp<NhOpImportedFile>(ConfigStore, LoggerFactory);
+      var importedFileRepoNhOp =
+        new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
 
-      var listOfNhOpFiles = importedFileHandlerNhOp.Read();
+      var listOfNhOpFiles = importedFileRepoNhOp.Read();
       Assert.AreNotEqual(0, listOfNhOpFiles.Count, "NhOpDb importFile not read");
-      NhOpImportedFile importFileResponse =
-        listOfNhOpFiles.FirstOrDefault(x => (String.Compare(x.ProjectUid, importedFile.ProjectUid,
+      ImportedFileNhOp importFileResponse =
+        listOfNhOpFiles.FirstOrDefault(x => (String.Compare(x.ProjectUid, importedFileProject.ProjectUid,
                                                StringComparison.OrdinalIgnoreCase) == 0)
-                                            && x.Name == importedFile.Name);
+                                            && x.Name == importedFileProject.Name);
       Assert.IsNotNull(importFileResponse, "should have found the importedFile we created in project, synced to NhOp");
     }
   }

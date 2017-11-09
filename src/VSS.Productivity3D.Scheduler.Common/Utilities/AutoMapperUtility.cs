@@ -1,10 +1,12 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using VSS.Productivity3D.Scheduler.Common.Models;
 
 namespace VSS.Productivity3D.Scheduler.Common.Utilities
 {
   public class AutoMapperUtility
   {
+    [ThreadStatic]
     private static MapperConfiguration _automapperConfiguration;
 
     public static MapperConfiguration AutomapperConfiguration
@@ -20,6 +22,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
       }
     }
 
+    [ThreadStatic]
     private static IMapper _automapper;
 
     public static IMapper Automapper
@@ -43,8 +46,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
         cfg =>
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
-          cfg.CreateMap<ProjectImportedFile, NhOpImportedFile>();
-          cfg.CreateMap<NhOpImportedFile, ProjectImportedFile>()
+          cfg.CreateMap<ImportedFileProject, ImportedFileNhOp>();
+          cfg.CreateMap<ImportedFileNhOp, ImportedFileProject>()
             .ForMember(dest => dest.ImportedFileUid, opt => opt.Ignore())
             .ForMember(dest => dest.ImportedFileId, opt => opt.Ignore())
             .ForMember(dest => dest.FileDescriptor, opt => opt.Ignore())

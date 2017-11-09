@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace SchedulerTests
 {
   [TestClass]
-  public class ImportedFilesSyncTests : TestControllerBase
+  public class ImportedFileSyncTaskTests : TestControllerBase
   {
     private ILogger _log;
     private string ImportedProjectFileSyncTask = "ImportedProjectFileSyncTask";
@@ -15,7 +15,7 @@ namespace SchedulerTests
     {
       SetupDi();
 
-      _log = LoggerFactory.CreateLogger<ImportedFilesSyncTests>();
+      _log = LoggerFactory.CreateLogger<ImportedFileSyncTaskTests>();
       Assert.IsNotNull(_log, "Log is null");
     }
 
