@@ -128,7 +128,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       foreach (var mode in modes)
       {
         List<ColorValue> colorValues;
-        var compactionPalette = settingsManager.CompactionPalette(mode, null, projectSettings);
+        var compactionPalette = this.SettingsManager.CompactionPalette(mode, null, projectSettings);
         switch (mode)
         {
           case DisplayMode.CCV:
@@ -217,7 +217,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
       ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(projectId, filter, projectSettings);
-      var compactionPalette = settingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettings);
+      var compactionPalette = this.SettingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettings);
 
       DetailPalette elevationPalette = null;
       if (compactionPalette != null)

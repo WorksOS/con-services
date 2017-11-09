@@ -1,6 +1,5 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using VSS.MasterData.Models.Internal;
 using VSS.Productivity3D.Common.Extensions;
 
@@ -184,6 +183,12 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       Assert.IsNull(endUtc, "Wrong endUtc for custom");
     }
     
+    [TestMethod]
+    public void UtcForDateRangeType_Should_return_null_When_timeZoneName_is_null()
+    {
+      Assert.IsNull(utcNow.UtcForDateRangeType(DateRangeType.CurrentWeek, null, true));
+    }
+
     private DateTime now = new DateTime(2017, 1, 18, 10, 25, 12);//Wednesday
     private DateTime utcNow = new DateTime(2017, 1, 18, 10, 25, 12).AddHours(-13);// -13 = offset for NZ time zone for 'now' datetime
     private string ianaTimeZone = "Pacific/Auckland";

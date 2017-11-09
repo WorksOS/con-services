@@ -125,7 +125,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long fileId,
-      [FromQuery] UnitsTypeEnum? dxfUnitsType)
+      [FromQuery] DxfUnitsType dxfUnitsType)
     {
       log.LogDebug("GetAddFile: " + Request.QueryString);
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
@@ -137,7 +137,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         projectDescr.projectId, 
         projectUid, fileDes, 
         coordSystem,
-        dxfUnitsType.HasValue && fileType == ImportedFileType.Linework ? dxfUnitsType.Value : UnitsTypeEnum.None,
+        dxfUnitsType,
         fileId, 
         fileType);
 
@@ -191,7 +191,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         }
       }
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, UnitsTypeEnum.None, fileId, fileType);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType);
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);

@@ -81,8 +81,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="endLonDegrees">End profileLine Lon</param>
     /// <param name="filterUid">Filter UID for all profiles except summary volumes</param>
     /// <param name="cutfillDesignUid">Design UID for cut-fill</param>
-    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
-    /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="baseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="topUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>
     /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
@@ -136,7 +136,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //Get production data profile
       var slicerProductionDataProfileRequest = requestFactory.Create<ProductionDataProfileRequestHelper>(r => r
           .ProjectId(projectId)
-          .Headers(customHeaders)
+          .Headers(this.CustomHeaders)
           .ProjectSettings(settings)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
@@ -156,7 +156,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (cutFillDesign != null)
       {
-        FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, 
+        FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
           cutFillDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
       }
 
@@ -167,7 +167,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       return slicerProductionDataResult;
     }
-
     /// <summary>
     /// Calculate the elevations for cut-fill or summary volumes cells from the design surface.
     /// </summary>
@@ -196,7 +195,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //Get design profile
       var slicerDesignProfileRequest = requestFactory.Create<DesignProfileRequestHelper>(r => r
           .ProjectId(projectId)
-          .Headers(customHeaders)
+          .Headers(this.CustomHeaders)
           .ProjectSettings(settings)
           .DesignDescriptor(design))
         .CreateDesignProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
@@ -248,7 +247,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         var profileRequest = requestFactory.Create<DesignProfileRequestHelper>(r => r
             .ProjectId(projectId)
-            .Headers(customHeaders)
+            .Headers(this.CustomHeaders)
             .ProjectSettings(settings)
             .Filter(filter)
             .DesignDescriptor(designDescriptor))

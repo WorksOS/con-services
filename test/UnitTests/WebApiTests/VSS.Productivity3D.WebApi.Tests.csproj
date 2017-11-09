@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Common\VSS.Productivity3D.Common.csproj" />
     <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\WebApi\VSS.Productivity3D.WebApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,7 +39,7 @@
     <PackageReference Include="System.Reflection" Version="4.1.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.1.0" />
     <PackageReference Include="System.Diagnostics.Process" Version="4.1.0" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.7.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.8.*" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.*" />
     <!-- END -->
   </ItemGroup>

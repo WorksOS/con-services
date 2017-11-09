@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       if (exportType == ExportTypes.kSurfaceExport)
       {
         raptorClient.GetDataModelExtents(ProjectId,
-          RaptorConverters.convertSurveyedSurfaceExlusionList(Filter?.surveyedSurfaceExclusionList), out projectExtents);
+          RaptorConverters.convertSurveyedSurfaceExlusionList(Filter?.SurveyedSurfaceExclusionList), out projectExtents);
       }
       else
       {

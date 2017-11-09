@@ -108,6 +108,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <param name="cutFillDesignUid">Design UID for cut-fill</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
+    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
     [ProjectUidVerifier]
@@ -128,7 +131,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutFillDesignUid,
-      [FromQuery] DisplayMode mode)
+      [FromQuery] DisplayMode mode,
+      [FromQuery] Guid? volumeBaseUid,
+      [FromQuery] Guid? volumeTopUid,
+      [FromQuery] VolumeCalcType? volumeCalcType)
     {
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
 
@@ -137,10 +143,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
-      
+      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid ,volumeTopUid);
+
       var tileResult = WithServiceExceptionTryExecute(() => 
         tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT, 
-          GetBoundingBox(BBOX), cutFillDesign, customHeaders));
+          GetBoundingBox(BBOX), cutFillDesign, customHeaders, sumVolParameters, volumeCalcType));
+
 
       return tileResult;
     }
@@ -165,6 +173,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <param name="cutFillDesignUid">Design UID for cut-fill</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
+    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. 
     /// If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered 
     /// in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to 
@@ -190,7 +201,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutFillDesignUid,
-      [FromQuery] DisplayMode mode)
+      [FromQuery] DisplayMode mode,
+      [FromQuery] Guid? volumeBaseUid,
+      [FromQuery] Guid? volumeTopUid,
+      [FromQuery] VolumeCalcType? volumeCalcType)
     {
       log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
 
@@ -199,10 +213,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
+      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
 
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
-          GetBoundingBox(BBOX), cutFillDesign,customHeaders));
+          GetBoundingBox(BBOX), cutFillDesign,customHeaders, sumVolParameters, volumeCalcType));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
@@ -252,7 +267,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
       request.Validate();
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, this.ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(request) as TileResult;
       return result;
     }
@@ -303,7 +318,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
       request.Validate();
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, this.ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(request) as TileResult;
             
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
@@ -398,7 +413,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       //Get all the imported files for the project
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
       if (fileList == null)
       {
         fileList = new List<FileData>();

@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using NodaTime;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -38,27 +37,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Where to get environment variables, connection string etc. from
     /// </summary>
-    protected IConfigurationStore configStore;
+    protected IConfigurationStore ConfigStore;
 
     /// <summary>
     /// For getting list of imported files for a project
     /// </summary>
-    protected readonly IFileListProxy fileListProxy;
+    protected readonly IFileListProxy FileListProxy;
 
     /// <summary>
     /// For getting project settings for a project
     /// </summary>
-    protected readonly IProjectSettingsProxy projectSettingsProxy;
+    protected readonly IProjectSettingsProxy ProjectSettingsProxy;
 
     /// <summary>
     /// For getting list of persistent filters for a project
     /// </summary>
-    protected readonly IFilterServiceProxy filterServiceProxy;
+    protected readonly IFilterServiceProxy FilterServiceProxy;
 
     /// <summary>
     /// For getting compaction settings for a project
     /// </summary>
-    protected readonly ICompactionSettingsManager settingsManager;
+    protected readonly ICompactionSettingsManager SettingsManager;
 
     /// <summary>
     /// Gets the custom headers for the request.
@@ -66,27 +65,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <value>
     /// The custom headers.
     /// </value>
-    protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
+    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
-    /// Gets the customer uid form the current context
+    /// Default constructor.
     /// </summary>
-    /// <value>
-    /// The customer uid.
-    /// </value>
-    protected Guid customerUid => GetCustomerUid();
-
-
     protected BaseController(ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy,
       IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager)
     {
       this.log = log;
       this.serviceExceptionHandler = serviceExceptionHandler;
-      this.configStore = configStore;
-      this.fileListProxy = fileListProxy;
-      this.projectSettingsProxy = projectSettingsProxy;
-      this.filterServiceProxy = filterServiceProxy;
-      this.settingsManager = settingsManager;
+      this.ConfigStore = configStore;
+      this.FileListProxy = fileListProxy;
+      this.ProjectSettingsProxy = projectSettingsProxy;
+      this.FilterServiceProxy = filterServiceProxy;
+      this.SettingsManager = settingsManager;
     }
 
     /// <summary>
@@ -121,18 +114,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Gets the customer uid form the context.
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException">Incorrect customer uid value.</exception>
-    private Guid GetCustomerUid()
-    {
-      if (User is RaptorPrincipal principal)
-        return Guid.Parse(principal.CustomerUid);
-      throw new ArgumentException("Incorrect request context principal.");
-    }
-
-    /// <summary>
     /// Gets the project identifier.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
@@ -156,7 +137,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
     protected async Task<List<long>> GetExcludedSurveyedSurfaceIds(Guid projectUid)
     {
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), this.CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         return null;
@@ -169,44 +150,56 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return results;
     }
 
+    /// <summary>
+    /// Gets the <see cref="DesignDescriptor"/> from a given project's fileUid.
+    /// </summary>
     protected async Task<DesignDescriptor> GetDesignDescriptor(Guid projectUid, Guid? fileUid, bool forProfile = false)
     {
-      if (fileUid.HasValue)
+      if (!fileUid.HasValue)
       {
-        var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
-        if (fileList == null || fileList.Count == 0)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Project has no appropriate design files."));
-        }
-
-        var file = fileList.SingleOrDefault(
-          f => f.ImportedFileUid == fileUid.ToString() &&
-               f.IsActivated &&
-               (!forProfile || f.IsProfileSupportedFileType()));
-
-        if (file == null)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Unable to access design file."));
-        }
-
-        var tccFileName = file.Name;
-        if (file.ImportedFileType == ImportedFileType.SurveyedSurface)
-        {
-          //Note: ':' is an invalid character for filenames in Windows so get rid of them
-          tccFileName = Path.GetFileNameWithoutExtension(tccFileName) +
-            "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
-            Path.GetExtension(tccFileName);
-        }
-        string fileSpaceId = FileDescriptor.GetFileSpaceId(configStore, log);
-        FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
-
-        return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
+        return null;
       }
-      return null;
+
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), this.CustomHeaders);
+      if (fileList == null || fileList.Count == 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Project has no appropriate design files."));
+      }
+
+      FileData file = null;
+
+      foreach (var f in fileList)
+      {
+        if (f.ImportedFileUid == fileUid.ToString() && f.IsActivated && (!forProfile || f.IsProfileSupportedFileType()))
+        {
+          file = f;
+
+          break;
+        }
+      }
+
+      if (file == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Unable to access design file."));
+      }
+
+      var tccFileName = file.Name;
+      if (file.ImportedFileType == ImportedFileType.SurveyedSurface)
+      {
+        //Note: ':' is an invalid character for filenames in Windows so get rid of them
+        tccFileName = Path.GetFileNameWithoutExtension(tccFileName) +
+                      "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
+                      Path.GetExtension(tccFileName);
+      }
+
+      string fileSpaceId = FileDescriptor.GetFileSpaceId(this.ConfigStore, this.log);
+      FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
+
+      return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
     }
 
     /// <summary>
@@ -217,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<CompactionProjectSettings> GetProjectSettings(Guid projectUid)
     {
       CompactionProjectSettings ps;
-      var jsonSettings = await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders);
+      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), this.CustomHeaders);
       if (!string.IsNullOrEmpty(jsonSettings))
       {
         try
@@ -239,7 +232,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       return ps;
     }
-
 
     /// <summary>
     /// Gets the list of contributing machines from the query parameters
@@ -279,7 +271,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DesignDescriptor designDescriptor = null;
       if (filterUid.HasValue)
       {
-        var filterData = await GetFilter(projectUid, filterUid.Value);
+        var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
         if (filterData != null)
         {
           if (filterData.designUID != null && Guid.TryParse(filterData.designUID, out Guid designUidGuid))
@@ -291,7 +283,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           {
             filterData = ApplyDateRange(projectUid, filterData);
 
-            var polygonPoints = filterData.polygonLL == null ? null : filterData.polygonLL.ConvertAll(p => { return Common.Models.WGSPoint.CreatePoint(p.Lat.latDegreesToRadians() , p.Lon.lonDegreesToRadians() ); });
+            var polygonPoints = filterData.polygonLL?.ConvertAll(p => Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
 
             var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
@@ -316,29 +308,53 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>The filter with the date range set</returns>
     private MasterData.Models.Models.Filter ApplyDateRange(Guid projectUid, MasterData.Models.Models.Filter filter)
     {
-      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
-        return filter;
-
-      var project = (User as RaptorPrincipal).GetProject(projectUid);
-      DateTime? startUtc = null;
-      DateTime? endUtc = null;
-      if (filter.DateRangeType.Value != DateRangeType.ProjectExtents)
+      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom || filter.DateRangeType.Value == DateRangeType.ProjectExtents)
       {
-        var utcNow = DateTime.UtcNow;
-        startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
-        endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
+        return filter;
       }
+
+      var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
+      if (project == null)
+      {
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,"Failed to retrieve project."));
+      }
+
+      var utcNow = DateTime.UtcNow;
+
+      DateTime? startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
+      DateTime? endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
+
       return MasterData.Models.Models.Filter.CreateFilter(
-        startUtc, endUtc, filter.designUID, filter.contributingMachines, filter.onMachineDesignID, filter.elevationType, 
+        startUtc, endUtc, filter.designUID, filter.contributingMachines, filter.onMachineDesignID, filter.elevationType,
         filter.vibeStateOn, filter.polygonLL, filter.forwardDirection, filter.layerNumber, filter.polygonUID, filter.polygonName);
     }
 
-    private async Task<MasterData.Models.Models.Filter> GetFilter(Guid projectUid, Guid filterUid)
+    private async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
-      var filterDescriptor = await filterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), customHeaders);
-      if (filterDescriptor == null)
+      var filterDescriptor = await this.FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), this.CustomHeaders);
+
+      return filterDescriptor == null
+        ? null
+        : JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
+    }
+
+    /// <summary>
+    /// Gets the summary volumes parameters according to the calcultion type
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="volumeCalcType">The summary volumes calculation type</param>
+    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeTopUid">Top Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <returns>Tuple of base filter, top filter and volume design descriptor</returns>
+    protected async Task<Tuple<Filter,Filter,DesignDescriptor>> GetSummaryVolumesParameters(Guid projectUid, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
+    {
+      Filter baseFilter = null;
+      Filter topFilter = null;
+      DesignDescriptor volumeDesign = null;
+      if (volumeCalcType.HasValue)
       {
-        return null;
       }
 
       return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);

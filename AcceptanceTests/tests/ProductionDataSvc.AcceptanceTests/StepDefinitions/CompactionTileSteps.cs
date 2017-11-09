@@ -34,13 +34,15 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"filterUid ""(.*)""")]
     public void GivenFilterUid(string filterUid)
     {
-      tileRequester.QueryString.Add("filterUid", filterUid);
+      if (!string.IsNullOrEmpty(filterUid))
+        { tileRequester.QueryString.Add("filterUid", filterUid);}
     }
 
     [Given(@"cutfillDesignUid ""(.*)""")]
     public void GivenCutfillDesignUid(string cutfillDesignUid)
     {
-      tileRequester.QueryString.Add("cutfillDesignUid", cutfillDesignUid);
+      if (!string.IsNullOrEmpty(cutfillDesignUid))
+        { tileRequester.QueryString.Add("cutfillDesignUid", cutfillDesignUid);}
     }
 
 
@@ -63,6 +65,17 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       tileRequester.QueryString.Add("bbox", bbox);
       tileRequester.QueryString.Add("width", width.ToString());
       tileRequester.QueryString.Add("height", height.ToString());
+    }
+
+    [Given(@"a summary volume file with volumeCalcType ""(.*)"" and a topUid ""(.*)"" and a baseUid ""(.*)""")]
+    public void GivenAVolumeCalcTypeAndABaseUid(string volumeCalcType, string volumeTopUid, string volumeBaseUid)
+    {
+      if (!string.IsNullOrEmpty(volumeCalcType))
+        { tileRequester.QueryString.Add("volumeCalcType", volumeCalcType);}
+      if (!string.IsNullOrEmpty(volumeTopUid))
+        { tileRequester.QueryString.Add("volumeTopUid", volumeTopUid);}
+      if (!string.IsNullOrEmpty(volumeBaseUid))
+        { tileRequester.QueryString.Add("volumeBaseUid", volumeBaseUid);}
     }
   }
 }
