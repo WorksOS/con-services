@@ -8,6 +8,7 @@ namespace VSS.MasterData.Repositories.DBModels
     public string ProjectUid { get; set; }
     public string ImportedFileUid { get; set; }
     public long ImportedFileId { get; set; }
+    public long? LegacyImportedFileId { get; set; }
     public string CustomerUid { get; set; }
     public ImportedFileType ImportedFileType { get; set; }
     public string Name { get; set; }
@@ -29,6 +30,7 @@ namespace VSS.MasterData.Repositories.DBModels
       return otherImportedFile.ProjectUid == ProjectUid
              && otherImportedFile.ImportedFileUid == ImportedFileUid
              && otherImportedFile.ImportedFileId == ImportedFileId
+             && otherImportedFile.LegacyImportedFileId == LegacyImportedFileId
              && otherImportedFile.CustomerUid == CustomerUid
              && otherImportedFile.ImportedFileType == ImportedFileType
              && otherImportedFile.Name == Name
