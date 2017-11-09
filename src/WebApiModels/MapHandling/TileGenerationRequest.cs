@@ -21,7 +21,6 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     public Filter baseFilter { get; private set; }
     public Filter topFilter { get; private set; }
     public VolumeCalcType? volCalcType { get; private set; }
-    public DesignDescriptor volumeDesign { get; private set; }
     public IEnumerable<GeofenceData> geofences { get; private set; }
     public IEnumerable<DesignDescriptor> alignmentDescriptors { get; private set; }
     public IEnumerable<FileData> dxfFiles { get; private set; }
@@ -44,7 +43,6 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
       Filter baseFilter, 
       Filter topFilter,
       VolumeCalcType? volCalcType,
-      DesignDescriptor volumeDesign,
       IEnumerable<GeofenceData> geofences,
       IEnumerable<DesignDescriptor> alignmentDescriptors,
       IEnumerable<FileData> dxfFiles,
@@ -65,7 +63,6 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
         baseFilter = baseFilter,
         topFilter = topFilter,
         volCalcType = volCalcType,
-        volumeDesign = volumeDesign,
         geofences = geofences,
         alignmentDescriptors = alignmentDescriptors,
         dxfFiles = dxfFiles,
@@ -74,7 +71,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
         height = height,
         mapType = mapType,
         mode = mode,
-        language = language,
+        language = language ?? "en-US",
         project = project,
         projectSettings = projectSettings
       };
@@ -115,11 +112,37 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
               "Missing display mode parameter for production data overlay"));
         }
 
-        if (mode.Value == DisplayMode.CutFill && designDescriptor == null)
+
+
+        if (mode.Value == DisplayMode.CutFill)
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Missing design for cut-fill production data overlay"));
+          if (volCalcType == VolumeCalcType.None && designDescriptor == null)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Missing design for cut-fill production data overlay"));
+          }
+          if ((volCalcType == VolumeCalcType.DesignToGround || volCalcType == VolumeCalcType.GroundToDesign) &&
+              designDescriptor == null)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Missing design for summary volumes production data overlay"));
+          }
+          if ((volCalcType == VolumeCalcType.GroundToGround || volCalcType == VolumeCalcType.GroundToDesign) &&
+              baseFilter == null)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Missing base filter for summary volumes production data overlay"));
+          }
+          if ((volCalcType == VolumeCalcType.GroundToGround || volCalcType == VolumeCalcType.DesignToGround) &&
+              topFilter == null)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Missing top filter for summary volumes production data overlay"));
+          }
         }
       }
     }

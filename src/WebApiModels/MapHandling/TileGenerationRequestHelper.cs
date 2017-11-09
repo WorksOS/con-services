@@ -21,7 +21,6 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     private Filter baseFilter;
     private Filter topFilter;
     private VolumeCalcType? volCalcType;
-    private DesignDescriptor volumeDesign;
 
     private IEnumerable<GeofenceData> geofences;
     private IEnumerable<DesignDescriptor> alignmentDescriptors;
@@ -43,12 +42,6 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     public TileGenerationRequestHelper SetVolumeCalcType(VolumeCalcType? calcType)
     {
       this.volCalcType = calcType;
-      return this;
-    }
-
-    public TileGenerationRequestHelper SetVolumeDesign(DesignDescriptor volumeDesign)
-    {
-      this.volumeDesign = volumeDesign;
       return this;
     }
 
@@ -94,7 +87,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     public TileGenerationRequest CreateTileGenerationRequest(TileOverlayType[] overlays, int width, int height,
       MapType? mapType, DisplayMode? mode, string language)
     {
-      return TileGenerationRequest.CreateTileGenerationRequest(DesignDescriptor, Filter, baseFilter, topFilter, volCalcType, volumeDesign,
+      return TileGenerationRequest.CreateTileGenerationRequest(DesignDescriptor, Filter, baseFilter, topFilter, volCalcType,
         geofences, alignmentDescriptors, dxfFiles, overlays, width, height, mapType, mode, language, project, ProjectSettings);
 
     }

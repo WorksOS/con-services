@@ -122,36 +122,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogDebug("GetReportTile: " + Request.QueryString);
 
-      var project = (User as RaptorPrincipal).GetProject(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
-      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
-      var dxfFiles = await GetFilesOfType(projectUid, ImportedFileType.Linework);
-      var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
-      var userPreferences = await GetUserPreferences();
-      var geofences = await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders);
+      var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
+        volumeCalcType, overlays, width, height, mapType, mode);
 
-      var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
-          .ProjectId(project.projectId)
-          .Headers(CustomHeaders)
-          .ProjectSettings(projectSettings)
-          .Filter(filter)
-          .DesignDescriptor(cutFillDesign))
-        .SetBaseFilter(sumVolParameters.Item1)
-        .SetTopFilter(sumVolParameters.Item2)
-        .SetVolumeCalcType(volumeCalcType)
-        .SetVolumeDesign(sumVolParameters.Item3)
-        .SetGeofences(geofences)
-        .SetAlignmentDescriptors(alignmentDescriptors)
-        .SetDxfFiles(dxfFiles)
-        .CreateTileGenerationRequest(overlays, width, height, mapType, mode, userPreferences.Language);
-
-      request.Validate();
-
-      var tileResult = await WithServiceExceptionTryExecute(async () =>
-        await tileGenerator.GetMapData(request));
-    
       return tileResult;
     }
 
@@ -190,25 +163,38 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogDebug("GetReportTileRaw: " + Request.QueryString);
 
+      var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
+        volumeCalcType, overlays, width, height, mapType, mode);
+
+      Response.Headers.Add("X-Warning", "false");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+    }
+
+    private async Task<TileResult> GetGeneratedTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, Guid? volumeBaseUid, Guid? volumeTopUid, VolumeCalcType? volumeCalcType,
+      TileOverlayType[] overlays, int width, int height, MapType? mapType, DisplayMode? mode)
+    {
       var project = (User as RaptorPrincipal).GetProject(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
+      var designDescriptor = (!volumeCalcType.HasValue || volumeCalcType.Value == VolumeCalcType.None)
+        ? cutFillDesign
+        : sumVolParameters.Item3;
       var dxfFiles = await GetFilesOfType(projectUid, ImportedFileType.Linework);
       var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
       var userPreferences = await GetUserPreferences();
       var geofences = await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders);
+
       var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
           .ProjectId(project.projectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter)
-          .DesignDescriptor(cutFillDesign))
+          .DesignDescriptor(designDescriptor))
         .SetBaseFilter(sumVolParameters.Item1)
         .SetTopFilter(sumVolParameters.Item2)
         .SetVolumeCalcType(volumeCalcType)
-        .SetVolumeDesign(sumVolParameters.Item3)
         .SetGeofences(geofences)
         .SetAlignmentDescriptors(alignmentDescriptors)
         .SetDxfFiles(dxfFiles)
@@ -216,11 +202,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       request.Validate();
 
-      var tileResult = await WithServiceExceptionTryExecute(async () =>
+      return await WithServiceExceptionTryExecuteAsync(async () =>
         await tileGenerator.GetMapData(request));
-
-      Response.Headers.Add("X-Warning", "false");
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
 
     private async Task<List<FileData>> GetFilesOfType(Guid projectUid, ImportedFileType fileType)

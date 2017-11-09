@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
     public async Task<TileResult> GetMapData(TileGenerationRequest request)
     {
-      MapBoundingBox bbox = await GetBoundingBox(request.project, request.filter, request.mode, request.baseFilter, request.topFilter, request.volumeDesign);
+      MapBoundingBox bbox = await GetBoundingBox(request.project, request.filter, request.mode, request.baseFilter, request.topFilter, request.designDescriptor);
 
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
       int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(bbox.minLng, bbox.minLat, bbox.maxLng, bbox.maxLat);
         var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.filter, request.project.projectId,
           request.mode.Value, (ushort)request.width, (ushort)request.height, prodDataBox, request.designDescriptor, request.baseFilter, 
-          request.topFilter, request.volumeDesign, null);//custom headers not used
+          request.topFilter, request.designDescriptor, null);//custom headers not used
         tileList.Add(tileResult.TileData);
       }
       if (request.overlays.Contains(TileOverlayType.ProjectBoundary))

@@ -114,6 +114,37 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
+    /// Asynch form of WithServiceExceptionTryExecute
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
+    {
+      TResult result = default(TResult);
+      try
+      {
+        result = await action.Invoke();
+        log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
+
+      }
+      catch (ServiceException)
+      {
+        throw;
+      }
+      catch (Exception ex)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+          ContractExecutionStatesEnum.InternalProcessingError - 2000, ex.Message);
+      }
+      finally
+      {
+        log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
+      }
+      return result;
+    }
+
+    /// <summary>
     /// Gets the project identifier.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
