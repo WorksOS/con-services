@@ -26,8 +26,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             // Construct the function to be used
             IComputeFunc<TileRenderRequestArgument, Bitmap> func = new TileRenderRequestComputeFunc();
 
-            // Decorate the supplied argument with the RaptorNodeID of the node currently executing this code
-
             // Get a reference to the Ignite cluster
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
 
@@ -35,7 +33,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             // Note: Broadcast will block until all compute nodes receiving the request have responded, or
             // until the internal Ignite timeout expires
 
-            IClusterGroup group = ignite.GetCluster().ForRemotes().ForAttribute("Role", "ASNode");
+            IClusterGroup group = ignite.GetCluster().ForRemotes().ForServers().ForAttribute("Role", "ASNode");
             ICompute compute = group.GetCompute();
 
             Task<Bitmap> taskResult = compute.ApplyAsync(func, arg);
