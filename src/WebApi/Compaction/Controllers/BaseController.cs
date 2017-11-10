@@ -271,28 +271,38 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DesignDescriptor designDescriptor = null;
       if (filterUid.HasValue)
       {
-        var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
-        if (filterData != null)
+        try
         {
-          if (filterData.designUID != null && Guid.TryParse(filterData.designUID, out Guid designUidGuid))
+
+          var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
+          if (filterData != null)
           {
-            designDescriptor = await GetDesignDescriptor(projectUid, designUidGuid);
+            if (filterData.designUID != null && Guid.TryParse(filterData.designUID, out Guid designUidGuid))
+            {
+              designDescriptor = await GetDesignDescriptor(projectUid, designUidGuid);
+            }
+
+            if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
+            {
+              filterData = ApplyDateRange(projectUid, filterData);
+
+              var polygonPoints = filterData.polygonLL?.ConvertAll(p => Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
+
+              var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
+
+              return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
+                filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
+                polygonPoints, null, filterData.forwardDirection, null, null, null, null, null, null,
+                layerMethod, designDescriptor, null, filterData.layerNumber, null, filterData.contributingMachines,
+                excludedIds, returnEarliest, null, null, null, null, null);
+            }
           }
 
-          if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
-          {
-            filterData = ApplyDateRange(projectUid, filterData);
-
-            var polygonPoints = filterData.polygonLL?.ConvertAll(p => Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
-
-            var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
-
-            return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
-              filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
-              polygonPoints, null, filterData.forwardDirection, null, null, null, null, null, null,
-              layerMethod, designDescriptor, null, filterData.layerNumber, null, filterData.contributingMachines,
-              excludedIds, returnEarliest, null, null, null, null, null);
-          }
+        }
+        catch (Exception ex)
+        {
+          log.LogDebug("EXCEPTION caught - cannot find filter" + ex.Message);
+          return null;
         }
       }
       return haveExcludedIds ? Filter.CreateFilter(excludedIds) : null;
