@@ -19,12 +19,12 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
         /// <summary>
         /// The X origin location for the patch of elevations to be computed from
         /// </summary>
-        public int OriginX { get; set; }
+        public uint OriginX { get; set; }
 
         /// <summary>
         /// The Y origin location for the patch of elevations to be computed from
         /// </summary>
-        public int OriginY { get; set; }
+        public uint OriginY { get; set; }
 
         /// <summary>
         /// The cell stepping size to move between points in the patch being interpolated
@@ -51,8 +51,8 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
         /// <param name="designDescriptor"></param>
         /// <param name="processingMap"></param>
         public CalculateDesignElevationPatchArgument(long siteModelID,
-                                         int originX,
-                                         int originY,
+                                         uint originX,
+                                         uint originY,
                                          double cellSize,
                                          DesignDescriptor designDescriptor,
                                          SubGridTreeBitmapSubGridBits processingMap)

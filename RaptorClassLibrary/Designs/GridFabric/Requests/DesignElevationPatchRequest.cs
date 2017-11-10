@@ -27,7 +27,7 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Requests
             // Note: Broadcast will block until all compute nodes receiving the request have responded, or
             // until the internal Ignite timeout expires
 
-            IClusterGroup group = ignite.GetCluster().ForRemotes().ForServers().ForAttribute("Role", "DesignProfiler");
+            IClusterGroup group = ignite.GetCluster().ForRemotes().ForAttribute("Role", "DesignProfiler");
             ICompute compute = group.GetCompute();
 
             Task<ClientHeightLeafSubGrid> taskResult = compute.ApplyAsync(func, arg);
