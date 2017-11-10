@@ -67,7 +67,7 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         public bool AbortedDueToTimeout;
 
-        // FCutFillDesignDescriptor : TVLPDDesignDescriptor;
+        public DesignDescriptor CutFillDesign; // =  // FCutFillDesignDescriptor : TVLPDDesignDescriptor;
         // FReferenceVolumeType : TComputeICVolumesType;
 
         public int EpochCount;
@@ -277,7 +277,7 @@ namespace VSS.VisionLink.Raptor.Rendering
 
                 // Displayer.ICOptions  = ICOptions;
 
-                PipelinedTask = new PVMRenderingTask(RequestDescriptor, RequestingRaptorNodeID, GridDataFromModeConverter.Convert(Mode), this);
+                PipelinedTask = new PVMRenderingTask(RequestDescriptor, RequestingRaptorNodeID, GridDataFromModeConverter.Convert(Mode), this, CutFillDesign);
 
                 // ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.ASTasks.Add(PipelinedTask);
                 try

@@ -41,7 +41,7 @@ namespace VSS.VisionLink.Raptor.Executors
 
         //    FFilter1IsLocal : Boolean;
         //    FFilter2IsLocal : Boolean;
-        //    FDesignDescriptor : TVLPDDesignDescriptor;
+        DesignDescriptor CutFillDesign; // DesignDescriptor : TVLPDDesignDescriptor;
         //    ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
         //    FColourPalettes: TColourPalettes;
         //    ICOptions ICOptions = new ICOptions();
@@ -59,7 +59,7 @@ namespace VSS.VisionLink.Raptor.Executors
                                  ushort ANPixelsY,
                                  CombinedFilter AFilter1,
                                  CombinedFilter AFilter2,
-                                 //ADesignDescriptor : TVLPDDesignDescriptor;
+                                 DesignDescriptor ACutFillDesign,
                                  //AReferenceVolumeType : TComputeICVolumesType;
                                  //AColourPalettes: TColourPalettes;
                                  //AICOptions: TSVOICOptions;
@@ -77,7 +77,7 @@ namespace VSS.VisionLink.Raptor.Executors
             NPixelsY = ANPixelsY;
             Filter1 = AFilter1;
             Filter2 = AFilter2;
-            //DesignDescriptor = ADesignDescriptor;
+            CutFillDesign = ACutFillDesign;
             //ReferenceVolumeType = AReferenceVolumeType;
             //ColourPalettes = AColourPalettes;
             //ICOptions = AICOptions;
@@ -680,7 +680,7 @@ namespace VSS.VisionLink.Raptor.Executors
                                    WorldTileWidth, WorldTileHeight,
                                    NPixelsX, NPixelsY);
 
-                // Renderer.CutFillDesignDescriptor = FDesignDescriptor;
+                Renderer.CutFillDesign = CutFillDesign;
                 // Renderer.ReferenceVolumeType = FReferenceVolumeType;
 
                 Renderer.TileRotation = TileRotation;

@@ -82,7 +82,13 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// </summary>
         /// <param name="mask"></param>
         /// <param name="Filters"></param>
-        public SubGridRequests(ITask task, long siteModelID, long requestID, string raptorNodeID, GridDataType requestedGridDataType, SubGridTreeBitMask mask, FilterSet filters) : this()
+        public SubGridRequests(ITask task, 
+                               long siteModelID, 
+                               long requestID, 
+                               string raptorNodeID, 
+                               GridDataType requestedGridDataType, 
+                               SubGridTreeBitMask mask, 
+                               FilterSet filters) : this()
         {
             Task = task;
             SiteModelID = siteModelID;
@@ -132,7 +138,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
 
             // Get a reference to the compute cluster group and send the request to it for processing
-            IClusterGroup group = ignite.GetCluster().ForRemotes().ForServers().ForAttribute("Role", "PSNode");
+            IClusterGroup group = ignite.GetCluster().ForRemotes().ForAttribute("Role", "PSNode");
             ICompute compute = group.GetCompute();
 
             // Create a messaging group the cluster can use to send messages back to and establish

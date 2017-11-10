@@ -83,7 +83,8 @@ namespace VSS.VisionLink.Raptor.Client
                                  Fence = new Fence(renderExtents)
                              }
                          },
-                         null // filter 2
+                         null, // filter 2
+                         DesignDescriptor.Null()
                         ));
 
                         if (bmp != null)

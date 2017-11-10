@@ -29,6 +29,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         public CombinedFilter Filter1 { get; set; } = null;
         public CombinedFilter Filter2 { get; set; } = null;
 
+        public DesignDescriptor CutFillDesign { get; set; }
+
         public TileRenderRequestArgument(long siteModelID,
                                          DisplayMode mode,
                                          BoundingWorldExtent3D extents,
@@ -36,7 +38,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
                                          ushort pixelsX,
                                          ushort pixelsY,
                                          CombinedFilter filter1,
-                                         CombinedFilter filter2)
+                                         CombinedFilter filter2,
+                                         DesignDescriptor cutFillDesign)
         {
             SiteModelID = siteModelID;
             Mode = mode;
@@ -46,6 +49,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
             PixelsY = pixelsY;
             Filter1 = filter1;
             Filter2 = filter2;
+            CutFillDesign = cutFillDesign;
         }
     }
 }
