@@ -232,8 +232,6 @@ namespace VSS.VisionLink.Raptor.Geometry
         public bool IncludesLine(double x1, double y1, double x2, double y2)
         {
             FencePoint pt1, pt2;
-            double X, Y;
-            bool LinesAreColinear;
 
             if ((IncludesPoint(x1, y1) || IncludesPoint(x2, y2)))
             {
@@ -250,8 +248,8 @@ namespace VSS.VisionLink.Raptor.Geometry
 
                 if (LineIntersection.LinesIntersect(x1, y1, x2, y2,
                                                     pt1.X, pt1.Y, pt2.X, pt2.Y,
-                                                    out X, out Y, true,
-                                                    out LinesAreColinear))
+                                                    out double X, out double Y, true,
+                                                    out bool LinesAreColinear))
                 {
                     return true;
                 }
@@ -271,8 +269,6 @@ namespace VSS.VisionLink.Raptor.Geometry
         public bool BoundaryIntersectsLine(double x1, double y1, double x2, double y2)
         {
             FencePoint pt1, pt2;
-            double X, Y;
-            bool LinesAreColinear;
 
             int pointsCount = Points.Count;
 
@@ -284,8 +280,8 @@ namespace VSS.VisionLink.Raptor.Geometry
 
                 if (LineIntersection.LinesIntersect(x1, y1, x2, y2,
                                                     pt1.X, pt1.Y, pt2.X, pt2.Y,
-                                                    out X, out Y, true,
-                                                    out LinesAreColinear))
+                                                    out double X, out double Y, true,
+                                                    out bool LinesAreColinear))
                 {
                     return true;
                 }

@@ -272,8 +272,7 @@ namespace VSS.VisionLink.Raptor.Filters
         {
             if (IsSpatial)// Just a polygonal fence
             {
-                double MinX, MinY, MaxX, MaxY;
-                Fence.GetExtents(out MinX, out MinY, out MaxX, out MaxY);
+                Fence.GetExtents(out double MinX, out double MinY, out double MaxX, out double MaxY);
                 return Extents.Intersect(MinX, MinY, MaxX, MaxY);
             }
             else

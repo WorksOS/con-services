@@ -128,8 +128,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>
         public GPSMode GetGPSModeAtDateTime(DateTime dateTime)
         {
-            object value;
-            return GetValueAtDateTime(dateTime, out value) ? (GPSMode)value : CellPass.NullGPSMode;
+            return GetValueAtDateTime(dateTime, out object value) ? (GPSMode)value : CellPass.NullGPSMode;
         }
 
         /// <summary>
@@ -139,8 +138,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>
         public short GetCCVValueAtDateTime(DateTime dateTime)
         {
-            object value;
-            return GetValueAtDateTime(dateTime, out value) ? (short)value : CellPass.NullCCV;
+            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPass.NullCCV;
         }
 
         /// <summary>
@@ -150,8 +148,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>        
         public short GetRMVValueAtDateTime(DateTime dateTime)
         {
-            object value;
-            return GetValueAtDateTime(dateTime, out value) ? (short)value : CellPass.NullRMV;
+            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPass.NullRMV;
         }
 
         /// <summary>
@@ -161,8 +158,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>   
         public ushort GetFrequencyValueAtDateTime(DateTime dateTime)
         {
-            object value;
-            return GetValueAtDateTime(dateTime, out value) ? (ushort)value : CellPass.NullFrequency;
+            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPass.NullFrequency;
         }
 
         /// <summary>
@@ -172,8 +168,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>   
         public ushort GetAmplitudeValueAtDateTime(DateTime dateTime)
         {
-            object value;
-            return GetValueAtDateTime(dateTime, out value) ? (ushort)value : CellPass.NullAmplitude;
+            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPass.NullAmplitude;
         }
 
         /// <summary>
@@ -183,8 +178,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>
         public byte GetAgeOfCorrectionValueAtDateTime(DateTime dateTime)
         {
-            object value;
-            return GetValueAtDateTime(dateTime, out value) ? (byte)value : (byte)0;
+            return GetValueAtDateTime(dateTime, out object value) ? (byte)value : (byte)0;
         }
 
         /// <summary>
@@ -194,8 +188,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>
         public OnGroundState GetOnGroundAtDateTime(DateTime dateTime)
         {
-            object value;
-            return GetValueAtDateTime(dateTime, out value) ? (OnGroundState)value : OnGroundState.No;
+            return GetValueAtDateTime(dateTime, out object value) ? (OnGroundState)value : OnGroundState.No;
         }
 
         /// <summary>
@@ -205,8 +198,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>
         public ushort GetMaterialTemperatureValueAtDateTime(DateTime dateTime)
         {
-            object value;
-            return GetValueAtDateTime(dateTime, out value) ? (ushort)value : CellPass.NullMaterialTemp;
+            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPass.NullMaterialTemp;
         }
 
         /// <summary>
@@ -216,8 +208,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>
         public short GetMDPValueAtDateTime(DateTime dateTime)
         {
-            object value;
-            return GetValueAtDateTime(dateTime, out value) ? (short)value : CellPass.NullMDP;
+            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPass.NullMDP;
         }
 
         /// <summary>
@@ -227,8 +218,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>
         public double GetMachineSpeedValueAtDateTime(DateTime dateTime)
         {
-            object value;
-            return GetValueAtDateTime(dateTime, out value) ? (double)value : Consts.NullDouble;
+            return GetValueAtDateTime(dateTime, out object value) ? (double)value : Consts.NullDouble;
         }
 
         /// <summary>
@@ -238,8 +228,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>
         public byte GetCCAValueAtDateTime(DateTime dateTime)
         {
-            object value;
-            return GetValueAtDateTime(dateTime, out value) ? (byte)value : CellPass.NullCCA;
+            return GetValueAtDateTime(dateTime, out object value) ? (byte)value : CellPass.NullCCA;
         }
     }
 }

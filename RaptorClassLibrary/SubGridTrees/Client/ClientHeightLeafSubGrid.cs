@@ -91,7 +91,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <summary>
         /// Ar array containing the content of a fully null subgrid
         /// </summary>
-        public static float[,] nullCells = nullHeights();
+        public static float[,] nullCells = NullHeights();
 
         /// <summary>
         /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
@@ -110,7 +110,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             SurveyedSurfaceMap.Clear();
         }
 
-        private static float[,] nullHeights()
+        private static float[,] NullHeights()
         {
             float[,] result = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
