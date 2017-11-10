@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VSS.VisionLink.Raptor</RootNamespace>
     <AssemblyName>RaptorClassLibrary</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,6 +92,11 @@
     <Compile Include="Compression\BitFieldArrayRecordsDescriptor.cs" />
     <Compile Include="Compression\EncodedBitFieldDescriptor.cs" />
     <Compile Include="DesignDescriptor.cs" />
+    <Compile Include="Designs\DesignBase.cs" />
+    <Compile Include="Designs\DesignFiles.cs" />
+    <Compile Include="Designs\DesignLoadResult.cs" />
+    <Compile Include="Designs\DesignProfilerRequestResult.cs" />
+    <Compile Include="Designs\TTMDesign.cs" />
     <Compile Include="Events\Interfaces\IProductionEventChangeList.cs" />
     <Compile Include="Events\ProductionEventChangeList.cs" />
     <Compile Include="Events\ProductionEventChanges.cs" />
@@ -98,6 +104,7 @@
     <Compile Include="Events\ProductionEventType.cs" />
     <Compile Include="Events\SpecificProductionEventChangeList.cs" />
     <Compile Include="Events\StartEndRecordedDataEvent.cs" />
+    <Compile Include="Designs\Executors\CalculateDesignElevationPatch.cs" />
     <Compile Include="Executors\ProjectExtents.cs" />
     <Compile Include="Executors\RenderOverlayTile.cs" />
     <Compile Include="Executors\RenderOverlayTile_Old.cs" />
@@ -116,8 +123,6 @@
     <Compile Include="Filters\Interfaces\ICellPassAttributeFilter.cs" />
     <Compile Include="Filters\Interfaces\ICellSpatialFilter.cs" />
     <Compile Include="Filters\SubGridFilterMasks.cs" />
-    <Compile Include="Geometry\BoundingIntegerExtent2D.cs" />
-    <Compile Include="Geometry\BoundingWorldExtent3D.cs" />
     <Compile Include="Cells\CellNonStatic.cs" />
     <Compile Include="Cells\CellEvents.cs" />
     <Compile Include="Cells\CellPass.cs" />
@@ -125,25 +130,22 @@
     <Compile Include="Filters\FilteredPassData.cs" />
     <Compile Include="Filters\FilteredSinglePassInfo.cs" />
     <Compile Include="Filters\FilteredValueAssignmentContext.cs" />
-    <Compile Include="Geometry\Fence.cs" />
-    <Compile Include="Geometry\FencePoint.cs" />
-    <Compile Include="Geometry\LineIntersection.cs" />
-    <Compile Include="Geometry\SimpleTriangle.cs" />
-    <Compile Include="Geometry\UTMCoordPointPair.cs" />
-    <Compile Include="Geometry\XYZ.cs" />
     <Compile Include="GridFabric\Affinity\RaptorSpatialAffinityFunction.cs" />
     <Compile Include="GridFabric\Affinity\SubGridSpatialAffinityKey.cs" />
     <Compile Include="GridFabric\Arguments\BaseApplicationServiceRequestArgument.cs" />
+    <Compile Include="Designs\GridFabric\Arguments\CalculateDesignElevationPatchArgument.cs" />
     <Compile Include="GridFabric\Arguments\SubGridsRequestArgument.cs" />
     <Compile Include="GridFabric\Arguments\TileRenderRequestArgument.cs" />
     <Compile Include="GridFabric\Caches\RaptorCaches.cs" />
     <Compile Include="GridFabric\Caches\RaptorCacheStoreFactory.cs" />
     <Compile Include="GridFabric\Caches\RaptorSpatialCacheStore.cs" />
     <Compile Include="GridFabric\Caches\RaptorNonSpatialCacheStore.cs" />
+    <Compile Include="Designs\GridFabric\ComputeFuncs\CalculateDesignElevationPatchComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\TileRenderRequestComputeFunc.cs" />
     <Compile Include="GridFabric\Grids\RaptorGrids.cs" />
     <Compile Include="GridFabric\Listeners\SubGridListener.cs" />
+    <Compile Include="Designs\GridFabric\Requests\DesignElevationPatchRequest.cs" />
     <Compile Include="GridFabric\Requests\SubGridRequests.cs" />
     <Compile Include="GridFabric\Requests\TileRenderRequest.cs" />
     <Compile Include="GridFabric\Responses\SubGridRequestsResponse.cs" />
@@ -174,6 +176,7 @@
     <Compile Include="Rendering\PVMDisplayer_MachineSpeed.cs" />
     <Compile Include="Rendering\PVMDisplayer_Height.cs" />
     <Compile Include="Servers\Client\ActivatePersistentGridServer.cs" />
+    <Compile Include="Designs\Servers\Client\CalculateDesignElevationsServer.cs" />
     <Compile Include="Servers\Client\RaptorApplicationServiceServer.cs" />
     <Compile Include="Servers\Client\RaptorClientServer.cs" />
     <Compile Include="Servers\Client\TAGFileProcessingServer.cs" />
@@ -422,6 +425,14 @@
     <ProjectReference Include="..\Raptor.Common\Raptor.Common.csproj">
       <Project>{197081dd-40e6-42af-8a77-a3a0445042eb}</Project>
       <Name>Raptor.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Velociraptor.Designs.TTM\VSS.Velociraptor.Designs.TTM.csproj">
+      <Project>{dc561602-6780-4764-857d-b7681c08c2e2}</Project>
+      <Name>VSS.Velociraptor.Designs.TTM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Velociraptor.Geometry\VSS.VisionLink.Raptor.Geometry.csproj">
+      <Project>{e1a52e73-5ccd-4aa5-bb78-561319479792}</Project>
+      <Name>VSS.VisionLink.Raptor.Geometry</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RaptorClient</RootNamespace>
     <AssemblyName>RaptorClient</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -108,6 +109,10 @@
     <ProjectReference Include="..\TAGFiles.Tests\TAGFiles.Tests.csproj">
       <Project>{18856B8B-9821-4036-AF0F-4401707355C0}</Project>
       <Name>TAGFiles.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Velociraptor.Geometry\VSS.VisionLink.Raptor.Geometry.csproj">
+      <Project>{e1a52e73-5ccd-4aa5-bb78-561319479792}</Project>
+      <Name>VSS.VisionLink.Raptor.Geometry</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

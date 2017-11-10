@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WindowsFormsApplication1</RootNamespace>
     <AssemblyName>WindowsFormsApplication1</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -122,6 +123,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -141,6 +143,10 @@
     <ProjectReference Include="..\RaptorClassLibrary\RaptorClassLibrary.csproj">
       <Project>{d900b783-706f-4845-82e1-3c93c1e06df2}</Project>
       <Name>RaptorClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Velociraptor.Geometry\VSS.VisionLink.Raptor.Geometry.csproj">
+      <Project>{e1a52e73-5ccd-4aa5-bb78-561319479792}</Project>
+      <Name>VSS.VisionLink.Raptor.Geometry</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

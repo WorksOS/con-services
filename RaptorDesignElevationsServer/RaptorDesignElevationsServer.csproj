@@ -87,10 +87,6 @@
       <Project>{d900b783-706f-4845-82e1-3c93c1e06df2}</Project>
       <Name>RaptorClassLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.Velociraptor.DesignProfiling\VSS.Velociraptor.DesignProfiling.csproj">
-      <Project>{54ff5c80-682d-4583-a77b-5055f65cffe2}</Project>
-      <Name>VSS.Velociraptor.DesignProfiling</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VSS.Velociraptor.Designs.TTM\VSS.Velociraptor.Designs.TTM.csproj">
       <Project>{dc561602-6780-4764-857d-b7681c08c2e2}</Project>
       <Name>VSS.Velociraptor.Designs.TTM</Name>
