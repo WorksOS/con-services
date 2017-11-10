@@ -119,7 +119,7 @@ namespace VSS.Velociraptor.Designs.TTM
 
         public Triangle GetTriangleAtPoint(double X, double Y, out double Z)
         {
-            Z = 0;
+            Z = Consts.NullReal;
 
             for (int i = 0; i < Triangles.Count; i++)
             {

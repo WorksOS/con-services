@@ -9,7 +9,7 @@ using VSS.VisionLink.Raptor.Geometry;
 
 namespace VSS.Velociraptor.Designs.TTM
 {
-    public class TrimbleTinModel : TriangleMesh
+    public class TrimbleTINModel : TriangleMesh
     {
         private string FModelName;
         private TTMEdges FEdges;
@@ -45,7 +45,7 @@ namespace VSS.Velociraptor.Designs.TTM
             (Vertices as TTMVertices).SnapToOutputResolution(FHeader);
         }
 
-        public TrimbleTinModel() : base()
+        public TrimbleTINModel() : base()
         {
             FEdges = new TTMEdges();
             FStartPoints = new TTMStartPoints();
@@ -219,7 +219,7 @@ namespace VSS.Velociraptor.Designs.TTM
 
         public void LoadFromFile(string FileName)
         {
-            using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read))
+            using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 using (BinaryReader reader = new BinaryReader(fs))
                 {
@@ -335,7 +335,7 @@ namespace VSS.Velociraptor.Designs.TTM
 
                 TTMHeader Header = TTMHeader.NewHeader();
 
-                using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read))
+                using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     using (BinaryReader reader = new BinaryReader(fs))
                     {
@@ -379,7 +379,7 @@ namespace VSS.Velociraptor.Designs.TTM
 
             try
             {
-                using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read))
+                using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     using (BinaryReader reader = new BinaryReader(fs))
                     {

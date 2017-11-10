@@ -16,7 +16,7 @@ namespace VSS.Velociraptor.Designs.TTM
         /// Gets the X, Y, Z location of the vertex as a XYZ instance
         /// </summary>
         /// <returns></returns>
-        private XYZ GetXYZProp()
+        private XYZ GetXYZ()
         {
             return new XYZ(X, Y, Z);
         }
@@ -25,11 +25,11 @@ namespace VSS.Velociraptor.Designs.TTM
         /// Sets the location of the vertex from a XYZ instance
         /// </summary>
         /// <param name="Value"></param>
-        private void SetXYZProp(XYZ Value)
+        private void SetXYZ(XYZ Value)
         {
-            X = XYZ.X;
-            Y = XYZ.Y;
-            Z = XYZ.Z;
+            X = Value.X;
+            Y = Value.Y;
+            Z = Value.Z;
         }
 
         /// <summary>
@@ -110,11 +110,11 @@ namespace VSS.Velociraptor.Designs.TTM
         {
             get
             {
-                return GetXYZProp();
+                return GetXYZ();
             }
             set
             {
-                SetXYZProp(value);
+                SetXYZ(value);
             }
         }
 

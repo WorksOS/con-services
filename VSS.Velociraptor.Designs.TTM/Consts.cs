@@ -8,11 +8,22 @@ namespace VSS.Velociraptor.Designs.TTM
 {
     public static class Consts
     {
+        public const float kTTMNullReal = -1.2345E-35f;
+        public const float NullHeight = -3.4E38f;
+        public const double NullReal = 1E308;
+
         public const int MaxSmallIntValue = 0x7FFF;
   public const byte TTMMajorVersion = 1;
         public const byte TTMMinorVersion = 0;
 
         public const string TTMFileIdentifier = "TNL TIN DTM FILE";
+
+        public const string kDesignSubgridOverlaySubgridIndexHeader = "TTMSUBGRIDINDEX";
+        public const int kDesignSubgridOverlaySubgridIndexVersion = 2; //= 3; ###RPW### See TFS item 16560
+        public const string kDesignSubgridIndexFileExt = ".$DesignSubgridIndex$";
+
+        public const string kCombinedSurfaceSubgridOverlaySubgridIndexHeader = "SpatialExistenceMap";
+        public const int kCombinedSurfaceSubgridOverlaySubgridIndexVersion = 2; //= 3; ###RPW### See TFS item 16560
 
     public const int NoNeighbour = -1;
         public const int NullHashIndex = 0;

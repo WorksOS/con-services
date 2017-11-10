@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DC561602-6780-4764-857D-B7681C08C2E2}</ProjectGuid>
+    <ProjectGuid>{54FF5C80-682D-4583-A77B-5055F65CFFE2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VSS.Velociraptor.Designs.TTM</RootNamespace>
-    <AssemblyName>VSS.Velociraptor.Designs.TTM</AssemblyName>
+    <RootNamespace>VSS.Velociraptor.DesignProfiling</RootNamespace>
+    <AssemblyName>VSS.Velociraptor.DesignProfiling</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,7 +20,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Apache.Ignite, Version=2.2.0.22980, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Ignite.2.2.0\lib\net40\Apache.Ignite.exe</HintPath>
+    </Reference>
+    <Reference Include="Apache.Ignite.Core, Version=2.2.0.22980, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Ignite.2.2.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,35 +46,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Consts.cs" />
-    <Compile Include="HashOrdinate.cs" />
-    <Compile Include="TrimbleTINModel.cs" />
-    <Compile Include="TTMStartPoint.cs" />
-    <Compile Include="Triangle.cs" />
-    <Compile Include="TriangleMesh.cs" />
-    <Compile Include="Triangles.cs" />
-    <Compile Include="TriStoreObject.cs" />
+    <Compile Include="DesignBase.cs" />
+    <Compile Include="DesignFiles.cs" />
+    <Compile Include="DesignLoadResult.cs" />
+    <Compile Include="DesignProfilerRequestResult.cs" />
+    <Compile Include="Executors\CalculateDesignElevationPatch.cs" />
+    <Compile Include="GridFabric\Arguments\CalculateDesignElevationPatchArgument.cs" />
+    <Compile Include="GridFabric\ComputeFuncs\CalculateDesignElevationPatchComputeFunc.cs" />
+    <Compile Include="GridFabric\Requests\DesignElevationPatchRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TriVertex.cs" />
-    <Compile Include="TriVertices.cs" />
-    <Compile Include="TTMEdges.cs" />
-    <Compile Include="TTMHeader.cs" />
-    <Compile Include="TTMStartPoints.cs" />
-    <Compile Include="TTMTriangle.cs" />
-    <Compile Include="TTMTriangles.cs" />
-    <Compile Include="TTMVertex.cs" />
-    <Compile Include="TTMVertices.cs" />
-    <Compile Include="Utilities.cs" />
+    <Compile Include="Servers\Client\CalculateDesignElevationsServer.cs" />
+    <Compile Include="TTMDesign.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Raptor.Common\Raptor.Common.csproj">
-      <Project>{197081dd-40e6-42af-8a77-a3a0445042eb}</Project>
-      <Name>Raptor.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RaptorClassLibrary\RaptorClassLibrary.csproj">
       <Project>{d900b783-706f-4845-82e1-3c93c1e06df2}</Project>
       <Name>RaptorClassLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VSS.Velociraptor.Designs.TTM\VSS.Velociraptor.Designs.TTM.csproj">
+      <Project>{DC561602-6780-4764-857D-B7681C08C2E2}</Project>
+      <Name>VSS.Velociraptor.Designs.TTM</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Servers\Compute\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+if not exist "$(TargetDir)Libs" md "$(TargetDir)Libs"
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.2.0\Libs\*.*" "$(TargetDir)Libs"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

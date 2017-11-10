@@ -20,7 +20,7 @@ namespace VSS.Velociraptor.Designs.TTM.Tests
         [TestMethod()]
         public void TrimbleTinModelTest_Creation()
         {
-            TrimbleTinModel TTM = new TrimbleTinModel();
+            TrimbleTINModel TTM = new TrimbleTINModel();
 
             Assert.IsTrue(TTM != null, "Failed to create TrimbleTinModel instance");
         }
@@ -52,7 +52,7 @@ namespace VSS.Velociraptor.Designs.TTM.Tests
         [TestMethod()]
         public void LoadFromFileTest()
         {
-            TrimbleTinModel TTM = new TrimbleTinModel();
+            TrimbleTINModel TTM = new TrimbleTINModel();
 
             TTM.LoadFromFile(@"C:\Temp\Bug36372.ttm");
 
