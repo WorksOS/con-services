@@ -62,13 +62,9 @@
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Raptor.Common\Raptor.Common.csproj">
-      <Project>{197081dd-40e6-42af-8a77-a3a0445042eb}</Project>
-      <Name>Raptor.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RaptorClassLibrary\RaptorClassLibrary.csproj">
-      <Project>{d900b783-706f-4845-82e1-3c93c1e06df2}</Project>
-      <Name>RaptorClassLibrary</Name>
+    <ProjectReference Include="..\VSS.Velociraptor.Geometry\VSS.VisionLink.Raptor.Geometry.csproj">
+      <Project>{e1a52e73-5ccd-4aa5-bb78-561319479792}</Project>
+      <Name>VSS.VisionLink.Raptor.Geometry</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
