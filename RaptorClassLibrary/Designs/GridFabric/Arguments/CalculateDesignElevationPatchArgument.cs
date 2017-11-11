@@ -64,5 +64,14 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
             DesignDescriptor = designDescriptor;
             ProcessingMap = processingMap;
         }
+
+        /// <summary>
+        /// Overloaded ToString to add argument properties
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return base.ToString() + $" -> SiteModel:{SiteModelID}, Origin:{OriginX}/{OriginY}, CellSize:{CellSize}, Design:{DesignDescriptor}";
+        }
     }
 }

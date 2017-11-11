@@ -51,6 +51,10 @@ namespace VSS.VisionLink.Raptor
 
         public bool IsNull => String.IsNullOrEmpty(FileName);
         
+        /// <summary>
+        /// Overloaded ToString detailing the state of the Design Descriptor
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return String.Format("[{0}:'{1}', '{2}', '{3}', '{4}', '{5}']", DesignID, FileSpace, FileSpaceID, Folder, FileName, Offset);
