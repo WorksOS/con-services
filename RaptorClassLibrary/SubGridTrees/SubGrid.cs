@@ -14,6 +14,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
     /// <summary>
     /// The base class representing the concept of a subgrid within a subgrid throw
     /// </summary>
+    [Serializable]
     public class SubGrid : ISubGrid
     {
         /// <summary>
@@ -417,6 +418,48 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// </summary>
         /// <returns></returns>
         public SubGridCellAddress OriginAsCellAddress() => new SubGridCellAddress(OriginX, OriginY);
+
+        public byte[] ToByteArray()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (BinaryWriter bw = new BinaryWriter(ms))
+                {
+                    Write(bw, new byte[10000]);
+                }
+
+                return ms.ToArray();
+            }
+        }
+
+        public byte[] ToByteArray(byte[] helperBuffer)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (BinaryWriter bw = new BinaryWriter(ms))
+                {
+                    Write(bw, helperBuffer ?? new byte[10000]);
+                }
+
+                return ms.ToArray();
+            }
+        }
+
+        public byte[] ToByteArray(MemoryStream helperStream, byte[] helperBuffer)
+        {
+            throw new NotImplementedException("Not done yet");
+        }
+
+        public void FromByteArray(byte[] bytes, byte[] helperBuffer = null)
+        {
+            using (MemoryStream ms = new MemoryStream(bytes))
+            {
+                using (BinaryReader bw = new BinaryReader(ms))
+                {
+                    Read(bw, helperBuffer ?? new byte[10000]);
+                }
+            }
+        }
     }
 }
 

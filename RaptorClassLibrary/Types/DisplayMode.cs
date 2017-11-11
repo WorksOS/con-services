@@ -9,6 +9,7 @@ namespace VSS.VisionLink.Raptor.Types
     /// <summary>
     /// DisplayMode represents the displayable rendering modes supported by the Raptor tile rendering engine
     /// </summary>
+    [Serializable]
     public enum DisplayMode
     {
         Height,

@@ -159,7 +159,7 @@
     <Compile Include="ProductionDataExistanceMap.cs" />
     <Compile Include="RaptorServerConfig.cs" />
     <Compile Include="Rendering\MapSurface.cs" />
-    <Compile Include="Rendering\Palettes\CutFill.cs" />
+    <Compile Include="Rendering\Palettes\CutFillPalette.cs" />
     <Compile Include="Rendering\Palettes\TemperaturePalette.cs" />
     <Compile Include="Rendering\Palettes\HeightPalette.cs" />
     <Compile Include="Rendering\Palettes\Interfaces\IPlanViewPalette.cs" />

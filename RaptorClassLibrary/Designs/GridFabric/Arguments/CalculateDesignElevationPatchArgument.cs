@@ -9,6 +9,7 @@ using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
 {
+    [Serializable]
     public class CalculateDesignElevationPatchArgument : BaseApplicationServiceRequestArgument
     {
         /// <summary>

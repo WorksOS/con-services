@@ -9,6 +9,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 {
+    [Serializable]
     public class GenericClientLeafSubGrid<T> : ClientLeafSubGrid, ISubGrid, ILeafSubGrid, IClientLeafSubGrid
     {
         public T[,] Cells = null;

@@ -16,8 +16,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
     /// <summary>
     /// The content of each cell in a height client leaf sub grid. Each cell stores an elevation only.
     /// </summary>
+    [Serializable]
     public class ClientHeightLeafSubGrid : GenericClientLeafSubGrid<float>
     {
+        [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>

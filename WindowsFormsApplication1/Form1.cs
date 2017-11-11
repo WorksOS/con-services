@@ -80,7 +80,12 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                  (ushort)width, // PixelsX
                  (ushort)Height, // PixelsY
                  new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
-                 null // filter 2
+                 null, // filter 2
+                 new DesignDescriptor()
+                 {
+                     Folder = @"C:\Temp",
+                     FileName = @"Bug36372.ttm"
+                 }
                 ));
             }
             catch (Exception E)
@@ -239,10 +244,10 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                      }
                  });
                 // Linear
-                //for(int count = 0; count < nImages; count++)
-                //{ 
+                //for (int count = 0; count < nImages; count++)
+                //{  
                 //    using (Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
-                //   {
+                //    {
                 //    }
                 //};
                 
@@ -302,10 +307,12 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 return;
             }
 
-//            writeCacheMetrics(writer, cache.GetMetrics());
+            //            writeCacheMetrics(writer, cache.GetMetrics());
 
-            var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>();
-            scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
+            var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>
+            {
+                PageSize = 1 // Restrict the number of keys requested in each page to reduce memory consumption
+            };
 
             IQueryCursor<ICacheEntry<SubGridSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
 
@@ -320,8 +327,10 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void retriveAllItems(string title, StreamWriter writer, ICache<SubGridSpatialAffinityKey, byte[]> cache)
         {
-            var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>();
-            scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
+            var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>
+            {
+                PageSize = 1 // Restrict the number of keys requested in each page to reduce memory consumption
+            };
 
             IQueryCursor<ICacheEntry<SubGridSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
 

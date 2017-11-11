@@ -10,6 +10,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Helpers;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees
 {
+    [Serializable]
     public struct SubGridTreeBitmapSubGridBits : IEquatable<SubGridTreeBitmapSubGridBits>
     {
         /// <summary>

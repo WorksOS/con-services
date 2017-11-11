@@ -21,6 +21,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
     /// map records which cells in the subgrid contain information that has been
     /// retrieved from the server.
     /// </summary>
+    [Serializable]
     public class ClientLeafSubGrid : SubGrid, ISubGrid, ILeafSubGrid, IClientLeafSubGrid
     {
 
@@ -59,6 +60,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <summary>
         /// A map of flags indicating which grid data types are supported by the intermediary subgrid result cache
         /// </summary>
+        [NonSerialized]
         private static bool[] SupportsAssignationFromCachedPreProcessedClientSubgrid = // GridDataType
         {
           false, // All = $00000000;
@@ -282,8 +284,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 
         /// <summary>
         /// Write the contents of the Items array using the supplied writer
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
         public override void Write(BinaryWriter writer, byte [] buffer)
@@ -300,8 +300,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 
         /// <summary>
         /// Fill the items array by reading the binary representation using the provided reader. 
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
         public override void Read(BinaryReader reader, byte [] buffer)
@@ -316,6 +314,4 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             FilterMap.Read(reader, buffer);
         }
     }
-
-
 }

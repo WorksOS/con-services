@@ -26,20 +26,10 @@ namespace VSS.VisionLink.Raptor.Rendering.Palettes
                         return new HeightPalette(extent.MinZ, extent.MaxZ);
                     }
 
-                case DisplayMode.MachineSpeed:
-                    {
-                        return new SpeedPalette();
-                    }
-
-                case DisplayMode.CCV:
-                    {
-                        return new CMVPalette();
-                    }
-
-                case DisplayMode.TemperatureSummary:
-                    {
-                        return new TemperaturePalette();
-                    }
+                case DisplayMode.MachineSpeed:       return new SpeedPalette();
+                case DisplayMode.CCV:                return new CMVPalette();
+                case DisplayMode.TemperatureSummary: return new TemperaturePalette();
+                case DisplayMode.CutFill:            return new CutFillPalette();
 
                 default: // Just use the elevation palette as a default...
                     BoundingWorldExtent3D extent2 = siteModel.GetAdjustedDataModelSpatialExtents(new long[0]);
