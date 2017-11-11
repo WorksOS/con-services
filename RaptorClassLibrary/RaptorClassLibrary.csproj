@@ -159,6 +159,7 @@
     <Compile Include="ProductionDataExistanceMap.cs" />
     <Compile Include="RaptorServerConfig.cs" />
     <Compile Include="Rendering\MapSurface.cs" />
+    <Compile Include="Rendering\Palettes\CutFill.cs" />
     <Compile Include="Rendering\Palettes\TemperaturePalette.cs" />
     <Compile Include="Rendering\Palettes\HeightPalette.cs" />
     <Compile Include="Rendering\Palettes\Interfaces\IPlanViewPalette.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Rendering\PlanViewTileRenderer.cs" />
     <Compile Include="Rendering\ProductionPVMDisplayerBase.cs" />
     <Compile Include="Rendering\PVMDisplayerBase.cs" />
+    <Compile Include="Rendering\PVMDisplayer_CutFill.cs" />
     <Compile Include="Rendering\PVMDisplayer_Temperature.cs" />
     <Compile Include="Rendering\PVMDisplayer_CMV.cs" />
     <Compile Include="Rendering\PVMDisplayer_MachineSpeed.cs" />

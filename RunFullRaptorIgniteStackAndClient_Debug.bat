@@ -1,14 +1,22 @@
 start C:\Dev\VSS.Raptor.IgnitePOC\RaptorPSNodeServer\bin\debug\RaptorPSNodeServer.exe SpatialDivision=0
-timeout 10
-start C:\Dev\VSS.Raptor.IgnitePOC\RaptorPSNodeServer\bin\debug\RaptorPSNodeServer.exe SpatialDivision=1
-timeout 10
-start C:\Dev\VSS.Raptor.IgnitePOC\RaptorPSNodeServer\bin\debug\RaptorPSNodeServer.exe SpatialDivision=2
-timeout 10
-start C:\Dev\VSS.Raptor.IgnitePOC\RaptorPSNodeServer\bin\debug\RaptorPSNodeServer.exe SpatialDivision=3
-timeout 10
+timeout 7
+rem start C:\Dev\VSS.Raptor.IgnitePOC\RaptorPSNodeServer\bin\debug\RaptorPSNodeServer.exe SpatialDivision=1
+rem timeout 7
+rem start C:\Dev\VSS.Raptor.IgnitePOC\RaptorPSNodeServer\bin\debug\RaptorPSNodeServer.exe SpatialDivision=2
+rem timeout 7
+rem start C:\Dev\VSS.Raptor.IgnitePOC\RaptorPSNodeServer\bin\debug\RaptorPSNodeServer.exe SpatialDivision=3
+rem timeout 7
 start C:\Dev\VSS.Raptor.IgnitePOC\RaptorServerApplication\bin\debug\RaptorServerApplication.exe
-timeout 10
+timeout 7
+rem start C:\Dev\VSS.Raptor.IgnitePOC\RaptorServerApplication\bin\debug\RaptorServerApplication.exe
+rem timeout 7
+rem start C:\Dev\VSS.Raptor.IgnitePOC\RaptorServerApplication\bin\debug\RaptorServerApplication.exe
+rem timeout 7
+rem start C:\Dev\VSS.Raptor.IgnitePOC\RaptorServerApplication\bin\debug\RaptorServerApplication.exe
+rem timeout 7
+start C:\Dev\VSS.Raptor.IgnitePOC\RaptorDesignElevationsServer\bin\debug\RaptorDesignElevationsServer.exe
+timeout 7
 start C:\Dev\VSS.Raptor.IgnitePOC\WindowsFormsApplication1\bin\debug\WindowsFormsApplication1.exe
-timeout 10
+timeout 7
 start C:\Dev\VSS.Raptor.IgnitePOC\RaptorGridActivator\bin\debug\RaptorGridActivator.exe
 
