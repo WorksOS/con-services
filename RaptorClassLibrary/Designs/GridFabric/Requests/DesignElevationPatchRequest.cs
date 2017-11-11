@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
 using VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs;
+using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 
@@ -18,7 +19,7 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Requests
         public static ClientHeightLeafSubGrid Execute(CalculateDesignElevationPatchArgument arg)
         {
             // Construct the function to be used
-            IComputeFunc<CalculateDesignElevationPatchArgument, ClientHeightLeafSubGrid> func = new CalculateDesignElevationPatchComputeFunc();
+            IComputeFunc<CalculateDesignElevationPatchArgument, byte[] /*ClientHeightLeafSubGrid*/> func = new CalculateDesignElevationPatchComputeFunc();
 
             // Get a reference to the Ignite cluster
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
@@ -30,10 +31,17 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Requests
             IClusterGroup group = ignite.GetCluster().ForRemotes().ForAttribute("Role", "DesignProfiler");
             ICompute compute = group.GetCompute();
 
-            Task<ClientHeightLeafSubGrid> taskResult = compute.ApplyAsync(func, arg);
+            /*ClientHeightLeafSubGrid */ byte[] result = compute.Apply(func, arg);
+
+            ClientHeightLeafSubGrid clientResult = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTree.DefaultIndexOriginOffset);
+            clientResult.FromByteArray(result);
+            return clientResult;
+
+            //return result;
+//            Task<ClientHeightLeafSubGrid> taskResult = compute.ApplyAsync(func, arg);
 
             // Send the appropriate response to the caller
-            return taskResult.Result;
+//            return taskResult.Result;
         }
     }
 }

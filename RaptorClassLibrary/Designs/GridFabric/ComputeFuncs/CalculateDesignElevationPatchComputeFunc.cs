@@ -13,12 +13,12 @@ using System.Reflection;
 namespace VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs
 {
     [Serializable]
-    public class CalculateDesignElevationPatchComputeFunc : IComputeFunc<CalculateDesignElevationPatchArgument, ClientHeightLeafSubGrid>
+    public class CalculateDesignElevationPatchComputeFunc : IComputeFunc<CalculateDesignElevationPatchArgument, byte [] /* ClientHeightLeafSubGrid */>
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public ClientHeightLeafSubGrid Invoke(CalculateDesignElevationPatchArgument arg)
+        public byte[] /*ClientHeightLeafSubGrid */Invoke(CalculateDesignElevationPatchArgument arg)
         {
             try
             {
@@ -26,10 +26,11 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs
 
                 CalculateDesignElevationPatch Executor = new CalculateDesignElevationPatch(arg);
 
-                return Executor.Execute();
+                return Executor.Execute().ToByteArray();
             }
-            catch
+            catch (Exception E)
             {
+                Log.InfoFormat("Exception:", E);
                 return null; // Todo .....
             }
         }
