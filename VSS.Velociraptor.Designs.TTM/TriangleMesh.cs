@@ -63,10 +63,7 @@ namespace VSS.Velociraptor.Designs.TTM
             //  Triangles.DumpTriangleList('c:\TriangleList_AfterNumber.txt');
 
             // Create point triangle lists
-            List<List<Triangle>> Trianglelists = new List<List<Triangle>>
-            {
-                Capacity = Vertices.Count + 1
-            };
+            List<List<Triangle>> Trianglelists = new List<List<Triangle>>(Vertices.Count + 1);
 
             // Add a dummy list to make the indices of the lists agree with the indices in the tag property
             Trianglelists.Add(new List<Triangle>());

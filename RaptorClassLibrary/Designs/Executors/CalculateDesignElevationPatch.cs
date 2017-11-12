@@ -102,6 +102,12 @@ namespace VSS.Velociraptor.DesignProfiling.Executors
                     // Check we are still active
                     // TODO.... 
 
+                    /* Test code to force all subgrids to have 0 elevations from a design
+                    ClientHeightLeafSubGrid test = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTree.DefaultIndexOriginOffset);
+                    test.SetToZeroHeight();
+                    return test;
+                    */
+
                     // Calculate the patch of elevations and return it
                     ClientHeightLeafSubGrid result = Calc(out DesignProfilerRequestResult CalcResult);
 

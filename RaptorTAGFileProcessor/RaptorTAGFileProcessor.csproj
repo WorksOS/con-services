@@ -7,8 +7,8 @@
     <ProjectGuid>{7DD49C6B-042D-40CE-8E8E-430146E3AF97}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RaptorClient</RootNamespace>
-    <AssemblyName>RaptorClient</AssemblyName>
+    <RootNamespace>VSS.Velociraptor.TAGFileProcessor</RootNamespace>
+    <AssemblyName>RaptorTAGFileProcessor</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

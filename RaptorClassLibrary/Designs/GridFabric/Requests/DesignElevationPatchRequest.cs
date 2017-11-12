@@ -33,6 +33,11 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Requests
 
             /*ClientHeightLeafSubGrid */ byte[] result = compute.Apply(func, arg);
 
+            if (result == null)
+            {
+                return null;
+            }
+
             ClientHeightLeafSubGrid clientResult = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTree.DefaultIndexOriginOffset);
             clientResult.FromByteArray(result);
             return clientResult;

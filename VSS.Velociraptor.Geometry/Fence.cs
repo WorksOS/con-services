@@ -59,7 +59,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         public List<FencePoint> Points = new List<FencePoint>();
 
         /// <summary>
-        ///  Determine if any of the vertices in the Fence are null
+        /// Determine if any of the vertices in the Fence are null
         /// </summary>
         /// <returns></returns>
         public bool IsNull()

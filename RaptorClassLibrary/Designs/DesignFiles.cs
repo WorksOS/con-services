@@ -76,7 +76,7 @@ namespace VSS.Velociraptor.DesignProfiling
             }
         }
 
-      public void AddDesignToCache(DesignDescriptor designDescriptor, DesignBase design)
+        public void AddDesignToCache(DesignDescriptor designDescriptor, DesignBase design)
         {
             lock (designs)
             {
@@ -102,11 +102,25 @@ namespace VSS.Velociraptor.DesignProfiling
         public DesignBase Lock(DesignDescriptor designDescriptor,
                                long DataModelID, double ACellSize, out DesignLoadResult LoadResult)
         {
-                // Very simple lock function...
-                designs.TryGetValue(designDescriptor, out DesignBase design);
+            DesignBase design;
 
-                LoadResult = design == null ? DesignLoadResult.UnknownFailure : DesignLoadResult.Success;
-                return design;
+            // Very simple lock function...
+            lock (designs)
+            {
+                designs.TryGetValue(designDescriptor, out design);
+            }
+
+            if (design == null)
+            {
+                // Load the design into the cache (in this case jsut TTM files)
+                design = new TTMDesign(ACellSize);
+                design.LoadFromFile(designDescriptor.FullPath);
+
+                AddDesignToCache(designDescriptor, design);
+            }
+
+            LoadResult = design == null ? DesignLoadResult.UnknownFailure : DesignLoadResult.Success;
+            return design;
         }
 
         /// <summary>
@@ -117,8 +131,11 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <returns></returns>
         public bool UnLock(DesignDescriptor designDescriptor, DesignBase design)
         {
-            // Very simple unlock function...
-            return true;
+            lock (Designs)
+            {
+                // Very simple unlock function...
+                return true;
+            }
         }
 
         /// <summary>
