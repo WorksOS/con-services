@@ -177,6 +177,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns></returns>
     private async Task<FilterDescriptorSingleResult> RetrieveFilter(FilterRequestFull filterRequest, bool transient)
     {
+      //TODO we need to remove this rubbish from here
       var retrievedFilter = (await ((IFilterRepository)Repository)
           .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId, transient)
           .ConfigureAwait(false))
