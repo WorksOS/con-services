@@ -66,8 +66,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
           var projectEvent = AutoMapperUtility.Automapper.Map<ImportedFileProject>(ifo);
           projectEvent.Name = ImportedFileUtils.RemoveSurveyedUtcFromName(projectEvent.Name);
           projectEvent.ImportedFileUid = Guid.NewGuid().ToString();
-          projectEvent.FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(_fileSpaceId, projectEvent.CustomerUid, projectEvent.ProjectUid, projectEvent.Name));
-          projectEvent.ImportedBy = "";
+          // for L&S if its come from CG then use legacyIds
+          projectEvent.FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(_fileSpaceId, projectEvent.LegacyCustomerId.ToString(), projectEvent.LegacyProjectId.ToString(), projectEvent.Name));
+          if (projectEvent.ImportedBy == null) projectEvent.ImportedBy = "";
           _repoProject.Create(projectEvent);
           fileListNhOp.RemoveAt(0);
           _log.LogTrace(

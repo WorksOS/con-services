@@ -315,12 +315,15 @@ namespace SchedulerTests
         ImportedFileUtils.RemoveSurveyedUtcFromName(importedFileNhOp.Name),
         importFileResponse.Name, "File Name was not sunced to Project.");
 
-      var fileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(FileSpaceId, importFileResponse.CustomerUid, importFileResponse.ProjectUid, importFileResponse.Name));
+      // files imported via CG must during the Lift&Shift point to the customer/project Id locations
+      //   it is not till NG supports importing files (during Lift and Shift) that they will be generated at all under UIDs.
+      var fileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(FileSpaceId, importFileResponse.LegacyCustomerId.ToString(), importFileResponse.LegacyProjectId.ToString(), importFileResponse.Name));
       Assert.AreEqual(fileDescriptor, importFileResponse.FileDescriptor, "FileDescriptor not created corerectly in Project.");
 
       Assert.AreEqual(importedFileNhOp.FileCreatedUtc, importFileResponse.FileCreatedUtc, "FileCreatedUtc not synced to Project.");
       Assert.AreEqual(importedFileNhOp.FileUpdatedUtc, importFileResponse.FileUpdatedUtc, "FileUpdatedUtc not synced to Project.");
 
+      // todo  todo test that CG emailContact appears in NG
       Assert.AreEqual("", importFileResponse.ImportedBy, "ImportedBy not synced to Project.");
       Assert.IsFalse(importFileResponse.IsDeleted, "IsDeleted not synced to Project.");
       Assert.IsTrue(importFileResponse.IsActivated, "IsActivated not synced to Project.");
