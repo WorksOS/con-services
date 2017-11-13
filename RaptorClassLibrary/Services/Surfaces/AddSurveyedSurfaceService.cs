@@ -55,15 +55,22 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
             /*
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
-                        // Get the surveyed surfaces, creating it if it does not exist
-                        SurveyedSurfaces SurveyedSurfaces = SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(SurveyedSurfaces.CacheKey(SiteModelID))) ?? new SurveyedSurfaces();
+            // Get the surveyed surfaces, creating it if it does not exist
+            SurveyedSurfaces SurveyedSurfaces = SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(SurveyedSurfaces.CacheKey(SiteModelID))) ?? new SurveyedSurfaces();
 
-                        // Add the new surveyed surface, generating a random ID from a GUID
-                        SurveyedSurface ss = SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid().GetHashCode(), designDescriptor, asAtDate);
+            // Add the new surveyed surface, generating a random ID from a GUID
+            SurveyedSurface ss = SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid().GetHashCode(), designDescriptor, asAtDate);
 
-                        // Put the list back into the cache with the new entry
-                        mutableNonSpatialCache.Put(SurveyedSurfaces.CacheKey(SiteModelID), SurveyedSurfaces.ToByteArray());
+            // Put the list back into the cache with the new entry
+            mutableNonSpatialCache.Put(SurveyedSurfaces.CacheKey(SiteModelID), SurveyedSurfaces.ToByteArray());
             */
+        }
+
+        public SurveyedSurfaces List(long SiteModelID)
+        {
+            Log.InfoFormat($"Listing surveyed surfaces from {SurveyedSurfaces.CacheKey(SiteModelID)}");
+
+            return SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(SurveyedSurfaces.CacheKey(SiteModelID)));
         }
 
         /// <summary>
@@ -81,7 +88,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="context"></param>
         public void Execute(IServiceContext context)
         {
-            Log.Info($"Executing Raptor Service 'AddSurveyedSurface': {this}");
+           Log.Info($"Executing Raptor Service 'AddSurveyedSurface': {this}");
         }
 
         /// <summary>

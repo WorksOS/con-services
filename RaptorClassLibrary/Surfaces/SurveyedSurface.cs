@@ -31,7 +31,6 @@ namespace VSS.VisionLink.Raptor.Surfaces
             FExtents.Read(reader);
         }
 
-
         public long ID { get { return FID; } }
         public DesignDescriptor DesignDescriptor { get { return FDesignDescriptor; } }
         public DateTime AsAtDate { get { return FAsAtDate; } }
@@ -107,15 +106,20 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        public static SurveyedSurfaces FromBytes(byte [] bytes)
+        public static SurveyedSurface FromBytes(byte [] bytes)
         {
+            if (bytes == null)
+            {
+                return null;
+            }
+
             using (MemoryStream ms = new MemoryStream(bytes))
             {
                 using (BinaryReader reader = new BinaryReader(ms))
                 {
                     try
                     {
-                        return new SurveyedSurfaces(reader);
+                        return new SurveyedSurface(reader);
                     }
                     catch
                     {

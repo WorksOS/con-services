@@ -18,17 +18,17 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         {
             try
             {
-                SurveyedSurfaces SurveyedSurfaces = entry.Exists ? SurveyedSurfaces.FromBytes(entry.Value) : new SurveyedSurfaces();
+                SurveyedSurfaces ss = entry.Exists ? SurveyedSurfaces.FromBytes(entry.Value) : new SurveyedSurfaces();
 
-                SurveyedSurfaces.AddSurveyedSurfaceDetails(arg.ID, arg.DesignDescriptor, arg.AsAtDate);
+                ss.AddSurveyedSurfaceDetails(arg.ID, arg.DesignDescriptor, arg.AsAtDate);
 
-                entry.Value = SurveyedSurfaces.ToByteArray();
+                entry.Value = ss.ToByteArray();
 
                 return true;
             }
             catch
             {
-                return false;
+                throw; // return false;
             }
         }
     }

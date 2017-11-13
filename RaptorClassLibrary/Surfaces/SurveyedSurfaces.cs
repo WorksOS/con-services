@@ -214,6 +214,11 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// <returns></returns>
         public static SurveyedSurfaces FromBytes(byte[] bytes)
         {
+            if (bytes == null)
+            {
+                return null;
+            }
+
             using (MemoryStream ms = new MemoryStream(bytes))
             {
                 using (BinaryReader reader = new BinaryReader(ms))
