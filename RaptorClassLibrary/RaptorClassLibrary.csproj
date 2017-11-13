@@ -188,10 +188,11 @@
     <Compile Include="Servers\RaptorIgniteServer.cs" />
     <Compile Include="Servers\Client\RaptorProjectStatisticsServer.cs" />
     <Compile Include="Servers\Client\RaptorTileRenderingServer.cs" />
-    <Compile Include="Services\Surfaces\AddSurveyedSurfaceService.cs" />
+    <Compile Include="Services\Surfaces\SurveyedSurfaceService.cs" />
     <Compile Include="Services\Surfaces\AddSurveyedSurfaceServiceProcessor.cs" />
     <Compile Include="Services\Surfaces\DeployAddSurveyedSurfaceService.cs" />
-    <Compile Include="Services\Surfaces\IAddSurveyedSurfaceService.cs" />
+    <Compile Include="Services\Surfaces\ISurveyedSurfaceService.cs" />
+    <Compile Include="Services\Surfaces\RemoveSurveyedSurfaceProcessor.cs" />
     <Compile Include="SiteModels\SiteModels.cs" />
     <Compile Include="Storage\Interfaces\IStorageProxy.cs" />
     <Compile Include="Events\MachinesTargetValues.cs" />

@@ -366,8 +366,10 @@ namespace VSS.VisionLink.Raptor.Rendering
                 return RequestErrorStatus.UnsupportedDisplayType;
             }
 
-            Displayer.MapView = new MapSurface();
-            Displayer.MapView.SquareAspect = IsWhollyInTermsOfGridProjection;
+            Displayer.MapView = new MapSurface
+            {
+                SquareAspect = IsWhollyInTermsOfGridProjection
+            };
 
             SetDisplayerPalette();
 
