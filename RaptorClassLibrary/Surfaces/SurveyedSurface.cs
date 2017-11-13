@@ -8,6 +8,7 @@ using VSS.VisionLink.Raptor.Geometry;
 
 namespace VSS.VisionLink.Raptor.Surfaces
 {
+    [Serializable]
     public class SurveyedSurface : IEquatable<SurveyedSurface>
     {
         long FID = long.MinValue;
@@ -79,7 +80,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// <returns></returns>
         public override string ToString()
         {
-            return String.Format("ID:{0}, DesignID:{1} {2}; {4};{5};{6} {7:F3} [{8}]",
+            return String.Format("ID:{0}, DesignID:{1} {2}; {3};{4};{5} {6:F3} [{7}]",
                             FID,
                              FDesignDescriptor.DesignID,
                              FAsAtDate,

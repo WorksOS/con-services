@@ -37,6 +37,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.btnRegisterServices = new System.Windows.Forms.Button();
             this.bntListSurveyedSurfaces = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnAddNewSurveyedSurface
@@ -102,7 +103,7 @@
             // 
             // btnRegisterServices
             // 
-            this.btnRegisterServices.Location = new System.Drawing.Point(477, 190);
+            this.btnRegisterServices.Location = new System.Drawing.Point(475, 161);
             this.btnRegisterServices.Name = "btnRegisterServices";
             this.btnRegisterServices.Size = new System.Drawing.Size(166, 23);
             this.btnRegisterServices.TabIndex = 7;
@@ -120,11 +121,22 @@
             this.bntListSurveyedSurfaces.UseVisualStyleBackColor = true;
             this.bntListSurveyedSurfaces.Click += new System.EventHandler(this.btnListSurveyedSurfacesClick);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(475, 190);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(166, 23);
+            this.button1.TabIndex = 9;
+            this.button1.Text = "Create Direct Access";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(668, 244);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.bntListSurveyedSurfaces);
             this.Controls.Add(this.btnRegisterServices);
             this.Controls.Add(this.label3);
@@ -152,6 +164,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnRegisterServices;
         private System.Windows.Forms.Button bntListSurveyedSurfaces;
+        private System.Windows.Forms.Button button1;
     }
 }
 

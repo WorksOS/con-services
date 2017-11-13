@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VSS.VisionLink.Raptor;
+using VSS.VisionLink.Raptor.GridFabric.Caches;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.Surfaces;
 
@@ -20,16 +22,20 @@ namespace SurveyedSurfaceManager
             InitializeComponent();
         }
 
-        private DeployAddSurveyedSurfaceService SurveyedSurfaceService = null;
+        private DeployAddSurveyedSurfaceService DeployedSurveyedSurfaceService = null;
+        private AddSurveyedSurfaceService SurveyedSurfaceService = null;
 
         private bool CheckConnection()
         {
-            if (SurveyedSurfaceService == null)
+            if (DeployedSurveyedSurfaceService == null && SurveyedSurfaceService == null)
             {
                 MessageBox.Show("Not connected to service");
+                return false;
             }
-
-            return SurveyedSurfaceService != null;
+            else
+            {
+                return true;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -47,9 +53,18 @@ namespace SurveyedSurfaceManager
             }
 
             // Invoke the service to add the surveyed surface
-            Exception E = SurveyedSurfaceService.Invoke_Add(ID, new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, 0), DateTime.Now);
-
-            if (E != null)
+            try
+            {
+                if (DeployedSurveyedSurfaceService != null)
+                {
+                    DeployedSurveyedSurfaceService.Invoke_Add(ID, new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, 0), DateTime.Now);
+                }
+                else
+                {
+                    SurveyedSurfaceService.AddDirect(ID, new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, 0), DateTime.Now);
+                }
+            }
+            catch (Exception E)
             {
                 MessageBox.Show($"Exception: {E}");
             }
@@ -57,12 +72,14 @@ namespace SurveyedSurfaceManager
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // Deply the service as a cluster singleton
-            SurveyedSurfaceService = new DeployAddSurveyedSurfaceService();
+            // Deploy the service as a cluster singleton
+            DeployedSurveyedSurfaceService = new DeployAddSurveyedSurfaceService();
 
-            Exception E = SurveyedSurfaceService.Deploy();
-
-            if (E != null)
+            try
+            { 
+                DeployedSurveyedSurfaceService.Deploy();
+            }
+            catch (Exception E)
             {
                 MessageBox.Show($"Exception: {E}");
             }
@@ -84,14 +101,23 @@ namespace SurveyedSurfaceManager
                     return;
                 }
 
-                SurveyedSurfaces ss = SurveyedSurfaceService.Invoke_List(ID);
+                SurveyedSurfaces ss = DeployedSurveyedSurfaceService != null ? DeployedSurveyedSurfaceService.Invoke_List(ID) : SurveyedSurfaceService.ListDirect(ID);
 
-                MessageBox.Show("Surveyed Surfaces:\n" + ss.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
+                if (ss == null)
+                    MessageBox.Show("No surveyed surfaces");
+                else
+                    MessageBox.Show("Surveyed Surfaces:\n" + ss == null ? "None" : ss.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
             }
             catch (Exception E)
             {
                 MessageBox.Show($"Exception: {E}");
             }
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            SurveyedSurfaceService = new AddSurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName());
+            SurveyedSurfaceService.Init(null);
         }
     }
 }

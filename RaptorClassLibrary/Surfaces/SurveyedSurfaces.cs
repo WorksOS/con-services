@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.Surfaces
 {
+    [Serializable]
     public class SurveyedSurfaces : List<SurveyedSurface>, IComparable<SurveyedSurface>
     {
-        private const int kMajorVersion = 1;
-        private const int kMinorVersion = 3;
+        private const byte kMajorVersion = 1;
+        private const byte kMinorVersion = 3;
 
         //    var
         //     FMREWSyncInterlock : TMultiReadExclusiveWriteSynchronizer;
@@ -150,10 +151,10 @@ namespace VSS.VisionLink.Raptor.Surfaces
         }
 
         public void FilterGroundSurfaceDetails(bool HasTimeFilter,
-        DateTime StartTime, DateTime EndTime,
-                                         bool ExcludeSurveyedSurfaces,
-                                         SurveyedSurfaces FilteredGroundSurfaceDetails,
-                                         long[] ExclusionList)
+                                               DateTime StartTime, DateTime EndTime,
+                                               bool ExcludeSurveyedSurfaces,
+                                               SurveyedSurfaces FilteredGroundSurfaceDetails,
+                                               long[] ExclusionList)
         {
             if (ExcludeSurveyedSurfaces)
             {

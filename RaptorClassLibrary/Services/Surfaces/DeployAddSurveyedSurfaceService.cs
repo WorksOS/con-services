@@ -51,7 +51,6 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// </summary>
         public DeployAddSurveyedSurfaceService()
         {
-
             _ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
 
             if (_ignite == null)
@@ -65,26 +64,17 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
             services = cacheGrp.GetServices();
         }
 
-        public Exception Deploy()
+        public void Deploy()
         {
-            try
-            {
-                // Attempt to cancel any previously deployed service
-                services.Cancel(ServiceName);
+            // Attempt to cancel any previously deployed service
+            services.Cancel(ServiceName);
 
-                // Deploy per-node singleton. An instance of the service
-                // will be deployed on every node within the cluster group.
-                services.DeployNodeSingleton(ServiceName, new AddSurveyedSurfaceService());
-                //services.DeployClusterSingleton(ServiceName, new AddSurveyedSurfaceService());
+            // Deploy per-node singleton. An instance of the service
+            // will be deployed on every node within the cluster group.
+            //services.DeployNodeSingleton(ServiceName, new AddSurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName()));
+            services.DeployClusterSingleton(ServiceName, new AddSurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName()));
 
-                proxy = services.GetServiceProxy<IAddSurveyedSurfaceService>(ServiceName);
-
-                return null;
-            }
-            catch (Exception E)
-            {
-                return E;
-            }
+            proxy = services.GetServiceProxy<IAddSurveyedSurfaceService>(ServiceName, true);
         }
 
         /// <summary>
@@ -93,18 +83,9 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
         /// <param name="asAtDate"></param>
-        public Exception Invoke_Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate)
+        public void Invoke_Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate)
         {
-            try
-            {
-                proxy.Add(SiteModelID, designDescriptor, asAtDate);
-
-                return null;
-            }
-            catch (Exception E)
-            {
-                return E;
-            }
+            proxy.Add(SiteModelID, designDescriptor, asAtDate);
         }
 
         /// <summary>
@@ -113,14 +94,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         public SurveyedSurfaces Invoke_List(long SiteModelID)
         {
-            try
-            {
-                return proxy.List(SiteModelID);
-            }
-            catch (Exception E)
-            {
-                throw E;
-            }
+            return proxy.List(SiteModelID);
         }
     }
 }
