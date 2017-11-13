@@ -62,8 +62,6 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
                 // cut/fill computatation on the PSNodes now, modify this to the new approach when things are brought up to date
 
                 // 1. Request the elevations for the matching subgrid from the grid
-                // ...
-
                 ProductionElevations.CalculateWorldOrigin(out double worldOriginX, out double worldOriginY);
                 CalculateDesignElevationPatchArgument arg =
                     new CalculateDesignElevationPatchArgument(TileRenderer.DataModelID,
@@ -76,7 +74,6 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
                 ClientHeightLeafSubGrid DesignElevations = DesignElevationPatchRequest.Execute(arg);
 
                 // 2. Adjust the heights to be isopac elevations
-                // ..
                 if (DesignElevations == null)
                 {
                     return false; //???? Or true?

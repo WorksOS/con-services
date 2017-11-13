@@ -50,7 +50,7 @@ namespace VSS.VisionLink.Raptor
         public string FullPath => Path.Combine(Folder, FileName);
 
         public bool IsNull => String.IsNullOrEmpty(FileName);
-        
+
         /// <summary>
         /// Overloaded ToString detailing the state of the Design Descriptor
         /// </summary>
@@ -77,5 +77,27 @@ namespace VSS.VisionLink.Raptor
             result.Clear();
             return result;
         }
+
+        public void Write(BinaryWriter writer)
+        {
+            writer.Write(DesignID);
+            writer.Write(FileSpace);
+            writer.Write(FileSpaceID);
+            writer.Write(Folder);
+            writer.Write(FileName);
+            writer.Write(Offset);
+        }
+
+        public void Read(BinaryReader reader)
+        {
+            DesignID = reader.ReadInt64();
+            FileSpace = reader.ReadString();
+            FileSpaceID = reader.ReadString();
+            Folder = reader.ReadString();
+            FileName = reader.ReadString();
+            Offset = reader.ReadDouble();
+
+        }
     }
 }
+

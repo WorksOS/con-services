@@ -19,7 +19,7 @@ namespace VSS.VisionLink.Raptor.Rendering
                 case DisplayMode.CCV: return new PVMDisplayer_CMV();
                 case DisplayMode.TemperatureSummary: return new PVMDisplayer_Temperature();
                 case DisplayMode.CutFill: return new PVMDisplayer_CutFill();
-
+                    
                 default:
                     Debug.Assert(false, String.Format("Unknown display mode to create a displayer for: {0}", Mode));
                     return null;

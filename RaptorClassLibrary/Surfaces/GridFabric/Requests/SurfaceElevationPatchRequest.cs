@@ -6,20 +6,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
-using VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
+using VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs;
 
-namespace VSS.Velociraptor.DesignProfiling.GridFabric.Requests
+namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests
 {
-    public static class DesignElevationPatchRequest
+    public static class SurfaceElevationPatchRequest
     {
-        public static ClientHeightLeafSubGrid Execute(CalculateDesignElevationPatchArgument arg)
+        public static ClientHeightAndTimeLeafSubGrid Execute(SurfaceElevationPatchArgument arg)
         {
             // Construct the function to be used
-            IComputeFunc<CalculateDesignElevationPatchArgument, byte[] /*ClientHeightLeafSubGrid*/> func = new CalculateDesignElevationPatchComputeFunc();
+            IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/> func = new SurfaceElevationPatchComputeFunc();
 
             // Get a reference to the Ignite cluster
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
@@ -31,21 +30,23 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Requests
             IClusterGroup group = ignite.GetCluster().ForRemotes().ForAttribute("Role", "DesignProfiler");
             ICompute compute = group.GetCompute();
 
-            /*ClientHeightLeafSubGrid */ byte[] result = compute.Apply(func, arg);
+            /*ClientHeightAndTimeLeafSubGrid */
+            byte[] result = compute.Apply(func, arg);
 
             if (result == null)
             {
                 return null;
             }
 
-            ClientHeightLeafSubGrid clientResult = new ClientHeightLeafSubGrid(null, null, SubGridTree.SubGridTreeLevels, SubGridTree.DefaultCellSize, SubGridTree.DefaultIndexOriginOffset);
+            ClientHeightAndTimeLeafSubGrid clientResult = new ClientHeightAndTimeLeafSubGrid(null, null, SubGridTree.SubGridTreeLevels, SubGridTree.DefaultCellSize, SubGridTree.DefaultIndexOriginOffset);
             clientResult.FromByteArray(result);
             return clientResult;
 
-//            Task<ClientHeightLeafSubGrid> taskResult = compute.ApplyAsync(func, arg);
+            //            Task<ClientHeightAndTimeLeafSubGrid> taskResult = compute.ApplyAsync(func, arg);
 
             // Send the appropriate response to the caller
-//            return taskResult.Result;
+            //            return taskResult.Result;
         }
+
     }
 }

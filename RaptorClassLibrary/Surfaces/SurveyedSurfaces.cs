@@ -18,9 +18,21 @@ namespace VSS.VisionLink.Raptor.Surfaces
         private bool FSorted = false;
         private bool FSortDescending = false;
 
+        /// <summary>
+        /// No-arg constructor
+        /// </summary>
         public SurveyedSurfaces()
         {
 
+        }
+
+        /// <summary>
+        /// Constructor accepting a Binary Reader instance from which to instantiate itself
+        /// </summary>
+        /// <param name="reader"></param>
+        public SurveyedSurfaces(BinaryReader reader) : base()
+        {
+            Read(reader);
         }
 
         public void Write(BinaryWriter writer)
@@ -65,7 +77,14 @@ namespace VSS.VisionLink.Raptor.Surfaces
             MinorVersion = reader.ReadByte();
         }
 
-        public SurveyedSurface AddGroundSurfaceDetails(long AGroundSurfaceID,
+        /// <summary>
+        /// Create a new surveyed surface in the list based on the provided details
+        /// </summary>
+        /// <param name="AGroundSurfaceID"></param>
+        /// <param name="ADesignDescriptor"></param>
+        /// <param name="AAsAtDate"></param>
+        /// <returns></returns>
+        public SurveyedSurface AddSurveyedSurfaceDetails(long AGroundSurfaceID,
                                                        DesignDescriptor ADesignDescriptor,
                                                        DateTime AAsAtDate)
         {
@@ -76,7 +95,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
                 return match;
             }
 
-            SurveyedSurface ss = new SurveyedSurface(AGroundSurfaceID, ADesignDescriptor, AAsAtDate));
+            SurveyedSurface ss = new SurveyedSurface(AGroundSurfaceID, ADesignDescriptor, AAsAtDate);
             Add(new SurveyedSurface(AGroundSurfaceID, ADesignDescriptor, AAsAtDate));
 
             Sort();
@@ -176,6 +195,63 @@ namespace VSS.VisionLink.Raptor.Surfaces
         public int CompareTo(SurveyedSurface other)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Calculate the cache key for the surveyd surface list
+        /// </summary>
+        /// <param name="SiteModelID"></param>
+        /// <returns></returns>
+        public static string CacheKey(long SiteModelID)
+        {
+            return $"{SiteModelID}-SurveyedSurfaces";
+        }
+
+        /// <summary>
+        /// Takes a byte array containing a set of serialised surveyed surfaces and returns an instance based on it
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static SurveyedSurfaces FromBytes(byte[] bytes)
+        {
+            using (MemoryStream ms = new MemoryStream(bytes))
+            {
+                using (BinaryReader reader = new BinaryReader(ms))
+                {
+                    try
+                    {
+                        return new SurveyedSurfaces(reader);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Takes a byte array containing a set of serialised surveyed surfaces and returns an instance based on it
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public byte[] ToByteArray()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (BinaryWriter writer = new BinaryWriter(ms))
+                {
+                    try
+                    {
+                        Write(writer);
+                        return ms.ToArray();
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
+            }
         }
     }
 }

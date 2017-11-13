@@ -33,6 +33,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             Time = DateTime.MinValue;
             Height = Consts.NullHeight;
         }
+
+        public void Set(float height, DateTime time)
+        {
+            Height = height;
+            Time = time;
+        }
     }
 
     /// <summary>

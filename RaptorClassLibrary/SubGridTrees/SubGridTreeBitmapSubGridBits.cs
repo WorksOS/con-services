@@ -547,6 +547,38 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         }
 
         /// <summary>
+        /// Iterate over all the bits in the bit map that are set (1) and execute the given action/lambda expression
+        /// with the CellX, CellY (as integer indices) location of the set bit. The functor returns true/false to indicate
+        /// if scanning of bits should continue
+        /// </summary>
+        /// <param name="functor"></param>
+        public void ForEachSetBit(Func<int, int, bool> functor)
+        {
+            uint RowBits;
+
+            for (int Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+            {
+                RowBits = Bits[Row];
+
+                if (RowBits == 0)
+                {
+                    continue;
+                }
+
+                for (int Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
+                {
+                    if ((RowBits & (SubGridBitMapHighBitMask >> Column)) != 0)
+                    {
+                        if (!functor(Column, Row))
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Iterate over all the bits in the bit map that are not set (0) and execute the given action/lambda expression
         /// with the CellX, CellY location of the not set bit
         /// </summary>

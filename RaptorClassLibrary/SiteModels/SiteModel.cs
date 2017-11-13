@@ -13,6 +13,7 @@ using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
+using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.SiteModels
@@ -70,9 +71,11 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// </summary>
         public SiteModelDesignList SiteModelDesigns { get { return siteModelDesigns; } }
 
+        private SurveyedSurfaces surveyedSurfaces = new SurveyedSurfaces();
+
         // This is a list of TTM descriptors which indicate designs
         // that can be used as a snapshot of an actual ground surface at a specific point in time
-        // public GroundSurfaces: TICGroundSurfaceDetailsList;
+        public SurveyedSurfaces SurveyedSurfaces { get { return surveyedSurfaces; } }
 
         // FSiteModelDesignNames is an integrated list of all the design names that have appeared
         // in design change events. It shadows the FSiteModelDesigns to an alarming degree
@@ -118,7 +121,6 @@ namespace VSS.VisionLink.Raptor.SiteModels
             existanceMap = new SubGridTreeBitMask();
 
             // FProofingRuns:= TICSiteProofingRuns.Create;
-            // FGroundSurfaces:= TICGroundSurfaceDetailsList.Create;
 
             // FMaxInterEpochDist:= kMaxEpochInterval;
 
@@ -502,5 +504,11 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
             return SpatialExtents;
         }
+
+
+        /// <summary>
+        /// For the time being, just pretend we always have loaded surveyed surfaces.
+        /// </summary>
+        public bool SurveyedSurfacesLoaded = true;
     }
 }
