@@ -24,6 +24,11 @@ namespace TestUtility
     public ImportedFileDescriptorListResult expectedImportFileDescriptorsListResult = new ImportedFileDescriptorListResult()
     { ImportedFileDescriptors = ImmutableList<ImportedFileDescriptor>.Empty };
 
+    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+    {
+      DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
+      NullValueHandling = NullValueHandling.Ignore
+    };
 
     public ImportFile()
     {
@@ -81,7 +86,7 @@ namespace TestUtility
       expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc = expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc.ToUniversalTime();
       try
       {
-        var filesResult = JsonConvert.DeserializeObject<ImportedFileDescriptorSingleResult>(response);
+        var filesResult = JsonConvert.DeserializeObject<ImportedFileDescriptorSingleResult>(response, jsonSettings);
         return filesResult;
       }
       catch (Exception)

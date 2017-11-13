@@ -659,12 +659,12 @@ namespace TestUtility
             continue;
           }
         }
-        if (actualValue is DateTime)
-        {
+        //if (actualValue is DateTime)
+        //{
           // The ExpectedValue is set using the .ToString("o") ISO formatting convention so we must 
           // convert actualValue to UTC here to ensure we're comparing two UTC values.
-          actualValue = ((DateTime)actualValue).ToUniversalTime();
-        }
+          //actualValue = ((DateTime)actualValue).ToUniversalTime();
+        //}
         if (!Equals(expectedValue, actualValue))
         {
           Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue);
