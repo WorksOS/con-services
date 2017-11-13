@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using TestUtility;
+using TestUtility.Model.WebApi;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
@@ -231,7 +232,9 @@ namespace WebApiTests
       var filterRequest1 = FilterRequest.Create(string.Empty, filterName + "- one", filterJson1);
       var filterJson2 = CreateTestFilter(ElevationType.First,true, true, 3, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
       var filterRequest2 = FilterRequest.Create(string.Empty, filterName + "- two", filterJson2);
-      var filterListRequest = new List<FilterRequest> {filterRequest1, filterRequest2};
+      var filterListRequest = new TestUtility.Model.WebApi.FilterListRequest();
+      filterListRequest.FilterRequests.Add(filterRequest1);
+      filterListRequest.FilterRequests.Add(filterRequest2);
       var filter = JsonConvert.SerializeObject(filterListRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = ts.CallFilterWebApi($"api/v1/filters/{ProjectUid}", "POST", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorListResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
