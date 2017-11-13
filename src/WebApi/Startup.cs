@@ -10,6 +10,7 @@ using Swashbuckle.Swagger.Model;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.FIlters;
 using VSS.TCCFileAccess;
 
 #if NET_4_7
