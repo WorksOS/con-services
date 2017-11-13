@@ -1369,6 +1369,22 @@ namespace TestUtility
           {
             importedFileDescriptor.IsActivated = eventObject.IsActivated.ToLower() == "true";
           }
+          if (HasProperty(eventObject, "DxfUnitsType)"))
+          {
+            switch (eventObject.DxfUnitsType)
+            {
+              case "0":
+                importedFileDescriptor.DxfUnitsType = DxfUnitsType.Meters;
+                break;
+              case "1":
+                importedFileDescriptor.DxfUnitsType = DxfUnitsType.ImperialFeet;
+                break;
+              case "2":
+                importedFileDescriptor.DxfUnitsType = DxfUnitsType.UsSurveyFeet;
+                break;
+            }
+          }
+
           switch (eventObject.ImportedFileType)
           {
             case "0":

@@ -32,9 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="FileImportFiles\MillingDesignMap.dxf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="FileImportFiles\TestAlignment1.svl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

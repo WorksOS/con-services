@@ -76,6 +76,10 @@ namespace TestUtility
       {
         uri = uri + $"&SurveyedUtc={ed.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff} ";
       }
+      if (ed.ImportedFileTypeName == "Linework")
+      {
+        uri = uri + $"&DxfUnitsType={ed.DxfUnitsType} ";
+      }
       if (method == "DELETE")
       {
         uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileUid={importedFileUid}";
