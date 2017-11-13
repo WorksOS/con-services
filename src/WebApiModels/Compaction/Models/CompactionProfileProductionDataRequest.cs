@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
@@ -21,6 +24,31 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     [JsonProperty(PropertyName = "cutFillDesignDescriptor", Required = Required.Default)]
     public DesignDescriptor cutFillDesignDescriptor { get; private set; }
 
+    /// <summary>
+    /// The base filter to use for a summary volumes profile. 
+    /// </summary>
+    [JsonProperty(PropertyName = "topFilter", Required = Required.Default)]
+    public Filter baseFilter { get; private set; }
+
+    /// <summary>
+    /// The top filter to use for a summary volumes profile. 
+    /// </summary>
+    [JsonProperty(PropertyName = "topFilter", Required = Required.Default)]
+    public Filter topFilter { get; private set; }
+
+    /// <summary>
+    /// The calculation type to use for a summary volumes profile. 
+    /// </summary>
+    [JsonProperty(PropertyName = "volumeCalcType", Required = Required.Default)]
+    public VolumeCalcType? volumeCalcType { get; private set; }
+
+    /// <summary>
+    /// The design to use for a summary volumes profile
+    /// </summary>
+    [JsonProperty(PropertyName = "volumeDesignDescriptor", Required = Required.Default)]
+    public DesignDescriptor volumeDesignDescriptor { get; private set; }
+
+
 
     public static CompactionProfileProductionDataRequest CreateCompactionProfileProductionDataRequest(
       long? projectID,
@@ -35,7 +63,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
       double endStation,
       LiftBuildSettings liftBuildSettings,
       bool returnAllPassesAndLayers,
-      DesignDescriptor cutFillDesignDescriptor
+      DesignDescriptor cutFillDesignDescriptor,
+      Filter baseFilter,
+      Filter topFilter,
+      VolumeCalcType? volumeCalcType,
+      DesignDescriptor volumeDesignDescriptor
     )
     {
       return new CompactionProfileProductionDataRequest
@@ -52,8 +84,57 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
         endStation = endStation,
         liftBuildSettings = liftBuildSettings,
         returnAllPassesAndLayers = returnAllPassesAndLayers,
-        cutFillDesignDescriptor = cutFillDesignDescriptor
+        cutFillDesignDescriptor = cutFillDesignDescriptor,
+        baseFilter = baseFilter,
+        topFilter = topFilter,
+        volumeCalcType = volumeCalcType,
+        volumeDesignDescriptor = volumeDesignDescriptor
       };
+    }
+
+    /// <summary>
+    /// Validates the request and throws if validation fails.
+    /// </summary>
+    public override void Validate()
+    {
+      base.Validate();
+      baseFilter?.Validate();
+      topFilter?.Validate();
+      cutFillDesignDescriptor?.Validate();
+      volumeDesignDescriptor?.Validate();
+
+      if (volumeCalcType.HasValue)
+      {
+        switch (volumeCalcType.Value)
+        {
+          case VolumeCalcType.None:
+            break;
+          case VolumeCalcType.GroundToGround:
+            if (baseFilter == null || topFilter == null)
+            {
+              throw new ServiceException(HttpStatusCode.BadRequest,
+                new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                  "Missing filter(s) for summary volumes profile"));
+            }
+            break;
+          case VolumeCalcType.GroundToDesign:
+            if (baseFilter == null || volumeDesignDescriptor == null)
+            {
+              throw new ServiceException(HttpStatusCode.BadRequest,
+                new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                  "Missing base filter and/or design for summary volumes profile"));
+            }
+            break;
+          case VolumeCalcType.DesignToGround:
+            if (volumeDesignDescriptor == null || topFilter == null)
+            {
+              throw new ServiceException(HttpStatusCode.BadRequest,
+                new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                  "Missing design and/or top filter for summary volumes profile"));
+            }
+            break;
+        }
+      }
     }
   }
 }

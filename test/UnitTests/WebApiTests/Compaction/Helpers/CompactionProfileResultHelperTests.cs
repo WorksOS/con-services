@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SVOICProfileCell;
-using VLPDDecls;
 using VSS.Common.Exceptions;
-using VSS.Productivity3D.Common.Filters.Caching;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
@@ -35,7 +31,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
     #region FindCutFillElevations tests
     [TestMethod]
-    public void NoProdDataAndNoDesignProfile()
+    [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void NoProdDataAndNoDesignProfile(string profileType, VolumeCalcType calcType)
     {
       CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -44,7 +43,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "cutFill",
+              type = profileType,
               data = new List<CompactionDataPoint>()
             }
           }
@@ -54,7 +53,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
@@ -62,7 +61,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     }
 
     [TestMethod]
-    public void NoDesignProfileShouldNotChangeProdData()
+    [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void NoDesignProfileShouldNotChangeProdData(string profileType, VolumeCalcType calcType)
     {
       CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -71,12 +73,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "cutFill",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint {x = 0, y2 = float.NaN},
-                new CompactionDataPoint {x = 1, y2 = float.NaN},
-                new CompactionDataPoint {x = 2, y2 = float.NaN},
+                new CompactionDataPoint {x = 0, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint {x = 1, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint {x = 2, y = float.NaN, y2 = float.NaN},
               }
             }
           }
@@ -86,20 +88,23 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
       Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
       for (int i = 0; i < 3; i++)
       {
-        Assert.AreEqual(float.NaN, actualPoints[i].y2, $"{i}: Wrong cut-fill height");
+        Assert.AreEqual(float.NaN, actualPoints[i].y, $"{i}: Wrong y height");
+        Assert.AreEqual(float.NaN, actualPoints[i].y2, $"{i}: Wrong y2 height");
       }
-
     }
 
     [TestMethod]
-    public void CellStationsOutsideDesign()
+    [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void CellStationsOutsideDesign(string profileType, VolumeCalcType calcType)
     {
       CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -108,13 +113,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "cutFill",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint{ x = 0, y2 = float.NaN},
-                new CompactionDataPoint{ x = 1, y2 = float.NaN},
-                new CompactionDataPoint{ x = 2, y2 = float.NaN},
-                new CompactionDataPoint{ x = 3, y2 = float.NaN},
+                new CompactionDataPoint{ x = 0, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint{ x = 1, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint{ x = 2, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint{ x = 3, y = float.NaN, y2 = float.NaN},
               }
             }
           }
@@ -132,20 +137,22 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
       Assert.AreEqual(4, actualPoints.Count, "Wrong number of profile points");
-      Assert.AreEqual(float.NaN, actualPoints[0].y2, "0: Wrong cut-fill height");
-      Assert.AreEqual(15, actualPoints[1].y2, "1: Wrong cut-fill height");
-      Assert.AreEqual(30, actualPoints[2].y2, "2: Wrong cut-fill height");
-      Assert.AreEqual(float.NaN, actualPoints[3].y2, "3: Wrong cut-fill height");
+      Assert.AreEqual(float.NaN, calcType == VolumeCalcType.DesignToGround ? actualPoints[0].y : actualPoints[0].y2, "0: Wrong cut-fill height");
+      Assert.AreEqual(15, calcType == VolumeCalcType.DesignToGround ? actualPoints[1].y : actualPoints[1].y2, "1: Wrong cut-fill height");
+      Assert.AreEqual(30, calcType == VolumeCalcType.DesignToGround ? actualPoints[2].y : actualPoints[2].y2, "2: Wrong cut-fill height");
+      Assert.AreEqual(float.NaN, calcType == VolumeCalcType.DesignToGround ? actualPoints[3].y : actualPoints[3].y2, "3: Wrong cut-fill height");
     }
 
-
     [TestMethod]
-    public void CellStationsMatchDesign()
+    [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void CellStationsMatchDesign(string profileType, VolumeCalcType calcType)
     {
       CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -154,7 +161,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "cutFill",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ x = 0, y2 = float.NaN},
@@ -179,18 +186,21 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
       Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
-      Assert.AreEqual(10, actualPoints[0].y2, "0: Wrong cut-fill height");
-      Assert.AreEqual(20, actualPoints[1].y2, "1: Wrong cut-fill height");
-      Assert.AreEqual(40, actualPoints[2].y2, "2: Wrong cut-fill height");
+      Assert.AreEqual(10, calcType == VolumeCalcType.DesignToGround ? actualPoints[0].y : actualPoints[0].y2, "0: Wrong cut-fill height");
+      Assert.AreEqual(20, calcType == VolumeCalcType.DesignToGround ? actualPoints[1].y : actualPoints[1].y2, "1: Wrong cut-fill height");
+      Assert.AreEqual(40, calcType == VolumeCalcType.DesignToGround ? actualPoints[2].y : actualPoints[2].y2, "2: Wrong cut-fill height");
     }
 
     [TestMethod]
-    public void CellStationsWithNoDesignElevation()
+    [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void CellStationsWithNoDesignElevation(string profileType, VolumeCalcType calcType)
     {
       CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -199,7 +209,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "cutFill",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ x = 0, y2 = float.NaN},
@@ -226,15 +236,109 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
       Assert.AreEqual(4, actualPoints.Count, "Wrong number of profile points");
-      Assert.AreEqual(10, actualPoints[0].y2, "0: Wrong cut-fill height");
-      Assert.AreEqual(float.NaN, actualPoints[1].y2, "1: Wrong cut-fill height");
-      Assert.AreEqual(20, actualPoints[2].y2, "2: Wrong cut-fill height");
-      Assert.AreEqual(float.NaN, actualPoints[3].y2, "3: Wrong cut-fill height");
+      Assert.AreEqual(10, calcType == VolumeCalcType.DesignToGround ? actualPoints[0].y : actualPoints[0].y2, "0: Wrong cut-fill height");
+      Assert.AreEqual(float.NaN, calcType == VolumeCalcType.DesignToGround ? actualPoints[1].y : actualPoints[1].y2, "1: Wrong cut-fill height");
+      Assert.AreEqual(20, calcType == VolumeCalcType.DesignToGround ? actualPoints[2].y : actualPoints[2].y2, "2: Wrong cut-fill height");
+      Assert.AreEqual(float.NaN, calcType == VolumeCalcType.DesignToGround ? actualPoints[3].y : actualPoints[3].y2, "3: Wrong cut-fill height");
+    }
+
+    [TestMethod]
+    public void WrongProfileTypeShouldNotChangeData()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = CompactionDataPoint.CMV_SUMMARY,
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ x = 0, y2 = float.NaN},
+                new CompactionDataPoint{ x = 1, y2 = float.NaN},
+                new CompactionDataPoint{ x = 2, y2 = float.NaN},
+              }
+            }
+          }
+        };
+      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
+        new CompactionProfileResult<CompactionProfileVertex>
+        {
+          results = new List<CompactionProfileVertex>
+          {
+            new CompactionProfileVertex {station = 0, elevation = 10},
+            new CompactionProfileVertex {station = 0.5, elevation = 30},
+            new CompactionProfileVertex {station = 1.0, elevation = 20},
+            new CompactionProfileVertex {station = 1.5, elevation = 10},
+            new CompactionProfileVertex {station = 2.0, elevation = 40},
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, CompactionDataPoint.CMV_SUMMARY, VolumeCalcType.GroundToDesign);
+
+      Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = slicerProfileResult.results[0].data;
+      Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
+      for (int i = 0; i < 3; i++)
+      {
+        Assert.AreEqual(float.NaN, actualPoints[i].y2, $"{i}: Wrong cut-fill height");
+      }
+    }
+
+    [TestMethod]
+    public void GroundToGroundShouldNotChangeData()
+    {
+      CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
+        new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>
+          {
+            new CompactionProfileDataResult
+            {
+              type = CompactionDataPoint.SUMMARY_VOLUMES,
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint{ x = 0, y = 10 , y2 = 11},
+                new CompactionDataPoint{ x = 1, y = 15, y2 = 17},
+                new CompactionDataPoint{ x = 2, y = 25, y2 = 30},
+              }
+            }
+          }
+        };
+      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
+        new CompactionProfileResult<CompactionProfileVertex>
+        {
+          results = new List<CompactionProfileVertex>
+          {
+            new CompactionProfileVertex {station = 0, elevation = 10},
+            new CompactionProfileVertex {station = 0.5, elevation = 30},
+            new CompactionProfileVertex {station = 1.0, elevation = 20},
+            new CompactionProfileVertex {station = 1.5, elevation = 10},
+            new CompactionProfileVertex {station = 2.0, elevation = 40},
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround);
+
+      Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
+      var actualPoints = slicerProfileResult.results[0].data;
+      Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
+      Assert.AreEqual(10, actualPoints[0].y, "0: Wrong y height");
+      Assert.AreEqual(15, actualPoints[1].y, "1: Wrong y height");
+      Assert.AreEqual(25, actualPoints[2].y, "2: Wrong y height");
+      Assert.AreEqual(11, actualPoints[0].y2, "0: Wrong y2 height");
+      Assert.AreEqual(17, actualPoints[1].y2, "1: Wrong y2 height");
+      Assert.AreEqual(30, actualPoints[2].y2, "2: Wrong y2 height");
     }
     #endregion
 
@@ -293,7 +397,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               minSpeed = 5.9F,
               maxSpeed = 6.5F,
               cutFill = 0.06F,
-              cutFillHeight = 0.8F,
               passCountIndex = ValueTargetType.NoData,
               temperatureIndex = ValueTargetType.AboveTarget,
               cmvIndex = ValueTargetType.NoData,
@@ -322,7 +425,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               minSpeed = 8.1F,
               maxSpeed = 9.2F,
               cutFill = 0.15F,
-              cutFillHeight = 0.9F,
               passCountIndex = ValueTargetType.AboveTarget,
               temperatureIndex = ValueTargetType.BelowTarget,
               cmvIndex = ValueTargetType.OnTarget,
@@ -351,7 +453,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               minSpeed = float.NaN,
               maxSpeed = float.NaN,
               cutFill = float.NaN,
-              cutFillHeight = float.NaN,
               passCountIndex = ValueTargetType.NoData,
               temperatureIndex = ValueTargetType.BelowTarget,
               cmvIndex = ValueTargetType.AboveTarget,
@@ -372,9 +473,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(expectedCount, result.results.Count, "Wrong number of profiles");
       string[] expectedTypes =
       {
-        "firstPass", "highestPass", "lastPass", "lowestPass", "lastComposite",
-        "cmvSummary", "cmvDetail", "cmvPercentChange", "mdpSummary", "temperatureSummary",
-        "speedSummary", "passCountSummary", "passCountDetail", "cutFill"
+        CompactionDataPoint.FIRST_PASS, CompactionDataPoint.HIGHEST_PASS, CompactionDataPoint.LAST_PASS, CompactionDataPoint.LOWEST_PASS, CompactionDataPoint.LAST_COMPOSITE,
+        CompactionDataPoint.CMV_SUMMARY, CompactionDataPoint.CMV_DETAIL, CompactionDataPoint.CMV_PERCENT_CHANGE, CompactionDataPoint.MDP_SUMMARY, CompactionDataPoint.TEMPERATURE_SUMMARY,
+        CompactionDataPoint.SPEED_SUMMARY, CompactionDataPoint.PASS_COUNT_SUMMARY, CompactionDataPoint.PASS_COUNT_DETAIL, CompactionDataPoint.CUT_FILL
       };
       for (int i = 0; i < expectedCount; i++)
       {
@@ -459,7 +560,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           case 13: //cutFill
             expectedHeight = expectedList[j].lastCompositeHeight;
             expectedValue = expectedList[j].cutFill;
-            expectedY2 = expectedList[j].cutFillHeight;
+            expectedY2 = float.NaN;
             break;
         }
         ValidatePoint(expectedType, j, expectedList[j], actualList[i].data[j], expectedHeight, expectedValue,
@@ -481,11 +582,160 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     }
     #endregion
 
+    #region RearrangeProfileResult summary volumes profile tests
+    [TestMethod]
+    public void RearrangeSummaryVolumesProfileResultWithNull()
+    {
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger); 
+      var result = helper.RearrangeProfileResult((CompactionProfileResult<CompactionSummaryVolumesProfileCell>)null, VolumeCalcType.None);
+      Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public void RearrangeSummaryVolumesProfileResultWithJustEndPoints()
+    {
+      CompactionProfileResult<CompactionSummaryVolumesProfileCell> slicerProfileResult =
+        new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
+        {
+          results = new List<CompactionSummaryVolumesProfileCell>
+          {
+            new CompactionSummaryVolumesProfileCell
+            {
+              cellType = ProfileCellType.Gap,
+              station = 0,
+              designHeight = float.NaN,
+              lastPassHeight1 = float.NaN,
+              lastPassHeight2 = float.NaN,
+              cutFill = float.NaN
+            },
+            new CompactionSummaryVolumesProfileCell
+            {
+              cellType = ProfileCellType.Gap,
+              station = 1234,
+              designHeight = float.NaN,
+              lastPassHeight1 = float.NaN,
+              lastPassHeight2 = float.NaN,
+              cutFill = float.NaN
+            }
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var result = helper.RearrangeProfileResult(slicerProfileResult, VolumeCalcType.GroundToGround);
+
+      ValidatePoint(CompactionDataPoint.SUMMARY_VOLUMES, 0, slicerProfileResult.results[0], result.data[0], float.NaN, float.NaN, float.NaN);
+      ValidatePoint(CompactionDataPoint.SUMMARY_VOLUMES, 1, slicerProfileResult.results[1], result.data[1], float.NaN, float.NaN, float.NaN);
+    }
+
+    [TestMethod]
+    [DataRow(VolumeCalcType.GroundToGround)]
+    [DataRow(VolumeCalcType.GroundToDesign)]
+    [DataRow(VolumeCalcType.DesignToGround)]
+    public void RearrangeSummaryVolumesProfileResultSuccess(VolumeCalcType calcType)
+    {
+      CompactionProfileResult<CompactionSummaryVolumesProfileCell> slicerProfileResult =
+        new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
+        {
+          gridDistanceBetweenProfilePoints = 1.234,
+          results = new List<CompactionSummaryVolumesProfileCell>
+          {
+            new CompactionSummaryVolumesProfileCell
+            {
+              cellType = ProfileCellType.MidPoint,
+              station = 0,
+              lastPassHeight1 = 0.7F,
+              lastPassHeight2 = 0.6F,
+              designHeight = 0.8F,
+              cutFill = 0.1F
+            },
+            new CompactionSummaryVolumesProfileCell
+            {
+              cellType = ProfileCellType.Edge,
+              station = 1,
+              lastPassHeight1 = 0.8F,
+              lastPassHeight2 = 0.65F,
+              designHeight = 1.2F,
+              cutFill = 0.15F
+            },
+            new CompactionSummaryVolumesProfileCell
+            {
+              cellType = ProfileCellType.MidPoint,
+              station = 2,
+              lastPassHeight1 = 0.9F,
+              lastPassHeight2 = 0.7F,
+              designHeight = 0.9F,
+              cutFill = 0.2F,
+            }
+          }
+        };
+
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+
+      var result = helper.RearrangeProfileResult(slicerProfileResult, calcType);
+      Assert.IsNotNull(result);
+      ValidateList(slicerProfileResult.results, result, calcType);
+    }
+
+    private void ValidateList(List<CompactionSummaryVolumesProfileCell> expectedList,
+      CompactionProfileDataResult actualResult, VolumeCalcType calcType)
+    {
+      Assert.AreEqual(expectedList.Count, actualResult.data.Count, "Wrong number of points");
+
+      for (int j = 0; j < expectedList.Count; j++)
+      {
+        float expectedHeight = float.NaN;
+        float expectedValue = expectedList[j].cutFill;
+        float? expectedY2 = float.NaN;
+        switch (calcType)
+        {
+          case VolumeCalcType.None:
+            break;
+          case VolumeCalcType.GroundToGround:
+            expectedHeight = expectedList[j].lastPassHeight1;
+            expectedY2 = expectedList[j].lastPassHeight2;
+            break;
+          case VolumeCalcType.GroundToDesign:
+            expectedHeight = expectedList[j].lastPassHeight1;
+            expectedY2 = float.NaN;
+            break;
+          case VolumeCalcType.DesignToGround:
+            expectedHeight = float.NaN;
+            expectedY2 = expectedList[j].lastPassHeight2;
+            break;
+        }
+        ValidatePoint(CompactionDataPoint.SUMMARY_VOLUMES, j, expectedList[j], actualResult.data[j], expectedHeight, expectedValue, expectedY2);
+      }
+    }
+
+    private void ValidatePoint(string expectedType, int j, CompactionSummaryVolumesProfileCell expectedCell,
+      CompactionDataPoint actualResult, float expectedY, float expectedValue, float? expectedY2)
+    {
+      Assert.AreEqual(expectedCell.cellType, actualResult.cellType, $"{j}: {expectedType} Wrong cellType");
+      Assert.AreEqual(expectedCell.station, actualResult.x, $"{j}: {expectedType} Wrong x");
+      Assert.AreEqual(expectedY, actualResult.y, $"{j}: {expectedType} Wrong y");
+      Assert.AreEqual(expectedValue, actualResult.value, $"{j}: {expectedType} Wrong value");
+      Assert.AreEqual(null, actualResult.valueType, $"{j}: {expectedType} Wrong valueType");
+      Assert.AreEqual(expectedY2, actualResult.y2, $"{j}: {expectedType} Wrong y2");
+      Assert.AreEqual(null, actualResult.value2, $"{j}: {expectedType} Wrong value2");
+    }
+
+    #endregion
+
     #region RemoveRepeatedNoData tests
 
     [TestMethod]
-    public void AllGapsShouldReturnEmptyList()
+    [DataRow(CompactionDataPoint.FIRST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void AllGapsShouldReturnEmptyList(string profileType, VolumeCalcType? calcType)
     {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
       CompactionProfileResult<CompactionProfileDataResult> result =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -494,29 +744,32 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "firstPass",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint
                 {
-                  type = "firstPass",
+                  type = profileType,
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
-                  y = float.NaN
+                  y = float.NaN,
+                  y2 = useY2 ? float.NaN : (float?)null
                 },
                 new CompactionDataPoint
                 {
-                  type = "firstPass",
+                  type = profileType,
                   cellType = ProfileCellType.Edge,
                   x = 1,
-                  y = float.NaN
+                  y = float.NaN,
+                  y2 = useY2 ? float.NaN : (float?)null
                 },
                 new CompactionDataPoint
                 {
-                  type = "firstPass",
+                  type = profileType,
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
-                  y = float.NaN
+                  y = float.NaN,
+                  y2 = useY2 ? float.NaN : (float?)null
                 }
               }             
             }
@@ -525,7 +778,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
+      helper.RemoveRepeatedNoData(result, calcType);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
@@ -534,8 +787,43 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     }
 
     [TestMethod]
-    public void NoRepeatedGapsNoShouldNotChangeData()
+    [DataRow(CompactionDataPoint.FIRST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void NoRepeatedGapsShouldNotChangeData(string profileType, VolumeCalcType? calcType)
     {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
+      var cellTypes = new List<ProfileCellType>
+      {
+        ProfileCellType.MidPoint,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint,
+        ProfileCellType.Gap,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint
+      };
+      var stations = new List<double> { 0, 1, 2, 3, 4, 5 };
+      var yValues = new List<float>
+      {
+        float.NaN,
+        useY ? 1.2F : float.NaN,
+        useY ? 1.5F : float.NaN,
+        float.NaN,
+        useY ? 1.3F : float.NaN,
+        float.NaN
+      };
+      var y2Values = new List<float?>
+      {
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? 1.3F : (float?)null,
+        useY2 ? 1.6F : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? 1.4F : (float?)null,
+        useY2 ? float.NaN : (float?)null
+      };
       CompactionProfileResult<CompactionProfileDataResult> result =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -544,75 +832,73 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "firstPass",
-              data = new List<CompactionDataPoint>
-              {
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 0,
-                  y = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 1,
-                  y = 1.2F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 2,
-                  y = 1.5F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Gap,
-                  x = 3,
-                  y = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 4,
-                  y = 1.3F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 5,
-                  y = float.NaN
-                }
-              }
+              type = profileType,
+              data = new List<CompactionDataPoint>()
             }
           }
         };
 
+      for (int i = 0; i < 6; i++)
+      {
+        result.results[0].data.Add(new CompactionDataPoint
+        {
+          type = profileType,
+          cellType = cellTypes[i],
+          x = stations[i],
+          y = yValues[i],
+          y2 = y2Values[i]
+        });
+      }
+
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
+      helper.RemoveRepeatedNoData(result, calcType);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
-      foreach (var item in result.results)
+      var item = result.results[0];
+      Assert.AreEqual(6, item.data.Count, $"{item.type}: Wrong number of data items");
+      for (int i = 0; i < 6; i++)
       {
-        Assert.AreEqual(6, item.data.Count, $"{item.type}: Wrong number of data items");
-        ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN);
-        ValidateItem(1, item.data[1], ProfileCellType.Edge, 1, 1.2F);
-        ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 2, 1.5F);
-        ValidateItem(3, item.data[3], ProfileCellType.Gap, 3, float.NaN);
-        ValidateItem(4, item.data[4], ProfileCellType.Edge, 4, 1.3F);
-        ValidateItem(5, item.data[5], ProfileCellType.Gap, 5, float.NaN);
+        //First and last points are gaps but also the slicer end points. 
+        var expectedCellType = i == 0 || i == 5 ? ProfileCellType.Gap : cellTypes[i];
+        ValidateItem(i, item.data[i], expectedCellType, stations[i], yValues[i], y2Values[i]);
       }
     }
 
     [TestMethod]
-    public void NoGapsShouldNotChangeData()
+    [DataRow(CompactionDataPoint.FIRST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void NoGapsShouldNotChangeData(string profileType, VolumeCalcType? calcType)
     {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
+      var cellTypes = new List<ProfileCellType>
+      {
+        ProfileCellType.MidPoint,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint
+      };
+      var stations = new List<double> { 0, 1, 2, 4, 5 };
+      var yValues = new List<float>
+      {
+        useY ? 1.1F : float.NaN,
+        useY ? 1.2F : float.NaN,
+        useY ? 1.5F : float.NaN,
+        useY ? 1.3F : float.NaN,
+        useY ? 1.0F : float.NaN,
+      };
+      var y2Values = new List<float?>
+      {
+        useY2 ? 1.0F : (float?)null,
+        useY2 ? 1.3F : (float?)null,
+        useY2 ? 1.6F : (float?)null,
+        useY2 ? 1.2F : (float?)null,
+        useY2 ? 1.4F : (float?)null,
+      };
       CompactionProfileResult<CompactionProfileDataResult> result =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -621,67 +907,101 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "firstPass",
-              data = new List<CompactionDataPoint>
-              {
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 0,
-                  y = 1.1F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 1,
-                  y = 1.2F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 2,
-                  y = 1.5F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 4,
-                  y = 1.3F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 5,
-                  y = 1.0F
-                }
-              }
+              type = profileType,
+              data = new List<CompactionDataPoint>()
             }
           }
         };
 
+      for (int i = 0; i < 5; i++)
+      {
+        result.results[0].data.Add(new CompactionDataPoint
+        {
+          type = profileType,
+          cellType = cellTypes[i],
+          x = stations[i],
+          y = yValues[i],
+          y2 = y2Values[i]
+        });
+      }
+
+
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
+      helper.RemoveRepeatedNoData(result, calcType);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
         Assert.AreEqual(5, item.data.Count, $"{item.type}: Wrong number of data items");
-        ValidateItem(0, item.data[0], ProfileCellType.MidPoint, 0, 1.1F);
-        ValidateItem(1, item.data[1], ProfileCellType.Edge, 1, 1.2F);
-        ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 2, 1.5F);
-        ValidateItem(3, item.data[3], ProfileCellType.Edge, 4, 1.3F);
-        ValidateItem(4, item.data[4], ProfileCellType.MidPoint, 5, 1.0F);
+        for (int i = 0; i < 5; i++)
+        {
+          ValidateItem(i, item.data[i], cellTypes[i], stations[i], yValues[i], y2Values[i]);
+        }
       }
     }
 
     [TestMethod]
-    public void RepeatedGapsShouldBeRemoved()
+    [DataRow(CompactionDataPoint.FIRST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void RepeatedGapsShouldBeRemoved(string profileType, VolumeCalcType? calcType)
     {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
+      var cellTypes = new List<ProfileCellType>
+      {
+        ProfileCellType.MidPoint,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint,
+        ProfileCellType.Gap,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint,
+        ProfileCellType.Gap,
+        ProfileCellType.MidPoint
+      };
+      var stations = new List<double> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+      var yValues = new List<float>
+      {
+        float.NaN,
+        float.NaN,
+        float.NaN,
+        useY ? 1.3F : float.NaN,
+        useY ? 1.2F : float.NaN,
+        float.NaN,
+        float.NaN,
+        float.NaN,
+        useY ? 1.8F : float.NaN,
+        useY ? 1.6F : float.NaN,
+        float.NaN,
+        float.NaN,
+        float.NaN,
+        float.NaN
+      };
+      var y2Values = new List<float?>
+      {
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? 1.2F : (float?)null,
+        useY2 ? 1.4F : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? 1.4F : (float?)null,
+        useY2 ? 1.9F : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? float.NaN : (float?)null
+      };
       CompactionProfileResult<CompactionProfileDataResult> result =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -690,127 +1010,38 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "firstPass",
-              data = new List<CompactionDataPoint>
-              {
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 0,
-                  y = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 1,
-                  y = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 2,
-                  y = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 3,
-                  y = 1.3F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 4,
-                  y = 1.2F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Gap,
-                  x = 5,
-                  y = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 6,
-                  y = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 7,
-                  y = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 8,
-                  y = 1.8F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 9,
-                  y = 1.6F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 10,
-                  y = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 11,
-                  y = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Gap,
-                  x = 12,
-                  y = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 13,
-                  y = float.NaN
-                }
-              }
+              type = profileType,
+              data = new List<CompactionDataPoint>()
             }
           }
         };
 
+      for (int i = 0; i < 14; i++)
+      {
+        result.results[0].data.Add(new CompactionDataPoint
+        {
+          type = profileType,
+          cellType = cellTypes[i],
+          x = stations[i],
+          y = yValues[i],
+          y2 = y2Values[i]
+        });
+      }
+
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
+      helper.RemoveRepeatedNoData(result, calcType);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
         Assert.AreEqual(8, item.data.Count, $"{item.type}: Wrong number of data items");
-        ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN);
-        ValidateItem(1, item.data[1], ProfileCellType.Edge, 3, 1.3F);
-        ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 4, 1.2F);
-        ValidateItem(3, item.data[3], ProfileCellType.Gap, 5, float.NaN);
-        ValidateItem(4, item.data[4], ProfileCellType.Edge, 8, 1.8F);
-        ValidateItem(5, item.data[5], ProfileCellType.MidPoint, 9, 1.6F);
-        ValidateItem(6, item.data[6], ProfileCellType.Gap, 10, float.NaN);
-        ValidateItem(7, item.data[7], ProfileCellType.Gap, 13, float.NaN);
+        var keptItemIndices = new int[] {0, 3, 4, 5, 8, 9, 10, 13};
+        for (int i = 0; i < 8; i++)
+        {
+          //First and last points are gaps but also the slicer end points. Also keep start of last gap as a gap.
+          var expectedCellType = i == 0 || i == 6 || i == 7 ? ProfileCellType.Gap : cellTypes[keptItemIndices[i]];
+          ValidateItem(i, item.data[i], expectedCellType, stations[keptItemIndices[i]], yValues[keptItemIndices[i]], y2Values[keptItemIndices[i]]);
+        }
       }
     }
  
@@ -825,61 +1056,61 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "firstPass",
+              type = CompactionDataPoint.FIRST_PASS,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint
                 {
-                  type = "firstPass",
+                  type = CompactionDataPoint.FIRST_PASS,
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = 1.2F
                 },
                 new CompactionDataPoint
                 {
-                  type = "firstPass",
+                  type = CompactionDataPoint.FIRST_PASS,
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "firstPass",
+                  type = CompactionDataPoint.FIRST_PASS,
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "firstPass",
+                  type = CompactionDataPoint.FIRST_PASS,
                   cellType = ProfileCellType.Edge,
                   x = 3,
                   y = 1.3F
                 },
                 new CompactionDataPoint
                 {
-                  type = "firstPass",
+                  type = CompactionDataPoint.FIRST_PASS,
                   cellType = ProfileCellType.MidPoint,
                   x = 4,
                   y = 1.2F
                 },
                 new CompactionDataPoint
                 {
-                  type = "firstPass",
+                  type = CompactionDataPoint.FIRST_PASS,
                   cellType = ProfileCellType.Gap,
                   x = 5,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "firstPass",
+                  type = CompactionDataPoint.FIRST_PASS,
                   cellType = ProfileCellType.Edge,
                   x = 6,
                   y = 1.7F
                 },
                 new CompactionDataPoint
                 {
-                  type = "firstPass",
+                  type = CompactionDataPoint.FIRST_PASS,
                   cellType = ProfileCellType.MidPoint,
                   x = 7,
                   y = 1.1F
@@ -888,61 +1119,61 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             },
             new CompactionProfileDataResult
             {
-              type = "cmvSummary",
+              type = CompactionDataPoint.CMV_SUMMARY,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint
                 {
-                  type = "cmvSummary",
+                  type = CompactionDataPoint.CMV_SUMMARY,
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "cmvSummary",
+                  type = CompactionDataPoint.CMV_SUMMARY,
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = 1.8F
                 },
                 new CompactionDataPoint
                 {
-                  type = "cmvSummary",
+                  type = CompactionDataPoint.CMV_SUMMARY,
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = 1.7F
                 },
                 new CompactionDataPoint
                 {
-                  type = "cmvSummary",
+                  type = CompactionDataPoint.CMV_SUMMARY,
                   cellType = ProfileCellType.Edge,
                   x = 3,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "cmvSummary",
+                  type = CompactionDataPoint.CMV_SUMMARY,
                   cellType = ProfileCellType.MidPoint,
                   x = 4,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "cmvSummary",
+                  type = CompactionDataPoint.CMV_SUMMARY,
                   cellType = ProfileCellType.Gap,
                   x = 5,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "cmvSummary",
+                  type = CompactionDataPoint.CMV_SUMMARY,
                   cellType = ProfileCellType.Edge,
                   x = 6,
                   y = 1.1F
                 },
                 new CompactionDataPoint
                 {
-                  type = "cmvSummary",
+                  type = CompactionDataPoint.CMV_SUMMARY,
                   cellType = ProfileCellType.MidPoint,
                   x = 7,
                   y = 1.0F
@@ -951,61 +1182,61 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             },
             new CompactionProfileDataResult
             {
-              type = "passCountDetail",
+              type = CompactionDataPoint.PASS_COUNT_DETAIL,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint
                 {
-                  type = "passCountDetail",
+                  type = CompactionDataPoint.PASS_COUNT_DETAIL,
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = 1.4F
                 },
                 new CompactionDataPoint
                 {
-                  type = "passCountDetail",
+                  type = CompactionDataPoint.PASS_COUNT_DETAIL,
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = 1.1F
                 },
                 new CompactionDataPoint
                 {
-                  type = "passCountDetail",
+                  type = CompactionDataPoint.PASS_COUNT_DETAIL,
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = 1.4F
                 },
                 new CompactionDataPoint
                 {
-                  type = "passCountDetail",
+                  type = CompactionDataPoint.PASS_COUNT_DETAIL,
                   cellType = ProfileCellType.Edge,
                   x = 3,
                   y = 1.0F
                 },
                 new CompactionDataPoint
                 {
-                  type = "passCountDetail",
+                  type = CompactionDataPoint.PASS_COUNT_DETAIL,
                   cellType = ProfileCellType.MidPoint,
                   x = 4,
                   y = 1.5F
                 },
                 new CompactionDataPoint
                 {
-                  type = "passCountDetail",
+                  type = CompactionDataPoint.PASS_COUNT_DETAIL,
                   cellType = ProfileCellType.Gap,
                   x = 5,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "passCountDetail",
+                  type = CompactionDataPoint.PASS_COUNT_DETAIL,
                   cellType = ProfileCellType.Edge,
                   x = 6,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "passCountDetail",
+                  type = CompactionDataPoint.PASS_COUNT_DETAIL,
                   cellType = ProfileCellType.MidPoint,
                   x = 7,
                   y = float.NaN
@@ -1014,129 +1245,257 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             },
             new CompactionProfileDataResult
             {
-              type = "cutFill",
+              type = CompactionDataPoint.CUT_FILL,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint
                 {
-                  type = "cutFill",
+                  type = CompactionDataPoint.CUT_FILL,
                   cellType = ProfileCellType.MidPoint,
                   x = 0,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "cutFill",
+                  type = CompactionDataPoint.CUT_FILL,
                   cellType = ProfileCellType.Edge,
                   x = 1,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "cutFill",
+                  type = CompactionDataPoint.CUT_FILL,
                   cellType = ProfileCellType.MidPoint,
                   x = 2,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "cutFill",
+                  type = CompactionDataPoint.CUT_FILL,
                   cellType = ProfileCellType.Edge,
                   x = 3,
                   y = 1.3F
                 },
                 new CompactionDataPoint
                 {
-                  type = "cutFill",
+                  type = CompactionDataPoint.CUT_FILL,
                   cellType = ProfileCellType.MidPoint,
                   x = 4,
                   y = 1.2F
                 },
                 new CompactionDataPoint
                 {
-                  type = "cutFill",
+                  type = CompactionDataPoint.CUT_FILL,
                   cellType = ProfileCellType.Gap,
                   x = 5,
                   y = float.NaN
                 },
                 new CompactionDataPoint
                 {
-                  type = "cutFill",
+                  type = CompactionDataPoint.CUT_FILL,
                   cellType = ProfileCellType.Edge,
                   x = 6,
                   y = 1.7F
                 },
                 new CompactionDataPoint
                 {
-                  type = "cutFill",
+                  type = CompactionDataPoint.CUT_FILL,
                   cellType = ProfileCellType.MidPoint,
                   x = 7,
                   y = 1.6F
                 }
               }
             },
-
+            new CompactionProfileDataResult
+            {
+              type = CompactionDataPoint.SUMMARY_VOLUMES,
+              data = new List<CompactionDataPoint>
+              {
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.MidPoint,
+                  x = 0,
+                  y = float.NaN,                  
+                  y2 = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.Edge,
+                  x = 1,
+                  y = float.NaN,
+                  y2 = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.MidPoint,
+                  x = 2,
+                  y = float.NaN,
+                  y2 = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.Edge,
+                  x = 3,
+                  y = float.NaN,
+                  y2 = 1.3F
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.MidPoint,
+                  x = 4,
+                  y = float.NaN,
+                  y2 = 1.2F
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.Gap,
+                  x = 5,
+                  y = float.NaN,
+                  y2 = float.NaN
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.Edge,
+                  x = 6,
+                  y = float.NaN,
+                  y2 = 1.7F
+                },
+                new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = ProfileCellType.MidPoint,
+                  x = 7,
+                  y = float.NaN,
+                  y2 = 1.6F
+                }
+              }
+            },
           }
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
-      Assert.AreEqual(4, result.results.Count, "Wrong number of results");
-      for (int i=0; i<4; i++)
+      helper.RemoveRepeatedNoData(result, VolumeCalcType.DesignToGround);
+      Assert.AreEqual(5, result.results.Count, "Wrong number of results");
+      for (int i=0; i<5; i++)
       {
         var item = result.results[i];
         switch (i)
         {
           case 0:
             Assert.AreEqual(7, item.data.Count, $"{i}: Wrong number of data items");
-            Assert.AreEqual("firstPass", item.type, $"{i}: Wrong type");
-            ValidateItem(0, item.data[0], ProfileCellType.MidPoint, 0, 1.2F);
-            ValidateItem(1, item.data[1], ProfileCellType.Gap, 1, float.NaN);
-            ValidateItem(2, item.data[2], ProfileCellType.Edge, 3, 1.3F);
-            ValidateItem(3, item.data[3], ProfileCellType.MidPoint, 4, 1.2F);
-            ValidateItem(4, item.data[4], ProfileCellType.Gap, 5, float.NaN);
-            ValidateItem(5, item.data[5], ProfileCellType.Edge, 6, 1.7F);
-            ValidateItem(6, item.data[6], ProfileCellType.MidPoint, 7, 1.1F);
+            Assert.AreEqual(CompactionDataPoint.FIRST_PASS, item.type, $"{i}: Wrong type");
+            ValidateItem(0, item.data[0], ProfileCellType.MidPoint, 0, 1.2F, null);
+            ValidateItem(1, item.data[1], ProfileCellType.Gap, 1, float.NaN, null);
+            ValidateItem(2, item.data[2], ProfileCellType.Edge, 3, 1.3F, null);
+            ValidateItem(3, item.data[3], ProfileCellType.MidPoint, 4, 1.2F, null);
+            ValidateItem(4, item.data[4], ProfileCellType.Gap, 5, float.NaN, null);
+            ValidateItem(5, item.data[5], ProfileCellType.Edge, 6, 1.7F, null);
+            ValidateItem(6, item.data[6], ProfileCellType.MidPoint, 7, 1.1F, null);
             break;
           case 1:
             Assert.AreEqual(6, item.data.Count, $"{i}: Wrong number of data items");
-            Assert.AreEqual("cmvSummary", item.type, $"{i}: Wrong type");
-            ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN);
-            ValidateItem(1, item.data[1], ProfileCellType.Edge, 1, 1.8F);
-            ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 2, 1.7F);
-            ValidateItem(3, item.data[3], ProfileCellType.Gap, 3, float.NaN);
-            ValidateItem(4, item.data[4], ProfileCellType.Edge, 6, 1.1F);
-            ValidateItem(5, item.data[5], ProfileCellType.MidPoint, 7, 1.0F);
+            Assert.AreEqual(CompactionDataPoint.CMV_SUMMARY, item.type, $"{i}: Wrong type");
+            ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN, null);
+            ValidateItem(1, item.data[1], ProfileCellType.Edge, 1, 1.8F, null);
+            ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 2, 1.7F, null);
+            ValidateItem(3, item.data[3], ProfileCellType.Gap, 3, float.NaN, null);
+            ValidateItem(4, item.data[4], ProfileCellType.Edge, 6, 1.1F, null);
+            ValidateItem(5, item.data[5], ProfileCellType.MidPoint, 7, 1.0F, null);
             break;
           case 2:
             Assert.AreEqual(7, item.data.Count, $"{i}: Wrong number of data items");
-            Assert.AreEqual("passCountDetail", item.type, $"{i}: Wrong type");
-            ValidateItem(0, item.data[0], ProfileCellType.MidPoint, 0, 1.4F);
-            ValidateItem(1, item.data[1], ProfileCellType.Edge, 1, 1.1F);
-            ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 2, 1.4F);
-            ValidateItem(3, item.data[3], ProfileCellType.Edge, 3, 1.0F);
-            ValidateItem(4, item.data[4], ProfileCellType.MidPoint, 4, 1.5F);
-            ValidateItem(5, item.data[5], ProfileCellType.Gap, 5, float.NaN);
-            ValidateItem(6, item.data[6], ProfileCellType.Gap, 7, float.NaN);
+            Assert.AreEqual(CompactionDataPoint.PASS_COUNT_DETAIL, item.type, $"{i}: Wrong type");
+            ValidateItem(0, item.data[0], ProfileCellType.MidPoint, 0, 1.4F, null);
+            ValidateItem(1, item.data[1], ProfileCellType.Edge, 1, 1.1F, null);
+            ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 2, 1.4F, null);
+            ValidateItem(3, item.data[3], ProfileCellType.Edge, 3, 1.0F, null);
+            ValidateItem(4, item.data[4], ProfileCellType.MidPoint, 4, 1.5F, null);
+            ValidateItem(5, item.data[5], ProfileCellType.Gap, 5, float.NaN, null);
+            ValidateItem(6, item.data[6], ProfileCellType.Gap, 7, float.NaN, null);
             break;
           case 3:
             Assert.AreEqual(6, item.data.Count, $"{i}: Wrong number of data items");
-            Assert.AreEqual("cutFill", item.type, $"{i}: Wrong type");
-            ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN);
-            ValidateItem(1, item.data[1], ProfileCellType.Edge, 3, 1.3F);
-            ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 4, 1.2F);
-            ValidateItem(3, item.data[3], ProfileCellType.Gap, 5, float.NaN);
-            ValidateItem(4, item.data[4], ProfileCellType.Edge, 6, 1.7F);
-            ValidateItem(5, item.data[5], ProfileCellType.MidPoint, 7, 1.6F);
+            Assert.AreEqual(CompactionDataPoint.CUT_FILL, item.type, $"{i}: Wrong type");
+            ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN, null);
+            ValidateItem(1, item.data[1], ProfileCellType.Edge, 3, 1.3F, null);
+            ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 4, 1.2F, null);
+            ValidateItem(3, item.data[3], ProfileCellType.Gap, 5, float.NaN, null);
+            ValidateItem(4, item.data[4], ProfileCellType.Edge, 6, 1.7F, null);
+            ValidateItem(5, item.data[5], ProfileCellType.MidPoint, 7, 1.6F, null);
+            break;
+          case 4:
+            Assert.AreEqual(6, item.data.Count, $"{i}: Wrong number of data items");
+            Assert.AreEqual(CompactionDataPoint.SUMMARY_VOLUMES, item.type, $"{i}: Wrong type");
+            ValidateItem(0, item.data[0], ProfileCellType.Gap, 0, float.NaN, float.NaN);
+            ValidateItem(1, item.data[1], ProfileCellType.Edge, 3, float.NaN, 1.3F);
+            ValidateItem(2, item.data[2], ProfileCellType.MidPoint, 4, float.NaN, 1.2F);
+            ValidateItem(3, item.data[3], ProfileCellType.Gap, 5, float.NaN, float.NaN);
+            ValidateItem(4, item.data[4], ProfileCellType.Edge, 6, float.NaN, 1.7F);
+            ValidateItem(5, item.data[5], ProfileCellType.MidPoint, 7, float.NaN, 1.6F);
             break;
         }
       }
     }
 
     [TestMethod]
-    public void RepeatedGapsWithNoDataShouldBeRemoved()
+    [DataRow(CompactionDataPoint.FIRST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void RepeatedGapsWithNoDataShouldBeRemoved(string profileType, VolumeCalcType? calcType)
     {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
+      var cellTypes = new List<ProfileCellType>
+      {
+        ProfileCellType.MidPoint,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint,
+        ProfileCellType.Edge,
+        ProfileCellType.MidPoint
+      };
+      var stations = new List<double> { 0, 1, 2, 3, 4, 5, 6 };
+      var yValues = new List<float>
+      {
+        useY ? 2.0F : float.NaN,
+        useY ? 1.8F : float.NaN,
+        float.NaN,
+        useY ? 1.3F : float.NaN,
+        float.NaN,
+        useY ? 1.7F : float.NaN,
+        useY ? 1.2F : float.NaN
+      };
+      var y2Values = new List<float?>
+      {
+        useY2 ? 1.7F : (float?)null,
+        useY2 ? 1.4F : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? 1.1F : (float?)null,
+        useY2 ? float.NaN : (float?)null,
+        useY2 ? 1.3F : (float?)null,
+        useY2 ? 1.9F : (float?)null
+      };
+      var values = new List<float>
+      {
+        2.0F,
+        float.NaN,
+        float.NaN,
+        float.NaN,
+        float.NaN,
+        1.7F,
+        1.2F
+      };
       CompactionProfileResult<CompactionProfileDataResult> result =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -1145,89 +1504,48 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "firstPass",
-              data = new List<CompactionDataPoint>
-              {
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 0,
-                  y = 2.0F,
-                  value = 2.0F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 1,
-                  y = 1.8F,
-                  value = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 2,
-                  y = float.NaN,
-                  value = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 3,
-                  y = 1.3F,
-                  value = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 4,
-                  y = float.NaN,
-                  value = float.NaN
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.Edge,
-                  x = 5,
-                  y = 1.7F,
-                  value = 1.7F
-                },
-                new CompactionDataPoint
-                {
-                  type = "firstPass",
-                  cellType = ProfileCellType.MidPoint,
-                  x = 6,
-                  y = 1.2F,
-                  value = 1.2F
-                }
-              }
+              type = profileType,
+              data = new List<CompactionDataPoint>()
             }
           }
         };
 
+      for (int i = 0; i < 7; i++)
+      {
+        result.results[0].data.Add(new CompactionDataPoint
+        {
+          type = profileType,
+          cellType = cellTypes[i],
+          x = stations[i],
+          y = yValues[i],
+          y2 = y2Values[i],
+          value = values[i]
+        });
+      }
+
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.RemoveRepeatedNoData(result);
+      helper.RemoveRepeatedNoData(result, calcType);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
         Assert.AreEqual(4, item.data.Count, $"{item.type}: Wrong number of data items");
-        ValidateItem(0, item.data[0], ProfileCellType.MidPoint, 0, 2.0F);
-        ValidateItem(1, item.data[1], ProfileCellType.Gap, 1, 1.8F);
-        ValidateItem(2, item.data[2], ProfileCellType.Edge, 5, 1.7F);
-        ValidateItem(3, item.data[3], ProfileCellType.MidPoint, 6, 1.2F);
+        var keptItemIndices = new int[] { 0, 1, 5, 6 };
+        for (int i = 0; i < 4; i++)
+        {
+          //Index 1 is a gap due to no data
+          var expectedCellType = i == 1 ? ProfileCellType.Gap : cellTypes[keptItemIndices[i]];
+          ValidateItem(i, item.data[i], expectedCellType, stations[keptItemIndices[i]], yValues[keptItemIndices[i]], y2Values[keptItemIndices[i]]);
+        }
       }
     }
 
-    private void ValidateItem(int i, CompactionDataPoint actual, ProfileCellType expectedCellType, double expectedStation, float expectedElevation)
+    private void ValidateItem(int i, CompactionDataPoint actual, ProfileCellType expectedCellType, double expectedStation, float expectedElevation, float? expectedElevation2)
     {
       Assert.AreEqual(expectedCellType, actual.cellType, $"{i}: Wrong cellType");
       Assert.AreEqual(expectedStation, actual.x, $"{i}: Wrong x");
       Assert.AreEqual(expectedElevation, actual.y, $"{i}: Wrong y");
+      Assert.AreEqual(expectedElevation2, actual.y2, $"{i}: Wrong y2");
     }
     #endregion
 
@@ -1243,7 +1561,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = CompactionDataPoint.LAST_PASS,
               data = new List<CompactionDataPoint>()
             }
           }
@@ -1268,7 +1586,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = CompactionDataPoint.LAST_PASS,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 597.367F},
@@ -1299,7 +1617,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = CompactionDataPoint.LAST_PASS,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 596.3F},
@@ -1332,7 +1650,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = CompactionDataPoint.LAST_PASS,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
@@ -1383,7 +1701,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = CompactionDataPoint.LAST_PASS,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
@@ -1443,7 +1761,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = CompactionDataPoint.LAST_PASS,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
@@ -1499,7 +1817,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = CompactionDataPoint.LAST_PASS,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
@@ -1546,7 +1864,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = CompactionDataPoint.LAST_PASS,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
@@ -1607,7 +1925,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = CompactionDataPoint.LAST_PASS,
               data = new List<CompactionDataPoint>
               {
                 new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0, y = float.NaN},
@@ -1661,8 +1979,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
     #region InterpolateEdges tests
     [TestMethod]
-    public void SlicerInOneCellNoInterpolation()
+    [DataRow(CompactionDataPoint.LAST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void SlicerInOneCellNoInterpolation(string profileType, VolumeCalcType? calcType)
     {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
       CompactionProfileResult<CompactionProfileDataResult> profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -1670,11 +1995,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 597F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.085, y = 597F}
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = useY ? 597F : float.NaN, y2 = useY2 ? 603F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.085, y = useY ? 597F : float.NaN, y2 = useY2 ? 603F : (float?)null }
               }
             }
           }
@@ -1682,18 +2007,33 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
       Assert.AreEqual(2, actualPoints.Count, "Wrong number of profile points");
-      Assert.AreEqual(597F, actualPoints[0].y, "Wrong y 1");
-      Assert.AreEqual(597F, actualPoints[1].y, "Wrong y 2");
+      if (useY)
+      {
+        Assert.AreEqual(597F, actualPoints[0].y, "Wrong y 1");
+        Assert.AreEqual(597F, actualPoints[1].y, "Wrong y 2");
+      }
+      if (useY2)
+      {
+        Assert.AreEqual(603F, actualPoints[0].y2, "Wrong y2 1");
+        Assert.AreEqual(603F, actualPoints[1].y2, "Wrong y2 2");
+      }
     }
 
     [TestMethod]
-    public void SlicesOneEdgeInterpolated()
+    [DataRow(CompactionDataPoint.LAST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void SlicesOneEdgeInterpolated(string profileType, VolumeCalcType? calcType)
     {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
       CompactionProfileResult<CompactionProfileDataResult> profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -1701,12 +2041,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = 200F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.0, y = 200F}
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = useY ? 100F : float.NaN, y2 = useY2 ? 200F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = useY ? 200F : float.NaN, y2 = useY2 ? 300F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.0, y = useY ? 200F : float.NaN, y2 = useY2 ? 300F : (float?)null }
               }
             }
           }
@@ -1714,18 +2054,35 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
       Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
-      Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
-      Assert.AreEqual(150F, actualPoints[1].y, "Wrong y 2");
-      Assert.AreEqual(200F, actualPoints[2].y, "Wrong y 3");
+      if (useY)
+      {
+        Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
+        Assert.AreEqual(150F, actualPoints[1].y, "Wrong y 2");
+        Assert.AreEqual(200F, actualPoints[2].y, "Wrong y 3");
+      }
+      if (useY2)
+      {
+        Assert.AreEqual(200F, actualPoints[0].y2, "Wrong y2 1");
+        Assert.AreEqual(250F, actualPoints[1].y2, "Wrong y2 2");
+        Assert.AreEqual(300F, actualPoints[2].y2, "Wrong y2 3");
+      }
     }
 
-    [TestMethod] public void SlicesTwoEdgesInterpolated()
+    [TestMethod]
+    [DataRow(CompactionDataPoint.LAST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void SlicesTwoEdgesInterpolated(string profileType, VolumeCalcType? calcType)
     {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
       CompactionProfileResult<CompactionProfileDataResult> profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -1733,14 +2090,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = 250F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.75, y = 250F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 325F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.5, y = 325F}
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = useY ? 100F : float.NaN, y2 = useY2 ? 200F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = useY ? 250F : float.NaN, y2 = useY2 ? 350F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.75, y = useY ? 250F : float.NaN, y2 = useY2 ? 350F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = useY ? 325F : float.NaN, y2 = useY2 ? 425F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.5, y = useY ? 325F : float.NaN, y2 = useY2 ? 425F : (float?)null }
               }
             }
           }
@@ -1748,36 +2105,52 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
       Assert.AreEqual(5, actualPoints.Count, "Wrong number of profile points");
 
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[0].cellType, "Wrong cellType 1");
-      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
-      Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[1].cellType, "Wrong cellType 2");
-      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
-      Assert.AreEqual(200F, actualPoints[1].y, "Wrong y 2");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[2].cellType, "Wrong cellType 3");
-      Assert.AreEqual(0.75, actualPoints[2].x, "Wrong x 3");
-      Assert.AreEqual(250F, actualPoints[2].y, "Wrong y 3");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[3].cellType, "Wrong cellType 4");
-      Assert.AreEqual(1.0, actualPoints[3].x, "Wrong x 4");
-      Assert.AreEqual(275F, actualPoints[3].y, "Wrong y 4");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[4].cellType, "Wrong cellType 5");
+
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(0.75, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(1.0, actualPoints[3].x, "Wrong x 4");
       Assert.AreEqual(1.5, actualPoints[4].x, "Wrong x 5");
-      Assert.AreEqual(325F, actualPoints[4].y, "Wrong y 5");
+
+      if (useY)
+      {
+        Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
+        Assert.AreEqual(200F, actualPoints[1].y, "Wrong y 2");
+        Assert.AreEqual(250F, actualPoints[2].y, "Wrong y 3");
+        Assert.AreEqual(275F, actualPoints[3].y, "Wrong y 4");
+        Assert.AreEqual(325F, actualPoints[4].y, "Wrong y 5");
+      }
+      if (useY2)
+      {
+        Assert.AreEqual(200F, actualPoints[0].y2, "Wrong y2 1");
+        Assert.AreEqual(300F, actualPoints[1].y2, "Wrong y2 2");
+        Assert.AreEqual(350F, actualPoints[2].y2, "Wrong y2 3");
+        Assert.AreEqual(375F, actualPoints[3].y2, "Wrong y2 4");
+        Assert.AreEqual(425F, actualPoints[4].y2, "Wrong y2 5");
+      }
     }
 
     [TestMethod]
-    public void SlicerWithOneGapInterpolated()
-    {     
+    [DataRow(CompactionDataPoint.LAST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void SlicerWithOneGapInterpolated(string profileType, VolumeCalcType? calcType)
+    {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
       CompactionProfileResult<CompactionProfileDataResult> profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -1785,15 +2158,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 190F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = 190F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.5, y = 235F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 2.0, y = 235F}
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = useY ? 100F : float.NaN, y2 = useY2 ? 200F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN, y2 = useY2 ? float.NaN : (float?)null },//this is a gap
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = useY ? 190F : float.NaN, y2 = useY2 ? 290F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = useY ? 190F : float.NaN, y2 = useY2 ? 290F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.5, y = useY ? 235F : float.NaN, y2 = useY2 ? 335F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 2.0, y = useY ? 235F : float.NaN, y2 = useY2 ? 335F : (float?)null }
               }
             }
           }
@@ -1801,40 +2174,57 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
       Assert.AreEqual(6, actualPoints.Count, "Wrong number of profile points");
 
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[0].cellType, "Wrong cellType 1");
-      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
-      Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
-
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[1].cellType, "Wrong cellType 2");
-      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
-      Assert.AreEqual(136F, actualPoints[1].y, "Wrong y 2");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[2].cellType, "Wrong cellType 3");
-      Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
-      Assert.AreEqual(172F, actualPoints[2].y, "Wrong y 3");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[3].cellType, "Wrong cellType 4");
-      Assert.AreEqual(1.25, actualPoints[3].x, "Wrong x 4");
-      Assert.AreEqual(190F, actualPoints[3].y, "Wrong y 4");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[4].cellType, "Wrong cellType 5");
-      Assert.AreEqual(1.5, actualPoints[4].x, "Wrong x 5");
-      Assert.AreEqual(205F, actualPoints[4].y, "Wrong y 5");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[5].cellType, "Wrong cellType 6");
+
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(1.25, actualPoints[3].x, "Wrong x 4");
+      Assert.AreEqual(1.5, actualPoints[4].x, "Wrong x 5");
       Assert.AreEqual(2.0, actualPoints[5].x, "Wrong x 6");
-      Assert.AreEqual(235F, actualPoints[5].y, "Wrong y 6");
+
+      if (useY)
+      {
+        Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
+        Assert.AreEqual(136F, actualPoints[1].y, "Wrong y 2");
+        Assert.AreEqual(172F, actualPoints[2].y, "Wrong y 3");
+        Assert.AreEqual(190F, actualPoints[3].y, "Wrong y 4");
+        Assert.AreEqual(205F, actualPoints[4].y, "Wrong y 5");
+        Assert.AreEqual(235F, actualPoints[5].y, "Wrong y 6");
+      }
+
+      if (useY2)
+      {
+        Assert.AreEqual(200F, actualPoints[0].y2, "Wrong y2 1");
+        Assert.AreEqual(236F, actualPoints[1].y2, "Wrong y2 2");
+        Assert.AreEqual(272F, actualPoints[2].y2, "Wrong y2 3");
+        Assert.AreEqual(290F, actualPoints[3].y2, "Wrong y2 4");
+        Assert.AreEqual(305F, actualPoints[4].y2, "Wrong y2 5");
+        Assert.AreEqual(335F, actualPoints[5].y2, "Wrong y2 6");
+      }
     }
 
     [TestMethod]
-    public void SlicerWithOnlyAGapInterpolated()
+    [DataRow(CompactionDataPoint.LAST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void SlicerWithOnlyAGapInterpolated(string profileType, VolumeCalcType? calcType)
     {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
       CompactionProfileResult<CompactionProfileDataResult> profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -1842,13 +2232,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 190F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.5, y = 190F}
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = useY ? 100F : float.NaN, y2 = useY2 ? 200F : (float?)null},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN, y2 = useY2 ? float.NaN : (float?)null },//this is a gap
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = useY ? 190F : float.NaN, y2 = useY2 ? 290F : (float?)null},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.5, y = useY ? 190F : float.NaN, y2 = useY2 ? 290F : (float?)null}
               }
             }
           }
@@ -1856,32 +2246,48 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
       Assert.AreEqual(4, actualPoints.Count, "Wrong number of profile points");
 
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[0].cellType, "Wrong cellType 1");
-      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
-      Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
-
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[1].cellType, "Wrong cellType 2");
-      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
-      Assert.AreEqual(130F, actualPoints[1].y, "Wrong y 2");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[2].cellType, "Wrong cellType 3");
-      Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
-      Assert.AreEqual(160F, actualPoints[2].y, "Wrong y 3");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[3].cellType, "Wrong cellType 4");
+
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
       Assert.AreEqual(1.5, actualPoints[3].x, "Wrong x 4");
-      Assert.AreEqual(190F, actualPoints[3].y, "Wrong y 4");
+
+      if (useY)
+      {
+        Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
+        Assert.AreEqual(130F, actualPoints[1].y, "Wrong y 2");
+        Assert.AreEqual(160F, actualPoints[2].y, "Wrong y 3");
+        Assert.AreEqual(190F, actualPoints[3].y, "Wrong y 4");
+      }
+      if (useY2)
+      {
+        Assert.AreEqual(200F, actualPoints[0].y2, "Wrong y2 1");
+        Assert.AreEqual(230F, actualPoints[1].y2, "Wrong y2 2");
+        Assert.AreEqual(260F, actualPoints[2].y2, "Wrong y2 3");
+        Assert.AreEqual(290F, actualPoints[3].y2, "Wrong y2 4");
+      }
     }
 
     [TestMethod]
-    public void SlicerWithTwoGapsInterpolated()
+    [DataRow(CompactionDataPoint.LAST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void SlicerWithTwoGapsInterpolated(string profileType, VolumeCalcType? calcType)
     {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
       CompactionProfileResult<CompactionProfileDataResult> profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -1889,16 +2295,16 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 190F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = 190F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 1.5, y = float.NaN},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 2.0, y = 235F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 2.5, y = 235F}
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0, y = useY ? 100F : float.NaN, y2 = useY2 ? 200F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0.5, y = float.NaN, y2 = useY2 ? float.NaN : (float?)null },//this is a gap
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = useY ? 190F : float.NaN, y2 = useY2 ? 290F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = useY ? 190F : float.NaN, y2 = useY2 ? 290F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 1.5, y = float.NaN, y2 = useY2 ? float.NaN : (float?)null },//this is a gap
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 2.0, y = useY ?  235F : float.NaN, y2 = useY2 ? 335F : (float?)null },
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 2.5, y = useY ? 235F : float.NaN, y2 = useY2 ? 335F : (float?)null }
               }
             }
           }
@@ -1906,45 +2312,60 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
       Assert.AreEqual(7, actualPoints.Count, "Wrong number of profile points");
 
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[0].cellType, "Wrong cellType 1");
-      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
-      Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
-
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[1].cellType, "Wrong cellType 2");
-      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
-      Assert.AreEqual(136F, actualPoints[1].y, "Wrong y 2");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[2].cellType, "Wrong cellType 3");
-      Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
-      Assert.AreEqual(172F, actualPoints[2].y, "Wrong y 3");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[3].cellType, "Wrong cellType 4");
-      Assert.AreEqual(1.25, actualPoints[3].x, "Wrong x 4");
-      Assert.AreEqual(190F, actualPoints[3].y, "Wrong y 4");
-
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[4].cellType, "Wrong cellType 5");
-      Assert.AreEqual(1.5, actualPoints[4].x, "Wrong x 5");
-      Assert.AreEqual(199F, actualPoints[4].y, "Wrong y 5");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[5].cellType, "Wrong cellType 6");
-      Assert.AreEqual(2.0, actualPoints[5].x, "Wrong x 6");
-      Assert.AreEqual(217F, actualPoints[5].y, "Wrong y 6");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[6].cellType, "Wrong cellType 7");
+
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(1.0, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(1.25, actualPoints[3].x, "Wrong x 4");
+      Assert.AreEqual(1.5, actualPoints[4].x, "Wrong x 5");
+      Assert.AreEqual(2.0, actualPoints[5].x, "Wrong x 6");
       Assert.AreEqual(2.5, actualPoints[6].x, "Wrong x 7");
-      Assert.AreEqual(235F, actualPoints[6].y, "Wrong y 7");
+
+      if (useY)
+      {
+        Assert.AreEqual(100F, actualPoints[0].y, "Wrong y 1");
+        Assert.AreEqual(136F, actualPoints[1].y, "Wrong y 2");
+        Assert.AreEqual(172F, actualPoints[2].y, "Wrong y 3");
+        Assert.AreEqual(190F, actualPoints[3].y, "Wrong y 4");
+        Assert.AreEqual(199F, actualPoints[4].y, "Wrong y 5");
+        Assert.AreEqual(217F, actualPoints[5].y, "Wrong y 6");
+        Assert.AreEqual(235F, actualPoints[6].y, "Wrong y 7");
+      }
+      if (useY2)
+      {
+        Assert.AreEqual(200F, actualPoints[0].y2, "Wrong y2 1");
+        Assert.AreEqual(236F, actualPoints[1].y2, "Wrong y2 2");
+        Assert.AreEqual(272F, actualPoints[2].y2, "Wrong y2 3");
+        Assert.AreEqual(290F, actualPoints[3].y2, "Wrong y2 4");
+        Assert.AreEqual(299F, actualPoints[4].y2, "Wrong y2 5");
+        Assert.AreEqual(317F, actualPoints[5].y2, "Wrong y2 6");
+        Assert.AreEqual(335F, actualPoints[6].y2, "Wrong y2 7");
+      }
     }
 
     [TestMethod]
-    public void SlicerStartInGapExtrapolated()
+    [DataRow(CompactionDataPoint.LAST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void SlicerStartInGapExtrapolated(string profileType, VolumeCalcType? calcType)
     {
       //Tests the extrapolation special case
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
       CompactionProfileResult<CompactionProfileDataResult> profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
@@ -1953,16 +2374,16 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0, y = float.NaN},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.75, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 200F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = 200F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.5, y = 350F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 2.0, y = 350F}
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0, y = float.NaN, y2 = useY2 ? float.NaN : (float?)null },//this is a gap
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = useY ? 100F : float.NaN, y2 = useY2 ? 200F : (float?)null},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.75, y = useY ? 100F: float.NaN, y2 = useY2 ? 200F : (float?)null},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = useY? 200F : float.NaN, y2 = useY2? 300F : (float?)null},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = useY ? 200F : float.NaN, y2 = useY2 ? 300F : (float?)null},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.5, y = useY ? 350F : float.NaN, y2 = useY2 ? 450F : (float?)null},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 2.0, y = useY ? 350F : float.NaN, y2 = useY2 ? 450F : (float?)null}
               }
             }
           }
@@ -1970,44 +2391,60 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
       Assert.AreEqual(7, actualPoints.Count, "Wrong number of profile points");
 
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[0].cellType, "Wrong cellType 1");
-      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
-      Assert.AreEqual(float.NaN, actualPoints[0].y, "Wrong y 1");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[1].cellType, "Wrong cellType 2");
-      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
-      Assert.AreEqual(50F, actualPoints[1].y, "Wrong y 2");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[2].cellType, "Wrong cellType 3");
-      Assert.AreEqual(0.75, actualPoints[2].x, "Wrong x 3");
-      Assert.AreEqual(100F, actualPoints[2].y, "Wrong y 3");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[3].cellType, "Wrong cellType 4");
-      Assert.AreEqual(1.0, actualPoints[3].x, "Wrong x 4");
-      Assert.AreEqual(150F, actualPoints[3].y, "Wrong y 4");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[4].cellType, "Wrong cellType 5");
-      Assert.AreEqual(1.25, actualPoints[4].x, "Wrong x 5");
-      Assert.AreEqual(200F, actualPoints[4].y, "Wrong y 5");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[5].cellType, "Wrong cellType 6");
-      Assert.AreEqual(1.5, actualPoints[5].x, "Wrong x 6");
-      Assert.AreEqual(250F, actualPoints[5].y, "Wrong y 6");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[6].cellType, "Wrong cellType 7");
+
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(0.75, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(1.0, actualPoints[3].x, "Wrong x 4");
+      Assert.AreEqual(1.25, actualPoints[4].x, "Wrong x 5");
+      Assert.AreEqual(1.5, actualPoints[5].x, "Wrong x 6");
       Assert.AreEqual(2.0, actualPoints[6].x, "Wrong x 7");
-      Assert.AreEqual(350F, actualPoints[6].y, "Wrong y 7");
+
+      if (useY)
+      {
+        Assert.AreEqual(float.NaN, actualPoints[0].y, "Wrong y 1");
+        Assert.AreEqual(50F, actualPoints[1].y, "Wrong y 2");
+        Assert.AreEqual(100F, actualPoints[2].y, "Wrong y 3");
+        Assert.AreEqual(150F, actualPoints[3].y, "Wrong y 4");
+        Assert.AreEqual(200F, actualPoints[4].y, "Wrong y 5");
+        Assert.AreEqual(250F, actualPoints[5].y, "Wrong y 6");
+        Assert.AreEqual(350F, actualPoints[6].y, "Wrong y 7");
+      }
+      if (useY2)
+      {
+        Assert.AreEqual(float.NaN, actualPoints[0].y2, "Wrong y2 1");
+        Assert.AreEqual(150F, actualPoints[1].y2, "Wrong y2 2");
+        Assert.AreEqual(200F, actualPoints[2].y2, "Wrong y2 3");
+        Assert.AreEqual(250F, actualPoints[3].y2, "Wrong y2 4");
+        Assert.AreEqual(300F, actualPoints[4].y2, "Wrong y2 5");
+        Assert.AreEqual(350F, actualPoints[5].y2, "Wrong y2 6");
+        Assert.AreEqual(450F, actualPoints[6].y2, "Wrong y2 7");
+      }
     }
 
     [TestMethod]
-    public void SlicerStartAndEndInGapInterpolatedCorrectly()
+    [DataRow(CompactionDataPoint.LAST_PASS, null)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
+    [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
+    public void SlicerStartAndEndInGapInterpolatedCorrectly(string profileType, VolumeCalcType? calcType)
     {
+      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+
       CompactionProfileResult<CompactionProfileDataResult> profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
@@ -2015,16 +2452,16 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           {
             new CompactionProfileDataResult
             {
-              type = "lastPass",
+              type = profileType,
               data = new List<CompactionDataPoint>
               {
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0, y = float.NaN},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.75, y = 100F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = 200F},
-                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = 200F},
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 1.5, y = float.NaN},
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 2.0, y = float.NaN}
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 0, y = float.NaN, y2 = useY2 ? float.NaN : (float?)null },//this is a gap
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 0.5, y = useY ? 100F : float.NaN, y2 = useY2 ? 200F : (float?)null},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 0.75, y = useY ? 100F : float.NaN, y2 = useY2 ? 200F : (float?)null},
+                new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = useY ? 200F : float.NaN, y2 = useY2 ? 300F : (float?)null},
+                new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = useY ? 200F : float.NaN, y2 = useY2 ? 300F : (float?)null},
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 1.5, y = float.NaN, y2 = useY2 ? float.NaN : (float?)null },//this is a gap
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 2.0, y = float.NaN, y2 = useY2 ? float.NaN : (float?)null },//this is a gap
               }
             }
           }
@@ -2032,39 +2469,48 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
-      helper.InterpolateEdges(profileResult);
+      helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
       var actualPoints = profileResult.results[0].data;
       Assert.AreEqual(7, actualPoints.Count, "Wrong number of profile points");
 
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[0].cellType, "Wrong cellType 1");
-      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
-      Assert.AreEqual(float.NaN, actualPoints[0].y, "Wrong y 1");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[1].cellType, "Wrong cellType 2");
-      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
-      Assert.AreEqual(50F, actualPoints[1].y, "Wrong y 2");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[2].cellType, "Wrong cellType 3");
-      Assert.AreEqual(0.75, actualPoints[2].x, "Wrong x 3");
-      Assert.AreEqual(100F, actualPoints[2].y, "Wrong y 3");
-
       Assert.AreEqual(ProfileCellType.Edge, actualPoints[3].cellType, "Wrong cellType 4");
-      Assert.AreEqual(1.0, actualPoints[3].x, "Wrong x 4");
-      Assert.AreEqual(150F, actualPoints[3].y, "Wrong y 4");
-
       Assert.AreEqual(ProfileCellType.MidPoint, actualPoints[4].cellType, "Wrong cellType 5");
-      Assert.AreEqual(1.25, actualPoints[4].x, "Wrong x 5");
-      Assert.AreEqual(200F, actualPoints[4].y, "Wrong y 5");
-
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[5].cellType, "Wrong cellType 6");
-      Assert.AreEqual(1.5, actualPoints[5].x, "Wrong x 6");
-      Assert.AreEqual(250F, actualPoints[5].y, "Wrong y 6");
-
       Assert.AreEqual(ProfileCellType.Gap, actualPoints[6].cellType, "Wrong cellType 7");
+
+      Assert.AreEqual(0, actualPoints[0].x, "Wrong x 1");
+      Assert.AreEqual(0.5, actualPoints[1].x, "Wrong x 2");
+      Assert.AreEqual(0.75, actualPoints[2].x, "Wrong x 3");
+      Assert.AreEqual(1.0, actualPoints[3].x, "Wrong x 4");
+      Assert.AreEqual(1.25, actualPoints[4].x, "Wrong x 5");
+      Assert.AreEqual(1.5, actualPoints[5].x, "Wrong x 6");
       Assert.AreEqual(2.0, actualPoints[6].x, "Wrong x 7");
-      Assert.AreEqual(float.NaN, actualPoints[6].y, "Wrong y 7");
+
+      if (useY)
+      {
+        Assert.AreEqual(float.NaN, actualPoints[0].y, "Wrong y 1");
+        Assert.AreEqual(50F, actualPoints[1].y, "Wrong y 2");
+        Assert.AreEqual(100F, actualPoints[2].y, "Wrong y 3");
+        Assert.AreEqual(150F, actualPoints[3].y, "Wrong y 4");
+        Assert.AreEqual(200F, actualPoints[4].y, "Wrong y 5");
+        Assert.AreEqual(250F, actualPoints[5].y, "Wrong y 6");
+        Assert.AreEqual(float.NaN, actualPoints[6].y, "Wrong y 7");
+      }
+      if (useY2)
+      {
+        Assert.AreEqual(float.NaN, actualPoints[0].y2, "Wrong y2 1");
+        Assert.AreEqual(150F, actualPoints[1].y2, "Wrong y2 2");
+        Assert.AreEqual(200F, actualPoints[2].y2, "Wrong y2 3");
+        Assert.AreEqual(250F, actualPoints[3].y2, "Wrong y2 4");
+        Assert.AreEqual(300F, actualPoints[4].y2, "Wrong y2 5");
+        Assert.AreEqual(350F, actualPoints[5].y2, "Wrong y2 6");
+        Assert.AreEqual(float.NaN, actualPoints[6].y2, "Wrong y2 7");
+      }
     }
     #endregion
 

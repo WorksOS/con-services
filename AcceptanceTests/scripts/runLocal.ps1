@@ -9,6 +9,8 @@ function WriteMsg
     {
         Write-Host $message -ForegroundColor $color
     }
+    
+    [Console]::ResetColor()
 }
 
 function GetContainerIpAddress
@@ -24,6 +26,15 @@ function GetContainerIpAddress
     WriteMsg $containerId
     WriteMsg "  IP Address: " "gray" $True
     WriteMsg $containerIpAddress`n
+    [Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../../ProductionDataSvc.AcceptanceTests/bin/Debug/TestData/", "Machine")
+    [Environment]::SetEnvironmentVariable("COMPACTION_SVC_BASE_URI", ":80", "Machine")
+    [Environment]::SetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI", ":80", "Machine")
+    [Environment]::SetEnvironmentVariable("REPORT_SVC_BASE_URI", ":80", "Machine")
+    [Environment]::SetEnvironmentVariable("TAG_SVC_BASE_URI", ":80", "Machine")
+    [Environment]::SetEnvironmentVariable("COORD_SVC_BASE_URI", ":80", "Machine")
+    [Environment]::SetEnvironmentVariable("PROD_SVC_BASE_URI", ":80", "Machine")
+    [Environment]::SetEnvironmentVariable("FILE_ACCESS_SVC_BASE_URI", ":80", "Machine")
+    [Environment]::SetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST", "$containerIpAddress", "Machine")
 }
 
 WriteMsg "Removing Docker containers and images"

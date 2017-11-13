@@ -6,8 +6,8 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.Extensions;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
@@ -17,6 +17,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
   /// </summary>
   public class ProductionDataProfileRequestHelper : DataRequestBase, IProductionDataProfileRequestHelper
   {
+    private Filter baseFilter;
+    private Filter topFilter;
+    private VolumeCalcType? volCalcType;
+    private DesignDescriptor volumeDesign;
+
     public ProductionDataProfileRequestHelper()
     { }
 
@@ -29,6 +34,31 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       SettingsManager = settingsManager;
     }
 
+    public ProductionDataProfileRequestHelper SetVolumeCalcType(VolumeCalcType? calcType)
+    {
+      this.volCalcType = calcType;
+      return this;
+    }
+
+    public ProductionDataProfileRequestHelper SetVolumeDesign(DesignDescriptor volumeDesign)
+    {
+      this.volumeDesign = volumeDesign;
+      return this;
+    }
+
+    public ProductionDataProfileRequestHelper SetBaseFilter(Filter baseFilter)
+    {
+      this.baseFilter = baseFilter;
+      return this;
+    }
+
+    public ProductionDataProfileRequestHelper SetTopFilter(Filter topFilter)
+    {
+      this.topFilter = topFilter;
+      return this;
+    }
+
+
     /// <summary>
     /// Creates an instance of the CompactionProfileProductionDataRequest class and populate it with data needed for a production data slice profile.   
     /// </summary>
@@ -39,7 +69,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <returns>An instance of the CompactionProfileProductionDataRequest class.</returns>
     public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees)
     {
-      var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians());
+      var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.LatDegreesToRadians(), startLonDegrees.LonDegreesToRadians(), endLatDegrees.LatDegreesToRadians(), endLonDegrees.LonDegreesToRadians());
 
       var liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
@@ -58,7 +88,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         ValidationConstants.MIN_STATION,
         liftBuildSettings,
         false,
-        DesignDescriptor);
+        DesignDescriptor,
+        baseFilter,
+        topFilter,
+        volCalcType,
+        volumeDesign);
     }
   }
 }

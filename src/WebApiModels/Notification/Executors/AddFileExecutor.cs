@@ -80,10 +80,13 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           var suffix = FileUtils.GeneratedFileSuffix(fileType);
           //Get PRJ file contents from Raptor
           log.LogDebug("Getting projection file from Raptor");
+          var dxfUnitsType = fileType == ImportedFileType.Linework
+            ? (TVLPDDistanceUnits)request.DXFUnitsType
+            : TVLPDDistanceUnits.vduMeters; //always metric for design surface and alignment as we generate the DXF file.
 
           string prjFile;
           var result2 = raptorClient.GetCoordinateSystemProjectionFile(request.projectId.Value,
-            TVLPDDistanceUnits.vduMeters, out prjFile);
+            dxfUnitsType, out prjFile);
           if (result2 != TASNodeErrorStatus.asneOK)
           {
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
@@ -98,7 +101,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           log.LogDebug("Getting horizontal adjustment file from Raptor");
           string haFile;
           var result3 = raptorClient.GetCoordinateSystemHorizontalAdjustmentFile(request.CoordSystemFileName,
-            request.projectId.Value, TVLPDDistanceUnits.vduMeters, out haFile);
+            request.projectId.Value, dxfUnitsType, out haFile);
           if (result3 != TASNodeErrorStatus.asneOK)
           {
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
@@ -113,7 +116,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           if (fileType != ImportedFileType.Linework)
           {
             //Get alignment or surface boundary as DXF file from Raptor
-            await CreateDxfFile(request.projectId.Value, request.File, suffix, request.UserPreferenceUnits);    
+            await CreateDxfFile(request.projectId.Value, request.File, suffix, request.DXFUnitsType);    
           }
           //Generate DXF tiles
           await tileGenerator.CreateDxfTiles(request.projectId.Value, request.File, suffix, false).ConfigureAwait(false);
@@ -178,7 +181,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
     /// <param name="fileDescr">The original file for which the associated file is created</param>
     /// <param name="suffix">The suffix applied to the file name to get the generated file name</param>
     /// <param name="userUnits">The user units preference</param>
-    private async Task<bool> CreateDxfFile(long projectId, FileDescriptor fileDescr, string suffix, UnitsTypeEnum userUnits)
+    private async Task<bool> CreateDxfFile(long projectId, FileDescriptor fileDescr, string suffix, DxfUnitsType userUnits)
     {
       const double ImperialFeetToMetres = 0.3048;
       const double USFeetToMetres = 0.304800609601;
@@ -189,16 +192,16 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
       TVLPDDistanceUnits raptorUnits;
       switch (userUnits)
       {
-        case UnitsTypeEnum.Imperial:
+        case DxfUnitsType.ImperialFeet:
           raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduImperialFeet;
           interval = 300 * ImperialFeetToMetres;
           break;
 
-        case UnitsTypeEnum.Metric:
+        case DxfUnitsType.Meters:
           raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduMeters;
           interval = 100;
           break;
-        case UnitsTypeEnum.US:
+        case DxfUnitsType.UsSurveyFeet:
         default:
           raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduUSSurveyFeet;
           interval = 300 * USFeetToMetres;

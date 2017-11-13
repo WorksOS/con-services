@@ -65,6 +65,19 @@
     "Code": 0,
     "Message": "success"
   },
+  "BoundaryFilter_PercentChangeSummary": {
+    "cmvChangeData": {
+      "percents": [
+        5.2297939778129949,
+        16.006339144215531,
+        21.130480718436345,
+        57.633386159535128
+      ],
+      "totalAreaCoveredSqMeters": 218.83080000000004
+    },
+    "Code": 0,
+    "Message": "success"
+  },
   "DesignOutside_Details": {
     "percents": [
       0,
@@ -131,6 +144,22 @@
       },
       "minCMVPercent": 80,
       "maxCMVPercent": 130
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "BoundaryFilter_Summary": {
+    "cmvSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 215.24720000000005,
+      "cmvTarget": {
+        "cmvMachineTarget": 70.0,
+        "targetVaries": false
+      },
+      "minCMVPercent": 80.0,
+      "maxCMVPercent": 130.0
     },
     "Code": 0,
     "Message": "success"

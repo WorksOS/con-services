@@ -112,6 +112,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
     /// <param name="fileType">Type of the file</param>
     /// <param name="fileId">A unique file identifier</param>
+    /// <param name="dxfUnitsType">A DXF file units type</param>
     /// <returns>A code and message to indicate the result</returns>
     /// <executor>AddFileExecutor</executor> 
     [ProjectUidVerifier]
@@ -122,16 +123,23 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
-      [FromQuery] long fileId)
+      [FromQuery] long fileId,
+      [FromQuery] DxfUnitsType dxfUnitsType)
     {
       log.LogDebug("GetAddFile: " + Request.QueryString);
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
       string coordSystem = projectDescr.coordinateSystemFileName;
       var customHeaders = Request.Headers.GetCustomHeaders();
-      var userPrefs = await prefProxy.GetUserPreferences(customHeaders);
-      var userUnits = userPrefs.Units.UnitsType();
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, coordSystem, userUnits, fileId, fileType);
+
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
+        projectDescr.projectId, 
+        projectUid, fileDes, 
+        coordSystem,
+        dxfUnitsType,
+        fileId, 
+        fileType);
+
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
@@ -182,7 +190,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         }
       }
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, UnitsTypeEnum.None, fileId, fileType);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType);
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);

@@ -16,16 +16,15 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
 {
   public class TIDAuthentication
   {
-    private readonly RequestDelegate _next;
+    private readonly RequestDelegate next;
     private readonly IProjectListProxy projectListProxy;
     private readonly ICustomerProxy customerProxy;
     private readonly ILogger log;
-    private CustomerDataResult _customerDataResult;
-
-
+    private CustomerDataResult customerDataResult;
+    
     public TIDAuthentication(RequestDelegate next, IProjectListProxy projectListProxy, ICustomerProxy customerProxy, ILoggerFactory logger)
     {
-      _next = next;
+      this.next = next;
       this.projectListProxy = projectListProxy;
       this.customerProxy = customerProxy;
       log = logger.CreateLogger<TIDAuthentication>();
@@ -85,10 +84,10 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
           // User must have authentication for this customer
           try
           {
-            _customerDataResult = await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
-            if (_customerDataResult.status != StatusCodes.Status200OK || _customerDataResult.customer == null ||
-                _customerDataResult.customer.Count < 1 ||
-                !_customerDataResult.customer.Exists(x => x.uid == customerUid))
+            this.customerDataResult = await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
+            if (this.customerDataResult.status != StatusCodes.Status200OK || this.customerDataResult.customer == null ||
+                this.customerDataResult.customer.Count < 1 ||
+                !this.customerDataResult.customer.Exists(x => x.uid == customerUid))
             {
               var error = $"User {userUid} is not authorized for this customer {customerUid}";
               log.LogWarning(error);
@@ -140,7 +139,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
           var principal = new RaptorPrincipal(identity, customerUid, authProjects, username,
             isApplicationContext
               ? "Application"
-              : _customerDataResult.customer.First(cst => cst.uid == customerUid).name, isApplicationContext);
+              : this.customerDataResult.customer.First(cst => cst.uid == customerUid).name, isApplicationContext);
           context.User = principal;
         }
         catch (Exception ex)
@@ -148,11 +147,12 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
           log.LogError($"Error setting custom context: {ex.GetBaseException().Message}.");
 
           await SetResult("Invalid authentication", context);
-          return;
 
+          return;
         }
       }
-      await _next.Invoke(context);
+
+      await this.next.Invoke(context);
     }
 
     private static async Task SetResult(string message, HttpContext context)
