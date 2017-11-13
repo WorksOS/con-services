@@ -23,7 +23,7 @@ namespace SurveyedSurfaceManager
         }
 
         private DeployAddSurveyedSurfaceService DeployedSurveyedSurfaceService = null;
-        private AddSurveyedSurfaceService SurveyedSurfaceService = null;
+        private SurveyedSurfaceService SurveyedSurfaceService = null;
 
         private bool CheckConnection()
         {
@@ -103,7 +103,7 @@ namespace SurveyedSurfaceManager
 
                 SurveyedSurfaces ss = DeployedSurveyedSurfaceService != null ? DeployedSurveyedSurfaceService.Invoke_List(ID) : SurveyedSurfaceService.ListDirect(ID);
 
-                if (ss == null)
+                if (ss == null || ss.Count == 0)
                     MessageBox.Show("No surveyed surfaces");
                 else
                     MessageBox.Show("Surveyed Surfaces:\n" + ss == null ? "None" : ss.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
@@ -116,8 +116,51 @@ namespace SurveyedSurfaceManager
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            SurveyedSurfaceService = new AddSurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName());
+            SurveyedSurfaceService = new SurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName());
             SurveyedSurfaceService.Init(null);
+        }
+
+        private void btnRemoveSurveyedSurface_Click(object sender, EventArgs e)
+        {
+            if (!CheckConnection())
+            {
+                return;
+            }
+
+            // Get the site model ID
+            if (!long.TryParse(txtSiteModelID.Text, out long SiteModelID))
+            {
+                MessageBox.Show("Invalid Site Model ID");
+                return;
+            }
+
+            // Get the site model ID
+            if (!long.TryParse(txtSurveyedSurfaceID.Text, out long SurveydSurfaceID))
+            {
+                MessageBox.Show("Invalid Surveyed Surface ID");
+                return;
+            }
+
+            // Invoke the service to remove the surveyed surface
+            try
+            {
+                bool result = false;
+
+                if (DeployedSurveyedSurfaceService != null)
+                {
+                    result = DeployedSurveyedSurfaceService.Invoke_Remove(SiteModelID, SurveydSurfaceID);
+                }
+                else
+                {
+                    result = SurveyedSurfaceService.RemoveDirect(SiteModelID, SurveydSurfaceID);
+                }
+
+                MessageBox.Show($"Result for removing surveyed surface ID {SurveydSurfaceID} from Site Model {SiteModelID}: {result}");
+            }
+            catch (Exception E)
+            {
+                MessageBox.Show($"Exception: {E}");
+            }
         }
     }
 }

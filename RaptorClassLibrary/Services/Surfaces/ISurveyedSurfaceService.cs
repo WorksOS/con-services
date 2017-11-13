@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
     /// <summary>
     /// Interface detailing the API for the service that supports adding new surveyed surfaces
     /// </summary>
-    public interface IAddSurveyedSurfaceService
+    public interface ISurveyedSurfaceService
     {
         /// <summary>
         /// Add a new surveyd surface to a site model
@@ -26,5 +26,12 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
         SurveyedSurfaces List(long SiteModelID);
+
+        /// <summary>
+        /// Removes a surveyed surfaces from a site model
+        /// </summary>
+        /// <param name="SiteModelID"></param>
+        /// <returns></returns>
+        bool Remove(long SiteModelID, long SurveySurfaceID);
     }
 }

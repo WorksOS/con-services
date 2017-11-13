@@ -85,23 +85,35 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// <param name="ADesignDescriptor"></param>
         /// <param name="AAsAtDate"></param>
         /// <returns></returns>
-        public SurveyedSurface AddSurveyedSurfaceDetails(long AGroundSurfaceID,
+        public SurveyedSurface AddSurveyedSurfaceDetails(long ASurveyedSurfaceID,
                                                        DesignDescriptor ADesignDescriptor,
                                                        DateTime AAsAtDate)
         {
-            SurveyedSurface match = this.Find(x => x.ID == AGroundSurfaceID);
+            SurveyedSurface match = this.Find(x => x.ID == ASurveyedSurfaceID);
 
             if (match != null)
             {
                 return match;
             }
 
-            SurveyedSurface ss = new SurveyedSurface(AGroundSurfaceID, ADesignDescriptor, AAsAtDate);
-            Add(new SurveyedSurface(AGroundSurfaceID, ADesignDescriptor, AAsAtDate));
+            SurveyedSurface ss = new SurveyedSurface(ASurveyedSurfaceID, ADesignDescriptor, AAsAtDate);
+            Add(new SurveyedSurface(ASurveyedSurfaceID, ADesignDescriptor, AAsAtDate));
 
             Sort();
 
             return ss;
+        }
+
+        /// <summary>
+        /// Remove a given surveyed surface from the list of surveyed surfaces for a site model
+        /// </summary>
+        /// <param name="ASurveyedSurfaceID"></param>
+        /// <returns></returns>
+        public bool RemoveSurveyedSurface(long ASurveyedSurfaceID)
+        {
+            SurveyedSurface match = this.Find(x => x.ID == ASurveyedSurfaceID);
+
+            return match == null ? false : this.Remove(match);
         }
 
         public SurveyedSurface Locate(long AID) => this.Find(x => x.ID == AID);

@@ -38,11 +38,14 @@
             this.btnRegisterServices = new System.Windows.Forms.Button();
             this.bntListSurveyedSurfaces = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtSurveyedSurfaceID = new System.Windows.Forms.TextBox();
+            this.btnRemoveSurveyedSurface = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnAddNewSurveyedSurface
             // 
-            this.btnAddNewSurveyedSurface.Location = new System.Drawing.Point(30, 190);
+            this.btnAddNewSurveyedSurface.Location = new System.Drawing.Point(30, 161);
             this.btnAddNewSurveyedSurface.Name = "btnAddNewSurveyedSurface";
             this.btnAddNewSurveyedSurface.Size = new System.Drawing.Size(166, 23);
             this.btnAddNewSurveyedSurface.TabIndex = 0;
@@ -103,7 +106,7 @@
             // 
             // btnRegisterServices
             // 
-            this.btnRegisterServices.Location = new System.Drawing.Point(475, 161);
+            this.btnRegisterServices.Location = new System.Drawing.Point(475, 180);
             this.btnRegisterServices.Name = "btnRegisterServices";
             this.btnRegisterServices.Size = new System.Drawing.Size(166, 23);
             this.btnRegisterServices.TabIndex = 7;
@@ -113,7 +116,7 @@
             // 
             // bntListSurveyedSurfaces
             // 
-            this.bntListSurveyedSurfaces.Location = new System.Drawing.Point(251, 190);
+            this.bntListSurveyedSurfaces.Location = new System.Drawing.Point(475, 109);
             this.bntListSurveyedSurfaces.Name = "bntListSurveyedSurfaces";
             this.bntListSurveyedSurfaces.Size = new System.Drawing.Size(166, 23);
             this.bntListSurveyedSurfaces.TabIndex = 8;
@@ -123,7 +126,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(475, 190);
+            this.button1.Location = new System.Drawing.Point(475, 209);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(166, 23);
             this.button1.TabIndex = 9;
@@ -131,11 +134,41 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(538, 17);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(103, 13);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Surveyd Surface ID:";
+            // 
+            // txtSurveyedSurfaceID
+            // 
+            this.txtSurveyedSurfaceID.Location = new System.Drawing.Point(541, 33);
+            this.txtSurveyedSurfaceID.Name = "txtSurveyedSurfaceID";
+            this.txtSurveyedSurfaceID.Size = new System.Drawing.Size(100, 20);
+            this.txtSurveyedSurfaceID.TabIndex = 10;
+            this.txtSurveyedSurfaceID.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // btnRemoveSurveyedSurface
+            // 
+            this.btnRemoveSurveyedSurface.Location = new System.Drawing.Point(475, 62);
+            this.btnRemoveSurveyedSurface.Name = "btnRemoveSurveyedSurface";
+            this.btnRemoveSurveyedSurface.Size = new System.Drawing.Size(166, 23);
+            this.btnRemoveSurveyedSurface.TabIndex = 12;
+            this.btnRemoveSurveyedSurface.Text = "Remove Surveyed Surface";
+            this.btnRemoveSurveyedSurface.UseVisualStyleBackColor = true;
+            this.btnRemoveSurveyedSurface.Click += new System.EventHandler(this.btnRemoveSurveyedSurface_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(668, 244);
+            this.Controls.Add(this.btnRemoveSurveyedSurface);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.txtSurveyedSurfaceID);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.bntListSurveyedSurfaces);
             this.Controls.Add(this.btnRegisterServices);
@@ -165,6 +198,9 @@
         private System.Windows.Forms.Button btnRegisterServices;
         private System.Windows.Forms.Button bntListSurveyedSurfaces;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txtSurveyedSurfaceID;
+        private System.Windows.Forms.Button btnRemoveSurveyedSurface;
     }
 }
 

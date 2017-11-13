@@ -44,7 +44,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <summary>
         /// The proxy to the deploy service
         /// </summary>
-        private IAddSurveyedSurfaceService proxy = null;
+        private ISurveyedSurfaceService proxy = null;
 
         /// <summary>
         /// No-arg constructor that instantiates the Ignitre instance, cluster, service and proxy members
@@ -72,9 +72,9 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
             // Deploy per-node singleton. An instance of the service
             // will be deployed on every node within the cluster group.
             //services.DeployNodeSingleton(ServiceName, new AddSurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName()));
-            services.DeployClusterSingleton(ServiceName, new AddSurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName()));
+            services.DeployClusterSingleton(ServiceName, new SurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName()));
 
-            proxy = services.GetServiceProxy<IAddSurveyedSurfaceService>(ServiceName, true);
+            proxy = services.GetServiceProxy<ISurveyedSurfaceService>(ServiceName, true);
         }
 
         /// <summary>
@@ -86,6 +86,11 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         public void Invoke_Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate)
         {
             proxy.Add(SiteModelID, designDescriptor, asAtDate);
+        }
+
+        public bool Invoke_Remove(long SiteModelID, long SurveyedSurfaceID)
+        {
+            return proxy.Remove(SiteModelID, SurveyedSurfaceID);
         }
 
         /// <summary>

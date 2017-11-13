@@ -9,7 +9,7 @@ using VSS.VisionLink.Raptor.Surfaces;
 namespace VSS.VisionLink.Raptor.Services.Surfaces
 {
     /// <summary>
-    /// Service processor to handle adding a new survyedd surface to the list for a sitemodel
+    /// Service processor to handle adding a new surveyed surface to the list for a sitemodel
     /// </summary>
     [Serializable]
     public class AddSurveyedSurfaceProcessor : ICacheEntryProcessor<string, byte[], SurveyedSurface, bool>

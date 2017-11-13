@@ -82,9 +82,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 return null;
             }
 
-            Result = new SubGridCellPassesDataSegment();
-            Result.Owner = subGrid;
-            Result.SegmentInfo = segmentInfo;
+            Result = new SubGridCellPassesDataSegment
+            {
+                Owner = subGrid,
+                SegmentInfo = segmentInfo
+            };
             segmentInfo.Segment = Result;
 
             //  SubGrid.CachedMemorySizeOutOfDate = True;
