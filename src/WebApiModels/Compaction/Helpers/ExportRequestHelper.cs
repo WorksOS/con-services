@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
         if (machineDetails != null)
         {
-          if (machineNames != null && machineNames != "All")
+          if (!string.IsNullOrEmpty(machineNames) && machineNames != "All")
           {
             var machineNamesArray = machineNames.Split(',');
             machineDetails = machineDetails.Where(machineDetail => machineNamesArray.Contains(machineDetail.Name)).ToArray();
