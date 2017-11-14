@@ -16,7 +16,7 @@ rem start C:\Dev\VSS.Raptor.IgnitePOC\RaptorServerApplication\bin\debug\RaptorSe
 rem timeout 7
 start C:\Dev\VSS.Raptor.IgnitePOC\RaptorDesignElevationsServer\bin\debug\RaptorDesignElevationsServer.exe
 timeout 7
-start C:\Dev\VSS.Raptor.IgnitePOC\WindowsFormsApplication1\bin\debug\WindowsFormsApplication1.exe
+start C:\Dev\VSS.Raptor.IgnitePOC\WindowsFormsApplication1\bin\debug\RaptorIgniteTest.exe
 timeout 7
 start C:\Dev\VSS.Raptor.IgnitePOC\RaptorGridActivator\bin\debug\RaptorGridActivator.exe
 

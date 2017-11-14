@@ -32,11 +32,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
     {
         BoundingWorldExtent3D extents = BoundingWorldExtent3D.Inverted();
 
-        RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
-        RaptorTileRenderingServer tileRender = RaptorTileRenderingServer.NewInstance();
+        //        RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
+        RaptorTileRenderingServer tileRender = null;
 
         /// <summary>
-        /// Convert the Projecft ID in the text box into a number. It if is invalid return project ID 2 as a default
+        /// Convert the Project ID in the text box into a number. It if is invalid return project ID 2 as a default
         /// </summary>
         /// <returns></returns>
         private long ID()
@@ -83,8 +83,12 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                  null, // filter 2
                  new DesignDescriptor()
                  {
-                     Folder = @"C:\Temp",
-                     FileName = @"Bug36372.ttm"
+                     // Folder = @"C:\Temp",
+                     //FileName = @"Bug36372.ttm"
+
+                     Folder = @"J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Dimensions 2012\BC Data\Sites\BootCamp 2012\Designs(linework in USFt)\Original Ground Survey",
+                     FileName = @"Original Ground Survey - Dimensions 2012.ttm"
+
                  }
                 ));
             }
@@ -106,6 +110,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             }
 
             displayMode.SelectedIndex = (int)DisplayMode.Height;
+
+            tileRender = RaptorTileRenderingServer.NewInstance();
         }
 
         private void Form1_Load(object sender, EventArgs e)
