@@ -161,7 +161,7 @@ namespace IntegrationTests
       var custEventArray = new[] {
        "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | ProjectUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType | DeviceUID   | AssetUID      |",
       $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |              |                   |                    |         |                  |             |               |",
-      $"| CreateAssetSubscriptionEvent      | 0d+09:01:00 |              |              | {customerUid} |              | {subscriptionUid} |{ts.FirstEventDate} | {endDt} | Landfill         | {deviceUid} | {ts.AssetUid} |"};
+      $"| CreateProjectSubscriptionEvent    | 0d+09:01:00 |              |              | {customerUid} |              | {subscriptionUid} |{ts.FirstEventDate} | {endDt} | Landfill         | {deviceUid} | {ts.AssetUid} |"};
       ts.PublishEventCollection(custEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
 
@@ -217,7 +217,7 @@ namespace IntegrationTests
       var custEventArray = new[] {
        "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | ProjectUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType | DeviceUID   | AssetUID      |",
       $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |              |                   |                    |         |                  |             |               |",
-      $"| CreateAssetSubscriptionEvent      | 0d+09:01:00 |              |              | {customerUid} |              | {subscriptionUid} |{ts.FirstEventDate} | {endDt} | Landfill         | {deviceUid} | {ts.AssetUid} |"};
+      $"| CreateProjectSubscriptionEvent      | 0d+09:01:00 |              |              | {customerUid} |              | {subscriptionUid} |{ts.FirstEventDate} | {endDt} | Landfill         | {deviceUid} | {ts.AssetUid} |"};
       ts.PublishEventCollection(custEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
 

@@ -79,7 +79,7 @@ namespace IntegrationTests
       var custEventArray = new[] { 
        "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | ProjectUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType             |",
       $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |              |                   |                    |         |                              |",
-      $"| CreateProjectSubscriptionEvent    | 0d+09:01:00 |              |              | {customerUid} |              | {subscriptionUid} |{ts.FirstEventDate} | {endDt} | Manual 3D Project Monitoring |",
+      $"| CreateCustomerSubscriptionEvent   | 0d+09:01:00 |              |              | {customerUid} |              | {subscriptionUid} |{ts.FirstEventDate} | {endDt} | Manual 3D Project Monitoring |",
       $"| AssociateProjectSubscriptionEvent | 0d+09:02:00 |              |              |               | {projectUid} | {subscriptionUid} |                    |         |                              |"};
 
       ts.PublishEventCollection(custEventArray);
@@ -199,7 +199,7 @@ namespace IntegrationTests
       var custEventArray = new[] { 
        "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | ProjectUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType | DeviceUID   | AssetUID      |",
       $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |              |                   |                    |         |                  |             |               |",
-      $"| CreateAssetSubscriptionEvent      | 0d+09:01:00 |              |              | {customerUid} |              | {subscriptionUid} |{ts.FirstEventDate} | {endDt} | Landfill         | {deviceUid} | {ts.AssetUid} |"};
+      $"| CreateProjectSubscriptionEvent    | 0d+09:01:00 |              |              | {customerUid} |              | {subscriptionUid} |{ts.FirstEventDate} | {endDt} | Landfill         | {deviceUid} | {ts.AssetUid} |"};
 
       ts.PublishEventCollection(custEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
