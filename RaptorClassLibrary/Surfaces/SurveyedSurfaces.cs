@@ -162,38 +162,61 @@ namespace VSS.VisionLink.Raptor.Surfaces
             return this.Any(x => x.AsAtDate.CompareTo(TimeStamp) < 0);
         }
 
-        public void FilterGroundSurfaceDetails(bool HasTimeFilter,
-                                               DateTime StartTime, DateTime EndTime,
-                                               bool ExcludeSurveyedSurfaces,
-                                               SurveyedSurfaces FilteredGroundSurfaceDetails,
-                                               long[] ExclusionList)
+        /// <summary>
+        /// Determine if the surveyed surfaces in this list are the same as the surveyed surfaces in the other list, based on ID comparison
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool IsSameAs(SurveyedSurfaces other)
+        {
+            if (Count != other.Count)
+            {
+                return false;
+            }
+
+            for (int I = 0; I < Count; I++)
+            {
+                if (this[I].ID != other[I].ID)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public void FilterSurveyedSurfaceDetails(bool HasTimeFilter,
+                                                 DateTime StartTime, DateTime EndTime,
+                                                 bool ExcludeSurveyedSurfaces,
+                                                 SurveyedSurfaces FilteredSurveyedSurfaceDetails,
+                                                 long[] ExclusionList)
         {
             if (ExcludeSurveyedSurfaces)
             {
-                FilteredGroundSurfaceDetails.Clear();
+                FilteredSurveyedSurfaceDetails.Clear();
                 return;
             }
 
             if (!HasTimeFilter && ExclusionList.Count() == 0)
             {
-                FilteredGroundSurfaceDetails.Assign(this);
+                FilteredSurveyedSurfaceDetails.Assign(this);
                 return;
             }
 
-            FilteredGroundSurfaceDetails.Clear();
+            FilteredSurveyedSurfaceDetails.Clear();
             foreach (SurveyedSurface ss in this)
             {
                 if (!ExclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
                 {
                     if (!HasTimeFilter)
                     {
-                        FilteredGroundSurfaceDetails.Add(ss.Clone());
+                        FilteredSurveyedSurfaceDetails.Add(ss.Clone());
                     }
                     else
                     {
                         if (ss.AsAtDate >= StartTime && ss.AsAtDate >= EndTime)
                         {
-                            FilteredGroundSurfaceDetails.Add(ss.Clone());
+                            FilteredSurveyedSurfaceDetails.Add(ss.Clone());
                         }
                     }
                 }

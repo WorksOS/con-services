@@ -22,7 +22,7 @@ namespace SurveyedSurfaceManager
             InitializeComponent();
         }
 
-        private DeployAddSurveyedSurfaceService DeployedSurveyedSurfaceService = null;
+        private SurveyedSurfaceServiceProxy DeployedSurveyedSurfaceService = null;
         private SurveyedSurfaceService SurveyedSurfaceService = null;
 
         private bool CheckConnection()
@@ -73,7 +73,7 @@ namespace SurveyedSurfaceManager
         private void button2_Click(object sender, EventArgs e)
         {
             // Deploy the service as a cluster singleton
-            DeployedSurveyedSurfaceService = new DeployAddSurveyedSurfaceService();
+            DeployedSurveyedSurfaceService = new SurveyedSurfaceServiceProxy();
 
             try
             { 

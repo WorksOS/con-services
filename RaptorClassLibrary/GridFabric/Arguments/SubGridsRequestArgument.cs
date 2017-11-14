@@ -46,6 +46,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         public string MessageTopic { get; set; } = String.Empty;
 
         /// <summary>
+        /// Denotes whether results of these requests should include any surveyed surfaces in the site model
+        /// </summary>
+        public bool IncludeSurveyedSurfaceInformation { get; set; } = false;
+
+        /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public SubGridsRequestArgument()
+        {
+
+        }
+
+        /// <summary>
         /// Full constructor for a subgrids request
         /// </summary>
         /// <param name="siteModelID"></param>
@@ -53,11 +66,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         /// <param name="gridDataType"></param>
         /// <param name="maskStream"></param>
         /// <param name="messageTopic"></param>
-        public SubGridsRequestArgument(long siteModelID, long requestID, GridDataType gridDataType, MemoryStream maskStream, FilterSet filters, string messageTopic, string raptorNodeID)
+        public SubGridsRequestArgument(long siteModelID, 
+                                       long requestID, 
+                                       GridDataType gridDataType, 
+                                       bool includeSurveyedSurfaceInformation,
+                                       MemoryStream maskStream, 
+                                       FilterSet filters, 
+                                       string messageTopic, 
+                                       string raptorNodeID) : this()
         {
             SiteModelID = siteModelID;
             RequestID = requestID;
             GridDataType = gridDataType;
+            IncludeSurveyedSurfaceInformation = includeSurveyedSurfaceInformation;
             MaskStream = maskStream;
             Filters = filters;
             MessageTopic = messageTopic;

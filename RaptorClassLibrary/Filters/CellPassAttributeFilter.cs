@@ -184,7 +184,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <summary>
         /// The list of surveyed surface identifiers to be exluded from the filtered result
         /// </summary>
-        public long[] SurveyedSurfaceExclusionList { get; set; } = null; // note this is not saved in the database and must be set in the server
+        public long[] SurveyedSurfaceExclusionList { get; set; } = new long[0]; // note this is not saved in the database and must be set in the server
 
         //TODO add when machine sets are implemented 
         //  public something[] MachineIDSets

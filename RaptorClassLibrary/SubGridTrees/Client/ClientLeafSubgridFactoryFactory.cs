@@ -32,6 +32,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 
                 // Hardwiring registration of client data types here. May want to make this more dependency injection controlled....
                 instance.RegisterClientLeafSubGridType(GridDataType.Height, typeof(ClientHeightLeafSubGrid));
+                instance.RegisterClientLeafSubGridType(GridDataType.HeightAndTime, typeof(ClientHeightAndTimeLeafSubGrid));
                 instance.RegisterClientLeafSubGridType(GridDataType.MachineSpeed, typeof(ClientmachineSpeedLeafSubGrid));
                 instance.RegisterClientLeafSubGridType(GridDataType.CCV, typeof(ClientCMVLeafSubGrid));
                 instance.RegisterClientLeafSubGridType(GridDataType.Temperature, typeof(ClientTemperatureLeafSubGrid));

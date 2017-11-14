@@ -71,6 +71,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         public FilterSet Filters { get; set; } = null;
 
         /// <summary>
+        /// Denotes whether results of these requests should include any surveyed surfaces in the site model
+        /// </summary>
+        public bool IncludeSurveyedSurfaceInformation { get; set; } = false;
+
+        /// <summary>
         /// No arg constructor
         /// </summary>
         public SubGridRequests()
@@ -87,6 +92,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
                                long requestID, 
                                string raptorNodeID, 
                                GridDataType requestedGridDataType, 
+                               bool includeSurveyedSurfaceInformation,
                                SubGridTreeBitMask mask, 
                                FilterSet filters) : this()
         {
@@ -94,6 +100,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             SiteModelID = siteModelID;
             RequestID = requestID;
             RequestedGridDataType = requestedGridDataType;
+            IncludeSurveyedSurfaceInformation = includeSurveyedSurfaceInformation;
             Mask = mask;
             Filters = filters;
             RaptorNodeID = raptorNodeID;
@@ -106,7 +113,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             SubGridTreePersistor.Write(Mask, new BinaryWriter(MS, Encoding.UTF8, true));
             MS.Position = 0;
              
-            return new SubGridsRequestArgument(SiteModelID, RequestID, RequestedGridDataType, MS, Filters, String.Format("SubGridRequest:{0}", RequestID), RaptorNodeID);
+            return new SubGridsRequestArgument(SiteModelID, 
+                                               RequestID, 
+                                               RequestedGridDataType,
+                                               IncludeSurveyedSurfaceInformation,
+                                               MS, 
+                                               Filters, 
+                                               String.Format("SubGridRequest:{0}", RequestID), 
+                                               RaptorNodeID);
         }
 
         /// <summary>
@@ -128,7 +142,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             SubGridsRequestArgument arg = PrepareArgument();
 
             Log.InfoFormat("Prepared argument has RaptorNodeID = {0}", arg.RaptorNodeID);
-
             Log.Info(String.Format("Mask in argument to renderer contains {0} subgrids", Mask.CountBits()));
 
             // Construct the function to be used

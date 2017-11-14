@@ -94,9 +94,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <returns>An appropriate instance derived from ClientLeafSubgrid</returns>
         public IClientLeafSubGrid GetSubGrid(GridDataType gridDataType)
         {
-            IClientLeafSubGrid result = null;
-
-            if (ClientLeaves[(int)gridDataType].TryTake(out result))
+            if (ClientLeaves[(int)gridDataType].TryTake(out IClientLeafSubGrid result))
             {
                 result.Clear();
                 return result;
@@ -108,7 +106,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
                             null, // Subgrid tree owner
                             null, // Subgrid parent
                             SubGridTree.SubGridTreeLevels, // Level, default to standard tree levels
-                            0.0, // Cell Size
+                            SubGridTree.DefaultCellSize, // Cell Size
                             SubGridTree.DefaultIndexOriginOffset // IndexOfiginOffset, default to tree default value
                             );
             }
@@ -120,8 +118,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="clientGrid"></param>
         public void ReturnClientSubGrid(ref IClientLeafSubGrid clientGrid)
         {
-            ClientLeaves[(int)clientGrid.GridDataType].Add(clientGrid);
+            if (clientGrid == null)
+            {
+                return;
+            }
 
+            ClientLeaves[(int)clientGrid.GridDataType].Add(clientGrid);
             clientGrid = null;
         }
 

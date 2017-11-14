@@ -491,8 +491,8 @@ double BorderSize)
         {
             double Aspect = (double)BitmapCanvas.Height / (double)BitmapCanvas.Width;
 
-            Utilities.MinMax.SetMinMax(ref MinX, ref MaxX);
-            Utilities.MinMax.SetMinMax(ref MinY, ref MaxY);
+            Raptor.Utilities.MinMax.SetMinMax(ref MinX, ref MaxX);
+            Raptor.Utilities.MinMax.SetMinMax(ref MinY, ref MaxY);
 
             // We restrict the maximum zoom extent (ie width/height across view) to +-20,000,000 metres
             if ((MaxX - MinX) > MaxViewDimensionMetres)
@@ -561,8 +561,8 @@ double BorderSize)
 
             double AspectRatio = ((double)ClipHeight + 1) / ((double)ClipWidth + 1);
 
-            Utilities.MinMax.SetMinMax(ref MinX, ref MaxX);
-            Utilities.MinMax.SetMinMax(ref MinY, ref MaxY);
+            Raptor.Utilities.MinMax.SetMinMax(ref MinX, ref MaxX);
+            Raptor.Utilities.MinMax.SetMinMax(ref MinY, ref MaxY);
 
             double BorderWidthX = (MaxX - MinX) * BorderSize;
             double BorderWidthY = (MaxY - MinY) * BorderSize;

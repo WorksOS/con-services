@@ -9,6 +9,7 @@ using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Interfaces;
+using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
@@ -93,7 +94,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
             SubGridTreeBitmapSubGridBits ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
 
-            SurveyedSurfaces FilteredGroundSurfaces;
+            SurveyedSurfaces FilteredSurveyedSurfaces;
             ClientHeightAndTimeLeafSubGrid ClientGridAsHeightAndTime = null;
             ClientHeightAndTimeLeafSubGrid SurfaceElevations = null;
             SubGridCellHeightAndTime SurveyedSurfaceCell;
@@ -294,52 +295,41 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             // if VLPDSvcLocations.Debug_SwitchOffCompositeSurfaceGenerationFromSurveyedSurfaces then
             // Exit;
 
-            if (ASurveyedSurfaceDataRequested || Result != ServerRequestResult.NoError)
+            return Result;
+
+            if (!ASurveyedSurfaceDataRequested || Result != ServerRequestResult.NoError)
             {
                 return Result;
             }
 
-            ///* TODO - Surveyed surfaces not yet supported
             ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime = ClientGrid is ClientHeightAndTimeLeafSubGrid;
-//            ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile = ClientGrid is ClientCellProfileLeafSubGrid; // TICClientSubGridTreeLeaf_CellProfile;
+
+            ///* TODO - cell profiles not yet supported
+            // ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile = ClientGrid is ClientCellProfileLeafSubGrid; // TICClientSubGridTreeLeaf_CellProfile;
 
             // If we're requesting heights, we need to determine if any surveyed surfaces should be used to provide more up to date elevations
             if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime /* || ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile */)
             {
-                FilteredGroundSurfaces = null;
+                FilteredSurveyedSurfaces = null;
 
-                /* TODO: No persistence for Surveyed surfaces
-                if (!SiteModel.SurveyedSurfacesLoaded)
+                // Obtain local reference to surveyed surface list. If it is replaced while processing the
+                // list then the local reference will still be valid allowing lock free read access to the list.
+                SurveyedSurfaces SurveyedSurfaceList = SiteModel.SurveyedSurfaces;
+                if (SurveyedSurfaceList.Count > 0)
                 {
-                    SiteModel.ReadGroundSurfacesFromDataModel();
-                }
-                */
+                    FilteredSurveyedSurfaces = new SurveyedSurfaces();
 
-                // TODO: No locking implementation in POC - need to determine if one is needed at all...
-                // SiteModel.SurveyedSurfaces.AcquireReadAccessInterlock;
-                try
-                {
-                    if (SiteModel.SurveyedSurfacesLoaded && SiteModel.SurveyedSurfaces.Count > 0)
-                    {
-                        FilteredGroundSurfaces = new SurveyedSurfaces();
-
-                        // Filter out any ground surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
-                        SiteModel.SurveyedSurfaces.FilterGroundSurfaceDetails(Filter.AttributeFilter.HasTimeFilter, 
-                             Filter.AttributeFilter.StartTime, Filter.AttributeFilter.EndTime, 
-                             Filter.AttributeFilter.ExcludeSurveyedSurfaces(), FilteredGroundSurfaces, 
-                             Filter.AttributeFilter.SurveyedSurfaceExclusionList);
-                    }
-                }
-                finally
-                {
-                    // TODO: No locking implementation in POC - need to determine if one is needed at all...
-                    // SiteModel.SurveyedSurfaces.ReleaseReadAccessInterlock();
+                    // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
+                    SurveyedSurfaceList.FilterSurveyedSurfaceDetails(Filter.AttributeFilter.HasTimeFilter,
+                         Filter.AttributeFilter.StartTime, Filter.AttributeFilter.EndTime,
+                         Filter.AttributeFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
+                         Filter.AttributeFilter.SurveyedSurfaceExclusionList);
                 }
 
-                if (FilteredGroundSurfaces != null && FilteredGroundSurfaces.Count > 0)
+                if (FilteredSurveyedSurfaces != null && FilteredSurveyedSurfaces.Count > 0)
                 {
                     // Ensure that the filtered ground surfaces are in a known ordered state
-                    FilteredGroundSurfaces.SortChronologically();
+                    FilteredSurveyedSurfaces.SortChronologically();
 
                     if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
                     {
@@ -354,65 +344,69 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                         {
                             ProcessingMap.ForEachSetBit((I, J) =>
                             {
-                                if (ClientGridAsHeightAndTime.Cells[I, J].Height != Consts.NullHeight)
+                                if (ClientGridAsHeightAndTime.Cells[I, J].Height == Consts.NullHeight)
                                 {
-                                    if (Filter.AttributeFilter.ReturnEarliestFilteredCellPass)
+                                    return;
+                                }
+
+                                if (Filter.AttributeFilter.ReturnEarliestFilteredCellPass)
+                                {
+                                    if (!FilteredSurveyedSurfaces.HasSurfaceEarlierThan(ClientGridAsHeightAndTime.Cells[I, J].Time))
                                     {
-                                        if (!FilteredGroundSurfaces.HasSurfaceEarlierThan(ClientGridAsHeightAndTime.Cells[I, J].Time))
-                                        {
-                                            ProcessingMap.ClearBit(I, J);
-                                        }
+                                        ProcessingMap.ClearBit(I, J);
                                     }
-                                    else
+                                }
+                                else
+                                {
+                                    if (!FilteredSurveyedSurfaces.HasSurfaceLaterThan(ClientGridAsHeightAndTime.Cells[I, J].Time))
                                     {
-                                        if (!FilteredGroundSurfaces.HasSurfaceLaterThan(ClientGridAsHeightAndTime.Cells[I, J].Time))
-                                        {
-                                            ProcessingMap.ClearBit(I, J);
-                                        }
+                                        ProcessingMap.ClearBit(I, J);
                                     }
                                 }
                             });
                         }
                     }
                     /*
-                                        else
-                                        if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
-                                        {
-                                            ClientGridAsCellProfile = TICClientSubGridTreeLeaf_CellProfile(ClientGrid);
-                                            ProcessingMap.Assign(ClientGridAsCellProfile .FilterMap);
+                    else
+                    if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
+                    {
+                        ClientGridAsCellProfile = TICClientSubGridTreeLeaf_CellProfile(ClientGrid);
+                        ProcessingMap.Assign(ClientGridAsCellProfile .FilterMap);
+                        
+                        // If we're interested in a particular cell, but we don't have any
+                        // surveyed surfaces later (or earlier) than the cell production data
+                        // pass time (depending on PassFilter.ReturnEarliestFilteredCellPass)
+                        // then there's no point in asking the Design Profiler service for an elevation
+                        if (Result == ServerRequestResult.NoError)
+                        {
+                            ProcessingMap.ForEachSetBit((I, J) =>
+                            {
+                                if (ClientGridAsCellProfile.Cells[I, J].Height == Consts.NullHeight)
+                                {
+                                    return;
+                                }
 
-                                            // If we're interested in a particular cell, but we don't have any
-                                            // surveyed surfaces later (or earlier) than the cell production data
-                                            // pass time (depending on PassFilter.ReturnEarliestFilteredCellPass)
-                                            // then there's no point in asking the Design Profiler service for an elevation
-                                            if (Result == ServerRequestResult.NoError)
-                                            {
-                                                ProcessingMap.ForEachSetBit((I, J) =>
-                                                {
-                                                    if (ClientGridAsCellProfile.Cells[I, J].Height != Consts.NullHeight)
-                                                    {
-                                                        if (Filter.AttributeFilter.ReturnEarliestFilteredCellPass)
-                                                        {
-                                                            if (!FilteredGroundSurfaces.HasSurfaceEarlierThan(ClientGridAsCellProfile.Cells[I, J].Time))
-                                                            {
-                                                                ProcessingMap.ClearBit(I, J);
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            if (!FilteredGroundSurfaces.HasSurfaceLaterThan(ClientGridAsCellProfile.Cells[I, J].Time))
-                                                            {
-                                                                ProcessingMap.ClearBit(I, J);
-                                                            }
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        }
-                    */
+                                if (Filter.AttributeFilter.ReturnEarliestFilteredCellPass)
+                                {
+                                    if (!FilteredSurveyedSurfaces.HasSurfaceEarlierThan(ClientGridAsCellProfile.Cells[I, J].Time))
+                                    {
+                                        ProcessingMap.ClearBit(I, J);
+                                    }
+                                }
+                                else
+                                {
+                                    if (!FilteredSurveyedSurfaces.HasSurfaceLaterThan(ClientGridAsCellProfile.Cells[I, J].Time))
+                                    {
+                                        ProcessingMap.ClearBit(I, J);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    */ 
 
-                // If we still have any cells to request surveyed surface elevations for...
-                if (ProcessingMap.IsEmpty())
+                    // If we still have any cells to request surveyed surface elevations for...
+                    if (ProcessingMap.IsEmpty())
                     {
                         return Result;
                     }
@@ -430,9 +424,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                             OTGCellBottomLeftY = ClientGrid.OriginY,
                             EarliestSurface = Filter.AttributeFilter.ReturnEarliestFilteredCellPass,
                             ProcessingMap = ProcessingMap,
-                            IncludedSurveyedSurfaces = FilteredGroundSurfaces
+                            IncludedSurveyedSurfaces = FilteredSurveyedSurfaces
                         });
 
+                        if (SurfaceElevations == null)
+                        {
+                            return Result;
+                        }
                         // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
 /*
                           if (PSNodeImplInstance.DesignProfilerService.RequestSurfaceElevationPatch
@@ -523,7 +521,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                             }
                             else
                             {
-                                // We didn't get a surveyed surface elevation, so clear the bit so that ASNode won't render it as a surveyed surface
+                                // We didn't get a surveyed surface elevation, so clear the bit so that the renderer won't render it as a surveyed surface
                                 ProcessingMap.ClearBit(I, J);
                             }
                         });
@@ -537,11 +535,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     }
                     finally
                     {
+                    // TODO: Use client subgrid pool...
                     //    PSNodeImplInstance.RequestProcessor.RepatriateClientGrid(TICSubGridTreeLeafSubGridBase(SurfaceElevations));
                     }
                 }
             }
-            /**/
 
 //            Log.Info("Exiting RequestSubGridInternal");
 

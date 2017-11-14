@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
     /// <summary>
     /// Class responsible for deploying the add surveyed surface service
     /// </summary>
-    public class DeployAddSurveyedSurfaceService
+    public class SurveyedSurfaceServiceProxy
     {
         /// <summary>
         /// The cluster wide name of the deployed service
@@ -49,7 +49,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <summary>
         /// No-arg constructor that instantiates the Ignitre instance, cluster, service and proxy members
         /// </summary>
-        public DeployAddSurveyedSurfaceService()
+        public SurveyedSurfaceServiceProxy()
         {
             _ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
 

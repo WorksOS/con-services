@@ -192,7 +192,14 @@ namespace VSS.VisionLink.Raptor.Pipelines
             }
 
             // Send the subgrid request mask to the grid fabric layer for processing
-            SubGridRequests gridFabricRequest = new SubGridRequests(PipelineTask, DataModelID, PipelineTask.RequestDescriptor, PipelineTask.RaptorNodeID, GridDataType, analyser.Mask, FilterSet);
+            SubGridRequests gridFabricRequest = new SubGridRequests(PipelineTask, 
+                                                                    DataModelID, 
+                                                                    PipelineTask.RequestDescriptor, 
+                                                                    PipelineTask.RaptorNodeID, 
+                                                                    GridDataType,
+                                                                    IncludeSurveyedSurfaceInformation,
+                                                                    analyser.Mask, 
+                                                                    FilterSet);
 
             try
             {

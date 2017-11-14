@@ -177,6 +177,7 @@
     <Compile Include="Rendering\PVMDisplayer_CMV.cs" />
     <Compile Include="Rendering\PVMDisplayer_MachineSpeed.cs" />
     <Compile Include="Rendering\PVMDisplayer_Height.cs" />
+    <Compile Include="Rendering\Utilities.cs" />
     <Compile Include="Servers\Client\ActivatePersistentGridServer.cs" />
     <Compile Include="Designs\Servers\Client\CalculateDesignElevationsServer.cs" />
     <Compile Include="Servers\Client\RaptorApplicationServiceServer.cs" />
@@ -190,7 +191,7 @@
     <Compile Include="Servers\Client\RaptorTileRenderingServer.cs" />
     <Compile Include="Services\Surfaces\SurveyedSurfaceService.cs" />
     <Compile Include="Services\Surfaces\AddSurveyedSurfaceServiceProcessor.cs" />
-    <Compile Include="Services\Surfaces\DeployAddSurveyedSurfaceService.cs" />
+    <Compile Include="Services\Surfaces\SurveyedSurfaceServiceProxy.cs" />
     <Compile Include="Services\Surfaces\ISurveyedSurfaceService.cs" />
     <Compile Include="Services\Surfaces\RemoveSurveyedSurfaceProcessor.cs" />
     <Compile Include="SiteModels\SiteModels.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="SubGridTrees\Client\ClientMachineSpeedLeafSubGrid.cs" />
     <Compile Include="SubGridTrees\Client\ClientLeafSubgridFactoryFactory.cs" />
     <Compile Include="SubGridTrees\Client\SubGridTreeLeafSubGridBaseResult.cs" />
+    <Compile Include="SubGridTrees\Client\Utilities.cs" />
     <Compile Include="SubGridTrees\Server\Interfaces\IServerLeafSubgrid.cs" />
     <Compile Include="SiteModels\Interfaces\ISiteModel.cs" />
     <Compile Include="Machines\Machine.cs" />
@@ -288,7 +290,7 @@
     <Compile Include="SubGridTrees\SubGridTree.cs" />
     <Compile Include="SubGridTrees\SubGridTreeBitmapSubGridBits.cs" />
     <Compile Include="SubGridTrees\Types\SubGridTreeSparseCellRecord.cs" />
-    <Compile Include="SubGridTrees\Utilities\SubgridDimensionalInterator.cs" />
+    <Compile Include="SubGridTrees\Utilities\SubgridDimensionalIterator.cs" />
     <Compile Include="SubGridTrees\Utilities\SubGridUtilities.cs" />
     <Compile Include="Surfaces\Executors\CalculateSurfaceElevationPatch.cs" />
     <Compile Include="Surfaces\GridFabric\Arguments\SurfaceElevationPatchArgument.cs" />

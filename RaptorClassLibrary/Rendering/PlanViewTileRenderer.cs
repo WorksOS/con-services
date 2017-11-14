@@ -182,15 +182,16 @@ namespace VSS.VisionLink.Raptor.Rendering
             PipeLine.GridDataType = GridDataFromModeConverter.Convert(Mode);
 
             // Construct and assign the filter set into the pipeline
-            PipeLine.FilterSet = new FilterSet() { Filters = Filter2 == null ? new CombinedFilter[1] { Filter1 } : new CombinedFilter[2] { Filter1, Filter2 } };
+            PipeLine.FilterSet = new FilterSet()
+            {
+                Filters = Filter2 == null ? new CombinedFilter[1] { Filter1 } : new CombinedFilter[2] { Filter1, Filter2 }
+            };
 
-            /* TODO: Surveyed surfaces are not supported yet
-            PipeLine.IncludeSurveyedSurfaceInformation  = DisplayModeRequireSurveyedSurfaceInformation(Mode) && !SurveyedSurfacesExludedViaTimeFiltering;
+            PipeLine.IncludeSurveyedSurfaceInformation = Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) && !SurveyedSurfacesExludedViaTimeFiltering;
             if (PipeLine.IncludeSurveyedSurfaceInformation)  // if required then check if filter turns off requirement due to filters used
             {
-                PipeLine.IncludeSurveyedSurfaceInformation = FilterRequireSurveyedSurfaceInformation(PipeLine.FilterSet);
+                PipeLine.IncludeSurveyedSurfaceInformation = Utilities.FilterRequireSurveyedSurfaceInformation(PipeLine.FilterSet);
             }
-            */
 
             //PipeLine.ReferenceDesign  = CutFillDesignDescriptor;
             //PipeLine.ReferenceVolumeType  = FReferenceVolumeType;

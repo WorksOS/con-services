@@ -7,9 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Machines;
+using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
@@ -75,7 +77,26 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
         // This is a list of TTM descriptors which indicate designs
         // that can be used as a snapshot of an actual ground surface at a specific point in time
-        public SurveyedSurfaces SurveyedSurfaces { get { return surveyedSurfaces; } }
+        public SurveyedSurfaces SurveyedSurfaces
+        {
+            get
+            {
+                if (!SurveyedSurfacesLoaded)
+                {
+                    SurveyedSurfaceService proxy = new SurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName());
+                    proxy.Init(null); // TODO: Not needed when this moves to Ignite deployed service model
+                    SurveyedSurfaces ss = proxy.ListDirect(ID);
+
+                    lock (this)
+                    {
+                        surveyedSurfaces = ss;
+                        SurveyedSurfacesLoaded = true;
+                    }
+                }
+
+                return surveyedSurfaces;
+            }
+        }
 
         // FSiteModelDesignNames is an integrated list of all the design names that have appeared
         // in design change events. It shadows the FSiteModelDesigns to an alarming degree
@@ -91,6 +112,8 @@ namespace VSS.VisionLink.Raptor.SiteModels
         public MachinesList Machines { get; set; } = null;
 
         public bool IgnoreInvalidPositions { get; set; } = true;
+
+        private bool SurveyedSurfacesLoaded { get; set; } = false;
 
         public SiteModel()
         {
@@ -126,7 +149,6 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
             // FWorkingSiteModelExtent.SetInverted;
 
-            // FGroundSurfacesLoaded:= False;
             // FGroundSurfacesInterlock:= TCriticalSection.Create;
 
             // FLoadFromPersistentStoreInterlock:= TCriticalSection.Create;
@@ -499,16 +521,10 @@ namespace VSS.VisionLink.Raptor.SiteModels
             BoundingWorldExtent3D SpatialExtents = SiteModelExtent;
 
             // TODO: Surveyed surfaces are not supported yet
-            // Iterate over all non-exluded surveyed surfaces and expad the SpatialExtents as necessary
+            // Iterate over all non-exluded surveyed surfaces and expand the SpatialExtents as necessary
             // ...
 
             return SpatialExtents;
         }
-
-
-        /// <summary>
-        /// For the time being, just pretend we always have loaded surveyed surfaces.
-        /// </summary>
-        public bool SurveyedSurfacesLoaded = true;
     }
 }

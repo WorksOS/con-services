@@ -30,7 +30,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 
         /// <summary>
         /// Surveyed surface map records which cells hold cell pass heights that were derived
-        /// from a surveyd surface
+        /// from a surveyed surface
         /// </summary>
         public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
 
@@ -59,7 +59,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             ProdDataMap.Assign(heightAndTimeResults.ProdDataMap);
             FilterMap.Assign(heightAndTimeResults.FilterMap);
 
-            ForEach((x, y, height) => heightAndTimeResults.Cells[x, y].Height = height);
+            ForEach((x, y, height) => Cells[x, y] = heightAndTimeResults.Cells[x, y].Height);
 
             SurveyedSurfaceMap.Assign(heightAndTimeResults.SurveyedSurfaceMap);
         }
@@ -91,12 +91,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != Consts.NullHeight;
 
         /// <summary>
-        /// Ar array containing the content of a fully null subgrid
+        /// An array containing the content of a fully null subgrid
         /// </summary>
         public static float[,] nullCells = NullHeights();
 
         /// <summary>
-        /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
+        /// Sets all cell heights to null and clears the first pass and surveyed surface pass maps
         /// </summary>
         public override void Clear()
         {
@@ -192,15 +192,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 
             Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
             writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-/*
-             for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
-            {
-                for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
-                {
-                    writer.Write(Cells[I, J]);
-                }
-            }
-*/
         }
 
         /// <summary>
@@ -218,16 +209,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 
             reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
             Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-
-            /*
-                        for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
-                        {
-                            for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
-                            {
-                                Cells[I, J] = reader.ReadSingle();
-                            }
-                        }
-            */
         }
 
         /// <summary>
