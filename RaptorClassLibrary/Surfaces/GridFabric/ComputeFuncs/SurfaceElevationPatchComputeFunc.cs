@@ -6,13 +6,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.Surfaces.Executors;
 using VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments;
 
 namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs
 {
     [Serializable]
-    public class SurfaceElevationPatchComputeFunc : IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>
+    public class SurfaceElevationPatchComputeFunc : /*BaseRaptorComputeFunc,*/ IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

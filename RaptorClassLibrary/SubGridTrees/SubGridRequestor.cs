@@ -416,7 +416,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
                     try
                     {
-                        SurfaceElevations = SurfaceElevationPatchRequest.Execute(new SurfaceElevationPatchArgument
+                        SurfaceElevationPatchRequest request = new SurfaceElevationPatchRequest();
+                        SurfaceElevationPatchArgument arg = new SurfaceElevationPatchArgument
                         {
                             SiteModelID = SiteModel.ID,
                             CellSize = ClientGrid.CellSize,
@@ -425,7 +426,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                             EarliestSurface = Filter.AttributeFilter.ReturnEarliestFilteredCellPass,
                             ProcessingMap = ProcessingMap,
                             IncludedSurveyedSurfaces = FilteredSurveyedSurfaces
-                        });
+                        };
+
+                        SurfaceElevations = request.Execute(arg);
 
                         if (SurfaceElevations == null)
                         {

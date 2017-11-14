@@ -20,16 +20,10 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
     /// <summary>
     /// A test of how to add a new surveyed surface
     /// </summary>
-    public class SurveyedSurfaceService : IService, ISurveyedSurfaceService
+    public class SurveyedSurfaceService : BaseRaptorService, IService, ISurveyedSurfaceService
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        /// <summary>
-        /// Injected Ignite instance
-        /// </summary>
-        /// [InstanceResource]
-        private /*readonly*/ IIgnite _ignite;
 
         /// <summary>
         /// Cache storing sitemodel instances
@@ -76,30 +70,44 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="AsAtDate"></param>
         public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate)
         {
-            // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
-
-            string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
-
-            // Get the surveyed surfaces, creating it if it does not exist
-            SurveyedSurfaces ssList = SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(cacheKey));
-
-            if (ssList == null)
+            try
             {
-                ssList = new SurveyedSurfaces();
+                // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
+
+                string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
+
+                // Get the surveyed surfaces, creating it if it does not exist
+                SurveyedSurfaces ssList = SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(cacheKey));
+
+                if (ssList == null)
+                {
+                    ssList = new SurveyedSurfaces();
+                }
+
+                // Add the new surveyed surface, generating a random ID from a GUID
+                SurveyedSurface ss = ssList.AddSurveyedSurfaceDetails(Guid.NewGuid().GetHashCode(), designDescriptor, asAtDate);
+
+                // Put the list back into the cache with the new entry
+                mutableNonSpatialCache.Put(cacheKey, ssList.ToByteArray());
             }
-
-            // Add the new surveyed surface, generating a random ID from a GUID
-            SurveyedSurface ss = ssList.AddSurveyedSurfaceDetails(Guid.NewGuid().GetHashCode(), designDescriptor, asAtDate);
-
-            // Put the list back into the cache with the new entry
-            mutableNonSpatialCache.Put(cacheKey, ssList.ToByteArray());
+            catch (KeyNotFoundException)
+            {
+                // Swallow exception
+            }
         }
 
         public SurveyedSurfaces List(long SiteModelID)
         {
             Log.InfoFormat($"Listing surveyed surfaces from {SurveyedSurfaces.CacheKey(SiteModelID)}");
 
-            return SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(SurveyedSurfaces.CacheKey(SiteModelID)));
+            try
+            {
+                return SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(SurveyedSurfaces.CacheKey(SiteModelID)));
+            }
+            catch (KeyNotFoundException)
+            {
+                return null;
+            }
         }
 
         public SurveyedSurfaces ListDirect(long SiteModelID) => List(SiteModelID);
@@ -133,10 +141,10 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
                 _svcName = context.Name;
             }
 
-            if (_ignite == null)
-            {
-                _ignite = Ignition.TryGetIgnite(GridName);
-            }
+//            if (_ignite == null)
+//            {
+//                _ignite = Ignition.TryGetIgnite(GridName);
+//            }
 
             mutableNonSpatialCache = _ignite.GetCache<String, Byte[]>(CacheName /*RaptorCaches.MutableNonSpatialCacheName()*/);
         }
@@ -149,9 +157,16 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <returns></returns>
         public bool Remove(long SiteModelID, long SurveySurfaceID)
         {
-            return mutableNonSpatialCache.Invoke(SurveyedSurfaces.CacheKey(SiteModelID),
-                                                 new RemoveSurveyedSurfaceProcessor(),
-                                                 SurveySurfaceID);
+            try
+            {
+                return mutableNonSpatialCache.Invoke(SurveyedSurfaces.CacheKey(SiteModelID),
+                                                     new RemoveSurveyedSurfaceProcessor(),
+                                                     SurveySurfaceID);
+            }
+            catch (KeyNotFoundException)
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -164,26 +179,33 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
-            string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
-
-            // Get the surveyed surfaces, creating it if it does not exist
-            SurveyedSurfaces ssList = SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(cacheKey));
-
-            if (ssList == null)
+            try
             {
-                ssList = new SurveyedSurfaces();
+                string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
+
+                // Get the surveyed surfaces, creating it if it does not exist
+                SurveyedSurfaces ssList = SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(cacheKey));
+
+                if (ssList == null)
+                {
+                    ssList = new SurveyedSurfaces();
+                }
+
+                // Add the new surveyed surface, generating a random ID from a GUID
+                bool result = ssList.RemoveSurveyedSurface(SurveySurfaceID);
+
+                // Put the list back into the cache with the new entry
+                if (result)
+                {
+                    mutableNonSpatialCache.Put(cacheKey, ssList.ToByteArray());
+                }
+
+                return result;
             }
-
-            // Add the new surveyed surface, generating a random ID from a GUID
-            bool result = ssList.RemoveSurveyedSurface(SurveySurfaceID);
-
-            // Put the list back into the cache with the new entry
-            if (result)
+            catch (KeyNotFoundException)
             {
-                mutableNonSpatialCache.Put(cacheKey, ssList.ToByteArray());
+                return false;
             }
-
-            return result;
         }
     }
 }

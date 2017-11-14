@@ -63,7 +63,7 @@ namespace Apache_Ignite_DotNet_Test
                 return "Affinity: <Error: No Ignite>";
             }
 
-            //return "Affinity: " + Ignition.GetIgnite().GetCache<String, MyCacheClass>("TestCache").Get(s).name;
+            //return "Affinity: " + Ignition.TryGetIgnite().GetCache<String, MyCacheClass>("TestCache").Get(s).name;
         }
 
         public AffinityComputeFunc(String _s)

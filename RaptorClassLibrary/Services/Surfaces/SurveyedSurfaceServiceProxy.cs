@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <summary>
         /// Injected Ignite instance
         /// </summary>
-//        [InstanceResource]
+        [InstanceResource]
         private readonly IIgnite _ignite;
 
         /// <summary>
@@ -52,11 +52,6 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         public SurveyedSurfaceServiceProxy()
         {
             _ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
-
-            if (_ignite == null)
-            {
-                _ignite = Ignition.Start();
-            }
 
             cacheGrp = _ignite.GetCluster().ForCacheNodes(RaptorCaches.MutableNonSpatialCacheName()).ForAttribute("Role", "PSNode");
 

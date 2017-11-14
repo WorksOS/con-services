@@ -136,16 +136,19 @@
     <Compile Include="Designs\GridFabric\Arguments\CalculateDesignElevationPatchArgument.cs" />
     <Compile Include="GridFabric\Arguments\SubGridsRequestArgument.cs" />
     <Compile Include="GridFabric\Arguments\TileRenderRequestArgument.cs" />
+    <Compile Include="GridFabric\BaseRaptorIgniteClass.cs" />
     <Compile Include="GridFabric\Caches\RaptorCaches.cs" />
     <Compile Include="GridFabric\Caches\RaptorCacheStoreFactory.cs" />
     <Compile Include="GridFabric\Caches\RaptorSpatialCacheStore.cs" />
     <Compile Include="GridFabric\Caches\RaptorNonSpatialCacheStore.cs" />
     <Compile Include="Designs\GridFabric\ComputeFuncs\CalculateDesignElevationPatchComputeFunc.cs" />
+    <Compile Include="GridFabric\ComputeFuncs\BaseRaptorComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\TileRenderRequestComputeFunc.cs" />
     <Compile Include="GridFabric\Grids\RaptorGrids.cs" />
     <Compile Include="GridFabric\Listeners\SubGridListener.cs" />
     <Compile Include="Designs\GridFabric\Requests\DesignElevationPatchRequest.cs" />
+    <Compile Include="GridFabric\Requests\BaseRaptorRequest.cs" />
     <Compile Include="GridFabric\Requests\SubGridRequests.cs" />
     <Compile Include="GridFabric\Requests\TileRenderRequest.cs" />
     <Compile Include="GridFabric\Responses\SubGridRequestsResponse.cs" />
@@ -189,6 +192,7 @@
     <Compile Include="Servers\RaptorIgniteServer.cs" />
     <Compile Include="Servers\Client\RaptorProjectStatisticsServer.cs" />
     <Compile Include="Servers\Client\RaptorTileRenderingServer.cs" />
+    <Compile Include="Services\BaseRaptorService.cs" />
     <Compile Include="Services\Surfaces\SurveyedSurfaceService.cs" />
     <Compile Include="Services\Surfaces\AddSurveyedSurfaceServiceProcessor.cs" />
     <Compile Include="Services\Surfaces\SurveyedSurfaceServiceProxy.cs" />

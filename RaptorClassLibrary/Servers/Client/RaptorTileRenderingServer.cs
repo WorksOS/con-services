@@ -34,7 +34,9 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// <returns></returns>
         public Bitmap RenderTile(TileRenderRequestArgument argument)
         {
-            return TileRenderRequest.Execute(argument);
+            TileRenderRequest request = new TileRenderRequest();
+
+            return request.Execute(argument);
         }
     }
 }

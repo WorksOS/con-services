@@ -32,7 +32,9 @@ namespace VSS.Velociraptor.DesignProfiling.Servers.Client
         /// <returns></returns>
         public ClientHeightLeafSubGrid ComputeDesignElvations(CalculateDesignElevationPatchArgument argument)
         {
-            return DesignElevationPatchRequest.Execute(argument);
+            DesignElevationPatchRequest request = new DesignElevationPatchRequest();
+
+            return request.Execute(argument);
         }
     }
 }

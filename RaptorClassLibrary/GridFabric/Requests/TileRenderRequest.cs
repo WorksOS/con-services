@@ -19,21 +19,26 @@ using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Requests
 {
-    public static class TileRenderRequest
+    /// <summary>
+    /// Sends a request to the grid for a tile to be rendered
+    /// </summary>
+    public class TileRenderRequest : BaseRaptorRequest
     {
-        public static Bitmap Execute(TileRenderRequestArgument arg)
+        /// <summary>
+        /// Renders a bitmap according to the parameters in its argument
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        public Bitmap Execute(TileRenderRequestArgument arg)
         {
             // Construct the function to be used
             IComputeFunc<TileRenderRequestArgument, Bitmap> func = new TileRenderRequestComputeFunc();
-
-            // Get a reference to the Ignite cluster
-            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
 
             // Get a reference to the compute cluster group and send the request to it for processing
             // Note: Broadcast will block until all compute nodes receiving the request have responded, or
             // until the internal Ignite timeout expires
 
-            IClusterGroup group = ignite.GetCluster().ForRemotes().ForAttribute("Role", "ASNode");
+            IClusterGroup group = _ignite.GetCluster().ForRemotes().ForAttribute("Role", "ASNode");
             ICompute compute = group.GetCompute();
 
             Task<Bitmap> taskResult = compute.ApplyAsync(func, arg);

@@ -31,7 +31,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     /// The closure/function that implements subgrid request processing on compute nodes
     /// </summary>
     [Serializable]
-    class SubGridsRequestComputeFunc : IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse>
+    class SubGridsRequestComputeFunc : BaseRaptorComputeFunc, IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse>
     {
         [NonSerialized]
         private const int addressBucketSize = 20;
@@ -71,9 +71,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         private string raptorNodeIDAsString = String.Empty;
 
         [NonSerialized]
-        private IIgnite ignite = null;
-
-        [NonSerialized]
         private IClusterGroup group = null;
 
         [NonSerialized]
@@ -100,7 +97,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     ClientLeafSubGridFactory.ReturnClientSubGrids(SubgridResultArray[0].GridDataType, SubgridResultArray, SubgridResultArray.Count());
                 }
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 throw;
                 // TODO Readd when logging available
@@ -398,8 +395,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
             // TODO Perform implementation here and craft appropriate modified result
 
-            ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
-            group = ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
+            group = _ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
 
             Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
 

@@ -16,7 +16,11 @@ namespace VSS.VisionLink.Raptor.Servers
     /// </summary>
     public abstract class RaptorIgniteServer
     {
+        /// <summary>
+        /// The Ignite grid reference maintained by this server instance
+        /// </summary>
         protected IIgnite raptorGrid = null;
+
         protected static ICache<String, byte[]> NonSpatialMutableCache = null;
         protected static ICache<String, byte[]> NonSpatialImmutableCache = null;
         protected static ICache<String, byte[]> SpatialMutableCache = null;

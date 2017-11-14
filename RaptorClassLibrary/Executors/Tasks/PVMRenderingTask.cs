@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Requests;
+using VSS.Velociraptor.DesignProfiling.Servers.Client;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Rendering;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
@@ -71,7 +72,8 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
                                                               TileRenderer.CutFillDesign,
                                                               ProductionElevations.FilterMap);
 
-                ClientHeightLeafSubGrid DesignElevations = DesignElevationPatchRequest.Execute(arg);
+                DesignElevationPatchRequest request = new DesignElevationPatchRequest();
+                ClientHeightLeafSubGrid DesignElevations = request.Execute(arg);
 
                 // 2. Adjust the heights to be isopac elevations
                 if (DesignElevations == null)

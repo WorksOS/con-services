@@ -98,6 +98,11 @@ namespace VSS.VisionLink.Raptor.Common
             {
                 for (int i = 0; i < itemCount; i++)
                 {
+                    if (itemArray[i] == null)
+                    {
+                        continue;
+                    }
+
                     if (count < Items.Count)
                     {
                         // Reuse an element in the list

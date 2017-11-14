@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// to relevant filters other parameters. The grid fabric responds with responses as the servers in the fabric compute them, sending
     /// them to the Raptor node identified by the RaptorNodeID property
     /// </summary>
-    public class SubGridRequests
+    public class SubGridRequests : BaseRaptorComputeFunc
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -147,11 +147,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             // Construct the function to be used
             IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse> func = new SubGridsRequestComputeFunc();
 
-            // Get a reference to the Ignite cluster
-            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
-
             // Get a reference to the compute cluster group and send the request to it for processing
-            IClusterGroup group = ignite.GetCluster().ForRemotes().ForAttribute("Role", "PSNode");
+            IClusterGroup group = _ignite.GetCluster().ForRemotes().ForAttribute("Role", "PSNode");
             ICompute compute = group.GetCompute();
 
             // Create a messaging group the cluster can use to send messages back to and establish
