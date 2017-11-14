@@ -153,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the <see cref="DesignDescriptor"/> from a given project's fileUid.
     /// </summary>
-    protected async Task<DesignDescriptor> GetDesignDescriptor(Guid projectUid, Guid? fileUid, bool forProfile = false)
+    protected async Task<DesignDescriptor> GetAndValidateDesignDescriptor(Guid projectUid, Guid? fileUid, bool forProfile = false)
     {
       if (!fileUid.HasValue)
       {
@@ -273,13 +273,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         try
         {
-
           var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
           if (filterData != null)
           {
             if (filterData.designUID != null && Guid.TryParse(filterData.designUID, out Guid designUidGuid))
             {
-              designDescriptor = await GetDesignDescriptor(projectUid, designUidGuid);
+              designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUidGuid);
             }
 
             if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
@@ -297,7 +296,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                 excludedIds, returnEarliest, null, null, null, null, null);
             }
           }
-
         }
         catch (Exception ex)
         {
@@ -305,6 +303,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           return null;
         }
       }
+
       return haveExcludedIds ? Filter.CreateFilter(excludedIds) : null;
     }
 
@@ -373,10 +372,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             break;
           case VolumeCalcType.GroundToDesign:
             baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
-            volumeDesign = await GetDesignDescriptor(projectUid, volumeTopUid, true);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, true);
             break;
           case VolumeCalcType.DesignToGround:
-            volumeDesign = await GetDesignDescriptor(projectUid, volumeBaseUid, true);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, true);
             topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
             break;
         }
