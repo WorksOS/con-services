@@ -54,15 +54,11 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Where to get environment variables, connection string etc. from
     /// </summary>
-    private IConfigurationStore configStore;
-    /// <summary>
-    /// For retrieving user preferences
-    /// </summary>
-    private IPreferenceProxy prefProxy;
+    private readonly IConfigurationStore configStore;
     /// <summary>
     /// For handling DXF tiles
     /// </summary>
-    private ITileGenerator tileGenerator;
+    private readonly ITileGenerator tileGenerator;
 
     /// <summary>
     /// For getting imported files for a project
@@ -87,6 +83,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="tileGenerator">DXF tile generator</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
+    /// <param name="cacheBuilder">The in memory cache provider</param>
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
       IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy,
@@ -97,7 +94,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       this.log = logger.CreateLogger<NotificationController>();
       this.fileRepo = fileRepo;
       this.configStore = configStore;
-      this.prefProxy = prefProxy;
       this.tileGenerator = tileGenerator;
       this.fileListProxy = fileListProxy;
       this.filterServiceProxy = filterServiceProxy;
@@ -124,7 +120,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long fileId,
-      [FromQuery] UnitsTypeEnum? dxfUnitsType)
+      [FromQuery] DxfUnitsType dxfUnitsType)
     {
       log.LogDebug("GetAddFile: " + Request.QueryString);
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
@@ -133,11 +129,11 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
 
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
-        projectDescr.projectId, 
-        projectUid, fileDes, 
+        projectDescr.projectId,
+        projectUid, fileDes,
         coordSystem,
-        dxfUnitsType.HasValue && fileType == ImportedFileType.Linework ? dxfUnitsType.Value : UnitsTypeEnum.None,
-        fileId, 
+        dxfUnitsType,
+        fileId,
         fileType);
 
       request.Validate();
@@ -190,7 +186,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         }
       }
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, UnitsTypeEnum.None, fileId, fileType);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType);
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
@@ -278,7 +274,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <returns>The file descriptor instance</returns>
     private FileDescriptor GetFileDescriptor(string fileDescriptor)
     {
-      FileDescriptor fileDes = null;
+      FileDescriptor fileDes;
       try
       {
         fileDes = JsonConvert.DeserializeObject<FileDescriptor>(fileDescriptor);
@@ -305,7 +301,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       {
         return null;
       }
-      
+
       return filterDescriptors.Select(f => JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(f.FilterJson)).ToList();
     }
   }

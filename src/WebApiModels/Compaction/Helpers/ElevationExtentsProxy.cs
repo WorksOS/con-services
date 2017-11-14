@@ -125,20 +125,20 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       return
         filter == null
           ? ElevationCacheKey(projectId, null, null, null, null, null, null, null, null, null, null, null)
-          : ElevationCacheKey(projectId, filter.startUTC, filter.endUTC, filter.vibeStateOn,
-            filter.elevationType, filter.layerNumber, filter.onMachineDesignID,
-            filter.contributingMachines == null || filter.contributingMachines.Count == 0
+          : ElevationCacheKey(projectId, filter.StartUtc, filter.EndUtc, filter.VibeStateOn,
+            filter.ElevationType, filter.LayerNumber, filter.OnMachineDesignId,
+            filter.ContributingMachines == null || filter.ContributingMachines.Count == 0
               ? (long?)null
-              : filter.contributingMachines[0].assetID,
+              : filter.ContributingMachines[0].assetID,
             //Can only filter by one machine at present
-            filter.contributingMachines == null || filter.contributingMachines.Count == 0
+            filter.ContributingMachines == null || filter.ContributingMachines.Count == 0
               ? null
-              : filter.contributingMachines[0].machineName,
-            filter.contributingMachines == null || filter.contributingMachines.Count == 0
+              : filter.ContributingMachines[0].machineName,
+            filter.ContributingMachines == null || filter.ContributingMachines.Count == 0
               ? (bool?)null
-              : filter.contributingMachines[0].isJohnDoe,
-            filter.surveyedSurfaceExclusionList,
-            filter.forwardDirection);
+              : filter.ContributingMachines[0].isJohnDoe,
+            filter.SurveyedSurfaceExclusionList,
+            filter.ForwardDirection);
     }
 
     /// <summary>

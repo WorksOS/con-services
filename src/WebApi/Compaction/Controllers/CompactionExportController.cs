@@ -13,13 +13,13 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using VSS.Productivity3D.WebApiModels.Report.Models;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
+using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -66,6 +66,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="requestFactory">The request factory.</param>
     /// <param name="exceptionHandler">The exception handler.</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
+    /// <param name="prefProxy">The user preferences proxy</param>
     public CompactionExportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IPreferenceProxy prefProxy) :
@@ -95,7 +96,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double? tolerance,
       [FromQuery] Guid? filterUid)
     {
-      const double SURFACE_EXPORT_TOLLERANCE = 0.05;
+      const double surfaceExportTollerance = 0.05;
 
       log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
@@ -103,9 +104,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
-
-
-      tolerance = tolerance ?? SURFACE_EXPORT_TOLLERANCE;
+      
+      tolerance = tolerance ?? surfaceExportTollerance;
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
@@ -159,10 +159,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
+      var startEndDate = GetDateRange(projectId, filter);
 
-      DateTime startUtc, endUtc;
-      GetDateRange(projectId, filter, out startUtc, out endUtc);
-    
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
@@ -172,8 +170,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetUserPreferences(userPreferences)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
-          startUtc,
-          endUtc,
+          startEndDate.Item1,
+          startEndDate.Item2,
           CoordTypes.ptNORTHEAST,
           ExportTypes.kVedaExport,
           fileName,
@@ -220,9 +218,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
-
-      DateTime startUtc, endUtc;
-      GetDateRange(projectId, filter, out startUtc, out endUtc);
+      var startEndDate = GetDateRange(projectId, filter);
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
@@ -233,8 +229,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetRaptorClient(raptorClient)
         .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
         .CreateExportRequest(
-          startUtc,
-          endUtc,
+          startEndDate.Item1,
+          startEndDate.Item2,
           (CoordTypes)coordType,
           ExportTypes.kPassCountExport,
           fileName,
@@ -275,13 +271,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filter"></param>
     /// <param name="startUtc"></param>
     /// <param name="endUtc"></param>
-    private void GetDateRange(long projectId, Common.Models.Filter filter, out DateTime startUtc, out DateTime endUtc)
+    private Tuple<DateTime, DateTime> GetDateRange(long projectId, Common.Models.Filter filter)
     {
-      if (filter == null || !filter.startUTC.HasValue || !filter.endUTC.HasValue)
+      if (filter?.StartUtc == null || !filter.EndUtc.HasValue)
       {
         //Special case of project extents where start and end UTC not set in filter for Raptor peformance.
         //But need to set here for export.
-        var excludedIds = filter?.surveyedSurfaceExclusionList?.ToArray() ?? new long[0];
+        var excludedIds = filter?.SurveyedSurfaceExclusionList?.ToArray() ?? new long[0];
         ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds);
         request.Validate();
 
@@ -289,15 +285,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
             .Process(request) as ProjectStatisticsResult;
 
-        startUtc = result.startTime;
-        endUtc = result.endTime;
+        return new Tuple<DateTime, DateTime>(result.startTime, result.endTime);
       }
-      else
-      {
-        startUtc = filter.startUTC.Value;
-        endUtc = filter.endUTC.Value;
 
-      }
+      return new Tuple<DateTime, DateTime>(filter.StartUtc.Value, filter.EndUtc.Value);
     }
   }
 }

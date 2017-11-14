@@ -17,20 +17,20 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     {
       CustomerUid = customerUid;
       Projects = projects;
-      this.isApplication = isApplication;
-      userEmail = username;
-      customerName = customername;
+      this.IsApplication = isApplication;
+      this.UserEmail = username;
+      this.CustomerName = customername;
     }
 
     public string CustomerUid { get; }
 
     public List<ProjectDescriptor> Projects { get; }
 
-    public string userEmail { get; }
+    public string UserEmail { get; }
 
-    public string customerName { get; }
+    public string CustomerName { get; }
 
-    public bool isApplication { get; private set; } = false;
+    public bool IsApplication { get; }
 
     /// <summary>
     /// Get the project descriptor for the specified project id.
@@ -39,13 +39,14 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <returns>Project descriptor</returns>
     public ProjectDescriptor GetProject(long projectId)
     {
-      var projectDescr = Projects.Where(p => p.projectId == projectId).FirstOrDefault();
+      var projectDescr = Projects.FirstOrDefault(p => p.projectId == projectId);
       if (projectDescr == null)
       {
         throw new ServiceException(HttpStatusCode.Unauthorized,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, 
-          string.Format("Missing Project or project does not belong to specified customer or don't have access to the project {0}", projectId)));
+          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
+            $"Missing Project or project does not belong to specified customer or don't have access to the project {projectId}"));
       }
+
       return projectDescr;
     }
 
@@ -76,13 +77,15 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
       }
-      var projectDescr = Projects.Where(p => string.Equals(p.projectUid, projectUid, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+
+      var projectDescr = Projects.FirstOrDefault(p => string.Equals(p.projectUid, projectUid, StringComparison.OrdinalIgnoreCase));
       if (projectDescr == null)
       {
         throw new ServiceException(HttpStatusCode.Unauthorized,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, 
-          string.Format("Missing Project or project does not belong to specified customer or don't have access to the project {0}", projectUid)));
+          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
+            $"Missing Project or project does not belong to specified customer or don't have access to the project {projectUid}"));
       }
+
       return projectDescr;
     }
 
@@ -93,15 +96,15 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <returns>Legacy project ID</returns>
     public long GetProjectId(Guid? projectUid)
     {
-      var projectDescr = GetProject(projectUid);
-      long projectId = projectDescr.projectId;
+      long projectId = GetProject(projectUid).projectId;
+
       if (projectId <= 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing project ID"));
       }
+
       return projectId;
     }
-
   }
 }

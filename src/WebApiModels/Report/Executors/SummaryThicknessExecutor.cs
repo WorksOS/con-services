@@ -9,6 +9,7 @@ using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
@@ -51,13 +52,13 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       TASNodeThicknessSummaryResult result = new TASNodeThicknessSummaryResult();
 
       bool success = raptorClient.GetSummaryThickness(request.projectId ?? -1,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid) (request.callId ?? Guid.NewGuid()), 0,
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid) (request.CallId ?? Guid.NewGuid()), 0,
           TASNodeCancellationDescriptorType.cdtVolumeSummary),
-        RaptorConverters.ConvertFilter(request.baseFilterID, request.baseFilter, request.projectId, null, null),
-        RaptorConverters.ConvertFilter(request.topFilterID, request.topFilter, request.projectId, null, null),
-        RaptorConverters.ConvertFilter(request.additionalSpatialFilterID,
-          request.additionalSpatialFilter, request.projectId, null, null),
-        RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
+        RaptorConverters.ConvertFilter(request.BaseFilterId, request.BaseFilter, request.projectId, null, null),
+        RaptorConverters.ConvertFilter(request.TopFilterId, request.TopFilter, request.projectId, null, null),
+        RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
+          request.AdditionalSpatialFilter, request.projectId, null, null),
+        RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
         out result);
       if (success)
       {

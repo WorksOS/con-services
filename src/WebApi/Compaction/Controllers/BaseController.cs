@@ -153,51 +153,53 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the <see cref="DesignDescriptor"/> from a given project's fileUid.
     /// </summary>
-    protected async Task<DesignDescriptor> GetDesignDescriptor(Guid projectUid, Guid? fileUid, bool forProfile = false)
+    protected async Task<DesignDescriptor> GetAndValidateDesignDescriptor(Guid projectUid, Guid? fileUid, bool forProfile = false)
     {
-      if (fileUid.HasValue)
+      if (!fileUid.HasValue)
       {
-        var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), this.CustomHeaders);
-        if (fileList == null || fileList.Count == 0)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Project has no appropriate design files."));
-        }
-
-        FileData file = null;
-
-        foreach (var f in fileList)
-        {
-          if (f.ImportedFileUid == fileUid.ToString() && f.IsActivated && (!forProfile || f.IsProfileSupportedFileType()))
-          {
-            file = f;
-
-            break;
-          }
-        }
-
-        if (file == null)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Unable to access design file."));
-        }
-
-        var tccFileName = file.Name;
-        if (file.ImportedFileType == ImportedFileType.SurveyedSurface)
-        {
-          //Note: ':' is an invalid character for filenames in Windows so get rid of them
-          tccFileName = Path.GetFileNameWithoutExtension(tccFileName) +
-            "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
-            Path.GetExtension(tccFileName);
-        }
-        string fileSpaceId = FileDescriptor.GetFileSpaceId(this.ConfigStore, log);
-        FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
-
-        return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
+        return null;
       }
-      return null;
+
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), this.CustomHeaders);
+      if (fileList == null || fileList.Count == 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Project has no appropriate design files."));
+      }
+
+      FileData file = null;
+
+      foreach (var f in fileList)
+      {
+        if (f.ImportedFileUid == fileUid.ToString() && f.IsActivated && (!forProfile || f.IsProfileSupportedFileType()))
+        {
+          file = f;
+
+          break;
+        }
+      }
+
+      if (file == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Unable to access design file."));
+      }
+
+      var tccFileName = file.Name;
+      if (file.ImportedFileType == ImportedFileType.SurveyedSurface)
+      {
+        //Note: ':' is an invalid character for filenames in Windows so get rid of them
+        tccFileName = Path.GetFileNameWithoutExtension(tccFileName) +
+                      "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
+                      Path.GetExtension(tccFileName);
+      }
+
+      string fileSpaceId = FileDescriptor.GetFileSpaceId(this.ConfigStore, this.log);
+      FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
+
+      return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
     }
 
     /// <summary>
@@ -269,30 +271,39 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DesignDescriptor designDescriptor = null;
       if (filterUid.HasValue)
       {
-        var filterData = await GetFilter(projectUid, filterUid.Value);
-        if (filterData != null)
+        try
         {
-          if (filterData.designUID != null && Guid.TryParse(filterData.designUID, out Guid designUidGuid))
+          var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
+          if (filterData != null)
           {
-            designDescriptor = await GetDesignDescriptor(projectUid, designUidGuid);
-          }
+            if (filterData.designUID != null && Guid.TryParse(filterData.designUID, out Guid designUidGuid))
+            {
+              designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUidGuid);
+            }
 
-          if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
-          {
-            filterData = ApplyDateRange(projectUid, filterData);
+            if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
+            {
+              filterData = ApplyDateRange(projectUid, filterData);
 
-            var polygonPoints = filterData.polygonLL?.ConvertAll(p => Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
+              var polygonPoints = filterData.polygonLL?.ConvertAll(p => Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
 
-            var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
+              var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
-            return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
-              filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
-              polygonPoints, null, filterData.forwardDirection, null, null, null, null, null, null,
-              layerMethod, designDescriptor, null, filterData.layerNumber, null, filterData.contributingMachines,
-              excludedIds, returnEarliest, null, null, null, null, null);
+              return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
+                filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
+                polygonPoints, null, filterData.forwardDirection, null, null, null, null, null, null,
+                layerMethod, designDescriptor, null, filterData.layerNumber, null, filterData.contributingMachines,
+                excludedIds, returnEarliest, null, null, null, null, null);
+            }
           }
         }
+        catch (Exception ex)
+        {
+          log.LogDebug("EXCEPTION caught - cannot find filter" + ex.Message);
+          return null;
+        }
       }
+
       return haveExcludedIds ? Filter.CreateFilter(excludedIds) : null;
     }
 
@@ -329,13 +340,47 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         filter.vibeStateOn, filter.polygonLL, filter.forwardDirection, filter.layerNumber, filter.polygonUID, filter.polygonName);
     }
 
-    private async Task<MasterData.Models.Models.Filter> GetFilter(Guid projectUid, Guid filterUid)
+    private async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await this.FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), this.CustomHeaders);
 
       return filterDescriptor == null
         ? null
         : JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
+    }
+
+    /// <summary>
+    /// Gets the summary volumes parameters according to the calcultion type
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="volumeCalcType">The summary volumes calculation type</param>
+    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeTopUid">Top Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <returns>Tuple of base filter, top filter and volume design descriptor</returns>
+    protected async Task<Tuple<Filter,Filter,DesignDescriptor>> GetSummaryVolumesParameters(Guid projectUid, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
+    {
+      Filter baseFilter = null;
+      Filter topFilter = null;
+      DesignDescriptor volumeDesign = null;
+      if (volumeCalcType.HasValue)
+      {
+        switch (volumeCalcType.Value)
+        {
+          case VolumeCalcType.GroundToGround:
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            break;
+          case VolumeCalcType.GroundToDesign:
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, true);
+            break;
+          case VolumeCalcType.DesignToGround:
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, true);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            break;
+        }
+      }
+      return new Tuple<Filter, Filter, DesignDescriptor>(baseFilter, topFilter, volumeDesign);
     }
   }
 }
