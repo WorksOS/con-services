@@ -92,7 +92,8 @@ services:
     environment:
      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
      - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent-TFA:1:1,VSS.Interfaces.Events.MasterData.IProjectEvent-TFA:1:1,VSS.Interfaces.Events.MasterData.IGeofenceEvent-TFA:1:1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent-TFA:1:1,VSS.Interfaces.Events.MasterData.IAssetEvent-TFA:1:1,VSS.Interfaces.Events.MasterData.IDeviceEvent-TFA:1:1
-     - KAFKA_ADVERTISED_PORT=9092
+    ports:
+     - "9092:9092"
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:

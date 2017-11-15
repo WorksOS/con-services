@@ -23,8 +23,6 @@ namespace WebApiTests.Executors
     protected ProjectRepository projectRepository;
     protected SubscriptionRepository subscriptionsRepository;
     protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-
-    protected IKafka producer;
     protected string kafkaTopicName;
 
     [TestInitialize]
@@ -58,9 +56,6 @@ namespace WebApiTests.Executors
       projectRepository = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
       subscriptionsRepository = serviceProvider.GetRequiredService<IRepository<ISubscriptionEvent>>() as SubscriptionRepository;
 
-      producer = serviceProvider.GetRequiredService<IKafka>();
-      if (!producer.IsInitializedProducer)
-        producer.InitProducer(configStore);
       kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
