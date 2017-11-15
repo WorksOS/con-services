@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
@@ -11,22 +5,27 @@ using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 
-namespace VSS.Productivity3D.Common.Filters
+namespace VSS.Productivity3D.Common.Filters.Caching
 {
-
   //Based on a reference implementation
   public class CustomResponseCachingKeyProvider : IResponseCachingKeyProvider
   {
     // Use the record separator for delimiting components of the cache key to avoid possible collisions
-    private static readonly char KeyDelimiter = '\x1e';
+    private const char KEY_DELIMITER = '\x1e';
+
     internal static readonly char ProjectDelimiter = '\x1f';
     internal static readonly char FilterDelimiter = '\x1d';
 
-    private readonly ObjectPool<StringBuilder> _builderPool;
-    private readonly ResponseCachingOptions _options;
+    private readonly ObjectPool<StringBuilder> builderPool;
+    private readonly ResponseCachingOptions options;
     private readonly IFilterServiceProxy filterServiceProxy;
 
     public CustomResponseCachingKeyProvider(ObjectPoolProvider poolProvider, IFilterServiceProxy filterProxy, IOptions<ResponseCachingOptions> options)
@@ -40,14 +39,14 @@ namespace VSS.Productivity3D.Common.Filters
         throw new ArgumentNullException(nameof(options));
       }
 
-      _builderPool = poolProvider.CreateStringBuilderPool();
-      _options = options.Value;
-      filterServiceProxy = filterProxy;
+      this.builderPool = poolProvider.CreateStringBuilderPool();
+      this.options = options.Value;
+      this.filterServiceProxy = filterProxy;
     }
 
     public IEnumerable<string> CreateLookupVaryByKeys(ResponseCachingContext context)
     {
-      return new string[] { CreateStorageVaryByKey(context) };
+      return new[] { CreateStorageVaryByKey(context) };
     }
 
     // GET<delimiter>/PATH
@@ -65,38 +64,34 @@ namespace VSS.Productivity3D.Common.Filters
 
     public string GenerateBaseKeyFromRequest(HttpRequest request)
     {
-      var builder = _builderPool.Get();
+      var builder = this.builderPool.Get();
 
       try
       {
         builder
           .Append(request.Method.ToUpperInvariant())
-          .Append(KeyDelimiter);
+          .Append(KEY_DELIMITER);
 
-        if (_options.UseCaseSensitivePaths)
-        {
-          builder.Append(request.Path.Value);
-        }
-        else
-        {
-          builder.Append(request.Path.Value.ToUpperInvariant());
-        }
+        builder.Append(this.options.UseCaseSensitivePaths
+          ? request.Path.Value
+          : request.Path.Value.ToUpperInvariant());
 
         if (request.Query.ContainsKey("projectUid"))
         {
           builder.Append(ProjectDelimiter).Append(request.Query["projectUid"]);
 
           if (request.Query.ContainsKey("filterUid"))
+          {
             builder.Append(FilterDelimiter).Append(GenerateFilterHash(request.Query["projectUid"],
               request.Query["filterUid"], request.Headers.GetCustomHeaders()));
+          }
         }
-
 
         return builder.ToString();
       }
       finally
       {
-        _builderPool.Return(builder);
+        this.builderPool.Return(builder);
       }
     }
 
@@ -114,13 +109,12 @@ namespace VSS.Productivity3D.Common.Filters
         throw new InvalidOperationException($"{nameof(CachedVaryByRules)} must not be null on the {nameof(ResponseCachingContext)}");
       }
 
-      if ((StringValues.IsNullOrEmpty(varyByRules.Headers) && StringValues.IsNullOrEmpty(varyByRules.QueryKeys)))
+      if (StringValues.IsNullOrEmpty(varyByRules.Headers) && StringValues.IsNullOrEmpty(varyByRules.QueryKeys))
       {
         return varyByRules.VaryByKeyPrefix;
       }
 
-      var request = context.HttpContext.Request;
-      var builder = _builderPool.Get();
+      var builder = this.builderPool.Get();
 
       try
       {
@@ -128,15 +122,15 @@ namespace VSS.Productivity3D.Common.Filters
         builder.Append(varyByRules.VaryByKeyPrefix);
 
         // Vary by headers
-        if (varyByRules?.Headers.Count > 0)
+        if (varyByRules.Headers.Count > 0)
         {
           // Append a group separator for the header segment of the cache key
-          builder.Append(KeyDelimiter)
+          builder.Append(KEY_DELIMITER)
             .Append('H');
 
           foreach (var header in varyByRules.Headers)
           {
-            builder.Append(KeyDelimiter)
+            builder.Append(KEY_DELIMITER)
               .Append(header)
               .Append("=")
               // TODO: Perf - iterate the string values instead?
@@ -145,10 +139,10 @@ namespace VSS.Productivity3D.Common.Filters
         }
 
         // Vary by query keys
-        if (varyByRules?.QueryKeys.Count > 0)
+        if (varyByRules.QueryKeys.Count > 0)
         {
           // Append a group separator for the query key segment of the cache key
-          builder.Append(KeyDelimiter)
+          builder.Append(KEY_DELIMITER)
             .Append('Q');
 
           if (varyByRules.QueryKeys.Count == 1 && string.Equals(varyByRules.QueryKeys[0], "*", StringComparison.Ordinal))
@@ -158,7 +152,7 @@ namespace VSS.Productivity3D.Common.Filters
               StringComparer.OrdinalIgnoreCase))
             {
               if (query.Key.ToUpperInvariant() != "FILTERUID")
-                builder.Append(KeyDelimiter)
+                builder.Append(KEY_DELIMITER)
                   .Append(query.Key.ToUpperInvariant())
                   .Append("=")
                   .Append(query.Value);
@@ -169,7 +163,7 @@ namespace VSS.Productivity3D.Common.Filters
             foreach (var queryKey in varyByRules.QueryKeys)
             {
               if (queryKey.ToUpperInvariant() != "FILTERUID")
-                builder.Append(KeyDelimiter)
+                builder.Append(KEY_DELIMITER)
                 .Append(queryKey)
                 .Append("=")
                 // TODO: Perf - iterate the string values instead?
@@ -182,20 +176,27 @@ namespace VSS.Productivity3D.Common.Filters
       }
       finally
       {
-        _builderPool.Return(builder);
+        this.builderPool.Return(builder);
       }
     }
 
-    private int GenerateFilterHash(string projectUid, string filterUid, IDictionary<string,string> headers)
+    /// <remarks>
+    /// Method must be run synchronously to avoid any filter caching read anomolies.
+    /// </remarks>>
+    private int GenerateFilterHash(string projectUid, string filterUid, IDictionary<string, string> headers)
     {
-      return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterServiceProxy
-        .GetFilter(projectUid, filterUid, headers).Result.FilterJson).GetHashCode();
+      var filter = this.filterServiceProxy.GetFilter(projectUid, filterUid, headers).Result;
+      if (filter == null)
+      {
+        throw new NullReferenceException($"Filter not found, id: {filterUid}");
+      }
+
+      return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson).GetHashCode();
     }
   }
 
   public static class CachingKeyExtensions
   {
-
     public static Guid ExtractProjectGuidFromKey(this IResponseCachingKeyProvider cachingKeyProvider, string key)
     {
       if (key.IndexOf(CustomResponseCachingKeyProvider.ProjectDelimiter) <= 0) return Guid.Empty;

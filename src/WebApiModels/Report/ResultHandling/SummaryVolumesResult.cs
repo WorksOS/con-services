@@ -1,7 +1,7 @@
 ﻿using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Summary Volumes request
@@ -54,6 +54,13 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
         CutArea = cutArea,
         FillArea = fillArea
       };
+    }
+
+    public static SummaryVolumesResult CreateEmptySummaryVolumesResult()
+    {
+      var boundingBox = BoundingBox3DGrid.CreatBoundingBox3DGrid(0, 0, 0, 0, 0, 0);
+
+      return CreateSummaryVolumesResult(boundingBox, 0.0, 0.0, 0.0, 0.0, 0.0);
     }
   }
 }

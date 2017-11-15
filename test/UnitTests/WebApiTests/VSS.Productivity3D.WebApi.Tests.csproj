@@ -32,10 +32,10 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <!-- References are required to support VSS.MasterData.Models.netcore for local unit testing only. -->
-    <PackageReference Include="System.Runtime" Version="4.1.0" />
-    <PackageReference Include="System.Reflection" Version="4.1.0" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.1.0" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.7.*" />
+    <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.8.*" />
     <!-- END -->
   </ItemGroup>
 
@@ -51,7 +51,7 @@
     <Reference Include="Microsoft.CSharp" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="1.1.2" />
     <PackageReference Include="System.Net.Security" Version="4.3.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.1.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">

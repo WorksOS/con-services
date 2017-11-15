@@ -30,10 +30,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       volumesSummaryRequester.QueryString.Add("ProjectUid", projectUid);
     }
 
-    [When(@"I request result")]
-    public void WhenIRequestResult()
+    [When(@"I request result ""(.*)""")]
+    public void WhenIRequestResult(int httpCode)
     {
-      volumesSummaryRequester.DoValidRequest(url);
+      volumesSummaryRequester.DoValidRequest(url, (HttpStatusCode)httpCode);
     }
 
     [Then(@"the result should match the ""(.*)"" from the repository")]
@@ -42,11 +42,17 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       Assert.AreEqual(volumesSummaryRequester.ResponseRepo[resultName], volumesSummaryRequester.CurrentResponse);
     }
 
+    [Then(@"the response should contain error code (.*)")]
+    public void ThenTheResponseShouldContainErrorCode(int httpCode)
+    {
+      this.volumesSummaryRequester.DoInvalidRequest(url, (HttpStatusCode)httpCode);
+    }
+
     [Given(@"filter ""(.*)""")]
     public void GivenFilterUid(string filterUid)
     {
       if (!string.IsNullOrEmpty(filterUid))
-        { volumesSummaryRequester.QueryString.Add("baseUid", filterUid);}
+      { volumesSummaryRequester.QueryString.Add("baseUid", filterUid); }
     }
 
     [Given(@"design ""(.*)""")]

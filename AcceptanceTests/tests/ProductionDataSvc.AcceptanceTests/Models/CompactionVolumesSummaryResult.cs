@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RaptorSvcAcceptTestsCommon.Models;
+using System;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
@@ -27,17 +23,25 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public bool Equals(CompactionVolumesSummaryResult other)
     {
       if (other == null)
+      {
         return false;
+      }
 
-      return this.volumeSummaryData.Equals(other.volumeSummaryData) &&
-             this.Code == other.Code &&
+      if (this.volumeSummaryData != null)
+      {
+        return this.volumeSummaryData.Equals(other.volumeSummaryData) &&
+               this.Code == other.Code &&
+               this.Message == other.Message;
+      }
+
+      return this.Code == other.Code &&
              this.Message == other.Message;
     }
 
     public static bool operator ==(CompactionVolumesSummaryResult a, CompactionVolumesSummaryResult b)
     {
       if ((object)a == null || (object)b == null)
-        return Object.Equals(a, b);
+        return object.Equals(a, b);
 
       return a.Equals(b);
     }
@@ -96,9 +100,8 @@ namespace ProductionDataSvc.AcceptanceTests.Models
                Math.Round(this.totalCutVolume, 2) == Math.Round(other.totalCutVolume, 2) &&
                Math.Round(this.totalFillVolume, 2) == Math.Round(other.totalFillVolume, 2) &&
                Math.Round(this.totalMachineCoveragePlanArea, 2) == Math.Round(other.totalMachineCoveragePlanArea, 2) &&
-               Math.Round(this.totalVolume, 2) == Math.Round(other.totalVolume, 2) ;
+               Math.Round(this.totalVolume, 2) == Math.Round(other.totalVolume, 2);
       }
-
     }
   }
 }

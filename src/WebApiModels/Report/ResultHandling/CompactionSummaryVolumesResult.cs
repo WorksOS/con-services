@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
@@ -51,8 +50,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
       {
         SummaryVolumeData = new SummaryVolumesData
         {
-          Bulking = bulking ?? 0,
-          Shrinkage = shrinkage ?? 0,
+          Bulking = bulking ?? 0.0,
+          Shrinkage = shrinkage ?? 0.0,
           TotalCutVolume = totalCutVolume,
           TotalFillVolume = totalFillVolume,
           TotalMachineCoveragePlanArea = resultObj.TotalCoverageArea,
@@ -63,29 +62,5 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
         Message = resultObj.Message
       };
     }
-  }
-
-  public class SummaryVolumesData
-  {
-    [JsonProperty(PropertyName = "netVolume")]
-    public double NetVolume;
-
-    [JsonProperty(PropertyName = "totalVolume")]
-    public double TotalVolume;
-
-    [JsonProperty(PropertyName = "totalCutVolume")]
-    public double TotalCutVolume;
-
-    [JsonProperty(PropertyName = "totalFillVolume")]
-    public double TotalFillVolume;
-
-    [JsonProperty(PropertyName = "totalMachineCoveragePlanArea")]
-    public double TotalMachineCoveragePlanArea;
-
-    [JsonProperty(PropertyName = "shrinkage")]
-    public double Shrinkage;
-
-    [JsonProperty(PropertyName = "bulking")]
-    public double Bulking;
   }
 }

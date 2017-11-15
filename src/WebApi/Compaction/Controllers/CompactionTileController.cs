@@ -119,6 +119,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <param name="cutFillDesignUid">Design UID for cut-fill</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
+    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
     [ProjectUidVerifier]
@@ -139,7 +142,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutFillDesignUid,
-      [FromQuery] DisplayMode mode)
+      [FromQuery] DisplayMode mode,
+      [FromQuery] Guid? volumeBaseUid,
+      [FromQuery] Guid? volumeTopUid,
+      [FromQuery] VolumeCalcType? volumeCalcType)
     {
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
 
@@ -147,10 +153,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
-
-      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
-        GetBoundingBox(BBOX), cutFillDesign);
+      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
+      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid ,volumeTopUid);
+     var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
+        GetBoundingBox(BBOX), cutFillDesign, sumVolParameters, volumeCalcType);
 
       return tileResult;
     }
@@ -175,6 +181,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <param name="cutFillDesignUid">Design UID for cut-fill</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
+    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
+    /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. 
     /// If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered 
     /// in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to 
@@ -200,7 +209,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutFillDesignUid,
-      [FromQuery] DisplayMode mode)
+      [FromQuery] DisplayMode mode,
+      [FromQuery] Guid? volumeBaseUid,
+      [FromQuery] Guid? volumeTopUid,
+      [FromQuery] VolumeCalcType? volumeCalcType)
     {
       log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
 
@@ -208,9 +220,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
+      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
+      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
 
-      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX), cutFillDesign);
+      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, 
+        GetBoundingBox(BBOX), cutFillDesign, sumVolParameters, volumeCalcType);
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
@@ -510,9 +524,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="height">Height of the tile in pixels</param>
     /// <param name="bbox">Bounding box in radians</param>
     /// <param name="cutFillDesign">Design descriptor for cut-fill design</param>
+    /// <param name="sumVolParameters">Filter(s) and/or design for summary volumes</param>
+    /// <param name="volumeCalcType">Volume calculation type</param>
     /// <returns>Tile result</returns>
     private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Common.Models.Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
-      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign)
+      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, Tuple<Common.Models.Filter, Common.Models.Filter, DesignDescriptor> sumVolParameters, VolumeCalcType? volumeCalcType)
     {
       var tileRequest = requestFactory.Create<TileRequestHelper>(r => r
           .ProjectId(projectId)
@@ -520,8 +536,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectSettings(projectSettings)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
-        .CreateTileRequest(mode, width, height, bbox,
-          GetElevationExtents(projectSettings, filter, projectId, mode));
+          .SetBaseFilter(sumVolParameters.Item1)
+          .SetTopFilter(sumVolParameters.Item2)
+          .SetVolumeCalcType(volumeCalcType)
+          .SetVolumeDesign(sumVolParameters.Item3)
+          .CreateTileRequest(mode, width, height, bbox,
+            GetElevationExtents(projectSettings, filter, projectId, mode));
 
       //TileRequest is both v1 and v2 model so cannot change its validation directly.
       //However for v2 we want to return a transparent empty tile for cut-fill if no design specified.
@@ -533,15 +553,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException se)
       {
-        if (tileRequest.mode == DisplayMode.CutFill && tileRequest.designDescriptor == null)
+        if (tileRequest.mode == DisplayMode.CutFill && 
+            se.Code == HttpStatusCode.BadRequest &&
+            se.GetResult.Code == ContractExecutionStatesEnum.ValidationError)
         {
-          if (se.Code == HttpStatusCode.BadRequest &&
-              se.GetResult.Code == ContractExecutionStatesEnum.ValidationError &&
+          if (se.GetResult.Message ==
+              "Design descriptor required for cut/fill and design to filter or filter to design volumes display" ||
               se.GetResult.Message ==
-              "Design descriptor required for cut/fill and design to filter or filter to design volumes display")
-          {
-            getTile = false;
-          }
+              "Two filters required for filter to filter volumes display" ||
+              se.GetResult.Message ==
+              "One filter required for design to filter or filter to design volumes display")
+            {
+              getTile = false;
+            }
         }
         //Rethrow any other exception
         if (getTile)

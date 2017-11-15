@@ -6,6 +6,7 @@ using VSS.Common.Exceptions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Notification.Models
 {
@@ -52,7 +53,7 @@ namespace VSS.Productivity3D.WebApiTests.Notification.Models
     private FileDescriptor fileDescr = FileDescriptor.CreateFileDescriptor("u72003136-d859-4be8-86de-c559c841bf10",
       "BC Data/Sites/Integration10/Designs", "Cycleway.ttm");
     private long fileId = 9914;
-    private UnitsTypeEnum userUnits = UnitsTypeEnum.Metric;
+    private DxfUnitsType userUnits = DxfUnitsType.Meters;
     private string coordSystemFileName = "test.dc";
   }
 }
