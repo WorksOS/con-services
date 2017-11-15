@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using ASNodeDecls;
+﻿using ASNodeDecls;
 using ASNodeRaptorReports;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using SVOICFilterSettings;
+using System;
+using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
@@ -44,13 +37,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         TICFilterSettings raptorFilter =
           RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.projectId);
 
-        MemoryStream responseData;
-
         log.LogDebug("About to call GetReportGrid");
 
         var args = ASNode.GridReport.RPC.__Global.Construct_GridReport_Args(
           request.projectId ?? -1,
-          (int) CompactionReportType.Grid,
+          (int)CompactionReportType.Grid,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtProdDataReport),
           RaptorConverters.DesignDescriptor(request.DesignFile),
@@ -61,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           request.ReportMDP,
           request.ReportPassCount,
           request.ReportTemperature,
-          (int) request.GridReportOption,
+          (int)request.GridReportOption,
           request.StartNorthing,
           request.StartEasting,
           request.EndNorthing,
@@ -72,7 +63,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           new SVOICOptionsDecls.TSVOICOptions() // ICOptions, need to resolve what this should be
         );
 
-        int returnedResult = raptorClient.GetReportGrid(args, out responseData);
+        int returnedResult = raptorClient.GetReportGrid(args, out var responseData);
 
         log.LogDebug("Completed call to GetReportGrid");
 
@@ -81,9 +72,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           try
           {
             // Unpack the data for the report and construct a stream containing the result
-            TRaptorReportsPackager reportPackager = new TRaptorReportsPackager(TRaptorReportType.rrtGridReport);
-
-            reportPackager.ReturnCode = TRaptorReportReturnCode.rrrcUnknownError;
+            TRaptorReportsPackager reportPackager = new TRaptorReportsPackager(TRaptorReportType.rrtGridReport)
+            {
+              ReturnCode = TRaptorReportReturnCode.rrrcUnknownError
+            };
 
             reportPackager.GridReport.ElevationReport = request.ReportElevation;
             reportPackager.GridReport.CutFillReport = request.ReportCutFill;
@@ -100,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
             // Populate an array of grid rows from the data
             //foreach (TGridRow row in reportPackager.GridReport.Rows)
-            for ( var i = 0; i < reportPackager.GridReport.NumberOfRows; i++ )
+            for (var i = 0; i < reportPackager.GridReport.NumberOfRows; i++)
             {
               gridRows[i] = GridRow.CreateGridRow(
                 reportPackager.GridReport.Rows[i].Northing,
@@ -125,7 +117,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             var endTime = request.Filter.EndUtc ?? DateTime.Now;
 
             var gridReport = GridReport.CreateGridReport(startTime, endTime, gridRows);
-            
+
             result = CompactionReportGridResult.CreateExportDataResult(gridReport.ToJsonString(), (short)returnedResult);
           }
           catch (Exception ex)

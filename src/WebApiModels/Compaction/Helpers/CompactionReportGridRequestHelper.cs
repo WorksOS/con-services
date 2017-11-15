@@ -39,17 +39,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return this;
     }
 
-//    public ExportRequestHelper SetUserPreferences(UserPreferenceData userPrefs)
-//    {
-//      userPreferences = userPrefs;
-//      return this;
-//    }
-
-
     public async Task<CompactionReportGridRequest> CreateCompactionReportGridRequest(
       bool reportElevation,
-      bool reportCMV,
-      bool reportMDP,
+      bool reportCmv,
+      bool reportMdp,
       bool reportPassCount,
       bool reportTemperature,
       bool reportCutFill,
@@ -70,8 +63,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         Filter != null ? Filter.Id ?? -1 : -1,
         liftBuildSettings,
         reportElevation,
-        reportCMV,
-        reportMDP,
+        reportCmv,
+        reportMdp,
         reportPassCount,
         reportTemperature,
         reportCutFill,
