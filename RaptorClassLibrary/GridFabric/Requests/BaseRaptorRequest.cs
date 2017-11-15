@@ -22,5 +22,13 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         public BaseRaptorRequest() : base()
         {
         }
+
+        /// <summary>
+        /// Constructor accepting a role for the request that may identify a cluster group of nodes in the grid
+        /// </summary>
+        /// <param name="Role"></param>
+        public BaseRaptorRequest(string Role) : base(Role)
+        {
+        }
     }
 }

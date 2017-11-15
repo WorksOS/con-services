@@ -22,7 +22,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// <summary>
     /// Sends a request to the grid for a tile to be rendered
     /// </summary>
-    public class TileRenderRequest : BaseRaptorRequest
+    public class TileRenderRequest : ApplicationServicePoolRequest
     {
         /// <summary>
         /// Renders a bitmap according to the parameters in its argument
@@ -34,14 +34,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             // Construct the function to be used
             IComputeFunc<TileRenderRequestArgument, Bitmap> func = new TileRenderRequestComputeFunc();
 
-            // Get a reference to the compute cluster group and send the request to it for processing
-            // Note: Broadcast will block until all compute nodes receiving the request have responded, or
-            // until the internal Ignite timeout expires
-
-            IClusterGroup group = _ignite.GetCluster().ForRemotes().ForAttribute("Role", "ASNode");
-            ICompute compute = group.GetCompute();
-
-            Task<Bitmap> taskResult = compute.ApplyAsync(func, arg);
+            Task<Bitmap> taskResult = _compute.ApplyAsync(func, arg);
 
             //Bitmap result = compute.Apply(func, arg);
 

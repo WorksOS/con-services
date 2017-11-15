@@ -31,7 +31,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     /// The closure/function that implements subgrid request processing on compute nodes
     /// </summary>
     [Serializable]
-    class SubGridsRequestComputeFunc : BaseRaptorComputeFunc, IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse>
+    class SubGridsRequestComputeFunc : CacheComputeComputeFunc, IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse>
     {
         [NonSerialized]
         private const int addressBucketSize = 20;
@@ -69,9 +69,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
         [NonSerialized]
         private string raptorNodeIDAsString = String.Empty;
-
-        [NonSerialized]
-        private IClusterGroup group = null;
 
         [NonSerialized]
         private IMessaging rmtMsg = null;
@@ -393,9 +390,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
             Log.Info(String.Format("Num subgrids present in request = {0} [All divisions]", result.NumSubgridsExamined));
 
-            // TODO Perform implementation here and craft appropriate modified result
-
-            group = _ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
+            IClusterGroup group = _ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
 
             Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
 

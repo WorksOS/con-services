@@ -1,4 +1,6 @@
 ﻿using Apache.Ignite.Core;
+using Apache.Ignite.Core.Cluster;
+using Apache.Ignite.Core.Compute;
 using Apache.Ignite.Core.Resource;
 using log4net;
 using System;
@@ -18,8 +20,21 @@ namespace VSS.VisionLink.Raptor.GridFabric
         /// <summary>
         /// Injected Ignite instance
         /// </summary>
+        [NonSerialized]
         [InstanceResource]
         protected readonly IIgnite _ignite;
+
+        /// <summary>
+        /// The cluster group of nodes in the grid that are available for responding to design/profile requests
+        /// </summary>
+        [NonSerialized]
+        protected readonly IClusterGroup _group = null;
+
+        /// <summary>
+        /// The compute interface from the cluster group projection
+        /// </summary>
+        [NonSerialized]
+        protected readonly ICompute _compute = null;
 
         /// <summary>
         /// Default no-arg constructor
@@ -43,6 +58,22 @@ namespace VSS.VisionLink.Raptor.GridFabric
                 catch (Exception E)
                 {
                     Log.InfoFormat($"Exception: {E}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Default no-arg constructor that sets up cluster and compute projections available for use
+        /// </summary>
+        public BaseRaptorIgniteClass(string Role) : this()
+        {
+            if (!String.IsNullOrEmpty(Role))
+            {
+                _group = _ignite.GetCluster().ForRemotes().ForAttribute("Role", Role);
+
+                if (_group != null)
+                {
+                    _compute = _group.GetCompute();
                 }
             }
         }

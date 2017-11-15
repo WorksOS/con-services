@@ -95,6 +95,7 @@
     <Compile Include="Designs\DesignBase.cs" />
     <Compile Include="Designs\DesignFiles.cs" />
     <Compile Include="Designs\DesignLoadResult.cs" />
+    <Compile Include="Designs\GridFabric\Requests\DesignProfilerRaptorRequest.cs" />
     <Compile Include="Designs\DesignProfilerRequestResult.cs" />
     <Compile Include="Designs\TTMDesign.cs" />
     <Compile Include="Events\Interfaces\IProductionEventChangeList.cs" />
@@ -143,12 +144,15 @@
     <Compile Include="GridFabric\Caches\RaptorNonSpatialCacheStore.cs" />
     <Compile Include="Designs\GridFabric\ComputeFuncs\CalculateDesignElevationPatchComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\BaseRaptorComputeFunc.cs" />
+    <Compile Include="GridFabric\ComputeFuncs\CacheComputeComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\TileRenderRequestComputeFunc.cs" />
     <Compile Include="GridFabric\Grids\RaptorGrids.cs" />
     <Compile Include="GridFabric\Listeners\SubGridListener.cs" />
     <Compile Include="Designs\GridFabric\Requests\DesignElevationPatchRequest.cs" />
+    <Compile Include="GridFabric\Requests\CacheComputePoolRequest.cs" />
     <Compile Include="GridFabric\Requests\BaseRaptorRequest.cs" />
+    <Compile Include="GridFabric\Requests\ApplicationServicePoolRequest.cs" />
     <Compile Include="GridFabric\Requests\SubGridRequests.cs" />
     <Compile Include="GridFabric\Requests\TileRenderRequest.cs" />
     <Compile Include="GridFabric\Responses\SubGridRequestsResponse.cs" />

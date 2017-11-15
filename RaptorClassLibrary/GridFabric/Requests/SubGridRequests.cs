@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Designs.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
@@ -28,7 +29,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// to relevant filters other parameters. The grid fabric responds with responses as the servers in the fabric compute them, sending
     /// them to the Raptor node identified by the RaptorNodeID property
     /// </summary>
-    public class SubGridRequests : BaseRaptorComputeFunc
+    public class SubGridRequests : CacheComputePoolRequest
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -76,9 +77,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         public bool IncludeSurveyedSurfaceInformation { get; set; } = false;
 
         /// <summary>
-        /// No arg constructor
+        /// No arg constructor that establishes this request as a cache compute request
         /// </summary>
-        public SubGridRequests()
+        public SubGridRequests() : base()
         {
         }
 
@@ -147,19 +148,15 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             // Construct the function to be used
             IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse> func = new SubGridsRequestComputeFunc();
 
-            // Get a reference to the compute cluster group and send the request to it for processing
-            IClusterGroup group = _ignite.GetCluster().ForRemotes().ForAttribute("Role", "PSNode");
-            ICompute compute = group.GetCompute();
-
             // Create a messaging group the cluster can use to send messages back to and establish
             // a local listener
-            var msgGroup = compute.ClusterGroup.GetMessaging();
+            var msgGroup = _compute.ClusterGroup.GetMessaging();
             msgGroup.LocalListen(new SubGridListener(Task), arg.MessageTopic);
 
             // Note: Broadcast will block until all compute nodes receiving the request have responded, or
             // until the internal Ignite timeout expires
             //ICollection<SubGridRequestsResponse> result = compute.Broadcast(func, arg);
-            Task<ICollection<SubGridRequestsResponse>> taskResult = compute.BroadcastAsync(func, arg);
+            Task<ICollection<SubGridRequestsResponse>> taskResult = _compute.BroadcastAsync(func, arg);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
