@@ -119,7 +119,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = GetProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid, true);
+      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
       var projectSettings = await GetProjectSettings(projectUid);
       //var userPreferences = await GetUserPreferences();
 
