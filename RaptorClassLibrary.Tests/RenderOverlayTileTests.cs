@@ -27,6 +27,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
                                                              null, // Filter1
                                                              null, // Filter2
                                                              DesignDescriptor.Null(),
+                                                             Color.Black,
                                                              String.Empty);
 
             Assert.IsTrue(render != null, "Did not create renderer as expected");
@@ -46,6 +47,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
                                                              null, // Filter1
                                                              null, // Filter2
                                                              DesignDescriptor.Null(),
+                                                             Color.Black,
                                                              String.Empty);
            Bitmap bmp = render.Execute();
            Assert.IsTrue(bmp != null, "Render did not return a Bitmap");
