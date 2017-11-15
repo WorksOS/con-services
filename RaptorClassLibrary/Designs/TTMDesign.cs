@@ -656,10 +656,8 @@ namespace VSS.Velociraptor.DesignProfiling
 
                 foreach (var vertex in FData.Vertices)
                 {
-                    if (vertex.Z < FMinHeight)
-                        FMinHeight = vertex.Z;
-                    if (vertex.Z > FMaxHeight)
-                        FMaxHeight = vertex.Z;
+                    if (vertex.Z < FMinHeight) FMinHeight = vertex.Z;
+                    if (vertex.Z > FMaxHeight) FMaxHeight = vertex.Z;
                 }
             }
 

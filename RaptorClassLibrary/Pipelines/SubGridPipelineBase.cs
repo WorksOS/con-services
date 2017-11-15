@@ -205,7 +205,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
             {
                 gridFabricRequest.Execute();
             }
-            catch // (Exception E)
+            catch //(Exception E)
             {
                 throw;
             }

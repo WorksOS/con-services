@@ -141,7 +141,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             if (AProdDataRequested) // note there is an assumption you have already checked on a existenance map that there is a subgrid for this address
             {
-                /* TODO - subgrid general result cahce not supported yet
+                /* TODO - subgrid general result cache not supported yet
                 // Determine if there is a suitable pre-calculated result present
                 // in the general subgrid result cache. If there is, then apply the
                 // filter mask to the cached data and copy it to the client grid
