@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Surfaces;
@@ -78,9 +79,9 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
         /// <param name="asAtDate"></param>
-        public void Invoke_Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate)
+        public void Invoke_Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
         {
-            proxy.Add(SiteModelID, designDescriptor, asAtDate);
+            proxy.Add(SiteModelID, designDescriptor, asAtDate.Date, extents);
         }
 
         public bool Invoke_Remove(long SiteModelID, long SurveyedSurfaceID)

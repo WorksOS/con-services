@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Geometry;
 //using VSS.VisionLink.Raptor.GridFabric.Caches;
 //using VSS.VisionLink.Raptor.GridFabric.Grids;
 //using VSS.VisionLink.Raptor.SiteModels;
@@ -55,11 +56,11 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
         /// <param name="AsAtDate"></param>
-        public void Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate)
+        public void Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents )
         {
             mutableNonSpatialCache.Invoke(SurveyedSurfaces.CacheKey(SiteModelID), 
                                           new AddSurveyedSurfaceProcessor(), 
-                                          new SurveyedSurface(SiteModelID, designDescriptor, asAtDate));
+                                          new SurveyedSurface(SiteModelID, designDescriptor, asAtDate, extents));
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
         /// <param name="AsAtDate"></param>
-        public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate)
+        public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
         {
             try
             {
@@ -85,7 +86,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
                 }
 
                 // Add the new surveyed surface, generating a random ID from a GUID
-                SurveyedSurface ss = ssList.AddSurveyedSurfaceDetails(Guid.NewGuid().GetHashCode(), designDescriptor, asAtDate);
+                SurveyedSurface ss = ssList.AddSurveyedSurfaceDetails(Guid.NewGuid().GetHashCode(), designDescriptor, asAtDate, extents);
 
                 // Put the list back into the cache with the new entry
                 mutableNonSpatialCache.Put(cacheKey, ssList.ToByteArray());

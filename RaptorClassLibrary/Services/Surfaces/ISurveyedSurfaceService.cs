@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Surfaces;
 
 namespace VSS.VisionLink.Raptor.Services.Surfaces
@@ -18,7 +19,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
         /// <param name="AsAtDate"></param>
-        void Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime AsAtDate);
+        void Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime AsAtDate, BoundingWorldExtent3D extents);
 
         /// <summary>
         /// Request the list of surveyed surfaces from a site model

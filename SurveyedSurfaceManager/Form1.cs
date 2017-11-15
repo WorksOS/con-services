@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor;
+using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Services.Surfaces;
@@ -55,13 +58,21 @@ namespace SurveyedSurfaceManager
             // Invoke the service to add the surveyed surface
             try
             {
+                // Load the file and extract its extents
+                TTMDesign TTM = new TTMDesign(SubGridTree.DefaultCellSize);
+                TTM.LoadFromFile(Path.Combine(new string[] { txtFilePath.Text, txtFileName.Text }));
+
+                BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+                TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
+                TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
+
                 if (DeployedSurveyedSurfaceService != null)
                 {
-                    DeployedSurveyedSurfaceService.Invoke_Add(ID, new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, 0), DateTime.Now);
+                    DeployedSurveyedSurfaceService.Invoke_Add(ID, new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, 0), DateTime.Now, extents);
                 }
                 else
                 {
-                    SurveyedSurfaceService.AddDirect(ID, new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, 0), DateTime.Now);
+                    SurveyedSurfaceService.AddDirect(ID, new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, 0), DateTime.Now, extents);
                 }
             }
             catch (Exception E)

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Geometry;
 
 namespace VSS.VisionLink.Raptor.Surfaces
 {
@@ -87,7 +88,8 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// <returns></returns>
         public SurveyedSurface AddSurveyedSurfaceDetails(long ASurveyedSurfaceID,
                                                        DesignDescriptor ADesignDescriptor,
-                                                       DateTime AAsAtDate)
+                                                       DateTime AAsAtDate,
+                                                       BoundingWorldExtent3D AExtents)
         {
             SurveyedSurface match = this.Find(x => x.ID == ASurveyedSurfaceID);
 
@@ -96,8 +98,8 @@ namespace VSS.VisionLink.Raptor.Surfaces
                 return match;
             }
 
-            SurveyedSurface ss = new SurveyedSurface(ASurveyedSurfaceID, ADesignDescriptor, AAsAtDate);
-            Add(new SurveyedSurface(ASurveyedSurfaceID, ADesignDescriptor, AAsAtDate));
+            SurveyedSurface ss = new SurveyedSurface(ASurveyedSurfaceID, ADesignDescriptor, AAsAtDate, AExtents);
+            Add(ss);
 
             Sort();
 

@@ -94,6 +94,10 @@
       <Project>{d900b783-706f-4845-82e1-3c93c1e06df2}</Project>
       <Name>RaptorClassLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VSS.Velociraptor.Geometry\VSS.VisionLink.Raptor.Geometry.csproj">
+      <Project>{E1A52E73-5CCD-4AA5-BB78-561319479792}</Project>
+      <Name>VSS.VisionLink.Raptor.Geometry</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

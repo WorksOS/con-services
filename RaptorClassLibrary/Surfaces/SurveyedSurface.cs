@@ -61,18 +61,20 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// <param name="AAsAtDate"></param>
         public SurveyedSurface(long AID,
                                DesignDescriptor ADesignDescriptor,
-                               DateTime AAsAtDate) : base()
+                               DateTime AAsAtDate,
+                               BoundingWorldExtent3D AExtents) : base()
         {
             FID = AID;
             FDesignDescriptor = ADesignDescriptor;
             FAsAtDate = AAsAtDate;
+            FExtents = AExtents;
         }
 
         /// <summary>
         /// Produces a deep clone of the surveyed surface
         /// </summary>
         /// <returns></returns>
-        public SurveyedSurface Clone() => new SurveyedSurface(FID, FDesignDescriptor, FAsAtDate);
+        public SurveyedSurface Clone() => new SurveyedSurface(FID, FDesignDescriptor, FAsAtDate, FExtents);
 
         /// <summary>
         /// ToString() for SurveyedSurface

@@ -20,7 +20,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
             {
                 SurveyedSurfaces ss = entry.Exists ? SurveyedSurfaces.FromBytes(entry.Value) : new SurveyedSurfaces();
 
-                ss.AddSurveyedSurfaceDetails(arg.ID, arg.DesignDescriptor, arg.AsAtDate);
+                ss.AddSurveyedSurfaceDetails(arg.ID, arg.DesignDescriptor, arg.AsAtDate, arg.Extents);
 
                 entry.Value = ss.ToByteArray();
 
