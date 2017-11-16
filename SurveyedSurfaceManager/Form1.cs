@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor;
+using VSS.VisionLink.Raptor.ExistenceMaps;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.Surfaces;
+using VSS.VisionLink.Raptor.ExistenceMaps;
 
 namespace SurveyedSurfaceManager
 {
@@ -82,13 +84,19 @@ namespace SurveyedSurfaceManager
                                                               new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, offset),                                                          
                                                               dateTimePicker.Value,
                                                               extents);
+
+                    throw new NotImplementedException("Existence map not set via Ignite service invocation to add a surveyes surface or design");
                 }
                 else
                 {
                     SurveyedSurfaceService.AddDirect(ID, 
                                                      new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, offset),
                                                      dateTimePicker.Value,
-                                                     extents);
+                                                     extents,
+                                                     out long SurveyedSurfaceID);
+
+                    // Store the existence map for the surveyd surface for later use
+                    ExistenceMaps.SetExistenceMap(ID, Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, SurveyedSurfaceID, TTM.SubgridOverlayIndex());
                 }
             }
             catch (Exception E)
@@ -298,9 +306,14 @@ namespace SurveyedSurfaceManager
                 TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
                 TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
+                // Create the new design for the site model
                 DesignsService.AddDirect(ID,
                                          new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, offset),
-                                         extents);
+                                         extents,
+                                         out long DesignID);
+
+                // Store the existence map for the design for later use
+                ExistenceMaps.SetExistenceMap(ID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, DesignID, TTM.SubgridOverlayIndex());
             }
             catch (Exception E)
             {

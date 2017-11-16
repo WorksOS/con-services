@@ -11,12 +11,6 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
     /// </summary>
     public class BaseExistenceMapRequest
     {
-        protected const string EXISTENCE_MAP_HEADER = "SpatialExistenceMap";
-        protected const int EXISTENCE_MAP_VERSION = 1;
-
-        public const int EXISTANCE_MAP_DESIGN_DESCRIPTOR = 1;
-        public const int EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR = 2;
-
         /// <summary>
         /// Constrct a unique key for the existance map comprised of a type descriptor and an ID
         /// </summary>

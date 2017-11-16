@@ -37,7 +37,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
             {
                 using (BinaryReader reader = new BinaryReader(ms))
                 {
-                    SubGridTreePersistor.Read(mask, EXISTENCE_MAP_HEADER, EXISTENCE_MAP_VERSION, reader);
+                    SubGridTreePersistor.Read(mask, Consts.EXISTENCE_MAP_HEADER, Consts.EXISTENCE_MAP_VERSION, reader);
                 }
             }
 

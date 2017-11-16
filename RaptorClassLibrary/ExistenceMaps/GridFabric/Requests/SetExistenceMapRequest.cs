@@ -33,7 +33,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
             {
                 using (BinaryWriter writer = new BinaryWriter(ms))
                 {
-                    SubGridTreePersistor.Write(mask, EXISTENCE_MAP_HEADER, EXISTENCE_MAP_VERSION, writer);
+                    SubGridTreePersistor.Write(mask, Consts.EXISTENCE_MAP_HEADER, Consts.EXISTENCE_MAP_VERSION, writer);
 
                     ExistenceMapServer.Instance().SetExistenceMap(key, ms.ToArray());
                 }

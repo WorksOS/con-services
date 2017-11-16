@@ -117,6 +117,7 @@
     <Compile Include="Executors\Tasks\PipelinedSubGridTask.cs" />
     <Compile Include="Executors\Tasks\PVMRenderingTask.cs" />
     <Compile Include="Executors\Tasks\TaskBase.cs" />
+    <Compile Include="ExistenceMaps\Consts.cs" />
     <Compile Include="ExistenceMaps\ExistenceMaps.cs" />
     <Compile Include="ExistenceMaps\GridFabric\Requests\BaseExistenceMapRequest.cs" />
     <Compile Include="ExistenceMaps\GridFabric\Requests\GetCombinedExistenceMapRequest.cs" />

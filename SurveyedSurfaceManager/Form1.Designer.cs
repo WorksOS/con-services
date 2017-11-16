@@ -68,6 +68,9 @@
             this.txtFilePath.Name = "txtFilePath";
             this.txtFilePath.Size = new System.Drawing.Size(369, 20);
             this.txtFilePath.TabIndex = 1;
+            this.txtFilePath.Text = "J:\\PP\\Construction\\Office software\\SiteVision Office\\Test Files\\VisionLink Data\\D" +
+    "imensions 2012\\BC Data\\Sites\\BootCamp 2012\\Designs(linework in USFt)\\Original Gr" +
+    "ound Survey";
             this.txtFilePath.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txtFileName
@@ -76,6 +79,7 @@
             this.txtFileName.Name = "txtFileName";
             this.txtFileName.Size = new System.Drawing.Size(369, 20);
             this.txtFileName.TabIndex = 2;
+            this.txtFileName.Text = "Original Ground Survey - Dimensions 2012.ttm";
             this.txtFileName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label1
@@ -102,6 +106,7 @@
             this.txtSiteModelID.Name = "txtSiteModelID";
             this.txtSiteModelID.Size = new System.Drawing.Size(74, 20);
             this.txtSiteModelID.TabIndex = 5;
+            this.txtSiteModelID.Text = "5";
             this.txtSiteModelID.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label3
@@ -195,6 +200,7 @@
             this.txtOffset.Name = "txtOffset";
             this.txtOffset.Size = new System.Drawing.Size(74, 20);
             this.txtOffset.TabIndex = 14;
+            this.txtOffset.Text = "5.5";
             this.txtOffset.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label6

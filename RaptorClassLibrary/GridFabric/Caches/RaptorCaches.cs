@@ -20,7 +20,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
         private const string kNonSpatialImmutable = "NonSpatial-Immutable";
         private const string kNonSpatialImmutableCompressed = "NonSpatial-Immutable"; // Same as compressed as there is currently no distinction
 
-        private const string kDesignTopologyExistanceMaps = "DesignTopologyExistanceMaps";
+        private const string kDesignTopologyExistenceMaps = "DesignTopologyExistenceMaps";
 
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
@@ -93,6 +93,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
         /// Returns the name of of the design topology existence maps
         /// </summary>
         /// <returns></returns>
-        public static string DesignTopologyExistanceMapsCacheName() => kDesignTopologyExistanceMaps;
+        public static string DesignTopologyExistenceMapsCacheName() => kDesignTopologyExistenceMaps;
     }
 }

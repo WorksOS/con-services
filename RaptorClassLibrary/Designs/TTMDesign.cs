@@ -593,7 +593,7 @@ namespace VSS.Velociraptor.DesignProfiling
             }
         }
 
-        protected bool ConstructSubgridIndex(string SubgridIndexFileName)
+        protected bool ConstructSubgridIndex()//(string SubgridIndexFileName)
         {
             // Read through all the triangles in the model and, for each triangle,
             // determine which subgrids intersect it and set the appropriate bits in the
@@ -1003,7 +1003,7 @@ namespace VSS.Velociraptor.DesignProfiling
 
             if (!Result)
             {
-                Result = ConstructSubgridIndex(SubgridIndexFileName);
+                Result = ConstructSubgridIndex();
 
                 if (Result)
                 {

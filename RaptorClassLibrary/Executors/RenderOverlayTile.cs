@@ -301,7 +301,7 @@ namespace VSS.VisionLink.Raptor.Executors
             }
 
             SubGridTreeBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.ExistenceMaps.GetCombinedExistenceMap(siteModelID,
-              FilteredSurveyedSurfaces.Select(x => new Tuple<long, long>(ExistenceMaps.GridFabric.Requests.BaseExistenceMapRequest.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
+              FilteredSurveyedSurfaces.Select(x => new Tuple<long, long>(ExistenceMaps.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
 
             if (DesignSubgridOverlayMap == null)
             {
@@ -589,7 +589,7 @@ namespace VSS.VisionLink.Raptor.Executors
             if (Filter1 != null && Filter1.AttributeFilter.HasElevationRangeFilter && !Filter1.AttributeFilter.ElevationRangeDesign.IsNull)
             {
                 SubGridTreeBitMask LiftDesignSubgridOverlayMap =
-                    ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(DataModelID, ExistenceMaps.GridFabric.Requests.BaseExistenceMapRequest.EXISTANCE_MAP_DESIGN_DESCRIPTOR,
+                    ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(DataModelID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR,
                                                                       Filter1.AttributeFilter.ElevationRangeDesign.DesignID);
 
                 if (LiftDesignSubgridOverlayMap != null)
@@ -666,7 +666,7 @@ namespace VSS.VisionLink.Raptor.Executors
                     return null;
                 }
 
-                DesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(DataModelID, ExistenceMaps.GridFabric.Requests.BaseExistenceMapRequest.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesign.DesignID);
+                DesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(DataModelID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesign.DesignID);
 
                 if (DesignSubgridOverlayMap == null)
                 {
