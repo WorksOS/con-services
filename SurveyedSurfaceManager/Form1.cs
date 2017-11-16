@@ -13,6 +13,7 @@ using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.Surfaces;
 
@@ -28,9 +29,11 @@ namespace SurveyedSurfaceManager
         private SurveyedSurfaceServiceProxy DeployedSurveyedSurfaceService = null;
         private SurveyedSurfaceService SurveyedSurfaceService = null;
 
+        private DesignsService DesignsService = null;
+
         private bool CheckConnection()
         {
-            if (DeployedSurveyedSurfaceService == null && SurveyedSurfaceService == null)
+            if ((DeployedSurveyedSurfaceService == null && SurveyedSurfaceService == null) || (DesignsService == null))
             {
                 MessageBox.Show("Not connected to service");
                 return false;
@@ -55,6 +58,13 @@ namespace SurveyedSurfaceManager
                 return;
             }
 
+            // Get the offset
+            if (!double.TryParse(txtOffset.Text, out double offset))
+            {
+                MessageBox.Show("Invalid design offset");
+                return;
+            }
+
             // Invoke the service to add the surveyed surface
             try
             {
@@ -68,11 +78,17 @@ namespace SurveyedSurfaceManager
 
                 if (DeployedSurveyedSurfaceService != null)
                 {
-                    DeployedSurveyedSurfaceService.Invoke_Add(ID, new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, 0), DateTime.Now, extents);
+                    DeployedSurveyedSurfaceService.Invoke_Add(ID, 
+                                                              new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, offset),                                                          
+                                                              dateTimePicker.Value,
+                                                              extents);
                 }
                 else
                 {
-                    SurveyedSurfaceService.AddDirect(ID, new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, 0), DateTime.Now, extents);
+                    SurveyedSurfaceService.AddDirect(ID, 
+                                                     new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, offset),
+                                                     dateTimePicker.Value,
+                                                     extents);
                 }
             }
             catch (Exception E)
@@ -81,6 +97,11 @@ namespace SurveyedSurfaceManager
             }
         }
 
+        /// <summary>
+        /// Register services...
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
             // Deploy the service as a cluster singleton
@@ -117,7 +138,7 @@ namespace SurveyedSurfaceManager
                 if (ss == null || ss.Count == 0)
                     MessageBox.Show("No surveyed surfaces");
                 else
-                    MessageBox.Show("Surveyed Surfaces:\n" + ss == null ? "None" : ss.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
+                    MessageBox.Show("Surveyed Surfaces:\n" + ss.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
             }
             catch (Exception E)
             {
@@ -125,10 +146,18 @@ namespace SurveyedSurfaceManager
             }
         }
 
+        /// <summary>
+        /// Create direct access
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click_1(object sender, EventArgs e)
         {
             SurveyedSurfaceService = new SurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName());
             SurveyedSurfaceService.Init(null);
+
+            DesignsService = new DesignsService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName());
+            //DesignsService.Init(null);
         }
 
         private void btnRemoveSurveyedSurface_Click(object sender, EventArgs e)
@@ -167,6 +196,111 @@ namespace SurveyedSurfaceManager
                 }
 
                 MessageBox.Show($"Result for removing surveyed surface ID {SurveydSurfaceID} from Site Model {SiteModelID}: {result}");
+            }
+            catch (Exception E)
+            {
+                MessageBox.Show($"Exception: {E}");
+            }
+        }
+
+        private void btnRemoveDesign_Click(object sender, EventArgs e)
+        {
+            if (!CheckConnection())
+            {
+                return;
+            }
+
+            // Get the site model ID
+            if (!long.TryParse(txtSiteModelID.Text, out long SiteModelID))
+            {
+                MessageBox.Show("Invalid Site Model ID");
+                return;
+            }
+
+            // Get the design ID
+            if (!long.TryParse(txtDesignID.Text, out long DesignID))
+            {
+                MessageBox.Show("Invalid design ID");
+                return;
+            }
+
+            // Invoke the service to remove the design
+            try
+            {
+                bool result = SurveyedSurfaceService.RemoveDirect(SiteModelID, DesignID);
+
+                MessageBox.Show($"Result for removing design ID {DesignID} from Site Model {SiteModelID}: {result}");
+            }
+            catch (Exception E)
+            {
+                MessageBox.Show($"Exception: {E}");
+            }
+        }
+
+        private void btnListDesigns_Click(object sender, EventArgs e)
+        {
+            if (!CheckConnection())
+            {
+                return;
+            }
+
+            try
+            {
+                // Get the site model ID
+                if (!long.TryParse(txtSiteModelID.Text, out long ID))
+                {
+                    MessageBox.Show("Invalid Site Model ID");
+                    return;
+                }
+
+                VSS.VisionLink.Raptor.Designs.Storage.Designs designList = DesignsService.ListDirect(ID);
+
+                if (designList == null || designList.Count == 0)
+                    MessageBox.Show("No designs");
+                else
+                    MessageBox.Show("Designs:\n" + designList.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
+            }
+            catch (Exception E)
+            {
+                MessageBox.Show($"Exception: {E}");
+            }
+        }
+
+        private void btnAddAsNewDesign_Click(object sender, EventArgs e)
+        {
+            if (!CheckConnection())
+            {
+                return;
+            }
+
+            // Get the site model ID
+            if (!long.TryParse(txtSiteModelID.Text, out long ID))
+            {
+                MessageBox.Show("Invalid Site Model ID");
+                return;
+            }
+
+            // Get the offset
+            if (!double.TryParse(txtOffset.Text, out double offset))
+            {
+                MessageBox.Show("Invalid design offset");
+                return;
+            }
+
+            // Invoke the service to add the design
+            try
+            {
+                // Load the file and extract its extents
+                TTMDesign TTM = new TTMDesign(SubGridTree.DefaultCellSize);
+                TTM.LoadFromFile(Path.Combine(new string[] { txtFilePath.Text, txtFileName.Text }));
+
+                BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+                TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
+                TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
+
+                DesignsService.AddDirect(ID,
+                                         new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, offset),
+                                         extents);
             }
             catch (Exception E)
             {

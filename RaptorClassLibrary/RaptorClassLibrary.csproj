@@ -94,7 +94,9 @@
     <Compile Include="DesignDescriptor.cs" />
     <Compile Include="Designs\DesignBase.cs" />
     <Compile Include="Designs\DesignFiles.cs" />
+    <Compile Include="Designs\Storage\Design.cs" />
     <Compile Include="Designs\DesignLoadResult.cs" />
+    <Compile Include="Designs\Storage\Designs.cs" />
     <Compile Include="Designs\GridFabric\Requests\DesignProfilerRaptorRequest.cs" />
     <Compile Include="Designs\DesignProfilerRequestResult.cs" />
     <Compile Include="Designs\TTMDesign.cs" />
@@ -203,6 +205,8 @@
     <Compile Include="Servers\Client\RaptorProjectStatisticsServer.cs" />
     <Compile Include="Servers\Client\RaptorTileRenderingServer.cs" />
     <Compile Include="Services\BaseRaptorService.cs" />
+    <Compile Include="Services\Designs\DesignsService.cs" />
+    <Compile Include="Services\Designs\IDesignsService.cs" />
     <Compile Include="Services\Surfaces\SurveyedSurfaceService.cs" />
     <Compile Include="Services\Surfaces\AddSurveyedSurfaceServiceProcessor.cs" />
     <Compile Include="Services\Surfaces\SurveyedSurfaceServiceProxy.cs" />
@@ -441,9 +445,11 @@
     <Compile Include="Types\ServerRequestResult.cs" />
     <Compile Include="Types\VibrationState.cs" />
     <Compile Include="Utilities\BitFlagHelper.cs" />
+    <Compile Include="Utilities\ExtensionMethods\FromToBytes.cs" />
     <Compile Include="Utilities\FilterUtilities.cs" />
     <Compile Include="Utilities\Formatters.cs" />
     <Compile Include="Utilities\GeometryHelper.cs" />
+    <Compile Include="Utilities\Interfaces\IBinaryReaderWriter.cs" />
     <Compile Include="Utilities\MathUtilities.cs" />
     <Compile Include="Utilities\MinMax.cs" />
     <Compile Include="Utilities\PassCountSize.cs" />

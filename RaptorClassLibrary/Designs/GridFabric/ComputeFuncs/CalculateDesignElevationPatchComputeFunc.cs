@@ -9,7 +9,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.Velociraptor.DesignProfiling.Executors;
 using log4net;
 using System.Reflection;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
+using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
 
 namespace VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs
 {
@@ -27,7 +27,7 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs
 
                 CalculateDesignElevationPatch Executor = new CalculateDesignElevationPatch(arg);
 
-                return Executor.Execute().ToByteArray();
+                return Executor.Execute().ToBytes();
             }
             catch (Exception E)
             {

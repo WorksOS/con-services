@@ -41,21 +41,30 @@
             this.label4 = new System.Windows.Forms.Label();
             this.txtSurveyedSurfaceID = new System.Windows.Forms.TextBox();
             this.btnRemoveSurveyedSurface = new System.Windows.Forms.Button();
+            this.btnAddAsNewDesign = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtOffset = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.dateTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtDesignID = new System.Windows.Forms.TextBox();
+            this.btnRemoveDesign = new System.Windows.Forms.Button();
+            this.btnListDesigns = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnAddNewSurveyedSurface
             // 
-            this.btnAddNewSurveyedSurface.Location = new System.Drawing.Point(30, 161);
+            this.btnAddNewSurveyedSurface.Location = new System.Drawing.Point(27, 193);
             this.btnAddNewSurveyedSurface.Name = "btnAddNewSurveyedSurface";
             this.btnAddNewSurveyedSurface.Size = new System.Drawing.Size(166, 23);
             this.btnAddNewSurveyedSurface.TabIndex = 0;
-            this.btnAddNewSurveyedSurface.Text = "Add New Surveyed Surface";
+            this.btnAddNewSurveyedSurface.Text = "Add As New Surveyed Surface";
             this.btnAddNewSurveyedSurface.UseVisualStyleBackColor = true;
             this.btnAddNewSurveyedSurface.Click += new System.EventHandler(this.button1_Click);
             // 
             // txtFilePath
             // 
-            this.txtFilePath.Location = new System.Drawing.Point(27, 91);
+            this.txtFilePath.Location = new System.Drawing.Point(28, 75);
             this.txtFilePath.Name = "txtFilePath";
             this.txtFilePath.Size = new System.Drawing.Size(369, 20);
             this.txtFilePath.TabIndex = 1;
@@ -63,7 +72,7 @@
             // 
             // txtFileName
             // 
-            this.txtFileName.Location = new System.Drawing.Point(27, 128);
+            this.txtFileName.Location = new System.Drawing.Point(28, 112);
             this.txtFileName.Name = "txtFileName";
             this.txtFileName.Size = new System.Drawing.Size(369, 20);
             this.txtFileName.TabIndex = 2;
@@ -72,7 +81,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(27, 114);
+            this.label1.Location = new System.Drawing.Point(28, 98);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(57, 13);
             this.label1.TabIndex = 3;
@@ -81,7 +90,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(27, 72);
+            this.label2.Location = new System.Drawing.Point(28, 56);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(51, 13);
             this.label2.TabIndex = 4;
@@ -89,7 +98,7 @@
             // 
             // txtSiteModelID
             // 
-            this.txtSiteModelID.Location = new System.Drawing.Point(27, 49);
+            this.txtSiteModelID.Location = new System.Drawing.Point(28, 33);
             this.txtSiteModelID.Name = "txtSiteModelID";
             this.txtSiteModelID.Size = new System.Drawing.Size(74, 20);
             this.txtSiteModelID.TabIndex = 5;
@@ -98,7 +107,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(27, 33);
+            this.label3.Location = new System.Drawing.Point(28, 17);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(74, 13);
             this.label3.TabIndex = 6;
@@ -106,7 +115,7 @@
             // 
             // btnRegisterServices
             // 
-            this.btnRegisterServices.Location = new System.Drawing.Point(475, 180);
+            this.btnRegisterServices.Location = new System.Drawing.Point(647, 193);
             this.btnRegisterServices.Name = "btnRegisterServices";
             this.btnRegisterServices.Size = new System.Drawing.Size(166, 23);
             this.btnRegisterServices.TabIndex = 7;
@@ -116,7 +125,7 @@
             // 
             // bntListSurveyedSurfaces
             // 
-            this.bntListSurveyedSurfaces.Location = new System.Drawing.Point(475, 109);
+            this.bntListSurveyedSurfaces.Location = new System.Drawing.Point(647, 109);
             this.bntListSurveyedSurfaces.Name = "bntListSurveyedSurfaces";
             this.bntListSurveyedSurfaces.Size = new System.Drawing.Size(166, 23);
             this.bntListSurveyedSurfaces.TabIndex = 8;
@@ -126,7 +135,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(475, 209);
+            this.button1.Location = new System.Drawing.Point(445, 193);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(166, 23);
             this.button1.TabIndex = 9;
@@ -137,7 +146,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(538, 17);
+            this.label4.Location = new System.Drawing.Point(710, 17);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(103, 13);
             this.label4.TabIndex = 11;
@@ -145,7 +154,7 @@
             // 
             // txtSurveyedSurfaceID
             // 
-            this.txtSurveyedSurfaceID.Location = new System.Drawing.Point(541, 33);
+            this.txtSurveyedSurfaceID.Location = new System.Drawing.Point(713, 33);
             this.txtSurveyedSurfaceID.Name = "txtSurveyedSurfaceID";
             this.txtSurveyedSurfaceID.Size = new System.Drawing.Size(100, 20);
             this.txtSurveyedSurfaceID.TabIndex = 10;
@@ -153,7 +162,7 @@
             // 
             // btnRemoveSurveyedSurface
             // 
-            this.btnRemoveSurveyedSurface.Location = new System.Drawing.Point(475, 62);
+            this.btnRemoveSurveyedSurface.Location = new System.Drawing.Point(647, 62);
             this.btnRemoveSurveyedSurface.Name = "btnRemoveSurveyedSurface";
             this.btnRemoveSurveyedSurface.Size = new System.Drawing.Size(166, 23);
             this.btnRemoveSurveyedSurface.TabIndex = 12;
@@ -161,11 +170,102 @@
             this.btnRemoveSurveyedSurface.UseVisualStyleBackColor = true;
             this.btnRemoveSurveyedSurface.Click += new System.EventHandler(this.btnRemoveSurveyedSurface_Click);
             // 
+            // btnAddAsNewDesign
+            // 
+            this.btnAddAsNewDesign.Location = new System.Drawing.Point(199, 193);
+            this.btnAddAsNewDesign.Name = "btnAddAsNewDesign";
+            this.btnAddAsNewDesign.Size = new System.Drawing.Size(166, 23);
+            this.btnAddAsNewDesign.TabIndex = 13;
+            this.btnAddAsNewDesign.Text = "Add As New Design";
+            this.btnAddAsNewDesign.UseVisualStyleBackColor = true;
+            this.btnAddAsNewDesign.Click += new System.EventHandler(this.btnAddAsNewDesign_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(28, 141);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(78, 13);
+            this.label5.TabIndex = 15;
+            this.label5.Text = "Offset (meters):";
+            // 
+            // txtOffset
+            // 
+            this.txtOffset.Location = new System.Drawing.Point(28, 157);
+            this.txtOffset.Name = "txtOffset";
+            this.txtOffset.Size = new System.Drawing.Size(74, 20);
+            this.txtOffset.TabIndex = 14;
+            this.txtOffset.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(132, 141);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(89, 13);
+            this.label6.TabIndex = 17;
+            this.label6.Text = "As At Date/Time:";
+            // 
+            // dateTimePicker
+            // 
+            this.dateTimePicker.Location = new System.Drawing.Point(133, 157);
+            this.dateTimePicker.Name = "dateTimePicker";
+            this.dateTimePicker.Size = new System.Drawing.Size(200, 20);
+            this.dateTimePicker.TabIndex = 18;
+            // 
+            // label7
+            // 
+            this.label7.AllowDrop = true;
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(442, 17);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(57, 13);
+            this.label7.TabIndex = 20;
+            this.label7.Text = "Design ID:";
+            // 
+            // txtDesignID
+            // 
+            this.txtDesignID.AllowDrop = true;
+            this.txtDesignID.Location = new System.Drawing.Point(445, 33);
+            this.txtDesignID.Name = "txtDesignID";
+            this.txtDesignID.Size = new System.Drawing.Size(100, 20);
+            this.txtDesignID.TabIndex = 19;
+            this.txtDesignID.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // btnRemoveDesign
+            // 
+            this.btnRemoveDesign.Location = new System.Drawing.Point(445, 62);
+            this.btnRemoveDesign.Name = "btnRemoveDesign";
+            this.btnRemoveDesign.Size = new System.Drawing.Size(166, 23);
+            this.btnRemoveDesign.TabIndex = 21;
+            this.btnRemoveDesign.Text = "Remove Design";
+            this.btnRemoveDesign.UseVisualStyleBackColor = true;
+            this.btnRemoveDesign.Click += new System.EventHandler(this.btnRemoveDesign_Click);
+            // 
+            // btnListDesigns
+            // 
+            this.btnListDesigns.Location = new System.Drawing.Point(445, 109);
+            this.btnListDesigns.Name = "btnListDesigns";
+            this.btnListDesigns.Size = new System.Drawing.Size(166, 23);
+            this.btnListDesigns.TabIndex = 22;
+            this.btnListDesigns.Text = "List Designs";
+            this.btnListDesigns.UseVisualStyleBackColor = true;
+            this.btnListDesigns.Click += new System.EventHandler(this.btnListDesigns_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(668, 244);
+            this.ClientSize = new System.Drawing.Size(836, 231);
+            this.Controls.Add(this.btnListDesigns);
+            this.Controls.Add(this.btnRemoveDesign);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.txtDesignID);
+            this.Controls.Add(this.dateTimePicker);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.txtOffset);
+            this.Controls.Add(this.btnAddAsNewDesign);
             this.Controls.Add(this.btnRemoveSurveyedSurface);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txtSurveyedSurfaceID);
@@ -201,6 +301,15 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtSurveyedSurfaceID;
         private System.Windows.Forms.Button btnRemoveSurveyedSurface;
+        private System.Windows.Forms.Button btnAddAsNewDesign;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox txtOffset;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.DateTimePicker dateTimePicker;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtDesignID;
+        private System.Windows.Forms.Button btnRemoveDesign;
+        private System.Windows.Forms.Button btnListDesigns;
     }
 }
 

@@ -14,10 +14,7 @@ namespace VSS.Velociraptor.DesignProfiling
     {
         private int FLockCount = 0;
 
-//      TICSubGridCellPassData_HeightPtr_Temp = TICClientSubGridTreeLeaf_Base<TICCellHeight>.TCellData;
-//      TICSubGridCellPassData_HeightPtr = ^TICSubGridCellPassData_HeightPtr_Temp;
-
-//      function GetMemorySizeInKB: Integer; Virtual; Abstract;
+        //      function GetMemorySizeInKB: Integer; Virtual; Abstract;
 
         public int LockCount { get { return FLockCount; } }
 
@@ -85,10 +82,5 @@ namespace VSS.Velociraptor.DesignProfiling
 
         public void AcquireExclusiveInterlock() => Monitor.Enter(this);
         public void ReleaseExclusiveInterlock() => Monitor.Exit(this);
-
-//function GetDesignLoadResultEnumName(LoadResult: TDesignLoadResult): String;
-//begin
-//  Result := GetEnumName(TypeInfo(TDesignLoadResult), Integer(LoadResult))
-//end;
     }
 }
