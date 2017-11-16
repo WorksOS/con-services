@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.Utilities.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Surfaces
 {
     [Serializable]
-    public class SurveyedSurface : IEquatable<SurveyedSurface>
+    public class SurveyedSurface : IEquatable<SurveyedSurface>, IBinaryReaderWriter
     {
         long FID = long.MinValue;
         DesignDescriptor FDesignDescriptor;
@@ -23,6 +24,8 @@ namespace VSS.VisionLink.Raptor.Surfaces
             writer.Write(FAsAtDate.ToBinary());
             FExtents.Write(writer);
         }
+
+        public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
         public void Read(BinaryReader reader)
         {
@@ -102,34 +105,6 @@ namespace VSS.VisionLink.Raptor.Surfaces
                    FDesignDescriptor.Equals(other.DesignDescriptor) &&
                    (FAsAtDate == other.AsAtDate) &&
                    (FExtents.Equals(other.Extents));
-        }
-
-        /// <summary>
-        /// Takes a byte array containing a serialised surveyed surface and returns an instance based on it
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <returns></returns>
-        public static SurveyedSurface FromBytes(byte [] bytes)
-        {
-            if (bytes == null)
-            {
-                return null;
-            }
-
-            using (MemoryStream ms = new MemoryStream(bytes))
-            {
-                using (BinaryReader reader = new BinaryReader(ms))
-                {
-                    try
-                    {
-                        return new SurveyedSurface(reader);
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                }
-            }
         }
     }
 }

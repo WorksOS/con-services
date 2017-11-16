@@ -9,7 +9,7 @@ using VSS.VisionLink.Raptor.Surfaces;
 namespace VSS.VisionLink.Raptor.Services.Surfaces
 {
     /// <summary>
-    /// Interface detailing the API for the service that supports adding new surveyed surfaces
+    /// Interface detailing the API for the service that supports adding and managing surveyed surfaces
     /// </summary>
     public interface ISurveyedSurfaceService
     {

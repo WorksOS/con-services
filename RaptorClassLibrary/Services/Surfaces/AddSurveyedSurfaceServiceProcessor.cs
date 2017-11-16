@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Surfaces;
+using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
 
 namespace VSS.VisionLink.Raptor.Services.Surfaces
 {
@@ -18,11 +19,15 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         {
             try
             {
-                SurveyedSurfaces ss = entry.Exists ? SurveyedSurfaces.FromBytes(entry.Value) : new SurveyedSurfaces();
+                SurveyedSurfaces ss = new SurveyedSurfaces(); 
+                if (entry.Exists)
+                {
+                    ss.FromBytes(entry.Value);
+                }
 
                 ss.AddSurveyedSurfaceDetails(arg.ID, arg.DesignDescriptor, arg.AsAtDate, arg.Extents);
 
-                entry.Value = ss.ToByteArray();
+                entry.Value = ss.ToBytes();
 
                 return true;
             }

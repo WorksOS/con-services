@@ -419,7 +419,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         public SubGridCellAddress OriginAsCellAddress() => new SubGridCellAddress(OriginX, OriginY);
 
-        public byte[] ToByteArray()
+        public byte[] ToBytes()
         {
             using (MemoryStream ms = new MemoryStream())
             {
@@ -432,7 +432,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             }
         }
 
-        public byte[] ToByteArray(byte[] helperBuffer)
+        public byte[] ToBytes(byte[] helperBuffer)
         {
             using (MemoryStream ms = new MemoryStream())
             {
@@ -445,7 +445,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             }
         }
 
-        public byte[] ToByteArray(MemoryStream helperStream, byte[] helperBuffer)
+        public byte[] ToBytes(MemoryStream helperStream, byte[] helperBuffer)
         {
             throw new NotImplementedException("Not done yet");
         }

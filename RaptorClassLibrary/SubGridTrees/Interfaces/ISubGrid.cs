@@ -75,12 +75,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
         void Read(BinaryReader reader, byte [] buffer);
         void Read(BinaryFormatter formatter, Stream stream);
 
-//      byte[] ToByteArray();
-//      byte[] ToByteArray(byte[] helperBuffer);
-//      byte[] ToByteArray(MemoryStream helperStream, byte [] helperBuffer);
-
-//      void FromByteArray(byte[] bytes);
-
         SubGridCellAddress OriginAsCellAddress();
     }
 }

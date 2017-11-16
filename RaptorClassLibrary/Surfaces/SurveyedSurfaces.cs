@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.Utilities.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Surfaces
 {
     [Serializable]
-    public class SurveyedSurfaces : List<SurveyedSurface>, IComparable<SurveyedSurface>
+    public class SurveyedSurfaces : List<SurveyedSurface>, IComparable<SurveyedSurface>, IBinaryReaderWriter
     {
         private const byte kMajorVersion = 1;
         private const byte kMinorVersion = 3;
@@ -82,7 +83,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// <summary>
         /// Create a new surveyed surface in the list based on the provided details
         /// </summary>
-        /// <param name="AGroundSurfaceID"></param>
+        /// <param name="ASurveyedSurfaceID"></param>
         /// <param name="ADesignDescriptor"></param>
         /// <param name="AAsAtDate"></param>
         /// <returns></returns>
@@ -245,56 +246,6 @@ namespace VSS.VisionLink.Raptor.Surfaces
             return $"{SiteModelID}-SurveyedSurfaces";
         }
 
-        /// <summary>
-        /// Takes a byte array containing a set of serialised surveyed surfaces and returns an instance based on it
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <returns></returns>
-        public static SurveyedSurfaces FromBytes(byte[] bytes)
-        {
-            if (bytes == null)
-            {
-                return null;
-            }
-
-            using (MemoryStream ms = new MemoryStream(bytes))
-            {
-                using (BinaryReader reader = new BinaryReader(ms))
-                {
-                    try
-                    {
-                        return new SurveyedSurfaces(reader);
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Takes a byte array containing a set of serialised surveyed surfaces and returns an instance based on it
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <returns></returns>
-        public byte[] ToByteArray()
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                using (BinaryWriter writer = new BinaryWriter(ms))
-                {
-                    try
-                    {
-                        Write(writer);
-                        return ms.ToArray();
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                }
-            }
-        }
+        public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
     }
 }

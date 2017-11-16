@@ -26,7 +26,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs
 
                 CalculateSurfaceElevationPatch Executor = new CalculateSurfaceElevationPatch(arg);
 
-                return Executor.Execute().ToByteArray();
+                return Executor.Execute().ToBytes();
             }
             catch (Exception E)
             {

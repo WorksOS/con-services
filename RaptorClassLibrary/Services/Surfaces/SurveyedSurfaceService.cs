@@ -10,16 +10,14 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
-//using VSS.VisionLink.Raptor.GridFabric.Caches;
-//using VSS.VisionLink.Raptor.GridFabric.Grids;
-//using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Surfaces;
+using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
 
 namespace VSS.VisionLink.Raptor.Services.Surfaces
 {
 
     /// <summary>
-    /// A test of how to add a new surveyed surface
+    /// A test of how to manage surveyed surfaces
     /// </summary>
     public class SurveyedSurfaceService : BaseRaptorService, IService, ISurveyedSurfaceService
     {
@@ -39,12 +37,12 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         private string GridName;
         private string CacheName;
 
-        public SurveyedSurfaceService()
+        public SurveyedSurfaceService() : base()
         {
 
         }
 
-        public SurveyedSurfaceService(string gridName, string cacheName) : base()
+        public SurveyedSurfaceService(string gridName, string cacheName) : this()
         {
             GridName = gridName;
             CacheName = cacheName;
@@ -71,30 +69,31 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="AsAtDate"></param>
         public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
         {
+            // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
+
+            string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
+
+            // Get the surveyed surfaces, creating it if it does not exist
+            SurveyedSurfaces ssList = new SurveyedSurfaces();
+
             try
             {
-                // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
-
-                string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
-
-                // Get the surveyed surfaces, creating it if it does not exist
-                SurveyedSurfaces ssList = SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(cacheKey));
-
-                if (ssList == null)
-                {
-                    ssList = new SurveyedSurfaces();
-                }
-
-                // Add the new surveyed surface, generating a random ID from a GUID
-                SurveyedSurface ss = ssList.AddSurveyedSurfaceDetails(Guid.NewGuid().GetHashCode(), designDescriptor, asAtDate, extents);
-
-                // Put the list back into the cache with the new entry
-                mutableNonSpatialCache.Put(cacheKey, ssList.ToByteArray());
+                ssList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
             }
             catch (KeyNotFoundException)
             {
-                // Swallow exception
+                // Swallow exception, the list will be empty
             }
+            catch
+            {
+                throw;
+            }
+
+            // Add the new surveyed surface, generating a random ID from a GUID
+            SurveyedSurface ss = ssList.AddSurveyedSurfaceDetails(Guid.NewGuid().GetHashCode(), designDescriptor, asAtDate, extents);
+
+            // Put the list back into the cache with the new entry
+            mutableNonSpatialCache.Put(cacheKey, ssList.ToBytes());
         }
 
         public SurveyedSurfaces List(long SiteModelID)
@@ -103,7 +102,9 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
 
             try
             {
-                return SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(SurveyedSurfaces.CacheKey(SiteModelID)));
+                SurveyedSurfaces ss = new SurveyedSurfaces();
+                ss.FromBytes(mutableNonSpatialCache.Get(SurveyedSurfaces.CacheKey(SiteModelID)));
+                return ss;
             }
             catch (KeyNotFoundException)
             {
@@ -128,7 +129,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="context"></param>
         public void Execute(IServiceContext context)
         {
-           Log.Info($"Executing Raptor Service 'AddSurveyedSurface'");
+           Log.Info($"Executing Raptor Service 'SurveyedSurfaceService'");
         }
 
         /// <summary>
@@ -141,11 +142,6 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
             {
                 _svcName = context.Name;
             }
-
-//            if (_ignite == null)
-//            {
-//                _ignite = Ignition.TryGetIgnite(GridName);
-//            }
 
             mutableNonSpatialCache = _ignite.GetCache<String, Byte[]>(CacheName /*RaptorCaches.MutableNonSpatialCacheName()*/);
         }
@@ -185,7 +181,8 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
                 string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
 
                 // Get the surveyed surfaces, creating it if it does not exist
-                SurveyedSurfaces ssList = SurveyedSurfaces.FromBytes(mutableNonSpatialCache.Get(cacheKey));
+                SurveyedSurfaces ssList = new SurveyedSurfaces();
+                ssList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
 
                 if (ssList == null)
                 {
@@ -198,7 +195,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
                 // Put the list back into the cache with the new entry
                 if (result)
                 {
-                    mutableNonSpatialCache.Put(cacheKey, ssList.ToByteArray());
+                    mutableNonSpatialCache.Put(cacheKey, ssList.ToBytes());
                 }
 
                 return result;
