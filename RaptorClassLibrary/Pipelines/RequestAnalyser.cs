@@ -17,13 +17,58 @@ namespace VSS.VisionLink.Raptor.Pipelines
     /// Its implementation was modelled on the activities of the Legacy TSVOICSubGridSubmissionThread class.
     /// </summary>
     public class RequestAnalyser
-    {
+    { 
+        /// <summary>
+        /// The pipeline that has initiated this request analysis
+        /// </summary>
         private SubGridPipelineBase Owner = null;
 
-        public SubGridTreeBitMask Mask = null;
+        /// <summary>
+        /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
+        /// </summary>
+        public SubGridTreeSubGridExistenceBitMask ProdDataMask = null;
 
+        /// <summary>
+        /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
+        /// </summary>
+        public SubGridTreeSubGridExistenceBitMask SurveydSurfaceOnlyMask = null;
+
+        /// <summary>
+        /// A cell coordinate level (rather than world coordinate) boundary that acts as an optional final override of the spatial area
+        /// within which subgrids are being requested
+        /// </summary>
         public BoundingIntegerExtent2D OverrideSpatialCellRestriction = BoundingIntegerExtent2D.Inverted();
 
+        public BoundingWorldExtent3D WorldExtents = BoundingWorldExtent3D.Inverted();
+
+        public long TotalNumberOfSubgridsAnalysed = 0;
+        public long TotalNumberOfCandidateSubgrids = 0;
+        protected bool ScanningFullWorldExtent = false;
+
+        /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public RequestAnalyser() : base()
+        {
+        }
+
+        /// <summary>
+        /// Constructor accepting the pipeline (analyser client) and the bounding world coordinate extents within which subgrids
+        /// are being requested
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="worldExtents"></param>
+        public RequestAnalyser(SubGridPipelineBase owner, BoundingWorldExtent3D worldExtents) : this()
+        {
+            Owner = owner;
+            ProdDataMask = new SubGridTreeSubGridExistenceBitMask();
+            SurveydSurfaceOnlyMask = new SubGridTreeSubGridExistenceBitMask();
+            WorldExtents = worldExtents;
+        }
+
+        /// <summary>
+        /// Performs the donkey work of the request analysis
+        /// </summary>
         protected void PerformScanning()
         {
             BoundingWorldExtent3D FilterRestriction = new BoundingWorldExtent3D();
@@ -38,13 +83,26 @@ namespace VSS.VisionLink.Raptor.Pipelines
                 FilterRestriction.SetMaximalCoverage();
             }
 
-            for (int I = 0; I < Owner.FilterSet.Filters.Length; I++)
+            foreach (CombinedFilter filter in Owner.FilterSet.Filters)
             {
-                if (Owner.FilterSet.Filters[I] != null)
+                if (filter != null)
                 {
-                    FilterRestriction = Owner.FilterSet.Filters[I].SpatialFilter.CalculateIntersectionWithExtents(FilterRestriction);
+                    FilterRestriction = filter.SpatialFilter.CalculateIntersectionWithExtents(FilterRestriction);
                 }
             }
+
+            // TODO: Complete when design filter existance map is available
+            /*
+            //  for each filter and mask in filter to FOwner.OverallExistenceMap
+            foreach (CombinedFilter filter in Owner.FilterSet.Filters)
+            {
+                if (filter != null && filter.AttributeFilter.HasDesignFilter && filter.DesignFilterSubgridOverlayMap)
+                {
+                    //    SIGLogMessage.PublishNoODS(Self, Format('#D# %s Has Design %s Anding with OverallExistMap',[Self.ClassName,FOwner.FilterSet.Filters[I].DesignFilter.FileName]), slmcDebug);
+                    Owner.OverallExistenceMap.SetOp_AND(filter.DesignFilterSubgridOverlayMap);
+                }
+            }
+            */
 
             ScanningFullWorldExtent = !WorldExtents.IsValidPlanExtent || WorldExtents.IsMaximalPlanConverage;
 
@@ -58,23 +116,10 @@ namespace VSS.VisionLink.Raptor.Pipelines
             };
         }
 
-        public BoundingWorldExtent3D WorldExtents = BoundingWorldExtent3D.Inverted();
-
-        public long TotalNumberOfSubgridsAnalysed = 0;
-        public long TotalNumberOfCandidateSubgrids = 0;
-        protected bool ScanningFullWorldExtent = false;
-
-        public RequestAnalyser() : base()
-        {
-        }
-
-        public RequestAnalyser(SubGridPipelineBase owner, BoundingWorldExtent3D worldExtents) : this()
-        {
-            Owner = owner;
-            Mask = new SubGridTreeBitMask();
-            WorldExtents = worldExtents;
-        }
-
+        /// <summary>
+        /// The executor method for the analyser
+        /// </summary>
+        /// <returns></returns>
         public bool Execute()
         {
             try
@@ -83,7 +128,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
                 return true;  
             }
-            catch // (Exception E)
+            catch (Exception E)
             {
                 // TODO Readd when logging available
                 // SIGLogMessage.PublishNoODS(Self, Format('Exception: ''%s''', [E.Message]), slmcException);
@@ -91,8 +136,23 @@ namespace VSS.VisionLink.Raptor.Pipelines
             }
         }
 
+        /// <summary>
+        /// Performs scanning operations across subgrids, determining if they should be included in the request
+        /// </summary>
+        /// <param name="SubGrid"></param>
+        /// <returns></returns>
         protected bool SubGridEvent(ISubGrid SubGrid)
         {
+            // The given subgrid is a leaf sudgrid containing a bit mask recording subgrid inclusion in the overall subgrid map 
+            // being iterated over. This map includes, production data only subgrids, surveyed surface data only subgrids and
+            // subgrids that will have both types of data retrived for them. The analyser needs to seaprate out the two in terms
+            // of the masks of subgrids that needs to be queried, one for production data (and optionally surveyed surface data) and 
+            // one for surveyed surface data only. 
+            // Get the matching subgrid from the production data only bit mask subgrid tree and use this subgrid to be able to sepearat 
+            // the two sets of subgrids
+
+            SubGridTreeLeafBitmapSubGrid ProdDataSubGrid = Owner.ProdDataExistenceMap.LocateSubGridContaining(SubGrid.OriginX, SubGrid.OriginY) as SubGridTreeLeafBitmapSubGrid;
+
             byte ScanMinXb, ScanMinYb, ScanMaxXb, ScanMaxYb;
             bool SubgridSatisfiesFilter;
             bool Result = true; // Set to false if the scanning process needs to be aborted.
@@ -136,9 +196,9 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
             // Iterate over the subrange of cells (bits) in this subgrid and request the matching subgrids
 
-            for (byte I = ScanMinXb; I < ScanMaxXb + 1; I++)
+            for (byte I = ScanMinXb; I <= ScanMaxXb; I++)
             {
-                for (byte J = ScanMinYb; J < ScanMaxYb + 1; J++)
+                for (byte J = ScanMinYb; J <= ScanMaxYb; J++)
                 {
                     if (CastSubGrid.Bits.BitSet(I, J))
                     {
@@ -164,30 +224,32 @@ namespace VSS.VisionLink.Raptor.Pipelines
                         // If there is a spatial filter in play then determine if the subgrid about to be requested intersects the spatial filter extent
 
                         SubgridSatisfiesFilter = true;
-                        for (int FilterIdx = 0; FilterIdx < Owner.FilterSet.Filters.Length; FilterIdx++)
+                        foreach (CombinedFilter filter in Owner.FilterSet.Filters)
                         {
-                            if (Owner.FilterSet.Filters[FilterIdx] != null)
+                            if (filter == null)
                             {
-                                CellSpatialFilter spatialFilter = Owner.FilterSet.Filters[FilterIdx].SpatialFilter;
+                                continue;
+                            }
 
-                                if (spatialFilter.IsSpatial && spatialFilter.Fence != null && spatialFilter.Fence.NumVertices > 0)
-                                {
-                                    SubgridSatisfiesFilter = spatialFilter.Fence.IntersectsExtent(CastSubGrid.Owner.GetCellExtents(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J));
-                                }
-                                else
-                                {
-                                    if (spatialFilter.IsPositional)
-                                    {
-                                        CastSubGrid.Owner.GetCellCenterPosition(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, out double centerX, out double centerY);
+                            CellSpatialFilter spatialFilter = filter.SpatialFilter;
 
-                                        SubgridSatisfiesFilter = Math.Sqrt(Math.Pow(spatialFilter.PositionX - centerX, 2) + Math.Pow(spatialFilter.PositionY - centerY, 2)) < (spatialFilter.PositionRadius + (Math.Sqrt(2) * CastSubGrid.Owner.CellSize) / 2);
-                                    }
-                                }
-
-                                if (!SubgridSatisfiesFilter)
+                            if (spatialFilter.IsSpatial && spatialFilter.Fence != null && spatialFilter.Fence.NumVertices > 0)
+                            {
+                                SubgridSatisfiesFilter = spatialFilter.Fence.IntersectsExtent(CastSubGrid.Owner.GetCellExtents(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J));
+                            }
+                            else
+                            {
+                                if (spatialFilter.IsPositional)
                                 {
-                                    break;
+                                    CastSubGrid.Owner.GetCellCenterPosition(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, out double centerX, out double centerY);
+
+                                    SubgridSatisfiesFilter = Math.Sqrt(Math.Pow(spatialFilter.PositionX - centerX, 2) + Math.Pow(spatialFilter.PositionY - centerY, 2)) < (spatialFilter.PositionRadius + (Math.Sqrt(2) * CastSubGrid.Owner.CellSize) / 2);
                                 }
+                            }
+
+                            if (!SubgridSatisfiesFilter)
+                            {
+                                break;
                             }
                         }
 
@@ -197,16 +259,23 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
                             // Add the leaf subgrid identitied by the address below, along with the production data and surveyed surface
                             // flags to the subgrid tree being used to aggregate all the subgrids that need to be queried for the request
-//                            SubGridCellAddress NewSubGridAddress =
-//                                 new SubGridCellAddress((CastSubGrid.OriginX + I) << SubGridTree.SubGridIndexBitsPerLevel,
-//                                                        (CastSubGrid.OriginY + J) << SubGridTree.SubGridIndexBitsPerLevel,
-//                                                        Owner.ProdDataExistenceMap.GetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J),
-//                                                        Owner.IncludeSurveyedSurfaceInformation);
+                            //                            SubGridCellAddress NewSubGridAddress =
+                            //                                 new SubGridCellAddress((CastSubGrid.OriginX + I) << SubGridTree.SubGridIndexBitsPerLevel,
+                            //                                                        (CastSubGrid.OriginY + J) << SubGridTree.SubGridIndexBitsPerLevel,
+                            //                                                        Owner.ProdDataExistenceMap.GetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J),
+                            //                                                        Owner.IncludeSurveyedSurfaceInformation);
 
-                            /// Set the mask for the production data
-                            Mask.SetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, true);
-
-                            /* TODO - Do the same for surveyed surface information */
+                            /// Set the ProdDataMaskk for the production data
+                            if (ProdDataSubGrid != null && ProdDataSubGrid.Bits.BitSet(I, J))
+                            {
+                                ProdDataMask.SetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, true);
+                            }
+                            else
+                            {
+                                // Note: This is ONLY recording the subgrids that have surveyed surface data required, but not production data 
+                                // as a delta to the production data requests
+                                SurveydSurfaceOnlyMask.SetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, true);
+                            }
                         }
                     }
                 }
@@ -215,5 +284,4 @@ namespace VSS.VisionLink.Raptor.Pipelines
             return Result;
         }
     }
-}
- 
+} 

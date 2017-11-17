@@ -13,13 +13,13 @@ namespace VSS.VisionLink.Raptor
     public class ProductionDataExistanceMap
     {
         public long DataModelID { get; set; } = -1;
-        public SubGridTreeBitMask Map { get; set; } = null;
+        public SubGridTreeSubGridExistenceBitMask Map { get; set; } = null;
 
         public ProductionDataExistanceMap(long dataModelID, double cellSize)
         {
             DataModelID = dataModelID;
 
-            Map = new SubGridTreeBitMask(SubGridTree.SubGridTreeLevels - 1, cellSize); //, kICFSSubgridSpatialExistanceMapHeader, kICFSSubgridSpatialExistanceMapVersion);
+            Map = new SubGridTreeSubGridExistenceBitMask(); //, kICFSSubgridSpatialExistanceMapHeader, kICFSSubgridSpatialExistanceMapVersion);
         }    
     }
 }

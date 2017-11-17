@@ -20,7 +20,7 @@ namespace VSS.Velociraptor.DesignProfiling
         private double FMaxHeight;
         //      private FIndex : TDQMTTMQuadTree;
         private double FCellSize;
-        private SubGridTreeBitMask FSubgridIndex;
+        private SubGridTreeSubGridExistenceBitMask FSubgridIndex;
 
         private void SwapVertices(ref TriVertex A, ref TriVertex B) => MinMax.Swap(ref A, ref B);
 
@@ -636,7 +636,10 @@ namespace VSS.Velociraptor.DesignProfiling
 
             // Create a subgrid tree bit mask index that holds one bit per on-the-ground
             // subgrid that intersects at least one triangle in the TTM.
-            FSubgridIndex = new SubGridTreeBitMask(SubGridTree.SubGridTreeLevels - 1, SubGridTree.SubGridTreeDimension * ACellSize);
+            FSubgridIndex = new SubGridTreeSubGridExistenceBitMask()
+            {
+                CellSize = SubGridTree.SubGridTreeDimension * ACellSize
+            };
         }
 
         public override void GetExtents(out double x1, out double y1, out double x2, out double y2)
@@ -1126,6 +1129,6 @@ namespace VSS.Velociraptor.DesignProfiling
             return false;
         }
 
-        public override SubGridTreeBitMask SubgridOverlayIndex() => FSubgridIndex;
+        public override SubGridTreeSubGridExistenceBitMask SubgridOverlayIndex() => FSubgridIndex;
     }
 }

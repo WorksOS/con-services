@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
+using Apache.Ignite.Core.Resource;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,12 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
     public class ExistenceMapServer
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>
+        /// Ignite instance to be used in the server
+        /// </summary>
+        [InstanceResource]
+        private readonly IIgnite ignite = null;
 
         /// <summary>
         /// A cache that holds the existance maps derived from designfiles (eg: TTM files)
@@ -44,18 +51,30 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
         /// </summary>
         public ExistenceMapServer()
         {
-            IIgnite ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
+            if (ignite == null)
+            {
+                ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
+            }
 
             if (ignite == null)
             {
                 Log.InfoFormat($"Failed to get Ignite reference in {this}");
+                throw new ArgumentException("No Ignite instance available");
             }
 
-            DesignTopologyExistanceMapsCache = ignite.GetCache<String, byte[]>(RaptorCaches.DesignTopologyExistanceMapsCacheName());
+            try
+            {
+                DesignTopologyExistanceMapsCache = ignite.GetCache<String, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName());
+            }
+            catch // Exception is thrown if the cache does not exist
+            {
+                DesignTopologyExistanceMapsCache = ignite.GetOrCreateCache<String, byte[]>(ConfigureDesignTopologyExistanceMapsCache());
+            }
 
             if (DesignTopologyExistanceMapsCache == null)
             {
-                DesignTopologyExistanceMapsCache = ignite.GetOrCreateCache<String, byte[]>(ConfigureDesignTopologyExistanceMapsCache());
+                Log.InfoFormat($"Failed to get or create Ignite cache {RaptorCaches.DesignTopologyExistenceMapsCacheName()}");
+                throw new ArgumentException("Ignite cache not available");
             }
         }
 
@@ -67,7 +86,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
         {
             return new CacheConfiguration()
             {
-                Name = RaptorCaches.DesignTopologyExistanceMapsCacheName(),
+                Name = RaptorCaches.DesignTopologyExistenceMapsCacheName(),
 
                 // cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
                 KeepBinaryInStore = false,

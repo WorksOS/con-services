@@ -31,13 +31,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 
         /// <summary>
-        /// The serialised contents of the SubGridTreeBitMask that notes the address of all subgrids that need to be requested
+        /// The serialised contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for production data
         /// </summary>
-        public MemoryStream MaskStream { get; set; } = null;
+        public Byte[] ProdDataMaskBytes { get; set; } = null;
+
+        /// <summary>
+        /// The serialised contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for surveyed surface data ONLY
+        /// </summary>
+        public Byte[] SurveyedSurfaceOnlyMaskBytes { get; set; } = null;
 
         /// <summary>
         /// The set of filters to be applied to the requested subgrids
         /// </summary>
+        /// 
         public FilterSet Filters { get; set; } = null;
 
         /// <summary>
@@ -64,13 +70,17 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         /// <param name="siteModelID"></param>
         /// <param name="requestID"></param>
         /// <param name="gridDataType"></param>
-        /// <param name="maskStream"></param>
+        /// <param name="includeSurveyedSurfaceInformation"></param>
+        /// <param name="prodDataMaskBytes"></param>
+        /// <param name="surveyedSurfaceOnlyMaskBytes"></param>
         /// <param name="messageTopic"></param>
+        /// <param name="raptorNodeID"></param>
         public SubGridsRequestArgument(long siteModelID, 
                                        long requestID, 
                                        GridDataType gridDataType, 
                                        bool includeSurveyedSurfaceInformation,
-                                       MemoryStream maskStream, 
+                                       byte[] prodDataMaskBytes,
+                                       byte[] surveyedSurfaceOnlyMaskBytes,
                                        FilterSet filters, 
                                        string messageTopic, 
                                        string raptorNodeID) : this()
@@ -79,7 +89,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
             RequestID = requestID;
             GridDataType = gridDataType;
             IncludeSurveyedSurfaceInformation = includeSurveyedSurfaceInformation;
-            MaskStream = maskStream;
+            ProdDataMaskBytes = prodDataMaskBytes;
+            SurveyedSurfaceOnlyMaskBytes = surveyedSurfaceOnlyMaskBytes;
             Filters = filters;
             MessageTopic = messageTopic;
             RaptorNodeID = raptorNodeID;

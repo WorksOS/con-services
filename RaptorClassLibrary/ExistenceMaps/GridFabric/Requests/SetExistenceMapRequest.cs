@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public void Execute(string key, SubGridTreeBitMask mask)
+        public void Execute(string key, SubGridTreeSubGridExistenceBitMask mask)
         {
             using (MemoryStream ms = new MemoryStream())
             {
@@ -45,6 +45,6 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public void Execute(long siteModelID, long descriptor, long ID, SubGridTreeBitMask mask) => Execute(CacheKey(siteModelID, descriptor, ID), mask);
+        public void Execute(long siteModelID, long descriptor, long ID, SubGridTreeSubGridExistenceBitMask mask) => Execute(CacheKey(siteModelID, descriptor, ID), mask);
     }
 }

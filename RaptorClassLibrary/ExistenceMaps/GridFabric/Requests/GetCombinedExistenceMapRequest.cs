@@ -27,14 +27,14 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public SubGridTreeBitMask Execute(string[] keys)
+        public SubGridTreeSubGridExistenceBitMask Execute(string[] keys)
         {
             GetSingleExistenceMapRequest request = new GetSingleExistenceMapRequest();
-            SubGridTreeBitMask combinedMask = new SubGridTreeBitMask(SubGridTree.SubGridTreeLevels - 1, SubGridTree.DefaultCellSize * SubGridTree.SubGridTreeDimension);
+            SubGridTreeSubGridExistenceBitMask combinedMask = new SubGridTreeSubGridExistenceBitMask();
 
             foreach (string key in keys)
             {
-                SubGridTreeBitMask Mask = request.Execute(key);
+                SubGridTreeSubGridExistenceBitMask Mask = request.Execute(key);
 
                 if (Mask != null)
                 {
@@ -50,6 +50,6 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public SubGridTreeBitMask Execute(long siteModelID, Tuple<long, long>[] IDs) => Execute(IDs.Select(x => CacheKey(siteModelID, x.Item1, x.Item2)).ToArray());
+        public SubGridTreeSubGridExistenceBitMask Execute(long siteModelID, Tuple<long, long>[] IDs) => Execute(IDs.Select(x => CacheKey(siteModelID, x.Item1, x.Item2)).ToArray());
     }
 }

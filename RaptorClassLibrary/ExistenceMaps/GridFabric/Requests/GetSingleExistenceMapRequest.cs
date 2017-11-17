@@ -28,10 +28,17 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public SubGridTreeBitMask Execute(string key)
+        public SubGridTreeSubGridExistenceBitMask Execute(string key)
         {
             byte[] bytes = ExistenceMapServer.Instance().GetExistenceMap(key);
-            SubGridTreeBitMask mask = new SubGridTreeBitMask();
+
+            if (bytes == null)
+            {
+                // There is no mask available for the key.
+                return null;
+            }
+
+            SubGridTreeSubGridExistenceBitMask mask = new SubGridTreeSubGridExistenceBitMask();
 
             using (MemoryStream ms = new MemoryStream(bytes))
             {
@@ -49,7 +56,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public SubGridTreeBitMask Execute(long siteModeID, long descriptor, long ID) => Execute(CacheKey(siteModeID, descriptor, ID));
+        public SubGridTreeSubGridExistenceBitMask Execute(long siteModeID, long descriptor, long ID) => Execute(CacheKey(siteModeID, descriptor, ID));
         
     }
 }

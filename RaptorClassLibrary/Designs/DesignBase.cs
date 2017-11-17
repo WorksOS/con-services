@@ -78,7 +78,7 @@ namespace VSS.Velociraptor.DesignProfiling
 
         public abstract bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubgridY);
 
-        public virtual SubGridTreeBitMask SubgridOverlayIndex() => null;
+        public virtual SubGridTreeSubGridExistenceBitMask SubgridOverlayIndex() => null;
 
         public void AcquireExclusiveInterlock() => Monitor.Enter(this);
         public void ReleaseExclusiveInterlock() => Monitor.Exit(this);

@@ -46,9 +46,9 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         public PVMDisplayerBase Displayer = null;
 
-        public SubGridTreeBitMask OverallExistenceMap = null;
-        public SubGridTreeBitMask ProdDataExistenceMap = null;
-        public SubGridTreeBitMask DesignSubgridOverlayMap = null;
+        public SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
+        public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null;
+        public SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap = null;
 
         // DisplayPalettes : TICDisplayPalettes;
 
@@ -166,17 +166,6 @@ namespace VSS.VisionLink.Raptor.Rendering
             PipeLine.OverallExistenceMap = OverallExistenceMap;
             PipeLine.ProdDataExistenceMap = ProdDataExistenceMap;
             PipeLine.DesignSubgridOverlayMap = DesignSubgridOverlayMap;
-
-            //    PipeLine.IP  = ASNodeImplInstance.ServiceIPAddress;
-            //    PipeLine.Port  = ASNodeImplInstance.ServiceIPPort;
-            //    PipeLine.ResponsePort  = ASNodeImplInstance.AsyncResponder.ServiceIPPort;
-
-            //    if (PipeLine.IP = $0) or(PipeLine.IP = $ffffffff) then
-            //     begin
-            //        SIGLogMessage.PublishNoODS(Self, '', slmcMessage);
-            //        SIGLogMessage.PublishNoODS(Self, Format('ASNodeImplInstance.ServiceIPAddress is invalid in TPlanViewTileRenderer.ExecutePipeline (%x)', [PipeLine.IP]), slmcAssert);
-            //        SIGLogMessage.PublishNoODS(Self, '', slmcMessage);
-            //      end;
 
             // PipeLine.OperationNode.OnOperateOnSubGrid  = ProcessTransferredSubgridResponse;
             PipeLine.GridDataType = GridDataFromModeConverter.Convert(Mode);

@@ -109,7 +109,7 @@ namespace VSS.VisionLink.Raptor.Executors
             RequestingRaptorNodeID = requestingRaptorNodeID;
         }
 
-        SubGridTreeBitMask OverallExistenceMap = null;
+        SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
 
         RequestErrorStatus ResultStatus = RequestErrorStatus.Unknown;
 
@@ -281,7 +281,7 @@ namespace VSS.VisionLink.Raptor.Executors
                                                       CombinedFilter Filter,
                                                       SurveyedSurfaces ComparisonList,
                                                       SurveyedSurfaces FilteredSurveyedSurfaces,
-                                                      SubGridTreeBitMask DesignSubgridOverlayMap)
+                                                      SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap)
         {
             if (LocalSurveyedSurfaces == null)
             {
@@ -300,8 +300,8 @@ namespace VSS.VisionLink.Raptor.Executors
                 return true;
             }
 
-            SubGridTreeBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.ExistenceMaps.GetCombinedExistenceMap(siteModelID,
-              FilteredSurveyedSurfaces.Select(x => new Tuple<long, long>(ExistenceMaps.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
+            SubGridTreeSubGridExistenceBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.ExistenceMaps.GetCombinedExistenceMap(siteModelID,
+            FilteredSurveyedSurfaces.Select(x => new Tuple<long, long>(ExistenceMaps.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
 
             if (DesignSubgridOverlayMap == null)
             {
@@ -368,8 +368,8 @@ namespace VSS.VisionLink.Raptor.Executors
             // CoordConversionResult : TCoordServiceErrorStatus;
             long RequestDescriptor;
             // bool ScheduledWithGovernor = false;
-            SubGridTreeBitMask ProdDataExistenceMap = null;
-            SubGridTreeBitMask DesignSubgridOverlayMap = null;
+            SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null;
+            SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap = null;
             long[] SurveyedSurfaceExclusionList = new long[0];
 
             double dx, dy;
@@ -516,7 +516,7 @@ namespace VSS.VisionLink.Raptor.Executors
                 RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
             }
 
-            if (Filter1 != null)
+            if (Filter1 != null && SurveyedSurfaceExclusionList.Length > 0)
             {
                 SurveyedSurfaceExclusionList = new long[Filter1.AttributeFilter.SurveyedSurfaceExclusionList.Length];
                 Array.Copy(Filter1.AttributeFilter.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList.Length);
@@ -557,7 +557,10 @@ namespace VSS.VisionLink.Raptor.Executors
 
             // Obtain the subgrid existence map for the project
             // Retrieve the existence map for the datamodel
-            OverallExistenceMap = new SubGridTreeBitMask(SubGridTree.SubGridTreeLevels - 1, SubGridTree.SubGridTreeDimension * SiteModel.Grid.CellSize);
+            OverallExistenceMap = new SubGridTreeSubGridExistenceBitMask()
+            {
+                CellSize = SubGridTree.SubGridTreeDimension * SiteModel.Grid.CellSize
+            };
 
             if (Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode))
             {
@@ -588,7 +591,7 @@ namespace VSS.VisionLink.Raptor.Executors
 
             if (Filter1 != null && Filter1.AttributeFilter.HasElevationRangeFilter && !Filter1.AttributeFilter.ElevationRangeDesign.IsNull)
             {
-                SubGridTreeBitMask LiftDesignSubgridOverlayMap =
+                SubGridTreeSubGridExistenceBitMask LiftDesignSubgridOverlayMap =
                     ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(DataModelID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR,
                                                                       Filter1.AttributeFilter.ElevationRangeDesign.DesignID);
 

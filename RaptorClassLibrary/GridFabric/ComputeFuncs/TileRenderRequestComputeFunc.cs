@@ -47,8 +47,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                      arg.Filter1, arg.Filter2,
                      arg.CutFillDesign,
                      Color.Black,
-                     arg.RaptorNodeID
-                     );
+                     arg.RaptorNodeID);
 
                 Log.Info("Executing render.Execute()");
 

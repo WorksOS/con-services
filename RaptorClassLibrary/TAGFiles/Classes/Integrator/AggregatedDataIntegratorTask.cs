@@ -33,7 +33,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
         public ServerSubGridTree AggregatedCellPasses { get; set; } = null;
         public ProductionEventChanges AggregatedMachineEvents { get; set; } = null;
-        public SubGridTreeBitMask AggregateModifiedSubgrids { get; set; } = null;
+        public SubGridTreeSubGridExistenceBitMask AggregateModifiedSubgrids { get; set; } = null;
 
         //      Finalizer : TAggregationTaskFinalizer;
 
@@ -52,7 +52,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             TargetSiteModel = null;
         }
 
-        public void SetAggregateModifiedSubgrids(ref SubGridTreeBitMask AAggregateModifiedSubgrids)
+        public void SetAggregateModifiedSubgrids(ref SubGridTreeSubGridExistenceBitMask AAggregateModifiedSubgrids)
         {
             AggregateModifiedSubgrids = AAggregateModifiedSubgrids;
 

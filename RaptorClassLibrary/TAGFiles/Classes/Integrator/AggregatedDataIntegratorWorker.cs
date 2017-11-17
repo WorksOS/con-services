@@ -17,7 +17,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
     public class AggregatedDataIntegratorWorker
     {
         private ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess = null;
-        private SubGridTreeBitMask WorkingModelUpdateMap = null;
+        private SubGridTreeSubGridExistenceBitMask WorkingModelUpdateMap = null;
         private IStorageProxy storageProxyRaptor = null;
         private IStorageProxy[] storageProxySpatial = null;
 
@@ -345,8 +345,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                             // we have been given are with respect to the subgrid, we must transform them
                             // into coordinates relavant to the dirty bitmap subgrid tree.
 
-                            WorkingModelUpdateMap = new SubGridTreeBitMask((byte)(SiteModelFromDM.Grid.NumLevels - 1), SiteModelFromDM.Grid.CellSize)
+                            WorkingModelUpdateMap = new SubGridTreeSubGridExistenceBitMask()
                             {
+                                CellSize = SubGridTree.SubGridTreeDimension * SiteModelFromDM.Grid.CellSize,
                                 ID = SiteModelFromDM.ID
                             };
 

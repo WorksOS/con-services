@@ -67,11 +67,12 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
         /// <param name="AsAtDate"></param>
-        public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
+        public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents, out long SuveyedSurfaceID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
             string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
+            SuveyedSurfaceID = Guid.NewGuid().GetHashCode();
 
             // Get the surveyed surfaces, creating it if it does not exist
             SurveyedSurfaces ssList = new SurveyedSurfaces();
@@ -90,7 +91,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
             }
 
             // Add the new surveyed surface, generating a random ID from a GUID
-            SurveyedSurface ss = ssList.AddSurveyedSurfaceDetails(Guid.NewGuid().GetHashCode(), designDescriptor, asAtDate, extents);
+            SurveyedSurface ss = ssList.AddSurveyedSurfaceDetails(SuveyedSurfaceID, designDescriptor, asAtDate, extents);
 
             // Put the list back into the cache with the new entry
             mutableNonSpatialCache.Put(cacheKey, ssList.ToBytes());

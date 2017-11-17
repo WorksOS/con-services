@@ -69,6 +69,29 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 PassFilter.InitialiseElevationRangeFilter(DesignElevations);
             }
             */
+
+            /*
+
+    if CellFilter.HasDesignFilter then
+      begin
+//        SIGLogMessage.PublishNoODS(Nil, Format('#D# InitialiseFilterContext RequestDesignElevationPatch for Design %s',[CellFilter.DesignFilter.FileName]), slmcDebug);
+        // Query the DesignProfiler service to get the patch of elevations calculated
+        ErrorCode := PSNodeImplInstance.DesignProfilerService.RequestDesignElevationPatch
+                     (Construct_CalculateDesignElevationPatch_Args(SiteModel.Grid.DataModelID,
+                                                                   SubgridX, SubgridY,
+                                                                   SiteModel.Grid.CellSize,
+                                                                   CellFilter.DesignFilter,
+                                                                   TSubGridTreeLeafBitmapSubGridBits.FullMask),
+                     DesignFilterElevations);
+
+        if (ErrorCode <> dppiOK) or not Assigned(DesignFilterElevations) then
+          begin
+            SIGLogMessage.PublishNoODS(Nil, Format('#D# InitialiseFilterContext RequestDesignElevationPatch for Design %s Failed',[CellFilter.DesignFilter.FileName]), slmcError);
+            Result := False;
+            Exit;
+          end;
+      end;
+*/              
             return true;
         }
 
@@ -193,7 +216,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 }
                 */
 
-                if (false)
+            if (false)
                 {
                     // TODO placeholder for cache implementation above
                 }
@@ -295,7 +318,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             // if VLPDSvcLocations.Debug_SwitchOffCompositeSurfaceGenerationFromSurveyedSurfaces then
             // Exit;
 
-            return Result;
+//            return Result;
 
             if (!ASurveyedSurfaceDataRequested || Result != ServerRequestResult.NoError)
             {

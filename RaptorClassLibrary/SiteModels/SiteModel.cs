@@ -45,9 +45,9 @@ namespace VSS.VisionLink.Raptor.SiteModels
         public ServerSubGridTree Grid { get { return grid; } }
 
         [NonSerialized]
-        private SubGridTreeBitMask existanceMap = null; //ProductionDataExistanceMap ExistanceMap = new ProductionDataExistanceMap(-1, 1);
+        private SubGridTreeSubGridExistenceBitMask existanceMap = null;
 
-        public SubGridTreeBitMask ExistanceMap {  get { return existanceMap; } }
+        public SubGridTreeSubGridExistenceBitMask ExistanceMap {  get { return existanceMap; } }
 
         /// <summary>
         /// SiteModelExtent records the 3D extents of the data stored in the site model
@@ -141,7 +141,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
             grid = new ServerSubGridTree(this);
 
-            existanceMap = new SubGridTreeBitMask();
+            existanceMap = new SubGridTreeSubGridExistenceBitMask();
 
             // FProofingRuns:= TICSiteProofingRuns.Create;
 
@@ -169,13 +169,11 @@ namespace VSS.VisionLink.Raptor.SiteModels
         }
 
         public SiteModel(//AOwner: TICSiteModels;
-                        string name,
-                                string description,
-                                long id,
-                                double cellSize) : this(id)
+                         string name,
+                         string description,
+                         long id,
+                         double cellSize) : this(id)
         {
-            //  Create(AOwner, AID);
-
             //        FName := AName;
             //  FDescription := ADescription;
             Grid.CellSize = cellSize;
@@ -440,7 +438,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// load it from storage/cache
         /// </summary>
         /// <returns></returns>
-        public SubGridTreeBitMask GetProductionDataExistanceMap()
+        public SubGridTreeSubGridExistenceBitMask GetProductionDataExistanceMap()
         {
             if (existanceMap == null)
             {
@@ -466,7 +464,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             try
             {
                 // Create the new existance map instance
-                SubGridTreeBitMask localExistanceMap = existanceMap;
+                SubGridTreeSubGridExistenceBitMask localExistanceMap = existanceMap;
 
                 // Save its content to storage
                 MemoryStream MS = new MemoryStream();
@@ -491,7 +489,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             try
             {
                 // Create the new existance map instance
-                SubGridTreeBitMask localExistanceMap = new SubGridTreeBitMask();
+                SubGridTreeSubGridExistenceBitMask localExistanceMap = new SubGridTreeSubGridExistenceBitMask();
 
                 // Read its content from storage
                 StorageProxy.RaptorInstance().ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);

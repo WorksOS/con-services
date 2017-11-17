@@ -24,9 +24,6 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Requests
             // Construct the function to be used
             IComputeFunc<CalculateDesignElevationPatchArgument, byte[] /*ClientHeightLeafSubGrid*/> func = new CalculateDesignElevationPatchComputeFunc();
 
-            // Note: Broadcast will block until all compute nodes receiving the request have responded, or
-            // until the internal Ignite timeout expires
-
             /*ClientHeightLeafSubGrid */ byte[] result = _compute.Apply(func, arg);
 
             if (result == null)

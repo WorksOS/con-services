@@ -120,5 +120,20 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// </summary>
         /// <returns></returns>
         public override string ToString() => System.String.Format("{0}:{1}", X, Y);
+
+        /// <summary>
+        /// Sets the state of a cell address struct
+        /// </summary>
+        /// <param name="AX"></param>
+        /// <param name="AY"></param>
+        /// <param name="AProdDataRequested"></param>
+        /// <param name="ASurveyedSurfaceDataRequested"></param>
+        public void Set(UInt32 AX, UInt32 AY, bool AProdDataRequested, bool ASurveyedSurfaceDataRequested)
+        {
+            X = AX;
+            Y = AY;
+            ProdDataRequested = AProdDataRequested;
+            SurveyedSurfaceDataRequested = ASurveyedSurfaceDataRequested;
+        }
     }
 }

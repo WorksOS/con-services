@@ -33,8 +33,31 @@ namespace VSS.VisionLink.Raptor.GridFabric.Responses
 
         /// <summary>
         /// The total number of subgrids scanned by the processing cluster node. This should match the overall number
-        /// of subgrids inthe request unless ResponseCode indicates a failure.
+        /// of subgrids in the request unless ResponseCode indicates a failure.
         /// </summary>
         public long NumSubgridsExamined { get; set; } = -1;
+
+        /// <summary>
+        /// The number of subgrids containing production data in the total subgrids request processed by the responding cluster node
+        /// </summary>
+        public long NumProdDataSubGridsProcessed { get; set; } = -1;
+
+        /// <summary>
+        /// The total number of subgrids containing production data scanned by the processing cluster node. This should match the overall number
+        /// of production data subgrids in the request unless ResponseCode indicates a failure.
+        /// </summary>
+        public long NumProdDataSubGridsExamined { get; set; } = -1;
+
+        /// <summary>
+        /// The number of subgrids containing survyed surfaces data in the total subgrids request processed by the responding cluster node
+        /// </summary>
+        public long NumSurveyedSurfaceSubGridsProcessed { get; set; } = -1;
+
+        /// <summary>
+        /// The total number of subgrids containing surveyed surface data scanned by the processing cluster node. This should match the overall number
+        /// of surveyed surface subgrids in the request unless ResponseCode indicates a failure.
+        /// </summary>
+        public long NumSurveyedSurfaceSubGridsExamined { get; set; } = -1;
+
     }
 }

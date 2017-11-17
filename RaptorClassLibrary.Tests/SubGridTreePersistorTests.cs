@@ -16,7 +16,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
         public void Test_SubGridTreePersistor_Write_Empty()
         {
             // Create an empty subgrid bit mask tree and persist it into a stream
-            SubGridTreeBitMask masktree = new SubGridTreeBitMask();
+            SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
             MemoryStream MS = new MemoryStream();
 
             Assert.IsTrue(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
         public void Test_SubGridTreePersistor_Write_NotEmpty()
         {
             // Create an empty subgrid bit mask tree and persist it into a stream
-            SubGridTreeBitMask masktree = new SubGridTreeBitMask();
+            SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
             masktree.SetCell(100, 100, true);
 
             MemoryStream MS = new MemoryStream();
@@ -40,12 +40,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
         public void Test_SubGridTreePersistor_Read_Empty()
         {
             // Create an empty subgrid bit mask tree and persist it into a stream, then read it back again
-            SubGridTreeBitMask masktree = new SubGridTreeBitMask();
+            SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
             MemoryStream MS = new MemoryStream();
 
             Assert.IsTrue(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
 
-            SubGridTreeBitMask newtree = new SubGridTreeBitMask();
+            SubGridTreeSubGridExistenceBitMask newtree = new SubGridTreeSubGridExistenceBitMask();
 
             MS.Position = 0;
             Assert.IsFalse(SubGridTreePersistor.Read(newtree, "ExistanceXXX", 1, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect header did not cause failure");
@@ -61,14 +61,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
         public void Test_SubGridTreePersistor_Read_NotEmpty()
         {
             // Create an empty subgrid bit mask tree and persist it into a stream
-            SubGridTreeBitMask masktree = new SubGridTreeBitMask();
+            SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
             masktree.SetCell(100, 100, true);
 
             MemoryStream MS = new MemoryStream();
 
             Assert.IsTrue(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
 
-            SubGridTreeBitMask newtree = new SubGridTreeBitMask();
+            SubGridTreeSubGridExistenceBitMask newtree = new SubGridTreeSubGridExistenceBitMask();
 
             MS.Position = 0;
             Assert.IsFalse(SubGridTreePersistor.Read(newtree, "ExistanceXXX", 1, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect header did not cause failure");

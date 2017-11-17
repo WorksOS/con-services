@@ -75,39 +75,33 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
         /// <param name="AsAtDate"></param>
-            public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
+        public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents, out long DesignID)
         {
+            // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
+
+            string cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
+            DesignID = Guid.NewGuid().GetHashCode();
+
+            // Get the designs, creating it if it does not exist
+            Raptor.Designs.Storage.Designs designList = new Raptor.Designs.Storage.Designs();
             try
             {
-                // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
-
-                string cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
-
-                // Get the designs, creating it if it does not exist
-                Raptor.Designs.Storage.Designs designList = new Raptor.Designs.Storage.Designs();
-                try
-                {
-                    designList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
-                }
-                catch (KeyNotFoundException)
-                {
-                    // Swallow exception, the list will be empty
-                }
-                catch
-                {
-                    throw;
-                }
-
-                // Add the new design, generating a random ID from a GUID
-                Raptor.Designs.Storage.Design design = designList.AddDesignDetails(Guid.NewGuid().GetHashCode(), designDescriptor, extents);
-
-                // Put the list back into the cache with the new entry
-                mutableNonSpatialCache.Put(cacheKey, designList.ToBytes());
+                designList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
             }
             catch (KeyNotFoundException)
             {
-                // Swallow exception
+                // Swallow exception, the list will be empty
             }
+            catch
+            {
+                throw;
+            }
+
+            // Add the new design, generating a random ID from a GUID
+            Raptor.Designs.Storage.Design design = designList.AddDesignDetails(DesignID, designDescriptor, extents);
+
+            // Put the list back into the cache with the new entry
+            mutableNonSpatialCache.Put(cacheKey, designList.ToBytes());
         }
 
         public Raptor.Designs.Storage.Designs List(long SiteModelID)

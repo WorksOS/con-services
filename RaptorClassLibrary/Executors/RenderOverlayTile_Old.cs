@@ -90,7 +90,7 @@ namespace VSS.VisionLink.Raptor.Executors
                     }
 
                     // Get the current production data existance map from the sitemodel
-                    SubGridTreeBitMask ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap();
+                    SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap();
 
                     if (ProdDataExistenceMap != null)
                     {

@@ -61,21 +61,16 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public long DataModelID = -1;
 
-        //   public           FIP : DWord;   // IP Address where subgrid results should be sent
-        //   public           FPort : Word;  //  IP port number where subgrid results should be sent
-        //   public           FResponsePort : Word;  //  IP port number where subgrid responses should be sent
-
         // FOverallExistenceMap is the map which describes the combination of Prod Data and Surveyed Surfaces
-        // FProdDataExistenceMap is the subgrid existence map for the data model referenced
-        // by FDataModelID
-        public SubGridTreeBitMask OverallExistenceMap = null;
-        public SubGridTreeBitMask ProdDataExistenceMap = null;
+        // FProdDataExistenceMap is the subgrid existence map for the data model referenced by FDataModelID
+        public SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
+        public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null;
 
         public bool IncludeSurveyedSurfaceInformation = true;
 
         // FDesignSubgridOverlayMap is the subgrid index for subgrids that cover the
         // design being related to for cut/fill operations
-        public SubGridTreeBitMask DesignSubgridOverlayMap = null;
+        public SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap = null;
 
         public FilterSet FilterSet = null;
         public int MaxNumberOfPassesToReturn = 0;
@@ -183,7 +178,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
             SubgridsRemainingToProcess = analyser.TotalNumberOfSubgridsAnalysed;
 
-            Log.InfoFormat("Request analyser counts {0} subgrids to be requested, compared to {1} subgrids in production existance map", analyser.TotalNumberOfSubgridsAnalysed, ProdDataExistenceMap.CountBits());
+            Log.InfoFormat("Request analyser counts {0} subgrids to be requested, compared to {1} subgrids in production existance map", analyser.TotalNumberOfSubgridsAnalysed, OverallExistenceMap.CountBits());
 
             if (analyser.TotalNumberOfSubgridsAnalysed == 0)
             {
@@ -198,7 +193,8 @@ namespace VSS.VisionLink.Raptor.Pipelines
                                                                     PipelineTask.RaptorNodeID, 
                                                                     GridDataType,
                                                                     IncludeSurveyedSurfaceInformation,
-                                                                    analyser.Mask, 
+                                                                    analyser.ProdDataMask, 
+                                                                    analyser.SurveydSurfaceOnlyMask, 
                                                                     FilterSet);
 
             try

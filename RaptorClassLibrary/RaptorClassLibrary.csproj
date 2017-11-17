@@ -304,6 +304,7 @@
     <Compile Include="SubGridTrees\SubGridTreeBitMask.cs" />
     <Compile Include="SubGridTrees\SubGridTreeNodeBitmapSubGrid.cs" />
     <Compile Include="SubGridTrees\SubGridTreePersistor.cs" />
+    <Compile Include="SubGridTrees\SubGridTreeSubGridExistenceBitMask.cs" />
     <Compile Include="SubGridTrees\Types\SubGridPathConstructionType.cs" />
     <Compile Include="SubGridTrees\Types\SubGridProcessNodeSubGridResult.cs" />
     <Compile Include="SubGridTrees\SubGridTree.cs" />
