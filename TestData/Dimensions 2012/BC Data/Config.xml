@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<DeviceConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DeviceName>Business Data Center</DeviceName>
+  <SyncRootPath>C:\Trimble Synchronizer Data\Business Data Center\</SyncRootPath>
+  <Applications>
+    <Application>
+      <ID>1a439212-7801-4ed2-8f58-7c519dcb8019</ID>
+      <Name>Business Data Center</Name>
+      <Version>0</Version>
+    </Application>
+  </Applications>
+</DeviceConfig>
