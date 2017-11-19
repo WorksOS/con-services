@@ -17,6 +17,6 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// <param name="typeDescriptor"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public string CacheKey(long siteModelID, long typeDescriptor, long ID) => $"Model:{siteModelID}-Descriptor:{typeDescriptor}=ID:{ID}";
+        public string CacheKey(long siteModelID, long typeDescriptor, long ID) => $"Model:{siteModelID}-Descriptor:{typeDescriptor}-ID:{ID}";
     }
 }

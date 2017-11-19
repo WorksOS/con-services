@@ -30,7 +30,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         public SubGridTreeSubGridExistenceBitMask Execute(string[] keys)
         {
             GetSingleExistenceMapRequest request = new GetSingleExistenceMapRequest();
-            SubGridTreeSubGridExistenceBitMask combinedMask = new SubGridTreeSubGridExistenceBitMask();
+            SubGridTreeSubGridExistenceBitMask combinedMask = null;
 
             foreach (string key in keys)
             {
@@ -38,7 +38,14 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
 
                 if (Mask != null)
                 {
-                    combinedMask.SetOp_OR(Mask);
+                    if (combinedMask == null)
+                    {
+                        combinedMask = Mask;
+                    }
+                    else
+                    {
+                        combinedMask.SetOp_OR(Mask);
+                    }
                 }
             }
 
