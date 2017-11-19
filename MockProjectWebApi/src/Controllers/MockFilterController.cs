@@ -78,10 +78,9 @@ namespace MockProjectWebApi.Controllers
                 FilterDescriptors.Dimensions.DimensionsBoundaryCmv,
                 FilterDescriptors.Dimensions.SummaryVolumesBaseFilter,
                 FilterDescriptors.Dimensions.SummaryVolumesTopFilter,
-                FilterDescriptors.Dimensions.SummaryVolumesBaseFilterToday,
-                FilterDescriptors.Dimensions.SummaryVolumesTopFilterToday,
-                FilterDescriptors.Dimensions.SummaryVolumesBaseFilterYesterday,
-                FilterDescriptors.Dimensions.SummaryVolumesTopFilterYesterday
+                FilterDescriptors.Dimensions.SummaryVolumesFilterToday,
+                FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonToday,
+                FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonYesterday
               }
             };
           }
