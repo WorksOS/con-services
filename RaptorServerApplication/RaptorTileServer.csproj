@@ -7,8 +7,8 @@
     <ProjectGuid>{6EAD2931-5828-4D38-B141-ECF8A76E4347}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RaptorServerApplication</RootNamespace>
-    <AssemblyName>RaptorServerApplication</AssemblyName>
+    <RootNamespace>RaptorTileServer</RootNamespace>
+    <AssemblyName>RaptorTileServer</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
