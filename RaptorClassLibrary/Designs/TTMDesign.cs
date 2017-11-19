@@ -933,8 +933,6 @@ namespace VSS.Velociraptor.DesignProfiling
 
         public override DesignLoadResult LoadFromFile(string FileName)
         {
-            DesignLoadResult Result = DesignLoadResult.UnknownFailure;
-
             try
             {
                 FData.LoadFromFile(FileName);
@@ -944,9 +942,9 @@ namespace VSS.Velociraptor.DesignProfiling
 
                 // FIndex.Initialise(FData, False);
 
-                if (LoadSubgridIndexFile(FileName + Consts.kDesignSubgridIndexFileExt))
+                if (!LoadSubgridIndexFile(FileName + Consts.kDesignSubgridIndexFileExt))
                 {
-                    Result = DesignLoadResult.Success;
+                    return DesignLoadResult.UnableToLoadSubgridIndex;
                 }
 
                 /*
@@ -957,15 +955,15 @@ namespace VSS.Velociraptor.DesignProfiling
                                                              MinimumEasting, MinimumNorthing, MaximumEasting, MaximumNorthing,
                                                              MaximumEasting - MinimumEasting, MaximumNorthing - MinimumNorthing]), slmcMessage);
                 */
+
+                return DesignLoadResult.Success;
             }
-            catch // (Exception E)
+            catch (Exception E)
             {
                 // Readd when logging avbailable
                 // SIGLogMessage.PublishNoODS(Self, Format('Exception ''%s'' in %s.LoadFromFile', [E.Message, Self.ClassName]), slmcException);
-                Result = DesignLoadResult.UnknownFailure;
+                return DesignLoadResult.UnknownFailure;
             }
-
-            return Result;
         }
 
 
