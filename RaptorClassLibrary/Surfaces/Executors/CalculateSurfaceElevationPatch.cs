@@ -47,7 +47,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
             object Hint = null;
             DateTime AsAtDate;
             DesignLoadResult LockResult;
-            SurveyedSurface ThisGroundSurface;
+            SurveyedSurface ThisSurveyedSurface;
 
             try
             {
@@ -75,7 +75,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
                     double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
                     double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
 
-                    // Sort ground surfaces in correct order so that we only peer down/up if we don't find an upper/lower elevation
+                    // Sort surveyed surfaces in correct order so that we only peer down/up if we don't find an upper/lower elevation
                     // TODO: Validate this is needed, or if processing can be performed in the opposite direction as needed, rather than
                     // potentially sorting the list each time. ALso check if the required order is guaranteed to be provided by the caller
                     Args.IncludedSurveyedSurfaces.SortChronologically(!Args.EarliestSurface);
@@ -90,15 +90,15 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
 
                         // Reset hint object to prevent interpolation contamination from previous surface
 
-                        ThisGroundSurface = Args.IncludedSurveyedSurfaces[i];
+                        ThisSurveyedSurface = Args.IncludedSurveyedSurfaces[i];
 
                         // Lock & load the design
-                        Design = DesignFiles.Designs.Lock(ThisGroundSurface.DesignDescriptor, Args.SiteModelID, Args.CellSize, out LockResult);
+                        Design = DesignFiles.Designs.Lock(ThisSurveyedSurface.DesignDescriptor, Args.SiteModelID, Args.CellSize, out LockResult);
 
                         if (Design == null)
                         {
                             // TODO: Readd when logging available
-                            // SIGLogMessage.PublishNoODS(Self, Format('Failed to read design file %s in %s', [ThisGroundSurface.DesignDescriptor.ToString, Self.ClassName]), slmcWarning);
+                            // SIGLogMessage.PublishNoODS(Self, Format('Failed to read design file %s in %s', [ThisSurveyedSurface.DesignDescriptor.ToString, Self.ClassName]), slmcWarning);
                             CalcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
                             return null;
                         }
@@ -114,11 +114,11 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
                                     continue;
                                 }
 
-                                AsAtDate = ThisGroundSurface.AsAtDate;
+                                AsAtDate = ThisSurveyedSurface.AsAtDate;
                                 DesignIndexClone = Design.CreateAccessContext(); // as TDQMTTMQuadTree;
                                 try
                                 {
-                                    double Offset = ThisGroundSurface.DesignDescriptor.Offset;
+                                    double Offset = ThisSurveyedSurface.DesignDescriptor.Offset;
 
                                     // Walk across the subgrid checking for a design elevation for each appropriate cell
                                     // based on the processing bit mask passed in
@@ -153,7 +153,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
                         }
                         finally
                         {
-                            DesignFiles.Designs.UnLock(ThisGroundSurface.DesignDescriptor, Design);
+                            DesignFiles.Designs.UnLock(ThisSurveyedSurface.DesignDescriptor, Design);
                         }
                     }
 
