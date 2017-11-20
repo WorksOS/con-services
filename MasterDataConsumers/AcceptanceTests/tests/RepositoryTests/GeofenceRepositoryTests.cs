@@ -49,6 +49,7 @@ namespace RepositoryTests
         GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = customerUid,
         UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
@@ -84,6 +85,7 @@ namespace RepositoryTests
         GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = customerUid,
         UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
@@ -119,6 +121,7 @@ namespace RepositoryTests
         GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = customerUid,
         UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
@@ -156,6 +159,7 @@ namespace RepositoryTests
         GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = customerUid,
         UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
@@ -168,6 +172,7 @@ namespace RepositoryTests
         FillColor = 56666,
         IsTransparent = false,
         GeometryWKT = createGeofenceEvent.GeometryWKT,
+        AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
@@ -181,6 +186,7 @@ namespace RepositoryTests
       var projectGeofences = g.Result.ToList();
       Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
       Assert.AreEqual(updateGeofenceEvent.FillColor, projectGeofences[0].FillColor, "Wrong fillcolor returned");
+      Assert.AreEqual(updateGeofenceEvent.AreaSqMeters, projectGeofences[0].AreaSqMeters, "Wrong AreaSqMeters returned");
       Assert.AreEqual(updateGeofenceEvent.IsTransparent, projectGeofences[0].IsTransparent, "Wrong IsTransparent returned");
       Assert.AreEqual(createGeofenceEvent.UserUID.ToString(), projectGeofences[0].UserUID, "Wrong UserUID returned");
     }
@@ -206,6 +212,7 @@ namespace RepositoryTests
         GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = customerUid,
         UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
@@ -218,6 +225,7 @@ namespace RepositoryTests
         FillColor = 56666,
         IsTransparent = false,
         GeometryWKT = createGeofenceEvent.GeometryWKT,
+        AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
@@ -247,6 +255,7 @@ namespace RepositoryTests
         GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = customerUid,
         UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
@@ -292,6 +301,7 @@ namespace RepositoryTests
         GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = customerUid,
         UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
@@ -343,6 +353,7 @@ namespace RepositoryTests
         GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = customerUid,
         UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
@@ -387,6 +398,7 @@ namespace RepositoryTests
         GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = customerUid,
         UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 

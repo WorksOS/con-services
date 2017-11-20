@@ -23,6 +23,7 @@ namespace MasterDataConsumerTests
         IsTransparent = true,
         IsDeleted = false,
         Description = "The Description",
+        AreaSqMeters = 123.456,
         UserUID = Guid.NewGuid().ToString(),
         LastActionedUTC = now
       };
@@ -49,7 +50,8 @@ namespace MasterDataConsumerTests
         IsTransparent = geofence.IsTransparent.HasValue ? geofence.IsTransparent.Value : false,
         GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         UserUID = Guid.Parse(geofence.UserUID), 
-        ActionUTC = geofence.LastActionedUTC
+        ActionUTC = geofence.LastActionedUTC,
+        AreaSqMeters = geofence.AreaSqMeters 
       };
     }
 
@@ -66,7 +68,8 @@ namespace MasterDataConsumerTests
         IsDeleted = false,
         Description = kafkaGeofenceEvent.Description,
         UserUID = kafkaGeofenceEvent.UserUID.ToString(),
-        LastActionedUTC = kafkaGeofenceEvent.ActionUTC
+        LastActionedUTC = kafkaGeofenceEvent.ActionUTC,
+        AreaSqMeters = kafkaGeofenceEvent.AreaSqMeters
       };
     }
     #endregion
