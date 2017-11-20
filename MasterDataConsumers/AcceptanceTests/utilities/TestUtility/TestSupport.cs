@@ -512,7 +512,8 @@ namespace TestUtility
             GeofenceType = eventObject.GeofenceType,
             GeometryWKT = eventObject.GeometryWKT,
             IsTransparent = Boolean.Parse(eventObject.IsTransparent),
-            UserUID = new Guid(eventObject.UserUID)
+            UserUID = new Guid(eventObject.UserUID),
+            AreaSqMeters = double.Parse(eventObject.AreaSqMeters)
           };
           jsonString = JsonConvert.SerializeObject(new { CreateGeofenceEvent = createGeofenceEvent }, jsonSettings);
           break;
@@ -604,9 +605,9 @@ namespace TestUtility
                 ('{eventObject.DeviceUID}','{eventObject.DeviceSerialNumber}','{eventObject.DeviceType}','{eventObject.DeviceState}','{eventObject.DataLinkType}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "Geofence":
-          sqlCmd += $@"(GeofenceUID,Name,fk_GeofenceTypeID,GeometryWKT,FillColor,IsTransparent,IsDeleted,Description,fk_CustomerUID,UserUID,LastActionedUTC) VALUES
+          sqlCmd += $@"(GeofenceUID,Name,fk_GeofenceTypeID,GeometryWKT,FillColor,IsTransparent,IsDeleted,Description,AreaSqMeters,fk_CustomerUID,UserUID,LastActionedUTC) VALUES
                      ('{eventObject.GeofenceUID}','{eventObject.Name}',{eventObject.fk_GeofenceTypeID},'{eventObject.GeometryWKT}',
-                       {eventObject.FillColor},{eventObject.IsTransparent},{eventObject.IsDeleted},'{eventObject.Description}',
+                       {eventObject.FillColor},{eventObject.IsTransparent},{eventObject.IsDeleted},'{eventObject.Description}','{eventObject.AreaSqMeters}',
                       '{eventObject.fk_CustomerUID}',{eventObject.UserUID},{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "Project":

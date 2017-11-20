@@ -17,6 +17,7 @@ namespace VSS.MasterData.Repositories.Extensions
       geofence.Description = "";
       geofence.CustomerUID = "";
       geofence.UserUID = "";
+      geofence.AreaSqMeters = 0;
 
       return geofence;
     }

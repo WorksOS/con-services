@@ -46,6 +46,7 @@ namespace TestUtility.Model.TestEvents
     public string IsTransparent { get; set; }
     public string GeofenceType { get; set; }
     public string GeometryWKT { get; set; }
+    public string AreaSqMeters { get; set; }
 
     //Asset details
     public string AssetName { get; set; }

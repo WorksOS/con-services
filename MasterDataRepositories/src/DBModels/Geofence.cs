@@ -14,6 +14,7 @@ namespace VSS.MasterData.Repositories.DBModels
     public string Description { get; set; }
     public string CustomerUID { get; set; }
     public string UserUID { get; set; }
+    public double AreaSqMeters { get; set; }
     public DateTime LastActionedUTC { get; set; }
 
     public override bool Equals(object obj)
@@ -34,6 +35,7 @@ namespace VSS.MasterData.Repositories.DBModels
         && otherGeofence.CustomerUID == CustomerUID
         && otherGeofence.UserUID == UserUID
         && otherGeofence.IsDeleted == IsDeleted
+        && Math.Abs(otherGeofence.AreaSqMeters - AreaSqMeters) < 0.0001
         && otherGeofence.LastActionedUTC == LastActionedUTC;
     }
 
