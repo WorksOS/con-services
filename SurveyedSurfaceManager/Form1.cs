@@ -241,7 +241,7 @@ namespace SurveyedSurfaceManager
             // Invoke the service to remove the design
             try
             {
-                bool result = SurveyedSurfaceService.RemoveDirect(SiteModelID, DesignID);
+                bool result = DesignsService.RemoveDirect(SiteModelID, DesignID);
 
                 MessageBox.Show($"Result for removing design ID {DesignID} from Site Model {SiteModelID}: {result}");
             }
