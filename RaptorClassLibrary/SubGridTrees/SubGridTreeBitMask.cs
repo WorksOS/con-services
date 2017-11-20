@@ -33,7 +33,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="numLevels"></param>
         /// <param name="cellSize"></param>
         public SubGridTreeBitMask(byte numLevels, double cellSize) : base(numLevels, cellSize,
-                                           new SubGridFactory<SubGridTreeNodeBitmapSubGrid, SubGridTreeLeafBitmapSubGrid>())
+                                  new SubGridFactory<SubGridTreeNodeBitmapSubGrid, SubGridTreeLeafBitmapSubGrid>())
         {
         }
 
@@ -60,16 +60,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         {
             ISubGrid SubGrid = ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.ReturnExistingLeafOnly);
 
-            if (SubGrid != null)
-            {
-                SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
-
-                return ((SubGridTreeLeafBitmapSubGrid)SubGrid).Bits.BitSet(SubGridX, SubGridY);
-            }
-            else
+            if (SubGrid == null)
             {
                 return false;
             }
+
+            SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
+
+            return (SubGrid as SubGridTreeLeafBitmapSubGrid).Bits.BitSet(SubGridX, SubGridY);
         }
 
         /// <summary>
@@ -88,7 +86,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             {
                 SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
-                ((SubGridTreeLeafBitmapSubGrid)SubGrid).Bits.SetBitValue(SubGridX, SubGridY, Value);
+                (SubGrid as SubGridTreeLeafBitmapSubGrid).Bits.SetBitValue(SubGridX, SubGridY, Value);
 
                 // Set the bit for the leaf subgrid itself (in the parent)
                 if (SubGrid.Parent != null)
@@ -101,7 +99,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     // removing the fact that other cells in the leaf may be flagged with a bit.
                     if (Value)
                     {
-                        ((SubGridTreeNodeBitmapSubGrid)SubGrid.Parent).Bits.SetBit(SubGridX, SubGridY);
+                        (SubGrid.Parent as SubGridTreeNodeBitmapSubGrid).Bits.SetBit(SubGridX, SubGridY);
                     }
                 }
             }
@@ -124,7 +122,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             if (SubGrid != null)
             {
                 SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
-                return ((SubGridTreeNodeBitmapSubGrid)SubGrid).Bits.BitSet(SubGridX, SubGridY);
+                return (SubGrid as SubGridTreeNodeBitmapSubGrid).Bits.BitSet(SubGridX, SubGridY);
             }
             else
             {
@@ -143,7 +141,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             SubGridCellsExtents.SetInverted();
 
             ScanAllSubGrids(x => {
-                SubGridCellsExtents.Include(((SubGridTreeLeafBitmapSubGrid)x).ComputeCellsExtents());
+                SubGridCellsExtents.Include((x as SubGridTreeLeafBitmapSubGrid).ComputeCellsExtents());
                 return true;
             });
 
@@ -185,7 +183,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
-            SubGridTreeNodeBitmapSubGrid bitmapSubGrid = (SubGridTreeNodeBitmapSubGrid)SubGrid;
+            SubGridTreeNodeBitmapSubGrid bitmapSubGrid = (SubGrid as SubGridTreeNodeBitmapSubGrid);
 
             // Free the node containing the bits for the cells in the leaf
             bitmapSubGrid.Bits.ClearBit(SubGridX, SubGridY);
@@ -202,7 +200,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             long totalBits = 0;
 
             ScanAllSubGrids(x => {
-                totalBits += ((SubGridTreeLeafBitmapSubGrid)x).Bits.CountBits();
+                totalBits += ((x as SubGridTreeLeafBitmapSubGrid)).Bits.CountBits();
                 return true;
             });
 
@@ -257,12 +255,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             {
                 if (x != null)
                 {
-                    bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)(ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf));
+                    bitMapSubGrid = ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf) as SubGridTreeLeafBitmapSubGrid;
                     if (bitMapSubGrid != null)
                     {
                         // In this instance, x is a subgrid from the tree we are ORring with this
                         // one, and BitMapSubGrid is a grid retrieved from this tree
-                        bitMapSubGrid.Bits = bitMapSubGrid.Bits | ((SubGridTreeLeafBitmapSubGrid)x).Bits;
+                        bitMapSubGrid.Bits.OrWith((x as SubGridTreeLeafBitmapSubGrid).Bits);
                     }
                     else
                     {
@@ -283,25 +281,45 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         {
             SubGridTreeLeafBitmapSubGrid bitMapSubGrid;
 
+            /* Previus implementation iterated across the source, when only iteration across 'this' is required as
+             * subgrids not present in this tree are implicitly 'false' so will never generate any true bits needing storing.
+             * Similarly, subgrids in source that are not present in this will never generate any true bits requiring storing
             Source.ScanAllSubGrids(x =>
+            {
+                if (x == null)
+                {
+                    return true; // Keep the scan going
+                }
+
+                bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)(ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf));
+                if (bitMapSubGrid != null)
+                {
+                    bitMapSubGrid.Bits = bitMapSubGrid.Bits & ((SubGridTreeLeafBitmapSubGrid)x).Bits;
+                }
+                else
+                {
+                    Debug.Assert(false, "Failed to create bit map subgrid in SetOp_AND");
+                }
+
+                return true; // Keep the scan going
+            });
+            */
+
+
+            // This implementation will be much more performant!
+            ScanAllSubGrids(x =>
             {
                 if (x != null)
                 {
-                    bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)(ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf));
+                    bitMapSubGrid = Source.LocateSubGridContaining(x.OriginX, x.OriginY) as SubGridTreeLeafBitmapSubGrid;
                     if (bitMapSubGrid != null)
                     {
-                        // In this instance, Subgrid is a subgrid from this the tree we are ORring with this
-                        // one, and BitMapSubGrid is a grid retrieved from this tree
-                        bitMapSubGrid.Bits = bitMapSubGrid.Bits & ((SubGridTreeLeafBitmapSubGrid)x).Bits;
-                    }
-                    else
-                    {
-                        Debug.Assert(false, "Failed to create bit map subgrid in SetOp_AND");
+                        (x as SubGridTreeLeafBitmapSubGrid).Bits.AndWith(bitMapSubGrid.Bits);
                     }
                 }
 
                 return true; // Keep the scan going
-                });
+            });
         }
 
         /// <summary>
@@ -321,7 +339,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 return false;
             }
 
-            SubGridTreeLeafBitmapSubGrid bitmapSubGrid = (SubGridTreeLeafBitmapSubGrid)SubGrid;
+            SubGridTreeLeafBitmapSubGrid bitmapSubGrid = SubGrid as SubGridTreeLeafBitmapSubGrid;
 
             bitmapSubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
