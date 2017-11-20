@@ -426,9 +426,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
                     Write(bw, new byte[10000]);
-                }
 
-                return ms.ToArray();
+                    return ms.ToArray();
+                }
             }
         }
 
@@ -439,9 +439,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
                     Write(bw, helperBuffer ?? new byte[10000]);
-                }
 
-                return ms.ToArray();
+                    return ms.ToArray();
+                }
             }
         }
 
@@ -450,7 +450,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             throw new NotImplementedException("Not done yet");
         }
 
-        public void FromByteArray(byte[] bytes, byte[] helperBuffer = null)
+        public void FromBytes(byte[] bytes, byte[] helperBuffer = null)
         {
             using (MemoryStream ms = new MemoryStream(bytes))
             {

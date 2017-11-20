@@ -53,11 +53,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="heightAndTimeResults"></param>
         public void Assign(ClientHeightAndTimeLeafSubGrid heightAndTimeResults)
         {
-            OriginX = heightAndTimeResults.OriginX;
-            OriginY = heightAndTimeResults.OriginY;
+            base.Assign(heightAndTimeResults);
 
-            ProdDataMap.Assign(heightAndTimeResults.ProdDataMap);
-            FilterMap.Assign(heightAndTimeResults.FilterMap);
+            //OriginX = heightAndTimeResults.OriginX;
+            //OriginY = heightAndTimeResults.OriginY;
+
+            //ProdDataMap.Assign(heightAndTimeResults.ProdDataMap);
+            //FilterMap.Assign(heightAndTimeResults.FilterMap);
 
             ForEach((x, y, height) => Cells[x, y] = heightAndTimeResults.Cells[x, y].Height);
 

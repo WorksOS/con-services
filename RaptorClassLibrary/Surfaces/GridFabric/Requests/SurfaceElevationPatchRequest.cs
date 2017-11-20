@@ -31,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests
             }
 
             ClientHeightAndTimeLeafSubGrid clientResult = new ClientHeightAndTimeLeafSubGrid(null, null, SubGridTree.SubGridTreeLevels, SubGridTree.DefaultCellSize, SubGridTree.DefaultIndexOriginOffset);
-            clientResult.FromByteArray(result);
+            clientResult.FromBytes(result);
             return clientResult;
 
             //  Task<ClientHeightAndTimeLeafSubGrid> taskResult = compute.ApplyAsync(func, arg);

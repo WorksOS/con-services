@@ -32,7 +32,7 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Requests
             }
 
             ClientHeightLeafSubGrid clientResult = new ClientHeightLeafSubGrid(null, null, SubGridTree.SubGridTreeLevels, SubGridTree.DefaultCellSize, SubGridTree.DefaultIndexOriginOffset);
-            clientResult.FromByteArray(result);
+            clientResult.FromBytes(result);
             return clientResult;
 
 //            Task<ClientHeightLeafSubGrid> taskResult = compute.ApplyAsync(func, arg);

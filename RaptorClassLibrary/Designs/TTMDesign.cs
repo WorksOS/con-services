@@ -255,7 +255,7 @@ namespace VSS.Velociraptor.DesignProfiling
                         {
                             Z = Tri.GetHeight((I * CellSize) + HalfCellSize, Y);
 
-                            if (Z != Consts.kTTMNullReal)
+                            if (Z != Consts.NullReal)
                             {
                                 if (Patch[I - PatchOriginCellIndexX, ProcessingCellYIndex] == Consts.NullHeight)
                                 {
@@ -704,12 +704,9 @@ namespace VSS.Velociraptor.DesignProfiling
             if (Hint != null)
             {
                 Z = (Hint as Triangle).GetHeight(X, Y);
-                if (Z != Consts.kTTMNullReal)
+                if (Z != Consts.NullReal)
                 {
-                    if (Offset != 0)
-                    {
-                        Z += Offset;
-                    }
+                    Z += Offset;
                     return true;
                 }
             }
@@ -718,7 +715,13 @@ namespace VSS.Velociraptor.DesignProfiling
             // A spatial index will need to be established...
             Hint = FData.GetTriangleAtPoint(X, Y, out Z);
 
-            return Hint != null && Z != Consts.NullReal;
+            if (Z != Consts.NullReal)
+            {
+                Z += Offset;
+                return true;
+            }
+
+            return false; 
 
             /* Legacy implementation utilizing a quadtree index
              SearchState : Search_state_rec;

@@ -85,7 +85,6 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         protected virtual bool DoRenderSubGrid(ISubGrid SubGrid)
         {
-            double SubGridWorldOriginX, SubGridWorldOriginY;
             bool DrawCellStrips;
             double Temp;
             bool Result = true; // Continue processing subgrids...
@@ -95,11 +94,12 @@ namespace VSS.VisionLink.Raptor.Rendering
             // (ie: bottom to top, left to right)
 
             // See if this display supports cell strip rendering
+
             DrawCellStrips = SupportsCellStripRendering();
 
             // Calculate the world coordinate location of the origin (bottom left corner)
             // of this subgrid
-            SubGrid.CalculateWorldOrigin(out SubGridWorldOriginX, out SubGridWorldOriginY);
+            SubGrid.CalculateWorldOrigin(out double SubGridWorldOriginX, out double SubGridWorldOriginY);
 
             // Skip-Iterate through the cells drawing them in strips
 

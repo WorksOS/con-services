@@ -281,7 +281,7 @@ namespace VSS.VisionLink.Raptor.Executors
                                                       CombinedFilter Filter,
                                                       SurveyedSurfaces ComparisonList,
                                                       SurveyedSurfaces FilteredSurveyedSurfaces,
-                                                      SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap)
+                                                      SubGridTreeSubGridExistenceBitMask OverallExistenceMap)
         {
             if (LocalSurveyedSurfaces == null)
             {
@@ -303,12 +303,12 @@ namespace VSS.VisionLink.Raptor.Executors
             SubGridTreeSubGridExistenceBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.ExistenceMaps.GetCombinedExistenceMap(siteModelID,
             FilteredSurveyedSurfaces.Select(x => new Tuple<long, long>(ExistenceMaps.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
 
-            if (DesignSubgridOverlayMap == null)
+            if (OverallExistenceMap == null)
             {
                 return false;
             }
 
-            DesignSubgridOverlayMap.SetOp_OR(SurveyedSurfaceExistanceMap);
+            OverallExistenceMap.SetOp_OR(SurveyedSurfaceExistanceMap);
 
             return true;
         }
@@ -584,7 +584,7 @@ namespace VSS.VisionLink.Raptor.Executors
                     }
                 }
 
-                SurveyedSurfacesExludedViaTimeFiltering = (Filter1SurveyedSurfaces?.Count == 0) && (Filter2SurveyedSurfaces?.Count == 0);
+                SurveyedSurfacesExludedViaTimeFiltering = !(Filter1SurveyedSurfaces?.Count > 0) || (Filter2SurveyedSurfaces?.Count > 0);
             }
 
             OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
