@@ -172,7 +172,7 @@ namespace RepositoryTests
         FillColor = 56666,
         IsTransparent = false,
         GeometryWKT = createGeofenceEvent.GeometryWKT,
-        AreaSqMeters = 123.456,
+        AreaSqMeters = createGeofenceEvent.AreaSqMeters,
         ActionUTC = actionUtc
       };
 
@@ -186,7 +186,6 @@ namespace RepositoryTests
       var projectGeofences = g.Result.ToList();
       Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
       Assert.AreEqual(updateGeofenceEvent.FillColor, projectGeofences[0].FillColor, "Wrong fillcolor returned");
-      Assert.AreEqual(updateGeofenceEvent.AreaSqMeters, projectGeofences[0].AreaSqMeters, "Wrong AreaSqMeters returned");
       Assert.AreEqual(updateGeofenceEvent.IsTransparent, projectGeofences[0].IsTransparent, "Wrong IsTransparent returned");
       Assert.AreEqual(createGeofenceEvent.UserUID.ToString(), projectGeofences[0].UserUID, "Wrong UserUID returned");
     }
@@ -225,7 +224,7 @@ namespace RepositoryTests
         FillColor = 56666,
         IsTransparent = false,
         GeometryWKT = createGeofenceEvent.GeometryWKT,
-        AreaSqMeters = 123.456,
+        AreaSqMeters = createGeofenceEvent.AreaSqMeters,
         ActionUTC = actionUtc
       };
 
