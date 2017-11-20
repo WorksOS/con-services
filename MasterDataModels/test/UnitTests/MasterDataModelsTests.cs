@@ -195,14 +195,6 @@ namespace VSS.MasterData.Models.Tests
       filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), INVALID_GUID, _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
 
-      // No layer type is provided for a layer filter...
-      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1);
-      Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
-
-      // No layer number is provided for a layer filter...
-      filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, null);
-      Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
-
       // The provided polygon's boundary has less than 3 points...
       _polygonLL.RemoveAt(_polygonLL.Count - 1);
       filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, _polygonLL, true, 1);
@@ -286,80 +278,4 @@ namespace VSS.MasterData.Models.Tests
       Assert.AreEqual(4, filter.polygonLL.Count, "updated point count is wrong.");
       Assert.AreEqual(newBoundaryPoints[2].Lat, filter.polygonLL[2].Lat, "updated 3rd filter point is invalid");
     }
-
-    [TestMethod]
-    public void HydrateJsonStringWithPolygonTest_InvalidUid()
-    {
-      var filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, null, true, 1);
-
-      // now add the polygon
-      string boundaryUid = null;
-      var boundaryName = "myBoundaryName";
-      var newBoundaryPoints = new List<VSS.MasterData.Models.Models.WGSPoint>
-      {
-        WGSPoint.CreatePoint(1, 170),
-        WGSPoint.CreatePoint(6, 160),
-        WGSPoint.CreatePoint(8, 150),
-        WGSPoint.CreatePoint(1, 170)
-      };
-
-      filter.AddBoundary(boundaryUid, boundaryName, newBoundaryPoints);
-      var jsonString = JsonConvert.SerializeObject(filter);
-      Assert.IsTrue(jsonString != String.Empty);
-
-      filter = JsonConvert.DeserializeObject<Filter>(jsonString);
-      var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
-
-      StringAssert.Contains(ex.GetContent, "2045");
-      StringAssert.Contains(ex.GetContent, "Invalid spatial filter boundary. One or more polygon components are missing.");
-    }
-
-    [TestMethod]
-    public void HydrateJsonStringWithPolygonTest_InvalidName()
-    {
-      var filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, null, true, 1);
-
-      // now add the polygon
-      string boundaryUid = Guid.NewGuid().ToString();
-      string boundaryName = null;
-      var newBoundaryPoints = new List<WGSPoint>
-      {
-        WGSPoint.CreatePoint(1, 170),
-        WGSPoint.CreatePoint(6, 160),
-        WGSPoint.CreatePoint(8, 150),
-        WGSPoint.CreatePoint(1, 170)
-      };
-
-      filter.AddBoundary(boundaryUid, boundaryName, newBoundaryPoints);
-      var jsonString = JsonConvert.SerializeObject(filter);
-      Assert.IsTrue(jsonString != String.Empty);
-
-      filter = JsonConvert.DeserializeObject<Filter>(jsonString);
-      var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
-      StringAssert.Contains(ex.GetContent, "2045");
-      StringAssert.Contains(ex.GetContent, "Invalid spatial filter boundary. One or more polygon components are missing.");
-    }
-
-    [TestMethod]
-    public void HydrateJsonStringWithPolygonTest_InvalidPoints()
-    {
-      var filter = Filter.CreateFilter(_utcNow, _utcNow.AddDays(10), new Guid().ToString(), _machines, 123, ElevationType.Lowest, true, null, true, 1);
-
-      // now add the polygon
-      string boundaryUid = Guid.NewGuid().ToString();
-      var boundaryName = "myBoundaryName";
-      List<WGSPoint> newBoundaryPoints = null;
-
-      filter.AddBoundary(boundaryUid, boundaryName, newBoundaryPoints);
-      var jsonString = JsonConvert.SerializeObject(filter);
-      Assert.IsTrue(jsonString != String.Empty);
-
-      filter = JsonConvert.DeserializeObject<Filter>(jsonString);
-      var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
-      StringAssert.Contains(ex.GetContent, "2045");
-      StringAssert.Contains(ex.GetContent, "Invalid spatial filter boundary. One or more polygon components are missing.");
-    }
-
-    private string INVALID_GUID = "39823294vf-vbfb";
-  }
 }

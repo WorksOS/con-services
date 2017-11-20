@@ -28,6 +28,7 @@ namespace VSS.MasterData.Models.Models
     public Guid UserUID { get; set; }
 
     public DateTime ActionUTC => DateTime.UtcNow;
+    public double AreaSqMeters { get; set; }
 
   }
 }

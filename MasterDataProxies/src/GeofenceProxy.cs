@@ -55,7 +55,7 @@ namespace VSS.MasterData.Proxies
       }
 
         public async Task<Guid> CreateGeofence(Guid customerGuid, string geofenceName, string description,
-            string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid,
+            string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid, double areaSqMeters,
             IDictionary<string, string> customHeaders = null)
         {
             var geofenceGuid = Guid.NewGuid();
@@ -69,7 +69,8 @@ namespace VSS.MasterData.Proxies
                 FillColor = fillColor,
                 IsTransparent = isTransparent,
                 GeofenceUID = geofenceGuid,
-                UserUID = userUid
+                UserUID = userUid,
+                AreaSqMeters = areaSqMeters
             };
             await SendRequest<GeofenceData>("CREATEGEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
                 customHeaders);
