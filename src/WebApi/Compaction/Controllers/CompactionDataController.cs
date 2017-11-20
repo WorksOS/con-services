@@ -356,6 +356,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetSummaryVolumes: " + Request.QueryString);
 
+      if (baseUid == Guid.Empty || topUid == Guid.Empty)
+      {
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid surface parameter(s)."));
+      }
+
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
 
       DesignDescriptor baseDesign = null;
@@ -364,30 +371,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var baseFilter = await GetCompactionFilter(projectUid, baseUid, returnEarliest: true);
       if (baseFilter == null)
       {
-        baseDesign = await GetDesignDescriptor(projectUid, baseUid);
-
-        if (baseDesign == null)
-        {
-          throw new ServiceException(
-            HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No base surface found."));
-        }
+        baseDesign = await GetAndValidateDesignDescriptor(projectUid, baseUid);
       }
 
       var topFilter = await GetCompactionFilter(projectUid, topUid);
       if (topFilter == null)
       {
-        topDesign = await GetDesignDescriptor(projectUid, topUid);
-
-        if (topDesign == null)
-        {
-          throw new ServiceException(
-            HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No top surface found."));
-        }
+        topDesign = await GetAndValidateDesignDescriptor(projectUid, topUid);
       }
 
       var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeSummaryHelper.GetVolumesType(baseFilter, topFilter));
+
+      CompactionSummaryVolumesResult returnResult;
 
       try
       {
@@ -395,22 +390,22 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Build<SummaryVolumesExecutor>(logger, raptorClient)
           .Process(request) as SummaryVolumesResult;
 
-        var returnResult = CompactionSummaryVolumesResult.CreateInstance(result, await GetProjectSettings(projectUid));
-
-        log.LogTrace("GetSummaryVolumes result: " + JsonConvert.SerializeObject(returnResult));
-
-        return returnResult;
+        returnResult = CompactionSummaryVolumesResult.CreateInstance(result, await GetProjectSettings(projectUid));
       }
-      catch (ServiceException se)
+      catch (ServiceException)
       {
-        throw new ServiceException(
-          HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
+        returnResult = CompactionSummaryVolumesResult.CreateInstance(
+          SummaryVolumesResult.CreateEmptySummaryVolumesResult(),
+          await GetProjectSettings(projectUid));
       }
       finally
       {
         log.LogInformation("GetSummaryVolumes returned: " + Response.StatusCode);
       }
+
+      log.LogTrace("GetSummaryVolumes result: " + JsonConvert.SerializeObject(returnResult));
+
+      return returnResult;
     }
 
     #endregion
@@ -522,7 +517,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
-      var cutFillDesign = await GetDesignDescriptor(projectUid, cutfillDesignUid);
+      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
       var cutFillRequest = requestFactory.Create<CutFillRequestHelper>(r => r

@@ -41,8 +41,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       // Exclude sites that are too small to be displayed in the current viewport. 
       double viewPortArea = Math.Abs(parameters.bbox.minLat - parameters.bbox.maxLat) * Math.Abs(parameters.bbox.minLng - parameters.bbox.maxLng);
       double minArea = viewPortArea / 10000;
-      //TODO: AreaSqMeters should be in GeoFence model but not our MasterDataModel GeofenceData.
-      //Need to update that and then select from 'sites' where site.area > minArea
 
       byte[] sitesImage = null;
 
@@ -53,6 +51,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           foreach (var site in sites)
           {
+            //Old geofences may not have AreaSqMeters set.
+            if (site.AreaSqMeters > 0 && site.AreaSqMeters < minArea)
+              continue;
+
             var sitePoints = TileServiceUtils.GeometryToPoints(site.GeometryWKT);
 
             //Exclude site if outside bbox

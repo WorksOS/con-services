@@ -191,7 +191,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var project = (User as RaptorPrincipal).GetProject(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
+      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var designDescriptor = (!volumeCalcType.HasValue || volumeCalcType.Value == VolumeCalcType.None)
         ? cutFillDesign
@@ -252,7 +252,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         alignmentDescriptors = new List<DesignDescriptor>();
         foreach (var alignmentFile in alignmentFiles)
         {
-          alignmentDescriptors.Add(await GetDesignDescriptor(projectUid, new Guid(alignmentFile.ImportedFileUid)));
+          alignmentDescriptors.Add(await GetAndValidateDesignDescriptor(projectUid, new Guid(alignmentFile.ImportedFileUid)));
         }
       }
       return alignmentDescriptors;
