@@ -290,6 +290,7 @@
     <Compile Include="Models\CompactionPassCountDetailedResult.cs" />
     <Compile Include="Models\CompactionPassCountSummaryResult.cs" />
     <Compile Include="Models\CompactionProfileResult.cs" />
+    <Compile Include="Models\CompactionReportGridResult.cs" />
     <Compile Include="Models\CompactionSpeedSummaryResult.cs" />
     <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Models\CompactionTemperatureSummaryResult.cs" />
@@ -370,6 +371,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Profile.feature</DependentUpon>
     </Compile>
+    <Compile Include="Report.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Report.feature</DependentUpon>
+    </Compile>
     <Compile Include="StepDefinitions\BaseCompactionSteps.cs" />
     <Compile Include="StepDefinitions\CcaColorPaletteSteps.cs" />
     <Compile Include="StepDefinitions\CCASummarySteps.cs" />
@@ -408,6 +414,7 @@
     <Compile Include="StepDefinitions\ProjectSettingsSteps.cs" />
     <Compile Include="StepDefinitions\ProjectStatisticsSteps.cs" />
     <Compile Include="StepDefinitions\RaptorConfigSteps.cs" />
+    <Compile Include="StepDefinitions\ReportSteps.cs" />
     <Compile Include="StepDefinitions\SummarySpeedSteps.cs" />
     <Compile Include="StepDefinitions\SummaryThicknessSteps.cs" />
     <Compile Include="StepDefinitions\SummaryVolumesSteps.cs" />
@@ -649,6 +656,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ProjectStatistics.feature.cs</LastGenOutput>
     </None>
+    <None Include="Report.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Report.feature.cs</LastGenOutput>
+    </None>
     <None Include="SummarySpeed.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>SummarySpeed.feature.cs</LastGenOutput>
@@ -796,6 +807,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\Profiles\DesignProfileSummaryResponse.json" />
+    <None Include="TestData\ReportGridResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\SummarySpeedRequest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
