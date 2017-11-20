@@ -129,7 +129,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           SendToKafka(updateFilterEvent.FilterUID.ToString(), payload, 26);
         }
 
-        return await RetrieveFilter(filterRequest, false);
+        return RetrieveFilter(updateFilterEvent, false);
 
       }
       else // create
@@ -166,7 +166,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         }
       }
 
-      return await RetrieveFilter(filterRequest, transient);
+      return RetrieveFilter(createFilterEvent, transient);
     }
 
     /// <summary>
@@ -175,28 +175,13 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <param name="filterRequest"></param>
     /// <param name="transient"></param>
     /// <returns></returns>
-    private async Task<FilterDescriptorSingleResult> RetrieveFilter(FilterRequestFull filterRequest, bool transient)
+    private FilterDescriptorSingleResult RetrieveFilter<T>(T filterRequest, bool transient)
     {
-      //TODO we need to remove this rubbish from here
-      var retrievedFilter = (await ((IFilterRepository)Repository)
-          .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId, transient)
-          .ConfigureAwait(false))
-          .FirstOrDefault(f => string.Equals(f.FilterUid, filterRequest.FilterUid, StringComparison.OrdinalIgnoreCase));
 
-      if (retrievedFilter == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, transient ? 19 : 24);
-      }
-
-      log.LogDebug("retrievedFilter pre mapping:");
-      log.LogDebug(JsonConvert.SerializeObject(retrievedFilter));
-
-      var mappingResult = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(retrievedFilter));
-
-      log.LogDebug("retrievedFilter post mapping:");
-      log.LogDebug(JsonConvert.SerializeObject(mappingResult));
+      var mappingResult = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filterRequest));
 
       return mappingResult;
     }
+
   }
 }
