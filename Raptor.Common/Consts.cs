@@ -11,17 +11,17 @@ namespace VSS.VisionLink.Raptor.Common
         /// <summary>
         /// IEEE single/float null value
         /// </summary>
-        public const float NullSingle = (float)3.4E38;
+        public const float NullSingle = 3.4E38f;
 
         /// <summary>
         /// IEEE single/float null value
         /// </summary>
-        public const float NullFloat = (float)3.4E38;
+        public const float NullFloat = 3.4E38f;
 
         /// <summary>
         /// IEEE double null value
         /// </summary>
-        public const double NullDouble = (float)1E308;
+        public const double NullDouble = 1E308;
 
         /// <summary>
         /// Value representing a null height encoded as an IEEE single
