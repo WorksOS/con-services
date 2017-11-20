@@ -308,6 +308,8 @@
     <Compile Include="Models\FiltersResult.cs" />
     <Compile Include="Models\GetMachineDesignResult.cs" />
     <Compile Include="Models\GetEditDataRequest.cs" />
+    <Compile Include="Models\GridReport.cs" />
+    <Compile Include="Models\GridReportRows.cs" />
     <Compile Include="Models\LayerRequest.cs" />
     <Compile Include="Models\PassCounts.cs" />
     <Compile Include="Models\PatchRequest.cs" />
