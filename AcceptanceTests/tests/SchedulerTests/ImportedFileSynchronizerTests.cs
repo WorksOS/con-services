@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Scheduler.Common.Controller;
 using VSS.Productivity3D.Scheduler.Common.Models;
+using VSS.Productivity3D.Scheduler.Common.Repository;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -29,7 +33,7 @@ namespace SchedulerTests
     }
 
     [TestMethod]
-    public void ImportedFileSynchronizer_CreatedInProject()
+    public async Task ImportedFileSynchronizer_CreatedInProject()
     {
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
 
@@ -62,8 +66,8 @@ namespace SchedulerTests
       var createdCount = importedFileRepoProject.Create(importedFileProject);
       Assert.AreEqual(1, createdCount, "Project importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory);
-      sync.SyncTables();
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy);
+      await sync.SyncTables();
 
       // now lets see if it synced to NhOp
 
@@ -108,7 +112,7 @@ namespace SchedulerTests
     }
 
     [TestMethod]
-    public void ImportedFileSynchronizer_CreatedInProject_DeletedFromProject()
+    public async Task ImportedFileSynchronizer_CreatedInProject_DeletedFromProjectAsync()
     {
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
 
@@ -140,8 +144,8 @@ namespace SchedulerTests
       var createdCount = importedFileRepoProject.Create(importedFileProject);
       Assert.AreEqual(1, createdCount, "Project importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory);
-      sync.SyncTables();
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy);
+      await sync.SyncTables();
 
       // now lets see if it synced to NhOp
 
@@ -167,8 +171,8 @@ namespace SchedulerTests
       var deletedCount = importedFileRepoProject.Delete(importFileProjectReReadResponse);
       Assert.AreEqual(1, deletedCount, "Project importFile not deleted");
 
-      sync.SyncTables();
-      
+      await sync.SyncTables();
+
       listOfNhOpFiles = importedFileRepoNhOp.Read();
       if (listOfNhOpFiles.Count > 0)
       {
@@ -178,7 +182,7 @@ namespace SchedulerTests
         Assert.IsNull(importFileNhOpResponse,
           "should NOT have found the importedFile we deleted in Project, synced to NhOp");
       }
-      
+
       var listOfProjectFiles = importedFileRepoProject.Read();
       Assert.AreNotEqual(0, listOfProjectFiles.Count, "project importFile not read");
       ImportedFileProject importFileProjectResponse =
@@ -190,7 +194,7 @@ namespace SchedulerTests
     }
 
     [TestMethod]
-    public void ImportedFileSynchronizer_CreatedInProject_UpdatedInProject()
+    public async Task ImportedFileSynchronizer_CreatedInProject_UpdatedInProject()
     {
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
 
@@ -221,8 +225,8 @@ namespace SchedulerTests
       
       importedFileRepoProject.Create(importedFileProject);
       
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory);
-      sync.SyncTables();
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy);
+      await sync.SyncTables();
 
       // now lets see if it synced to NhOp
 
@@ -240,7 +244,7 @@ namespace SchedulerTests
       var updatedCount = importedFileRepoProject.Update(importFileProjectReReadResponse);
       Assert.AreEqual(1, updatedCount, "Project importFile not updated");
 
-      sync.SyncTables();
+      await sync.SyncTables();
 
       // ok now lets look at copy in NhOp to see that it has the updated file dates
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
@@ -255,7 +259,7 @@ namespace SchedulerTests
     }
 
     [TestMethod]
-    public void ImportedFileSynchronizer_CreatedInNhOp()
+    public async System.Threading.Tasks.Task ImportedFileSynchronizer_CreatedInNhOpAsync()
     {
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
 
@@ -279,13 +283,13 @@ namespace SchedulerTests
       WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFileNhOp);
       var importedFileProject = AutoMapperUtility.Automapper.Map<ImportedFileProject>(importedFileNhOp);
       WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFileProject);
-      
+
 
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory);
-      sync.SyncTables();
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy);
+      await sync.SyncTables();
 
       // now lets see if it synced to Project
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
@@ -330,7 +334,7 @@ namespace SchedulerTests
     }
 
     [TestMethod]
-    public void ImportedFileSynchronizer_CreatedInNhOp_DeletedFromNhOp()
+    public async Task ImportedFileSynchronizer_CreatedInNhOp_DeletedFromNhOp()
     {
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
 
@@ -358,8 +362,8 @@ namespace SchedulerTests
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory);
-      sync.SyncTables();
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy);
+      await sync.SyncTables();
 
       // now lets see if it synced to Project
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
@@ -376,7 +380,7 @@ namespace SchedulerTests
       var deletedCount = importedFileRepoNhOp.Delete(importedFileNhOp);
       Assert.AreEqual(2, deletedCount, "NhOp importFile not deleted");
 
-      sync.SyncTables();
+      await sync.SyncTables();
 
       // now lets see if its deleted in NhOp
       var listOfNhOpFiles = importedFileRepoNhOp.Read();
@@ -399,7 +403,7 @@ namespace SchedulerTests
     }
 
     [TestMethod]
-    public void ImportedFileSynchronizer_CreatedInNhOp_UpdatedInNhOp()
+    public async Task ImportedFileSynchronizer_CreatedInNhOp_UpdatedInNhOp()
     {
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
 
@@ -427,8 +431,8 @@ namespace SchedulerTests
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory);
-      sync.SyncTables();
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy);
+      await sync.SyncTables();
 
       // now update in NhOp note only FileCreatedUtc and FileInsertedUtc can be updated
       importedFileNhOp.FileCreatedUtc = importedFileNhOp.FileCreatedUtc.AddDays(1).AddMinutes(4);
@@ -437,7 +441,7 @@ namespace SchedulerTests
       var updatedCount = importedFileRepoNhOp.Update(importedFileNhOp);
       Assert.AreEqual(1, updatedCount, "NhOp importFile not updated");
 
-      sync.SyncTables();
+      await sync.SyncTables();
 
       // ok now lets look at copy in project to see that it has the updated file dates
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);

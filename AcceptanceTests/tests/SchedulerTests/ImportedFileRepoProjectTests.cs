@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Scheduler.Common.Models;
+using VSS.Productivity3D.Scheduler.Common.Repository;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

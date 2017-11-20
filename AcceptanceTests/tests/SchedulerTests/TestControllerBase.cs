@@ -11,6 +11,8 @@ using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using Hangfire.Storage;
 using MySql.Data.MySqlClient;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Models;
 
 namespace SchedulerTests
@@ -22,6 +24,7 @@ namespace SchedulerTests
     protected ILoggerFactory LoggerFactory;
     protected ILogger Log;
     protected string FileSpaceId;
+    protected IRaptorProxy RaptorProxy;
 
     protected void SetupDi()
     {
@@ -51,6 +54,8 @@ namespace SchedulerTests
         throw new InvalidOperationException(
           "ImportedFileSynchroniser unable to establish FileSpaceId");
       }
+
+      RaptorProxy = new RaptorProxy(ConfigStore, LoggerFactory);
 
       Assert.IsNotNull(ServiceProvider.GetService<IConfigurationStore>());
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());

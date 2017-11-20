@@ -1,49 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Scheduler.Common.Models;
+using VSS.Productivity3D.Scheduler.Common.Repository;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 
-namespace VSS.Productivity3D.Scheduler.Common.Models
+namespace VSS.Productivity3D.Scheduler.Common.Controller
 {
-  public class ImportedFileSynchronizer
+  public class ImportedFileSynchronizer : ImportedFileSynchronizerBase
   {
-    private IConfigurationStore _configStore;
-    private ILogger _log;
-    private ImportedFileRepoNhOp<ImportedFileNhOp> _repoNhOp;
-    private ImportedFileRepoProject<ImportedFileProject> _repoProject;
-    private string _fileSpaceId;
 
-    /// <summary>
-    /// </summary>
-    /// <param name="configStore"></param>
-    /// <param name="logger"></param>
-    public ImportedFileSynchronizer(IConfigurationStore configStore, ILoggerFactory logger)
+    public ImportedFileSynchronizer(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy) : base(configStore, logger, raptorProxy)
     {
-      _configStore = configStore;
-      _log = logger.CreateLogger<ImportedFileSynchronizer>();
-
-      _repoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(configStore, logger);
-      _repoProject = new ImportedFileRepoProject<ImportedFileProject>(configStore, logger);
-
-      _fileSpaceId = _configStore.GetValueString("TCCFILESPACEID");
-      if (string.IsNullOrEmpty(_fileSpaceId))
-      {
-        throw new InvalidOperationException(
-          "ImportedFileSynchroniser unable to establish filespaceId");
-      }
     }
 
     /// <summary>
     /// Read from NGen Project.ImportedFile table
     ///   May initially be limited to SurveyedSurface type
     /// </summary>
-    public void SyncTables()
+    public async Task SyncTables()
     {
-      var fileListProject = _repoProject.Read();
-      var fileListNhOp = _repoNhOp.Read();
+      ImportedFileRepoNhOp<ImportedFileNhOp> repoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, Logger);
+      ImportedFileRepoProject<ImportedFileProject> repoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, Logger);
+
+      var fileListProject = repoProject.Read();
+      var fileListNhOp = repoNhOp.Read();
 
       // cannot modify collectionB from within collectionA
       // put it in here and remove later
@@ -57,8 +43,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       foreach (var ifo in fileListNhOp.ToList())
       {
         // (a)
-        var gotMatchingProject =
-          fileListProject.FirstOrDefault(o => o.LegacyImportedFileId == ifo.LegacyImportedFileId);
+        var gotMatchingProject = fileListProject.FirstOrDefault(o => o.LegacyImportedFileId == ifo.LegacyImportedFileId);
 
         if (gotMatchingProject == null)
         {
@@ -67,20 +52,28 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
           projectEvent.Name = ImportedFileUtils.RemoveSurveyedUtcFromName(projectEvent.Name);
           projectEvent.ImportedFileUid = Guid.NewGuid().ToString();
           // for L&S if its come from CG then use legacyIds
-          projectEvent.FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(_fileSpaceId, projectEvent.LegacyCustomerId.ToString(), projectEvent.LegacyProjectId.ToString(), projectEvent.Name));
+          projectEvent.FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(FileSpaceId,
+            projectEvent.LegacyCustomerId.ToString(), projectEvent.LegacyProjectId.ToString(), projectEvent.Name));
           if (projectEvent.ImportedBy == null) projectEvent.ImportedBy = "";
-          _repoProject.Create(projectEvent);
+          repoProject.Create(projectEvent);
+
+          // Notify 3dpm of SS file created via Legacy
+          if (projectEvent.LegacyImportedFileId != null)  // Note that LegacyImportedFileId will always be !null 
+            await NotifyRaptorFileCreatedInCGenAsync(Guid.Parse(projectEvent.ProjectUid), projectEvent.ImportedFileType,
+              Guid.Parse(projectEvent.ImportedFileUid), projectEvent.FileDescriptor,
+              projectEvent.LegacyImportedFileId.Value, projectEvent.DxfUnitsType)
+              .ConfigureAwait(false);
+
           fileListNhOp.RemoveAt(0);
-          _log.LogTrace(
-            $"SyncTables: nhOp.IF is not in Project. Add it to Project : {JsonConvert.SerializeObject(gotMatchingProject)}");
+          Log.LogTrace($"SyncTables: nhOp. Is not in Project, added it.");
         }
         else
         {
           if (gotMatchingProject.IsDeleted)
           {
             // (b)
-            _repoNhOp.Delete(ifo);
-            _log.LogTrace(
+            repoNhOp.Delete(ifo);
+            Log.LogTrace(
               $"SyncTables: nhOp.IF is in nh_Op but was deleted in project. Deleted from NhOp: {JsonConvert.SerializeObject(ifo)}");
           }
           else
@@ -96,7 +89,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
                 ifo.FileCreatedUtc = gotMatchingProject.FileCreatedUtc;
                 ifo.FileUpdatedUtc = gotMatchingProject.FileUpdatedUtc;
                 ifo.LastActionedUtc = DateTime.UtcNow;
-                _repoNhOp.Update(ifo);
+                repoNhOp.Update(ifo);
               }
               else
               {
@@ -104,9 +97,16 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
                 gotMatchingProject.FileCreatedUtc = ifo.FileCreatedUtc;
                 gotMatchingProject.FileUpdatedUtc = ifo.FileUpdatedUtc;
                 gotMatchingProject.LastActionedUtc = DateTime.UtcNow;
-                _repoProject.Update(gotMatchingProject);
+                repoProject.Update(gotMatchingProject);
+
+                // Notify 3dpm of SS file updated via Legacy
+                if (gotMatchingProject.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
+                  await NotifyRaptorFileUpdatedInCGen(Guid.Parse(gotMatchingProject.ProjectUid),
+                      Guid.Parse(gotMatchingProject.ImportedFileUid))
+                    .ConfigureAwait(false);
+
               }
-              _log.LogTrace(
+              Log.LogTrace(
                 $"SyncTables: nhOp.IF is in Project and nhOp but some aspect has changed. Update in both Project and NhOp: {JsonConvert.SerializeObject(gotMatchingProject)}");
             }
           }
@@ -140,9 +140,17 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
           if (ifp.LegacyImportedFileId != null && ifp.LegacyImportedFileId > 0)
           {
             // (m)
-            _repoProject.Delete(ifp);
+
+            repoProject.Delete(ifp);
+
+            // Notify 3dpm of SS file deleted via Legacy
+            if (ifp.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
+              await NotifyRaptorFileDeletedInCGenAsync(Guid.Parse(ifp.ProjectUid), ifp.ImportedFileType,
+                  Guid.Parse(ifp.ImportedFileUid), ifp.FileDescriptor, (long) ifp.LegacyImportedFileId)
+                .ConfigureAwait(false);
+
             fileListProject.RemoveAt(0);
-            _log.LogTrace(
+            Log.LogTrace(
               $"SyncTables: Project.IF is not in NH_OP but was. Deleted from Project: {JsonConvert.SerializeObject(ifp)}");
           }
           else
@@ -159,11 +167,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
               // (n)
               var nhOpEvent = AutoMapperUtility.Automapper.Map<ImportedFileNhOp>(ifp);
               nhOpEvent.Name = ImportedFileUtils.IncludeSurveyedUtcInName(nhOpEvent.Name, nhOpEvent.SurveyedUtc.Value);
-              var legacyImportedFileId = _repoNhOp.Create(nhOpEvent);
+              var legacyImportedFileId = repoNhOp.Create(nhOpEvent);
               ifp.LegacyImportedFileId = legacyImportedFileId;
-              _repoProject.Update(ifp);
-              fileListProject.RemoveAt(0); 
-              _log.LogTrace(
+              repoProject.Update(ifp);
+              fileListProject.RemoveAt(0);
+              Log.LogTrace(
                 $"SyncTables: Project.IF is not in NH_OP. Added to nhOp: {JsonConvert.SerializeObject(nhOpEvent)}");
             }
           }

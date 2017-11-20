@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
-using VSS.Productivity3D.Scheduler.Common.Models;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Scheduler.Common.Controller;
 
 
 namespace VSS.Productivity3D.Scheduler.WebApi
@@ -17,6 +21,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private readonly IConfigurationStore _configStore;
     private readonly ILoggerFactory _logger;
     private readonly ILogger _log;
+    private readonly IRaptorProxy _raptorProxy;
     private static int DefaultTaskIntervalDefaultMinutes { get; } = 5;
 
     /// <summary>
@@ -24,12 +29,13 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     /// <param name="configStore"></param>
     /// <param name="logger"></param>
-    public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger)
+    /// <param name="raptorProxy"></param>
+    public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy)
     {
-      Console.WriteLine($"ImportedProjectFileSyncTask configStore {configStore} logger: {logger}");
       _configStore = configStore;
       _logger = logger;
       _log = logger.CreateLogger<ImportedProjectFileSyncTask>();
+      _raptorProxy = raptorProxy;
     }
 
     /// <summary>
@@ -64,13 +70,13 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <summary>
     /// bi-sync between 2 databases, 1 table in each
     /// </summary>
-    public void DatabaseSyncTask()
+    public async Task DatabaseSyncTask()
     {
       _log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow}");
       Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow}");
 
-      var sync = new ImportedFileSynchronizer(_configStore, _logger);
-      sync.SyncTables();
+      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy);
+      await sync.SyncTables().ConfigureAwait(false);
 
       _log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: completed successfully.");
       Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: completed successfully.");

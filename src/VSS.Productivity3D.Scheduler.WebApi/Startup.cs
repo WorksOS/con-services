@@ -11,8 +11,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 
@@ -28,6 +31,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _log;
     private readonly IConfigurationStore _configStore;
+    private readonly IRaptorProxy _raptorProxy;
     IServiceCollection _serviceCollection;
 
     /// <summary>
@@ -40,7 +44,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       // NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
       //    the webapi seems to go ahead anyways..
-      Thread.Sleep(webAPIStartupWaitMs); 
+      Thread.Sleep(webAPIStartupWaitMs);
 
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
@@ -54,6 +58,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       _loggerFactory = GetLoggerFactory();
       _log = GetLogger();
       _configStore = new GenericConfiguration(GetLoggerFactory());
+      _raptorProxy = new RaptorProxy(_configStore, _loggerFactory);
 
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
@@ -65,7 +70,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// The configuration.
     /// </value>
     public IConfigurationRoot Configuration { get; }
-   
+
     // This method gets called by the runtime. Use this method to add services to the container
     /// <summary>
     /// Configures the services.
@@ -101,6 +106,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      services.AddTransient<IRaptorProxy, RaptorProxy>();
       _serviceCollection = services;
     }
 
@@ -134,8 +140,9 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       try
       {
         List<RecurringJobDto> recurringJobs = Hangfire.JobStorage.Current.GetConnection().GetRecurringJobs();
-        _log.LogDebug($"Scheduler.Configure: PreJobsetup count of existing recurring jobs to be deleted {recurringJobs.Count()}");
-        recurringJobs.ForEach(delegate (RecurringJobDto job)
+        _log.LogDebug(
+          $"Scheduler.Configure: PreJobsetup count of existing recurring jobs to be deleted {recurringJobs.Count()}");
+        recurringJobs.ForEach(delegate(RecurringJobDto job)
         {
           RecurringJob.RemoveIfExists(job.Id);
         });
@@ -161,20 +168,22 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
 
       var importedProjectFileSyncTaskToRun = false;
-      if (!bool.TryParse(_configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_TASK_RUN"), out importedProjectFileSyncTaskToRun))
+      if (!bool.TryParse(_configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_TASK_RUN"),
+        out importedProjectFileSyncTaskToRun))
       {
         importedProjectFileSyncTaskToRun = false;
       }
       Console.WriteLine($"Scheduler.Startup: importedProjectFileTaskToRun {importedProjectFileSyncTaskToRun}");
       if (importedProjectFileSyncTaskToRun)
       {
-        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(_configStore, _loggerFactory);
+        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(_configStore, _loggerFactory, _raptorProxy);
         importedProjectFileSyncTask.AddTask();
         expectedJobCount += 1;
       }
 
       var recurringJobsPost = JobStorage.Current.GetConnection().GetRecurringJobs();
-      _log.LogInformation($"Scheduler.Configure: PostJobSetup count of existing recurring jobs {recurringJobsPost.Count()}");
+      _log.LogInformation(
+        $"Scheduler.Configure: PostJobSetup count of existing recurring jobs {recurringJobsPost.Count()}");
       if (recurringJobsPost.Count < expectedJobCount)
       {
         _log.LogError($"Scheduler.Configure: Incomplete list of recurring jobs {recurringJobsPost.Count}");

@@ -7,9 +7,10 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Scheduler.Common.Interfaces;
+using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 
-namespace VSS.Productivity3D.Scheduler.Common.Models
+namespace VSS.Productivity3D.Scheduler.Common.Repository
 {
   public class ImportedFileRepoNhOp<T> : IImportedFileRepo<T> where T : ImportedFileNhOp
   {

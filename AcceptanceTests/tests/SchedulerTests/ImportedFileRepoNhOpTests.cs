@@ -5,6 +5,7 @@ using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Linq;
+using VSS.Productivity3D.Scheduler.Common.Repository;
 
 namespace SchedulerTests
 {
