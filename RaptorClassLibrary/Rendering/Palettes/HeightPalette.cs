@@ -56,7 +56,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Palettes
             }
             else
             {
-                return Color.Empty;
+                return Color.Black; // Color.Empty;
             }
         }
     }
