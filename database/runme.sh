@@ -1,6 +1,6 @@
 echo ">>> Making sure MySQL is up"
-echo ">>> Sleep for 15 seconds"
-sleep 15s
+echo ">>> Sleep for 25 seconds"
+sleep 25s
 eval /scripts/wait-for-it.sh "$MYSQL_SERVER_NAME:$MYSQL_PORT" -t 0
 echo "<<< Done checking on MySQL"
 echo "<<< Migrate the database with flyway"

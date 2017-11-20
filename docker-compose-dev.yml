@@ -1,0 +1,14 @@
+version: '2'
+services:
+  webapi:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest
+    env_file:
+     - docker-compose-dev.env
+    ports:
+     - "3011:80"
+    depends_on:
+      - schema
+  schema:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest
+    env_file:
+     - docker-compose-dev.env
