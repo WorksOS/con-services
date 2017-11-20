@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -78,12 +79,14 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public BaseDataResult DummyAddFileGet(
       [FromQuery] Guid projectUid,
+      [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
-      [FromQuery] long importedFileId)
+      [FromQuery] long fileId,
+      [FromQuery] DxfUnitsType dXfUnitsType)
     {
       var res = new BaseDataResult();
-      var message = $"DummyAddFileGet: res {res}. projectUid {projectUid} fileUid {fileUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}";
+      var message = $"DummyAddFileGet: res {res}. projectUid {projectUid} fileType {fileType} fileUid {fileUid} fileDescriptor {fileDescriptor} fileId {fileId} dXfUnitsType {dXfUnitsType}";
       Console.WriteLine(message);
       return res;
     }
@@ -95,12 +98,13 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public BaseDataResult DummyDeleteFileGet(
       [FromQuery] Guid projectUid,
+      [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
-      [FromQuery] long importedFileId)
+      [FromQuery] long fileId)
     {
       var res = new BaseDataResult();
-      var message = $"DummyDeleteFileGet: res {res}. projectUid {projectUid} fileUid {fileUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}";
+      var message = $"DummyDeleteFileGet: res {res}. projectUid {projectUid} fileType {fileType} fileUid {fileUid} fileDescriptor {fileDescriptor} fileId {fileId}";
       Console.WriteLine(message);
       return res;
     }
