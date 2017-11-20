@@ -35,7 +35,7 @@ namespace VSS.Velociraptor.Designs.TTM
             Capacity = header.NumberOfTriangles;
 
             // Create objects first as we need neighbour triangles to exist
-            for (int i = 0; i < header.NumberOfTriangles + 1; i++)
+            for (int i = 0; i < header.NumberOfTriangles; i++)
             {
                 Add(new TTMTriangle(null, null, null));
             }

@@ -8,7 +8,6 @@ namespace VSS.Velociraptor.Designs.TTM
 {
     public static class Consts
     {
-        public const float kTTMNullReal = -1.2345E-35f;
         public const float NullHeight = -3.4E38f;
         public const double NullReal = 1E308;
 

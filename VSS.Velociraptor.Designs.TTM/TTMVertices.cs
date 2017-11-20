@@ -27,7 +27,7 @@ namespace VSS.Velociraptor.Designs.TTM
         public void Read(BinaryReader reader, TTMHeader header)
         {
             Capacity = header.NumberOfVertices;
-            for (int i = 0; i < header.NumberOfVertices + 1; i++)
+            for (int i = 0; i < header.NumberOfVertices; i++)
                 try
                 {
                     long RecPos = reader.BaseStream.Position;
