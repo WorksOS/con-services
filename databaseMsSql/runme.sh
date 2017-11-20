@@ -1,6 +1,6 @@
 echo ">>> Making sure MsSQL is up"
-echo ">>> Sleep for 15 seconds"
-sleep 15s
+echo ">>> Sleep for 25 seconds"
+sleep 25s
 eval /scriptsMs/wait-for-it.sh "$MSSQL_SERVER_NAME:$MSSQL_PORT" -t 0
 echo "<<< Done checking on MsSQL"
 echo "<<< Migrate the database with flyway"
