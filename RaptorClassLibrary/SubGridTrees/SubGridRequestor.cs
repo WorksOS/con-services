@@ -318,8 +318,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             // if VLPDSvcLocations.Debug_SwitchOffCompositeSurfaceGenerationFromSurveyedSurfaces then
             // Exit;
 
-//            return Result;
-
             if (!ASurveyedSurfaceDataRequested || Result != ServerRequestResult.NoError)
             {
                 return Result;
@@ -357,7 +355,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
                     {
                         ClientGridAsHeightAndTime = ClientGrid as ClientHeightAndTimeLeafSubGrid;
-                        ProcessingMap.Assign(ClientGridAsHeightAndTime.FilterMap);
+                        // Temporarily just fill the processing map
+                        ProcessingMap.Fill();
+
+                       // ProcessingMap.Assign(ClientGridAsHeightAndTime.FilterMap);
 
                         // If we're interested in a particular cell, but we don't have any
                         // surveyed surfaces later (or earlier) than the cell production data
@@ -365,25 +366,25 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                         // then there's no point in asking the Design Profiler service for an elevation
                         if (Result == ServerRequestResult.NoError)
                         {
-                            ProcessingMap.ForEachSetBit((I, J) =>
+                            ProcessingMap.ForEachSetBit((x, y) =>
                             {
-                                if (ClientGridAsHeightAndTime.Cells[I, J].Height == Consts.NullHeight)
+                                if (ClientGridAsHeightAndTime.Cells[x, y].Height == Consts.NullHeight)
                                 {
                                     return;
                                 }
 
                                 if (Filter.AttributeFilter.ReturnEarliestFilteredCellPass)
                                 {
-                                    if (!FilteredSurveyedSurfaces.HasSurfaceEarlierThan(ClientGridAsHeightAndTime.Cells[I, J].Time))
+                                    if (!FilteredSurveyedSurfaces.HasSurfaceEarlierThan(ClientGridAsHeightAndTime.Cells[x, y].Time))
                                     {
-                                        ProcessingMap.ClearBit(I, J);
+                                        ProcessingMap.ClearBit(x, y);
                                     }
                                 }
                                 else
                                 {
-                                    if (!FilteredSurveyedSurfaces.HasSurfaceLaterThan(ClientGridAsHeightAndTime.Cells[I, J].Time))
+                                    if (!FilteredSurveyedSurfaces.HasSurfaceLaterThan(ClientGridAsHeightAndTime.Cells[x, y].Time))
                                     {
-                                        ProcessingMap.ClearBit(I, J);
+                                        ProcessingMap.ClearBit(x, y);
                                     }
                                 }
                             });
@@ -402,40 +403,37 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                         // then there's no point in asking the Design Profiler service for an elevation
                         if (Result == ServerRequestResult.NoError)
                         {
-                            ProcessingMap.ForEachSetBit((I, J) =>
+                            ProcessingMap.ForEachSetBit((x, y) =>
                             {
-                                if (ClientGridAsCellProfile.Cells[I, J].Height == Consts.NullHeight)
+                                if (ClientGridAsCellProfile.Cells[x, y].Height == Consts.NullHeight)
                                 {
                                     return;
                                 }
 
                                 if (Filter.AttributeFilter.ReturnEarliestFilteredCellPass)
                                 {
-                                    if (!FilteredSurveyedSurfaces.HasSurfaceEarlierThan(ClientGridAsCellProfile.Cells[I, J].Time))
+                                    if (!FilteredSurveyedSurfaces.HasSurfaceEarlierThan(ClientGridAsCellProfile.Cells[x, y].Time))
                                     {
-                                        ProcessingMap.ClearBit(I, J);
+                                        ProcessingMap.ClearBit(x, y);
                                     }
                                 }
                                 else
                                 {
-                                    if (!FilteredSurveyedSurfaces.HasSurfaceLaterThan(ClientGridAsCellProfile.Cells[I, J].Time))
+                                    if (!FilteredSurveyedSurfaces.HasSurfaceLaterThan(ClientGridAsCellProfile.Cells[x, y].Time))
                                     {
-                                        ProcessingMap.ClearBit(I, J);
+                                        ProcessingMap.ClearBit(x, y);
                                     }
                                 }
                             });
                         }
                     }
-                    */ 
+                    */
 
                     // If we still have any cells to request surveyed surface elevations for...
                     if (ProcessingMap.IsEmpty())
                     {
                         return Result;
                     }
-
-                // Create the client grid instance to contain the result. Needed in the POC code??????
-                    // SurfaceElevations = PSNodeImplInstance.RequestProcessor.RequestClientGrid(icdtHeightAndTime, ClientGrid.CellSize, ClientGrid.IndexOriginOffset) as ClientHeightAndTimeLeafSubGrid;
 
                     try
                     {
@@ -457,39 +455,43 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                         {
                             return Result;
                         }
+
+                        ClientHeightLeafSubGrid temp = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTree.DefaultIndexOriginOffset);
+                        temp.Assign(SurfaceElevations);
+
                         // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
-/*
-                          if (PSNodeImplInstance.DesignProfilerService.RequestSurfaceElevationPatch
-                            (Construct_CalculateSurveyedSurfaceElevationPatch_Args(SiteModel.ID, 
-                                                                                   ClientGrid.OriginX, ClientGrid.OriginY,
-                                                                                   Filter.AttributeFilter.ReturnEarliestFilteredCellPass, 
-                                                                                   ClientGrid.CellSize, ProcessingMap),
-                             FilteredGroundSurfaces, SurfaceElevations) != dppiOK)
+                        /*
+                        if (PSNodeImplInstance.DesignProfilerService.RequestSurfaceElevationPatch
+                          (Construct_CalculateSurveyedSurfaceElevationPatch_Args(SiteModel.ID, 
+                                                                                 ClientGrid.OriginX, ClientGrid.OriginY,
+                                                                                 Filter.AttributeFilter.ReturnEarliestFilteredCellPass, 
+                                                                                 ClientGrid.CellSize, ProcessingMap),
+                           FilteredGroundSurfaces, SurfaceElevations) != dppiOK)
                         {
                             return Result;
                         }
-*/
+                        */
 
                         // For all cells we wanted to request a surveyed surface elevation for,
                         // update the cell elevation if a non null surveyed surface of appropriate
                         // time was computed
-                        ProcessingMap.ForEachSetBit((I, J) =>
+                        ProcessingMap.ForEachSetBit((x, y) =>
                         {
-                            SurveyedSurfaceCell = SurfaceElevations.Cells[I, J];
+                            SurveyedSurfaceCell = SurfaceElevations.Cells[x, y];
 
                             // If we got back a surveyed surface elevation...ComputeFuncs
 
                             if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
                             {
-                                ProdHeight = ClientGridAsHeightAndTime.Cells[I, J].Height;
-                                ProdTime = ClientGridAsHeightAndTime.Cells[I, J].Time;
+                                ProdHeight = ClientGridAsHeightAndTime.Cells[x, y].Height;
+                                ProdTime = ClientGridAsHeightAndTime.Cells[x, y].Time;
                             }
                             else
                             /*
                             if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
                             {
-                                ProdHeight = ClientGridAsCellProfile.Cells[I, J].Height;
-                                ProdTime = ClientGridAsCellProfile.Cells[I, J].LastPassTime;
+                                ProdHeight = ClientGridAsCellProfile.Cells[x, y].Height;
+                                ProdTime = ClientGridAsCellProfile.Cells[x, y].LastPassTime;
                             }
                             else
                             */
@@ -518,12 +520,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
                                 if (Filter.AttributeFilter.HasElevationRangeFilter)
                                 {
-                                    Filter.AttributeFilter.InitaliaseFilteringForCell((byte)I, (byte)J);
+                                    Filter.AttributeFilter.InitaliaseFilteringForCell((byte)x, (byte)y);
 
                                     if (!Filter.AttributeFilter.FiltersElevation(SurveyedSurfaceCell.Height))
                                     {
                                         // We didn't get a surveyed surface elevation, so clear the bit so that ASNode won't render it as a surveyed surface
-                                        ProcessingMap.ClearBit(I, J);
+                                        ProcessingMap.ClearBit(x, y);
                                         ContinueProcessing = false;
                                     }
                                 }
@@ -532,7 +534,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                 {
                                     if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
                                     {
-                                        ClientGridAsHeightAndTime.Cells[I, J] = SurveyedSurfaceCell;
+                                        ClientGridAsHeightAndTime.Cells[x, y] = SurveyedSurfaceCell;
                                     }
                                     /*
                                     else
@@ -548,7 +550,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                             else
                             {
                                 // We didn't get a surveyed surface elevation, so clear the bit so that the renderer won't render it as a surveyed surface
-                                ProcessingMap.ClearBit(I, J);
+                                ProcessingMap.ClearBit(x, y);
                             }
                         });
 

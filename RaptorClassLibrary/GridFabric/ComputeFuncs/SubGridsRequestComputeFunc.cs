@@ -53,7 +53,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
         [NonSerialized]
         private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
-//        private static int requestCount = 0;
+        //        private static int requestCount = 0;
 
         /// <summary>
         /// Mask is the internal sub grid bit mask tree created from the serialised mask contained in the 
@@ -89,7 +89,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         private SiteModel siteModel = null;
 
         [NonSerialized]
-        private MemoryStream MS = null; 
+        private MemoryStream MS = null;
 
         [NonSerialized]
         private IClientLeafSubGrid[] clientGrids = null;
@@ -113,14 +113,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         {
 
         }
-        
+
         private void CleanSubgridResultArray(IClientLeafSubGrid[] SubgridResultArray)
         {
             try
             {
                 if (SubgridResultArray.Count() > 0 && SubgridResultArray[0] != null)
                 {
-                    ClientLeafSubGridFactory.ReturnClientSubGrids(SubgridResultArray[0].GridDataType, SubgridResultArray, SubgridResultArray.Count());
+                    ClientLeafSubGridFactory.ReturnClientSubGrids(/*SubgridResultArray[0].GridDataType, */SubgridResultArray, SubgridResultArray.Count());
                 }
             }
             catch // (Exception E)
@@ -132,9 +132,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         }
 
         private void ConvertIntermediarySubgridsToResult(GridDataType RequestGridDataType,
-                                                        ref  IClientLeafSubGrid[] SubgridResultArray)
+                                                         ref IClientLeafSubGrid[] SubgridResultArray)
         {
-            IClientLeafSubGrid[] NewClientGrids = new IClientLeafSubGrid[0]; 
+            IClientLeafSubGrid[] NewClientGrids = null;
 
             try
             {
@@ -158,30 +158,31 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
                         for (int I = 0; I < SubgridResultArray.Length; I++)
                         {
-                            if (SubgridResultArray[I] != null)
+                            if (SubgridResultArray[I]?.GridDataType != RequestGridDataType)
                             {
                                 NewClientGrids[I] = ClientLeafSubGridFactory.GetSubGrid(RequestGridDataType);
                                 NewClientGrids[I].CellSize = siteModel.Grid.CellSize;
 
-                                Debug.Assert(NewClientGrids[I] is ClientHeightLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {NewClientGrids[I]}");
-                                Debug.Assert(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {SubgridResultArray[I]}");
+                                Debug.Assert(NewClientGrids[I] is ClientHeightLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {NewClientGrids[I].GetType().Name}/{NewClientGrids[I]}");
+
+                                if (!(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid))
+                                {
+                                    Debug.Assert(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid failed, is actually {SubgridResultArray[I].GetType().Name}/{SubgridResultArray[I]}");
+                                }
+                                //Debug.Assert(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid failed, is actually {SubgridResultArray[I].GetType().Name}/{SubgridResultArray[I]}");
 
                                 (NewClientGrids[I] as ClientHeightLeafSubGrid).Assign(SubgridResultArray[I] as ClientHeightAndTimeLeafSubGrid);
                             }
                             else
                             {
-                                NewClientGrids[I] = null;
+                                NewClientGrids[I] = SubgridResultArray[I];
+                                SubgridResultArray[I] = null;
                             }
                         }
 
                         CleanSubgridResultArray(SubgridResultArray);
 
-                        SubgridResultArray = new IClientLeafSubGrid[NewClientGrids.Length];
-                        for (int I = 0; I < NewClientGrids.Length; I++)
-                        {
-                            SubgridResultArray[I] = NewClientGrids[I];
-                            NewClientGrids[I] = null;
-                        }
+                        SubgridResultArray = NewClientGrids;
                         break;
                 }
             }
@@ -189,14 +190,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             {
                 CleanSubgridResultArray(SubgridResultArray);
 
-                foreach (IClientLeafSubGrid leaf in NewClientGrids)
+                if (NewClientGrids != null)
                 {
-                    if (leaf != null)
+                    for (int i = 0; i < NewClientGrids.Count(); i++)
                     {
-                        IClientLeafSubGrid tempLeaf = leaf;
-                        ClientLeafSubGridFactory.ReturnClientSubGrid(ref tempLeaf);
+                        ClientLeafSubGridFactory.ReturnClientSubGrid(ref NewClientGrids[i]);
                     }
                 }
+
 
                 throw;
             }
@@ -260,6 +261,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
                 //clientGrid = ClientLeafSubGridFactory.GetSubGrid(localArg.GridDataType);
                 clientGrid.CellSize = siteModel.Grid.CellSize;
+                clientGrid.SetAbsoluteLevel(SubGridTree.SubGridTreeLevels);
+                clientGrid.SetAbsoluteOriginPosition((uint)(address.X & ~((int)SubGridTree.SubGridLocalKeyMask)),
+                                                     (uint)(address.Y & ~((int)SubGridTree.SubGridLocalKeyMask)));
 
                 // Reach into the subgrid request layer and retrieve an appropriate subgrid
                 ServerRequestResult result = SubGridRequestor.RequestSubGridInternal
@@ -283,12 +287,13 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     //throw new ArgumentException(String.Format("Subgrid request failed with code {0}", result));
                 }
 
-//                /*
+                //                /*
                 if (clientGrid != null)
                 {
                     // Some request types require additional processing of the subgrid results prior to repatriating the answers back to the caller
                     // Convert the computed intermediary grids into the client grid form expected by the caller
-                    if (SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested) != localArg.GridDataType)
+                    if (clientGrid.GridDataType != localArg.GridDataType)
+                    // if (SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested) != localArg.GridDataType)
                     {
                         // Convert to an array to preserve the multiple filter semantic giving a list of subgrids to be converted (eg: volumes)
                         IClientLeafSubGrid[] ClientArray = new IClientLeafSubGrid[1] { clientGrid };
@@ -296,7 +301,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                         clientGrid = ClientArray[0];
                     }
                 }
-//                */
+                //                */
 
                 return result;
             }
@@ -351,7 +356,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 // Return the client grid to the factory for recycling now its role is complete here... when using SimpleConcurrentBag
                 if (resultCount > 0)
                 {
-                    ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids[0].GridDataType, clientGrids, resultCount);
+                    ClientLeafSubGridFactory.ReturnClientSubGrids(/*clientGrids[0].GridDataType, */clientGrids, resultCount);
                 }
             }
 
@@ -412,11 +417,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 // Request production data only, or hybrid production data and surveyd surface data subgrids
                 ProdDataMask?.ScanAllSetBitsAsSubGridAddresses(address =>
                 {
-                    // Is this subgrid is the responsibility of this server?
-                    if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
+            // Is this subgrid is the responsibility of this server?
+            if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
 
-                    // Decorate the address with the production data and surveyed surface flags
-                    address.ProdDataRequested = true;
+            // Decorate the address with the production data and surveyed surface flags
+            address.ProdDataRequested = true;
                     address.SurveyedSurfaceDataRequested = localArg.IncludeSurveyedSurfaceInformation;
 
                     AddSubgridToAddressList(address);      // Assign the address into the group to be processed
@@ -425,11 +430,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 // Request surveyd surface only subgrids
                 SurveyedSurfaceOnlyMask?.ScanAllSetBitsAsSubGridAddresses(address =>
                 {
-                    // Is this subgrid is the responsibility of this server?
-                    if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
+            // Is this subgrid is the responsibility of this server?
+            if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
 
-                    // Decorate the address with the production data and surveyed surface flags
-                    address.ProdDataRequested = false; // TODO: This is a bit of an assumption and assumes the subgrid request is not solely driven by the existance of a subgrid in a surveyed surface
+            // Decorate the address with the production data and surveyed surface flags
+            address.ProdDataRequested = false; // TODO: This is a bit of an assumption and assumes the subgrid request is not solely driven by the existance of a subgrid in a surveyed surface
                     address.SurveyedSurfaceDataRequested = localArg.IncludeSurveyedSurfaceInformation;
 
                     AddSubgridToAddressList(address);      // Assign the address into the group to be processed

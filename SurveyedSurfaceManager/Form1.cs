@@ -17,7 +17,6 @@ using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.Surfaces;
-using VSS.VisionLink.Raptor.ExistenceMaps;
 
 namespace SurveyedSurfaceManager
 {

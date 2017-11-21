@@ -13,12 +13,16 @@ using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.Velociraptor.DesignProfiling
 {
+    /// <summary>
+    /// A design comprised of a Triangulated Irregular Network TIN surface, comsumed from a Timble TIN Model file
+    /// </summary>
     public class TTMDesign : DesignBase
     {
         private TrimbleTINModel FData;
+        private GenericSubGridTree<List<Triangle>> FSpatialIndex;
+
         private double FMinHeight;
         private double FMaxHeight;
-        //      private FIndex : TDQMTTMQuadTree;
         private double FCellSize;
         private SubGridTreeSubGridExistenceBitMask FSubgridIndex;
 
@@ -26,11 +30,9 @@ namespace VSS.Velociraptor.DesignProfiling
 
 
         public TrimbleTINModel Data { get { return FData; } }
+        public GenericSubGridTree<List<Triangle>> SpatialIndex { get { return FSpatialIndex; } }
 
-        // No spatial index for now...
-        // property Index : TDQMTTMQuadTree read FIndex;
-
-        public override object CreateAccessContext() => null; /* TDQMTTMQuadTree.Clone(FIndex, False); */
+        public override object CreateAccessContext() => null; /* TDQMTTMQuadTree.Clone(FSpatialIndex, False); */
 
         private void AddTrianglePieceToElevationPatch(TriVertex H1, TriVertex H2, TriVertex V,
                                                       Triangle Tri,
@@ -42,28 +44,9 @@ namespace VSS.Velociraptor.DesignProfiling
                                                       ref int ValueCount)
         {
             double Y, Z;
-            double YRange;
-            int YStep;
-            double H1X, H1Y, H2X, H2Y;
-            int ProcessingCellYIndex;
-            double HalfCellSize;
-            double HalfMinorCellSize;
             double H1Slope, H2Slope;
-            double H1SlopeTimesCellSize;
-            double H2SlopeTimesCellSize;
-            double PatchSize;
-            double VX, VY;
-            double TopEdge, RightEdge;
-            double OriginXPlusHalfCell, OriginYPlusHalfCell;
-            double TopEdgeLessHalfCell, RightEdgeLessHalfCell;
-            int PatchOriginCellIndexX, PatchOriginCellIndexY;
-            int PatchCellLimitIndexX;
-            int LeftCellIndexX, RightCellIndexX;
             int HCellIndexY, VCellIndexY;
-            int NumCellRowsToProcess;
-            int VCellPatchIndex, HCellPatchIndex;
             int Delta;
-            double AbsH1SlopeTimesCellSize, AbsH2SlopeTimesCellSize;
 
             try
             {
@@ -76,12 +59,12 @@ namespace VSS.Velociraptor.DesignProfiling
                     SwapVertices(ref H1, ref H2);
                 }
 
-                H1X = H1.X;
-                H1Y = H1.Y;
-                H2X = H2.X;
-                H2Y = H2.Y;
-                VX = V.X;
-                VY = V.Y;
+                double H1X = H1.X;
+                double H1Y = H1.Y;
+                double H2X = H2.X;
+                double H2Y = H2.Y;
+                double VX = V.X;
+                double VY = V.Y;
 
                 // HalfMinorCellSize is half of the cell size of the on-the-ground cells that
                 // will be compared against the TIN design surface during cut fill operations.
@@ -89,18 +72,18 @@ namespace VSS.Velociraptor.DesignProfiling
                 // no need to include a half cell width outer boundary of each cell in the subgrid
                 // index. A small epsilon value is deducted from the half cell size value to prevent
                 // numeric imprecision
-                HalfCellSize = CellSize / 2;
-                HalfMinorCellSize = HalfCellSize - 0.001;
+                double HalfCellSize = CellSize / 2;
+                double HalfMinorCellSize = HalfCellSize - 0.001;
 
-                PatchSize = SubGridTree.SubGridTreeDimension * CellSize;
-                TopEdge = OriginY + PatchSize;
-                RightEdge = OriginX + PatchSize;
+                double PatchSize = SubGridTree.SubGridTreeDimension * CellSize;
+                double TopEdge = OriginY + PatchSize;
+                double RightEdge = OriginX + PatchSize;
 
-                OriginXPlusHalfCell = OriginX + HalfMinorCellSize;
-                OriginYPlusHalfCell = OriginY + HalfMinorCellSize;
+                double OriginXPlusHalfCell = OriginX + HalfMinorCellSize;
+                double OriginYPlusHalfCell = OriginY + HalfMinorCellSize;
 
-                TopEdgeLessHalfCell = TopEdge - HalfMinorCellSize;
-                RightEdgeLessHalfCell = RightEdge - HalfMinorCellSize;
+                double TopEdgeLessHalfCell = TopEdge - HalfMinorCellSize;
+                double RightEdgeLessHalfCell = RightEdge - HalfMinorCellSize;
 
                 // Check to see if the triangle piece being considered could possibly intersect
                 // the extent of the patch (or any of the cell center positions at which the
@@ -114,13 +97,13 @@ namespace VSS.Velociraptor.DesignProfiling
                     return;
                 }
 
-                PatchOriginCellIndexX = (int)Math.Floor((OriginX + HalfMinorCellSize) / CellSize);
-                PatchOriginCellIndexY = (int)Math.Floor((OriginY + HalfMinorCellSize) / CellSize);
-                PatchCellLimitIndexX = PatchOriginCellIndexX + SubGridTree.SubGridTreeDimension - 1;
+                int PatchOriginCellIndexX = (int)Math.Floor(OriginXPlusHalfCell / CellSize);
+                int PatchOriginCellIndexY = (int)Math.Floor(OriginYPlusHalfCell / CellSize);
+                int PatchCellLimitIndexX = PatchOriginCellIndexX + SubGridTree.SubGridTreeDimension - 1;
 
                 // Work out 'Y' range and step direction of the triangle piece.
-                YRange = VY - H1Y;
-                YStep = Math.Sign(YRange);
+                double YRange = VY - H1Y;
+                int YStep = Math.Sign(YRange);
 
                 try
                 {
@@ -141,11 +124,11 @@ namespace VSS.Velociraptor.DesignProfiling
                     H2Slope = 0;
                 }
 
-                H1SlopeTimesCellSize = H1Slope * CellSize;
-                H2SlopeTimesCellSize = H2Slope * CellSize;
+                double H1SlopeTimesCellSize = H1Slope * CellSize;
+                double H2SlopeTimesCellSize = H2Slope * CellSize;
 
-                AbsH1SlopeTimesCellSize = Math.Abs(H1SlopeTimesCellSize) + 0.001;
-                AbsH2SlopeTimesCellSize = Math.Abs(H2SlopeTimesCellSize) + 0.001;
+                double AbsH1SlopeTimesCellSize = Math.Abs(H1SlopeTimesCellSize) + 0.001;
+                double AbsH2SlopeTimesCellSize = Math.Abs(H2SlopeTimesCellSize) + 0.001;
 
                 // ProcessingCellYIndex is used to ensure that each 'row' of cells is adjacent to the
                 // previous row to ensure a row of cells is not skipped in the event that
@@ -156,12 +139,12 @@ namespace VSS.Velociraptor.DesignProfiling
                 VCellIndexY = (int)Math.Floor(VY / CellSize);
                 HCellIndexY = (int)Math.Floor(H1Y / CellSize);
 
-                VCellPatchIndex = VCellIndexY - PatchOriginCellIndexY;
-                HCellPatchIndex = HCellIndexY - PatchOriginCellIndexY;
+                int VCellPatchIndex = VCellIndexY - PatchOriginCellIndexY;
+                int HCellPatchIndex = HCellIndexY - PatchOriginCellIndexY;
 
-                NumCellRowsToProcess = Math.Abs(VCellPatchIndex - HCellPatchIndex) + 1;
+                int NumCellRowsToProcess = Math.Abs(VCellPatchIndex - HCellPatchIndex) + 1;
 
-                ProcessingCellYIndex = HCellPatchIndex;
+                int ProcessingCellYIndex = HCellPatchIndex;
 
                 // Determine how many rows of cells there are between ProcessingCellYIndex and
                 // the extent covered by the subgrid. Shift the H1X/H2X/etc values appropriately,
@@ -227,8 +210,8 @@ namespace VSS.Velociraptor.DesignProfiling
                 // as iterating across just this interval will leave cells on the extreme
                 // edges missed out from the spot elevation calcs
 
-                H1X = H1X - AbsH1SlopeTimesCellSize;
-                H2X = H2X + AbsH2SlopeTimesCellSize;
+                H1X -= AbsH1SlopeTimesCellSize;
+                H2X += AbsH2SlopeTimesCellSize;
 
                 // Note: H1X & H2X are modified in the loop after this location
 
@@ -238,8 +221,8 @@ namespace VSS.Velociraptor.DesignProfiling
                 {
                     // Calculate the positions of the left and right cell indices in the coordinate space of the
                     // triangle piece
-                    LeftCellIndexX = (int)Math.Floor(H1X / CellSize);
-                    RightCellIndexX = (int)Math.Floor(H2X / CellSize) + 1;
+                    int LeftCellIndexX = (int)Math.Floor(H1X / CellSize);
+                    int RightCellIndexX = (int)Math.Floor(H2X / CellSize) + 1;
 
                     // Clip the calculated cell indices against the coordinate space of the patch
                     if (LeftCellIndexX < PatchOriginCellIndexX)
@@ -267,8 +250,8 @@ namespace VSS.Velociraptor.DesignProfiling
                     }
 
                     // Recalculate the left and right cell indexors for the next row of cells to be scanned across the triangle.
-                    H1X = H1X + H1SlopeTimesCellSize;
-                    H2X = H2X - H2SlopeTimesCellSize;
+                    H1X += H1SlopeTimesCellSize;
+                    H2X -= H2SlopeTimesCellSize;
 
                     NumCellRowsToProcess--;
                     ProcessingCellYIndex += YStep;
@@ -285,24 +268,16 @@ namespace VSS.Velociraptor.DesignProfiling
             }
         }
 
-        private void AddTrianglePieceToSubgridIndex(TriVertex H1, TriVertex H2, TriVertex V, bool SingleRowOnly)
+        private void AddTrianglePieceToSubgridIndex(SubGridTree index,
+                                                    Triangle sourceTriangle,
+                                                    Func<SubGridTree, uint, uint, bool> leafSatisfied,
+                                                    Action<SubGridTree, uint, uint, Triangle> includeTriangleInLeaf,
+                                                    TriVertex H1, TriVertex H2, TriVertex V, bool SingleRowOnly)
         {
-            double YRange;
-            int YStep;
-            uint LeftSubGridX, RightSubGridX, SubGridY;
-            uint PrevLeftSubGridX, PrevRightSubGridX;
-            BoundingWorldExtent3D Extents;
-            double H1X, H1Y, H2X, H2Y;
-            uint OverrideSubGridY;
-            double HalfMinorCellSize;
+            uint LeftSubGridX, RightSubGridX, TestLeftSubGridX, TestRightSubGridX; ;
             double H1Slope, H2Slope;
-            double YStepTimesCellSize;
-            double H1SlopeTimesCellSize;
-            double H2SlopeTimesCellSize;
-            bool FirstRow;
-            bool LastRow;
-            double SubgridFraction;
-            double T;
+            bool LastRow = false;
+            bool WasLastRow = false;
 
             try
             {
@@ -310,21 +285,20 @@ namespace VSS.Velociraptor.DesignProfiling
                 // V describes the vertex above, or below the horizontal line
 
                 // Ensure H1 is left of H2 and take local copies of the vertex ordinates
-
                 if (H1.X > H2.X)
                 {
                     SwapVertices(ref H1, ref H2);
                 }
 
-                H1X = H1.X;
-                H1Y = H1.Y;
-                H2X = H2.X;
-                H2Y = H2.Y;
+                double H1X = H1.X;
+                double H1Y = H1.Y;
+                double H2X = H2.X;
+                double H2Y = H2.Y;
 
                 // Work out 'Y' range and step direction of the triangle piece.
-                YRange = V.Y - H1.Y;
-                YStep = Math.Sign(YRange);
-                YStepTimesCellSize = YStep * FSubgridIndex.CellSize;
+                double YRange = V.Y - H1Y;
+                int YStep = Math.Sign(YRange);
+                double YStepTimesCellSize = YStep * index.CellSize;
 
                 try
                 {
@@ -335,8 +309,8 @@ namespace VSS.Velociraptor.DesignProfiling
                     }
                     else
                     {
-                        H1Slope = (V.X - H1.X) / Math.Abs(YRange);
-                        H2Slope = (H2.X - V.X) / Math.Abs(YRange);
+                        H1Slope = (V.X - H1X) / Math.Abs(YRange);
+                        H2Slope = (H2X - V.X) / Math.Abs(YRange);
                     }
                 }
                 catch
@@ -345,122 +319,120 @@ namespace VSS.Velociraptor.DesignProfiling
                     H2Slope = 0;
                 }
 
-                H1SlopeTimesCellSize = H1Slope * FSubgridIndex.CellSize;
-                H2SlopeTimesCellSize = H2Slope * FSubgridIndex.CellSize;
+                double H1SlopeTimesCellSize = H1Slope * index.CellSize;
+                double H2SlopeTimesCellSize = H2Slope * index.CellSize;
 
-                OverrideSubGridY = uint.MaxValue;
+                bool FirstRow = true;
+                uint PrevLeftSubGridX = uint.MaxValue;
+                uint PrevRightSubGridX = uint.MinValue;
 
-                // HalfMinorCellSize is half of the cell size of the on-the-ground cells that
-                // will be compared against the TIN design surface during cut fill operations.
-                // As the sample point for a cell is the center point of the cell then there is
-                // no need to include a half cell width outer boundary of each cell in the subgrid
-                // index. A small epsilon value is deducted from the half cell size value to prevent
-                // numeric imprecision
-                HalfMinorCellSize = ((FSubgridIndex.CellSize / SubGridTree.SubGridTreeDimension) / 2) - 0.0001;
+                // Determine the start and end rows
+                index.CalculateIndexOfCellContainingPosition(H1X, H1Y, out _, out uint SubgridStartY);
+                index.CalculateIndexOfCellContainingPosition(V.X, V.Y, out _, out uint SubgridEndY);
 
-                // Calculate a fraction of the horizontal movement distances required to move the
-                // H1X and H2X positions to the leading 'edge' of the first row of subgrids
-                // that they will cross as the subgrids are scanned. This is an adjusment made after
-                // the first row of subgrids is analysed to ensure that the left and right subgrid
-                // indices of the next subgrid row are correctly determined due to the lines between
-                // H1->V and H2->V crossing the horizontal subgrid boundaries, especially
-                // when the slope is shallow.
-
-                // Compute the fractional part of the following calculation...
-                T = H1.Y / FSubgridIndex.CellSize;
-                T = T - Math.Truncate(T); // T = Math.Frac(H1.Y / FSubgridIndex.CellSize);
-
-                if (V.Y < H1.Y)  // if V is below H1
+                if (SubgridStartY == SubgridEndY)
                 {
-                    SubgridFraction = (T < 0) ? 1 + T : T;
-                }
-                else  // V is top
-                {
-                    SubgridFraction = (T < 0) ? 1 - Math.Abs(T) : 1 - T;
+                    SingleRowOnly = true;
                 }
 
-                // Modify the subgrid fraction so the test position is just inside the next subgrid row that
-                // H[1|2].Y  in, rather than lying exactly on the boundary between the two rows.
-                SubgridFraction = SubgridFraction * 1.001;
-
-                FirstRow = true;
-                PrevLeftSubGridX = uint.MaxValue;
-                PrevRightSubGridX = uint.MinValue;
+                // OverrideSubGridY is used to ensure that each 'row' of subgrids is adjacent to the
+                // previous row to ensure a row of subgrids is not skipped in the event that
+                // H1 and H2 vertices lie on the boundary of two subgrids which may cause numeric
+                // imprecision when the H1 and H2 vertices are updated after scanning across the
+                // subgrids in the row.
+                uint OverrideSubGridY = SubgridStartY;
 
                 // Repeatedly scan over rows of subgrids that cover the triangle piece checking
                 // if they cover the body of the triangle
                 do
                 {
-                    FSubgridIndex.CalculateIndexOfCellContainingPosition(H1X, H1Y, out LeftSubGridX, out SubGridY);
-                    FSubgridIndex.CalculateIndexOfCellContainingPosition(H2X, H2Y, out RightSubGridX, out SubGridY);
+                    index.CalculateIndexOfCellContainingPosition(H1X, H1Y, out LeftSubGridX, out _);
+                    index.CalculateIndexOfCellContainingPosition(H2X, H2Y, out RightSubGridX, out _);
+
+                    if (LeftSubGridX > RightSubGridX)
+                    {
+                        MinMax.Swap(ref LeftSubGridX, ref RightSubGridX);
+                    }
 
                     // Bracket the calculate left and right subgrid indices with the previous left and
                     // right subgrid indices to ensure subgrids included via shallow grazing
                     // of near horizontal triangle edges are taken into consideration as each
                     // subsequent row of subgrids is scanned.
-                    if (PrevLeftSubGridX < LeftSubGridX)
-                        LeftSubGridX = PrevLeftSubGridX;
-                    if (PrevRightSubGridX > RightSubGridX)
-                        RightSubGridX = PrevRightSubGridX;
 
-                    // OverrideSubGridY is used to ensure that each 'row' of subgrids is adjacent to the
-                    // previous row to ensure a row of subgrids is not skipped in the event that
-                    // H1 and H2 vertices lie on the boundary of two subgrids which may cause numeric
-                    // imprecision when the H1 and H2 vertices are updated after scanning across the
-                    // subgrids in the row.
+                    TestLeftSubGridX = FirstRow ? LeftSubGridX : (PrevLeftSubGridX < LeftSubGridX) ? PrevLeftSubGridX : LeftSubGridX;
+                    TestRightSubGridX = FirstRow ? RightSubGridX : (PrevRightSubGridX > RightSubGridX) ? PrevRightSubGridX : RightSubGridX;
 
-                    if (OverrideSubGridY == uint.MaxValue)
+                    BoundingWorldExtent3D Extents;
+
+                    // Scan 'central' portion of subgrids between the two end points
+                    for (uint I = TestLeftSubGridX; I <= TestRightSubGridX; I++)
                     {
-                        OverrideSubGridY = SubGridY;
-                    }
-
-                    for (uint I = LeftSubGridX - 1; I <= RightSubGridX + 1; I++) // Go +- one for some additional safety
-                    {
-                        if (!FSubgridIndex[I, SubGridY])
+                        if (!leafSatisfied(index, I, OverrideSubGridY))
                         {
-                            Extents = FSubgridIndex.GetCellExtents(I, OverrideSubGridY);
-                            Extents.Shrink(HalfMinorCellSize, HalfMinorCellSize);
+                            Extents = index.GetCellExtents(I, OverrideSubGridY);
 
-                            // Does extents of subgrid intersect over triangle
                             if (SubGridIntersectsTriangle(Extents, H1, H2, V))
                             {
-                                FSubgridIndex[I, SubGridY] = true; // tag subgrid as true
+                                includeTriangleInLeaf(index, I, OverrideSubGridY, sourceTriangle);
                             }
                         };
                     }
 
-                    if (FirstRow)
+                    // Scan to the left from the left most point until subgrids no longer intersect the triangle
+                    uint SubGridX = TestLeftSubGridX;
+                    do
                     {
-                        // Move the starting position of the H1X  H2X positions to be at the leading 'edge' of
-                        // the first row of subgrids that they will cross as the subgrids are scanned. This is a single
-                        // adjustment only so that the per row adjustment that is made below will advance the H1X and
-                        // H2X positions correctly into the new row.
+                        SubGridX--;
 
-                        H1X = H1X + (H1SlopeTimesCellSize * SubgridFraction);
-                        H1Y = H1Y + (YStepTimesCellSize * SubgridFraction);
-                        H2X = H2X - (H2SlopeTimesCellSize * SubgridFraction);
-                        H2Y = H2Y + (YStepTimesCellSize * SubgridFraction);
+                        Extents = index.GetCellExtents(SubGridX, OverrideSubGridY);
 
-                        FirstRow = false;
-                        PrevLeftSubGridX = LeftSubGridX;
-                        PrevRightSubGridX = RightSubGridX;
-                    }
-                    else
+                        if (!SubGridIntersectsTriangle(Extents, H1, H2, V))
+                        {
+                            break;
+                        }
+
+                        if (!leafSatisfied(index, SubGridX, OverrideSubGridY))
+                        {
+                            includeTriangleInLeaf(index, SubGridX, OverrideSubGridY, sourceTriangle);
+                        }
+                    } while (true);
+
+                    // Scan to the right from the right most point until subgrids no longer intersect the triangle
+                    SubGridX = TestRightSubGridX;
+                    do
                     {
-                        // Recalculate the left and right subgrid indexors for the next row
-                        // of subgrids to be scanned across the triangle.
-                        H1X = H1X + H1SlopeTimesCellSize;
-                        H1Y = H1Y + YStepTimesCellSize;
+                        SubGridX++;
 
-                        H2X = H2X - H2SlopeTimesCellSize;
-                        H2Y = H2Y + YStepTimesCellSize;
-                    };
+                        Extents = index.GetCellExtents(SubGridX, OverrideSubGridY);
+
+                        if (!SubGridIntersectsTriangle(Extents, H1, H2, V))
+                        {
+                            break;
+                        }
+
+                        if (!leafSatisfied(index, SubGridX, OverrideSubGridY))
+                        {
+                            includeTriangleInLeaf(index, SubGridX, OverrideSubGridY, sourceTriangle);
+                        }
+                    } while (true);
+
+                    FirstRow = false;
+
+                    H1X += H1SlopeTimesCellSize;
+                    H1Y += YStepTimesCellSize;
+
+                    H2X -= H2SlopeTimesCellSize;
+                    H2Y += YStepTimesCellSize;
+
+                    PrevLeftSubGridX = LeftSubGridX;
+                    PrevRightSubGridX = RightSubGridX;
 
                     OverrideSubGridY = (uint)(OverrideSubGridY + YStep);
 
-                    LastRow = H2X <= H1X;
+                    WasLastRow = LastRow;
+                    LastRow = OverrideSubGridY == SubgridEndY; // H2X < H1X;
                 }
-                while (LeftSubGridX <= RightSubGridX && !LastRow && !SingleRowOnly);
+                while (!WasLastRow && !SingleRowOnly);
             }
             catch // (Exception E)
             {
@@ -469,60 +441,45 @@ namespace VSS.Velociraptor.DesignProfiling
             }
         }
 
-        private void ScanCellsOverTriangle(Triangle Tri,
-                            Action<TriVertex, TriVertex, TriVertex, bool> ProcessTrianglePiece,
-                                                   TriVertex IntersectionVertex)
+        private void ScanCellsOverTriangle(SubGridTree tree,
+                                           Triangle Tri,
+                                           Func<SubGridTree, uint, uint, bool> leafSatisfied,
+                                           Action<SubGridTree, uint, uint, Triangle> includeTriangleInLeaf,
+                                           Action<SubGridTree,
+                                                  Triangle, // sourceTriangle
+                                                  Func<SubGridTree, uint, uint, bool>,  // leafSatisfied
+                                                  Action<SubGridTree, uint, uint, Triangle>, // includeTriangleInLeaf
+                                                  TriVertex, TriVertex, TriVertex, bool> ProcessTrianglePiece,
+                                           TriVertex IntersectionVertex)
         {
-
-            TriVertex TopVertex, CentralVertex, BottomVertex;
-            TriVertex LeftMostVertex, RightMostVertex;
-            TriVertex[] SortVertices = new TriVertex[3];
-            bool TopPieceOnly, BottomPieceOnly;
-            double IntersectX, IntersectY;
-            bool LinesAreCoLinear;
-
             // Split triangle into two pieces, a 'top' piece and a 'bottom' piece to simplify
             // scanning across the triangle. Split is always with a horizontal line
 
-            for (int I = 0; I < 3; I++)
-            {
-                SortVertices[I] = Tri.Vertices[I];
-            }
+            TriVertex[] SortVertices = new TriVertex[3] { Tri.Vertices[0], Tri.Vertices[1], Tri.Vertices[2] };
 
-            // Make sure triangle has top vertex in last item vertex array
-            for (int I = 0; I < 2; I++)
-            {
-                for (int J = I + 1; J < 3; J++)
-                {
-                    if (SortVertices[I].Y > SortVertices[J].Y)
-                        SwapVertices(ref SortVertices[I], ref SortVertices[J]);
-                }
-            }
+            if (SortVertices[0].Y > SortVertices[1].Y) SwapVertices(ref SortVertices[0], ref SortVertices[1]);
+            if (SortVertices[1].Y > SortVertices[2].Y) SwapVertices(ref SortVertices[1], ref SortVertices[2]);
+            if (SortVertices[0].Y > SortVertices[1].Y) SwapVertices(ref SortVertices[0], ref SortVertices[1]);
 
-            TopVertex = SortVertices[2];
-            CentralVertex = SortVertices[1];
-            BottomVertex = SortVertices[0];
+            TriVertex TopVertex = SortVertices[2];
+            TriVertex CentralVertex = SortVertices[1];
+            TriVertex BottomVertex = SortVertices[0];
 
             // now make sure leftmost vertex in in first array item
-            for (int I = 0; I < 2; I++)
-            {
-                for (int J = I + 1; J < 3; J++)
-                {
-                    if (SortVertices[I].X > SortVertices[J].X)
-                        SwapVertices(ref SortVertices[I], ref SortVertices[J]);
-                }
-            }
+            if (SortVertices[0].X > SortVertices[1].X) SwapVertices(ref SortVertices[0], ref SortVertices[1]);
+            if (SortVertices[1].X > SortVertices[2].X) SwapVertices(ref SortVertices[1], ref SortVertices[2]);
+            if (SortVertices[0].X > SortVertices[1].X) SwapVertices(ref SortVertices[0], ref SortVertices[1]);
 
-            LeftMostVertex = SortVertices[0];
-            RightMostVertex = SortVertices[2];
+            TriVertex LeftMostVertex = SortVertices[0];
+            TriVertex RightMostVertex = SortVertices[2];
 
             // Are top or bottom vertices coincident with the middle vertex
-            BottomPieceOnly = Math.Abs(TopVertex.Y - CentralVertex.Y) < 0.0001;
-            TopPieceOnly = Math.Abs(BottomVertex.Y - CentralVertex.Y) < 0.0001;
+            bool BottomPieceOnly = Math.Abs(TopVertex.Y - CentralVertex.Y) < 0.0001;
+            bool TopPieceOnly = Math.Abs(BottomVertex.Y - CentralVertex.Y) < 0.0001;
 
             if (TopPieceOnly && BottomPieceOnly) // It's a thin horizontal triangle
             {
-                ProcessTrianglePiece(LeftMostVertex, RightMostVertex, CentralVertex, true);
+                ProcessTrianglePiece(tree, Tri, leafSatisfied, includeTriangleInLeaf, LeftMostVertex, RightMostVertex, CentralVertex, true);
             }
             else
             {
@@ -531,14 +488,14 @@ namespace VSS.Velociraptor.DesignProfiling
                     // Divide triangle in two with a hort line
                     // Find intersection point of triangle edge between top most and bottom most vertice
                     if (LineIntersection.LinesIntersect(LeftMostVertex.X - 1, CentralVertex.Y,
-                                      RightMostVertex.X + 1, CentralVertex.Y,
-                                      TopVertex.X, TopVertex.Y,
-                                      BottomVertex.X, BottomVertex.Y,
-                                      out IntersectX, out IntersectY, true, out LinesAreCoLinear))
+                                                        RightMostVertex.X + 1, CentralVertex.Y,
+                                                        TopVertex.X, TopVertex.Y,
+                                                        BottomVertex.X, BottomVertex.Y,
+                                                        out double IntersectX, out double IntersectY, true, out _))
                     {
                         IntersectionVertex.XYZ = new XYZ(IntersectX, IntersectY, 0);
-                        ProcessTrianglePiece(CentralVertex, IntersectionVertex, TopVertex, false);
-                        ProcessTrianglePiece(CentralVertex, IntersectionVertex, BottomVertex, false);
+                        ProcessTrianglePiece(tree, Tri, leafSatisfied, includeTriangleInLeaf, CentralVertex, IntersectionVertex, TopVertex, false);
+                        ProcessTrianglePiece(tree, Tri, leafSatisfied, includeTriangleInLeaf, CentralVertex, IntersectionVertex, BottomVertex, false);
                     }
                     else
                     {
@@ -550,20 +507,24 @@ namespace VSS.Velociraptor.DesignProfiling
                 else
                 {
                     if (TopPieceOnly)
-                        ProcessTrianglePiece(BottomVertex, CentralVertex, TopVertex, false);
+                    {
+                        ProcessTrianglePiece(tree, Tri, leafSatisfied, includeTriangleInLeaf, BottomVertex, CentralVertex, TopVertex, false);
+                    }
                     else // BottomPieceOnly
-                        ProcessTrianglePiece(TopVertex, CentralVertex, BottomVertex, false);
+                    {
+                        ProcessTrianglePiece(tree, Tri, leafSatisfied, includeTriangleInLeaf, TopVertex, CentralVertex, BottomVertex, false);
+                    }
                 }
             }
         }
 
         public override bool ComputeFilterPatch(object DesignSearchContext,
-                                  double StartStn, double EndStn, double LeftOffset, double RightOffset,
-                                  SubGridTreeBitmapSubGridBits Mask,
-                                  ref SubGridTreeBitmapSubGridBits Patch,
-                                  double OriginX, double OriginY,
-                                  double CellSize,
-                                  DesignDescriptor DesignDescriptor)
+                                                double StartStn, double EndStn, double LeftOffset, double RightOffset,
+                                                SubGridTreeBitmapSubGridBits Mask,
+                                                ref SubGridTreeBitmapSubGridBits Patch,
+                                                double OriginX, double OriginY,
+                                                double CellSize,
+                                                DesignDescriptor DesignDescriptor)
         {
             float[,] Heights = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
@@ -593,7 +554,11 @@ namespace VSS.Velociraptor.DesignProfiling
             }
         }
 
-        protected bool ConstructSubgridIndex()//(string SubgridIndexFileName)
+        /// <summary>
+        /// Constructs the Subgrid existance map for the design
+        /// </summary>
+        /// <returns></returns>
+        protected bool ConstructSubgridIndex()
         {
             // Read through all the triangles in the model and, for each triangle,
             // determine which subgrids intersect it and set the appropriate bits in the
@@ -602,15 +567,17 @@ namespace VSS.Velociraptor.DesignProfiling
             {
                 // TODO Readd when logging available
                 //SIGLogMessage.PublishNoODS(Self, Format('In: Constructing subgrid index for design %s containing %d triangles', [SubgridIndexFileName, FData.Triangles.Count]), slmcMessage);
-                TriVertex IntersectionVertex = new TriVertex(0, 0, 0);
 
                 try
                 {
                     foreach (Triangle tri in FData.Triangles)
                     {
-                        ScanCellsOverTriangle(tri,
-                            (H1, H2, V, SingleRowOnly) => AddTrianglePieceToSubgridIndex(H1, H2, V, SingleRowOnly),
-                            IntersectionVertex);
+                        ScanCellsOverTriangle(FSubgridIndex, 
+                                              tri,
+                                              (tree, x, y) => (tree as SubGridTreeSubGridExistenceBitMask)[x, y],
+                                              (tree, x, y, t) => (tree as SubGridTreeSubGridExistenceBitMask)[x, y] = true,
+                                              (Index, leafSatisfied, includeTriangle, T, H1, H2, V, SingleRowOnly) => AddTrianglePieceToSubgridIndex(Index, leafSatisfied, includeTriangle, T, H1, H2, V, SingleRowOnly),
+                                              new TriVertex(0, 0, 0));
                     }
                 }
                 finally
@@ -628,10 +595,13 @@ namespace VSS.Velociraptor.DesignProfiling
             }
         }
 
+        /// <summary>
+        /// Constructor for a TTMDesign that takes the underlying cell size for the site model that will be used when interpolating heights from the design surface
+        /// </summary>
+        /// <param name="ACellSize"></param>
         public TTMDesign(double ACellSize) : base()
         {
             FData = new TrimbleTINModel();
-            // FIndex = TDQMTTMQuadTree.Create;
             FCellSize = ACellSize;
 
             // Create a subgrid tree bit mask index that holds one bit per on-the-ground
@@ -640,8 +610,21 @@ namespace VSS.Velociraptor.DesignProfiling
             {
                 CellSize = SubGridTree.SubGridTreeDimension * ACellSize
             };
+
+            // Create a subgrid tree spatial index for triangles in the TTM
+            FSpatialIndex = new GenericSubGridTree<List<Triangle>>(SubGridTree.SubGridTreeLevels - 1, SubGridTree.SubGridTreeDimension * ACellSize)
+            {
+                CellSize = SubGridTree.SubGridTreeDimension * ACellSize
+            };
         }
 
+        /// <summary>
+        /// Retrieves the ground extents of the TTM design 
+        /// </summary>
+        /// <param name="x1"></param>
+        /// <param name="y1"></param>
+        /// <param name="x2"></param>
+        /// <param name="y2"></param>
         public override void GetExtents(out double x1, out double y1, out double x2, out double y2)
         {
             x1 = FData.Header.MinimumEasting;
@@ -650,6 +633,11 @@ namespace VSS.Velociraptor.DesignProfiling
             y2 = FData.Header.MaximumNorthing;
         }
 
+        /// <summary>
+        /// Retrieves the elevation range of the vertices in the TTm design surface
+        /// </summary>
+        /// <param name="z1"></param>
+        /// <param name="z2"></param>
         public override void GetHeightRange(out double z1, out double z2)
         {
             if (FMinHeight == Consts.NullReal || FMaxHeight == Consts.NullReal) // better calculate them
@@ -673,7 +661,7 @@ namespace VSS.Velociraptor.DesignProfiling
             begin
               Result = -1;
             try
-    Result = TTrimbleTINModel.MemorySizeInKB(FileName) + (BA_AllocationSize(FIndex.BAtree) div 1024);
+    Result = TTrimbleTINModel.MemorySizeInKB(FileName) + (BA_AllocationSize(FSpatialIndex.BAtree) div 1024);
             // debug LogWarnToRaptorLog(Format('Full Est%d',[Result]));
 
             except
@@ -695,118 +683,106 @@ namespace VSS.Velociraptor.DesignProfiling
 
         public override bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubgridY) => false;
 
+        /// <summary>
+        /// Interpolates a single spot height fromn the design
+        /// </summary>
+        /// <param name="DesignSearchContext"></param>
+        /// <param name="Hint"></param>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="Offset"></param>
+        /// <param name="Z"></param>
+        /// <returns></returns>
         public override bool InterpolateHeight(object DesignSearchContext,
-                                   ref object Hint,
-                                   double X, double Y,
-                                   double Offset,
-                                   out double Z)
+                                               ref object Hint,
+                                               double X, double Y,
+                                               double Offset,
+                                               out double Z)
         {
             if (Hint != null)
             {
-                Z = (Hint as Triangle).GetHeight(X, Y);
+                Triangle hintAsTriangle = (Hint as Triangle);
+
+                Z = hintAsTriangle.GetHeight(X, Y);
                 if (Z != Consts.NullReal)
                 {
                     Z += Offset;
                     return true;
                 }
+
+                Hint = null;
+
+                // Try to see if any of the neigbours of hint will give a result
+                for (int side = 0; side < 3; side++)
+                {
+                    if (hintAsTriangle.Neighbours[side] != null)
+                    {
+                        Z = (hintAsTriangle.Neighbours[side]).GetHeight(X, Y);
+                        if (Z != Consts.NullReal)
+                        {
+                            Hint = hintAsTriangle.Neighbours[side];
+                            Z += Offset;
+                            return true;
+                        }
+                    }
+                }
+
             }
 
             // Get the interpolated height for the triangle (very slow without an index)
-            // A spatial index will need to be established...
-            Hint = FData.GetTriangleAtPoint(X, Y, out Z);
 
-            if (Z != Consts.NullReal)
+            // Search in the subgrid triangle list for this subgrid from the spatial index
+            Z = Consts.NullReal;
+
+            FSpatialIndex.CalculateIndexOfCellContainingPosition(X, Y, out uint CellX, out uint CellY);
+            GenericLeafSubGrid<List<Triangle>> leaf = FSpatialIndex.LocateSubGridContaining(CellX, CellY) as GenericLeafSubGrid<List<Triangle>>;
+
+            if (leaf == null)
             {
-                Z += Offset;
-                return true;
+                // There are no triangles that can satisfy the query
+                return false;
+            }
+
+            leaf.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
+            List<Triangle> cell = leaf.Items[SubGridX, SubGridY];
+
+            if (cell == null)
+            {
+                // There are no triangles that can satisfy the query
+                return false;
+            }
+            
+            // Search the triangles in the leaf to locate the one to interpolate height from
+            foreach (Triangle tri in cell)
+            {
+                Z = tri.GetHeight(X, Y);
+
+                if (Z != Consts.NullReal)
+                {
+                    Hint = tri;
+                    Z += Offset;
+                    return true;
+                }
             }
 
             return false; 
-
-            /* Legacy implementation utilizing a quadtree index
-             SearchState : Search_state_rec;
-                        what: entity_type;
-                        edata: TDQMEntityBase;
-                        eindex: longint;
-                        IterationCount: Integer;
-                        IterationMax: Integer;
-
-                        begin
-                            if Assigned(Hint) then
-                begin
-                                Z = TTriangle(Hint).GetHeight(X, Y);
-                        if Z <> kTTM_NullReal then
-                          begin
-                                    if OffSet <> 0 then
-                        Z = Z + OffSet;
-                        Result = True;
-                        Exit;
-                        end;
-                        end;
-
-                        IterationMax = VLPDSvcLocations.DesignProfiler_MaxTrianglesToScanInSpatialSearchForHeightInterpolation;
-                        IterationCount = 0;
-
-                        with DesignSearchContext as TDQMTTMQuadTree do
-                            begin
-                              MapView = Nil;
-
-
-                            start_search(x - 0.1, y - 0.1, x + 0.1, y + 0.1,
-                                         search_triangles, 0, True, SearchState);
-                        while next_entity(SearchState, what, eindex, edata) do
-                                begin
-                                  Hint = FData.Triangles[TDQMTriangleEty(edata).application_info];
-
-
-                            Inc(IterationCount);
-
-                        if IterationCount >= IterationMax then
-                          begin
-                                        if IterationCount = IterationMax then
-                                         if VLPDSvcLocations.Debug_ExtremeLogSwitchK then
-                                            SIGLogMessage.PublishNoODS(Self, Format('Elevation interpolation at %.3f, %.3f in model %s has failed to find triangle after %d candidates examined',
-                                                                    [x, y, FData.ModelName, IterationMax]), slmcDebug)
-                                        else
-                            begin
-                                         if VLPDSvcLocations.Debug_ExtremeLogSwitchK then
-                                            SIGLogMessage.PublishNoODS(Self, Format('Elevation interpolation now @ triangle index %d, centroid = %s',
-                                                                      [TDQMTriangleEty(edata).application_info, TTriangle(Hint).Centroid.ToString]), slmcDebug);
-
-                        if IterationCount > IterationMax + 10 then
-                          begin
-                                                if VLPDSvcLocations.Debug_ExtremeLogSwitchK then
-                                                   SIGLogMessage.PublishNoODS(Self, Format('Elevation interpolation at %.3f, %.3f in model %s being abandoned as no clear solution',
-                                                                          [x, y, FData.ModelName]), slmcDebug);
-                        Result = False;
-                        Z = NullReal;
-                        Exit;
-                        end;
-                        end;
-                        end;
-
-                        Z = TTriangle(Hint).GetHeight(X, Y);
-                        if Z <> kTTM_NullReal then
-                          begin
-                                        if OffSet <> 0 then
-                            Z = Z + OffSet;
-                        Result = True;
-                        Exit;
-                        end;
-                        end;
-                        end;
-
-                        Result = False;
-                        Z = NullReal;
-                        end;
-            */
         }
 
+        /// <summary>
+        /// Interpolates heights from the design for all the cells in a subgrid
+        /// </summary>
+        /// <param name="DesignSearchContext"></param>
+        /// <param name="Patch"></param>
+        /// <param name="OriginX"></param>
+        /// <param name="OriginY"></param>
+        /// <param name="CellSize"></param>
+        /// <param name="Offset"></param>
+        /// <returns></returns>
         public override bool InterpolateHeights(object DesignSearchContext,
-                                   float[,] Patch, // [TICSubGridCellPassData_HeightPtr] The receiver of the patch of elevations
-                                   double OriginX, double OriginY,
-                                   double CellSize,
-                                   double Offset)
+                                                float[,] Patch, 
+                                                double OriginX, double OriginY,
+                                                double CellSize,
+                                                double Offset)
         {
             int ValueCount = 0;
             object Hint = null;
@@ -846,94 +822,76 @@ namespace VSS.Velociraptor.DesignProfiling
 
                 return false;
             }
-            /* Old implementation
-                        var
-                          SearchState : Search_state_rec;
-                        what: entity_type;
-                        edata: TDQMEntityBase;
-                        eindex: longint;
-                        Triangle: TTriangle;
-                        P: TProcessTrianglePiece;
-                        IntersectionVertex: TTriVertex;
-                        ValueCount: Integer;
-
-                        Hint: TObject;
-                        I, J: Integer;
-                        CellSizeTimesI: Double;
-                        HalfCellSize: Double;
-                        OriginXPlusHalfCellSize: Double;
-                        OriginYPlusHalfCellSize: Double;
-                        Z: Double;
-                        begin
-                          Result = False;
-
-                        try
-                ValueCount = 0;
-
-                        // Iterate through the triangles scanning the cells positions that overlay each one
-                        // and compute the spot elevations into Patch2
-                        IntersectionVertex = TTriVertex.Create(0, 0, 0);
-                        try
-                  with DesignSearchContext as TDQMTTMQuadTree do
-                            begin
-                                  if VLPDSvcLocations.UsePerCellHeightInterpolationForSubgridElevationPatchCalculation then
-                        begin
-                                      Hint = Nil;
-                        HalfCellSize = CellSize / 2;
-                        OriginXPlusHalfCellSize = OriginX + HalfCellSize;
-                        OriginYPlusHalfCellSize = OriginY + HalfCellSize;
-
-                        for I = 0 to kSubGridTreeDimension - 1 do
-                                begin
-                                  CellSizeTimesI = CellSize * I;
-                              for J = 0 to kSubGridTreeDimension - 1 do
-                                if InterpolateHeight(DesignSearchContext, Hint,
-                                                     OriginXPlusHalfCellSize + CellSizeTimesI,
-                                                     OriginYPlusHalfCellSize + (CellSize * J),
-                                                     0, z) then
-                                  begin
-                                    Patch[I, J] = Z + Offset;
-                        Inc(ValueCount);
-                        end
-                                            else
-                                  Patch[I, J] = kICNullHeight;
-                        end
-                    end
-
-                      else
-                        begin
-                          MapView = Nil;
-                        start_search(OriginX, OriginY,
-                                     OriginX + kSubGridTreeDimension * CellSize, OriginY + kSubGridTreeDimension * CellSize,
-                                     search_triangles, 0, True, SearchState);
-                        while next_entity(SearchState, what, eindex, edata) do
-                                begin
-                                  P = Procedure(H1, H2, V: TTriVertex; SingleRowOnly : Boolean)
-                                   begin
-                                                 AddTrianglePieceToElevationPatch(H1, H2, V, Triangle, SingleRowOnly, OriginX, OriginY, CellSize, Patch, OffSet, ValueCount);
-                        end;
-
-                        Triangle = FData.Triangles[TDQMTriangleEty(edata).application_info];
-                        ScanCellsOverTriangle(Triangle, P, IntersectionVertex);
-                        end;
-                        end;
-
-                        end;
-                finally
-                  IntersectionVertex.Free;
-                        end;
-
-                        Result = ValueCount > 0;
-                        except
-                          on E: Exception do
-                            SIGLogMessage.PublishNoODS(Self, Format('Exception "%s" occurred in TTTMDesign.InterpolateHeights', [E.Message]), slmcException);
-
-
-                       end;
-                        end;
-            */
         }
 
+        /// <summary>
+        /// Includes a triangle into the list of triangles that intersect the extent of a subgrid
+        /// </summary>
+        /// <param name="tree"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="tri"></param>
+        private void IncludeTriangleInSubGridTreeIndex(GenericSubGridTree<List<Triangle>> tree, uint x, uint y, Triangle tri)
+        {
+            // Get subgrid from tree, creating the path and leaf ic necessary
+            GenericLeafSubGrid<List<Triangle>> leaf = tree.ConstructPathToCell(x, y, VisionLink.Raptor.SubGridTrees.Types.SubGridPathConstructionType.CreateLeaf) as GenericLeafSubGrid<List<Triangle>>;
+
+            leaf.GetSubGridCellIndex(x, y, out byte SubGridX, out byte SubGridY);
+
+            // Get the list of triangles for the given cell
+            List<Triangle> triangles = leaf.Items[SubGridX, SubGridY];
+
+            // If there are none already create the list and assign it to the cell
+            if (triangles == null)
+            {
+                triangles = new List<Triangle>();
+                leaf.Items[SubGridX, SubGridY] = triangles;
+            }
+
+            // Add the triangle to the cell
+            triangles.Add(tri);
+        }
+
+        private bool ConstructSpatialIndex()
+        {
+            // Read through all the triangles in the model and, for each triangle,
+            // determine which subgrids in the index intersect it and add it to those subgrids
+            try
+            {
+                // TODO Readd when logging available
+                //SIGLogMessage.PublishNoODS(Self, Format('In: Constructing subgrid index for design %s containing %d triangles', [SubgridIndexFileName, FData.Triangles.Count]), slmcMessage);
+                try
+                {
+                    foreach (Triangle tri in FData.Triangles)
+                    {
+                        ScanCellsOverTriangle(FSpatialIndex,
+                                              tri,
+                                              (tree, x, y) => false,
+                                              (tree, x, y, t) => IncludeTriangleInSubGridTreeIndex(tree as GenericSubGridTree<List<Triangle>>, x, y, t),
+                                              (Index, leafSatisfied, includeTriangle, T, H1, H2, V, SingleRowOnly) => AddTrianglePieceToSubgridIndex(Index, leafSatisfied, includeTriangle, T, H1, H2, V, SingleRowOnly),
+                                              new TriVertex(0, 0, 0));
+                    }
+                }
+                finally
+                {
+                    //SIGLogMessage.PublishNoODS(Self, Format('Out: Constructing subgrid index for design %s containing %d triangles', [SubgridIndexFileName, FData.Triangles.Count]), slmcMessage);
+                }
+
+                return true;
+            }
+            catch (Exception E)
+            {
+                // TODO readd when logging available
+                //  SIGLogMessage.PublishNoODS(Self, Format('Exception in TTTMDesign.ConstructSubgridIndex: %s', [E.Message]), slmcException);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Loads the TTM design from a TTM file, along with the subgrid existance map file if it exists (created otherwise)
+        /// </summary>
+        /// <param name="FileName"></param>
+        /// <returns></returns>
         public override DesignLoadResult LoadFromFile(string FileName)
         {
             try
@@ -943,7 +901,8 @@ namespace VSS.Velociraptor.DesignProfiling
                 FMinHeight = Consts.NullReal;
                 FMaxHeight = Consts.NullReal;
 
-                // FIndex.Initialise(FData, False);
+                // Build the subgrid tree based spatial index
+                ConstructSpatialIndex();
 
                 if (!LoadSubgridIndexFile(FileName + Consts.kDesignSubgridIndexFileExt))
                 {
@@ -969,7 +928,11 @@ namespace VSS.Velociraptor.DesignProfiling
             }
         }
 
-
+        /// <summary>
+        /// Loads the subgrid existence map from a file
+        /// </summary>
+        /// <param name="SubgridIndexFileName"></param>
+        /// <returns></returns>
         protected bool LoadSubgridIndex(string SubgridIndexFileName)
         {
             try
@@ -991,13 +954,18 @@ namespace VSS.Velociraptor.DesignProfiling
             }
             catch // (Exception E)
             {
-                // Readd when loggin available
+                // Readd when logging available
                 // SIGLogMessage.PublishNoODS(Self, Format('Exception ''%s'' in %s.LoadSubgridIndex', [E.Message, Self.ClassName]), slmcException);
 
                 return false;
             }
         }
 
+        /// <summary>
+        /// Loads a subgrid existence map for the design from a file
+        /// </summary>
+        /// <param name="SubgridIndexFileName"></param>
+        /// <returns></returns>
         protected bool LoadSubgridIndexFile(string SubgridIndexFileName)
         {
             // TODO Readd when logging available
@@ -1032,6 +1000,11 @@ namespace VSS.Velociraptor.DesignProfiling
             return Result;
         }
 
+        /// <summary>
+        /// Daves a subgrid existence map for the design to a file
+        /// </summary>
+        /// <param name="SubgridIndexFileName"></param>
+        /// <returns></returns>
         protected bool SaveSubgridIndex(string SubgridIndexFileName)
         {
             bool Result = false;
@@ -1081,12 +1054,16 @@ namespace VSS.Velociraptor.DesignProfiling
             return Result;
         }
 
-        private bool SubGridIntersectsTriangle(BoundingWorldExtent3D Extents,
-        TriVertex H1, TriVertex H2, TriVertex V)
+        /// <summary>
+        /// Determines if the bounds of a subgrid intersects a given triangle
+        /// </summary>
+        /// <param name="Extents"></param>
+        /// <param name="H1"></param>
+        /// <param name="H2"></param>
+        /// <param name="V"></param>
+        /// <returns></returns>
+        private bool SubGridIntersectsTriangle(BoundingWorldExtent3D Extents, TriVertex H1, TriVertex H2, TriVertex V)
         {
-            bool LinesAreCoincident;
-            double IntX, IntY;
-
             // If any of the triangle vertices are in the cell extents then 'yes'
             if (Extents.Includes(H1.X, H1.Y) || Extents.Includes(H2.X, H2.Y) || Extents.Includes(V.X, V.Y))
             {
@@ -1109,19 +1086,20 @@ namespace VSS.Velociraptor.DesignProfiling
             }
 
             // If any of the extent and triangle lines intersect then also 'yes'
-            //    with Extents do
-            if ((LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MaxX, Extents.MinY, H1.X, H1.Y, H2.X, H2.Y, out IntX, out IntY, false, out LinesAreCoincident) ||
-                 LineIntersection.LinesIntersect(Extents.MaxX, Extents.MinY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, H2.X, H2.Y, out IntX, out IntY, false, out LinesAreCoincident) ||
-                 LineIntersection.LinesIntersect(Extents.MinX, Extents.MaxY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, H2.X, H2.Y, out IntX, out IntY, false, out LinesAreCoincident) ||
-                 LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MinX, Extents.MaxY, H1.X, H1.Y, H2.X, H2.Y, out IntX, out IntY, false, out LinesAreCoincident)) ||
-                (LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MaxX, Extents.MinY, H1.X, H1.Y, V.X, V.Y, out IntX, out IntY, false, out LinesAreCoincident) ||
-                 LineIntersection.LinesIntersect(Extents.MaxX, Extents.MinY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, V.X, V.Y, out IntX, out IntY, false, out LinesAreCoincident) ||
-                 LineIntersection.LinesIntersect(Extents.MinX, Extents.MaxY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, V.X, V.Y, out IntX, out IntY, false, out LinesAreCoincident) ||
-                 LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MinX, Extents.MaxY, H1.X, H1.Y, V.X, V.Y, out IntX, out IntY, false, out LinesAreCoincident)) ||
-                (LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MaxX, Extents.MinY, V.X, V.Y, H2.X, H2.Y, out IntX, out IntY, false, out LinesAreCoincident) ||
-                 LineIntersection.LinesIntersect(Extents.MaxX, Extents.MinY, Extents.MaxX, Extents.MaxY, V.X, V.Y, H2.X, H2.Y, out IntX, out IntY, false, out LinesAreCoincident) ||
-                 LineIntersection.LinesIntersect(Extents.MinX, Extents.MaxY, Extents.MaxX, Extents.MaxY, V.X, V.Y, H2.X, H2.Y, out IntX, out IntY, false, out LinesAreCoincident) ||
-                 LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MinX, Extents.MaxY, V.X, V.Y, H2.X, H2.Y, out IntX, out IntY, false, out LinesAreCoincident)))
+            if (LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MaxX, Extents.MinY, H1.X, H1.Y, H2.X, H2.Y, out _, out _, false, out _) ||
+                LineIntersection.LinesIntersect(Extents.MaxX, Extents.MinY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, H2.X, H2.Y, out _, out _, false, out _) ||
+                LineIntersection.LinesIntersect(Extents.MinX, Extents.MaxY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, H2.X, H2.Y, out _, out _, false, out _) ||
+                LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MinX, Extents.MaxY, H1.X, H1.Y, H2.X, H2.Y, out _, out _, false, out _) ||
+
+                LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MaxX, Extents.MinY, H1.X, H1.Y, V.X, V.Y, out _, out _, false, out _) ||
+                LineIntersection.LinesIntersect(Extents.MaxX, Extents.MinY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, V.X, V.Y, out _, out _, false, out _) ||
+                LineIntersection.LinesIntersect(Extents.MinX, Extents.MaxY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, V.X, V.Y, out _, out _, false, out _) ||
+                LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MinX, Extents.MaxY, H1.X, H1.Y, V.X, V.Y, out _, out _, false, out _) ||
+
+                LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MaxX, Extents.MinY, V.X, V.Y, H2.X, H2.Y, out _, out _, false, out _) ||
+                LineIntersection.LinesIntersect(Extents.MaxX, Extents.MinY, Extents.MaxX, Extents.MaxY, V.X, V.Y, H2.X, H2.Y, out _, out _, false, out _) ||
+                LineIntersection.LinesIntersect(Extents.MinX, Extents.MaxY, Extents.MaxX, Extents.MaxY, V.X, V.Y, H2.X, H2.Y, out _, out _, false, out _) ||
+                LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MinX, Extents.MaxY, V.X, V.Y, H2.X, H2.Y, out _, out _, false, out _))
             {
                 return true;
             };
@@ -1130,6 +1108,10 @@ namespace VSS.Velociraptor.DesignProfiling
             return false;
         }
 
+        /// <summary>
+        /// A reference to the internal subgrid existence map for the design
+        /// </summary>
+        /// <returns></returns>
         public override SubGridTreeSubGridExistenceBitMask SubgridOverlayIndex() => FSubgridIndex;
     }
 }

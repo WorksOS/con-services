@@ -196,15 +196,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
                                                                     analyser.ProdDataMask, 
                                                                     analyser.SurveydSurfaceOnlyMask, 
                                                                     FilterSet);
-
-            try
-            {
-                gridFabricRequest.Execute();
-            }
-            catch //(Exception E)
-            {
-                throw;
-            }
+            gridFabricRequest.Execute();
 
             return true;
         }
