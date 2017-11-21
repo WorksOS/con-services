@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raptor.Common", "Raptor.Com
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorIgniteTest", "WindowsFormsApplication1\RaptorIgniteTest.csproj", "{BEAD32E3-AB58-4A6D-9D6F-65BD623E760A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorServerApplication", "RaptorServerApplication\RaptorServerApplication.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorTileServer", "RaptorServerApplication\RaptorTileServer.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorPSNodeServer", "RaptorPSNodeServer\RaptorPSNodeServer.csproj", "{52BDC39B-A978-454B-8725-A0A887A263E3}"
 EndProject
