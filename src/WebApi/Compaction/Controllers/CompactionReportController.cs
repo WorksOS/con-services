@@ -89,7 +89,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Gets a tile representing the requested types of data overlayed. Types can be any or all of the following: a base map, production data, project boundary, DXF linework, alignments and geofences.
+    /// Gets a tile representing the requested types of data overlayed. 
+    /// Types can be any or all of the following: a base map, production data, project boundary, DXF linework, alignments and geofences.
     /// </summary>
     /// <param name="overlays">The types of data to be overlayed</param>
     /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
@@ -130,7 +131,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     /// <summary>
     /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
-    /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as elevation, compaction, temperature, cut/fill, volumes etc
+    /// Gets a tile representing the requested types of data overlayed. 
+    /// Types can be any or all of the following: a base map, production data, project boundary, DXF linework, alignments and geofences.
     /// </summary>
     /// <param name="overlays">The types of data to be overlayed</param>
     /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
@@ -213,6 +215,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetGeofences(geofences)
         .SetAlignmentDescriptors(alignmentDescriptors)
         .SetDxfFiles(dxfFiles)
+        .SetProject(project)
         .CreateTileGenerationRequest(overlays, width, height, mapType, mode, userPreferences.Language);
 
       request.Validate();

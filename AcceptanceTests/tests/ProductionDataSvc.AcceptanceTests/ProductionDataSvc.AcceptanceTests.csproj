@@ -370,6 +370,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Profile.feature</DependentUpon>
     </Compile>
+    <Compile Include="ReportTile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportTile.feature</DependentUpon>
+    </Compile>
     <Compile Include="StepDefinitions\BaseCompactionSteps.cs" />
     <Compile Include="StepDefinitions\CcaColorPaletteSteps.cs" />
     <Compile Include="StepDefinitions\CCASummarySteps.cs" />
@@ -408,6 +413,7 @@
     <Compile Include="StepDefinitions\ProjectSettingsSteps.cs" />
     <Compile Include="StepDefinitions\ProjectStatisticsSteps.cs" />
     <Compile Include="StepDefinitions\RaptorConfigSteps.cs" />
+    <Compile Include="StepDefinitions\ReportTileSteps.cs" />
     <Compile Include="StepDefinitions\SummarySpeedSteps.cs" />
     <Compile Include="StepDefinitions\SummaryThicknessSteps.cs" />
     <Compile Include="StepDefinitions\SummaryVolumesSteps.cs" />
@@ -648,6 +654,10 @@
     <None Include="ProjectStatistics.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ProjectStatistics.feature.cs</LastGenOutput>
+    </None>
+    <None Include="ReportTile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ReportTile.feature.cs</LastGenOutput>
     </None>
     <None Include="SummarySpeed.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
