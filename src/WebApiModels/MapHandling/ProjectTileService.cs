@@ -8,7 +8,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   /// <summary>
   /// Provides project boundary tile functionality for reports
   /// </summary>
-  public class ProjectTileService
+  public class ProjectTileService : IProjectTileService
   {
     private readonly ILogger log;
     private readonly ILoggerFactory logger;

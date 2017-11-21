@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           minLat = filterPoints.Min(p => p.Lat),
           minLng = filterPoints.Min(p => p.Lon),
           maxLat = filterPoints.Max(p => p.Lat),
-          maxLng = filterPoints.Min(p => p.Lon)
+          maxLng = filterPoints.Max(p => p.Lon)
         };
       }
       else
@@ -132,26 +132,36 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns></returns>
     private CoordinateConversionResult GetProductionDataExtents(long projectId, Filter filter)
     {
-      ProjectStatisticsRequest statsRequest = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, filter?.SurveyedSurfaceExclusionList?.ToArray());
-      var statsResult =
-        RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
-          .Process(statsRequest) as ProjectStatisticsResult;
-
-      if (statsResult.Code == ContractExecutionStatesEnum.ExecutedSuccessfully)
+      ProjectStatisticsResult statsResult = null;
+      try
       {
-        var coordList = new List<TwoDConversionCoordinate>
-        {
-          TwoDConversionCoordinate.CreateTwoDConversionCoordinate(statsResult.extents.minX, statsResult.extents.minY),
-          TwoDConversionCoordinate.CreateTwoDConversionCoordinate(statsResult.extents.maxX, statsResult.extents.maxY)
-        };
-
-        var coordRequest = CoordinateConversionRequest.CreateCoordinateConversionRequest(projectId,
-          TwoDCoordinateConversionType.NorthEastToLatLon, coordList.ToArray());
-        var coordResult = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger, raptorClient)
-          .Process(coordRequest) as CoordinateConversionResult;
-        return coordResult;
+        ProjectStatisticsRequest statsRequest =
+          ProjectStatisticsRequest.CreateStatisticsParameters(projectId,
+            filter?.SurveyedSurfaceExclusionList?.ToArray());
+        statsResult =
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
+            .Process(statsRequest) as ProjectStatisticsResult;
       }
-      return null;
+      catch (ServiceException se)
+      {
+        if (se.Code == HttpStatusCode.BadRequest && se.GetResult.Code == ContractExecutionStatesEnum.FailedToGetResults)
+        {
+          return null;
+        }
+        throw;
+      }
+
+      var coordList = new List<TwoDConversionCoordinate>
+      {
+        TwoDConversionCoordinate.CreateTwoDConversionCoordinate(statsResult.extents.minX, statsResult.extents.minY),
+        TwoDConversionCoordinate.CreateTwoDConversionCoordinate(statsResult.extents.maxX, statsResult.extents.maxY)
+      };
+
+      var coordRequest = CoordinateConversionRequest.CreateCoordinateConversionRequest(projectId,
+        TwoDCoordinateConversionType.NorthEastToLatLon, coordList.ToArray());
+      var coordResult = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger, raptorClient)
+        .Process(coordRequest) as CoordinateConversionResult;
+      return coordResult;   
     }
 
     /// <summary>
@@ -178,7 +188,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     }
 
     /// <summary>
-    /// Gets a list of points representing thye design surface boundary
+    /// Gets a list of points representing the design surface boundary
     /// </summary>
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="designDescriptor">The design ro get the boundary of</param>

@@ -89,6 +89,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <summary>
     /// Calculates the zoom level from the bounding box
     /// </summary>
+    /// <param name="deltaLat">The height (maximum latitude - minimum latitude) of the bounding box in radians</param>
+    /// <param name="deltaLng">The width (maximum longitude - minimum longitude) of the bounding box in radians</param>
     /// <returns>The zoom level</returns>
     public static int CalculateZoomLevel(double deltaLat, double deltaLng)
     {

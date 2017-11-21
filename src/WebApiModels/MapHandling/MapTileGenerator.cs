@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.MapHandling;
@@ -52,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       MapBoundingBox bbox = boundingBoxService.GetBoundingBox(request.project, request.filter, request.mode, request.baseFilter, request.topFilter);
 
-      int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
+      int zoomLevel = TileServiceUtils.CalculateZoomLevel((bbox.maxLat - bbox.minLat).LatDegreesToRadians(), (bbox.maxLng - bbox.minLng).LonDegreesToRadians());
       int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
       var pixelTopLeft = WebMercatorProjection.LatLngToPixel(new Point(bbox.maxLat, bbox.minLng), numTiles);
 
@@ -73,20 +74,37 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       if (request.overlays.Contains(TileOverlayType.ProductionData))
       {
         log.LogInformation("GetProductionDataTile");
-        BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(bbox.minLng, bbox.minLat, bbox.maxLng, bbox.maxLat);
+        BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(bbox.minLng.LonDegreesToRadians(), bbox.minLat.LatDegreesToRadians(), bbox.maxLng.LonDegreesToRadians(), bbox.maxLat.LatDegreesToRadians());
         var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.filter, request.project.projectId,
           request.mode.Value, (ushort)request.width, (ushort)request.height, prodDataBox, request.designDescriptor, request.baseFilter, 
           request.topFilter, request.designDescriptor, null);//custom headers not used
         tileList.Add(tileResult.TileData);
       }
       if (request.overlays.Contains(TileOverlayType.ProjectBoundary))
-        tileList.Add(projectTileService.GetProjectBitmap(parameters, request.project));
+      {
+        var projectBitmap = projectTileService.GetProjectBitmap(parameters, request.project);
+        if (projectBitmap != null)
+          tileList.Add(projectBitmap);
+      }
       if (request.overlays.Contains(TileOverlayType.Geofences))
-        tileList.Add(geofenceTileService.GetSitesBitmap(parameters, request.geofences));
+      {
+        var geofencesBitmap = geofenceTileService.GetSitesBitmap(parameters, request.geofences);
+        if (geofencesBitmap != null)
+          tileList.Add(geofencesBitmap);
+      }
       if (request.overlays.Contains(TileOverlayType.Alignments))
-        tileList.Add(alignmentTileService.GetAlignmentsBitmap(parameters, request.project.projectId, request.alignmentDescriptors));
+      {
+        var alignmentsBitmap = alignmentTileService.GetAlignmentsBitmap(parameters, request.project.projectId,
+          request.alignmentDescriptors);
+        if (alignmentsBitmap != null)
+          tileList.Add(alignmentsBitmap);
+      }
       if (request.overlays.Contains(TileOverlayType.DxfLinework))
-        tileList.Add(await dxfTileService.GetDxfBitmap(parameters, request.dxfFiles));
+      {
+        var dxfBitmap = await dxfTileService.GetDxfBitmap(parameters, request.dxfFiles);
+        if (dxfBitmap != null)
+          tileList.Add(dxfBitmap);
+      }
 
       return TileResult.CreateTileResult(TileServiceUtils.OverlayTiles(parameters, tileList), TASNodeErrorStatus.asneOK);
     }
