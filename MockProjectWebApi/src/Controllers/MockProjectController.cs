@@ -81,6 +81,16 @@ namespace MockProjectWebApi.Controllers
             ImportedFileUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
             LegacyFileId = 111,
             IsActivated = true
+          },
+          new FileData
+          {
+            Name = "Large Sites Road.svl",
+            ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+            CustomerUid = "StationOffsetReportTest",
+            ImportedFileType = ImportedFileType.Alignment,
+            ImportedFileUid = "6ece671b-7959-4a14-86fa-6bfe6ef4dd62",
+            LegacyFileId = 112,
+            IsActivated = true
           }
         };
       }

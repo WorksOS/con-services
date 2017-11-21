@@ -22,6 +22,7 @@
     <Content Remove="Json\Filters\SummaryVolumesBaseFilterYesterday.json" />
     <Content Remove="Json\Filters\SummaryVolumesTopFilter.json" />
     <Content Remove="Json\Filters\SummaryVolumesTopFilterYesterday.json" />
+    <Content Remove="Json\UserPreferences\DummyUserPreferences.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +37,7 @@
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
     <EmbeddedResource Include="Json\Filters\SummaryVolumesBaseFilter.json" />
     <EmbeddedResource Include="Json\Filters\SummaryVolumesTopFilter.json" />
+    <EmbeddedResource Include="Json\UserPreferences\DummyUserPreferences.json" />
   </ItemGroup>
 
   <ItemGroup>
