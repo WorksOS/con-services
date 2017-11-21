@@ -30,6 +30,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
       var fileListProject = repoProject.Read();
       var fileListNhOp = repoNhOp.Read();
+      var startUtc = DateTime.UtcNow;
 
       // cannot modify collectionB from within collectionA
       // put it in here and remove later
@@ -43,6 +44,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       foreach (var ifo in fileListNhOp.ToList())
       {
         // (a)
+        startUtc = DateTime.UtcNow;
         var gotMatchingProject = fileListProject.FirstOrDefault(o => o.LegacyImportedFileId == ifo.LegacyImportedFileId);
 
         if (gotMatchingProject == null)
@@ -58,14 +60,19 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           repoProject.Create(projectEvent);
 
           // Notify 3dpm of SS file created via Legacy
-          if (projectEvent.LegacyImportedFileId != null)  // Note that LegacyImportedFileId will always be !null 
+          if (projectEvent.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
             await NotifyRaptorFileCreatedInCGenAsync(Guid.Parse(projectEvent.ProjectUid), projectEvent.ImportedFileType,
-              Guid.Parse(projectEvent.ImportedFileUid), projectEvent.FileDescriptor,
-              projectEvent.LegacyImportedFileId.Value, projectEvent.DxfUnitsType)
+                Guid.Parse(projectEvent.ImportedFileUid), projectEvent.FileDescriptor,
+                projectEvent.LegacyImportedFileId.Value, projectEvent.DxfUnitsType)
               .ConfigureAwait(false);
 
+          var newRelicAttributes = new Dictionary<string, object>
+          {
+            {"message", "SS file created in NhOp, now created in Project."},
+            {"project", projectEvent}
+          };
+          NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
           fileListNhOp.RemoveAt(0);
-          Log.LogTrace($"SyncTables: nhOp. Is not in Project, added it.");
         }
         else
         {
@@ -75,6 +82,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             repoNhOp.Delete(ifo);
             Log.LogTrace(
               $"SyncTables: nhOp.IF is in nh_Op but was deleted in project. Deleted from NhOp: {JsonConvert.SerializeObject(ifo)}");
+
+            var newRelicAttributes = new Dictionary<string, object>
+            {
+              {"message", "SS file deleted in Project, now deleted in NhOp."},
+              {"project", gotMatchingProject}
+            };
+            NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
           }
           else
           {
@@ -90,6 +104,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 ifo.FileUpdatedUtc = gotMatchingProject.FileUpdatedUtc;
                 ifo.LastActionedUtc = DateTime.UtcNow;
                 repoNhOp.Update(ifo);
+
+                var newRelicAttributes = new Dictionary<string, object>
+                {
+                  {"message", "SS file updated in project, now updated in NhOp."},
+                  {"project", gotMatchingProject}
+                };
+                NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               }
               else
               {
@@ -100,25 +121,40 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 repoProject.Update(gotMatchingProject);
 
                 // Notify 3dpm of SS file updated via Legacy
-                if (gotMatchingProject.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
+                if (gotMatchingProject.LegacyImportedFileId != null
+                ) // Note that LegacyImportedFileId will always be !null 
                   await NotifyRaptorFileUpdatedInCGen(Guid.Parse(gotMatchingProject.ProjectUid),
                       Guid.Parse(gotMatchingProject.ImportedFileUid))
                     .ConfigureAwait(false);
 
+                var newRelicAttributes = new Dictionary<string, object>
+                {
+                  {"message", "SS file updated in NhOp, now updated in Project."},
+                  {"project", gotMatchingProject}
+                };
+                NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               }
-              Log.LogTrace(
-                $"SyncTables: nhOp.IF is in Project and nhOp but some aspect has changed. Update in both Project and NhOp: {JsonConvert.SerializeObject(gotMatchingProject)}");
             }
           }
-          // (a) plus all of those having found gotMatchingProject
+
+          // (a) no change
           fileListProjectToRemove.Add(gotMatchingProject);
           fileListNhOp.Remove(ifo);
         }
       }
 
+      // internal error, have we forgotten some scenario?
       if (fileListNhOp.Count > 0)
-        throw new InvalidOperationException(
-          "ImportedFileSynchroniser internal error as fileListNhOp list should be empty");
+      {
+        // proceed with sync, but send alert to NewRelic
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message", string.Format($"ImportedFileSynchroniser internal error as fileListNhOp list should be empty")},
+          {"fileListNhOp", fileListNhOp}
+        };
+        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc,
+          (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+      }
 
       fileListProject.RemoveAll(
         x => fileListProjectToRemove.Exists(y => y.LegacyImportedFileId == x.LegacyImportedFileId));
@@ -127,7 +163,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       //        if project has LegacyImportedFileId ,  and not already deleted, then delete in Project (m)
       //        if project has no LegacyImportedFileId, and not already deleted, then create in nhOp (n)
       //        if project has no LegacyImportedFileId, not deleted, but has no valid legacy customer or projectID then can't be added to NhOp (o)
-      //        deleted project in project but no link to nh_op, just delete it. (p)
+      //        deleted project in project but no link to nh_op, just ignore it. (p)
       foreach (var ifp in fileListProject.ToList())
       {
         if (ifp.IsDeleted)
@@ -140,7 +176,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           if (ifp.LegacyImportedFileId != null && ifp.LegacyImportedFileId > 0)
           {
             // (m)
-
             repoProject.Delete(ifp);
 
             // Notify 3dpm of SS file deleted via Legacy
@@ -148,19 +183,27 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               await NotifyRaptorFileDeletedInCGenAsync(Guid.Parse(ifp.ProjectUid), ifp.ImportedFileType,
                   Guid.Parse(ifp.ImportedFileUid), ifp.FileDescriptor, (long) ifp.LegacyImportedFileId)
                 .ConfigureAwait(false);
-
+            
+            var newRelicAttributes = new Dictionary<string, object>
+            {
+              {"message", "SS file deleted in NhOp, now deleted from Project."},
+              {"project", ifp}
+            };
+            NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
             fileListProject.RemoveAt(0);
-            Log.LogTrace(
-              $"SyncTables: Project.IF is not in NH_OP but was. Deleted from Project: {JsonConvert.SerializeObject(ifp)}");
           }
           else
           {
             if (ifp.LegacyCustomerId == 0 || ifp.LegacyProjectId >= 1000000)
             {
               // (o)
+              var newRelicAttributes = new Dictionary<string, object>
+              {
+                {"message", "SS file in Project which has no legacyCustomerId so cannot be synced to NhOp."},
+                {"project", ifp}
+              };
+              NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               fileListProject.RemoveAt(0);
-              //_log.LogWarning(
-              //  $"SyncTables: Project.IF is not in NH_OP. However it has no legacy customer/projectID so cannot be added to nhOp: {JsonConvert.SerializeObject(ifp)}");
             }
             else
             {
@@ -170,19 +213,30 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               var legacyImportedFileId = repoNhOp.Create(nhOpEvent);
               ifp.LegacyImportedFileId = legacyImportedFileId;
               repoProject.Update(ifp);
+
+              var newRelicAttributes = new Dictionary<string, object>
+              {
+                {"message", "SS file created in project, now created in NhOp."},
+                {"project", ifp}
+              };
+              NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               fileListProject.RemoveAt(0);
-              Log.LogTrace(
-                $"SyncTables: Project.IF is not in NH_OP. Added to nhOp: {JsonConvert.SerializeObject(nhOpEvent)}");
             }
           }
         }
       }
 
+      // internal error, have we forgotten some scenario?
       if (fileListProject.Count > 0)
-        throw new InvalidOperationException(
-          "ImportedFileSynchroniser internal error as fileListProject list should be empty");
-
-      // todo TCC and RaptorNotiications
+      {        // proceed with sync, but send alert to NewRelic
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message", string.Format($"ImportedFileSynchroniser internal error as fileListProject list should be empty")},
+          {"fileListProject", fileListProject}
+        };
+        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc,
+          (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+      }
     }
   }
 }

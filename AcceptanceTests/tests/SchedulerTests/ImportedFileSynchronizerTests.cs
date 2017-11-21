@@ -112,7 +112,7 @@ namespace SchedulerTests
     }
 
     [TestMethod]
-    public async Task ImportedFileSynchronizer_CreatedInProject_DeletedFromProjectAsync()
+    public async Task ImportedFileSynchronizer_CreatedInProject_DeletedFromProject()
     {
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
 
@@ -259,7 +259,7 @@ namespace SchedulerTests
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task ImportedFileSynchronizer_CreatedInNhOpAsync()
+    public async System.Threading.Tasks.Task ImportedFileSynchronizer_CreatedInNhOp()
     {
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
 
@@ -327,7 +327,6 @@ namespace SchedulerTests
       Assert.AreEqual(importedFileNhOp.FileCreatedUtc, importFileResponse.FileCreatedUtc, "FileCreatedUtc not synced to Project.");
       Assert.AreEqual(importedFileNhOp.FileUpdatedUtc, importFileResponse.FileUpdatedUtc, "FileUpdatedUtc not synced to Project.");
 
-      // todo  todo test that CG emailContact appears in NG
       Assert.AreEqual("", importFileResponse.ImportedBy, "ImportedBy not synced to Project.");
       Assert.IsFalse(importFileResponse.IsDeleted, "IsDeleted not synced to Project.");
       Assert.IsTrue(importFileResponse.IsActivated, "IsActivated not synced to Project.");

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Scheduler.Common.Controller
@@ -44,40 +45,50 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async System.Threading.Tasks.Task<bool> NotifyRaptorFileCreatedInCGenAsync(Guid projectUid,
+    protected async Task<bool> NotifyRaptorFileCreatedInCGenAsync(Guid projectUid,
       ImportedFileType importedFileType,
       Guid importedFileUid, string fileDescriptor, long legacyImportedFileId, DxfUnitsType dxfUnitsType)
     {
+      var startUtc = DateTime.UtcNow;
       var isNotified = false;
 
       BaseDataResult notificationResult = null;
-      // todo need to genate an application token
+      // todo need to generate an application token for "3dPmScheduler" 
       IDictionary<string, string> customHeaders = null;
       try
       {
         notificationResult = await RaptorProxy
-          .AddFile(projectUid, importedFileType, importedFileUid, fileDescriptor, legacyImportedFileId, dxfUnitsType,
-            customHeaders)
+          .AddFile(projectUid, importedFileType, importedFileUid, fileDescriptor, legacyImportedFileId, dxfUnitsType, customHeaders)
           .ConfigureAwait(false);
       }
       catch (Exception e)
       {
-        Log.LogError(
-          $"NotifyRaptorFileCreatedInCGen AddFile in RaptorServices failed with exception. projectUid:{projectUid} importedFileUid:{importedFileUid} FileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}. ");
-
         // proceed with sync, but send alert to NewRelic
-        // todo make NewRelic call
+        var newRelicAttributes = new Dictionary<string, object> {
+          { "message", string.Format($"AddFile in RaptorServices failed with exception {e.Message}") },
+          { "customHeaders", customHeaders},
+          { "projectUid", projectUid},
+          { "importedFileUid", importedFileUid},
+          { "fileDescriptor", fileDescriptor},
+          { "legacyImportedFileId", legacyImportedFileId}
+        };
+        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       Log.LogDebug(
         $"NotifyRaptorFileCreatedInCGen: projectUid:{projectUid} importedFileUid: {importedFileUid} FileDescriptor:{fileDescriptor}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
 
       if (notificationResult == null || notificationResult.Code != 0)
       {
-        Log.LogError(
-          $"NotifyRaptorFileCreatedInCGen AddFile in RaptorServices failed. projectUid:{projectUid} importedFileUid: {importedFileUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}.");
-
         // proceed with sync, but send alert to NewRelic
-        // todo make NewRelic call
+        var newRelicAttributes = new Dictionary<string, object> {
+          { "message", string.Format($"AddFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}") },
+          { "customHeaders", customHeaders},
+          { "projectUid", projectUid},
+          { "importedFileUid", importedFileUid},
+          { "fileDescriptor", fileDescriptor},
+          { "legacyImportedFileId", legacyImportedFileId}
+        };
+        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       else
       {
@@ -94,10 +105,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     /// <returns></returns>
     protected async Task<bool> NotifyRaptorFileUpdatedInCGen(Guid projectUid, Guid importedFileUid)
     {
+      var startUtc = DateTime.UtcNow;
       var isNotified = false;
 
       BaseDataResult notificationResult = null;
-      // todo need to genate an application token
+      // todo need to generate an application token for "3dPmScheduler" 
       IDictionary<string, string> customHeaders = null;
       try
       {
@@ -108,22 +120,28 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       }
       catch (Exception e)
       {
-        Log.LogError(
-          $"NotifyRaptorFileUpdatedInCGen UpdateFile in RaptorServices failed with exception. projectUid:{projectUid} importedFileUid: {importedFileUid}. Exception Thrown: {e.Message}. ");
-
         // proceed with sync, but send alert to NewRelic
-        // todo make NewRelic call
+        var newRelicAttributes = new Dictionary<string, object> {
+          { "message", string.Format($"UpdateFile in RaptorServices failed with exception {e.Message}") },
+          { "customHeaders", customHeaders},
+          { "projectUid", projectUid},
+          { "importedFileUid", importedFileUid}
+        };
+        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       Log.LogDebug(
         $"NotifyRaptorFileUpdatedInCGen: projectUid:{projectUid} importedFileUid: {importedFileUid}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
 
       if (notificationResult == null || notificationResult.Code != 0)
       {
-        Log.LogError(
-          $"NotifyRaptorFileUpdatedInCGen UpdateFile in RaptorServices failed. projectUid:{projectUid} importedFileUid: {importedFileUid}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}.");
-
         // proceed with sync, but send alert to NewRelic
-        // todo make NewRelic call
+        var newRelicAttributes = new Dictionary<string, object> {
+          { "message", string.Format($"UpdateFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}") },
+          { "customHeaders", customHeaders},
+          { "projectUid", projectUid},
+          { "importedFileUid", importedFileUid}
+        };
+        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       else
       {
@@ -142,36 +160,46 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       ImportedFileType importedFileType,
       Guid importedFileUid, string fileDescriptor, long legacyImportedFileId)
     {
+      var startUtc = DateTime.UtcNow;
       var isNotified = false;
 
       BaseDataResult notificationResult = null;
-      // todo need to genate an application token
+      // todo need to generate an application token for "3dPmScheduler" 
       IDictionary<string, string> customHeaders = null;
       try
       {
         notificationResult = await RaptorProxy
-          .DeleteFile(projectUid, importedFileType, importedFileUid, fileDescriptor, legacyImportedFileId,
-            customHeaders)
+          .DeleteFile(projectUid, importedFileType, importedFileUid, fileDescriptor, legacyImportedFileId, customHeaders)
           .ConfigureAwait(false);
       }
       catch (Exception e)
       {
-        Log.LogError(
-          $"NotifyRaptorFileDeletedInCGen DeleteFile in RaptorServices failed with exception. projectUid:{projectUid} importedFileUid:{importedFileUid} FileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}. ");
-
         // proceed with sync, but send alert to NewRelic
-        // todo make NewRelic call
+        var newRelicAttributes = new Dictionary<string, object> {
+          { "message", string.Format($"DeleteFile in RaptorServices failed with exception {e.Message}") },
+          { "customHeaders", customHeaders},
+          { "projectUid", projectUid},
+          { "importedFileUid", importedFileUid},
+          { "fileDescriptor", fileDescriptor},
+          { "legacyImportedFileId", legacyImportedFileId}
+        };
+        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       Log.LogDebug(
         $"NotifyRaptorFileDeletedInCGen: projectUid:{projectUid} importedFileUid: {importedFileUid} FileDescriptor:{fileDescriptor}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
 
       if (notificationResult == null || notificationResult.Code != 0)
       {
-        Log.LogError(
-          $"NotifyRaptorFileDeletedInCGen DeleteFile in RaptorServices failed. projectUid:{projectUid} importedFileUid: {importedFileUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}.");
-
         // proceed with sync, but send alert to NewRelic
-        // todo make NewRelic call
+        var newRelicAttributes = new Dictionary<string, object> {
+          { "message", string.Format($"DeleteFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}") },
+          { "customHeaders", customHeaders},
+          { "projectUid", projectUid},
+          { "importedFileUid", importedFileUid},
+          { "fileDescriptor", fileDescriptor},
+          { "legacyImportedFileId", legacyImportedFileId}
+        };
+        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       else
       {

@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Controller;
+using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 
 namespace VSS.Productivity3D.Scheduler.WebApi
@@ -43,6 +43,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     public void AddTask()
     {
+      var startUtc = DateTime.UtcNow;
       _log.LogDebug($"ImportedProjectFileSyncTask.AddTask. configStore: {_configStore}");
      
       // lowest interval is minutes 
@@ -62,7 +63,10 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedProjectFileSyncTask: Unable to schedule recurring job: DatabaseCleanup {ex.Message}");
+        var newRelicAttributes = new Dictionary<string, object> {
+          { "message", string.Format($"Unable to schedule recurring job: exception {ex.Message}") }
+        };
+        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Fatal", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
         throw;
       }
     }
@@ -72,14 +76,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     public async Task DatabaseSyncTask()
     {
-      _log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow}");
-      Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: starting. nowUtc {DateTime.UtcNow}");
-
+      var startUtc = DateTime.UtcNow;
+   
       var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy);
       await sync.SyncTables().ConfigureAwait(false);
 
-      _log.LogTrace($"ImportedProjectFileSyncTask.DatabaseSyncTask: completed successfully.");
-      Console.WriteLine($"ImportedProjectFileSyncTask.DatabaseSyncTask: completed successfully.");
+      NewRelicUtils.NotifyNewRelic("DatabaseCleanupTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds);
     }
   }
 }

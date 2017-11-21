@@ -29,6 +29,9 @@
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.4.*" />
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <PackageReference Include="NewRelic.Agent.Api" Version="6.16.178" />
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>

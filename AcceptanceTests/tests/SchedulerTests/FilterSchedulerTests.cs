@@ -61,7 +61,6 @@ namespace SchedulerTests
       var dbConnection = new MySqlConnection(_filterDbConnectionString);
       dbConnection.Open();
 
-      //var filter = new Filter(){}; //todo use DBModel
       var filterUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid().ToString();
       var projectUid = Guid.NewGuid().ToString();
