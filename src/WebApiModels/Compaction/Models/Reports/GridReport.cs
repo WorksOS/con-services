@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using ASNodeRaptorReports;
 using Newtonsoft.Json;
+using VSS.Productivity3D.WebApi.Models.Common;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 {
@@ -180,11 +181,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     }
     public bool ShouldSerializeCMV()
     {
-      return CMVReport;
+      return CMVReport && CMV != VelociraptorConstants.NO_CCV;
     }
     public bool ShouldSerializeMDP()
     {
-      return MDPReport;
+      return MDPReport && MDP != VelociraptorConstants.NO_MDP;
     }
     public bool ShouldSerializePassCount()
     {
@@ -192,7 +193,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     }
     public bool ShouldSerializeTemperature()
     {
-      return TemperatureReport;
+      return TemperatureReport && Temperature != VelociraptorConstants.NO_TEMPERATURE;
     }
     #endregion
 
