@@ -88,23 +88,23 @@ namespace ProductionDataSvc.AcceptanceTests
                     string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Grid Report", exampleTags);
-#line 5
+#line 4
 this.ScenarioSetup(scenarioInfo);
-#line 6
+#line 5
 testRunner.Given("the report service uri \"/api/v2/report/grid\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 7
+#line 6
 testRunner.And("the result file \'ReportGridResponse.json\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 8
+#line 7
 testRunner.And("I set request parameters projectUid \'ff91dd40-1569-4765-a2bc-014321f76ace\' and fi" +
                     "lterUid \'9c27697f-ea6d-478a-a168-ed20d6cd9a20\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 9
+#line 8
 testRunner.And(string.Format("I select columns \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\'", elevation, cMV, mDP, passCount, temperature, cutFill), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 10
+#line 9
 testRunner.And(string.Format("I select grid report parameters \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\' \'{6}\' \'{7}\'", cutfillDesignUid, gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 11
+#line 10
 testRunner.When("I request a report", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 12
-testRunner.Then(string.Format("the result should match the \'{0}\' from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 11
+testRunner.Then(string.Format("the grid report result should match the \'{0}\' from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -229,6 +229,70 @@ testRunner.Then(string.Format("the result should match the \'{0}\' from the repo
             this.GridReport("TempCutFill", "N", "N", "N", "N", "Y", "Y", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "1.0", "Automatic", "1146.36", "2889.8", "1300.0", "2700.0", "1.0", ((string[])(null)));
         }
         
+        public virtual void GridReportDifferentFilter(
+                    string resultName, 
+                    string elevation, 
+                    string cMV, 
+                    string mDP, 
+                    string passCount, 
+                    string temperature, 
+                    string cutFill, 
+                    string cutfillDesignUid, 
+                    string gridInterval, 
+                    string gridReportOption, 
+                    string startNorthing, 
+                    string startEasting, 
+                    string endNorthing, 
+                    string endEasting, 
+                    string azimuth, 
+                    string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Grid Report different filter", exampleTags);
+#line 21
+this.ScenarioSetup(scenarioInfo);
+#line 22
+testRunner.Given("the report service uri \"/api/v2/report/grid\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 23
+testRunner.And("the result file \'ReportGridResponse.json\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 24
+testRunner.And("I set request parameters projectUid \'ff91dd40-1569-4765-a2bc-014321f76ace\' and fi" +
+                    "lterUid \'a37f3008-65e5-44a8-b406-9a078ec62ece\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 25
+testRunner.And(string.Format("I select columns \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\'", elevation, cMV, mDP, passCount, temperature, cutFill), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 26
+testRunner.And(string.Format("I select grid report parameters \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\' \'{6}\' \'{7}\'", cutfillDesignUid, gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 27
+testRunner.When("I request a report", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 28
+testRunner.Then(string.Format("the grid report result should match the \'{0}\' from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Grid Report different filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Report")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ResultCMV")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "ResultCMV")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Elevation", "Y")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CMV", "Y")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:MDP", "Y")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PassCount", "Y")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Temperature", "Y")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFill", "N")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:gridInterval", "1.0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:gridReportOption", "Automatic")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startNorthing", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startEasting", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endNorthing", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endEasting", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:azimuth", "10.0")]
+        public virtual void GridReportDifferentFilter_ResultCMV()
+        {
+            this.GridReportDifferentFilter("ResultCMV", "Y", "Y", "Y", "Y", "Y", "N", "", "1.0", "Automatic", "0", "0", "0", "0", "10.0", ((string[])(null)));
+        }
+        
         public virtual void StationOffsetReport(string resultName, string elevation, string cMV, string mDP, string passCount, string temperature, string cutFill, string cutfillDesignUid, string alignmentDesignUid, string crossSectionInterval, string startStation, string endStation, string offsets, string[] exampleTags)
         {
             string[] @__tags = new string[] {
@@ -238,23 +302,23 @@ testRunner.Then(string.Format("the result should match the \'{0}\' from the repo
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Station offset Report", @__tags);
-#line 24
+#line 36
 this.ScenarioSetup(scenarioInfo);
-#line 25
+#line 37
 testRunner.Given("the report service uri \"/api/v2/report/stationoffset\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 26
+#line 38
 testRunner.And("the result file \'ReportstationoffsetResponse.json\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 27
+#line 39
 testRunner.And("I set request parameters projectUid \'ff91dd40-1569-4765-a2bc-014321f76ace\' and fi" +
                     "lterUid \'9c27697f-ea6d-478a-a168-ed20d6cd9a20\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 28
+#line 40
 testRunner.And(string.Format("I select columns \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\'", elevation, cMV, mDP, passCount, temperature, cutFill), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 29
+#line 41
 testRunner.And(string.Format("I select Station offset report parameters \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\'", cutfillDesignUid, alignmentDesignUid, crossSectionInterval, startStation, endStation, offsets), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 30
+#line 42
 testRunner.When("I request a report", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 31
-testRunner.Then(string.Format("the result should match the \'{0}\' from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 43
+testRunner.Then(string.Format("the grid report result should match the \'{0}\' from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

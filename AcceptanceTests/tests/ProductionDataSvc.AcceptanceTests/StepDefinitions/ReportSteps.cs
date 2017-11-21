@@ -145,9 +145,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       gridReportRequester.DoValidRequest(url);
     }
 
-
-    [Then(@"the result should match the '(.*)' from the repository")]
-    public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
+    [Then(@"the grid report result should match the '(.*)' from the repository")]
+    public void ThenTheGridReportResultShouldMatchTheFromTheRepository(string resultName)
     {
       Assert.AreEqual(0, gridReportRequester.CurrentResponse.Code);
       Assert.AreEqual("success", gridReportRequester.CurrentResponse.Message);
