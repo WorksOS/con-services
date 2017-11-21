@@ -105,7 +105,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="numLevels"></param>
         /// <param name="cellSize"></param>
         public GenericSubGridTree(byte numLevels,
-                                  double cellSize) : base(numLevels, cellSize, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<bool>>())
+                                  double cellSize) : base(numLevels, cellSize, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<T>>())
         {
         }
 
