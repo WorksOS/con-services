@@ -18,8 +18,26 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests
 {
     public class SurfaceElevationPatchRequest : DesignProfilerRaptorRequest
     {
+        private static SurveyedSurfaceResultCache _cache = new SurveyedSurfaceResultCache();
+
+        public SurfaceElevationPatchRequest()
+        {
+
+        }
+
         public ClientHeightAndTimeLeafSubGrid Execute(SurfaceElevationPatchArgument arg)
         {
+            // Check the item is available in the cache
+            ClientHeightAndTimeLeafSubGrid clientResult = _cache.get(arg);
+
+            if (clientResult != null)
+            {
+                // It was presnet in the cache, return it
+                return clientResult;
+            }
+
+            // Request the subgrid from the surveyd surface engine
+
             // Construct the function to be used
             IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/> func = new SurfaceElevationPatchComputeFunc();
 
@@ -30,14 +48,17 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests
                 return null;
             }
 
-            ClientHeightAndTimeLeafSubGrid clientResult = new ClientHeightAndTimeLeafSubGrid(null, null, SubGridTree.SubGridTreeLevels, SubGridTree.DefaultCellSize, SubGridTree.DefaultIndexOriginOffset);
+            clientResult = new ClientHeightAndTimeLeafSubGrid(null, null, SubGridTree.SubGridTreeLevels, SubGridTree.DefaultCellSize, SubGridTree.DefaultIndexOriginOffset);
             clientResult.FromBytes(result);
+
+            _cache.Put(arg, clientResult);
+
             return clientResult;
 
             //  Task<ClientHeightAndTimeLeafSubGrid> taskResult = compute.ApplyAsync(func, arg);
 
             // Send the appropriate response to the caller
-            //            return taskResult.Result;
+            // return taskResult.Result;
         }
 
     }

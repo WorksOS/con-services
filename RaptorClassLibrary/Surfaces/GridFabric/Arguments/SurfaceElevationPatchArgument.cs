@@ -57,8 +57,8 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments
         /// Constructor taking the full state of the surface patch computation operation
         /// </summary>
         /// <param name="siteModelID"></param>
-        /// <param name="originX"></param>
-        /// <param name="originY"></param>
+        /// <param name="oTGCellBottomLeftX"></param>
+        /// <param name="oTGCellBottomLeftY"></param>
         /// <param name="cellSize"></param>
         /// <param name="EarliestSurface"></param>
         /// <param name="processingMap"></param>
@@ -86,6 +86,15 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments
         public override string ToString()
         {
             return base.ToString() + $" -> SiteModel:{SiteModelID}, OTGOriginBL:{OTGCellBottomLeftX}/{OTGCellBottomLeftY}, CellSize:{CellSize}, EarliestSurface:{EarliestSurface}";
+        }
+
+        /// <summary>
+        /// Computes a cachekey for use in a simple dictionary mapping String => SurveyedSurface elevation result request
+        /// </summary>
+        /// <returns></returns>
+        public string CacheKey()
+        {
+            return $"{SiteModelID}:{OTGCellBottomLeftX}:{OTGCellBottomLeftY}:{CellSize}:{EarliestSurface}:{IncludedSurveyedSurfaces.Select(x => x.ID.ToString()).Aggregate((s1, s2) => s1 + s2)}";
         }
     }
 }
