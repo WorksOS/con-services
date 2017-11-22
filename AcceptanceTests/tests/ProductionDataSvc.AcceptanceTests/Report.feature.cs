@@ -85,6 +85,7 @@ namespace ProductionDataSvc.AcceptanceTests
                     string endNorthing, 
                     string endEasting, 
                     string azimuth, 
+                    string filterUid, 
                     string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Grid Report", exampleTags);
@@ -95,8 +96,8 @@ testRunner.Given("the report service uri \"/api/v2/report/grid\"", ((string)(nul
 #line 6
 testRunner.And("the result file \'ReportGridResponse.json\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
-testRunner.And("I set request parameters projectUid \'ff91dd40-1569-4765-a2bc-014321f76ace\' and fi" +
-                    "lterUid \'9c27697f-ea6d-478a-a168-ed20d6cd9a20\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("I set request parameters projectUid \'ff91dd40-1569-4765-a2bc-014321f76ace\' and fi" +
+                        "lterUid \'{0}\'", filterUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
 testRunner.And(string.Format("I select columns \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\'", elevation, cMV, mDP, passCount, temperature, cutFill), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
@@ -128,9 +129,10 @@ testRunner.Then(string.Format("the grid report result should match the \'{0}\' f
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endNorthing", "1300.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endEasting", "2700.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:azimuth", "10.0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "9c27697f-ea6d-478a-a168-ed20d6cd9a20")]
         public virtual void GridReport_AllColumns()
         {
-            this.GridReport("AllColumns", "Y", "Y", "Y", "Y", "Y", "Y", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "1.0", "Automatic", "1146.36", "2889.8", "1300.0", "2700.0", "10.0", ((string[])(null)));
+            this.GridReport("AllColumns", "Y", "Y", "Y", "Y", "Y", "Y", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "1.0", "Automatic", "1146.36", "2889.8", "1300.0", "2700.0", "10.0", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -152,9 +154,10 @@ testRunner.Then(string.Format("the grid report result should match the \'{0}\' f
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endNorthing", "1300.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endEasting", "2700.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:azimuth", "5.0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "9c27697f-ea6d-478a-a168-ed20d6cd9a20")]
         public virtual void GridReport_Elevation()
         {
-            this.GridReport("Elevation", "Y", "N", "N", "N", "N", "N", "", "1.5", "Automatic", "1146.36", "2889.8", "1300.0", "2700.0", "5.0", ((string[])(null)));
+            this.GridReport("Elevation", "Y", "N", "N", "N", "N", "N", "", "1.5", "Automatic", "1146.36", "2889.8", "1300.0", "2700.0", "5.0", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -176,9 +179,10 @@ testRunner.Then(string.Format("the grid report result should match the \'{0}\' f
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endNorthing", "1300.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endEasting", "2700.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:azimuth", "10.0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "9c27697f-ea6d-478a-a168-ed20d6cd9a20")]
         public virtual void GridReport_ElevPcTemp()
         {
-            this.GridReport("ElevPcTemp", "Y", "N", "N", "Y", "Y", "N", "", "1.0", "Automatic", "1146.36", "2889.8", "1300.0", "2700.0", "10.0", ((string[])(null)));
+            this.GridReport("ElevPcTemp", "Y", "N", "N", "Y", "Y", "N", "", "1.0", "Automatic", "1146.36", "2889.8", "1300.0", "2700.0", "10.0", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -200,9 +204,10 @@ testRunner.Then(string.Format("the grid report result should match the \'{0}\' f
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endNorthing", "1300.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endEasting", "2700.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:azimuth", "2.0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "9c27697f-ea6d-478a-a168-ed20d6cd9a20")]
         public virtual void GridReport_Cutfill()
         {
-            this.GridReport("Cutfill", "N", "N", "N", "N", "N", "Y", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "1.0", "Automatic", "1146.36", "2889.8", "1300.0", "2700.0", "2.0", ((string[])(null)));
+            this.GridReport("Cutfill", "N", "N", "N", "N", "N", "Y", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "1.0", "Automatic", "1146.36", "2889.8", "1300.0", "2700.0", "2.0", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -224,53 +229,14 @@ testRunner.Then(string.Format("the grid report result should match the \'{0}\' f
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endNorthing", "1300.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endEasting", "2700.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:azimuth", "1.0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "9c27697f-ea6d-478a-a168-ed20d6cd9a20")]
         public virtual void GridReport_TempCutFill()
         {
-            this.GridReport("TempCutFill", "N", "N", "N", "N", "Y", "Y", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "1.0", "Automatic", "1146.36", "2889.8", "1300.0", "2700.0", "1.0", ((string[])(null)));
-        }
-        
-        public virtual void GridReportDifferentFilter(
-                    string resultName, 
-                    string elevation, 
-                    string cMV, 
-                    string mDP, 
-                    string passCount, 
-                    string temperature, 
-                    string cutFill, 
-                    string cutfillDesignUid, 
-                    string gridInterval, 
-                    string gridReportOption, 
-                    string startNorthing, 
-                    string startEasting, 
-                    string endNorthing, 
-                    string endEasting, 
-                    string azimuth, 
-                    string[] exampleTags)
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Grid Report different filter", exampleTags);
-#line 21
-this.ScenarioSetup(scenarioInfo);
-#line 22
-testRunner.Given("the report service uri \"/api/v2/report/grid\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 23
-testRunner.And("the result file \'ReportGridResponse.json\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 24
-testRunner.And("I set request parameters projectUid \'ff91dd40-1569-4765-a2bc-014321f76ace\' and fi" +
-                    "lterUid \'a37f3008-65e5-44a8-b406-9a078ec62ece\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 25
-testRunner.And(string.Format("I select columns \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\'", elevation, cMV, mDP, passCount, temperature, cutFill), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 26
-testRunner.And(string.Format("I select grid report parameters \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\' \'{6}\' \'{7}\'", cutfillDesignUid, gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 27
-testRunner.When("I request a report", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 28
-testRunner.Then(string.Format("the grid report result should match the \'{0}\' from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
+            this.GridReport("TempCutFill", "N", "N", "N", "N", "Y", "Y", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "1.0", "Automatic", "1146.36", "2889.8", "1300.0", "2700.0", "1.0", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Grid Report different filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Grid Report")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Report")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ResultCMV")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "ResultCMV")]
@@ -288,12 +254,38 @@ testRunner.Then(string.Format("the grid report result should match the \'{0}\' f
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endNorthing", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endEasting", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:azimuth", "10.0")]
-        public virtual void GridReportDifferentFilter_ResultCMV()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "a37f3008-65e5-44a8-b406-9a078ec62ece")]
+        public virtual void GridReport_ResultCMV()
         {
-            this.GridReportDifferentFilter("ResultCMV", "Y", "Y", "Y", "Y", "Y", "N", "", "1.0", "Automatic", "0", "0", "0", "0", "10.0", ((string[])(null)));
+            this.GridReport("ResultCMV", "Y", "Y", "Y", "Y", "Y", "N", "", "1.0", "Automatic", "0", "0", "0", "0", "10.0", "a37f3008-65e5-44a8-b406-9a078ec62ece", ((string[])(null)));
         }
         
-        public virtual void StationOffsetReport(string resultName, string elevation, string cMV, string mDP, string passCount, string temperature, string cutFill, string cutfillDesignUid, string alignmentDesignUid, string crossSectionInterval, string startStation, string endStation, string offsets, string[] exampleTags)
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Grid Report")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Report")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ResultMDP")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "ResultMDP")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Elevation", "Y")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CMV", "N")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:MDP", "Y")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PassCount", "Y")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Temperature", "N")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFill", "N")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:gridInterval", "1.0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:gridReportOption", "Automatic")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startNorthing", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startEasting", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endNorthing", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endEasting", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:azimuth", "10.0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
+        public virtual void GridReport_ResultMDP()
+        {
+            this.GridReport("ResultMDP", "Y", "N", "Y", "Y", "N", "N", "", "1.0", "Automatic", "0", "0", "0", "0", "10.0", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", ((string[])(null)));
+        }
+        
+        public virtual void StationOffsetReport(string resultName, string elevation, string cMV, string mDP, string passCount, string temperature, string cutFill, string cutfillDesignUid, string alignmentDesignUid, string crossSectionInterval, string startStation, string endStation, string offsets, string filterUid, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "ignore"};
@@ -302,22 +294,22 @@ testRunner.Then(string.Format("the grid report result should match the \'{0}\' f
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Station offset Report", @__tags);
-#line 36
+#line 24
 this.ScenarioSetup(scenarioInfo);
-#line 37
+#line 25
 testRunner.Given("the report service uri \"/api/v2/report/stationoffset\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 38
+#line 26
 testRunner.And("the result file \'ReportstationoffsetResponse.json\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 39
-testRunner.And("I set request parameters projectUid \'ff91dd40-1569-4765-a2bc-014321f76ace\' and fi" +
-                    "lterUid \'9c27697f-ea6d-478a-a168-ed20d6cd9a20\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 40
+#line 27
+testRunner.And(string.Format("I set request parameters projectUid \'ff91dd40-1569-4765-a2bc-014321f76ace\' and fi" +
+                        "lterUid \'{0}\'", filterUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 28
 testRunner.And(string.Format("I select columns \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\'", elevation, cMV, mDP, passCount, temperature, cutFill), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 41
+#line 29
 testRunner.And(string.Format("I select Station offset report parameters \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\'", cutfillDesignUid, alignmentDesignUid, crossSectionInterval, startStation, endStation, offsets), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 42
+#line 30
 testRunner.When("I request a report", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 43
+#line 31
 testRunner.Then(string.Format("the grid report result should match the \'{0}\' from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -341,9 +333,10 @@ testRunner.Then(string.Format("the grid report result should match the \'{0}\' f
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startStation", "1146.36")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endStation", "2889.8")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:offsets", "1.0, 3.5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "9c27697f-ea6d-478a-a168-ed20d6cd9a20")]
         public virtual void StationOffsetReport_Stationreport1()
         {
-            this.StationOffsetReport("stationreport1", "Y", "Y", "Y", "Y", "Y", "Y", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "1.4", "1146.36", "2889.8", "1.0, 3.5", ((string[])(null)));
+            this.StationOffsetReport("stationreport1", "Y", "Y", "Y", "Y", "Y", "Y", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "1.4", "1146.36", "2889.8", "1.0, 3.5", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", ((string[])(null)));
         }
     }
 }
