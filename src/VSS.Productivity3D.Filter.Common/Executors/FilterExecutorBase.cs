@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         }
         else
         {
-          if (!(filterEvent is DeleteFilterEvent))
+          if (filterEvent is UpdateFilterEvent)
             await NotifyRaptor(filterRequest);
         }
       }
