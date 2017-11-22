@@ -79,6 +79,11 @@ namespace MockProjectWebApi.Utils
         FilterUid = "D6B254A0-C047-4805-9CCD-F847FAB05B14",
         FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterNoLatLonYesterday")
       };
+      public static FilterDescriptor ReportDxfTile => new FilterDescriptor
+      {
+        FilterUid = "7b2bd262-8355-44ba-938a-d50f9712dafc",
+        FilterJson = JsonResourceHelper.GetFilterJson("ReportDxfTile")
+      };
     }
   }
 }

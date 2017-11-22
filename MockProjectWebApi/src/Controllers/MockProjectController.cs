@@ -271,7 +271,8 @@ namespace MockProjectWebApi.Controllers
         LegacyProjectId = ConstantsUtil.DIMENSIONS_PROJECT_ID,
         ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
         ProjectTimeZone = "Mountain Standard Time",
-        IanaTimeZone = "America/Creston"
+        IanaTimeZone = "America/Creston",
+        ProjectGeofenceWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362, -115.025723657623 36.2101347890754))"
       },
       new ProjectData {
         LegacyProjectId = ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_ID,
