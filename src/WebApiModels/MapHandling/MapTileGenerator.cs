@@ -53,9 +53,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       MapBoundingBox bbox = boundingBoxService.GetBoundingBox(request.project, request.filter, request.mode, request.baseFilter, request.topFilter);
 
-      int zoomLevel = TileServiceUtils.CalculateZoomLevel((bbox.maxLat - bbox.minLat).LatDegreesToRadians(), (bbox.maxLng - bbox.minLng).LonDegreesToRadians());
+      int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
       int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
-      var pixelTopLeft = WebMercatorProjection.LatLngToPixel(new Point(bbox.maxLat, bbox.minLng), numTiles);
+      var pixelTopLeft = WebMercatorProjection.LatLngToPixel(new Point(bbox.maxLat.LatRadiansToDegrees(), bbox.minLng.LonRadiansToDegrees()), numTiles);
 
       MapParameters parameters = new MapParameters
       {
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       if (request.overlays.Contains(TileOverlayType.ProductionData))
       {
         log.LogInformation("GetProductionDataTile");
-        BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(bbox.minLng.LonDegreesToRadians(), bbox.minLat.LatDegreesToRadians(), bbox.maxLng.LonDegreesToRadians(), bbox.maxLat.LatDegreesToRadians());
+        BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(bbox.minLng, bbox.minLat, bbox.maxLng, bbox.maxLat);
         var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.filter, request.project.projectId,
           request.mode.Value, (ushort)request.width, (ushort)request.height, prodDataBox, request.designDescriptor, request.baseFilter, 
           request.topFilter, request.designDescriptor, null);//custom headers not used

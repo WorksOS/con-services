@@ -84,10 +84,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           {
             bbox = new MapBoundingBox
             {
-              minLat = productionDataExtents.conversionCoordinates[0].y.latRadiansToDegrees(),
-              minLng = productionDataExtents.conversionCoordinates[0].x.lonRadiansToDegrees(),
-              maxLat = productionDataExtents.conversionCoordinates[1].y.latRadiansToDegrees(),
-              maxLng = productionDataExtents.conversionCoordinates[1].x.lonRadiansToDegrees()
+              minLat = productionDataExtents.conversionCoordinates[0].y,
+              minLng = productionDataExtents.conversionCoordinates[0].x,
+              maxLat = productionDataExtents.conversionCoordinates[1].y,
+              maxLng = productionDataExtents.conversionCoordinates[1].x
             };
           }
         }
@@ -98,10 +98,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         //Also use project boundary extents if fail to get production data extents or not doing production data tiles
         //e.g. project thumbnails
         var projectPoints = TileServiceUtils.GeometryToPoints(project.projectGeofenceWKT);
-        var projectMinLat = projectPoints.Min(p => p.Latitude);
-        var projectMinLng = projectPoints.Min(p => p.Longitude);
-        var projectMaxLat = projectPoints.Max(p => p.Latitude);
-        var projectMaxLng = projectPoints.Max(p => p.Longitude);
+        var projectMinLat = projectPoints.Min(p => p.Latitude).LatDegreesToRadians();
+        var projectMinLng = projectPoints.Min(p => p.Longitude).LonDegreesToRadians();
+        var projectMaxLat = projectPoints.Max(p => p.Latitude).LatDegreesToRadians();
+        var projectMaxLng = projectPoints.Max(p => p.Longitude).LonDegreesToRadians();
         bool assign = bbox == null
           ? true
           : bbox.minLat < projectMinLat || bbox.minLat > projectMaxLat ||
@@ -206,7 +206,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           {
             foreach (var coordPair in coordList)
             {
-              points.Add(WGSPoint.CreatePoint(coordPair[1], coordPair[0]));//GeoJSON is lng/lat
+              points.Add(WGSPoint.CreatePoint(coordPair[1].LatDegreesToRadians(), coordPair[0].LonDegreesToRadians()));//GeoJSON is lng/lat
             }
           }
         }

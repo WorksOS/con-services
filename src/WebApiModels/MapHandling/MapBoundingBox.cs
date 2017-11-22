@@ -1,7 +1,7 @@
 ﻿namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
   /// <summary>
-  /// Model for map tile boundaing box. Lat/Lng are in degrees.
+  /// Model for map tile boundaing box. Lat/Lng are in radians.
   /// </summary>
   public class MapBoundingBox
   {

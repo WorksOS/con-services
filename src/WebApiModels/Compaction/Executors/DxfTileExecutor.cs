@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       //Calculate zoom level
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.topRightLat - request.bbox.bottomLeftLat, request.bbox.topRightLon - request.bbox.bottomLeftLon);
       int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
-      Point topLeftLatLng = new Point(request.bbox.topRightLat.latRadiansToDegrees(), request.bbox.bottomLeftLon.lonRadiansToDegrees());
+      Point topLeftLatLng = new Point(request.bbox.topRightLat.LatRadiansToDegrees(), request.bbox.bottomLeftLon.LonRadiansToDegrees());
       Point topLeftTile = WebMercatorProjection.LatLngToTile(topLeftLatLng, numTiles);
       log.LogDebug("DxfTileExecutor: zoomLevel={0}, numTiles={1}, xtile={2}, ytile={3}", zoomLevel, numTiles, topLeftTile.x, topLeftTile.y);
 

@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             int count = pdsPoints.Length / 2;
             for (int i = 0; i < count; i++)
             {
-              alignmentPoints.Add(new Point(pdsPoints[i].Lat.latRadiansToDegrees(), pdsPoints[i].Lon.lonRadiansToDegrees()));
+              alignmentPoints.Add(new Point(pdsPoints[i].Lat.LatRadiansToDegrees(), pdsPoints[i].Lon.LonRadiansToDegrees()));
             }
           }
         }

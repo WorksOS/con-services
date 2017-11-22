@@ -49,14 +49,15 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     }
 
     [TestMethod]
-    public void GetBoundingBoxDesignBoundaryFilter()
-    {
+    public void GetBoundingBoxPolygonAndDesignBoundaryFilter()
+    {  
+      //design boundary points: -115.018,36.208 -115.025,36.214 -115.123,36.17 -115.018,36.208
       DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(-1, null, 0);
       List<WGSPoint> polygonPoints = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(36.003, -115.145),
-        WGSPoint.CreatePoint(36.185, -115.765),
-        WGSPoint.CreatePoint(36.111, -115.445)
+        WGSPoint.CreatePoint(35.98.LatDegreesToRadians(), -115.11.LonDegreesToRadians()),
+        WGSPoint.CreatePoint(36.15.LatDegreesToRadians(), -115.74.LonDegreesToRadians()),
+        WGSPoint.CreatePoint(36.10.LatDegreesToRadians(), -115.39.LonDegreesToRadians())
       };
       Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, 
         polygonPoints, null, null, null, null, null, null, null, null, null, design, null, null, null, 
@@ -80,15 +81,15 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         var service = new BoundingBoxService(logger.Object, raptorClient.Object);
         var bbox = service.GetBoundingBox(project, filter, null, null, null);
         //bbox is a mixture of polgon and design boundary (see GeoJson)
-        Assert.AreEqual(-115.765, bbox.minLng);
-        Assert.AreEqual(36.003, bbox.minLat);
-        Assert.AreEqual(-115.018, bbox.maxLng);
-        Assert.AreEqual(36.214, bbox.maxLat);
+        Assert.AreEqual(-115.74.LonDegreesToRadians(), bbox.minLng);
+        Assert.AreEqual(35.98.LatDegreesToRadians(), bbox.minLat);
+        Assert.AreEqual(-115.018.LonDegreesToRadians(), bbox.maxLng);
+        Assert.AreEqual(36.214.LatDegreesToRadians(), bbox.maxLat);
       }
     }
 
     [TestMethod]
-    public void GetBoundingBoxPolygonAndDesignBoundaryFilter()
+    public void GetBoundingBoxDesignBoundaryFilter()
     {
       DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(-1, null, 0);
       Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null,
@@ -112,10 +113,11 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
         var service = new BoundingBoxService(logger.Object, raptorClient.Object);
         var bbox = service.GetBoundingBox(project, filter, null, null, null);
-        Assert.AreEqual(-115.123, bbox.minLng);
-        Assert.AreEqual(36.175, bbox.minLat);
-        Assert.AreEqual(-115.018, bbox.maxLng);
-        Assert.AreEqual(36.214, bbox.maxLat);
+        //Values are from GeoJson below
+        Assert.AreEqual(-115.123.LonDegreesToRadians(), bbox.minLng);
+        Assert.AreEqual(36.175.LatDegreesToRadians(), bbox.minLat);
+        Assert.AreEqual(-115.018.LonDegreesToRadians(), bbox.maxLng);
+        Assert.AreEqual(36.214.LatDegreesToRadians(), bbox.maxLat);
       }
     }
 
@@ -169,10 +171,10 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     public void GetBoundingBoxValidProductionDataExtents()
     {
       //Production data inside project boundary is valid
-      var prodDataMinLat = projMinLat + 1;
-      var prodDataMinLng = projMinLng + 1;
-      var prodDataMaxLat = projMaxLat - 1;
-      var prodDataMaxLng = projMaxLng - 1;
+      var prodDataMinLat = projMinLatRadians + 0.01;
+      var prodDataMinLng = projMinLngRadians + 0.01;
+      var prodDataMaxLat = projMaxLatRadians - 0.01;
+      var prodDataMaxLng = projMaxLngRadians - 0.01;
 
       var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
@@ -189,8 +191,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         {
           Coords = new TCoordPoint[]
           {
-            new TCoordPoint {X = prodDataMinLng.LonDegreesToRadians(), Y = prodDataMinLat.LatDegreesToRadians()},
-            new TCoordPoint {X = prodDataMaxLng.LonDegreesToRadians(), Y = prodDataMaxLat.LatDegreesToRadians()}
+            new TCoordPoint {X = prodDataMinLng, Y = prodDataMinLat},
+            new TCoordPoint {X = prodDataMaxLng, Y = prodDataMaxLat}
           }
         }
       };
@@ -201,20 +203,20 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var service = new BoundingBoxService(logger.Object, raptorClient.Object);
       var bbox = service.GetBoundingBox(project, null, DisplayMode.CCVSummary, null, null);
-      Assert.AreEqual(prodDataMinLat, bbox.minLat, 0.001); //0.001 To handle radians/degrees conversion
-      Assert.AreEqual(prodDataMaxLat, bbox.maxLat, 0.001);
-      Assert.AreEqual(prodDataMinLng, bbox.minLng, 0.001);
-      Assert.AreEqual(prodDataMaxLng, bbox.maxLng, 0.001);
+      Assert.AreEqual(prodDataMinLat, bbox.minLat);
+      Assert.AreEqual(prodDataMaxLat, bbox.maxLat);
+      Assert.AreEqual(prodDataMinLng, bbox.minLng);
+      Assert.AreEqual(prodDataMaxLng, bbox.maxLng);
     }
 
     [TestMethod]
     public void GetBoundingBoxInvalidProductionDataExtents()
     {
       //Production data outside project boundary is invalid
-      var prodDataMinLat = projMinLat - 10;
-      var prodDataMinLng = projMinLng - 10;
-      var prodDataMaxLat = projMaxLat + 10;
-      var prodDataMaxLng = projMaxLng + 10;
+      var prodDataMinLat = projMinLatRadians - 0.2;
+      var prodDataMinLng = projMinLngRadians - 0.2;
+      var prodDataMaxLat = projMaxLatRadians + 0.2;
+      var prodDataMaxLng = projMaxLngRadians + 0.2;
 
       var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
@@ -231,8 +233,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         {
           Coords = new TCoordPoint[]
           {
-            new TCoordPoint {X = prodDataMinLng.LonDegreesToRadians(), Y = prodDataMinLat.LatDegreesToRadians()},
-            new TCoordPoint {X = prodDataMaxLng.LonDegreesToRadians(), Y = prodDataMaxLat.LatDegreesToRadians()}
+            new TCoordPoint {X = prodDataMinLng, Y = prodDataMinLat},
+            new TCoordPoint {X = prodDataMaxLng, Y = prodDataMaxLat}
           }
         }
       };
@@ -243,10 +245,10 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var service = new BoundingBoxService(logger.Object, raptorClient.Object);
       var bbox = service.GetBoundingBox(project, null, DisplayMode.CCVSummary, null, null);
-      Assert.AreEqual(projMinLat, bbox.minLat);
-      Assert.AreEqual(projMaxLat, bbox.maxLat);
-      Assert.AreEqual(projMinLng, bbox.minLng);
-      Assert.AreEqual(projMaxLng, bbox.maxLng);
+      Assert.AreEqual(projMinLatRadians, bbox.minLat);
+      Assert.AreEqual(projMaxLatRadians, bbox.maxLat);
+      Assert.AreEqual(projMinLngRadians, bbox.minLng);
+      Assert.AreEqual(projMaxLngRadians, bbox.maxLng);
     }
 
     [TestMethod]
@@ -262,10 +264,10 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var service = new BoundingBoxService(logger.Object, raptorClient.Object);
       var bbox = service.GetBoundingBox(project, null, null, null, null);
-      Assert.AreEqual(projMinLat, bbox.minLat);
-      Assert.AreEqual(projMaxLat, bbox.maxLat);
-      Assert.AreEqual(projMinLng, bbox.minLng);
-      Assert.AreEqual(projMaxLng, bbox.maxLng);
+      Assert.AreEqual(projMinLatRadians, bbox.minLat);
+      Assert.AreEqual(projMaxLatRadians, bbox.maxLat);
+      Assert.AreEqual(projMinLngRadians, bbox.minLng);
+      Assert.AreEqual(projMaxLngRadians, bbox.maxLng);
     }
 
     [TestMethod]
@@ -281,19 +283,19 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var service = new BoundingBoxService(logger.Object, raptorClient.Object);
       var bbox = service.GetBoundingBox(project, null, DisplayMode.CCVSummary, null, null);
-      Assert.AreEqual(projMinLat, bbox.minLat);
-      Assert.AreEqual(projMaxLat, bbox.maxLat);
-      Assert.AreEqual(projMinLng, bbox.minLng);
-      Assert.AreEqual(projMaxLng, bbox.maxLng);
+      Assert.AreEqual(projMinLatRadians, bbox.minLat);
+      Assert.AreEqual(projMaxLatRadians, bbox.maxLat);
+      Assert.AreEqual(projMinLngRadians, bbox.minLng);
+      Assert.AreEqual(projMaxLngRadians, bbox.maxLng);
     }
 
 
     private static List<Point> projectPoints = new List<Point>
     {
-      new Point {y = 80.25, x = 12.67},
-      new Point {y = 90.85, x = 13.26},
-      new Point {y = 85.79, x = 20.44},
-      new Point {y = 82.15, x = 19.98}
+      new Point {y = 36.208, x = -115.018},
+      new Point {y = 36.145, x = -115.665},
+      new Point {y = 36.877, x = -115.109},
+      new Point {y = 36.103, x = -115.687}
     };
 
     private static ProjectDescriptor project = new ProjectDescriptor
@@ -302,10 +304,10 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       projectGeofenceWKT = TestUtils.GetWicketFromPoints(projectPoints)
     };
 
-    private static double projMinLat = projectPoints.Min(p => p.Latitude);
-    private static double projMinLng = projectPoints.Min(p => p.Longitude);
-    private static double projMaxLat = projectPoints.Max(p => p.Latitude);
-    private static double projMaxLng = projectPoints.Max(p => p.Longitude);
+    private static double projMinLatRadians = projectPoints.Min(p => p.Latitude).LatDegreesToRadians();
+    private static double projMinLngRadians = projectPoints.Min(p => p.Longitude).LonDegreesToRadians();
+    private static double projMaxLatRadians = projectPoints.Max(p => p.Latitude).LatDegreesToRadians();
+    private static double projMaxLngRadians = projectPoints.Max(p => p.Longitude).LonDegreesToRadians();
 
     private string designGeoJson = @"
       {

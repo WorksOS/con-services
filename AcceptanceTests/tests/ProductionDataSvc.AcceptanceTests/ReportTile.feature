@@ -4,7 +4,7 @@
 Scenario: Report Tile - DXF 
 	Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
-  And a filterUid ""
+  And a filterUid "7b2bd262-8355-44ba-938a-d50f9712dafc"
 	When I request a Report Tile
 	Then the Report Tile result should be
   """

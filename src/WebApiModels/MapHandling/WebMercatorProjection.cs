@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       return deg * (Math.PI / ONE_HALF_CIRCLE);
     }
 
-    [Obsolete("Use extension method latRadiansToDegrees or lonRadiansToDegrees")]
+    [Obsolete("Use extension method LatRadiansToDegrees or LonRadiansToDegrees")]
     public static double RadiansToDegrees(double rad)
     {
       return rad / (Math.PI / ONE_HALF_CIRCLE);

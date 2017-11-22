@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
@@ -58,8 +59,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             var sitePoints = TileServiceUtils.GeometryToPoints(site.GeometryWKT);
 
             //Exclude site if outside bbox
-            bool outside = sitePoints.Min(p => p.Latitude) < parameters.bbox.minLat || sitePoints.Max(p => p.Latitude) > parameters.bbox.maxLat ||
-                           sitePoints.Min(p => p.Longitude) < parameters.bbox.minLng || sitePoints.Max(p => p.Longitude) > parameters.bbox.maxLng;
+            bool outside = sitePoints.Min(p => p.Latitude).LatDegreesToRadians() < parameters.bbox.minLat || 
+                           sitePoints.Max(p => p.Latitude).LatDegreesToRadians() > parameters.bbox.maxLat ||
+                           sitePoints.Min(p => p.Longitude).LonDegreesToRadians() < parameters.bbox.minLng || 
+                           sitePoints.Max(p => p.Longitude).LonDegreesToRadians() > parameters.bbox.maxLng;
            
             if (!outside)
             {

@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.Common.Extensions
     /// </summary>
     /// <param name="lat"></param>
     /// <returns></returns>
-    public static double latRadiansToDegrees(this double lat)
+    public static double LatRadiansToDegrees(this double lat)
     {
       return lat.RadiansToDegrees();
     }
@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.Common.Extensions
     /// </summary>
     /// <param name="lon"></param>
     /// <returns></returns>
-    public static double lonRadiansToDegrees(this double lon)
+    public static double LonRadiansToDegrees(this double lon)
     {
       return lon.RadiansToDegrees();
     }
