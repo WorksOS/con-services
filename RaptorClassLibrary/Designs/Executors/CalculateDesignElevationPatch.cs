@@ -61,12 +61,10 @@ namespace VSS.Velociraptor.DesignProfiling.Executors
                                                  (uint)(Args.OriginY & ~SubGridTree.SubGridLocalKeyMask));
                 Result.CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
 
-                object DesignIndexClone = Design.CreateAccessContext(); // as TDQMTTMQuadTree;
-
                 Design.AcquireExclusiveInterlock();
                 try
                 {
-                    if (Design.InterpolateHeights(DesignIndexClone, Result.Cells, WorldOriginX, WorldOriginY, Args.CellSize, Args.DesignDescriptor.Offset))
+                    if (Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, Args.CellSize, Args.DesignDescriptor.Offset))
                     {
                         CalcResult = DesignProfilerRequestResult.OK;
                     }

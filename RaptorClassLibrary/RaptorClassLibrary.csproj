@@ -316,6 +316,7 @@
     <Compile Include="Surfaces\GridFabric\Arguments\SurfaceElevationPatchArgument.cs" />
     <Compile Include="Surfaces\GridFabric\ComputeFuncs\SurfaceElevationPatchComputeFunc.cs" />
     <Compile Include="Surfaces\GridFabric\Requests\SurfaceElevationPatchRequest.cs" />
+    <Compile Include="Surfaces\SurveyedSurfaceResultCache.cs" />
     <Compile Include="Surfaces\SurveyedSurface.cs" />
     <Compile Include="Surfaces\SurveyedSurfaces.cs" />
     <Compile Include="TAGFiles\Classes\Integrator\AggregatedDataIntegrator.cs" />

@@ -34,14 +34,12 @@ namespace VSS.Velociraptor.DesignProfiling
 
         public abstract void GetHeightRange(out double z1, out double z2);
 
-        public abstract bool InterpolateHeight(object DesignSearchContext,
-                                   ref object Hint,
+        public abstract bool InterpolateHeight(ref object Hint,
                                    double X, double Y,
                                    double Offset,
                                    out double Z);
 
-        public abstract bool InterpolateHeights(object DesignSearchContext,
-                                   float[,] Patch, // [TICSubGridCellPassData_HeightPtr] The receiver of the patch of elevations
+        public abstract bool InterpolateHeights(float[,] Patch, // [TICSubGridCellPassData_HeightPtr] The receiver of the patch of elevations
                                    double OriginX, double OriginY,
                                    double CellSize,
                                    double Offset);
@@ -52,8 +50,7 @@ namespace VSS.Velociraptor.DesignProfiling
         // to be in the filtered set. The Mask parameter allows the caller to restrict
         // the set of cells in the subgrid to be filtered, allowing additional spatial
         // filtering operations to be applied prior to this filtering step.
-        public abstract bool ComputeFilterPatch(object DesignSearchContext,
-                                  double StartStn, double EndStn, double LeftOffset, double RightOffset,
+        public abstract bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset,
                                   SubGridTreeBitmapSubGridBits Mask,
                                   ref SubGridTreeBitmapSubGridBits Patch,
                                   double OriginX, double OriginY,
@@ -67,8 +64,6 @@ namespace VSS.Velociraptor.DesignProfiling
         public bool IsStale { get; set; }
 
         public bool Locked => FLockCount > 0;
-
-        public abstract object CreateAccessContext();
 
         public abstract bool HasElevationDataForSubGridPatch(double X, double Y);
 

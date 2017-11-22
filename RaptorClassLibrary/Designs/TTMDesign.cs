@@ -9,6 +9,7 @@ using VSS.Velociraptor.Designs.TTM;
 using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.Velociraptor.DesignProfiling
@@ -31,8 +32,6 @@ namespace VSS.Velociraptor.DesignProfiling
 
         public TrimbleTINModel Data { get { return FData; } }
         public GenericSubGridTree<List<Triangle>> SpatialIndex { get { return FSpatialIndex; } }
-
-        public override object CreateAccessContext() => null; /* TDQMTTMQuadTree.Clone(FSpatialIndex, False); */
 
         private void AddTrianglePieceToElevationPatch(TriVertex H1, TriVertex H2, TriVertex V,
                                                       Triangle Tri,
@@ -518,8 +517,7 @@ namespace VSS.Velociraptor.DesignProfiling
             }
         }
 
-        public override bool ComputeFilterPatch(object DesignSearchContext,
-                                                double StartStn, double EndStn, double LeftOffset, double RightOffset,
+        public override bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset,
                                                 SubGridTreeBitmapSubGridBits Mask,
                                                 ref SubGridTreeBitmapSubGridBits Patch,
                                                 double OriginX, double OriginY,
@@ -528,7 +526,7 @@ namespace VSS.Velociraptor.DesignProfiling
         {
             float[,] Heights = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
-            if (InterpolateHeights(DesignSearchContext, Heights, OriginX, OriginY, CellSize, DesignDescriptor.Offset))
+            if (InterpolateHeights(Heights, OriginX, OriginY, CellSize, DesignDescriptor.Offset))
             {
                 // Iterate over the cell bitmask in Mask (ie: the cell this function is instructed to care about and remove cell fromn
                 // that mask where there is no non-null elevation in the heights calculated by InterpolateHeights. Return the result
@@ -686,15 +684,13 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <summary>
         /// Interpolates a single spot height fromn the design
         /// </summary>
-        /// <param name="DesignSearchContext"></param>
         /// <param name="Hint"></param>
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="Offset"></param>
         /// <param name="Z"></param>
         /// <returns></returns>
-        public override bool InterpolateHeight(object DesignSearchContext,
-                                               ref object Hint,
+        public override bool InterpolateHeight(ref object Hint,
                                                double X, double Y,
                                                double Offset,
                                                out double Z)
@@ -728,9 +724,7 @@ namespace VSS.Velociraptor.DesignProfiling
                 }
 
             }
-
-            // Get the interpolated height for the triangle (very slow without an index)
-
+            
             // Search in the subgrid triangle list for this subgrid from the spatial index
             Z = Consts.NullReal;
 
@@ -771,15 +765,13 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <summary>
         /// Interpolates heights from the design for all the cells in a subgrid
         /// </summary>
-        /// <param name="DesignSearchContext"></param>
         /// <param name="Patch"></param>
         /// <param name="OriginX"></param>
         /// <param name="OriginY"></param>
         /// <param name="CellSize"></param>
         /// <param name="Offset"></param>
         /// <returns></returns>
-        public override bool InterpolateHeights(object DesignSearchContext,
-                                                float[,] Patch, 
+        public override bool InterpolateHeights(float[,] Patch, 
                                                 double OriginX, double OriginY,
                                                 double CellSize,
                                                 double Offset)
@@ -792,26 +784,21 @@ namespace VSS.Velociraptor.DesignProfiling
 
             try
             {
-                for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+                SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                 {
-                    double CellSizeTimesI = CellSize * I;
-
-                    for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                    if (InterpolateHeight(ref Hint,
+                                         OriginXPlusHalfCellSize + (CellSize * x),
+                                         OriginYPlusHalfCellSize + (CellSize * y),
+                                         0, out double Z))
                     {
-                        if (InterpolateHeight(DesignSearchContext, ref Hint,
-                                             OriginXPlusHalfCellSize + CellSizeTimesI,
-                                             OriginYPlusHalfCellSize + (CellSize * J),
-                                             0, out double Z))
-                        {
-                            Patch[I, J] = (float)(Z + Offset);
-                            ValueCount++;
-                        }
-                        else
-                        {
-                            Patch[I, J] = Consts.NullHeight;
-                        }
+                        Patch[x, y] = (float)(Z + Offset);
+                        ValueCount++;
                     }
-                }
+                    else
+                    {
+                        Patch[x, y] = Consts.NullHeight;
+                    }
+                });
 
                 return ValueCount > 0;
             }
@@ -848,10 +835,17 @@ namespace VSS.Velociraptor.DesignProfiling
                 leaf.Items[SubGridX, SubGridY] = triangles;
             }
 
-            // Add the triangle to the cell
-            triangles.Add(tri);
+            // Add the triangle to the cell, but not if it is already there
+            if (!triangles.Any(t => t.Tag == tri.Tag))
+            {
+                triangles.Add(tri);
+            }
         }
 
+        /// <summary>
+        /// Build a spatial index for the triangles in the TIN surface by assinging each triangle to eavery subgrid it intersects with
+        /// </summary>
+        /// <returns></returns>
         private bool ConstructSpatialIndex()
         {
             // Read through all the triangles in the model and, for each triangle,

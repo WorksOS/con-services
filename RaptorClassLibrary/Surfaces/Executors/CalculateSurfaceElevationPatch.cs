@@ -43,7 +43,6 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
 
             DesignBase Design = null;
             ClientHeightAndTimeLeafSubGrid Patch = null;
-            object DesignIndexClone; //: TDQMTTMQuadTree;
             object Hint = null;
             DateTime AsAtDate;
             DesignLoadResult LockResult;
@@ -115,7 +114,6 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
                                 }
 
                                 AsAtDate = ThisSurveyedSurface.AsAtDate;
-                                DesignIndexClone = Design.CreateAccessContext(); // as TDQMTTMQuadTree;
                                 try
                                 {
                                     double Offset = ThisSurveyedSurface.DesignDescriptor.Offset;
@@ -124,8 +122,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
                                     // based on the processing bit mask passed in
                                     Args.ProcessingMap.ForEachSetBit((x, y) =>
                                     {
-                                        if (Design.InterpolateHeight(DesignIndexClone,
-                                                                     ref Hint,
+                                        if (Design.InterpolateHeight(ref Hint,
                                                                      OriginXPlusHalfCellSize + (CellSize * x),
                                                                      OriginYPlusHalfCellSize + (CellSize * y),
                                                                      Offset,
