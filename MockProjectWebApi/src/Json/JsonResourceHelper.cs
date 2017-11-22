@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.IO;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace MockProjectWebApi.Json
 {
@@ -11,21 +12,28 @@ namespace MockProjectWebApi.Json
 
     public static string GetFilterJson(string resourceName)
     {
-      return GetJsonFromEmbeddedResource($"MockProjectWebApi.Json.Filters.{resourceName}.json");
+      return GetJsonFromEmbeddedResource($"Filters.{resourceName}");
     }
 
-    public static string GetGoldenDataFilterJson(string resourceName)
+    public static string GetUserPreferencesJson(string resourceName)
     {
-      return GetJsonFromEmbeddedResource($"MockProjectWebApi.Json.Filters.GoldenData.{resourceName}.json");
+      return GetJsonFromEmbeddedResource($"UserPreferences.{resourceName}");
     }
 
+    public static string GetGoldenDataDimensionsFilterJson(string resourceName)
+    {
+      return GetJsonFromEmbeddedResource($"Filters.GoldenDataDimensions.{resourceName}");
+    }
     public static string GetDimensionsFilterJson(string resourceName)
     {
-      return GetJsonFromEmbeddedResource($"MockProjectWebApi.Json.Filters.Dimensions.{resourceName}.json");
+      return GetJsonFromEmbeddedResource($"Filters.Dimensions.{resourceName}");
     }
 
     private static string GetJsonFromEmbeddedResource(string resourceName)
     {
+      resourceName = $"MockProjectWebApi.Json.{resourceName}.json";
+
+
       using (var stream = Assembly.GetEntryAssembly().GetManifestResourceStream(resourceName))
       {
         if (stream == null)
@@ -33,9 +41,21 @@ namespace MockProjectWebApi.Json
           throw new Exception($"Error attempting to load resource '{resourceName}', stream cannot be null. Is the file marked as 'Embedded Resource'?");
         }
 
-        var json = new StreamReader(stream).ReadToEnd();
+        var json = DeserializeFromStream(stream);
+        return json;
+      }
+    }
 
-        return Regex.Replace(json, @"\s+", string.Empty);
+    private static string DeserializeFromStream(Stream stream)
+    {
+      var serializer = new JsonSerializer();
+
+      using (var sr = new StreamReader(stream))
+      using (var jsonTextReader = new JsonTextReader(sr))
+      {
+        var obj = serializer.Deserialize<JObject>(jsonTextReader);
+
+        return obj.ToString(Formatting.None);
       }
     }
   }
