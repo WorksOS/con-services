@@ -11,7 +11,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
   public class CompactionReportGridResult : RequestResult, IEquatable<CompactionReportGridResult>
   {
     #region Members
-    public string ReportData { get; set; }
+    public GridReport ReportData { get; set; }
 
     public int Code { get; set; }
 

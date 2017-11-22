@@ -5,12 +5,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   public class CompactionReportGridResult : ContractExecutionResult
   {
-    public ICompactionReport ReportData { get; private set; }
+    public GridReport ReportData { get; private set; }
 
     /// <summary>
     /// Create an instance of the CompactionReportGridResult class
     /// </summary>
-    public static CompactionReportGridResult CreateExportDataResult(ICompactionReport data, short resultCode)
+    public static CompactionReportGridResult CreateExportDataResult(GridReport data, short resultCode)
     {
       return new CompactionReportGridResult { ReportData = data };
     }

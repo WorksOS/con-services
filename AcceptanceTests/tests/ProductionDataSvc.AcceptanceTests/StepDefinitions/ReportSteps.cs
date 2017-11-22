@@ -153,8 +153,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       // Now get the actual results 
       Console.WriteLine("Actual:" + gridReportRequester.CurrentResponse);
-      var actualResult = JsonConvert.DeserializeObject<GridReport>(gridReportRequester.CurrentResponse.ReportData);
-      var expectedResult = JsonConvert.DeserializeObject<GridReport>(gridReportRequester.ResponseRepo[resultName].ReportData);
+      //var actualResult = JsonConvert.DeserializeObject<GridReport>(gridReportRequester.CurrentResponse.ReportData);
+      //var expectedResult = JsonConvert.DeserializeObject<GridReport>(gridReportRequester.ResponseRepo[resultName].ReportData);
+      var actualResult = gridReportRequester.CurrentResponse.ReportData;
+      var expectedResult = gridReportRequester.ResponseRepo[resultName].ReportData;
 
       // Sort the rows 
       var actualrows = actualResult.Rows.OrderBy(x => x.Northing).ThenBy(x => x.Easting);
