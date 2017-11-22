@@ -355,7 +355,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
                     {
                         ClientGridAsHeightAndTime = ClientGrid as ClientHeightAndTimeLeafSubGrid;
-                        // Temporarily just fill the processing map
+
+                        // Temporarily just fill the processing map as not doing so results in no surveyd surfaced information being requested
                         ProcessingMap.Fill();
 
                        // ProcessingMap.Assign(ClientGridAsHeightAndTime.FilterMap);
@@ -456,8 +457,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                             return Result;
                         }
 
-                        ClientHeightLeafSubGrid temp = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTree.DefaultIndexOriginOffset);
-                        temp.Assign(SurfaceElevations);
+                        //ClientHeightLeafSubGrid temp = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTree.DefaultIndexOriginOffset);
+                        //temp.Assign(SurfaceElevations);
 
                         // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
                         /*
