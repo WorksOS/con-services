@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   webapi:
     build: ./artifacts/VSS.Productivity3D.Scheduler.WebApi
