@@ -50,13 +50,13 @@ namespace VSS.Productivity3D.Common.Filters
         var eventAttributes = new Dictionary<string, object>
         {
           {"endpoint", context.Request.Path.ToString()},
-          {"userUid", principal.Identity.Name},
-          {"customerUid", principal.CustomerUid},
-          {"userName", principal.userEmail},
-          {"customerName", principal.customerName},
+          {"userUid", principal.Identity.Name.ToString()},
+          {"customerUid", principal.CustomerUid.ToString()},
+          {"userName", principal.userEmail.ToString()},
+          {"customerName", principal.customerName.ToString()},
           {"executionTime",(Single) Convert.ToDouble(watch.ElapsedMilliseconds)},
-          {"projectUid",projectUid },
-          {"origin",origin },
+          {"projectUid",projectUid.ToString() },
+          {"origin",origin.ToString() },
           {"result", context.Response.StatusCode.ToString() }
         };
 
