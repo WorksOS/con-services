@@ -152,6 +152,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       Assert.AreEqual("success", gridReportRequester.CurrentResponse.Message);
 
       // Now get the actual results 
+      Console.WriteLine("Actual:" + gridReportRequester.CurrentResponse);
       var actualResult = JsonConvert.DeserializeObject<GridReport>(gridReportRequester.CurrentResponse.ReportData);
       var expectedResult = JsonConvert.DeserializeObject<GridReport>(gridReportRequester.ResponseRepo[resultName].ReportData);
 
