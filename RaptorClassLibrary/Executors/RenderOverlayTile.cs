@@ -546,14 +546,15 @@ namespace VSS.VisionLink.Raptor.Executors
                 return null;
             }
 
+            // Temporarily remove tile pruning on intersection test
             // Intersect the site model extents with the extents requested by the caller
-            if (!SpatialExtents.Intersect(RotatedTileBoundingExtents).IsValidPlanExtent)
+            /*if (!SpatialExtents.Intersect(RotatedTileBoundingExtents).IsValidPlanExtent)
             {
                 ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
 
                 // RenderTransparentTile();
                 return new Bitmap(NPixelsX, NPixelsY);
-            }
+            }*/
 
             // Obtain the subgrid existence map for the project
             // Retrieve the existence map for the datamodel
