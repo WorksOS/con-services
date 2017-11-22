@@ -68,7 +68,7 @@ namespace MockProjectWebApi.Controllers
             ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
             CustomerUid = "CutFillAcceptanceTest",
             ImportedFileType = ImportedFileType.DesignSurface,
-            ImportedFileUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
+            ImportedFileUid = "127c9897-cdf5-4dcf-b46c-ef8fba01f64d",
             LegacyFileId = 3,
             IsActivated = true
           },
@@ -78,7 +78,7 @@ namespace MockProjectWebApi.Controllers
             ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
             CustomerUid = "CutFillAcceptanceTest",
             ImportedFileType = ImportedFileType.DesignSurface,
-            ImportedFileUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
+            ImportedFileUid = "12e86a90-b301-446e-8e37-7879f1d8fd39",
             LegacyFileId = 111,
             IsActivated = true
           },
@@ -229,7 +229,7 @@ namespace MockProjectWebApi.Controllers
         ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "DesignSurfaceAcceptanceTest",
         ImportedFileType = ImportedFileType.DesignSurface,
-        ImportedFileUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
+        ImportedFileUid = "12e86a90-b301-446e-8e37-7879f1d8fd39",
         LegacyFileId = 15176,
         IsActivated = true
       },
