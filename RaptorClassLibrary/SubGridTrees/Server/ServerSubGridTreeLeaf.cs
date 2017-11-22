@@ -114,6 +114,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
         }
 
+        /// <summary>
+        ///  Default no-arg constructor
+        /// </summary>
+        public ServerSubGridTreeLeaf()
+        {
+
+        }
+
         public ServerSubGridTreeLeaf(ISubGridTree owner,
                                      ISubGrid parent,
                                      byte level) : base(owner, parent, level)

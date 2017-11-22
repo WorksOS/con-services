@@ -18,6 +18,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         public T[,] Items = null;
 
         /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public GenericLeafSubGrid()
+        {
+            Clear();
+        }
+
+        /// <summary>
         /// Main constructor. Creates the lcoal generic Items[,] array and delegates to base(...)
         /// </summary>
         /// <param name="owner"></param>

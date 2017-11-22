@@ -27,6 +27,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private ISubGrid[,] Cells = null;
 
         /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public NodeSubGrid()
+        {
+            SparseCellCount = 0;
+            Cells = null;
+        }
+
+        /// <summary>
         /// Base constructor for a Node type subgrid.
         /// </summary>
         /// <param name="owner"></param>

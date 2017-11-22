@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
     /// </summary>
     /// <typeparam name="Node"></typeparam>
     /// <typeparam name="Leaf"></typeparam>
-    public class SubGridFactory<Node, Leaf> : ISubGridFactory where Node : INodeSubGrid where Leaf : ILeafSubGrid
+    public class SubGridFactory<Node, Leaf> : ISubGridFactory where Node : INodeSubGrid, new() where Leaf : ILeafSubGrid, new()
     {
         /// <summary>
         /// Construct either a node or a leaf subgrid for the given sub grid tree at the given level using the generic
@@ -30,9 +30,25 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 throw new ArgumentException(String.Format("Invalid treeLevel in subgrid factory: {0}, range is 1-{1}", treeLevel, tree.NumLevels), "treeLevel");
             }
 
-            Type NodeType = (treeLevel < tree.NumLevels) ? typeof(Node) : typeof(Leaf);
+            //Type NodeType = (treeLevel < tree.NumLevels) ? typeof(Node) : typeof(Leaf);
+            //return (ISubGrid)Activator.CreateInstance(NodeType, tree, null, treeLevel);
 
-            return (ISubGrid)Activator.CreateInstance(NodeType, tree, null, treeLevel /*, tree.CellSize, tree.IndexOriginOffset*/);
+            if (treeLevel < tree.NumLevels)
+            {
+                return new Node()
+                {
+                    Owner = tree,
+                    Level = treeLevel
+                };
+            }
+            else
+            {
+                return new Leaf()
+                {
+                    Owner = tree,
+                    Level = treeLevel
+                };
+            }
         }
     }
 }

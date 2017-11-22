@@ -44,6 +44,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         {
         }
 
+        /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
         public LeafSubGridBase() : base(null, null, SubGridTree.SubGridTreeLevels)
         {
 

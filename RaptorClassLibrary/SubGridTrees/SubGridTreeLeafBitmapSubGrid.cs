@@ -35,6 +35,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         }
 
         /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public SubGridTreeLeafBitmapSubGrid()
+        {
+            Bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+        }
+
+        /// <summary>
         /// Constructor taking the tree reference, parent and level of the subgrid to be created
         /// </summary>
         /// <param name="owner"></param>

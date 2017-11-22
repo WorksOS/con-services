@@ -101,6 +101,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         public virtual void SetDirty(bool value) => dirty = value;
 
         /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public SubGrid()
+        {
+
+        }
+
+        /// <summary>
         /// Basic constructor used to create base subgrid types that are not concerned with cell size
         /// or subgrid tree index origin offset aspects
         /// </summary>
@@ -109,7 +117,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="level"></param>
         public SubGrid(ISubGridTree owner, ISubGrid parent, byte level) : base()
         {
-            // Assert there is an owning tree (things don't work well without one!
+            // Assert there is an owning tree (things don't work well without one!)
             if (owner == null)
             {
               //  throw new ArgumentException("Owner cannot be null when creating a subgrid", "owner");
