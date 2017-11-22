@@ -18,6 +18,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     protected ILoggerFactory Logger;
     protected string FileSpaceId;
     protected IRaptorProxy RaptorProxy;
+    protected string JwtToken;
 
     /// <summary>
     /// </summary>
@@ -38,6 +39,24 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         throw new InvalidOperationException(
           "ImportedFileSynchroniser unable to establish filespaceId");
       }
+
+      // application token for "3dPmScheduler" to access 3dpm NotificationController
+      JwtToken = ConfigStore.GetValueString("RAPTOR_JWT_TOKEN");
+      if (string.IsNullOrEmpty(FileSpaceId))
+      {
+        throw new InvalidOperationException(
+          "ImportedFileSynchroniser unable to establish filespaceId");
+      }
+    }
+
+    private Dictionary<string, string> CustomHeaders(string customerUid)
+    {
+      var customHeaders = new Dictionary<string, string>()
+      {
+        { "X-JWT-Assertion", JwtToken },
+        { "X-VisionLink-CustomerUid", customerUid }
+      };
+      return customHeaders;
     }
 
     /// <summary>
@@ -45,16 +64,14 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task<bool> NotifyRaptorFileCreatedInCGenAsync(Guid projectUid,
-      ImportedFileType importedFileType,
+    protected async Task<bool> NotifyRaptorFileCreatedInCGenAsync(string customerUid, Guid projectUid, ImportedFileType importedFileType,
       Guid importedFileUid, string fileDescriptor, long legacyImportedFileId, DxfUnitsType dxfUnitsType)
     {
       var startUtc = DateTime.UtcNow;
       var isNotified = false;
 
       BaseDataResult notificationResult = null;
-      // todo need to generate an application token for "3dPmScheduler" 
-      IDictionary<string, string> customHeaders = null;
+      var customHeaders = CustomHeaders(customerUid);
       try
       {
         notificationResult = await RaptorProxy
@@ -66,7 +83,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         // proceed with sync, but send alert to NewRelic
         var newRelicAttributes = new Dictionary<string, object> {
           { "message", string.Format($"AddFile in RaptorServices failed with exception {e.Message}") },
-          { "customHeaders", customHeaders},
+          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid},
           { "fileDescriptor", fileDescriptor},
@@ -82,7 +99,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         // proceed with sync, but send alert to NewRelic
         var newRelicAttributes = new Dictionary<string, object> {
           { "message", string.Format($"AddFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}") },
-          { "customHeaders", customHeaders},
+          { "customHeaders",JsonConvert.SerializeObject(customHeaders)},
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid},
           { "fileDescriptor", fileDescriptor},
@@ -103,14 +120,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task<bool> NotifyRaptorFileUpdatedInCGen(Guid projectUid, Guid importedFileUid)
+    protected async Task<bool> NotifyRaptorFileUpdatedInCGen(string customerUid, Guid projectUid, Guid importedFileUid)
     {
       var startUtc = DateTime.UtcNow;
       var isNotified = false;
 
       BaseDataResult notificationResult = null;
-      // todo need to generate an application token for "3dPmScheduler" 
-      IDictionary<string, string> customHeaders = null;
+      var customHeaders = CustomHeaders(customerUid);
       try
       {
         notificationResult = await RaptorProxy
@@ -123,7 +139,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         // proceed with sync, but send alert to NewRelic
         var newRelicAttributes = new Dictionary<string, object> {
           { "message", string.Format($"UpdateFile in RaptorServices failed with exception {e.Message}") },
-          { "customHeaders", customHeaders},
+          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid}
         };
@@ -137,7 +153,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         // proceed with sync, but send alert to NewRelic
         var newRelicAttributes = new Dictionary<string, object> {
           { "message", string.Format($"UpdateFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}") },
-          { "customHeaders", customHeaders},
+          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid}
         };
@@ -156,20 +172,18 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async System.Threading.Tasks.Task<bool> NotifyRaptorFileDeletedInCGenAsync(Guid projectUid,
-      ImportedFileType importedFileType,
+    protected async System.Threading.Tasks.Task<bool> NotifyRaptorFileDeletedInCGenAsync(string customerUid, Guid projectUid,
       Guid importedFileUid, string fileDescriptor, long legacyImportedFileId)
     {
       var startUtc = DateTime.UtcNow;
       var isNotified = false;
 
       BaseDataResult notificationResult = null;
-      // todo need to generate an application token for "3dPmScheduler" 
-      IDictionary<string, string> customHeaders = null;
+      var customHeaders = CustomHeaders(customerUid);
       try
       {
         notificationResult = await RaptorProxy
-          .DeleteFile(projectUid, importedFileType, importedFileUid, fileDescriptor, legacyImportedFileId, customHeaders)
+          .DeleteFile(projectUid, ImportedFileType.SurveyedSurface, importedFileUid, fileDescriptor, legacyImportedFileId, customHeaders)
           .ConfigureAwait(false);
       }
       catch (Exception e)
@@ -177,7 +191,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         // proceed with sync, but send alert to NewRelic
         var newRelicAttributes = new Dictionary<string, object> {
           { "message", string.Format($"DeleteFile in RaptorServices failed with exception {e.Message}") },
-          { "customHeaders", customHeaders},
+          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid},
           { "fileDescriptor", fileDescriptor},
@@ -193,7 +207,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         // proceed with sync, but send alert to NewRelic
         var newRelicAttributes = new Dictionary<string, object> {
           { "message", string.Format($"DeleteFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}") },
-          { "customHeaders", customHeaders},
+          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid},
           { "fileDescriptor", fileDescriptor},

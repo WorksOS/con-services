@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
           // Notify 3dpm of SS file created via Legacy
           if (projectEvent.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
-            await NotifyRaptorFileCreatedInCGenAsync(Guid.Parse(projectEvent.ProjectUid), projectEvent.ImportedFileType,
+            await NotifyRaptorFileCreatedInCGenAsync(projectEvent.CustomerUid, Guid.Parse(projectEvent.ProjectUid), projectEvent.ImportedFileType,
                 Guid.Parse(projectEvent.ImportedFileUid), projectEvent.FileDescriptor,
                 projectEvent.LegacyImportedFileId.Value, projectEvent.DxfUnitsType)
               .ConfigureAwait(false);
@@ -69,7 +69,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           var newRelicAttributes = new Dictionary<string, object>
           {
             {"message", "SS file created in NhOp, now created in Project."},
-            {"project", projectEvent}
+            { "projectUid", projectEvent.ProjectUid},
+            { "importedFileUid", projectEvent.ImportedFileUid},
+            { "fileDescriptor", projectEvent.FileDescriptor},
+            { "legacyImportedFileId", projectEvent.LegacyImportedFileId}
           };
           NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
           fileListNhOp.RemoveAt(0);
@@ -86,7 +89,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             var newRelicAttributes = new Dictionary<string, object>
             {
               {"message", "SS file deleted in Project, now deleted in NhOp."},
-              {"project", gotMatchingProject}
+              { "projectUid", gotMatchingProject.ProjectUid},
+              { "importedFileUid", gotMatchingProject.ImportedFileUid},
+              { "fileDescriptor", gotMatchingProject.FileDescriptor},
+              { "legacyImportedFileId", gotMatchingProject.LegacyImportedFileId}
             };
             NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
           }
@@ -108,7 +114,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 var newRelicAttributes = new Dictionary<string, object>
                 {
                   {"message", "SS file updated in project, now updated in NhOp."},
-                  {"project", gotMatchingProject}
+                  { "projectUid", gotMatchingProject.ProjectUid},
+                  { "importedFileUid", gotMatchingProject.ImportedFileUid},
+                  { "fileDescriptor", gotMatchingProject.FileDescriptor},
+                  { "legacyImportedFileId", gotMatchingProject.LegacyImportedFileId}
                 };
                 NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               }
@@ -123,14 +132,17 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 // Notify 3dpm of SS file updated via Legacy
                 if (gotMatchingProject.LegacyImportedFileId != null
                 ) // Note that LegacyImportedFileId will always be !null 
-                  await NotifyRaptorFileUpdatedInCGen(Guid.Parse(gotMatchingProject.ProjectUid),
+                  await NotifyRaptorFileUpdatedInCGen(gotMatchingProject.CustomerUid, Guid.Parse(gotMatchingProject.ProjectUid),
                       Guid.Parse(gotMatchingProject.ImportedFileUid))
                     .ConfigureAwait(false);
 
                 var newRelicAttributes = new Dictionary<string, object>
                 {
                   {"message", "SS file updated in NhOp, now updated in Project."},
-                  {"project", gotMatchingProject}
+                  { "projectUid", gotMatchingProject.ProjectUid},
+                  { "importedFileUid", gotMatchingProject.ImportedFileUid},
+                  { "fileDescriptor", gotMatchingProject.FileDescriptor},
+                  { "legacyImportedFileId", gotMatchingProject.LegacyImportedFileId}
                 };
                 NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               }
@@ -150,7 +162,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         var newRelicAttributes = new Dictionary<string, object>
         {
           {"message", string.Format($"ImportedFileSynchroniser internal error as fileListNhOp list should be empty")},
-          {"fileListNhOp", fileListNhOp}
+          {"fileListNhOpCount", fileListNhOp.Count}
         };
         NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc,
           (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
@@ -180,14 +192,16 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
             // Notify 3dpm of SS file deleted via Legacy
             if (ifp.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
-              await NotifyRaptorFileDeletedInCGenAsync(Guid.Parse(ifp.ProjectUid), ifp.ImportedFileType,
-                  Guid.Parse(ifp.ImportedFileUid), ifp.FileDescriptor, (long) ifp.LegacyImportedFileId)
+              await NotifyRaptorFileDeletedInCGenAsync(ifp.CustomerUid, Guid.Parse(ifp.ProjectUid), Guid.Parse(ifp.ImportedFileUid), ifp.FileDescriptor, (long) ifp.LegacyImportedFileId)
                 .ConfigureAwait(false);
             
             var newRelicAttributes = new Dictionary<string, object>
             {
               {"message", "SS file deleted in NhOp, now deleted from Project."},
-              {"project", ifp}
+              { "projectUid", ifp.ProjectUid},
+              { "importedFileUid", ifp.ImportedFileUid},
+              { "fileDescriptor", ifp.FileDescriptor},
+              { "legacyImportedFileId", ifp.LegacyImportedFileId}
             };
             NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
             fileListProject.RemoveAt(0);
@@ -200,7 +214,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               var newRelicAttributes = new Dictionary<string, object>
               {
                 {"message", "SS file in Project which has no legacyCustomerId so cannot be synced to NhOp."},
-                {"project", ifp}
+                { "projectUid", ifp.ProjectUid},
+                { "importedFileUid", ifp.ImportedFileUid},
+                { "fileDescriptor", ifp.FileDescriptor},
+                { "legacyImportedFileId", ifp.LegacyImportedFileId}
               };
               NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               fileListProject.RemoveAt(0);
@@ -217,7 +234,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               var newRelicAttributes = new Dictionary<string, object>
               {
                 {"message", "SS file created in project, now created in NhOp."},
-                {"project", ifp}
+                { "projectUid", ifp.ProjectUid},
+                { "importedFileUid", ifp.ImportedFileUid},
+                { "fileDescriptor", ifp.FileDescriptor},
+                { "legacyImportedFileId", ifp.LegacyImportedFileId}
               };
               NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               fileListProject.RemoveAt(0);
@@ -232,7 +252,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         var newRelicAttributes = new Dictionary<string, object>
         {
           {"message", string.Format($"ImportedFileSynchroniser internal error as fileListProject list should be empty")},
-          {"fileListProject", fileListProject}
+          {"fileListProjectCount", fileListProject.Count}
         };
         NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc,
           (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);

@@ -20,9 +20,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
 
       if (eventAttributes != null)
       {
-        Console.WriteLine($"JeannieDebugbefore  eventAttributes {JsonConvert.SerializeObject(eventAttributes)} fullEventAttributes {JsonConvert.SerializeObject(fullEventAttributes)} ");
         fullEventAttributes.AddRange(eventAttributes);
-        Console.WriteLine($"JeannieDebugafter fullEventAttributes {JsonConvert.SerializeObject(fullEventAttributes)} ");
       }
 
 #if NET_4_7
