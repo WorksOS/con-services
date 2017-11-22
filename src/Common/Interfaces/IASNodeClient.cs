@@ -22,6 +22,7 @@ using SVOICStatistics;
 using SVOICVolumeCalculationsDecls;
 using System;
 using System.IO;
+using ASNode.GridReport.RPC;
 using VLPDDecls;
 
 namespace VSS.Productivity3D.Common.Interfaces
@@ -265,7 +266,14 @@ namespace VSS.Productivity3D.Common.Interfaces
     bool GetCutFillDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
       TCutFillSettings cutFillSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TCutFillDetails cutFillDetails);
-      
 
+    /// <summary>
+    /// Gets a grid report of the production data from Raptor.
+    /// </summary>
+    /// <param name="args">Set of the grid report parameters.</param>
+    /// <param name="dataReport">The reports data.</param>
+    /// <returns>The Raptor's request result code.</returns>
+    /// 
+    int GetReportGrid(TASNodeServiceRPCVerb_GridReport_Args args, out MemoryStream dataReport);
   }
 }
