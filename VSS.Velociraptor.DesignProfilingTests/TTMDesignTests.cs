@@ -114,7 +114,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             TTMDesign design = LoadTheDesign();
 
             object Hint = null;
-            bool result = design.InterpolateHeight(null, ref Hint, 247500.0, 193350.0, 0, out double Z);
+            bool result = design.InterpolateHeight(ref Hint, 247500.0, 193350.0, 0, out double Z);
 
             Assert.IsTrue(result, "Height interpolation returned false");
             Assert.IsTrue(Z != Consts.NullReal, "Interpolated heighth value is null");
@@ -127,7 +127,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
 
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
-            bool result = design.InterpolateHeights(null, Patch, 247500.0, 193350.0, SubGridTree.DefaultCellSize, 0);
+            bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTree.DefaultCellSize, 0);
 
             Assert.IsTrue(result, "Heights interpolation returned false");
 //            Assert.IsTrue(Z != Consts.NullReal, "Interpolated heighth value is null");

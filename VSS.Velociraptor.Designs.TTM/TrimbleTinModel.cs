@@ -327,12 +327,11 @@ namespace VSS.Velociraptor.Designs.TTM
 
         // procedure RemoveDuplicateTriangles;
 
-        public static bool IsTTMFile(string FileName, ref string ErrorMsg)
+        public static bool IsTTMFile(string FileName, out string ErrorMsg)
         {
+            ErrorMsg = "Error reading header";
             try
             {
-                ErrorMsg = "Error reading header";
-
                 TTMHeader Header = TTMHeader.NewHeader();
 
                 using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -342,7 +341,8 @@ namespace VSS.Velociraptor.Designs.TTM
                         Header.Read(reader);
 
                         // Check signature
-                        if (!Consts.TTMFileIdentifier.Equals(ASCIIEncoding.ASCII.GetString(Header.FileSignature)))
+                        string signature = ASCIIEncoding.ASCII.GetString(Header.FileSignature).Substring(0, Consts.TTMFileIdentifier.Length);
+                        if (!Consts.TTMFileIdentifier.Equals(signature))
                         {
                             ErrorMsg = "File is not a Trimble TIN Model.";
                             return false;
@@ -386,7 +386,8 @@ namespace VSS.Velociraptor.Designs.TTM
                         Header.Read(reader);
 
                         // Check signature
-                        if (!Consts.TTMFileIdentifier.Equals(ASCIIEncoding.ASCII.GetString(Header.FileSignature)))
+                        string signature = ASCIIEncoding.ASCII.GetString(Header.FileSignature).Substring(0, Consts.TTMFileIdentifier.Length);
+                        if (!Consts.TTMFileIdentifier.Equals(signature))
                         {
                             return false;
                         }

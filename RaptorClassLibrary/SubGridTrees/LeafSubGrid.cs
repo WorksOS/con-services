@@ -14,6 +14,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
     /// </summary>
     public class LeafSubGrid : LeafSubGridBase, ILeafSubGrid
     {
+        /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public LeafSubGrid()
+        {
+
+        }
+
         public LeafSubGrid(ISubGridTree owner,
                            ISubGrid parent,
                            byte level) : base(owner, parent, level)

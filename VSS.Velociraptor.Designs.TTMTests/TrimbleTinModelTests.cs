@@ -93,7 +93,7 @@ namespace VSS.Velociraptor.Designs.TTM.Tests
         [TestMethod()]
         public void IsTTMFileTest()
         {
-            Assert.Fail();
+            Assert.IsTrue(TrimbleTINModel.IsTTMFile(@"C:\Temp\Bug36372.ttm", out string error), $"File is not a TTM file when it should be with error='{error}'");
         }
 
         [TestMethod()]
