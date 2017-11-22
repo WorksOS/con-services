@@ -69,7 +69,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <summary>
         /// A subgrid bit mask tree identifying all the surveyd surface subgrids that require processing
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask SurveydSurfacOnlyeMask { get; set; } = null;
+        public SubGridTreeSubGridExistenceBitMask SurveyedSurfaceOnlyMask { get; set; } = null;
 
         /// <summary>
         /// The set of filters to be applied to the subgrids being processed
@@ -98,7 +98,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <param name="requestedGridDataType"></param>
         /// <param name="includeSurveyedSurfaceInformation"></param>
         /// <param name="prodDataMask"></param>
-        /// <param name="surveydSurfacOnlyeMask"></param>
+        /// <param name="surveyedSurfacOnlyeMask"></param>
         /// <param name="filters"></param>
         public SubGridRequests(ITask task, 
                                long siteModelID, 
@@ -107,7 +107,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
                                GridDataType requestedGridDataType, 
                                bool includeSurveyedSurfaceInformation,
                                SubGridTreeSubGridExistenceBitMask prodDataMask,
-                               SubGridTreeSubGridExistenceBitMask surveydSurfacOnlyeMask,
+                               SubGridTreeSubGridExistenceBitMask surveyedSurfaceOnlyMask,
                                FilterSet filters) : this()
         {
             Task = task;
@@ -116,7 +116,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             RequestedGridDataType = requestedGridDataType;
             IncludeSurveyedSurfaceInformation = includeSurveyedSurfaceInformation;
             ProdDataMask = prodDataMask;
-            SurveydSurfacOnlyeMask = surveydSurfacOnlyeMask;
+            SurveyedSurfaceOnlyMask = surveyedSurfaceOnlyMask;
             Filters = filters;
             RaptorNodeID = raptorNodeID;
         }
@@ -127,19 +127,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <returns></returns>
         private SubGridsRequestArgument PrepareArgument()
         {
-            using (MemoryStream ProdDataMS = new MemoryStream(), SurveydSurfaceMS = new MemoryStream())
+            using (MemoryStream ProdDataMS = new MemoryStream(), SurveyedSurfaceMS = new MemoryStream())
             {
-                using (BinaryWriter ProdDataWriter = new BinaryWriter(ProdDataMS), SurveydSurfaceWriter = new BinaryWriter(SurveydSurfaceMS))
+                using (BinaryWriter ProdDataWriter = new BinaryWriter(ProdDataMS), SurveyedSurfaceWriter = new BinaryWriter(SurveyedSurfaceMS))
                 {
                     SubGridTreePersistor.Write(ProdDataMask, ProdDataWriter);
-                    SubGridTreePersistor.Write(SurveydSurfacOnlyeMask, SurveydSurfaceWriter);
+                    SubGridTreePersistor.Write(SurveyedSurfaceOnlyMask, SurveyedSurfaceWriter);
 
                     return new SubGridsRequestArgument(SiteModelID,
                                                        RequestID,
                                                        RequestedGridDataType,
                                                        IncludeSurveyedSurfaceInformation,
                                                        ProdDataMS.ToArray(),
-                                                       SurveydSurfaceMS.ToArray(),
+                                                       SurveyedSurfaceMS.ToArray(),
                                                        Filters,
                                                        String.Format("SubGridRequest:{0}", RequestID),
                                                        RaptorNodeID);
@@ -155,7 +155,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         public ICollection<SubGridRequestsResponse> Execute()
         {
             // Make sure things look kosher
-            if (ProdDataMask == null || SurveydSurfacOnlyeMask == null || Filters == null || RequestID == -1)
+            if (ProdDataMask == null || SurveyedSurfaceOnlyMask == null || Filters == null || RequestID == -1)
             {
                 throw new ArgumentException("Mask, Filters or RequestID not initialised");
             }
@@ -167,7 +167,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
 
             Log.InfoFormat("Prepared argument has RaptorNodeID = {0}", arg.RaptorNodeID);
             Log.Info(String.Format("Production Data mask in argument to renderer contains {0} subgrids", ProdDataMask.CountBits()));
-            Log.Info(String.Format("Surveyd Surface mask in argument to renderer contains {0} subgrids", SurveydSurfacOnlyeMask.CountBits()));
+            Log.Info(String.Format("Surveyd Surface mask in argument to renderer contains {0} subgrids", SurveyedSurfaceOnlyMask.CountBits()));
 
             // Construct the function to be used
             IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse> func = new SubGridsRequestComputeFunc();
