@@ -72,7 +72,7 @@ namespace ProductionDataSvc.AcceptanceTests
         {
 #line 4
 #line 5
- testRunner.Given("the Tag file service URI \"/api/v1/tagfiles\" and request repo \"TagFileRequest.json" +
+  testRunner.Given("the Tag file service URI \"/api/v1/tagfiles\" and request repo \"TagFileRequest.json" +
                     "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
         }
@@ -88,9 +88,9 @@ this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 8
- testRunner.When("I POST a tag file with code 100 from the repository", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.When("I POST a tag file with code 100 from the repository", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 9
- testRunner.Then("the Tag Process Service response should contain Code 0 and Message \"success\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then("the Tag Process Service response should contain Code 0 and Message \"success\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -103,9 +103,9 @@ this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 12
- testRunner.When(string.Format("I POST a tag file with Code {0} from the repository expecting bad request return", code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.When(string.Format("I POST a tag file with Code {0} from the repository expecting bad request return", code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 13
- testRunner.Then(string.Format("the Tag Process Service response should contain Code {0} and Message {1}", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then(string.Format("the Tag Process Service response should contain Code {0} and Message {1}", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -157,10 +157,10 @@ this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 21
- testRunner.When(string.Format("I POST a Tag file with name \"{0}\" from the repository expecting bad request retur" +
+  testRunner.When(string.Format("I POST a Tag file with name \"{0}\" from the repository expecting bad request retur" +
                         "n", paramName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 22
- testRunner.Then(string.Format("the Tag Process Service response should contain Error Code {0}", code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then(string.Format("the Tag Process Service response should contain Error Code {0}", code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

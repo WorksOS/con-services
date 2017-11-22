@@ -83,8 +83,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           break;
         case DisplayMode.CCV:
           const int STEP = 100;
-          // Decimal values: 2971523, 4430812, 12509169, 10341991, 7053374, 3828517, 16174803, 13990524, 12660791, 15105570, 14785888, 15190446, 5182823, 9259433, 13740258, 1971179
-          List<uint> cmvColors = new List<uint> { 0x2D5783, 0x439BDC, 0xBEDFF1, 0x9DCE67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037, 0xE67E22, 0xE19D60, 0xE7C9AE, 0x4F1567, 0x8D49A9, 0xD1A8E2, 0x1E13EB };
+          // Decimal values: 87963, 2388910, 4755393, 7056597, 9423080, 11789820, 14413000, 10079077, 6594104, 2975773, 16764114, 16163752, 15628926, 15028564, 14493738, 13959168
+          List<uint> cmvColors = new List<uint> { 0x01579B, 0x2473AE, 0x488FC1, 0x6BACD5, 0x8FC8E8, 0xB3E5FC, 0xDBECC8, 0x99CB65, 0x649E38, 0x2D681D, 0xFFCCD2, 0xF6A3A8, 0xEE7A7E, 0xE55154, 0xDD282A, 0xD50000 };
 
           for (int i = 0; i < cmvColors.Count; i++)
           {
