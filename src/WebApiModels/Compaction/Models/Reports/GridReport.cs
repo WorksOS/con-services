@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Script.Serialization;
-using ASNodeRaptorReports;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
 using VSS.Productivity3D.WebApi.Models.Common;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
@@ -14,7 +8,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
   /// Defines all the grid report production data values that are returned from Raptor.
   /// </summary>
   /// 
-  public class GridReport
+  public class GridReport : ICompactionReport
   {
     /// <summary>
     /// The report's 'start' time from a time based filter.
@@ -45,20 +39,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// 
     public static GridReport CreateGridReport(DateTime startTime, DateTime endTime, GridRow[] rows)
     {
-      return new GridReport() { Rows = rows };
-    }
-
-    /// <summary>
-    /// Serialises an instance of the GridReport class to a JSON string.
-    /// </summary>
-    /// <returns>A JSON representation of the GridReport class instance.</returns>
-    /// 
-    public string ToJsonString()
-    {
-      return JsonConvert.SerializeObject(this);
+      return new GridReport { Rows = rows };
     }
   }
-  
+
 
   /// <summary>
   /// Defines a grid report row.
@@ -127,7 +111,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// </summary>
     ///
     [JsonIgnore]
-    [JsonProperty( Required = Required.Default)]
+    [JsonProperty(Required = Required.Default)]
     public bool ElevationReport { get; private set; }
 
     /// <summary>
@@ -151,7 +135,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// </summary>
     /// 
     [JsonIgnore]
-    [JsonProperty( Required = Required.Default)]
+    [JsonProperty(Required = Required.Default)]
     public bool MDPReport { get; private set; }
 
     /// <summary>

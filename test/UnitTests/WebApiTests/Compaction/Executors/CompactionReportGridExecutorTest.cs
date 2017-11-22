@@ -1,27 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ASNodeDecls;
-using ASNodeRPC;
+﻿using ASNodeRPC;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
 using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
 using SVOICOptionsDecls;
+using System;
+using System.IO;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
@@ -83,7 +79,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       );
 
       raptorClient.
-        Setup(x => x.GetReportGrid(args,out responseData)).
+        Setup(x => x.GetReportGrid(args, out responseData)).
         Returns(0); // icsrrUnknownError
 
       var executor = RequestExecutorContainerFactory
@@ -135,7 +131,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var result = executor.Process(request) as CompactionReportGridResult;
 
       Assert.IsNotNull(result, "Result should not be null");
-      Assert.AreEqual<string>(responseData.ToString(), result.ReportData, "Wrong Data");
+
+      var reportDataAsJson = JsonConvert.SerializeObject(result.ReportData);
+
+      Assert.AreEqual(responseData.ToString(), reportDataAsJson, "Wrong Data");
 
     }
   }

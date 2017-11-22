@@ -118,7 +118,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
             var gridReport = GridReport.CreateGridReport(startTime, endTime, gridRows);
 
-            result = CompactionReportGridResult.CreateExportDataResult(gridReport.ToJsonString(), (short)returnedResult);
+            result = CompactionReportGridResult.CreateExportDataResult(gridReport, (short)returnedResult);
           }
           catch (Exception ex)
           {
