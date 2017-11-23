@@ -370,27 +370,38 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DesignDescriptor topDesign = null;
       Filter baseFilter = null;
       Filter topFilter = null;
+      MasterData.Models.Models.Filter baseFilterDescriptor = null;
+      MasterData.Models.Models.Filter topFilterDescriptor = null;
 
-      var baseFilterDescriptor = await GetFilterDescriptor(projectUid, baseUid);
-      if (baseFilterDescriptor == null)
-      {
-        baseDesign = await GetAndValidateDesignDescriptor(projectUid, baseUid);
-      }
-      else
-      {
-        baseFilter = await GetCompactionFilter(projectUid, baseUid);
-        // TODO Validate is not null.
-      }
 
-      var topFilterDescriptor = await GetFilterDescriptor(projectUid, topUid);
-      if (topFilterDescriptor == null)
+      try
       {
-        topDesign = await GetAndValidateDesignDescriptor(projectUid, topUid);
+        baseFilterDescriptor = await GetFilterDescriptor(projectUid, baseUid);
+        if (baseFilterDescriptor == null)
+        {
+          baseDesign = await GetAndValidateDesignDescriptor(projectUid, baseUid);
+        }
+        else
+        {
+          baseFilter = await GetCompactionFilter(projectUid, baseUid);
+          // TODO Validate is not null.
+        }
+
+        topFilterDescriptor = await GetFilterDescriptor(projectUid, topUid);
+        if (topFilterDescriptor == null)
+        {
+          topDesign = await GetAndValidateDesignDescriptor(projectUid, topUid);
+        }
+        else
+        {
+          topFilter = await GetCompactionFilter(projectUid, topUid);
+          // TODO Validate is not null.
+        }
       }
-      else
+      catch
       {
-        topFilter = await GetCompactionFilter(projectUid, topUid);
-        // TODO Validate is not null.
+        if ((baseFilter == null && baseDesign == null) || (topFilter == null && topDesign == null))
+          throw;
       }
 
       // Ground to Ground
