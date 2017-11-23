@@ -205,7 +205,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       if (geofenceUid.HasValue)
       {
         //Todo this ahould be async
-        var geometryWKT = geofenceProxy.GetGeofenceBoundary(geofenceUid.ToString(), RequestUtils.GetCustomHeaders(Request.Headers)).Result;
+        var geometryWKT = geofenceProxy.GetGeofenceBoundary(geofenceUid.ToString(), this.Request.Headers.GetCustomHeaders().ToString()).Result;
 
         if (string.IsNullOrEmpty(geometryWKT))
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
