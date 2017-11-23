@@ -340,11 +340,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
     }
 
-    private T WithSwallowExceptionExecute<T>(Func<T> a) where T : class
+    private async Task<T> WithSwallowExceptionExecute<T>(Func<Task<T>> a) where T : class
     {
       try
       {
-        return a.Invoke();
+        return await a.Invoke();
       }
       catch
       {}

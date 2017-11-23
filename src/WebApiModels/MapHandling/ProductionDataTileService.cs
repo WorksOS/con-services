@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
+using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -95,7 +96,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       if (getTile)
       {
         tileResult = RequestExecutorContainerFactory
-          .Build<TilesExecutor>(logger, raptorClient)
+          .Build<CompactionTilesExecutor>(logger, raptorClient)
           .Process(tileRequest) as TileResult;
       }
 

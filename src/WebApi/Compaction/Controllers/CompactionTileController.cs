@@ -27,6 +27,8 @@ using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -112,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>TilesExecutor</executor> 
+    /// <executor>CompactionTilesExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles")]
     [HttpGet]
@@ -182,7 +184,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 
     /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).
     /// </returns>
-    /// <executor>TilesExecutor</executor> 
+    /// <executor>CompactionTilesExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles/png")]
     [HttpGet]
@@ -240,7 +242,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>TilesExecutor</executor> 
+    /// <executor>DxfTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
@@ -291,7 +293,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>TilesExecutor</executor> 
+    /// <executor>DxfTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles/png")]
     [HttpGet]
