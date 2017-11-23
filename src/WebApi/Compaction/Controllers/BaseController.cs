@@ -285,9 +285,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             {
               filterData = ApplyDateRange(projectUid, filterData);
 
-              var polygonPoints = filterData.polygonLL?.ConvertAll(p => Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
+              var polygonPoints = filterData.polygonLL?.ConvertAll(p =>
+                Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
 
-              var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
+              var layerMethod = filterData.layerNumber.HasValue
+                ? FilterLayerMethod.TagfileLayerNumber
+                : FilterLayerMethod.None;
 
               return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
                 filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
@@ -297,10 +300,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             }
           }
         }
+        catch (ServiceException ex)
+        {
+          log.LogDebug($"EXCEPTION caught - cannot find filter {ex.Message} {ex.GetContent} {ex.GetResult.Message}" );
+          throw;
+        }
         catch (Exception ex)
         {
-          log.LogDebug("EXCEPTION caught - cannot find filter" + ex.Message);
-          return null;
+          log.LogDebug("EXCEPTION caught - cannot find filter " + ex.Message);
+          throw;
         }
       }
 
