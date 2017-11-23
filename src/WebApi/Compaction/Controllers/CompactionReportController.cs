@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param> 
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>CompactionTilesExecutor</executor> 
+    /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/reporttiles")]
     [HttpGet]
@@ -146,7 +146,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. 
     /// </returns>
-    /// <executor>CompactionTilesExecutor</executor> 
+    /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/reporttiles/png")]
     [HttpGet]

@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
         filter = filter,
         baseFilter = baseFilter,
         topFilter = topFilter,
-        volCalcType = volCalcType,
+        volCalcType = volCalcType ?? VolumeCalcType.None,
         geofences = geofences,
         alignmentDescriptors = alignmentDescriptors,
         dxfFiles = dxfFiles,

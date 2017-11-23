@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>CompactionTilesExecutor</executor> 
+    /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles")]
     [HttpGet]
@@ -184,7 +184,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 
     /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).
     /// </returns>
-    /// <executor>CompactionTilesExecutor</executor> 
+    /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles/png")]
     [HttpGet]

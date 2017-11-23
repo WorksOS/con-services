@@ -51,7 +51,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       log.LogInformation("Getting map tile for reports");
       log.LogDebug("TileGenerationRequest: " + JsonConvert.SerializeObject(request));
 
-      MapBoundingBox bbox = boundingBoxService.GetBoundingBox(request.project, request.filter, request.mode, request.baseFilter, request.topFilter);
+      bool haveProdDataOverlay = request.overlays.Contains(TileOverlayType.ProductionData);
+      MapBoundingBox bbox = boundingBoxService.GetBoundingBox(request.project, request.filter, haveProdDataOverlay, request.baseFilter, request.topFilter);
 
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
       int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
@@ -71,7 +72,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       List<byte[]> tileList = new List<byte[]>();
       if (request.overlays.Contains(TileOverlayType.BaseMap))
         tileList.Add(mapTileService.GetMapBitmap(parameters, request.mapType.Value, request.language.Substring(0, 2)));
-      if (request.overlays.Contains(TileOverlayType.ProductionData))
+      if (haveProdDataOverlay)
       {
         log.LogInformation("GetProductionDataTile");
         BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(bbox.minLng, bbox.minLat, bbox.maxLng, bbox.maxLat);

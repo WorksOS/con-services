@@ -42,11 +42,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// </summary>
     /// <param name="project">The project for the report</param>
     /// <param name="filter">The filter for production data tiles</param>
-    /// <param name="mode">The display mode for production data tiles</param>
+    /// <param name="haveProdDataOverlay">True if doing production data tiles</param>
     /// <param name="baseFilter">The base filter for summary volumes</param>
     /// <param name="topFilter">The top filter for summary volumes</param>
     /// <returns>A bounding box in latitude/longitude (degrees)</returns>
-    public MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, DisplayMode? mode, Filter baseFilter, Filter topFilter)
+    public MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, bool haveProdDataOverlay, Filter baseFilter, Filter topFilter)
     {
       MapBoundingBox bbox = null;
 
@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       {
         //No area filter so use production data extents as the bounding box
         //Only applies if doing production data tiles
-        if (mode.HasValue)
+        if (haveProdDataOverlay)
         {
           var productionDataExtents = GetProductionDataExtents(project.projectId, filter);
           if (productionDataExtents != null)
@@ -261,6 +261,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
   public interface IBoundingBoxService
   {
-    MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, DisplayMode? mode, Filter baseFilter, Filter topFilter);
+    MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, bool haveProdDataOverlay, Filter baseFilter, Filter topFilter);
   }
 }

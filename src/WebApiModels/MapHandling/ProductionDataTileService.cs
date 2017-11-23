@@ -5,7 +5,6 @@ using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Helpers;
 using VSS.Productivity3D.Common.Interfaces;
@@ -96,7 +95,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       if (getTile)
       {
         tileResult = RequestExecutorContainerFactory
-          .Build<CompactionTilesExecutor>(logger, raptorClient)
+          .Build<CompactionTileExecutor>(logger, raptorClient)
           .Process(tileRequest) as TileResult;
       }
 

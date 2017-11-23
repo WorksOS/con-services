@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using ProductionDataSvc.AcceptanceTests.Models;
@@ -13,7 +15,15 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private string url;
     private string projectUid;
     private string filterUid;
-    //private string queryParameters = string.Empty;
+    private string overlayType;
+    private string mapType;
+    private int? mode;
+    private int width = 256;
+    private int height = 256;
+    private string volumeCalcType;
+    private string volumeBaseUid;
+    private string volumeTopUid;
+    private string cutFillDesignUid;
     private Getter<TileResult> tileRequester;
 
     [Given(@"the Report Tile service URI ""(.*)""")]
@@ -34,6 +44,55 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       this.filterUid = filterUid;
     }
 
+    [Given(@"an overlayType ""(.*)""")]
+    public void GivenAnOverlayType(string overlayType)
+    {
+      this.overlayType = overlayType;
+    }
+
+    [Given(@"a mapType ""(.*)""")]
+    public void GivenAMapType(string mapType)
+    {
+      this.mapType = mapType;
+    }
+
+    [Given(@"a mode ""(.*)""")]
+    public void GivenAMode(int mode)
+    {
+      this.mode = mode;
+    }
+
+    [Given(@"a width ""(.*)"" and a height ""(.*)""")]
+    public void GivenAWidthAndAHeight(int width, int height)
+    {
+      this.width = width;
+      this.height = height;
+    }
+
+    [Given(@"a volumeCalcType ""(.*)""")]
+    public void GivenAVolumeCalcType(string volumeCalcType)
+    {
+      this.volumeCalcType = volumeCalcType;
+    }
+
+    [Given(@"a volumeTopUid ""(.*)""")]
+    public void GivenAVolumeTopUid(string volumeTopUid)
+    {
+      this.volumeTopUid = volumeTopUid;
+    }
+
+    [Given(@"a cutFillDesignUid ""(.*)""")]
+    public void GivenACutFillDesignUid(string cutFillDesignUid)
+    {
+      this.cutFillDesignUid = cutFillDesignUid;
+    }
+
+    [Given(@"a volumeBaseUid ""(.*)""")]
+    public void GivenAVolumeBaseUid(string volumeBaseUid)
+    {
+      this.volumeBaseUid = volumeBaseUid;
+    }
+
     [When(@"I request a Report Tile")]
     public void WhenIRequestAReportTile()
     {
@@ -48,15 +107,53 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       Assert.AreEqual(expected, tileRequester.CurrentResponse);
     }
 
+    [When(@"I request a Report Tile Expecting BadRequest")]
+    public void WhenIRequestAReportTileExpectingBadRequest()
+    {
+      tileRequester = new Getter<TileResult>(MakeUrl());
+      tileRequester.DoInvalidRequest(HttpStatusCode.BadRequest);
+    }
+
+    [Then(@"I should get error code (.*) and message ""(.*)""")]
+    public void ThenIShouldGetErrorCodeAndMessage(int errorCode, string message)
+    {
+      Assert.AreEqual(errorCode, tileRequester.CurrentResponse.Code);
+      Assert.AreEqual(message, tileRequester.CurrentResponse.Message);
+    }
+
     private string MakeUrl()
     {
-      var fullUrl = string.Format("{0}?projectUid={1}&width=256&height=256&overlays=DxfLinework", url, projectUid);
+      StringBuilder sb = new StringBuilder();
+      sb.Append($"{url}?projectUid={projectUid}&width={width}&height={height}&overlays={overlayType}");
       if (!string.IsNullOrEmpty(filterUid))
       {
-        fullUrl = string.Format("{0}&filterUid={1}", fullUrl, filterUid);
+        sb.Append($"&filterUid={filterUid}");
       }
-      //fullUrl += queryParameters;
-      return fullUrl;
+      if (!string.IsNullOrEmpty(mapType))
+      {
+        sb.Append($"&mapType={mapType}");
+      }
+      if (mode.HasValue)
+      {
+        sb.Append($"&mode={mode}");
+      }
+      if (!string.IsNullOrEmpty(volumeCalcType))
+      {
+        sb.Append($"&volumeCalcType={volumeCalcType}");
+      }
+      if (!string.IsNullOrEmpty(volumeBaseUid))
+      {
+        sb.Append($"&volumeBaseUid={volumeBaseUid}");
+      }
+      if (!string.IsNullOrEmpty(volumeTopUid))
+      {
+        sb.Append($"&volumeTopUid={volumeTopUid}");
+      }
+      if (!string.IsNullOrEmpty(cutFillDesignUid))
+      {
+        sb.Append($"&cutFillDesignUid={cutFillDesignUid}");
+      }
+      return sb.ToString();
     }
   }
 }
