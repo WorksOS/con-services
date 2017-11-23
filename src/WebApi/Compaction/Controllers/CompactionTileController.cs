@@ -24,6 +24,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
@@ -577,7 +578,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         tileResult = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainerFactory
-            .Build<TilesExecutor>(logger, raptorClient)
+            .Build<CompactionTilesExecutor>(logger, raptorClient)
             .Process(tileRequest) as TileResult
         );
       }
