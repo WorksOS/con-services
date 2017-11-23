@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Net;
+using System.Runtime.Remoting;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -339,6 +340,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
     }
 
+    private T WithSwallowExceptionExecute<T>(Func<T> a) where T : class
+    {
+      try
+      {
+        return a.Invoke();
+      }
+      catch
+      {}
+      return default(T);
+    }
+
     /// <summary>
     /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results.
     /// </summary>
@@ -374,35 +386,33 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       MasterData.Models.Models.Filter topFilterDescriptor = null;
 
 
-      try
-      {
-        baseFilterDescriptor = await GetFilterDescriptor(projectUid, baseUid);
-        if (baseFilterDescriptor == null)
+      baseFilterDescriptor = await WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, baseUid));
+
+      if (baseFilterDescriptor == null)
         {
-          baseDesign = await GetAndValidateDesignDescriptor(projectUid, baseUid);
+          baseDesign = await WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, baseUid));
         }
         else
         {
-          baseFilter = await GetCompactionFilter(projectUid, baseUid);
+          baseFilter = await WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
           // TODO Validate is not null.
         }
 
-        topFilterDescriptor = await GetFilterDescriptor(projectUid, topUid);
+        topFilterDescriptor = await WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, topUid));
         if (topFilterDescriptor == null)
         {
-          topDesign = await GetAndValidateDesignDescriptor(projectUid, topUid);
+          topDesign = await WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, topUid));
         }
         else
         {
-          topFilter = await GetCompactionFilter(projectUid, topUid);
+          topFilter = await WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
           // TODO Validate is not null.
         }
-      }
-      catch
-      {
-        if ((baseFilter == null && baseDesign == null) || (topFilter == null && topDesign == null))
-          throw;
-      }
+
+      if ((baseFilter == null && baseDesign == null) || (topFilter == null && topDesign == null))
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Can not resolve either baseUsrface or topSurface"));
 
       // Ground to Ground
       if (baseFilterDescriptor != null && topFilterDescriptor != null)
