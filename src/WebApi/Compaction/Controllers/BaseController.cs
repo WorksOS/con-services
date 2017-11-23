@@ -316,9 +316,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             {
               filterData = ApplyDateRange(projectUid, filterData);
 
-              var polygonPoints = filterData.polygonLL?.ConvertAll(p => Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
+              var polygonPoints = filterData.polygonLL?.ConvertAll(p =>
+                Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
 
-              var layerMethod = filterData.layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
+              var layerMethod = filterData.layerNumber.HasValue
+                ? FilterLayerMethod.TagfileLayerNumber
+                : FilterLayerMethod.None;
 
               return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
                 filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
@@ -328,10 +331,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             }
           }
         }
+        catch (ServiceException ex)
+        {
+          log.LogDebug($"EXCEPTION caught - cannot find filter {ex.Message} {ex.GetContent} {ex.GetResult.Message}" );
+          throw;
+        }
         catch (Exception ex)
         {
-          log.LogDebug("EXCEPTION caught - cannot find filter" + ex.Message);
-          return null;
+          log.LogDebug("EXCEPTION caught - cannot find filter " + ex.Message);
+          throw;
         }
       }
 
@@ -350,6 +358,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom || filter.DateRangeType.Value == DateRangeType.ProjectExtents)
       {
+        log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom or ProjectExtents. Returning without setting filter start and end dates.");
         return filter;
       }
 
@@ -358,7 +367,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         throw new ServiceException(
           HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,"Failed to retrieve project."));
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to retrieve project."));
       }
 
       var utcNow = DateTime.UtcNow;
@@ -371,7 +380,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         filter.vibeStateOn, filter.polygonLL, filter.forwardDirection, filter.layerNumber, filter.polygonUID, filter.polygonName);
     }
 
-    private async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
+    public async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await this.FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), this.CustomHeaders);
 

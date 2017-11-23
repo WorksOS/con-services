@@ -8,8 +8,11 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 
@@ -188,7 +191,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
       var filter = this.filterServiceProxy.GetFilter(projectUid, filterUid, headers).Result;
       if (filter == null)
       {
-        throw new NullReferenceException($"Filter not found, id: {filterUid}");
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"Filter not found, id: { filterUid }"));
       }
 
       return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson).GetHashCode();

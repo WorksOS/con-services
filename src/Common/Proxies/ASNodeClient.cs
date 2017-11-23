@@ -26,6 +26,7 @@ using System;
 using System.IO;
 using System.Linq;
 using DesignProfiler.ComputeDesignFilterBoundary.RPC;
+using ASNode.GridReport.RPC;
 using VLPDDecls;
 using VSS.Productivity3D.Common.Interfaces;
 
@@ -492,5 +493,16 @@ namespace VSS.Productivity3D.Common.Proxies
       return client.GetDesignFilterBoundaryAsPolygon(args, out fence) == 1;/*icsrrNoError*/
     }
 
+    /// <summary>
+    /// Gets a grid report of the production data from Raptor.
+    /// </summary>
+    /// <param name="args">Set of the grid report parameters.</param>
+    /// <param name="dataReport">The reports data.</param>
+    /// <returns>The Raptor's request result code.</returns>
+    /// 
+    public int GetReportGrid(TASNodeServiceRPCVerb_GridReport_Args args, out MemoryStream dataReport)
+    {
+      return client.GetGridReport(args, out dataReport);
+    }
   }
 }

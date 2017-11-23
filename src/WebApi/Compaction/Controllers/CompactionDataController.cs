@@ -3,11 +3,13 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Net;
+using System.Runtime.Remoting;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -338,6 +340,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
     }
 
+    private T WithSwallowExceptionExecute<T>(Func<T> a) where T : class
+    {
+      try
+      {
+        return a.Invoke();
+      }
+      catch
+      {}
+      return default(T);
+    }
+
     /// <summary>
     /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results.
     /// </summary>
@@ -367,20 +380,57 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       DesignDescriptor baseDesign = null;
       DesignDescriptor topDesign = null;
+      Filter baseFilter = null;
+      Filter topFilter = null;
+      MasterData.Models.Models.Filter baseFilterDescriptor = null;
+      MasterData.Models.Models.Filter topFilterDescriptor = null;
 
-      var baseFilter = await GetCompactionFilter(projectUid, baseUid, returnEarliest: true);
-      if (baseFilter == null)
+
+      baseFilterDescriptor = await WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, baseUid));
+
+      if (baseFilterDescriptor == null)
+        {
+          baseDesign = await WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, baseUid));
+        }
+        else
+        {
+          baseFilter = await WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
+          // TODO Validate is not null.
+        }
+
+        topFilterDescriptor = await WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, topUid));
+        if (topFilterDescriptor == null)
+        {
+          topDesign = await WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, topUid));
+        }
+        else
+        {
+          topFilter = await WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
+          // TODO Validate is not null.
+        }
+
+      if ((baseFilter == null && baseDesign == null) || (topFilter == null && topDesign == null))
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Can not resolve either baseUsrface or topSurface"));
+
+      // Ground to Ground
+      if (baseFilterDescriptor != null && topFilterDescriptor != null)
       {
-        baseDesign = await GetAndValidateDesignDescriptor(projectUid, baseUid);
+        if (baseFilterDescriptor.DateRangeType != DateRangeType.ProjectExtents &&
+            baseFilterDescriptor.DateRangeType == topFilterDescriptor.DateRangeType &&
+            baseFilterDescriptor.elevationType == null && topFilterDescriptor.elevationType == null)
+        {
+          // TODO (Aaron) We need to review and understand v1 workflow around setting 'earliest'. This will be delivered in a second patch.
+        }
+        else
+        {
+          // Fall through and use the previously setup filters.
+        }
       }
 
-      var topFilter = await GetCompactionFilter(projectUid, topUid);
-      if (topFilter == null)
-      {
-        topDesign = await GetAndValidateDesignDescriptor(projectUid, topUid);
-      }
-
-      var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeSummaryHelper.GetVolumesType(baseFilter, topFilter));
+      var volumeCalcType = volumeSummaryHelper.GetVolumesType(baseFilter, topFilter);
+      var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
 
       CompactionSummaryVolumesResult returnResult;
 

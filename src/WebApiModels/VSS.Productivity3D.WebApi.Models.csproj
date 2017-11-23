@@ -34,6 +34,12 @@
     <WarningsAsErrors />
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Server.Kestrel">
+      <HintPath>..\..\..\..\..\Users\akozoub\.nuget\packages\microsoft.aspnetcore.server.kestrel\1.1.2\lib\net451\Microsoft.AspNetCore.Server.Kestrel.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
   </PropertyGroup>

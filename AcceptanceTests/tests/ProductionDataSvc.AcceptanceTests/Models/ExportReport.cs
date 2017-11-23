@@ -136,12 +136,6 @@ namespace ProductionDataSvc.AcceptanceTests.Models
                  this.ResultCode == other.ResultCode &&
                  this.Code == other.Code &&
                  this.Message == other.Message;
-          /*
-            return Common.Decompress(this.ExportData).SequenceEqual(Common.Decompress(other.ExportData)) &&
-                this.ResultCode == other.ResultCode &&
-                this.Code == other.Code &&
-                this.Message == other.Message;
-          */
         }
 
         public static bool operator ==(ExportReportResult a, ExportReportResult b)

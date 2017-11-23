@@ -23,6 +23,7 @@ using SVOICVolumeCalculationsDecls;
 using System;
 using System.IO;
 using DesignProfiler.ComputeDesignFilterBoundary.RPC;
+using ASNode.GridReport.RPC;
 using VLPDDecls;
 
 namespace VSS.Productivity3D.Common.Interfaces
@@ -272,5 +273,13 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     bool GetDesignFilterBoundaryAsPolygon(TDesignProfilerServiceRPCVerb_ComputeDesignFilterBoundary_Args args,
       out TWGS84Point[] fence);
+    /// <summary>
+    /// Gets a grid report of the production data from Raptor.
+    /// </summary>
+    /// <param name="args">Set of the grid report parameters.</param>
+    /// <param name="dataReport">The reports data.</param>
+    /// <returns>The Raptor's request result code.</returns>
+    /// 
+    int GetReportGrid(TASNodeServiceRPCVerb_GridReport_Args args, out MemoryStream dataReport);
   }
 }
