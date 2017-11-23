@@ -8,6 +8,7 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -367,20 +368,48 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       DesignDescriptor baseDesign = null;
       DesignDescriptor topDesign = null;
+      Filter baseFilter = null;
+      Filter topFilter = null;
 
-      var baseFilter = await GetCompactionFilter(projectUid, baseUid, returnEarliest: true);
-      if (baseFilter == null)
+      var baseFilterDescriptor = await GetFilterDescriptor(projectUid, baseUid);
+      if (baseFilterDescriptor == null)
       {
         baseDesign = await GetAndValidateDesignDescriptor(projectUid, baseUid);
       }
+      else
+      {
+        baseFilter = await GetCompactionFilter(projectUid, baseUid);
+        // TODO Validate is not null.
+      }
 
-      var topFilter = await GetCompactionFilter(projectUid, topUid);
-      if (topFilter == null)
+      var topFilterDescriptor = await GetFilterDescriptor(projectUid, topUid);
+      if (topFilterDescriptor == null)
       {
         topDesign = await GetAndValidateDesignDescriptor(projectUid, topUid);
       }
+      else
+      {
+        topFilter = await GetCompactionFilter(projectUid, topUid);
+        // TODO Validate is not null.
+      }
 
-      var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeSummaryHelper.GetVolumesType(baseFilter, topFilter));
+      // Ground to Ground
+      if (baseFilterDescriptor != null && topFilterDescriptor != null)
+      {
+        if (baseFilterDescriptor.DateRangeType != DateRangeType.ProjectExtents &&
+            baseFilterDescriptor.DateRangeType == topFilterDescriptor.DateRangeType &&
+            baseFilterDescriptor.elevationType == null && topFilterDescriptor.elevationType == null)
+        {
+          // TODO (Aaron) We need to review and understand v1 workflow around setting 'earliest'. This will be delivered in a second patch.
+        }
+        else
+        {
+          // Fall through and use the previously setup filters.
+        }
+      }
+
+      var volumeCalcType = volumeSummaryHelper.GetVolumesType(baseFilter, topFilter);
+      var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
 
       CompactionSummaryVolumesResult returnResult;
 
