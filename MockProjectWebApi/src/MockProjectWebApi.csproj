@@ -11,13 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Json\Filters\DimensionsBoundaryCMV.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilter.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryMDP.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonToday.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonYesterday.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
     <Content Remove="Json\Filters\ElevationRangeAndPaletteNoDataFilter.json" />
+    <Content Remove="Json\Filters\ReportDxfTile.json" />
     <Content Remove="Json\Filters\SummaryVolumesBaseFilter.json" />
     <Content Remove="Json\Filters\SummaryVolumesBaseFilterYesterday.json" />
     <Content Remove="Json\Filters\SummaryVolumesTopFilter.json" />
@@ -26,15 +28,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMV.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilter.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDP.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\DimensionsBoundaryCMV.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonToday.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonYesterday.json" />
     <EmbeddedResource Include="Json\Filters\ElevationRangeAndPaletteNoDataFilter.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
+    <EmbeddedResource Include="Json\Filters\ReportDxfTile.json" />
     <EmbeddedResource Include="Json\Filters\SummaryVolumesBaseFilter.json" />
     <EmbeddedResource Include="Json\Filters\SummaryVolumesTopFilter.json" />
     <EmbeddedResource Include="Json\UserPreferences\DummyUserPreferences.json" />

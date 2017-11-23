@@ -14,7 +14,7 @@ namespace MockProjectWebApi.Utils
       {
         FilterUid = "a37f3008-65e5-44a8-b406-9a078ec62ece",
         Name = "Dimensions boundary CMV",
-        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryCMV")
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("DimensionsBoundaryCMV")
       };
 
       public static FilterDescriptor DimensionsBoundaryFilter => new FilterDescriptor
@@ -33,7 +33,7 @@ namespace MockProjectWebApi.Utils
 
       public static FilterDescriptor DimensionsBoundaryFilterWithMachine => new FilterDescriptor
       {
-        FilterUid = "9c27697f-ea6d-478a-a168-ed20d6cd9a20",
+        FilterUid = "9A39E490-88DF-43AF-A64B-C919E23081DA",
         Name = "Dimensions boundary filter with machine",
         FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryFilterWithMachine")
       };
@@ -78,6 +78,11 @@ namespace MockProjectWebApi.Utils
       {
         FilterUid = "D6B254A0-C047-4805-9CCD-F847FAB05B14",
         FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterNoLatLonYesterday")
+      };
+      public static FilterDescriptor ReportDxfTile => new FilterDescriptor
+      {
+        FilterUid = "7b2bd262-8355-44ba-938a-d50f9712dafc",
+        FilterJson = JsonResourceHelper.GetFilterJson("ReportDxfTile")
       };
     }
   }
