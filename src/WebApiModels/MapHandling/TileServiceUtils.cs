@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using VSS.Productivity3D.Common.Extensions;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
@@ -12,18 +14,31 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   public class TileServiceUtils
   {
     /// <summary>
+    /// Converts the lat/lng point to pixels
+    /// </summary>
+    /// <param name="latitude">The latitude to convert in radians</param>
+    /// <param name="longitude">The longitude to convert in radians</param>
+    /// <param name="numTiles">The number of tiles</param>
+    /// <returns>Pixel point</returns>
+    public static Point LatLngToPixel(double latitude, double longitude, int numTiles)
+    {
+      var point = new Point(latitude.LatRadiansToDegrees(), longitude.LonRadiansToDegrees());
+      return WebMercatorProjection.LatLngToPixel(point, numTiles);
+    }
+
+    /// <summary>
     /// Converts the lat/lng points to pixels and offsets them from the top left corner of the tile.
     /// </summary>
-    /// <param name="latLngs">The list of points to convert in degrees</param>
+    /// <param name="latLngs">The list of points to convert in radians</param>
     /// <param name="pixelTopLeft">The top left corner of the tile in pixels</param>
     /// <param name="numTiles">The number of tiles for the zoom level</param>
     /// <returns>The points in pixels relative to the top left corner of the tile.</returns>
-    public static PointF[] LatLngToPixelOffset(IEnumerable<Point> latLngs, Point pixelTopLeft, int numTiles)
+    public static PointF[] LatLngToPixelOffset(IEnumerable<WGSPoint> latLngs, Point pixelTopLeft, int numTiles)
     {
       List<PointF> pixelPoints = new List<PointF>();
-      foreach (Point ll in latLngs)
+      foreach (WGSPoint ll in latLngs)
       {
-        Point pixelPt = WebMercatorProjection.LatLngToPixel(ll, numTiles);
+        Point pixelPt = LatLngToPixel(ll.Lat, ll.Lon, numTiles);
         pixelPoints.Add(new PointF((float) (pixelPt.x - pixelTopLeft.x), (float) (pixelPt.y - pixelTopLeft.y)));
       }
       return pixelPoints.ToArray();
@@ -59,31 +74,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
 
       return overlayData;
-    }
-
-    /// <summary>
-    /// Converts a WKT polygon to points (latitude/longitude)
-    /// </summary>
-    /// <param name="geometry">The WKT</param>
-    /// <returns>A list of latitude/longitude points in degrees</returns>
-    public static IEnumerable<Point> GeometryToPoints(string geometry)
-    {
-      List<Point> latlngs = new List<Point>();
-      //Trim off the "POLYGON((" and "))"
-      geometry = geometry.Substring(9, geometry.Length - 11);
-      var points = geometry.Split(',');
-      foreach (var point in points)
-      {
-        var parts = point.Trim().Split(' ');
-        var lng = double.Parse(parts[0]);
-        var lat = double.Parse(parts[1]);
-        latlngs.Add(new Point
-        {
-          y = lat,
-          x = lng
-        });
-      }
-      return latlngs;
     }
 
     /// <summary>

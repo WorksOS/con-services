@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           foreach (var alignmentDescriptor in alignmentDescriptors)
           {
-            IEnumerable<Point> alignmentPoints = GetAlignmentPoints(projectId, alignmentDescriptor);
+            IEnumerable<WGSPoint> alignmentPoints = GetAlignmentPoints(projectId, alignmentDescriptor);
 
             if (alignmentPoints.Any())
             {
@@ -66,9 +66,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="alignDescriptor">Design descriptor for the alignment file</param>
     /// <returns></returns>
-    private IEnumerable<Point> GetAlignmentPoints(long projectId, DesignDescriptor alignDescriptor)
+    private IEnumerable<WGSPoint> GetAlignmentPoints(long projectId, DesignDescriptor alignDescriptor)
     {
-      List<Point> alignmentPoints = null;
+      List<WGSPoint> alignmentPoints = null;
       if (alignDescriptor != null)
       {
         //Get the station extents
@@ -91,13 +91,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
           if (success && pdsPoints != null && pdsPoints.Length > 0)
           {
-            alignmentPoints = new List<Point>();
+            alignmentPoints = new List<WGSPoint>();
             //We only need half the points as normally GetDesignFilterBoundaryAsPolygon has offsets so is returning a polygon.
             //Since we have no offsets we have the centreline twice.
             int count = pdsPoints.Length / 2;
             for (int i = 0; i < count; i++)
             {
-              alignmentPoints.Add(new Point(pdsPoints[i].Lat.LatRadiansToDegrees(), pdsPoints[i].Lon.LonRadiansToDegrees()));
+              alignmentPoints.Add(WGSPoint.CreatePoint(pdsPoints[i].Lat, pdsPoints[i].Lon));
             }
           }
         }

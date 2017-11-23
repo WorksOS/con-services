@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Extensions;
+using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
@@ -40,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       const int SITE_OUTLINE_WIDTH = 2;
 
       // Exclude sites that are too small to be displayed in the current viewport. 
-      double viewPortArea = Math.Abs(parameters.bbox.minLat - parameters.bbox.maxLat) * Math.Abs(parameters.bbox.minLng - parameters.bbox.maxLng);
+      double viewPortArea = Math.Abs(parameters.bbox.minLatDegrees - parameters.bbox.maxLatDegrees) * Math.Abs(parameters.bbox.minLngDegrees - parameters.bbox.maxLngDegrees);
       double minArea = viewPortArea / 10000;
 
       byte[] sitesImage = null;
@@ -56,13 +57,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             if (site.AreaSqMeters > 0 && site.AreaSqMeters < minArea)
               continue;
 
-            var sitePoints = TileServiceUtils.GeometryToPoints(site.GeometryWKT);
+            var sitePoints = RaptorConverters.geometryToPoints(site.GeometryWKT);
 
             //Exclude site if outside bbox
-            bool outside = sitePoints.Min(p => p.Latitude).LatDegreesToRadians() < parameters.bbox.minLat || 
-                           sitePoints.Max(p => p.Latitude).LatDegreesToRadians() > parameters.bbox.maxLat ||
-                           sitePoints.Min(p => p.Longitude).LonDegreesToRadians() < parameters.bbox.minLng || 
-                           sitePoints.Max(p => p.Longitude).LonDegreesToRadians() > parameters.bbox.maxLng;
+            bool outside = sitePoints.Min(p => p.Lat) < parameters.bbox.minLat || 
+                           sitePoints.Max(p => p.Lat) > parameters.bbox.maxLat ||
+                           sitePoints.Min(p => p.Lon) < parameters.bbox.minLng || 
+                           sitePoints.Max(p => p.Lon) > parameters.bbox.maxLng;
            
             if (!outside)
             {

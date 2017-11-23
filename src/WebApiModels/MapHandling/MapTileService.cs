@@ -58,12 +58,12 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       //see http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc/help/operations/DrawMap
 
-      var region = GetRegion(parameters.bbox.centerLat.LatRadiansToDegrees(), parameters.bbox.centerLng.LonRadiansToDegrees());
+      var region = GetRegion(parameters.bbox.centerLatDegrees, parameters.bbox.centerLngDegrees);
       var dataset = "PCM_" + region; //"current";
       var mapLayers = "Cities,Labels,Roads,Commercial,Borders,Areas";
       var baseUrl = "http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc/map";
       mapURL =
-        $"{baseUrl}?AuthToken={alkKey}&pt1={parameters.bbox.minLng.LonRadiansToDegrees():F6},{parameters.bbox.minLat.LatRadiansToDegrees():F6}&pt2={parameters.bbox.maxLng.LonRadiansToDegrees():F6},{parameters.bbox.maxLat.LatRadiansToDegrees():F6}&width={parameters.mapWidth}&height={parameters.mapHeight}&drawergroups={mapLayers}&style={alkMapType}&srs=EPSG:900913&region={region}&dataset={dataset}&language={locale}&imgSrc=Sat1";
+        $"{baseUrl}?AuthToken={alkKey}&pt1={parameters.bbox.minLngDegrees:F6},{parameters.bbox.minLatDegrees:F6}&pt2={parameters.bbox.maxLngDegrees:F6},{parameters.bbox.maxLatDegrees:F6}&width={parameters.mapWidth}&height={parameters.mapHeight}&drawergroups={mapLayers}&style={alkMapType}&srs=EPSG:900913&region={region}&dataset={dataset}&language={locale}&imgSrc=Sat1";
       if (mapType == MapType.SATELLITE)
       {
         mapURL += "&imgOption=BACKGROUND";

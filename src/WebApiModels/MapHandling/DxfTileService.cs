@@ -9,6 +9,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Drawing;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -68,8 +69,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     {
       //Find the tiles that the bounding box fits into.
       Point tileTopLeft = WebMercatorProjection.PixelToTile(parameters.pixelTopLeft);
-      Point tileBottomRight = WebMercatorProjection.LatLngToTile(
-        new Point(parameters.bbox.minLat.LatRadiansToDegrees(), parameters.bbox.maxLng.LonRadiansToDegrees()), parameters.numTiles);
+      Point pixelBottomRight = TileServiceUtils.LatLngToPixel(
+        parameters.bbox.minLat, parameters.bbox.maxLng, parameters.numTiles);
+      Point tileBottomRight = WebMercatorProjection.PixelToTile(pixelBottomRight);
 
       int xnumTiles = (int)(tileBottomRight.x - tileTopLeft.x) + 1;
       int ynumTiles = (int)(tileBottomRight.y - tileTopLeft.y) + 1;

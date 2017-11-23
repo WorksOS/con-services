@@ -97,11 +97,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
         //Also use project boundary extents if fail to get production data extents or not doing production data tiles
         //e.g. project thumbnails
-        var projectPoints = TileServiceUtils.GeometryToPoints(project.projectGeofenceWKT);
-        var projectMinLat = projectPoints.Min(p => p.Latitude).LatDegreesToRadians();
-        var projectMinLng = projectPoints.Min(p => p.Longitude).LonDegreesToRadians();
-        var projectMaxLat = projectPoints.Max(p => p.Latitude).LatDegreesToRadians();
-        var projectMaxLng = projectPoints.Max(p => p.Longitude).LonDegreesToRadians();
+        var projectPoints = RaptorConverters.geometryToPoints(project.projectGeofenceWKT);
+        var projectMinLat = projectPoints.Min(p => p.Lat);
+        var projectMinLng = projectPoints.Min(p => p.Lon);
+        var projectMaxLat = projectPoints.Max(p => p.Lat);
+        var projectMaxLng = projectPoints.Max(p => p.Lon);
         bool assign = bbox == null
           ? true
           : bbox.minLat < projectMinLat || bbox.minLat > projectMaxLat ||

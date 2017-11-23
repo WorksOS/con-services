@@ -1,4 +1,6 @@
-﻿namespace VSS.Productivity3D.WebApi.Models.MapHandling
+﻿using VSS.Productivity3D.Common.Extensions;
+
+namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
   /// <summary>
   /// Model for map tile boundaing box. Lat/Lng are in radians.
@@ -10,7 +12,12 @@
     public double maxLat;
     public double maxLng;
 
-    public double centerLat => minLat + (maxLat - minLat) / 2;
-    public double centerLng => minLng + (maxLng - minLng) / 2;
+    public double centerLatDegrees => (minLat + (maxLat - minLat) / 2).LatRadiansToDegrees();
+    public double centerLngDegrees => (minLng + (maxLng - minLng) / 2).LonRadiansToDegrees();
+
+    public double minLatDegrees => minLat.LatRadiansToDegrees();
+    public double minLngDegrees => minLng.LonRadiansToDegrees();
+    public double maxLatDegrees => maxLat.LatRadiansToDegrees();
+    public double maxLngDegrees => maxLng.LonRadiansToDegrees();
   }
 }

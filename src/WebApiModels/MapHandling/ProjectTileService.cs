@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
@@ -41,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         using (Bitmap bitmap = new Bitmap(parameters.mapWidth, parameters.mapHeight))
         using (Graphics g = Graphics.FromImage(bitmap))
         {
-          var projectPoints = TileServiceUtils.GeometryToPoints(project.projectGeofenceWKT);
+          var projectPoints = RaptorConverters.geometryToPoints(project.projectGeofenceWKT);
           PointF[] pixelPoints = TileServiceUtils.LatLngToPixelOffset(projectPoints, parameters.pixelTopLeft, parameters.numTiles);
 
           Pen pen = new Pen(Color.FromArgb(STROKE_TRANSPARENCY, Color.FromArgb(PROJECT_BOUNDARY_COLOR)),

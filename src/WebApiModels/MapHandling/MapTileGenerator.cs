@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
       int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
-      var pixelTopLeft = WebMercatorProjection.LatLngToPixel(new Point(bbox.maxLat.LatRadiansToDegrees(), bbox.minLng.LonRadiansToDegrees()), numTiles);
+      var pixelTopLeft = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.minLng, numTiles);
 
       MapParameters parameters = new MapParameters
       {

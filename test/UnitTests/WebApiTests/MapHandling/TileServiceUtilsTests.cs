@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Productivity3D.Common.Extensions;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using Point = VSS.Productivity3D.WebApi.Models.MapHandling.Point;
 
@@ -14,13 +16,24 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
   {
 
     [TestMethod]
+    [DataRow(36.210, -115.025, 1514027.25F, 3288030F)]
+    [DataRow(36.205, -115.029, 1513934F, 3288174.5F)]
+    [DataRow(36.200, -115.018, 1514190.38F, 3288318.75F)]
+    public void CanConvertLatLngToPixel(double latDegrees, double lngDegrees, float xExpected, float yExpected)
+    {
+      var pixelPoint = TileServiceUtils.LatLngToPixel(latDegrees.LatDegreesToRadians(), lngDegrees.LonDegreesToRadians(), 32768);
+      Assert.AreEqual(xExpected, pixelPoint.x, 0.1);
+      Assert.AreEqual(yExpected, pixelPoint.y, 0.1);
+    }
+
+    [TestMethod]
     public void CanConvertLatLngToPixelOffset()
     {
-      List<Point> latLngs = new List<Point>
+      List<WGSPoint> latLngs = new List<WGSPoint>
       {
-        new Point(36.210, -115.025),
-        new Point(36.205, -115.029),
-        new Point(36.200, -115.018)
+        WGSPoint.CreatePoint(36.210.LatDegreesToRadians(), -115.025.LonDegreesToRadians()),
+        WGSPoint.CreatePoint(36.205.LatDegreesToRadians(), -115.029.LonDegreesToRadians()),
+        WGSPoint.CreatePoint(36.200.LatDegreesToRadians(), -115.018.LonDegreesToRadians())
       };
       var topLeft = new Point(100, 250);
       var pixelPoints = TileServiceUtils.LatLngToPixelOffset(latLngs, topLeft, 32768);
@@ -54,24 +67,6 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       for (int i = 0; i < expectedResult.Length; i++)
       {
         Assert.AreEqual(expectedResult[i], result[i]);
-      }
-    }
-
-    [TestMethod]
-    public void CanConvertGeometryToPoints()
-    {
-      var expectedPoints = new List<Point>
-      {
-        new Point{y=80.257874, x=12.677856},
-        new Point{y=79.856873, x=13.039345},
-        new Point{y=80.375977, x=13.443052},
-        new Point{y=80.257874, x=12.677856}
-      };
-      var actualPoints = TileServiceUtils.GeometryToPoints(TestUtils.GetWicketFromPoints(expectedPoints)).ToList();
-      Assert.AreEqual(expectedPoints.Count, actualPoints.Count, "Wrong number of points");
-      for (int i = 0; i < expectedPoints.Count; i++)
-      {
-        Assert.AreEqual(expectedPoints[i], actualPoints[i], $"Wrong point {i}");
       }
     }
 
