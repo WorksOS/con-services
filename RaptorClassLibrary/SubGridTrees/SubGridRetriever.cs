@@ -30,10 +30,19 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        // Local state populated for the purpose of access from variosu local methods
+        // Local state populated by the retriever constructor
         private CombinedFilter Filter = null;
-        private AreaControlSet AreaControlSet;
         private SiteModel SiteModel = null;
+        private bool CanUseGlobalLatestCells = false;
+        private bool HasOverrideSpatialCellRestriction = false;
+        private BoundingIntegerExtent2D OverrideSpatialCellRestriction;
+        private bool PrepareGridForCacheStorageIfNoSeiving = false;
+        private byte Level = SubGridTree.SubGridTreeLevels;
+        private int MaxNumberOfPassesToReturn = int.MaxValue;
+        private AreaControlSet AreaControlSet;
+
+
+        // Local state populated for the purpose of access from variosu local methods
         private IClientLeafSubGrid ClientGrid = null;
         private ClientLeafSubGrid ClientGridAsLeaf = null;
         private GridDataType _GridDataType = GridDataType.All;
@@ -73,13 +82,35 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         bool HaveFilteredPass = false;
         FilteredPassData CurrentPass;
         FilteredPassData TempPass;
-        bool PrepareGridForCacheStorageIfNoSeiving = false;
 
-        bool CanUseGlobalLatestCells = true;
         ISubGridCellLatestPassDataWrapper _GlobalLatestCells = null;
         bool UseLastPassGrid = false; // Assume we can't use last pass data
 
-        private void AcquirePopulationFilterValuesInterlock()
+        public SubGridRetriever(SiteModel sitemodel,
+                                CombinedFilter filter,
+                                bool hasOverrideSpatialCellRestriction,
+                                BoundingIntegerExtent2D overrideSpatialCellRestriction,
+                                bool prepareGridForCacheStorageIfNoSeiving,
+                                byte treeLevel,
+                                int maxNumberOfPassesToReturn)
+        {
+            SiteModel = sitemodel;
+            _CellSize = SiteModel.Grid.CellSize;
+
+            Filter = filter ?? new CombinedFilter(SiteModel);
+
+            CanUseGlobalLatestCells = Filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
+
+            HasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
+            OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
+
+            PrepareGridForCacheStorageIfNoSeiving = prepareGridForCacheStorageIfNoSeiving;
+
+            Level = treeLevel;
+            MaxNumberOfPassesToReturn = maxNumberOfPassesToReturn;
+    }
+
+    private void AcquirePopulationFilterValuesInterlock()
         {
             /* TODO
         if Debug_ExtremeLogSwitchD then
@@ -1261,18 +1292,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             return true;
         }
 
-        public ServerRequestResult RetrieveSubGrid(CombinedFilter filter,
-                                                   int maxNumberOfPassesToReturn,
-                                                   bool hasOverrideSpatialCellRestriction,
-                                                   BoundingIntegerExtent2D overrideSpatialCellRestriction,
-                                                   SiteModel siteModel,
-                                                   // gridDataCache : TICDataStoreCache;
-                                                   byte Level,
-                                                   uint CellX,
+        public ServerRequestResult RetrieveSubGrid(uint CellX,
                                                    uint CellY,
                                                    // liftBuildSettings          : TICLiftBuildSettings;
                                                    IClientLeafSubGrid clientGrid,
-                                                   bool prepareGridForCacheStorageIfNoSeiving,
                                                    SubGridTreeBitmapSubGridBits cellOverrideMask,
                                                    // subgridLockToken          : Integer;
                                                    ref AreaControlSet areaControlSet,
@@ -1285,17 +1308,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             //  SIGLogMessage.PublishNoODS(Nil, Format('In RetrieveSubGrid: Active pass filters = %s, Active cell filters = %s', [PassFilter.ActiveFiltersText, CellFilter.ActiveFiltersText]), slmcDebug);
 
             // Set up class local state for other methods to access
-            this._CellSize = siteModel.Grid.CellSize;
-            this.Filter = filter ?? new CombinedFilter(siteModel);
             this.AreaControlSet = areaControlSet;
             this.ClientGrid = clientGrid;
             this.ClientGridAsLeaf = clientGrid as ClientLeafSubGrid;
             this._GridDataType = clientGrid.GridDataType;
-
-            this.SiteModel = siteModel;
-            this.PrepareGridForCacheStorageIfNoSeiving = prepareGridForCacheStorageIfNoSeiving;
-
-            this.CanUseGlobalLatestCells = Filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
 
             try
             {
@@ -1349,7 +1365,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     {
                         // This should never really happen, but we'll be polite about it
                         // TODO Readd when logging available
-                        // SIGLogMessage.PublishNoODS(Nil, Format('Subgrid address (CellX=%d, CellY=%d) passed to LocateSubGridContaining() from RetrieveSubgriod() did not match an existing subgrid in the data model.' + 'Returning icsrrSubGridNotFound as response with a nil subgrid reference.', [CellX, CellY]), slmcWarning);
+                        Log.Warn($"Subgrid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubgrid() did not match an existing subgrid in the data model.' + 'Returning icsrrSubGridNotFound as response with a nil subgrid reference.");
                         return ServerRequestResult.SubGridNotFound;
                     }
 
@@ -1383,8 +1399,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     // Determine the bitmask detailing which cells match the cell selection filter
                     if (!SubGridFilterMasks.ConstructSubgridCellFilterMask(_SubGridAsLeaf, SiteModel, Filter,
                                                                            cellOverrideMask, 
-                                                                           hasOverrideSpatialCellRestriction, 
-                                                                           overrideSpatialCellRestriction,
+                                                                           HasOverrideSpatialCellRestriction, 
+                                                                           OverrideSpatialCellRestriction,
                                                                            ref ClientGridAsLeaf.ProdDataMap, 
                                                                            ref ClientGridAsLeaf.FilterMap))
                     {

@@ -119,7 +119,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
                         // ClientLeafSubGridFactory.ReturnClientSubGrid(ref clientGrid);
 
                         // Return the client grid to the factory for recycling now its role is complete here... when using SimpleConcurrentBag
-                        ClientLeafSubGridFactory.ReturnClientSubGrids(/*clientGrids[0].GridDataType, */clientGrids, subgridCount);
+                        ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, subgridCount);
                     }
                 }
             }

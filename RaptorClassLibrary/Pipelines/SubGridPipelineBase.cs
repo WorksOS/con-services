@@ -10,6 +10,7 @@ using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
+using VSS.VisionLink.Raptor.GridFabric.Responses;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.Types;
 
@@ -183,8 +184,12 @@ namespace VSS.VisionLink.Raptor.Pipelines
             if (analyser.TotalNumberOfSubgridsAnalysed == 0)
             {
                 // There are no subgrids to be requested, leave quietly
+                Log.InfoFormat("No subgrids analysed from request to be submitted to processign engine");
+
                 return false;
             }
+
+            Log.InfoFormat($"START: Request for {analyser.TotalNumberOfSubgridsAnalysed } subgrids");
 
             // Send the subgrid request mask to the grid fabric layer for processing
             SubGridRequests gridFabricRequest = new SubGridRequests(PipelineTask, 
@@ -196,21 +201,24 @@ namespace VSS.VisionLink.Raptor.Pipelines
                                                                     analyser.ProdDataMask, 
                                                                     analyser.SurveydSurfaceOnlyMask, 
                                                                     FilterSet);
-            gridFabricRequest.Execute();
+
+            ICollection<SubGridRequestsResponse> responses = gridFabricRequest.Execute();
+
+            Log.InfoFormat($"COMPLETED: Request for {analyser.TotalNumberOfSubgridsAnalysed } subgrids");
 
             return true;
         }
 
         public void WaitForCompletion()
         {
-            if (PipelineSignalEvent.WaitOne(120000)) // Don't wait for more than two minutes...
+            if (PipelineSignalEvent.WaitOne(30000)) // Don't wait for more than two minutes...
             {
-                Log.Info(String.Format("WaitForCompletion received signal with wait handle: {0}", PipelineSignalEvent.SafeWaitHandle.GetHashCode()));
+                Log.Info($"WaitForCompletion received signal with wait handle: {PipelineSignalEvent.SafeWaitHandle.GetHashCode()}");
             }
             else
             {
                 // No signal was received, the wait timed out...
-                Log.Info(String.Format("WaitForCompletion timed out with wait handle: {0}", PipelineSignalEvent.SafeWaitHandle.GetHashCode()));
+                Log.Info($"WaitForCompletion timed out with wait handle: {PipelineSignalEvent.SafeWaitHandle.GetHashCode()} and {SubgridsRemainingToProcess} subgrids remaining to be processed");
             }
         }
     }

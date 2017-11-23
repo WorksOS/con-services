@@ -50,11 +50,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
                 null, // CompositeHeights = $0000000E;
                 null, // MDP = $0000000F;
                 null, // MDPPercent = $00000010;
-                null, //  CellProfile = $00000011;
-                null, //   CellPasses = $00000012;
-                null, //   MachineSpeed = $00000013;
-                null, //  CCVPercentChange = $00000014;
-                null, //  MachineSpeedTarget = $00000015;
+                null, // CellProfile = $00000011;
+                null, // CellPasses = $00000012;
+                null, // MachineSpeed = $00000013;
+                null, // CCVPercentChange = $00000014;
+                null, // MachineSpeedTarget = $00000015;
                 null, // CCVPercentChangeIgnoredTopNullValue = $0000016
                 null, // CCA = $0000017
                 null  // CCAPerccent = = $0000018
@@ -73,7 +73,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             // implementing the IClienLeafSubGrid interface
             if (!(typeof(IClientLeafSubGrid).IsAssignableFrom(type)))
             {
-                throw new ArgumentException("ClientLeafSubGridFactory requires a types that implements IClientLeafSubGrid", "type");
+                throw new ArgumentException("ClientLeafSubGridFactory requires a type that implements IClientLeafSubGrid", "type");
             }
 
             if ((int)gridDataType > typeMap.Length)
@@ -118,6 +118,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="clientGrid"></param>
         public void ReturnClientSubGrid(ref IClientLeafSubGrid clientGrid)
         {
+            clientGrid = null;
+            //return; // Temporarily remove subgrid repatriation
+
             if (clientGrid == null)
             {
                 return;
@@ -130,14 +133,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <summary>
         /// Return an array of client grids (of the same type) previously obtained from the factory so it may reuse them
         /// </summary>
-        /// <param name="clientGrid"></param>
-        public void ReturnClientSubGrids(GridDataType gridDataType, IClientLeafSubGrid[] clientGrids, int count)
+        /// <param name="clientGrids"></param>
+        /// <param name="count"></param>
+        public void ReturnClientSubGrids(IClientLeafSubGrid[] clientGrids, int count)
         {
-            ClientLeaves[(int)gridDataType].Add(clientGrids, count);
-
             for (int i = 0; i < count; i++)
             {
-                clientGrids[i] = null;
+                ReturnClientSubGrid(ref clientGrids[i]);
             }
         }
     }

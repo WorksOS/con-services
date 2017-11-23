@@ -36,7 +36,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests
                 return clientResult;
             }
 
-            // Request the subgrid from the surveyd surface engine
+            // Request the subgrid from the surveyed surface engine
 
             // Construct the function to be used
             IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/> func = new SurfaceElevationPatchComputeFunc();

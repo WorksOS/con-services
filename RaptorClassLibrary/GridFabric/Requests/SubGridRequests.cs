@@ -166,8 +166,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             SubGridsRequestArgument arg = PrepareArgument();
 
             Log.InfoFormat("Prepared argument has RaptorNodeID = {0}", arg.RaptorNodeID);
-            Log.Info(String.Format("Production Data mask in argument to renderer contains {0} subgrids", ProdDataMask.CountBits()));
-            Log.Info(String.Format("Surveyd Surface mask in argument to renderer contains {0} subgrids", SurveyedSurfaceOnlyMask.CountBits()));
+            Log.Info($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
+            Log.Info($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()}");
 
             // Construct the function to be used
             IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse> func = new SubGridsRequestComputeFunc();
@@ -178,6 +178,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             msgGroup.LocalListen(new SubGridListener(Task), arg.MessageTopic);
 
             Task<ICollection<SubGridRequestsResponse>> taskResult = null;
+            ICollection<SubGridRequestsResponse> result = null;
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -185,10 +186,10 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             {
                 // Note: Broadcast will block until all compute nodes receiving the request have responded, or
                 // until the internal Ignite timeout expires
-                //ICollection<SubGridRequestsResponse> result = compute.Broadcast(func, arg);
-                taskResult = _compute.BroadcastAsync(func, arg);
+                //result = _compute.Broadcast(func, arg);
 
-                taskResult.Wait(120000);
+                taskResult = _compute.BroadcastAsync(func, arg);
+                taskResult.Wait(30000);
             }
             finally
             {
@@ -198,7 +199,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             }
 
             // Send the appropriate response to the caller
-            // return result;
+            //return result;
             return taskResult.Result;
         }
     }

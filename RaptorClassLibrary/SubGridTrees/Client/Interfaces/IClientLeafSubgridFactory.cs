@@ -34,6 +34,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
         IClientLeafSubGrid GetSubGrid(GridDataType gridDataType);
 
         void ReturnClientSubGrid(ref IClientLeafSubGrid clientGrid);
-        void ReturnClientSubGrids(/*GridDataType gridDataType, */ IClientLeafSubGrid[] clientGrid, int count);
+        void ReturnClientSubGrids(IClientLeafSubGrid[] clientGrid, int count);
     }
 }

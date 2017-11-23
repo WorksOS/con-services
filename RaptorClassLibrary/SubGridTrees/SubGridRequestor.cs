@@ -20,15 +20,68 @@ using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees
 {
-    public static class SubGridRequestor
+    public class SubGridRequestor
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        [NonSerialized]
+        private SubGridRetriever retriever = null;
+
+        [NonSerialized]
+        SiteModel SiteModel = null;
+
+        [NonSerialized]
+        CombinedFilter Filter = null;
+
+        [NonSerialized]
+        SurfaceElevationPatchRequest surfaceElevationPatchRequest = null;
+
+        [NonSerialized]
+        byte TreeLevel = SubGridTree.SubGridTreeLevels;
+
+        [NonSerialized]
+        bool HasOverrideSpatialCellRestriction = false;
+
+        [NonSerialized]
+        BoundingIntegerExtent2D OverrideSpatialCellRestriction;
+
+        [NonSerialized]
+        int MaxNumberOfPassesToReturn = int.MaxValue;
+
+        /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public SubGridRequestor(SiteModel sitemodel,
+                                CombinedFilter filter,
+                                bool hasOverrideSpatialCellRestriction,
+                                BoundingIntegerExtent2D overrideSpatialCellRestriction,
+                                byte treeLevel,
+                                int maxNumberOfPassesToReturn)
+        {
+            SiteModel = sitemodel;
+            Filter = filter;
+            TreeLevel = treeLevel;
+            HasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
+            OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
+            MaxNumberOfPassesToReturn = maxNumberOfPassesToReturn;
+
+            retriever = new SubGridRetriever(sitemodel, 
+                                             filter, 
+                                             hasOverrideSpatialCellRestriction, 
+                                             overrideSpatialCellRestriction,
+                                             false, // Assigned(SubgridCache), //ClientGrid.SupportsAssignationFromCachedPreProcessedClientSubgrid
+                                             treeLevel,
+                                             maxNumberOfPassesToReturn
+                                             );
+
+            surfaceElevationPatchRequest = new SurfaceElevationPatchRequest();
+        }
+
         // InitialiseFilterContext performs any required filter initialisation and configuration
         // that is external to the filter prior to engaging in cell by cell processing of
         // this subgrid
-        private static bool InitialiseFilterContext(CombinedFilter Filter)
+        private bool InitialiseFilterContext(CombinedFilter Filter)
         {
             if (Filter == null)
             {
@@ -88,22 +141,16 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
           begin
             SIGLogMessage.PublishNoODS(Nil, Format('#D# InitialiseFilterContext RequestDesignElevationPatch for Design %s Failed',[CellFilter.DesignFilter.FileName]), slmcError);
             Result := False;
-            Exit;
+           Exit;
           end;
       end;
 */              
             return true;
         }
 
-        public static ServerRequestResult RequestSubGridInternal(
+        public ServerRequestResult RequestSubGridInternal(
                                               // SubgridCache : TDataModelContextSubgridResultCache;
-                                              CombinedFilter Filter,
-                                              int AMaxNumberOfPassesToReturn,
-                                              bool AHasOverrideSpatialCellRestriction,
-                                              BoundingIntegerExtent2D AOverrideSpatialCellRestriction,
-                                              SiteModel SiteModel,
                                               SubGridCellAddress subGridAddress,
-                                              byte Level,
                                               // LiftBuildSettings: TICLiftBuildSettings;
                                               // ASubgridLockToken : Integer;
                                               bool AProdDataRequested,
@@ -112,8 +159,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                               SubGridTreeBitmapSubGridBits CellOverrideMask,
                                               ref AreaControlSet AAreaControlSet)
         {
-            uint CellX, CellY;
-
             // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
             SubGridTreeBitmapSubGridBits ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
 
@@ -152,15 +197,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             }
 
             // For now, it is safe to assume all subgrids containing on-the-ground cells have kSubGridTreeLevels levels
-            CellX = subGridAddress.X << ((SubGridTree.SubGridTreeLevels - Level) * SubGridTree.SubGridIndexBitsPerLevel);
-            CellY = subGridAddress.Y << ((SubGridTree.SubGridTreeLevels - Level) * SubGridTree.SubGridIndexBitsPerLevel);
+            uint CellX = subGridAddress.X << ((SubGridTree.SubGridTreeLevels - TreeLevel) * SubGridTree.SubGridIndexBitsPerLevel);
+            uint CellY = subGridAddress.Y << ((SubGridTree.SubGridTreeLevels - TreeLevel) * SubGridTree.SubGridIndexBitsPerLevel);
 
             //    if VLPDSvcLocations.Debug_ExtremeLogSwitchB then
             //      SIGLogMessage.PublishNoODS(Nil, 'About to call RetrieveSubGrid()', slmcDebug);
 
             ClientGrid.SetAbsoluteOriginPosition((uint)(subGridAddress.X & ~SubGridTree.SubGridLocalKeyMask),
                                                  (uint)(subGridAddress.Y & ~SubGridTree.SubGridLocalKeyMask));
-            ClientGrid.SetAbsoluteLevel(Level);
+            ClientGrid.SetAbsoluteLevel(TreeLevel);
 
             if (AProdDataRequested) // note there is an assumption you have already checked on a existenance map that there is a subgrid for this address
             {
@@ -222,18 +267,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 }
                 else
                 {
-                    SubGridRetriever retriever = new SubGridRetriever();
-                    Result = retriever.RetrieveSubGrid(Filter,
-                                                       AMaxNumberOfPassesToReturn,
-                                                       AHasOverrideSpatialCellRestriction,
-                                                       AOverrideSpatialCellRestriction,
-                                                       SiteModel,
-                                                       // DataStoreInstance.GridDataCache,
-                                                       Level,
+                    Result = retriever.RetrieveSubGrid(// DataStoreInstance.GridDataCache,
                                                        CellX, CellY,
                                                        // LiftBuildSettings,
                                                        ClientGrid,
-                                                       false, // Assigned(SubgridCache), //ClientGrid.SupportsAssignationFromCachedPreProcessedClientSubgrid,
                                                        CellOverrideMask,
                                                        // ASubgridLockToken,
                                                        ref AAreaControlSet,
@@ -299,8 +336,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 // Perform e.g. spatial filtering
                 if (SubGridFilterMasks.ConstructSubgridCellFilterMask(ClientGrid, SiteModel, Filter,
                                                                       CellOverrideMask, 
-                                                                      AHasOverrideSpatialCellRestriction, 
-                                                                      AOverrideSpatialCellRestriction,
+                                                                      HasOverrideSpatialCellRestriction, 
+                                                                      OverrideSpatialCellRestriction,
                                                                       ref (ClientGrid as ClientLeafSubGrid).ProdDataMap,
                                                                       ref (ClientGrid as ClientLeafSubGrid).FilterMap))
                 {
@@ -438,7 +475,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
                     try
                     {
-                        SurfaceElevationPatchRequest request = new SurfaceElevationPatchRequest();
                         SurfaceElevationPatchArgument arg = new SurfaceElevationPatchArgument
                         {
                             SiteModelID = SiteModel.ID,
@@ -450,7 +486,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                             IncludedSurveyedSurfaces = FilteredSurveyedSurfaces
                         };
 
-                        SurfaceElevations = request.Execute(arg);
+                        SurfaceElevations = surfaceElevationPatchRequest.Execute(arg);
 
                         if (SurfaceElevations == null)
                         {
