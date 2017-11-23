@@ -1,6 +1,9 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Interfaces;
@@ -11,6 +14,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
 {
     public static partial class SubGridUtilities
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// GetOTGLeafSubGridCellIndex determines the local in-subgrid X/Y location of a
         /// cell given its absolute cell index in an on-the-ground leaf subgrid where the level of the subgrid is implicitly known
@@ -72,6 +77,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
 
             try
             {
+                Debug.Assert(ForSubGridTree != null, $"Subgridtree null in LocateSubGridContaining");
+
                 // Use a subgrid tree specific interlock to permit multiple threads accessing
                 // different subgrid trees to operate concurrently
                 lock (ForSubGridTree) //  ForSubGridTree.AcquireExternalAccessInterlock;
@@ -83,6 +90,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
 
                         if (SubGrid == null) // Something bad happened
                         {
+                            Log.Warn($"Failed to locate subgrid at {CellX}:{CellY}, level {Level}, data model ID:{ForSubGridTree.ID}");
                             return null;
                         }
 
@@ -108,8 +116,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
                             }
                             else
                             {
-                                // TODO...
                                 //SIGLogMessage.PublishNoODS(Nil, 'Failed to create leaf subgrid in LocateSubGridContaining (Moniker: %2)', [SubGrid.Moniker], slmcError);
+                                Log.Error($"Failed to create leaf subgrid in LocateSubGridContaining (Moniker: {SubGrid.Moniker()})");
+
                                 return null;
                             }
                         }
@@ -132,12 +141,19 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
 
                 if (SubGrid == null)  // Something bad happened
                 {
+                    Log.Error($"Subgrid request result for {CellX}:{CellY} is null for undetermined reason.");
                     return null;
                 }
 
                 if (SubGrid.IsLeafSubGrid())
                 {
                     LeafSubGrid = SubGrid as ServerSubGridTreeLeaf;
+                }
+
+                if (LeafSubGrid == null)  // Something bad happened
+                {
+                    Log.Error($"Subgrid request result for {CellX}:{CellY} is not a leaf subgrid, it is a {SubGrid.GetType().Name}.");
+                    return null;
                 }
 
                 /* TODO... Locking semantics not defined yet when using Ignite
@@ -298,8 +314,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
                         }
                         else
                         {
-                            // TODO...
-                            //SIGLogMessage.PublishNoODS(Nil, Format('Failed to read leaf subgrid %s in model %d. Failed subgrid is NOT removed from the tree', [LeafSubGrid.Moniker, ForSubgridTree.DataModelID]), slmcWarning);
+                            Log.Warn($"Failed to read leaf subgrid {LeafSubGrid.Moniker()} in model {ForSubGridTree.ID}. Failed subgrid is NOT removed from the tree");
 
                             // Empty the subgrid leaf based data to encourage it to be read on a secondary attempt
                             LeafSubGrid.DeAllocateLeafFullPassStacks();
