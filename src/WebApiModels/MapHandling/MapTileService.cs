@@ -104,8 +104,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
          [{"Address":{"StreetAddress":"Christchurch Southern Motorway","City":"Christchurch","State":"NZ","Zip":"8024","County":"Christchurch City","Country":"New Zealand","SPLC":null,"CountryPostalFilter":0,"AbbreviationFormat":0},"Coords":{"Lat":"-43.545639","Lon":"172.583091"},"Region":5,"Label":"","PlaceName":"","TimeZone":"+13:0","Errors":[]}]
          */
         var result = jsonObject[0];
-        if (result["Region"] is int region)
-          return REGIONS[region];
+        var region = result["Region"] as int?;
+        if (region.HasValue)
+          return REGIONS[region.Value];
       }
       return "EU";
     }
