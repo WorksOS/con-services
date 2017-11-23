@@ -1,11 +1,4 @@
 {
-  "startUTC": null,
-  "endUTC": null,
-  "dateRangeType": 0,
-  "designUID": null,
-  "contributingMachines": null,
-  "onMachineDesignID": null,
-  "vibeStateOn": null,
   "polygonUID": "c910d127-5e3c-453f-82c3-e235848ac20e",
   "polygonName": "Dimensions boundary CMV",
   "polygonLL": [
@@ -21,7 +14,5 @@
       "Lat": 36.207174,
       "Lon": -115.019731
     }
-  ],
-  "forwardDirection": null,
-  "layerNumber": null
+  ]
 }

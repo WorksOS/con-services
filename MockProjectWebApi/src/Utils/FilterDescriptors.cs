@@ -14,7 +14,7 @@ namespace MockProjectWebApi.Utils
       {
         FilterUid = "a37f3008-65e5-44a8-b406-9a078ec62ece",
         Name = "Dimensions boundary CMV",
-        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("DimensionsBoundaryCMV")
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryCMV")
       };
 
       public static FilterDescriptor DimensionsBoundaryFilter => new FilterDescriptor
@@ -33,7 +33,7 @@ namespace MockProjectWebApi.Utils
 
       public static FilterDescriptor DimensionsBoundaryFilterWithMachine => new FilterDescriptor
       {
-        FilterUid = "9A39E490-88DF-43AF-A64B-C919E23081DA",
+        FilterUid = "9c27697f-ea6d-478a-a168-ed20d6cd9a20",
         Name = "Dimensions boundary filter with machine",
         FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryFilterWithMachine")
       };
