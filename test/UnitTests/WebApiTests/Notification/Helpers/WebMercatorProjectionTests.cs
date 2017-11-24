@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
     [DataRow(0, 0, 0, 0, 0)]
     [DataRow(4, 6, 1, 132.266666666667, 125.153242156653)]
     [DataRow(4, 6, 2, 264.533333333333, 250.306484313305)]
-    public void Point_LatLngToPixel(int x, int y, int numTiles, double expectedX, double expectedY)
+    public void Point_LatLngToPixel(int x, int y, long numTiles, double expectedX, double expectedY)
     {
       var result = WebMercatorProjection.LatLngToPixel(new Point(x, y), numTiles);
 

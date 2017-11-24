@@ -9,9 +9,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   {
     public MapBoundingBox bbox;
     public int zoomLevel;
-    public int numTiles;
+    public long numTiles;
     public Point pixelTopLeft;
     public int mapWidth;
     public int mapHeight;
+    public bool scaleDown;
   }
 }

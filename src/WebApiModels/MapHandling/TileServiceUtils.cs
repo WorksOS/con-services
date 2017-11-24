@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="longitude">The longitude to convert in radians</param>
     /// <param name="numTiles">The number of tiles</param>
     /// <returns>Pixel point</returns>
-    public static Point LatLngToPixel(double latitude, double longitude, int numTiles)
+    public static Point LatLngToPixel(double latitude, double longitude, long numTiles)
     {
       var point = new Point(latitude.LatRadiansToDegrees(), longitude.LonRadiansToDegrees());
       return WebMercatorProjection.LatLngToPixel(point, numTiles);
@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="pixelTopLeft">The top left corner of the tile in pixels</param>
     /// <param name="numTiles">The number of tiles for the zoom level</param>
     /// <returns>The points in pixels relative to the top left corner of the tile.</returns>
-    public static PointF[] LatLngToPixelOffset(IEnumerable<WGSPoint> latLngs, Point pixelTopLeft, int numTiles)
+    public static PointF[] LatLngToPixelOffset(IEnumerable<WGSPoint> latLngs, Point pixelTopLeft, long numTiles)
     {
       List<PointF> pixelPoints = new List<PointF>();
       foreach (WGSPoint ll in latLngs)

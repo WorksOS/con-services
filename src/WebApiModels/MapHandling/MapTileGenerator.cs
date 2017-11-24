@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ASNodeDecls;
@@ -7,6 +12,7 @@ using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.MapHandling;
 
 
@@ -51,33 +57,17 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       log.LogInformation("Getting map tile for reports");
       log.LogDebug("TileGenerationRequest: " + JsonConvert.SerializeObject(request));
 
-      bool haveProdDataOverlay = request.overlays.Contains(TileOverlayType.ProductionData);
-      MapBoundingBox bbox = boundingBoxService.GetBoundingBox(request.project, request.filter, haveProdDataOverlay, request.baseFilter, request.topFilter);
-
-      int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
-      int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
-      var pixelTopLeft = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.minLng, numTiles);
-
-      MapParameters parameters = new MapParameters
-      {
-        bbox = bbox,
-        zoomLevel = zoomLevel,
-        numTiles = numTiles,
-        mapWidth = request.width,
-        mapHeight = request.height,
-        pixelTopLeft = pixelTopLeft,
-      };
-      log.LogDebug("MapParameters: " + JsonConvert.SerializeObject(parameters));
+      MapParameters parameters = boundingBoxService.GetMapParameters(request);
 
       List<byte[]> tileList = new List<byte[]>();
       if (request.overlays.Contains(TileOverlayType.BaseMap))
         tileList.Add(mapTileService.GetMapBitmap(parameters, request.mapType.Value, request.language.Substring(0, 2)));
-      if (haveProdDataOverlay)
+      if (request.overlays.Contains(TileOverlayType.ProductionData))
       {
         log.LogInformation("GetProductionDataTile");
-        BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(bbox.minLng, bbox.minLat, bbox.maxLng, bbox.maxLat);
+        BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(parameters.bbox.minLng, parameters.bbox.minLat, parameters.bbox.maxLng, parameters.bbox.maxLat);
         var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.filter, request.project.projectId,
-          request.mode.Value, (ushort)request.width, (ushort)request.height, prodDataBox, request.designDescriptor, request.baseFilter, 
+          request.mode.Value, (ushort)parameters.mapWidth, (ushort)parameters.mapHeight, prodDataBox, request.designDescriptor, request.baseFilter, 
           request.topFilter, request.designDescriptor, null);//custom headers not used
         tileList.Add(tileResult.TileData);
       }
@@ -106,10 +96,67 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         if (dxfBitmap != null)
           tileList.Add(dxfBitmap);
       }
+      var overlayTile = TileServiceUtils.OverlayTiles(parameters, tileList);
+      if (parameters.scaleDown)
+      {
+        overlayTile = ScaleTileDown(request, overlayTile);
+      }
+      return TileResult.CreateTileResult(overlayTile, TASNodeErrorStatus.asneOK);
+    }
 
-      return TileResult.CreateTileResult(TileServiceUtils.OverlayTiles(parameters, tileList), TASNodeErrorStatus.asneOK);
+    /// <summary>
+    /// Reduce the size of the tile to the requested size. This assumes the relevant calculations have been done to maintain the aspect ratio.
+    /// </summary>
+    /// <param name="request">Request parameters</param>
+    /// <param name="overlayTile">The tile to scale</param>
+    /// <returns>The scaled tile</returns>
+    private byte[] ScaleTileDown(TileGenerationRequest request, byte[] overlayTile)
+    { 
+      using (Bitmap dstImage = new Bitmap(request.width, request.height))
+      using (Graphics g = Graphics.FromImage(dstImage))
+      using (var tileStream = new MemoryStream(overlayTile))
+      using (Image srcImage = Image.FromStream(tileStream))
+      {
+        /*
+        //Need to maintain aspect ratio. Figure out the ratio.
+        double ratioX = (double)request.width / (double)srcImage.Width;
+        double ratioY = (double)request.height / (double)srcImage.Height;
+        // use whichever multiplier is smaller
+        double ratio = ratioX < ratioY ? ratioX : ratioY;
+
+        // now we can get the new height and width
+        int newHeight = Convert.ToInt32(srcImage.Height * ratio);
+        int newWidth = Convert.ToInt32(srcImage.Width * ratio);
+
+        // Now calculate the X,Y position of the upper-left corner 
+        // (one of these will always be zero)
+        int posX = Convert.ToInt32((request.width - (srcImage.Width * ratio)) / 2);
+        int posY = Convert.ToInt32((request.height - (srcImage.Height * ratio)) / 2);
+
+        //g.Clear(Color.Red); // white padding
+        //g.DrawImage(image, posX, posY, newWidth, newHeight);
+        */
+        
+
+        dstImage.SetResolution(srcImage.HorizontalResolution, srcImage.VerticalResolution);
+        g.CompositingMode = CompositingMode.SourceCopy;
+        g.CompositingQuality = CompositingQuality.HighQuality;
+        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+        g.SmoothingMode = SmoothingMode.HighQuality;
+        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+        using (var wrapMode = new ImageAttributes())
+        {
+          wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+          //g.Clear(Color.Red); // white padding
+          //g.DrawImage(srcImage, posX, posY, newWidth, newHeight);
+          g.DrawImage(srcImage, new Rectangle(0, 0, request.width, request.height), 0, 0, srcImage.Width, srcImage.Height, GraphicsUnit.Pixel, wrapMode);
+        }
+        return dstImage.BitmapToByteArray();
+      }
     }
   }
+
+ 
 
   public interface IMapTileGenerator
   {

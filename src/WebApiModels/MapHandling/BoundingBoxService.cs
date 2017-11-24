@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,7 +19,9 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Coord.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
+using VSS.Productivity3D.WebApiModels.MapHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
+using VSS.VisionLink.Interfaces.Events.Commands.A5N2;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -37,6 +40,42 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       this.logger = logger;
       raptorClient = raptor;
     }
+
+    public MapParameters GetMapParameters(TileGenerationRequest request)
+    {
+      MapBoundingBox bbox = GetBoundingBox(request.project, request.filter, 
+        request.overlays.Contains(TileOverlayType.ProductionData), request.baseFilter, request.topFilter);
+
+      int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
+      long numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
+
+      int requiredWidth, requiredHeight;
+      CalculateSize(bbox, numTiles, out requiredWidth, out requiredHeight);
+      bool scaleDown = requiredWidth > request.width || requiredHeight > request.height;
+      if (scaleDown)
+      {
+        AdjustBoundingBoxToMaintainAspectRatio();
+      }
+      else
+      {
+        ExpandBoundingBoxToFit(bbox, numTiles, request.width, request.height);
+      }
+      var pixelTopLeft = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.minLng, numTiles);
+
+      MapParameters parameters = new MapParameters
+      {
+        bbox = bbox,
+        zoomLevel = zoomLevel,
+        numTiles = numTiles,
+        mapWidth = requiredWidth,
+        mapHeight = requiredHeight,
+        pixelTopLeft = pixelTopLeft,
+        scaleDown = scaleDown
+      };
+      log.LogDebug("MapParameters: " + JsonConvert.SerializeObject(parameters));
+      return parameters;
+    }
+
     /// <summary>
     /// Gets the map bounding box to use for the report.
     /// </summary>
@@ -45,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="haveProdDataOverlay">True if doing production data tiles</param>
     /// <param name="baseFilter">The base filter for summary volumes</param>
     /// <param name="topFilter">The top filter for summary volumes</param>
-    /// <returns>A bounding box in latitude/longitude (degrees)</returns>
+    /// <returns>A bounding box in latitude/longitude (radians)</returns>
     public MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, bool haveProdDataOverlay, Filter baseFilter, Filter topFilter)
     {
       MapBoundingBox bbox = null;
@@ -124,6 +163,92 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       return bbox;
     }
 
+
+    public void CalculateSize(MapBoundingBox bbox, long numTiles, out int calcWidth, out int calcHeight)
+    {
+      Point pixelMin = TileServiceUtils.LatLngToPixel(bbox.minLat, bbox.minLng, numTiles);
+      Point pixelMax = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.maxLng, numTiles);
+
+      calcWidth = (int)Math.Abs(pixelMax.x - pixelMin.x);
+      calcHeight = (int)Math.Abs(pixelMax.y - pixelMin.y);
+    }
+
+    /// <summary>
+    /// Expand the bounding box to fit in the tile of the required size
+    /// </summary>
+    /// <param name="bbox">Map bounding box</param>
+    /// <param name="numTiles">Number of tiles for the zoom level</param>
+    /// <param name="requiredWidth">Required width</param>
+    /// <param name="requiredHeight">Required height</param>
+    public void ExpandBoundingBoxToFit(MapBoundingBox bbox, long numTiles, int requiredWidth, int requiredHeight)
+    {
+      Point pixelMin = TileServiceUtils.LatLngToPixel(bbox.minLat, bbox.minLng, numTiles);
+      Point pixelMax = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.maxLng, numTiles);
+
+      int calcWidth = (int)Math.Abs(pixelMax.x - pixelMin.x);
+      int calcHeight = (int)Math.Abs(pixelMax.y - pixelMin.y);
+
+      bool adjust = false;
+      if (calcWidth < requiredWidth)
+      {
+        double scaleWidth = (double)requiredWidth / calcWidth;
+        calcWidth = (int)(scaleWidth * calcWidth);
+        double pixelCenterX = pixelMin.x + (pixelMax.x - pixelMin.x) / 2.0;
+        //Pixel origin is top left
+        pixelMin.x = pixelCenterX - calcWidth / 2.0;
+        pixelMax.x = pixelCenterX + calcWidth / 2.0;
+        adjust = true;
+      }
+
+      if (calcHeight  < requiredHeight)
+      {
+        double scaleHeight = (double)requiredHeight / calcHeight;
+        calcHeight = (int)(scaleHeight * calcHeight);
+        double pixelCenterY = pixelMin.y + (pixelMax.y - pixelMin.y) / 2.0;
+        //Pixel origin is top left
+        pixelMin.y = pixelCenterY + calcHeight / 2.0;
+        pixelMax.y = pixelCenterY - calcHeight / 2.0;
+        adjust = true;
+      }
+
+      if (adjust)
+      {
+        var minLatLngDegrees = WebMercatorProjection.PixelToLatLng(pixelMin, numTiles);
+        var maxLatLngDegrees = WebMercatorProjection.PixelToLatLng(pixelMax, numTiles);
+        bbox.minLat = minLatLngDegrees.Latitude.LatDegreesToRadians();
+        bbox.maxLat = maxLatLngDegrees.Latitude.LatDegreesToRadians();
+        bbox.minLng = minLatLngDegrees.Longitude.LonDegreesToRadians();
+        bbox.maxLng = maxLatLngDegrees.Longitude.LonDegreesToRadians();
+      }
+    }
+
+
+    public void AdjustBoundingBoxToMaintainAspectRatio(MapBoundingBox bbox, long numTiles, int requiredWidth, int requiredHeight)
+    {
+      Point pixelMin = TileServiceUtils.LatLngToPixel(bbox.minLat, bbox.minLng, numTiles);
+      Point pixelMax = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.maxLng, numTiles);
+
+      int calcWidth = (int)Math.Abs(pixelMax.x - pixelMin.x);
+      int calcHeight = (int)Math.Abs(pixelMax.y - pixelMin.y);
+
+      //Need to maintain aspect ratio. Figure out the ratio.
+      double ratioX = (double)requiredWidth / (double)calcWidth;
+      double ratioY = (double)requiredHeight / (double)calcHeight;
+      // use whichever multiplier is smaller
+      double ratio = ratioX < ratioY ? ratioX : ratioY;
+
+      // now we can get the new height and width
+      int newHeight = Convert.ToInt32(calcHeight * ratio);
+      int newWidth = Convert.ToInt32(calcWidth * ratio);
+
+      // Now calculate the X,Y position of the upper-left corner 
+      // (one of these will always be zero)
+      int posX = Convert.ToInt32((requiredWidth - (calcWidth * ratio)) / 2);
+      int posY = Convert.ToInt32((requiredHeight - (calcHeight * ratio)) / 2);
+
+      //g.Clear(Color.Red); // white padding
+      //g.DrawImage(image, posX, posY, newWidth, newHeight);
+    }
     /// <summary>
     /// Get the production data extents for the project.
     /// </summary>
@@ -261,6 +386,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
   public interface IBoundingBoxService
   {
+    MapParameters GetMapParameters(TileGenerationRequest request);
     MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, bool haveProdDataOverlay, Filter baseFilter, Filter topFilter);
+    void ExpandBoundingBoxToFit(MapBoundingBox bbox, long numTiles, int requiredWidth, int requiredHeight);
+    void CalculateSize(MapBoundingBox bbox, long numTiles, out int calcWidth, out int calcHeight);
   }
 }
