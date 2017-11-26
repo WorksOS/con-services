@@ -84,9 +84,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         private IMessaging rmtMsg = null;
 
         [NonSerialized]
-        private AreaControlSet areaControlSet;
-
-        [NonSerialized]
         private SiteModel siteModel = null;
 
         [NonSerialized]
@@ -110,6 +107,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         [NonSerialized]
         private SubGridRequestor requestor = null;
 
+        [NonSerialized]
+        private AreaControlSet AreaControlSet = AreaControlSet.Null();
+            
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
@@ -269,19 +269,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 clientGrid.SetAbsoluteOriginPosition((uint)(address.X & ~((int)SubGridTree.SubGridLocalKeyMask)),
                                                      (uint)(address.Y & ~((int)SubGridTree.SubGridLocalKeyMask)));
 
-/*
-                requestor = new SubGridRequestor(siteModel,
-                                                 localArg.Filters.Filters.Count() > 0 ? localArg.Filters.Filters[0] : null,
-                                                 false, // Override cell restriction
-                                                 BoundingIntegerExtent2D.Inverted(), // Override cell restriction
-                                                 SubGridTree.SubGridTreeLevels,
-                                                 int.MaxValue // MaxCellPasses
-                                                 );
-*/
-
                 // Reach into the subgrid request layer and retrieve an appropriate subgrid
-                ServerRequestResult result = requestor.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested,
-                    clientGrid, SubGridTreeBitmapSubGridBits.FullMask, ref areaControlSet );
+                requestor.CellOverrideMask = SubGridTreeBitmapSubGridBits.FullMask;
+                ServerRequestResult result = requestor.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, clientGrid);
 
                 if (result != ServerRequestResult.NoError)
                 {
@@ -408,7 +398,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
                 Log.Info("Scanning subgrids in request");
 
-                areaControlSet = AreaControlSet.Null();
                 siteModel = SiteModels.SiteModels.Instance().GetSiteModel(localArg.SiteModelID);
 
                 requestor = new SubGridRequestor(siteModel,
@@ -416,7 +405,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                                                  false, // Override cell restriction
                                                  BoundingIntegerExtent2D.Inverted(), // Override cell restriction
                                                  SubGridTree.SubGridTreeLevels,
-                                                 int.MaxValue // MaxCellPasses
+                                                 int.MaxValue, // MaxCellPasses
+                                                 AreaControlSet // No specifc paramters for selecting cells within the request area
                                                  );
 
                 addresses = new SubGridCellAddress[addressBucketSize];

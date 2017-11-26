@@ -41,7 +41,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private int MaxNumberOfPassesToReturn = int.MaxValue;
         private AreaControlSet AreaControlSet;
 
-
         // Local state populated for the purpose of access from variosu local methods
         private IClientLeafSubGrid ClientGrid = null;
         private ClientLeafSubGrid ClientGridAsLeaf = null;
@@ -86,13 +85,25 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         ISubGridCellLatestPassDataWrapper _GlobalLatestCells = null;
         bool UseLastPassGrid = false; // Assume we can't use last pass data
 
+        /// <summary>
+        /// Constructor for the subgrid retriever helper
+        /// </summary>
+        /// <param name="sitemodel"></param>
+        /// <param name="filter"></param>
+        /// <param name="hasOverrideSpatialCellRestriction"></param>
+        /// <param name="overrideSpatialCellRestriction"></param>
+        /// <param name="prepareGridForCacheStorageIfNoSeiving"></param>
+        /// <param name="treeLevel"></param>
+        /// <param name="maxNumberOfPassesToReturn"></param>
+        /// <param name="areaControlSet"></param>
         public SubGridRetriever(SiteModel sitemodel,
                                 CombinedFilter filter,
                                 bool hasOverrideSpatialCellRestriction,
                                 BoundingIntegerExtent2D overrideSpatialCellRestriction,
                                 bool prepareGridForCacheStorageIfNoSeiving,
                                 byte treeLevel,
-                                int maxNumberOfPassesToReturn)
+                                int maxNumberOfPassesToReturn,
+                                AreaControlSet areaControlSet)
         {
             SiteModel = sitemodel;
             _CellSize = SiteModel.Grid.CellSize;
@@ -108,7 +119,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             Level = treeLevel;
             MaxNumberOfPassesToReturn = maxNumberOfPassesToReturn;
-    }
+
+            AreaControlSet = areaControlSet;
+        }
 
     private void AcquirePopulationFilterValuesInterlock()
         {
@@ -1298,7 +1311,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                                    IClientLeafSubGrid clientGrid,
                                                    SubGridTreeBitmapSubGridBits cellOverrideMask,
                                                    // subgridLockToken          : Integer;
-                                                   ref AreaControlSet areaControlSet,
                                                    ClientHeightLeafSubGrid designElevations)
         {
 //            Log.Info("Entering RetrieveSubGrid");
@@ -1308,7 +1320,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             //  SIGLogMessage.PublishNoODS(Nil, Format('In RetrieveSubGrid: Active pass filters = %s, Active cell filters = %s', [PassFilter.ActiveFiltersText, CellFilter.ActiveFiltersText]), slmcDebug);
 
             // Set up class local state for other methods to access
-            this.AreaControlSet = areaControlSet;
             this.ClientGrid = clientGrid;
             this.ClientGridAsLeaf = clientGrid as ClientLeafSubGrid;
             this._GridDataType = clientGrid.GridDataType;

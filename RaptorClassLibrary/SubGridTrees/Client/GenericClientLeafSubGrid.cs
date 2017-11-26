@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 {
@@ -71,16 +72,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// </summary>
         /// <param name="functor"></param>
         /// <returns></returns>
-        public static void ForEach(Action<byte, byte> functor)
-        {
-            for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
-            {
-                for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
-                {
-                    functor(I, J);
-                }
-            }
-        }
+        public static void ForEach(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
 
         public override void Clear()
         {
@@ -129,7 +121,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         {
             base.Assign(source);
 
-            ForEach((x, y) => Cells[x, y] = source.Cells[x, y]);
+            // Derived classes are responsible for performing assignation of the Cells structure as they can use optimal methods such as BlockCopy()
+            // ForEach((x, y) => Cells[x, y] = source.Cells[x, y]);
         }
     }
 }

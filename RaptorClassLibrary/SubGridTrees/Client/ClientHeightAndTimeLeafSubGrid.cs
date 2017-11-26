@@ -14,6 +14,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 {
+/*
     /// <summary>
     /// The content of each cell in a 'Height and time' client leaf sub grid. Each cell stores an elevation and 
     /// the time at which the elevation measurement relates to (either the time stamp on a cell pass or the time
@@ -51,21 +52,21 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             Time = time;
         }
     }
+*/
 
     /// <summary>
     /// Client leaf sub grid that tracks height and time for each cell
     /// </summary>
     [Serializable]
-    public class ClientHeightAndTimeLeafSubGrid : GenericClientLeafSubGrid<SubGridCellHeightAndTime>
+    public class ClientHeightAndTimeLeafSubGrid : ClientHeightLeafSubGrid
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// The map of cells within this subgrid where the elevations are derived from a surveyed surface 
-        /// rather than a machine cell pass
+        /// Time values for the heights stored in the height and time structure. Times are expressed as the binary DateTime format to promote efficient copying of arrays
         /// </summary>
-        public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+        public Int64[,] Times = new Int64[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
         /// <summary>
         /// Constructor. Set the grid to HeightAndTime.
@@ -81,13 +82,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         }
 
         /// <summary>
-        /// Determine if a filtered height is valid (not null)
-        /// </summary>
-        /// <param name="filteredValue"></param>
-        /// <returns></returns>
-        public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.Height == Consts.NullSingle;
-
-        /// <summary>
         /// Assign filtered height value from a filtered pass to a cell
         /// </summary>
         /// <param name="cellX"></param>
@@ -95,27 +89,21 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="Context"></param>
         public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
         {
-            Cells[cellX, cellY].Set(Context.FilteredValue.FilteredPassData.FilteredPass.Height, Context.FilteredValue.FilteredPassData.FilteredPass.Time);
+            base.AssignFilteredValue(cellX, cellY, Context);
+
+            Times[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.Time.ToBinary();
         }
 
         /// <summary>
-        /// Determines if the height at the cell location is null or not.
+        /// An array containing the content of null times for all the cell in the subgrid
         /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <returns></returns>
-        public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].Height != Consts.NullHeight;
+        public static Int64[,] nullTimes = NullTimes();
 
-        /// <summary>
-        /// An array containing the content of a fully null subgrid
-        /// </summary>
-        public static SubGridCellHeightAndTime[,] nullCells = NullHeightsAndTimes();
-
-        private static SubGridCellHeightAndTime[,] NullHeightsAndTimes()
+        private static Int64[,] NullTimes()
         {
-            SubGridCellHeightAndTime[,] result = new SubGridCellHeightAndTime[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+            Int64[,] result = new Int64[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
-            ForEach((x, y) => result[x, y].Clear());
+            ForEach((x, y) => result[x, y] = DateTime.MinValue.ToBinary());
 
             return result;
         }
@@ -125,15 +113,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// </summary>
         public override void Clear()
         {
-            if (Cells == null)
-            {
-                base.Clear();
-            }
+            base.Clear();
 
-            //Buffer.BlockCopy(nullCells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(SubGridCellHeightAndTime));
-            ForEach((x, y) => Cells[x, y].Clear()); // TODO: Optimisation: Use PassData_Height_Null assignment as in current gen;
-
-            SurveyedSurfaceMap.Clear();
+            Buffer.BlockCopy(nullTimes, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(Int64));
         }
 
         /// <summary>
@@ -146,17 +128,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         {
             base.Write(writer, buffer);
 
-            SurveyedSurfaceMap.Write(writer, buffer);
-
-            /// Horribly slow... May need to separate height and time into separate vectors for performance...
-            SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-            {
-                writer.Write(Cells[x, y].Height);
-                writer.Write(Cells[x, y].Time.ToBinary());
-            });
-
-            //Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-            //writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+            Buffer.BlockCopy(Times, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(Int64));
+            writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(Int64));
         }
 
         /// <summary>
@@ -169,21 +142,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         {
             base.Read(reader, buffer);
 
-            SurveyedSurfaceMap.Read(reader, buffer);
-
-            /// Horribly slow... May need to separate height and time into separate vectors for performance...
-            SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-            {
-                Cells[x, y].Set(reader.ReadSingle(), DateTime.FromBinary(reader.ReadInt64()));
-            });
-
-            //reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-            //Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+            reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(Int64));
+            Buffer.BlockCopy(buffer, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(Int64));
         }
-
-        /// <summary>
-        /// Sets all elevations in the height & time client leaf sub grid to zero (not null), and minimum time value
-        /// </summary>
-        public void SetToZeroHeight() => ForEach((x, y) => Cells[x, y].Set(0, DateTime.MinValue)); // TODO: Optimisation: Use single array assignment
     }
 }

@@ -367,16 +367,17 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 {
                     using (var writer = new StreamWriter(outFile))
                     {
+//                        writer.Write($"All cache keys from {RaptorCaches.ImmutableNonSpatialCacheName()}");
+
                         IIgnite ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
 
-                        retriveAllItems(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+//                        retriveAllItems(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
 
-/*
+
                         writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
                         writeKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
                         writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
                         writeKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
-*/
                     }
                 }
             }

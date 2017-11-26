@@ -44,7 +44,6 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
             DesignBase Design = null;
             ClientHeightAndTimeLeafSubGrid Patch = null;
             object Hint = null;
-            DateTime AsAtDate;
             DesignLoadResult LockResult;
             SurveyedSurface ThisSurveyedSurface;
 
@@ -113,35 +112,29 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
                                     continue;
                                 }
 
-                                AsAtDate = ThisSurveyedSurface.AsAtDate;
-                                try
-                                {
-                                    double Offset = ThisSurveyedSurface.DesignDescriptor.Offset;
+                                Int64 AsAtDate = ThisSurveyedSurface.AsAtDate.ToBinary();
+                                double Offset = ThisSurveyedSurface.DesignDescriptor.Offset;
 
-                                    // Walk across the subgrid checking for a design elevation for each appropriate cell
-                                    // based on the processing bit mask passed in
-                                    Args.ProcessingMap.ForEachSetBit((x, y) =>
+                                // Walk across the subgrid checking for a design elevation for each appropriate cell
+                                // based on the processing bit mask passed in
+                                Args.ProcessingMap.ForEachSetBit((x, y) =>
+                                {
+                                    if (Design.InterpolateHeight(ref Hint,
+                                                                 OriginXPlusHalfCellSize + (CellSize * x),
+                                                                 OriginYPlusHalfCellSize + (CellSize * y),
+                                                                 Offset,
+                                                                 out double z))
                                     {
-                                        if (Design.InterpolateHeight(ref Hint,
-                                                                     OriginXPlusHalfCellSize + (CellSize * x),
-                                                                     OriginYPlusHalfCellSize + (CellSize * y),
-                                                                     Offset,
-                                                                     out double z))
-                                        {
-                                            // If we can interpolate a height for the requested cell, then update the cell height
-                                            // and decrement the bit count so that we know when we've handled all the requested cells
-                                            Patch.Cells[x, y].Set((float)z, AsAtDate);
-                                        }
+                                        // If we can interpolate a height for the requested cell, then update the cell height
+                                        // and decrement the bit count so that we know when we've handled all the requested cells
+                                        Patch.Cells[x, y] = (float)z;
+                                        Patch.Times[x, y] = AsAtDate;
+                                    }
 
-                                        Args.ProcessingMap.ClearBit(x, y);
+                                    Args.ProcessingMap.ClearBit(x, y);
 
-                                        return --CellsToCheck > 0;
-                                    });
-                                }
-                                finally
-                                {
-                                    //DesignIndexClone.Free;
-                                }
+                                    return --CellsToCheck > 0;
+                                });
                             }
                             finally
                             {

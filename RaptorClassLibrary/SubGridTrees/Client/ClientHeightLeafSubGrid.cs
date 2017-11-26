@@ -47,6 +47,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             GridDataType = Raptor.Types.GridDataType.Height;
         }
 
+        
         /// <summary>
         /// Assign contents of another height client lead sub grid to this one
         /// </summary>
@@ -55,16 +56,25 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         {
             base.Assign(heightAndTimeResults);
 
-            //OriginX = heightAndTimeResults.OriginX;
-            //OriginY = heightAndTimeResults.OriginY;
-
-            //ProdDataMap.Assign(heightAndTimeResults.ProdDataMap);
-            //FilterMap.Assign(heightAndTimeResults.FilterMap);
-
-            ForEach((x, y, height) => Cells[x, y] = heightAndTimeResults.Cells[x, y].Height);
+            Buffer.BlockCopy(heightAndTimeResults.Cells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
 
             SurveyedSurfaceMap.Assign(heightAndTimeResults.SurveyedSurfaceMap);
         }
+        
+
+        /// <summary>
+        /// Assign contents of another height client lead sub grid to this one
+        /// </summary>
+        /// <param name="heightLeaf"></param>
+        public void Assign(ClientHeightLeafSubGrid heightLeaf)
+        {
+            base.Assign(heightLeaf);
+
+            Buffer.BlockCopy(heightLeaf.Cells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+
+            SurveyedSurfaceMap.Assign(heightLeaf.SurveyedSurfaceMap);
+        }
+
 
         /// <summary>
         /// Determine if a filtered height is valid (not null)
@@ -108,7 +118,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             }
 
             Buffer.BlockCopy(nullCells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-            // ForEach((x, y) => Cells[x, y] = Consts.NullHeight); // TODO: Optimisation: Use PassData_Height_Null assignment as in current gen;
 
             FirstPassMap.Clear();
             SurveyedSurfaceMap.Clear();

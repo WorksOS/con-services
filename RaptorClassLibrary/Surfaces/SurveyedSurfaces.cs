@@ -145,24 +145,64 @@ namespace VSS.VisionLink.Raptor.Surfaces
             base.Sort((x, y) => { return FSortDescending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate); });
         }
 
+        /// <summary>
+        /// Determines if there is at least one surveyed surface with an as at date later than the data provided as a DateTime
+        /// </summary>
+        /// <param name="TimeStamp"></param>
+        /// <returns></returns>
         public bool HasSurfaceLaterThan(DateTime TimeStamp)
         {
-            if (!FSorted)
-            {
-                SortChronologically();
-            }
+            for (int i = Count - 1; i >= 0; i--)
+                if (this[i].AsAtDate.CompareTo(TimeStamp) > 0)
+                    return true;
 
-            return this.Any(x => x.AsAtDate.CompareTo(TimeStamp) > 0);
+            return false;
         }
 
+        /// <summary>
+        /// Determines if there is at least one surveyed surface with an as at date later than the data provided as a DateTime.ToBinary() Int64
+        /// </summary>
+        /// <param name="TimeStamp"></param>
+        /// <returns></returns>
+        public bool HasSurfaceLaterThan(Int64 TimeStamp)
+        {
+            DateTime _TimeStamp = DateTime.FromBinary(TimeStamp);
+
+            for (int i = Count - 1; i >= 0; i--)
+                if (this[i].AsAtDate.CompareTo(_TimeStamp) > 0)
+                    return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines if there is at least one surveyed surface with an as at date earlier than the data provided as a DateTime
+        /// </summary>
+        /// <param name="TimeStamp"></param>
+        /// <returns></returns>
         public bool HasSurfaceEarlierThan(DateTime TimeStamp)
         {
-            if (!FSorted)
-            {
-                SortChronologically();
-            }
+            for (int i = Count - 1; i >= 0; i--)
+                if (this[i].AsAtDate.CompareTo(TimeStamp) < 0)
+                    return true;
 
-            return this.Any(x => x.AsAtDate.CompareTo(TimeStamp) < 0);
+            return false;
+        }
+
+        /// <summary>
+        /// Determines if there is at least one surveyed surface with an as at date earlier than the data provided as a DateTime.ToBinary() Int64
+        /// </summary>
+        /// <param name="TimeStamp"></param>
+        /// <returns></returns>
+        public bool HasSurfaceEarlierThan(Int64 TimeStamp)
+        {
+            DateTime _TimeStamp = DateTime.FromBinary(TimeStamp);
+
+            for (int i = 0; i < Count; i--)
+                if (this[i].AsAtDate.CompareTo(_TimeStamp) < 0)
+                    return true;
+
+            return false;
         }
 
         /// <summary>

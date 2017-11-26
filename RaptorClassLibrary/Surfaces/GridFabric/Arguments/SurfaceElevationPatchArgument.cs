@@ -63,12 +63,12 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments
         /// <param name="EarliestSurface"></param>
         /// <param name="processingMap"></param>
         public SurfaceElevationPatchArgument(long siteModelID,
-                                         uint oTGCellBottomLeftX,
-                                         uint oTGCellBottomLeftY,
-                                         double cellSize,
-                                         bool earliestSurface,
-                                         SubGridTreeBitmapSubGridBits processingMap,
-                                         SurveyedSurfaces includedSurveyedSurfaces) : base()
+                                             uint oTGCellBottomLeftX,
+                                             uint oTGCellBottomLeftY,
+                                             double cellSize,
+                                             bool earliestSurface,
+                                             SubGridTreeBitmapSubGridBits processingMap,
+                                             SurveyedSurfaces includedSurveyedSurfaces) : base()
         {
             SiteModelID = siteModelID;
             OTGCellBottomLeftX = oTGCellBottomLeftX;
