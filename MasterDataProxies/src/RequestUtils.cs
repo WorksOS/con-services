@@ -21,7 +21,7 @@ namespace VSS.MasterData.Proxies
       return customHeaders;
     }
 
-    public static IDictionary<string, string> GetCustomHeadersINternalContext(this IHeaderDictionary headers)
+    public static IDictionary<string, string> GetCustomHeadersInternalContext(this IHeaderDictionary headers)
     {
       var customHeaders = new Dictionary<string, string>();
 
