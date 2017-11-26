@@ -28,11 +28,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     /// <returns></returns>
     public async Task<string> ScheduleVetaExportJob(Guid projectUid,
-      string fileName, string machineNames, Guid? filterUid, string pathToSave, IDictionary<string, string> customHeaders = null)
+      string fileName, string machineNames, Guid? filterUid, IDictionary<string, string> customHeaders = null)
     {
       var result = await GetMasterDataItem<string>("SCHEDULER_EXPORT_URL",
         customHeaders,
-        $"?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}&filterUid={filterUid}&path={pathToSave}",
+        $"?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}&filterUid={filterUid}",
         "/api/v1/export/veta");
       if (!string.IsNullOrEmpty(result))
       {

@@ -9,6 +9,6 @@ namespace VSS.MasterData.Proxies
     Task<Dictionary<string, string>> ScheduleVetaExportJob(string jobId);
 
     Task<string> ScheduleVetaExportJob(Guid projectUid,
-      string fileName, string machineNames, Guid? filterUid, string pathToSave, IDictionary<string, string> customHeaders = null);
+      string fileName, string machineNames, Guid? filterUid, IDictionary<string, string> customHeaders = null);
   }
 }
