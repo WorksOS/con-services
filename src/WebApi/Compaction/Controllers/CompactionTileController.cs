@@ -523,7 +523,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectSettings">Project settings to use for Raptor</param>
     /// <param name="filter">Filter to use for Raptor</param>
-    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="projectUid">Legacy project ID</param>
     /// <param name="mode">Display mode; type of data requested</param>
     /// <param name="width">Width of the tile</param>
     /// <param name="height">Height of the tile in pixels</param>

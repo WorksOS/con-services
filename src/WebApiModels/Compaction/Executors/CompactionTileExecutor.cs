@@ -44,8 +44,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         RaptorConverters.convertGridOrLLBoundingBox(request.boundBoxGrid, request.boundBoxLL, out TWGS84Point bl, out TWGS84Point tr,
           out bool coordsAreGrid);
 
-        TICFilterSettings baseFilter = RaptorConverters.ConvertFilter(request.BaseFilterId, request.BaseFilter, request.projectId);
-        TICFilterSettings topFilter = RaptorConverters.ConvertFilter(request.TopFilterId, request.TopFilter, request.projectId);
+        TICFilterSettings baseFilter = RaptorConverters.ConvertFilter(request.filterId1, request.filter1, request.projectId);
+        TICFilterSettings topFilter = RaptorConverters.ConvertFilter(request.filterId2, request.filter2, request.projectId);
         var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
 
         TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.computeVolType);
@@ -55,8 +55,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           RaptorConverters.AdjustBaseFilter(baseFilter);
         }
 
-        if ((baseFilter == null || topFilter == null) && designDescriptor.IsNull() ||
-          baseFilter == null && topFilter == null)
+        if (((baseFilter == null || topFilter == null) && designDescriptor.IsNull()) ||
+          (baseFilter == null && topFilter == null))
         {
           throw new ServiceException(
             HttpStatusCode.InternalServerError,
@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           baseFilter,
           topFilter,
           RaptorConverters.convertOptions(null, request.liftBuildSettings, request.computeVolNoChangeTolerance,
-            request.FilterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
+            request.filterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
           designDescriptor,
           volType,
           request.representationalDisplayColor,

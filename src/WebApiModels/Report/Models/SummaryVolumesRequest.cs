@@ -46,7 +46,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// </value>
     [JsonProperty(Required = Required.Default)]
     public double? FillTolerance { get; private set; }
-
+    
+    [JsonIgnore]
     public bool FiltersAreMatchingGroundToGround { get; set; }
 
     /// <summary>

@@ -420,7 +420,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-          .Build<SummaryVolumesExecutorV2>(logger, raptorClient)
+          .Build<CompactionSummaryVolumesExecutor>(logger, raptorClient)
           .Process(request) as SummaryVolumesResult;
 
         returnResult = CompactionSummaryVolumesResult.CreateInstance(result, await GetProjectSettings(projectUid));

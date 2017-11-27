@@ -75,32 +75,32 @@ namespace VSS.Productivity3D.Common.Models
     /// The base or earliest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filter1", Required = Required.Default)]
-    public Filter BaseFilter { get; protected set; }
+    public Filter filter1 { get; protected set; }
 
     /// <summary>
     /// The ID of the base or earliest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filterId1", Required = Required.Default)]
-    public long BaseFilterId { get; protected set; }
+    public long filterId1 { get; protected set; }
 
     /// <summary>
     /// The top or latest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filter2", Required = Required.Default)]
-    public Filter TopFilter { get; protected set; }
+    public Filter filter2 { get; protected set; }
 
     /// <summary>
     /// The ID of the top or latest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filterId2", Required = Required.Default)]
-    public long TopFilterId { get; protected set; }
+    public long filterId2 { get; protected set; }
 
     /// <summary>
     /// The method of filtering cell passes into layers to be used for thematic renderings that require layer analysis as an input into the rendered data.
     /// If this value is provided any layer method provided in a filter is ignored.
     /// </summary>
-    [JsonProperty(PropertyName = "FilterLayerMethod", Required = Required.Default)]
-    public FilterLayerMethod FilterLayerMethod { get; protected set; }
+    [JsonProperty(PropertyName = "filterLayerMethod", Required = Required.Default)]
+    public FilterLayerMethod filterLayerMethod { get; protected set; }
 
     /// <summary>
     /// The bounding box enclosing the area to be rendered. The bounding box is expressed in terms of WGS84 latitude and longitude positions, expressed in radians.
@@ -132,6 +132,7 @@ namespace VSS.Productivity3D.Common.Models
     [Required]
     public ushort height { get; protected set; }
 
+    [JsonIgnore]
     public bool IsSummaryVolumeCutFillRequest { get; set; }
 
     /// <summary>
@@ -176,11 +177,11 @@ namespace VSS.Productivity3D.Common.Models
         computeVolType = computeVolType,
         computeVolNoChangeTolerance = computeVolNoChangeTolerance,
         designDescriptor = designDescriptor,
-        BaseFilter = filter1,
-        BaseFilterId = filterId1,
-        TopFilter = filter2,
-        TopFilterId = filterId2,
-        FilterLayerMethod = filterLayerMethod,
+        filter1 = filter1,
+        filterId1 = filterId1,
+        filter2 = filter2,
+        filterId2 = filterId2,
+        filterLayerMethod = filterLayerMethod,
         boundBoxLL = boundingBoxLatLon,
         boundBoxGrid = boundingBoxGrid,
         width = width,
@@ -214,7 +215,7 @@ namespace VSS.Productivity3D.Common.Models
          computeVolType == RaptorConverters.VolumesType.BetweenDesignAndFilter || 
          computeVolType == RaptorConverters.VolumesType.BetweenFilterAndDesign)))
       {
-        ValidateVolumesFilters(computeVolType, this.BaseFilter, this.BaseFilterId, this.TopFilter, this.TopFilterId);
+        ValidateVolumesFilters(computeVolType, this.filter1, this.filterId1, this.filter2, this.filterId2);
       }
 
       if (boundBoxLL == null && boundBoxGrid == null)

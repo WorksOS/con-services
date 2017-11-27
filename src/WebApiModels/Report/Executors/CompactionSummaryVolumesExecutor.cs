@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// <summary>
   /// Summary volumes executor for use with API v2.
   /// </summary>
-  public class SummaryVolumesExecutorV2 : RequestExecutorContainer
+  public class CompactionSummaryVolumesExecutor : RequestExecutorContainer
   {
     private static BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
