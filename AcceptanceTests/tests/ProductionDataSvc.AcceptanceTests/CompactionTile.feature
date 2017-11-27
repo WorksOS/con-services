@@ -22,7 +22,8 @@ And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
 And displayMode "<Mode>" and bbox "<BBox>" and width "<Width>" and height "<Height>"
 When I request result
-Then the result should match the "<ResultName>" from the repository
+#Then the result should match the "<ResultName>" from the repository
+Then the result tile should match the "<ResultName>" from the repository
 Examples: 
 | RequestName       | ProjectUID                           | FilterUID                            | BBox                                                                            | Width | Height | Mode | ResultName        |
 | DesignOutside     | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | 36.207022, -115.020854, 36.207563, -115.018414                                  | 256   | 64     | 4    | DesignOutside     |

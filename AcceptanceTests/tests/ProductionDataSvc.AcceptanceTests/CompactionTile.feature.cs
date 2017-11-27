@@ -152,8 +152,8 @@ testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), 
 testRunner.And(string.Format("displayMode \"{0}\" and bbox \"{1}\" and width \"{2}\" and height \"{3}\"", mode, bBox, width, height), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 24
 testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 25
-testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 26
+testRunner.Then(string.Format("the result tile should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -263,26 +263,26 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         public virtual void CompactionGetTilesForCutfill(string requestName, string projectUID, string filterUID, string cutfillDesignUid, string bBox, string width, string height, string mode, string volCalc, string topUid, string baseUid, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Tiles for cutfill", exampleTags);
-#line 38
-this.ScenarioSetup(scenarioInfo);
 #line 39
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 40
-testRunner.And("the result file \"CompactionGetProductionDataTilesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.Given("the Compaction service URI \"/api/v2/compaction/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 41
-testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("the result file \"CompactionGetProductionDataTilesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 42
-testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 43
-testRunner.And(string.Format("cutfillDesignUid \"{0}\"", cutfillDesignUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 44
-testRunner.And(string.Format("displayMode \"{0}\" and bbox \"{1}\" and width \"{2}\" and height \"{3}\"", mode, bBox, width, height), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("cutfillDesignUid \"{0}\"", cutfillDesignUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 45
+testRunner.And(string.Format("displayMode \"{0}\" and bbox \"{1}\" and width \"{2}\" and height \"{3}\"", mode, bBox, width, height), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 46
 testRunner.And(string.Format("a summary volume file with volumeCalcType \"{0}\" and a topUid \"{1}\" and a baseUid " +
                         "\"{2}\"", volCalc, topUid, baseUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 46
-testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 47
+testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 48
 testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

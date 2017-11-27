@@ -1,4 +1,5 @@
 ﻿
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
@@ -51,6 +52,16 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       Assert.AreEqual(tileRequester.ResponseRepo[resultName], tileRequester.CurrentResponse);
     }
+
+    [Then(@"the result tile should match the ""(.*)"" from the repository")]
+    public void ThenTheResultTileShouldMatchTheFromTheRepository(string resultName)
+    {
+      var expectedTileData = tileRequester.ResponseRepo[resultName].TileData;
+      var actualTileData = tileRequester.CurrentResponse.TileData;
+
+
+    }
+
 
     [When(@"I request result")]
     public void WhenIRequestResult()
