@@ -50,10 +50,10 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <param name="jobId">The job identifier.</param>
     /// <returns></returns>
-    public async Task<Dictionary<string,string>> ScheduleVetaExportJob(string jobId)
+    public async Task<Tuple<string, string>> GetVetaExportJobStatus(Guid projectUId, string jobId)
     {
-      var result = await GetMasterDataItem<Dictionary<string,string>>("SCHEDULER_EXPORT_URL",
-        null, null, $"/api/v1/export/veta/{jobId}");
+      var result = await GetMasterDataItem<Tuple<string, string>>("SCHEDULER_EXPORT_URL",
+        null, null, $"/api/v1/export/veta/{projectUId}/{jobId}");
       if (result!=null)
       {
         return result;
