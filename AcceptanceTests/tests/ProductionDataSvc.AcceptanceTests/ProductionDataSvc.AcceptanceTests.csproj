@@ -593,10 +593,6 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ExportReportToVETA.feature.cs</LastGenOutput>
     </None>
-    <None Include="FilterServices.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>FilterServices.feature.cs</LastGenOutput>
-    </None>
     <None Include="GetDesignBoundaries.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetDesignBoundaries.feature.cs</LastGenOutput>

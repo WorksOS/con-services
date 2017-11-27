@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace RaptorSvcAcceptTestsCommon.Utils
 {
@@ -108,6 +112,58 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
         return true;
       }
+    }
+
+    /// <summary>
+    /// Compare two doubles and assert if different. Use to compare reports and exports in CSV
+    /// </summary>
+    /// <param name="expectedDouble">expected value</param>
+    /// <param name="actualDouble">actual value</param>
+    /// <param name="field">field name</param>
+    /// <param name="rowCount">row index</param>
+    /// <param name="precision">number of decimal places</param>
+    /// <returns>false if they don't match, true if they match</returns>
+    public static bool CompareDouble(double expectedDouble, double actualDouble, string field, int rowCount, int precision = 6)
+    {
+      if (expectedDouble == actualDouble)
+      {
+        return true;
+      }
+      if (Math.Round(expectedDouble, precision) != Math.Round(actualDouble, precision))
+      {
+        Console.WriteLine("RowCount:" + rowCount + " " + field + " actual: " + actualDouble + " expected: " + expectedDouble);
+        Assert.Fail("Expected: " + expectedDouble + " Actual: " + actualDouble + " at row index " + rowCount + " for field " + field);
+      }
+      return true;
+    }
+
+    /// <summary>
+    /// Sort a csv file which is in one large string
+    /// </summary>
+    /// <param name="csvData">csv file loaded into a string</param>
+    /// <returns>string which is sorted by datetime and next key</returns>
+    public static string SortCsvFileIntoString(string csvData)
+    {
+      var idx = csvData.IndexOf(Environment.NewLine, StringComparison.Ordinal);
+      var header = csvData.Substring(0, idx);
+      var datalines = csvData.Substring(idx+2).Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+      var sorted = datalines.Select(line => new
+        {
+          SortKey = DateTime.Parse(line.Split(',')[0]),  // Sort by data time
+          SortKeyThenBy = line.Split(',')[1],            // Sort by string for 2nd key
+          Line = line
+        }
+      ).OrderBy(x => x.SortKey).ThenBy(x => x.SortKeyThenBy).Select(x => x.Line);
+
+      var sb = new StringBuilder();
+      sb.Append(header);
+      sb.Append(Environment.NewLine);
+      foreach (var row in sorted)
+      {
+        sb.Append(row);
+        sb.Append(Environment.NewLine);
+      }
+      return sb.ToString();
     }
   }
 }
