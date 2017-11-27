@@ -57,7 +57,29 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       log.LogInformation("Getting map tile for reports");
       log.LogDebug("TileGenerationRequest: " + JsonConvert.SerializeObject(request));
 
-      MapParameters parameters = boundingBoxService.GetMapParameters(request);
+      int mapWidth = request.width;
+      int mapHeight = request.height;
+
+      MapBoundingBox bbox = boundingBoxService.GetBoundingBox(request.project, request.filter,
+        request.overlays.Contains(TileOverlayType.ProductionData), request.baseFilter, request.topFilter);
+
+      int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
+      long numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
+
+      boundingBoxService.AdjustBoundingBoxToFit(bbox, numTiles, request.width, request.height, out mapWidth, out mapHeight);
+
+      var pixelTopLeft = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.minLng, numTiles);
+
+      MapParameters parameters = new MapParameters
+      {
+        bbox = bbox,
+        zoomLevel = zoomLevel,
+        numTiles = numTiles,
+        mapWidth = mapWidth,
+        mapHeight = mapHeight,
+        pixelTopLeft = pixelTopLeft,
+      };
+      log.LogDebug("MapParameters: " + JsonConvert.SerializeObject(parameters));
 
       List<byte[]> tileList = new List<byte[]>();
       if (request.overlays.Contains(TileOverlayType.BaseMap))
@@ -97,10 +119,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           tileList.Add(dxfBitmap);
       }
       var overlayTile = TileServiceUtils.OverlayTiles(parameters, tileList);
-      if (parameters.scaleDown)
-      {
-        overlayTile = ScaleTileDown(request, overlayTile);
-      }
+      overlayTile = ScaleTile(request, overlayTile);      
       return TileResult.CreateTileResult(overlayTile, TASNodeErrorStatus.asneOK);
     }
 
@@ -110,34 +129,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="request">Request parameters</param>
     /// <param name="overlayTile">The tile to scale</param>
     /// <returns>The scaled tile</returns>
-    private byte[] ScaleTileDown(TileGenerationRequest request, byte[] overlayTile)
+    private byte[] ScaleTile(TileGenerationRequest request, byte[] overlayTile)
     { 
       using (Bitmap dstImage = new Bitmap(request.width, request.height))
       using (Graphics g = Graphics.FromImage(dstImage))
       using (var tileStream = new MemoryStream(overlayTile))
       using (Image srcImage = Image.FromStream(tileStream))
       {
-        /*
-        //Need to maintain aspect ratio. Figure out the ratio.
-        double ratioX = (double)request.width / (double)srcImage.Width;
-        double ratioY = (double)request.height / (double)srcImage.Height;
-        // use whichever multiplier is smaller
-        double ratio = ratioX < ratioY ? ratioX : ratioY;
-
-        // now we can get the new height and width
-        int newHeight = Convert.ToInt32(srcImage.Height * ratio);
-        int newWidth = Convert.ToInt32(srcImage.Width * ratio);
-
-        // Now calculate the X,Y position of the upper-left corner 
-        // (one of these will always be zero)
-        int posX = Convert.ToInt32((request.width - (srcImage.Width * ratio)) / 2);
-        int posY = Convert.ToInt32((request.height - (srcImage.Height * ratio)) / 2);
-
-        //g.Clear(Color.Red); // white padding
-        //g.DrawImage(image, posX, posY, newWidth, newHeight);
-        */
-        
-
         dstImage.SetResolution(srcImage.HorizontalResolution, srcImage.VerticalResolution);
         g.CompositingMode = CompositingMode.SourceCopy;
         g.CompositingQuality = CompositingQuality.HighQuality;
@@ -147,8 +145,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         using (var wrapMode = new ImageAttributes())
         {
           wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-          //g.Clear(Color.Red); // white padding
-          //g.DrawImage(srcImage, posX, posY, newWidth, newHeight);
           g.DrawImage(srcImage, new Rectangle(0, 0, request.width, request.height), 0, 0, srcImage.Width, srcImage.Height, GraphicsUnit.Pixel, wrapMode);
         }
         return dstImage.BitmapToByteArray();
