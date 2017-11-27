@@ -51,11 +51,12 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="baseFilter">Base filter for  summary volumes</param>
     /// <param name="topFilter">Top filter for  summary volumes</param>
     /// <param name="volumeDesign">Design descriptor for summary volumes design</param>
+    /// <param name="volumeCalcType">Type of summary volumes calculation</param>
+    /// <param name="customHeaders">Custom request headers</param>
     /// <returns>Tile result</returns>
-    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings,
-      Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
-      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, Filter baseFilter,
-      Filter topFilter, DesignDescriptor volumeDesign, IDictionary<string, string> customHeaders)
+    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, 
+      DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, Filter baseFilter,
+      Filter topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders)
     {
       var tileRequest = requestFactory.Create<TileRequestHelper>(r => r
           .ProjectId(projectId)
@@ -63,6 +64,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           .ProjectSettings(projectSettings)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
+          .SetVolumeCalcType(volumeCalcType)
+          .SetVolumeDesign(volumeDesign)
+          .SetBaseFilter(baseFilter)
+          .SetTopFilter(topFilter)
         .CreateTileRequest(mode, width, height, bbox,
           GetElevationExtents(projectSettings, filter, projectId, mode));
 
@@ -131,9 +136,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
   public interface IProductionDataTileService
   {
-    TileResult GetProductionDataTile(CompactionProjectSettings projectSettings,
-      Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
-      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, Filter baseFilter, 
-      Filter topFilter, DesignDescriptor volumeDesign, IDictionary<string, string> customHeaders);
+    TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, 
+      DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, 
+      Filter baseFilter, Filter topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders);
   }
 }

@@ -726,22 +726,77 @@ this.ScenarioSetup(scenarioInfo);
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tile - ProductionData - SummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        public virtual void ReportTile_ProductionData_SummaryVolumes()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - ProductionData - SummaryVolumes", ((string[])(null)));
+#line 114
+this.ScenarioSetup(scenarioInfo);
+#line 115
+ testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 116
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 117
+  testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 118
+  testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 119
+  testRunner.And("a volumeCalcType \"GroundToGround\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 120
+  testRunner.And("a volumeTopUid \"A40814AA-9CDB-4981-9A21-96EA30FFECDD\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 121
+  testRunner.And("a volumeBaseUid \"F07ED071-F8A1-42C3-804A-1BDE7A78BE5B\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 122
+ testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 123
+ testRunner.Then("the Report Tile result should be", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
+                    "AARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAUpSURBVHhe7dMxTQQAGIPR04cC5LAj" +
+                    "AwEMSEDYsXT8pyYk1+S95BPQoQ8AAAAAAAAAAAAAAAAAAF7V5+/bc7VMAFrXsVbKBKB1HWulTABa17FW" +
+                    "ygSgdR1rpUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWulTABa17FWygSgdR1rpUwAWtexVsoEoHUda6VM" +
+                    "AFrXsVbKBKB1HWulTABa17FWygSgdR1rpUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWulTABa17FWygSg" +
+                    "dR1rpUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWulTABa17FWygSgdR1rpUwAWtexVsoEoHUda6VMAFrX" +
+                    "sVbKBKB1HWulTABa17FWygSgdR1rpUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWulTABa17FWygSgdR1r" +
+                    "pUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWulTABa17FWygSgdR1rpUwAWh9fP8/VMgFoXcdaKROA1nWs" +
+                    "lTIBaF3HWikTgNZ1rJUyAWhdx1opE4DWdayVMgFoXcdaKROA1nWslTIBaF3HWikTgNZ1rJUyAWhdx1op" +
+                    "E4DWdayVMgFoXcdaKROA1nWslTIBaF3HWikTgNZ1rJUyAWhdx1opE4DWdayVMgFoXcdaKROA1nWslTIB" +
+                    "aF3HWikTgNZ1rJUyAWhdx1opE4DWdayVMgFoXcdaKROA1nWslTIBaF3HWikTgNZ1rJUyAWhdx1opE4DW" +
+                    "dayVMgFoXcdaKROA1nWslTIBaF3HWikTgNZ1rJUyAWhdx1opE4DWdayVMgFoXcdaKROA1nWslTIBaF3H" +
+                    "WikTgNZ1rJUyAWhdx1opE4DWdayVMgFoXcdaKROA1nWslTIBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAID/8Pn79lwtE4DWdayVMgFoXcdaKROA1nWslTIBaF3HWikTgNZ1rJUy" +
+                    "AWhdx1opE4DWdayVMgFoXcdaKROA1nWslTIBaF3HWikTgNZ1rJUyAWhdx1opE4DWdayVMgFoXcdaKROA" +
+                    "1nWslTIBaF3HWikTgNZ1rJUyAWhdx1opE4DWdayVMgFoXcdaKROA1nWslTIBaF3HWikTgNZ1rJUyAWhd" +
+                    "x1opE4DWdayVMgFoXcdaKROA1nWslTIBaF3HWikTgNZ1rJUyAWhdx1opE4DWdayVMgFoXcdaKROA1nWs" +
+                    "lTIBaF3HWikTgNZ1rJUyAWhdx1opE4DWdayVMgFoXcdaKROA1nWslTIBaF3HWikTgNZ1rJUyAWhdx1op" +
+                    "E4DWdayVMgFoXcdaKROA1nWslTIBaH2/vz9XywSgdR1rpUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWul" +
+                    "TABa17FWygSgdR1rpUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWulTABa17FWygSgdR1rpUwAWtexVsoE" +
+                    "oHUda6VMAFrXsVbKBKB1HWulTABa17FWygSgdR1rpUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWulTABa" +
+                    "17FWygSgdR1rpUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWulTABa17FWygSgdR1rpUwAWtexVsoEoHUd" +
+                    "a6VMAFrXsVbKBKB1HWulTABa17FWygSgdR1rpUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWulTABa17FW" +
+                    "ygSgdR1rpUwAWtexVsoEoHUda6VMAAAAAAAAAAAAAAAAAADgxTwef+E5oOp5aDzmAAAAAElFTkSuQmCC" +
+                    "\",\n  \"tileOutsideProjectExtents\": false,\n  \"Code\": 0,\n  \"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tile - Missing Mode")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
         public virtual void ReportTile_MissingMode()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Mode", ((string[])(null)));
-#line 116
+#line 133
 this.ScenarioSetup(scenarioInfo);
-#line 117
+#line 134
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 118
+#line 135
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 119
+#line 136
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 120
+#line 137
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 121
+#line 138
  testRunner.Then("I should get error code -1 and message \"Missing display mode parameter for produc" +
                     "tion data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -754,17 +809,17 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingMapType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Map Type", ((string[])(null)));
-#line 123
+#line 140
 this.ScenarioSetup(scenarioInfo);
-#line 124
+#line 141
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 125
+#line 142
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 126
+#line 143
   testRunner.And("an overlayType \"BaseMap\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 127
+#line 144
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 128
+#line 145
  testRunner.Then("I should get error code -1 and message \"Missing map type parameter for base map o" +
                     "verlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -777,15 +832,15 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingOverlays()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Overlays", ((string[])(null)));
-#line 130
+#line 147
 this.ScenarioSetup(scenarioInfo);
-#line 131
+#line 148
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 132
+#line 149
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 133
+#line 150
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 134
+#line 151
  testRunner.Then("I should get error code -1 and message \"[{\"Key\":\"overlays\",\"Value\":\"The value \'\' " +
                     "is invalid.\\r\\n\"}]\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -798,19 +853,19 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_InvalidSize()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Invalid Size", ((string[])(null)));
-#line 136
+#line 153
 this.ScenarioSetup(scenarioInfo);
-#line 137
+#line 154
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 138
+#line 155
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 139
+#line 156
   testRunner.And("an overlayType \"BaseMap\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 140
+#line 157
   testRunner.And("a width \"16\" and a height \"16\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 141
+#line 158
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 142
+#line 159
  testRunner.Then("I should get error code -1 and message \"Tile size must be between 64 and 4096\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -822,19 +877,19 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingCutFillDesign()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing CutFill Design", ((string[])(null)));
-#line 144
+#line 161
 this.ScenarioSetup(scenarioInfo);
-#line 145
+#line 162
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 146
+#line 163
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 147
+#line 164
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 148
+#line 165
   testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 149
+#line 166
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 150
+#line 167
  testRunner.Then("I should get error code -1 and message \"Missing design for cut-fill production da" +
                     "ta overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -847,21 +902,21 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingVolumeDesign()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Volume Design", ((string[])(null)));
-#line 152
+#line 169
 this.ScenarioSetup(scenarioInfo);
-#line 153
+#line 170
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 154
+#line 171
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 155
+#line 172
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 156
+#line 173
   testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 157
+#line 174
   testRunner.And("a volumeCalcType \"DesignToGround\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 158
+#line 175
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 159
+#line 176
  testRunner.Then("I should get error code -1 and message \"Missing design for summary volumes produc" +
                     "tion data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -874,23 +929,23 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingBaseFilter()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Base Filter", ((string[])(null)));
-#line 161
+#line 178
 this.ScenarioSetup(scenarioInfo);
-#line 162
+#line 179
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 163
+#line 180
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 164
+#line 181
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 165
+#line 182
   testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 166
+#line 183
   testRunner.And("a volumeCalcType \"GroundToDesign\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 167
+#line 184
   testRunner.And("a volumeTopUid \"127c9897-cdf5-4dcf-b46c-ef8fba01f64d\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 168
+#line 185
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 169
+#line 186
  testRunner.Then("I should get error code -1 and message \"Missing base filter for summary volumes p" +
                     "roduction data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -903,23 +958,23 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingTopFilter()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Top Filter", ((string[])(null)));
-#line 171
+#line 188
 this.ScenarioSetup(scenarioInfo);
-#line 172
+#line 189
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 173
+#line 190
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 174
+#line 191
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 175
+#line 192
   testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 176
+#line 193
   testRunner.And("a volumeCalcType \"DesignToGround\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 177
+#line 194
   testRunner.And("a volumeBaseUid \"127c9897-cdf5-4dcf-b46c-ef8fba01f64d\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 178
+#line 195
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 179
+#line 196
  testRunner.Then("I should get error code -1 and message \"Missing top filter for summary volumes pr" +
                     "oduction data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

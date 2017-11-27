@@ -149,7 +149,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var tileResult = WithServiceExceptionTryExecute(() => 
         tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT, 
-          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, CustomHeaders));
+          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, 
+          volumeCalcType, CustomHeaders));
 
 
       return tileResult;
@@ -219,7 +220,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
-          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, CustomHeaders));
+          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, 
+          volumeCalcType, CustomHeaders));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
