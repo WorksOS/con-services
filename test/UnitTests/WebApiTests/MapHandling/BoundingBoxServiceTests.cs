@@ -21,9 +21,12 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
   [TestClass]
   public class BoundingBoxServiceTests
   {
-    [Ignore]
     [TestMethod]
-    public void ShouldExpandBoundingBoxToFit()
+    [DataRow(4096, 4096, 4096, 4096, 0.63136, -2.00751, 0.63144, -2.00741)]//tile larger than bbox
+    [DataRow(2048, 2048, 2656, 2656, 0.63137, -2.00749, 0.63142, -2.00742)]//square tile smaller than bbox 
+    [DataRow(2048, 1024, 5302, 2656, 0.63137, -2.00752, 0.63142, -2.00739)]//rectangular tile smaller than bbox
+    public void ShouldExpandBoundingBoxToFit(int tileWidth, int tileHeight, int expectedWidth, int expectedHeight,
+      double expectedMinLat, double expectedMinLng, double expectedMaxLat, double expectedMaxLng)
     {
       var minLat = 0.63137;//36.175°
       var minLng = -2.00748;//-115.020°
@@ -40,41 +43,16 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
 
+      int mapWidth, mapHeight;
       var service = new BoundingBoxService(logger.Object, raptorClient.Object);
       //numTiles = 1048576 for Z10
-      //service.ExpandBoundingBoxToFit(bbox, 1048576, 4096, 4096);
-      Assert.AreEqual(0.63136, bbox.minLat, 0.00001);
-      Assert.AreEqual(-2.00751, bbox.minLng, 0.00001);
-      Assert.AreEqual(0.63144, bbox.maxLat, 0.00001);
-      Assert.AreEqual(-2.00741, bbox.maxLng, 0.00001);
-    }
-
-    [Ignore]
-    [TestMethod]
-    public void ShouldNotExpandBoundingBoxToFit()
-    {
-      var minLat = 0.63137;//36.175°
-      var minLng = -2.00748;//-115.020°
-      var maxLat = 0.63142;//36.178°
-      var maxLng = -2.00744;//-115.018°
-      MapBoundingBox bbox = new MapBoundingBox
-      {
-        minLat = minLat,
-        minLng = minLng,
-        maxLat = maxLat,
-        maxLng = maxLng
-      };
-
-      var logger = new Mock<ILoggerFactory>();
-      var raptorClient = new Mock<IASNodeClient>();
-
-      var service = new BoundingBoxService(logger.Object, raptorClient.Object);
-      //numTiles = 1048576 for Z10
-      //service.ExpandBoundingBoxToFit(bbox, 1048576, 256, 256);
-      Assert.AreEqual(minLat, bbox.minLat);
-      Assert.AreEqual(minLng, bbox.minLng);
-      Assert.AreEqual(maxLat, bbox.maxLat);
-      Assert.AreEqual(maxLng, bbox.maxLng);
+      service.AdjustBoundingBoxToFit(bbox, 1048576, tileWidth, tileHeight, out mapWidth, out mapHeight);
+      Assert.AreEqual(expectedWidth, mapWidth);
+      Assert.AreEqual(expectedHeight, mapHeight);
+      Assert.AreEqual(expectedMinLat, bbox.minLat, 0.00001);
+      Assert.AreEqual(expectedMinLng, bbox.minLng, 0.00001);
+      Assert.AreEqual(expectedMaxLat, bbox.maxLat, 0.00001);
+      Assert.AreEqual(expectedMaxLng, bbox.maxLng, 0.00001);
     }
 
     [TestMethod]
