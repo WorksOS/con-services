@@ -1,9 +1,7 @@
-﻿using ASNodeDecls;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -16,13 +14,13 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
@@ -32,7 +30,6 @@ using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -87,10 +84,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="requestFactory">The request factory.</param>
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
-    public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
-      IFileRepository fileRepo, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
+    public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
+      IFileRepository fileRepo, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy,
       IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
+      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
@@ -151,17 +148,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
 
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
-      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid ,volumeTopUid);
-     var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
-        GetBoundingBox(BBOX), cutFillDesign, sumVolParameters, volumeCalcType);
+
+      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue
+        ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value)
+        : null;
+
+      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
+
+      var tileResult = GetProductionDataTile(projectSettings, filter, projectUid, mode, (ushort)WIDTH, (ushort)HEIGHT,
+         GetBoundingBox(BBOX), cutFillDesign, sumVolParameters, volumeCalcType, volumeBaseUid, volumeTopUid);
 
       return tileResult;
     }
-
 
     /// <summary>
     /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
@@ -218,15 +218,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
 
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
-      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
 
-      var tileResult = GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort)WIDTH, (ushort)HEIGHT, 
-        GetBoundingBox(BBOX), cutFillDesign, sumVolParameters, volumeCalcType);
+      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue
+        ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value)
+        : null;
+
+      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
+      var tileResult = GetProductionDataTile(projectSettings, filter, projectUid, mode, (ushort)WIDTH, (ushort)HEIGHT,
+        GetBoundingBox(BBOX), cutFillDesign, sumVolParameters, volumeCalcType, volumeBaseUid, volumeTopUid);
+
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
 
@@ -328,7 +332,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, this.ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(request) as TileResult;
-            
+
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
     }
 
@@ -400,7 +404,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Missing file type"));
       }
-      
+
       //Check file type is valid
       if (Enum.TryParse(fileType, true, out ImportedFileType importedFileType))
       {
@@ -527,10 +531,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="cutFillDesign">Design descriptor for cut-fill design</param>
     /// <param name="sumVolParameters">Filter(s) and/or design for summary volumes</param>
     /// <param name="volumeCalcType">Volume calculation type</param>
+    /// <param name="volumeBaseUid">The base surface Uid</param>
+    /// <param name="volumeTopUid">The top surfance Uid</param>
     /// <returns>Tile result</returns>
-    private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Common.Models.Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
-      BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, Tuple<Common.Models.Filter, Common.Models.Filter, DesignDescriptor> sumVolParameters, VolumeCalcType? volumeCalcType)
+    private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Common.Models.Filter filter, Guid projectUid, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, Tuple<Common.Models.Filter, Common.Models.Filter, DesignDescriptor> sumVolParameters, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
     {
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+
       var tileRequest = requestFactory.Create<TileRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
@@ -554,7 +561,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException se)
       {
-        if (tileRequest.mode == DisplayMode.CutFill && 
+        if (tileRequest.mode == DisplayMode.CutFill &&
             se.Code == HttpStatusCode.BadRequest &&
             se.GetResult.Code == ContractExecutionStatesEnum.ValidationError)
         {
@@ -564,18 +571,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               "Two filters required for filter to filter volumes display" ||
               se.GetResult.Message ==
               "One filter required for design to filter or filter to design volumes display")
-            {
-              getTile = false;
-            }
+          {
+            getTile = false;
+          }
         }
         //Rethrow any other exception
         if (getTile)
+        {
           throw se;
+        }
       }
 
       TileResult tileResult = null;
       if (getTile)
       {
+        if (mode == DisplayMode.CutFill && volumeCalcType != VolumeCalcType.GroundToGround)
+        {
+          var baseFilterDescriptor = GetFilterDescriptor(projectUid, volumeBaseUid.Value).Result;
+          var topFilterDescriptor = GetFilterDescriptor(projectUid, volumeTopUid.Value).Result;
+          tileRequest.IsSummaryVolumeCutFillRequest = VolumeSummaryHelper.DoGroundToGroundComparison(baseFilterDescriptor, topFilterDescriptor);
+        }
+
         tileResult = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainerFactory
             .Build<CompactionTilesExecutor>(logger, raptorClient)
@@ -583,15 +599,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         );
       }
 
-      if (tileResult == null)
-      {
-        //Return en empty tile
-        using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
-        {
-          tileResult = TileResult.CreateTileResult(bitmap.BitmapToByteArray(), TASNodeErrorStatus.asneOK);
-        }
-      }
-      return tileResult;
+      return tileResult ?? TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
     }
   }
 }

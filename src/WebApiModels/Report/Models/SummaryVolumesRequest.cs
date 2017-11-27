@@ -47,6 +47,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     [JsonProperty(Required = Required.Default)]
     public double? FillTolerance { get; private set; }
 
+    public bool FiltersAreMatchingGroundToGround { get; set; }
+
     /// <summary>
     /// Prevents a default instance of the <see cref="SummaryVolumesRequest"/> class from being created.
     /// </summary>

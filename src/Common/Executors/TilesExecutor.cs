@@ -41,9 +41,9 @@ namespace VSS.Productivity3D.Common.Executors
         RaptorConverters.convertGridOrLLBoundingBox(request.boundBoxGrid, request.boundBoxLL, out TWGS84Point bl, out TWGS84Point tr,
   out bool coordsAreGrid);
         TICFilterSettings filter1 =
-          RaptorConverters.ConvertFilter(request.filterId1, request.filter1, request.projectId);
+          RaptorConverters.ConvertFilter(request.BaseFilterId, request.BaseFilter, request.projectId);
         TICFilterSettings filter2 =
-          RaptorConverters.ConvertFilter(request.filterId2, request.filter2, request.projectId);
+          RaptorConverters.ConvertFilter(request.TopFilterId, request.TopFilter, request.projectId);
         TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.computeVolType);
         if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
           RaptorConverters.AdjustFilterToFilter(filter1, filter2);
@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.Common.Executors
   filter1,
   filter2,
   RaptorConverters.convertOptions(null, request.liftBuildSettings, request.computeVolNoChangeTolerance,
-    request.filterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
+    request.FilterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
   RaptorConverters.DesignDescriptor(request.designDescriptor),
   volType,
   request.representationalDisplayColor,

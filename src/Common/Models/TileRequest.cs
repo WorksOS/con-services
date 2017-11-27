@@ -16,7 +16,6 @@ namespace VSS.Productivity3D.Common.Models
   /// </summary>
   public class TileRequest : RaptorHelper
   {
-
     /// <summary>
     /// An identifying string from the caller
     /// </summary>
@@ -76,32 +75,32 @@ namespace VSS.Productivity3D.Common.Models
     /// The base or earliest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filter1", Required = Required.Default)]
-    public Filter filter1 { get; protected set; }
+    public Filter BaseFilter { get; protected set; }
 
     /// <summary>
     /// The ID of the base or earliest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filterId1", Required = Required.Default)]
-    public long filterId1 { get; protected set; }
+    public long BaseFilterId { get; protected set; }
 
     /// <summary>
     /// The top or latest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filter2", Required = Required.Default)]
-    public Filter filter2 { get; protected set; }
+    public Filter TopFilter { get; protected set; }
 
     /// <summary>
     /// The ID of the top or latest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filterId2", Required = Required.Default)]
-    public long filterId2 { get; protected set; }
+    public long TopFilterId { get; protected set; }
 
     /// <summary>
     /// The method of filtering cell passes into layers to be used for thematic renderings that require layer analysis as an input into the rendered data.
     /// If this value is provided any layer method provided in a filter is ignored.
     /// </summary>
-    [JsonProperty(PropertyName = "filterLayerMethod", Required = Required.Default)]
-    public FilterLayerMethod filterLayerMethod { get; protected set; }
+    [JsonProperty(PropertyName = "FilterLayerMethod", Required = Required.Default)]
+    public FilterLayerMethod FilterLayerMethod { get; protected set; }
 
     /// <summary>
     /// The bounding box enclosing the area to be rendered. The bounding box is expressed in terms of WGS84 latitude and longitude positions, expressed in radians.
@@ -133,6 +132,7 @@ namespace VSS.Productivity3D.Common.Models
     [Required]
     public ushort height { get; protected set; }
 
+    public bool IsSummaryVolumeCutFillRequest { get; set; }
 
     /// <summary>
     /// Private constructor
@@ -176,11 +176,11 @@ namespace VSS.Productivity3D.Common.Models
         computeVolType = computeVolType,
         computeVolNoChangeTolerance = computeVolNoChangeTolerance,
         designDescriptor = designDescriptor,
-        filter1 = filter1,
-        filterId1 = filterId1,
-        filter2 = filter2,
-        filterId2 = filterId2,
-        filterLayerMethod = filterLayerMethod,
+        BaseFilter = filter1,
+        BaseFilterId = filterId1,
+        TopFilter = filter2,
+        TopFilterId = filterId2,
+        FilterLayerMethod = filterLayerMethod,
         boundBoxLL = boundingBoxLatLon,
         boundBoxGrid = boundingBoxGrid,
         width = width,
@@ -214,7 +214,7 @@ namespace VSS.Productivity3D.Common.Models
          computeVolType == RaptorConverters.VolumesType.BetweenDesignAndFilter || 
          computeVolType == RaptorConverters.VolumesType.BetweenFilterAndDesign)))
       {
-        ValidateVolumesFilters(computeVolType, filter1, filterId1, filter2, filterId2);
+        ValidateVolumesFilters(computeVolType, this.BaseFilter, this.BaseFilterId, this.TopFilter, this.TopFilterId);
       }
 
       if (boundBoxLL == null && boundBoxGrid == null)

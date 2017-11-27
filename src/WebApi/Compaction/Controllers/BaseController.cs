@@ -340,6 +340,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       var utcNow = DateTime.UtcNow;
+    //  var utcNow = new DateTime(2012, 11, 3);
 
       DateTime? startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
       DateTime? endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
