@@ -59,16 +59,23 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var raptorClient = new Mock<IASNodeClient>();
 
-      int mapWidth, mapHeight;
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
       //numTiles = 1048576 for Z10
-      service.AdjustBoundingBoxToFit(bbox, 1048576, tileWidth, tileHeight, out mapWidth, out mapHeight);
-      Assert.AreEqual(expectedWidth, mapWidth);
-      Assert.AreEqual(expectedHeight, mapHeight);
-      Assert.AreEqual(expectedMinLat, bbox.minLat, 0.00001);
-      Assert.AreEqual(expectedMinLng, bbox.minLng, 0.00001);
-      Assert.AreEqual(expectedMaxLat, bbox.maxLat, 0.00001);
-      Assert.AreEqual(expectedMaxLng, bbox.maxLng, 0.00001);
+      MapParameters parameters = new MapParameters
+      {
+        bbox = bbox,
+        numTiles = 1048576,
+        zoomLevel = 10,
+        mapWidth = tileWidth,
+        mapHeight = tileHeight
+      };
+      service.AdjustBoundingBoxToFit(parameters);
+      Assert.AreEqual(expectedWidth, parameters.mapWidth);
+      Assert.AreEqual(expectedHeight, parameters.mapHeight);
+      Assert.AreEqual(expectedMinLat, parameters.bbox.minLat, 0.00001);
+      Assert.AreEqual(expectedMinLng, parameters.bbox.minLng, 0.00001);
+      Assert.AreEqual(expectedMaxLat, parameters.bbox.maxLat, 0.00001);
+      Assert.AreEqual(expectedMaxLng, parameters.bbox.maxLng, 0.00001);
     }
 
     [TestMethod]

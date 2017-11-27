@@ -139,42 +139,33 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <summary>
     /// Adjust the bounding box to fit the requested tile size.
     /// </summary>
-    /// <param name="bbox">The bounding box to adjust.</param>
-    /// <param name="numTiles">The number of tiles for the zoom level</param>
-    /// <param name="requestedWidth">The requested tile width</param>
-    /// <param name="requestedHeight">The requested tile width</param>
-    /// <param name="mapWidth">The actual tile width to use</param>
-    /// <param name="mapHeight">The actual tile height to use</param>
-    public void AdjustBoundingBoxToFit(MapBoundingBox bbox, long numTiles, int requestedWidth, int requestedHeight, out int mapWidth, out int mapHeight)
+    /// <param name="parameters">The map parameters icluding the bounding box.</param>
+    public void AdjustBoundingBoxToFit(MapParameters parameters)
     {
-      log.LogInformation($"AdjustBoundingBoxToFit: requestedWidth={requestedWidth}, requestedHeight={requestedHeight}, bbox={bbox}");
+      log.LogInformation($"AdjustBoundingBoxToFit: requestedWidth={parameters.mapWidth}, requestedHeight={parameters.mapHeight}, bbox={parameters.bbox}");
 
-      //Get the existing bounding box in pixels
-      Point pixelMin = TileServiceUtils.LatLngToPixel(bbox.minLat, bbox.minLng, numTiles);
-      Point pixelMax = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.maxLng, numTiles);
-
-      int requiredWidth = (int)Math.Abs(pixelMax.x - pixelMin.x);
-      int requiredHeight = (int)Math.Abs(pixelMax.y - pixelMin.y);
+      Point pixelMin, pixelMax;
+      int requiredWidth, requiredHeight;
+      TryZoomIn(parameters, out requiredWidth, out requiredHeight, out pixelMin, out pixelMax);
 
       bool adjust = false;
 
       //Is it bigger or smaller than the requested size?
-      bool scaleDown = requiredWidth > requestedWidth || requiredHeight > requestedHeight;
-      if (scaleDown)
+      if (requiredWidth > parameters.mapWidth || requiredHeight > parameters.mapHeight)
       {
         log.LogDebug($"AdjustBoundingBoxToFit: scaling down");
 
         //We'll make the bounding box bigger in the same shape as the requested tile and scale down once the tile has been drawn. 
         adjust = true;
         //Need to maintain aspect ratio. Figure out the ratio.
-        double ratioX = (double)requiredWidth / (double)requestedWidth;
-        double ratioY = (double)requiredHeight / (double)requestedHeight;
+        double ratioX = (double)requiredWidth / (double)parameters.mapWidth;
+        double ratioY = (double)requiredHeight / (double)parameters.mapHeight;
         // use whichever multiplier is bigger
         double ratio = ratioX > ratioY ? ratioX : ratioY;
 
         // now we can get the new height and width
-        int newHeight = Convert.ToInt32(requestedHeight * ratio);
-        int newWidth = Convert.ToInt32(requestedWidth * ratio);
+        int newHeight = Convert.ToInt32(parameters.mapHeight * ratio);
+        int newWidth = Convert.ToInt32(parameters.mapWidth * ratio);
 
         //Allow a little around the boundary
         const int BORDER_PIXELS = 5;
@@ -188,17 +179,17 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         pixelMax.y -= yDiff;
 
         //Adjust the tile width & height
-        mapWidth = (int)Math.Abs(pixelMax.x - pixelMin.x);
-        mapHeight = (int)Math.Abs(pixelMax.y - pixelMin.y);
+        parameters.mapWidth = (int)Math.Abs(pixelMax.x - pixelMin.x);
+        parameters.mapHeight = (int)Math.Abs(pixelMax.y - pixelMin.y);
       }
       else
       {
         log.LogDebug($"AdjustBoundingBoxToFit: expanding to fill tile ");
 
         //Expand the bounding box to fill the requested tile size
-        if (requiredWidth < requestedWidth)
+        if (requiredWidth < parameters.mapWidth)
         {
-          double scaleWidth = (double)requestedWidth / requiredWidth;
+          double scaleWidth = (double)parameters.mapWidth / requiredWidth;
           requiredWidth = (int)(scaleWidth * requiredWidth);
           double pixelCenterX = pixelMin.x + (pixelMax.x - pixelMin.x) / 2.0;
           //Pixel origin is top left
@@ -207,9 +198,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           adjust = true;
         }
 
-        if (requiredHeight < requestedHeight)
+        if (requiredHeight < parameters.mapHeight)
         {
-          double scaleHeight = (double)requestedHeight / requiredHeight;
+          double scaleHeight = (double)parameters.mapHeight / requiredHeight;
           requiredHeight = (int)(scaleHeight * requiredHeight);
           double pixelCenterY = pixelMin.y + (pixelMax.y - pixelMin.y) / 2.0;
           //Pixel origin is top left
@@ -217,24 +208,57 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           pixelMax.y = pixelCenterY - requiredHeight / 2.0;
           adjust = true;
         }
-        mapWidth = requestedWidth;
-        mapHeight = requestedHeight;
+
       }
 
       if (adjust)
       {
         //Convert the adjusted bbox to lat/lng
-        var minLatLngDegrees = WebMercatorProjection.PixelToLatLng(pixelMin, numTiles);
-        var maxLatLngDegrees = WebMercatorProjection.PixelToLatLng(pixelMax, numTiles);
-        bbox.minLat = minLatLngDegrees.Latitude.LatDegreesToRadians();
-        bbox.maxLat = maxLatLngDegrees.Latitude.LatDegreesToRadians();
-        bbox.minLng = minLatLngDegrees.Longitude.LonDegreesToRadians();
-        bbox.maxLng = maxLatLngDegrees.Longitude.LonDegreesToRadians();
+        var minLatLngDegrees = WebMercatorProjection.PixelToLatLng(pixelMin, parameters.numTiles);
+        var maxLatLngDegrees = WebMercatorProjection.PixelToLatLng(pixelMax, parameters.numTiles);
+        parameters.bbox.minLat = minLatLngDegrees.Latitude.LatDegreesToRadians();
+        parameters.bbox.maxLat = maxLatLngDegrees.Latitude.LatDegreesToRadians();
+        parameters.bbox.minLng = minLatLngDegrees.Longitude.LonDegreesToRadians();
+        parameters.bbox.maxLng = maxLatLngDegrees.Longitude.LonDegreesToRadians();
       }
-      log.LogInformation($"AdjustBoundingBoxToFit: returning mapWidth={mapWidth}, mapHeight={mapHeight}, bbox={bbox}");
-
+      log.LogInformation($"AdjustBoundingBoxToFit: returning mapWidth={parameters.mapWidth}, mapHeight={parameters.mapHeight}, bbox={parameters.bbox}");
     }
 
+    private void TryZoomIn(MapParameters parameters, out int requiredWidth, out int requiredHeight, out Point pixelMin, out Point pixelMax)
+    {
+      pixelMin = TileServiceUtils.LatLngToPixel(parameters.bbox.minLat, parameters.bbox.minLng, parameters.numTiles);
+      pixelMax = TileServiceUtils.LatLngToPixel(parameters.bbox.maxLat, parameters.bbox.maxLng, parameters.numTiles);
+
+      requiredWidth = (int)Math.Abs(pixelMax.x - pixelMin.x);
+      requiredHeight = (int)Math.Abs(pixelMax.y - pixelMin.y);
+
+      //See if we can zoom in - occurs when the requested tile size is much larger than the bbox
+      var zoomedWidth = requiredWidth;
+      var zoomedHeight = requiredHeight;
+      int zoomLevel = parameters.zoomLevel;
+      Point zoomedPixelMin = pixelMin;
+      Point zoomedPixelMax = pixelMax;
+      long numTiles = parameters.numTiles;
+
+      while (zoomedWidth < parameters.mapWidth && zoomedHeight < parameters.mapHeight)
+      {
+        parameters.zoomLevel = zoomLevel;
+        parameters.numTiles = numTiles;
+        requiredWidth = zoomedWidth;
+        requiredHeight = zoomedHeight;
+        pixelMin = zoomedPixelMin;
+        pixelMax = zoomedPixelMax;
+
+        zoomLevel++;
+        numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
+
+        zoomedPixelMin = TileServiceUtils.LatLngToPixel(parameters.bbox.minLat, parameters.bbox.minLng, numTiles);
+        zoomedPixelMax = TileServiceUtils.LatLngToPixel(parameters.bbox.maxLat, parameters.bbox.maxLng, numTiles);
+
+        zoomedWidth = (int)Math.Abs(zoomedPixelMax.x - zoomedPixelMin.x);
+        zoomedHeight = (int)Math.Abs(zoomedPixelMax.y - zoomedPixelMin.y);
+      }
+    }
 
     /// <summary>
     /// Get the production data extents for the project.
@@ -380,7 +404,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   {
     MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, bool haveProdDataOverlay, Filter baseFilter, Filter topFilter);
 
-    void AdjustBoundingBoxToFit(MapBoundingBox bbox, long numTiles, int requestedWidth, int requestedHeight,
-      out int mapWidth, out int mapHeight);
+    void AdjustBoundingBoxToFit(MapParameters parameters);
   }
 }

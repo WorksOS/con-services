@@ -57,28 +57,24 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       log.LogInformation("Getting map tile for reports");
       log.LogDebug("TileGenerationRequest: " + JsonConvert.SerializeObject(request));
 
-      int mapWidth = request.width;
-      int mapHeight = request.height;
-
       MapBoundingBox bbox = boundingBoxService.GetBoundingBox(request.project, request.filter,
         request.overlays.Contains(TileOverlayType.ProductionData), request.baseFilter, request.topFilter);
 
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
       long numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
 
-      boundingBoxService.AdjustBoundingBoxToFit(bbox, numTiles, request.width, request.height, out mapWidth, out mapHeight);
-
-      var pixelTopLeft = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.minLng, numTiles);
-
       MapParameters parameters = new MapParameters
       {
         bbox = bbox,
         zoomLevel = zoomLevel,
         numTiles = numTiles,
-        mapWidth = mapWidth,
-        mapHeight = mapHeight,
-        pixelTopLeft = pixelTopLeft,
+        mapWidth = request.width,
+        mapHeight = request.height
       };
+
+      boundingBoxService.AdjustBoundingBoxToFit(parameters);
+
+      parameters.pixelTopLeft = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.minLng, parameters.numTiles);
       log.LogDebug("MapParameters: " + JsonConvert.SerializeObject(parameters));
 
       List<byte[]> tileList = new List<byte[]>();
