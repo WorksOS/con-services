@@ -585,7 +585,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       TileResult tileResult = null;
       if (getTile)
       {
-        if (mode == DisplayMode.CutFill && volumeCalcType != VolumeCalcType.GroundToGround)
+        if (mode == DisplayMode.CutFill && volumeCalcType != null && volumeCalcType != VolumeCalcType.GroundToGround)
         {
           var baseFilterDescriptor = GetFilterDescriptor(projectUid, volumeBaseUid.Value).Result;
           var topFilterDescriptor = GetFilterDescriptor(projectUid, volumeTopUid.Value).Result;

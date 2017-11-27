@@ -65,16 +65,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref baseFilter, ref topFilter, request.VolumeCalcType);
 
-      if (baseFilter == null && baseDesignDescriptor.IsNull() ||
-          topFilter == null && topDesignDescriptor.IsNull() ||
-          baseFilter != null && !baseDesignDescriptor.IsNull() ||
-          topFilter != null && !topDesignDescriptor.IsNull())
-      {
-        throw new ServiceException(
-          HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Invalid surface configuration."));
-      }
-
       bool success;
 
       if (request.CutTolerance != null && request.FillTolerance != null)
