@@ -20,7 +20,6 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
@@ -585,13 +584,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       TileResult tileResult = null;
       if (getTile)
       {
-        if (mode == DisplayMode.CutFill && volumeCalcType != null && volumeCalcType != VolumeCalcType.GroundToGround)
-        {
-          var baseFilterDescriptor = GetFilterDescriptor(projectUid, volumeBaseUid.Value).Result;
-          var topFilterDescriptor = GetFilterDescriptor(projectUid, volumeTopUid.Value).Result;
-          tileRequest.IsSummaryVolumeCutFillRequest = VolumeSummaryHelper.DoGroundToGroundComparison(baseFilterDescriptor, topFilterDescriptor);
-        }
-
         tileResult = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainerFactory
             .Build<CompactionTilesExecutor>(logger, raptorClient)
