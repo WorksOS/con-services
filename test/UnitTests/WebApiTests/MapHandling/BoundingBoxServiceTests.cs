@@ -22,31 +22,6 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
   public class BoundingBoxServiceTests
   {
     [TestMethod]
-    [DataRow(1, 0, 0)]//Z0
-    [DataRow(1048576, 1491, 2771)]//Z10
-    [DataRow(274877906944, 390937467, 726467292)]//Z19
-
-    public void CanCalculateSize(long numTiles, int expectedWidth, int expectedHeight)
-    {
-      int width, height;
-      MapBoundingBox bbox = new MapBoundingBox
-      {
-        minLat = 36.175.LatDegreesToRadians(),
-        minLng = -115.020.LonDegreesToRadians(),
-        maxLat = 36.178.LatDegreesToRadians(),
-        maxLng = -115.018.LonDegreesToRadians()
-      };
-
-      var logger = new Mock<ILoggerFactory>();
-      var raptorClient = new Mock<IASNodeClient>();
-
-      var service = new BoundingBoxService(logger.Object, raptorClient.Object);
-      service.CalculateSize(bbox, numTiles, out width, out height);
-      Assert.AreEqual(expectedWidth, width);
-      Assert.AreEqual(expectedHeight, height);
-    }
-
-    [TestMethod]
     public void ShouldExpandBoundingBoxToFit()
     {
       var minLat = 0.63137;//36.175°
