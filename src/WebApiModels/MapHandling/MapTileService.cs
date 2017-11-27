@@ -3,8 +3,6 @@ using System.Net;
 using System.Web.Script.Serialization;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
-using VSS.Productivity3D.Common.Extensions;
-
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -25,6 +23,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       log = logger.CreateLogger<MapTileService>();
       this.logger = logger;
       alkKey = config.GetValueString("ALK_KEY");
+     if (string.IsNullOrEmpty(alkKey))
+     {
+       log.LogError("Missing ALK maps key");
+     }
     }
 
     /// <summary>
@@ -36,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>ALK map tile</returns>
     public byte[] GetMapBitmap(MapParameters parameters, MapType mapType, string locale)
     {
-      log.LogInformation("GetMapBitmap");
+      log.LogInformation($"GetMapBitmap: mapType={mapType}");
       string mapURL = null;
 
       string alkMapType;

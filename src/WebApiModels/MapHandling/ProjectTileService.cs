@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>A bitmap</returns>
     public byte[] GetProjectBitmap(MapParameters parameters, ProjectDescriptor project)
     {
-      log.LogInformation("GetProjectBitmap");
+      log.LogInformation($"GetProjectBitmap: project {project.projectUid}");
 
       const int PROJECT_BOUNDARY_COLOR = 0xFF8000;
       const int STROKE_TRANSPARENCY = 0x73; //0.45 of FF

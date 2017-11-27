@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DesignProfiler.ComputeDesignBoundary.RPC;
 using DesignProfilerDecls;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -21,6 +22,22 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
   [TestClass]
   public class BoundingBoxServiceTests
   {
+    public IServiceProvider serviceProvider;
+
+    [TestInitialize]
+    public void InitTest()
+    {
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddDebug();
+
+      var serviceCollection = new ServiceCollection();
+      serviceCollection.AddLogging();
+      serviceCollection.AddSingleton(loggerFactory);
+
+      serviceProvider = serviceCollection.BuildServiceProvider();
+    }
+
+
     [TestMethod]
     [DataRow(4096, 4096, 4096, 4096, 0.63136, -2.00751, 0.63144, -2.00741)]//tile larger than bbox
     [DataRow(2048, 2048, 2656, 2656, 0.63137, -2.00749, 0.63142, -2.00742)]//square tile smaller than bbox 
@@ -40,11 +57,10 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         maxLng = maxLng
       };
 
-      var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
 
       int mapWidth, mapHeight;
-      var service = new BoundingBoxService(logger.Object, raptorClient.Object);
+      var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
       //numTiles = 1048576 for Z10
       service.AdjustBoundingBoxToFit(bbox, 1048576, tileWidth, tileHeight, out mapWidth, out mapHeight);
       Assert.AreEqual(expectedWidth, mapWidth);
@@ -71,10 +87,9 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         polygonPoints, null, null, null, null, null, null, null, null, null, null, null, null, null, 
         null, null, null, null, null, null, null, null);
 
-      var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
 
-      var service = new BoundingBoxService(logger.Object, raptorClient.Object);
+      var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
       var bbox = service.GetBoundingBox(project, filter, false, null, null);
       Assert.AreEqual(polygonPoints.Min(p => p.Lat), bbox.minLat);
       Assert.AreEqual(polygonPoints.Min(p => p.Lon), bbox.minLng);
@@ -97,7 +112,6 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         polygonPoints, null, null, null, null, null, null, null, null, null, design, null, null, null, 
         null, null, null, null, null, null, null, null);
 
-      var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
 
       TDesignProfilerRequestResult designProfilerResult = TDesignProfilerRequestResult.dppiOK;
@@ -112,7 +126,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
             out ms, out designProfilerResult))
           .Returns(true);
 
-        var service = new BoundingBoxService(logger.Object, raptorClient.Object);
+        var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
         var bbox = service.GetBoundingBox(project, filter, false, null, null);
         //bbox is a mixture of polgon and design boundary (see GeoJson)
         Assert.AreEqual(-115.74.LonDegreesToRadians(), bbox.minLng);
@@ -130,7 +144,6 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         null, null, null, null, null, null, null, null, null, design, null, null, null, null, null, null,
         null, null, null, null, null);
 
-      var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
 
       TDesignProfilerRequestResult designProfilerResult = TDesignProfilerRequestResult.dppiOK;
@@ -145,7 +158,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
             out ms, out designProfilerResult))
           .Returns(true);
 
-        var service = new BoundingBoxService(logger.Object, raptorClient.Object);
+        var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
         var bbox = service.GetBoundingBox(project, filter, false, null, null);
         //Values are from GeoJson below
         Assert.AreEqual(-115.123.LonDegreesToRadians(), bbox.minLng);
@@ -185,10 +198,9 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         polygonPoints2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
         null, null, null, null, null, null, null);
 
-      var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
 
-      var service = new BoundingBoxService(logger.Object, raptorClient.Object);
+      var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
       var bbox = service.GetBoundingBox(project, null, false, baseFilter, topFilter);
 
       var expectedMinLat = Math.Min(polygonPoints1.Min(p => p.Lat), polygonPoints2.Min(p => p.Lat));
@@ -210,7 +222,6 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       var prodDataMaxLat = projMaxLatRadians - 0.01;
       var prodDataMaxLng = projMaxLngRadians - 0.01;
 
-      var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
 
       TICDataModelStatistics statistics = new TICDataModelStatistics();
@@ -235,7 +246,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           TCoordConversionType.ctNEEtoLLH, out pointList))
         .Returns(TCoordReturnCode.nercNoError);
 
-      var service = new BoundingBoxService(logger.Object, raptorClient.Object);
+      var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
       var bbox = service.GetBoundingBox(project, null, true, null, null);
       Assert.AreEqual(prodDataMinLat, bbox.minLat);
       Assert.AreEqual(prodDataMaxLat, bbox.maxLat);
@@ -252,7 +263,6 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       var prodDataMaxLat = projMaxLatRadians + 0.2;
       var prodDataMaxLng = projMaxLngRadians + 0.2;
 
-      var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
 
       TICDataModelStatistics statistics = new TICDataModelStatistics();
@@ -277,7 +287,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           TCoordConversionType.ctNEEtoLLH, out pointList))
         .Returns(TCoordReturnCode.nercNoError);
 
-      var service = new BoundingBoxService(logger.Object, raptorClient.Object);
+      var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
       var bbox = service.GetBoundingBox(project, null, true, null, null);
       Assert.AreEqual(projMinLatRadians, bbox.minLat);
       Assert.AreEqual(projMaxLatRadians, bbox.maxLat);
@@ -288,7 +298,6 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     [TestMethod]
     public void GetBoundingBoxProjectExtentsNoMode()
     {
-      var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
 
       TICDataModelStatistics statistics = new TICDataModelStatistics();
@@ -296,7 +305,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         .Setup(x => x.GetDataModelStatistics(project.projectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
         .Returns(false);
 
-      var service = new BoundingBoxService(logger.Object, raptorClient.Object);
+      var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
       var bbox = service.GetBoundingBox(project, null, false, null, null);
       Assert.AreEqual(projMinLatRadians, bbox.minLat);
       Assert.AreEqual(projMaxLatRadians, bbox.maxLat);
@@ -307,7 +316,6 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     [TestMethod]
     public void GetBoundingBoxProjectExtentsWithMode()
     {
-      var logger = new Mock<ILoggerFactory>();
       var raptorClient = new Mock<IASNodeClient>();
 
       TICDataModelStatistics statistics = new TICDataModelStatistics();
@@ -315,7 +323,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         .Setup(x => x.GetDataModelStatistics(project.projectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
         .Returns(false);
 
-      var service = new BoundingBoxService(logger.Object, raptorClient.Object);
+      var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
       var bbox = service.GetBoundingBox(project, null, true, null, null);
       Assert.AreEqual(projMinLatRadians, bbox.minLat);
       Assert.AreEqual(projMaxLatRadians, bbox.maxLat);
@@ -334,6 +342,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
     private static ProjectDescriptor project = new ProjectDescriptor
     {
+      projectUid = Guid.NewGuid().ToString(),
       projectId = 1234,
       projectGeofenceWKT = TestUtils.GetWicketFromPoints(projectPoints)
     };

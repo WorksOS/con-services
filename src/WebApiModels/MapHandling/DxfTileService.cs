@@ -67,6 +67,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// </summary>
     private async Task<byte[]> JoinDxfTiles(MapParameters parameters, FileData dxfFile)
     {
+      log.LogDebug($"JoinDxfTiles: {dxfFile.ImportedFileUid}, {dxfFile.Name}");
+
       //Find the tiles that the bounding box fits into.
       Point tileTopLeft = WebMercatorProjection.PixelToTile(parameters.pixelTopLeft);
       Point pixelBottomRight = TileServiceUtils.LatLngToPixel(
@@ -109,6 +111,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
               string targetFile = $"{targetFolder}/{xTile}.png";
               if (await tccFileRepository.FileExists(tccFilespaceId, targetFile))
               {
+                log.LogDebug($"JoinDxfTiles: getting tile {targetFile}");
+
                 var file = await tccFileRepository.GetFile(tccFilespaceId, targetFile);
                 Image tile = Image.FromStream(file);
 

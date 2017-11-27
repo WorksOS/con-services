@@ -52,6 +52,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>A bounding box in latitude/longitude (radians)</returns>
     public MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, bool haveProdDataOverlay, Filter baseFilter, Filter topFilter)
     {
+      log.LogInformation($"GetBoundingBox: project {project.projectUid}");
+
       MapBoundingBox bbox = null;
 
       //If the filter has an area then use it as the bounding box
@@ -79,6 +81,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
       else
       {
+        log.LogDebug("GetBoundingBox: No area filter");
         //No area filter so use production data extents as the bounding box
         //Only applies if doing production data tiles
         if (haveProdDataOverlay)
@@ -86,6 +89,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           var productionDataExtents = GetProductionDataExtents(project.projectId, filter);
           if (productionDataExtents != null)
           {
+            log.LogDebug($"GetBoundingBox: Production data extents {productionDataExtents.conversionCoordinates[0].y},{productionDataExtents.conversionCoordinates[0].x},{productionDataExtents.conversionCoordinates[1].y},{productionDataExtents.conversionCoordinates[1].x}");
+
             bbox = new MapBoundingBox
             {
               minLat = productionDataExtents.conversionCoordinates[0].y,
@@ -115,6 +120,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
         if (assign)
         {
+          log.LogDebug($"GetBoundingBox: Using project extents {projectMinLat},{projectMinLng},{projectMaxLat},{projectMaxLng}");
+
           bbox = new MapBoundingBox
           {
             minLat = projectMinLat,
@@ -140,6 +147,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="mapHeight">The actual tile height to use</param>
     public void AdjustBoundingBoxToFit(MapBoundingBox bbox, long numTiles, int requestedWidth, int requestedHeight, out int mapWidth, out int mapHeight)
     {
+      log.LogInformation($"AdjustBoundingBoxToFit: requestedWidth={requestedWidth}, requestedHeight={requestedHeight}, bbox={bbox}");
+
       //Get the existing bounding box in pixels
       Point pixelMin = TileServiceUtils.LatLngToPixel(bbox.minLat, bbox.minLng, numTiles);
       Point pixelMax = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.maxLng, numTiles);
@@ -153,6 +162,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       bool scaleDown = requiredWidth > requestedWidth || requiredHeight > requestedHeight;
       if (scaleDown)
       {
+        log.LogDebug($"AdjustBoundingBoxToFit: scaling down");
+
         //We'll make the bounding box bigger in the same shape as the requested tile and scale down once the tile has been drawn. 
         adjust = true;
         //Need to maintain aspect ratio. Figure out the ratio.
@@ -182,6 +193,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
       else
       {
+        log.LogDebug($"AdjustBoundingBoxToFit: expanding to fill tile ");
+
         //Expand the bounding box to fill the requested tile size
         if (requiredWidth < requestedWidth)
         {
@@ -218,9 +231,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         bbox.minLng = minLatLngDegrees.Longitude.LonDegreesToRadians();
         bbox.maxLng = maxLatLngDegrees.Longitude.LonDegreesToRadians();
       }
+      log.LogInformation($"AdjustBoundingBoxToFit: returning mapWidth={mapWidth}, mapHeight={mapHeight}, bbox={bbox}");
+
     }
 
-   
+
     /// <summary>
     /// Get the production data extents for the project.
     /// </summary>
@@ -274,10 +289,12 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       {
         if (filter.PolygonLL != null && filter.PolygonLL.Count > 0)
         {
+          log.LogDebug($"GetFilterPoints: adding polygon points for projectId={projectId}, filter name={filter.Name}");
           points.AddRange(filter.PolygonLL);
         }
         if (filter.DesignOrAlignmentFile != null)
         {
+          log.LogDebug($"GetFilterPoints: adding design boundary points for projectId={projectId}, filter name={filter.Name}");
           points.AddRange(GetDesignBoundaryPoints(projectId, filter.DesignOrAlignmentFile));
         }
       }
@@ -292,8 +309,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>A list of latitude/longitude points in degrees</returns>
     private List<WGSPoint> GetDesignBoundaryPoints(long projectId, DesignDescriptor designDescriptor)
     {
+      var description = TileServiceUtils.DesignDescriptionForLogging(designDescriptor);
+      log.LogDebug($"GetDesignBoundaryPoints: projectId={projectId}, design={description}");
       List<WGSPoint> points = new List<WGSPoint>();
       var geoJson = GetDesignBoundary(projectId, designDescriptor);
+      log.LogDebug($"GetDesignBoundaryPoints: geoJson={geoJson}");
       if (!string.IsNullOrEmpty(geoJson))
       {
         var root = JsonConvert.DeserializeObject<RootObject>(geoJson);

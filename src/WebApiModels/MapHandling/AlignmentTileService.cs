@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>A bitmap</returns>
     public byte[] GetAlignmentsBitmap(MapParameters parameters, long projectId, IEnumerable<DesignDescriptor> alignmentDescriptors)
     {
-      log.LogInformation("GetAlignmentsBitmap");
+      log.LogInformation($"GetAlignmentsBitmap: project {projectId}");
 
       byte[] alignmentsImage = null;
       if (alignmentDescriptors.Any())
@@ -68,6 +68,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns></returns>
     private IEnumerable<WGSPoint> GetAlignmentPoints(long projectId, DesignDescriptor alignDescriptor)
     {
+      var description = TileServiceUtils.DesignDescriptionForLogging(alignDescriptor);
+      log.LogDebug($"GetAlignmentPoints: projectId={projectId}, alignment={description}");
       List<WGSPoint> alignmentPoints = null;
       if (alignDescriptor != null)
       {
@@ -79,6 +81,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           out startStation, out endStation);
         if (success)
         {
+          log.LogDebug($"GetAlignmentPoints: projectId={projectId}, station range={startStation}-{endStation}");
+
           //Get the alignment points
           TWGS84Point[] pdsPoints = null;
 
@@ -91,6 +95,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
           if (success && pdsPoints != null && pdsPoints.Length > 0)
           {
+            log.LogDebug($"GetAlignmentPoints success: projectId={projectId}, number of points={pdsPoints.Length}");
+
             alignmentPoints = new List<WGSPoint>();
             //We only need half the points as normally GetDesignFilterBoundaryAsPolygon has offsets so is returning a polygon.
             //Since we have no offsets we have the centreline twice.

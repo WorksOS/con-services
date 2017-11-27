@@ -112,6 +112,22 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     {
       return  1 << zoomLevel; //equivalent to 2 to the power of zoomLevel
     }
+
+    /// <summary>
+    /// Get a description of the design for logging
+    /// </summary>
+    /// <param name="designDescriptor">The design</param>
+    /// <returns>A descriptive string of the design properties</returns>
+    public static string DesignDescriptionForLogging(DesignDescriptor designDescriptor)
+    {
+      if (designDescriptor == null)
+        return string.Empty;
+
+      if (designDescriptor.file != null)
+        return $"{designDescriptor.file.filespaceId}:{designDescriptor.file.path}/{designDescriptor.file.fileName}";
+
+      return designDescriptor.id.ToString();
+    }
   }
 
 }

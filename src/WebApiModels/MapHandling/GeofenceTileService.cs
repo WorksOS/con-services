@@ -53,9 +53,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           foreach (var site in sites)
           {
+            log.LogDebug($"GetSitesBitmap examining site {site.GeofenceUID}");
             //Old geofences may not have AreaSqMeters set.
             if (site.AreaSqMeters > 0 && site.AreaSqMeters < minArea)
+            {
+              log.LogDebug($"GetSitesBitmap excluding site {site.GeofenceUID} due to area");
               continue;
+            }
 
             var sitePoints = RaptorConverters.geometryToPoints(site.GeometryWKT);
 
@@ -64,9 +68,14 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
                            sitePoints.Max(p => p.Lat) > parameters.bbox.maxLat ||
                            sitePoints.Min(p => p.Lon) < parameters.bbox.minLng || 
                            sitePoints.Max(p => p.Lon) > parameters.bbox.maxLng;
-           
-            if (!outside)
+
+            if (outside)
             {
+              log.LogDebug($"GetSitesBitmap excluding site {site.GeofenceUID} outside bbox");
+            }
+            else
+            {
+              log.LogDebug($"GetSitesBitmap drawing site {site.GeofenceUID}");
               PointF[] pixelPoints = TileServiceUtils.LatLngToPixelOffset(sitePoints, parameters.pixelTopLeft, parameters.numTiles);
               int siteColor = site.FillColor > 0 ? site.FillColor : DEFAULT_SITE_COLOR;
               if (!site.IsTransparent)

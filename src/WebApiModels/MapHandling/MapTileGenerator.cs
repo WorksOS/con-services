@@ -86,7 +86,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         tileList.Add(mapTileService.GetMapBitmap(parameters, request.mapType.Value, request.language.Substring(0, 2)));
       if (request.overlays.Contains(TileOverlayType.ProductionData))
       {
-        log.LogInformation("GetProductionDataTile");
+        log.LogInformation($"GetProductionDataTile: project {request.project.projectUid}");
         BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(parameters.bbox.minLng, parameters.bbox.minLat, parameters.bbox.maxLng, parameters.bbox.maxLat);
         var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.filter, request.project.projectId,
           request.mode.Value, (ushort)parameters.mapWidth, (ushort)parameters.mapHeight, prodDataBox, request.designDescriptor, request.baseFilter, 
@@ -136,6 +136,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       using (var tileStream = new MemoryStream(overlayTile))
       using (Image srcImage = Image.FromStream(tileStream))
       {
+        log.LogDebug($"ScaleTile: requested size=({request.width},{request.height}), image size=({srcImage.Width},{srcImage.Height})");
         dstImage.SetResolution(srcImage.HorizontalResolution, srcImage.VerticalResolution);
         g.CompositingMode = CompositingMode.SourceCopy;
         g.CompositingQuality = CompositingQuality.HighQuality;
