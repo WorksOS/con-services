@@ -16,7 +16,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
     /// <summary>
     /// The content of each cell in a height client leaf sub grid. Each cell stores an elevation only.
     /// </summary>
-    public class ClientmachineSpeedLeafSubGrid : GenericClientLeafSubGrid<ushort>
+    public class ClientMachineSpeedLeafSubGrid : GenericClientLeafSubGrid<ushort>
     {
         /// <summary>
         /// First pass map records which cells hold cell pass machine speeds that were derived
@@ -25,16 +25,16 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
-        /// Constructor. Set the grid to HeightAndTime.
+        /// Constructor. Set the grid to MachineSpeed.
         /// </summary>
         /// <param name="owner"></param>
         /// <param name="parent"></param>
         /// <param name="level"></param>
         /// <param name="cellSize"></param>
         /// <param name="indexOriginOffset"></param>
-        public ClientmachineSpeedLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+        public ClientMachineSpeedLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
-            GridDataType = Raptor.Types.GridDataType.MachineSpeed;
+            _gridDataType = Raptor.Types.GridDataType.MachineSpeed;
         }
 
         /// <summary>

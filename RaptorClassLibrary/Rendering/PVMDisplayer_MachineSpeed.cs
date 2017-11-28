@@ -16,13 +16,13 @@ namespace VSS.VisionLink.Raptor.Rendering
     /// </summary>
     public class PVMDisplayer_MachineSpeed : PVMDisplayerBase
     {
-        private ClientmachineSpeedLeafSubGrid SubGrid = null;
+        private ClientMachineSpeedLeafSubGrid SubGrid = null;
 
         protected override bool DoRenderSubGrid(ISubGrid subGrid)
         {
-            if (subGrid is ClientmachineSpeedLeafSubGrid)
+            if (subGrid is ClientMachineSpeedLeafSubGrid)
             {
-                SubGrid = (ClientmachineSpeedLeafSubGrid)subGrid;
+                SubGrid = subGrid as ClientMachineSpeedLeafSubGrid;
                 return base.DoRenderSubGrid(SubGrid);
             }
 
