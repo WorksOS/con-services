@@ -228,6 +228,16 @@ namespace VSS.VisionLink.Raptor.Surfaces
             return true;
         }
 
+        /// <summary>
+        /// Perform filtering on a set of surveyed surfaces according to the supplied time constraints.
+        /// Note: The list of filtered surveyed surfaces is assumed to be empty at the point it is passed to this method
+        /// </summary>
+        /// <param name="HasTimeFilter"></param>
+        /// <param name="StartTime"></param>
+        /// <param name="EndTime"></param>
+        /// <param name="ExcludeSurveyedSurfaces"></param>
+        /// <param name="FilteredSurveyedSurfaceDetails"></param>
+        /// <param name="ExclusionList"></param>
         public void FilterSurveyedSurfaceDetails(bool HasTimeFilter,
                                                  DateTime StartTime, DateTime EndTime,
                                                  bool ExcludeSurveyedSurfaces,
@@ -236,7 +246,6 @@ namespace VSS.VisionLink.Raptor.Surfaces
         {
             if (ExcludeSurveyedSurfaces)
             {
-                FilteredSurveyedSurfaceDetails.Clear();
                 return;
             }
 
@@ -246,20 +255,22 @@ namespace VSS.VisionLink.Raptor.Surfaces
                 return;
             }
 
-            FilteredSurveyedSurfaceDetails.Clear();
             foreach (SurveyedSurface ss in this)
             {
-                if (!ExclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
+                if (!HasTimeFilter)
                 {
-                    if (!HasTimeFilter)
+                    if (!ExclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
                     {
-                        FilteredSurveyedSurfaceDetails.Add(ss.Clone());
+                        FilteredSurveyedSurfaceDetails.Add(ss);  // Formerly ss.Clone
                     }
-                    else
+                }
+                else
+                {
+                    if (ss.AsAtDate >= StartTime && ss.AsAtDate <= EndTime)
                     {
-                        if (ss.AsAtDate >= StartTime && ss.AsAtDate >= EndTime)
+                        if (!ExclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
                         {
-                            FilteredSurveyedSurfaceDetails.Add(ss.Clone());
+                            FilteredSurveyedSurfaceDetails.Add(ss);  // Formerly ss.Clone
                         }
                     }
                 }
