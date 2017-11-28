@@ -74,7 +74,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         public SubGridTreeBitmapSubGridBits CellOverrideMask;
 
         [NonSerialized]
-        AreaControlSet AreaControlSet = AreaControlSet.Null();
+        public AreaControlSet AreaControlSet = AreaControlSet.Null();
+
+        // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
+        [NonSerialized]
+        private SubGridTreeBitmapSubGridBits ProcessingMap; // = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+
+        [NonSerialized]
+        private SurveyedSurfaces FilteredSurveyedSurfaces = null;
+
 
         /// <summary>
         /// Default no-arg constructor
@@ -115,12 +123,16 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             };
 
             AreaControlSet = areaControlSet;
-        }
 
-        // InitialiseFilterContext performs any required filter initialisation and configuration
-        // that is external to the filter prior to engaging in cell by cell processing of
-        // this subgrid
-        private bool InitialiseFilterContext(CombinedFilter Filter)
+            FilteredSurveyedSurfaces = new SurveyedSurfaces();
+
+            ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+       }
+
+    // InitialiseFilterContext performs any required filter initialisation and configuration
+    // that is external to the filter prior to engaging in cell by cell processing of
+    // this subgrid
+    private bool InitialiseFilterContext(CombinedFilter Filter)
         {
             if (Filter == null)
             {
@@ -338,7 +350,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// </summary>
         private ServerRequestResult PerformHeightAnnotation()
         {
-            SurveyedSurfaces FilteredSurveyedSurfaces;
             ClientHeightAndTimeLeafSubGrid ClientGridAsHeightAndTime = null;
             ClientHeightAndTimeLeafSubGrid SurfaceElevations = null;
             bool SurveyedSurfaceElevationWanted;
@@ -366,7 +377,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             // Obtain local reference to surveyed surface list. If it is replaced while processing the
             // list then the local reference will still be valid allowing lock free read access to the list.
-            FilteredSurveyedSurfaces = new SurveyedSurfaces();
+            FilteredSurveyedSurfaces.Clear(); // = new SurveyedSurfaces();
 
             // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
             SurveyedSurfaceList.FilterSurveyedSurfaceDetails(Filter.AttributeFilter.HasTimeFilter,
@@ -374,13 +385,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                  Filter.AttributeFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
                  Filter.AttributeFilter.SurveyedSurfaceExclusionList);
 
-            if (FilteredSurveyedSurfaces == null || FilteredSurveyedSurfaces.Count == 0)
+            if (FilteredSurveyedSurfaces.Count == 0)
             {
                 return ServerRequestResult.NoError;
             }
 
-            // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
-            SubGridTreeBitmapSubGridBits ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
             bool ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
 
             // Ensure that the filtered ground surfaces are in a known ordered state
@@ -578,6 +587,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             return Result;
         }
 
+        /// <summary>
+        /// Responsible for coordinating the retrieval of production data for a subgrid from a site model and also annotating it with
+        /// surveyd surface informationk for requests involving height data.
+        /// </summary>
+        /// <param name="subGridAddress"></param>
+        /// <param name="prodDataRequested"></param>
+        /// <param name="surveyedSurfaceDataRequested"></param>
+        /// <param name="clientGrid"></param>
+        /// <returns></returns>
         public ServerRequestResult RequestSubGridInternal(// SubgridCache : TDataModelContextSubgridResultCache;
                                                           SubGridCellAddress subGridAddress,
                                                           // LiftBuildSettings: TICLiftBuildSettings;
