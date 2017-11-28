@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;

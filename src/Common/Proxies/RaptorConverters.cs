@@ -53,11 +53,16 @@ namespace VSS.Productivity3D.Common.Proxies
       if (baseFilter.HasTimeComponent() && baseFilter.ReturnEarliestFilteredCellPass &&
           topFilter.HasTimeComponent() && !topFilter.ReturnEarliestFilteredCellPass)
       {
-        baseFilter.OverrideTimeBoundary = true;
-        baseFilter.EndTime = baseFilter.StartTime;
-        baseFilter.StartTime = PDS_MIN_DATE;
-        baseFilter.ReturnEarliestFilteredCellPass = false;
+        AdjustBaseFilter(baseFilter);
       }
+    }
+
+    public static void AdjustBaseFilter(TICFilterSettings baseFilter)
+    {
+      baseFilter.OverrideTimeBoundary = true;
+      baseFilter.EndTime = baseFilter.StartTime;
+      baseFilter.StartTime = PDS_MIN_DATE;
+      baseFilter.ReturnEarliestFilteredCellPass = false;
     }
 
     public static TColourPalettes convertColorPalettes(List<ColorPalette> palettes, DisplayMode mode)

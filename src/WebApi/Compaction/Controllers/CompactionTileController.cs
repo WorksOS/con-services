@@ -20,15 +20,11 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
-using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -146,16 +142,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid ,volumeTopUid);
-
       var tileResult = WithServiceExceptionTryExecute(() => 
         tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT, 
           GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, 
           volumeCalcType, CustomHeaders));
 
-
       return tileResult;
     }
-
 
     /// <summary>
     /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
@@ -215,14 +208,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
-      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
 
+      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue
+        ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value)
+        : null;
+
+      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
           GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, 
           volumeCalcType, CustomHeaders));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
 
@@ -324,7 +321,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, this.ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(request) as TileResult;
-            
+
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
     }
 
@@ -396,7 +393,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Missing file type"));
       }
-      
+
       //Check file type is valid
       if (Enum.TryParse(fileType, true, out ImportedFileType importedFileType))
       {
@@ -494,6 +491,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat);
     }
 
-    
+ 
+  
   }
 }

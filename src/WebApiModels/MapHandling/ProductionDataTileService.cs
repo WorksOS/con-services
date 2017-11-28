@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Net;
 using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Helpers;
 using VSS.Productivity3D.Common.Interfaces;
@@ -81,12 +83,16 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
       catch (ServiceException se)
       {
-        if (tileRequest.mode == DisplayMode.CutFill && tileRequest.designDescriptor == null)
+        if (tileRequest.mode == DisplayMode.CutFill &&
+            se.Code == HttpStatusCode.BadRequest &&
+            se.GetResult.Code == ContractExecutionStatesEnum.ValidationError)
         {
-          if (se.Code == HttpStatusCode.BadRequest &&
-              se.GetResult.Code == ContractExecutionStatesEnum.ValidationError &&
+          if (se.GetResult.Message ==
+              "Design descriptor required for cut/fill and design to filter or filter to design volumes display" ||
               se.GetResult.Message ==
-              "Design descriptor required for cut/fill and design to filter or filter to design volumes display")
+              "Two filters required for filter to filter volumes display" ||
+              se.GetResult.Message ==
+              "One filter required for design to filter or filter to design volumes display")
           {
             getTile = false;
           }
@@ -104,15 +110,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           .Process(tileRequest) as TileResult;
       }
 
-      if (tileResult == null)
-      {
-        //Return en empty tile
-        using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
-        {
-          tileResult = TileResult.CreateTileResult(bitmap.BitmapToByteArray(), TASNodeErrorStatus.asneOK);
-        }
-      }
-      return tileResult;
+      return tileResult ?? TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
     }
 
 
