@@ -81,6 +81,10 @@ namespace MockProjectWebApi.Controllers
                 FilterDescriptors.Dimensions.SummaryVolumesFilterToday,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonToday,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonYesterday,
+                FilterDescriptors.Dimensions.SummaryVolumesFilterProjectExtents,
+                FilterDescriptors.Dimensions.SummaryVolumesFilterCustom20121101First,
+                FilterDescriptors.Dimensions.SummaryVolumesFilterCustom20121101Last,
+                FilterDescriptors.Dimensions.SummaryVolumesFilterNull,
                 FilterDescriptors.Dimensions.ReportDxfTile
               }
             };

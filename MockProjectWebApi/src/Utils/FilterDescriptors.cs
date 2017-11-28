@@ -79,6 +79,31 @@ namespace MockProjectWebApi.Utils
         FilterUid = "D6B254A0-C047-4805-9CCD-F847FAB05B14",
         FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterNoLatLonYesterday")
       };
+
+      public static FilterDescriptor SummaryVolumesFilterProjectExtents => new FilterDescriptor
+      {
+        FilterUid = "03914de8-dce7-403b-8790-1e07773db5e1",
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterProjectExtents")
+      };
+
+      public static FilterDescriptor SummaryVolumesFilterCustom20121101First => new FilterDescriptor
+      {
+        FilterUid = "9244d3f1-af2b-41ed-aa16-5a776278b6eb",
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterCustom20121101First")
+      };
+
+      public static FilterDescriptor SummaryVolumesFilterCustom20121101Last => new FilterDescriptor
+      {
+        FilterUid = "279ed62b-06a2-4184-ab14-dd7462dcc8c1",
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterCustom20121101Last")
+      };
+
+      public static FilterDescriptor SummaryVolumesFilterNull => new FilterDescriptor
+      {
+        FilterUid = "e2c7381d-1a2e-4dc7-8c0e-45df2f92ba0e",
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterNull20121101")
+      };
+
       public static FilterDescriptor ReportDxfTile => new FilterDescriptor
       {
         FilterUid = "7b2bd262-8355-44ba-938a-d50f9712dafc",
