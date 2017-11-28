@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <AssemblyName>SchedulerTests</AssemblyName>
-    <PackageId>SchedulerTests</PackageId>
+    <AssemblyName>SchedulerTestsImportedFileSync</AssemblyName>
+    <PackageId>SchedulerTestsImportedFileSync</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion>1.1.2</RuntimeFrameworkVersion>

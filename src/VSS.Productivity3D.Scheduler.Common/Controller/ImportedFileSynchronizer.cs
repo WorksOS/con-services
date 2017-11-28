@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             { "fileDescriptor", projectEvent.FileDescriptor},
             { "legacyImportedFileId", projectEvent.LegacyImportedFileId}
           };
-          NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
           fileListNhOp.RemoveAt(0);
         }
         else
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               { "fileDescriptor", gotMatchingProject.FileDescriptor},
               { "legacyImportedFileId", gotMatchingProject.LegacyImportedFileId}
             };
-            NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+            NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
           }
           else
           {
@@ -119,7 +119,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                   { "fileDescriptor", gotMatchingProject.FileDescriptor},
                   { "legacyImportedFileId", gotMatchingProject.LegacyImportedFileId}
                 };
-                NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+                NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               }
               else
               {
@@ -144,7 +144,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                   { "fileDescriptor", gotMatchingProject.FileDescriptor},
                   { "legacyImportedFileId", gotMatchingProject.LegacyImportedFileId}
                 };
-                NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+                NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               }
             }
           }
@@ -164,7 +164,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           {"message", string.Format($"ImportedFileSynchroniser internal error as fileListNhOp list should be empty")},
           {"fileListNhOpCount", fileListNhOp.Count}
         };
-        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc,
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc,
           (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
 
@@ -203,7 +203,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               { "fileDescriptor", ifp.FileDescriptor},
               { "legacyImportedFileId", ifp.LegacyImportedFileId}
             };
-            NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+            NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
             fileListProject.RemoveAt(0);
           }
           else
@@ -219,7 +219,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 { "fileDescriptor", ifp.FileDescriptor},
                 { "legacyImportedFileId", ifp.LegacyImportedFileId}
               };
-              NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+              NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Warning", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               fileListProject.RemoveAt(0);
             }
             else
@@ -239,7 +239,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 { "fileDescriptor", ifp.FileDescriptor},
                 { "legacyImportedFileId", ifp.LegacyImportedFileId}
               };
-              NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+              NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
               fileListProject.RemoveAt(0);
             }
           }
@@ -254,7 +254,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           {"message", string.Format($"ImportedFileSynchroniser internal error as fileListProject list should be empty")},
           {"fileListProjectCount", fileListProject.Count}
         };
-        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc,
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc,
           (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
     }

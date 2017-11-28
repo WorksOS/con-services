@@ -12,8 +12,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
     {
      var fullEventAttributes = new Dictionary<string, object>
      {
-       {"scheduledTask", "DatabaseCleanupTask"},
-       {"errorLevel", "Fatal"},
+       {"scheduledTask", scheduledTask},
+       {"errorLevel", errorLevel},
        {"startTimeUtc", startTimeUtc},
        {"elapsedMs", (DateTime.UtcNow - startTimeUtc).TotalMilliseconds}
      };

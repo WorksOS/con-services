@@ -15,7 +15,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Models;
 
-namespace SchedulerTests
+namespace SchedulerTestsImportedFileSync
 {
   public class TestControllerBase
   {

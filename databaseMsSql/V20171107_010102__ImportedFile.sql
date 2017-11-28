@@ -1,9 +1,7 @@
-USE [NH_OP];
-
 SET ANSI_NULLS, QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE dbo.ImportedFile(
+CREATE TABLE NH_OP..ImportedFile(
 	[ID] [bigint] IDENTITY(1,1) NOT FOR REPLICATION NOT NULL,
 	[fk_CustomerID] [bigint] NOT NULL,
 	[fk_ProjectID] [bigint] NOT NULL,

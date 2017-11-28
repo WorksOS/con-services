@@ -11,7 +11,8 @@ dotnet restore VSS.Productivity3D.Scheduler.AcceptanceTests.sln --no-cache
 
 cd tests
 dotnet publish RepositoryTests/RepositoryTests.csproj -o ..\..\deploy\RepositoryTests -f netcoreapp1.1
-dotnet publish SchedulerTests/SchedulerTests.csproj -o ..\..\deploy\SchedulerTests -f netcoreapp1.1
+dotnet publish SchedulerTestsFilterCleanup/SchedulerTestsFilterCleanup.csproj -o ..\..\deploy\SchedulerTestsFilterCleanup -f netcoreapp1.1
+dotnet publish SchedulerTestsImportedFileSync/SchedulerTestsImportedFileSync.csproj -o ..\..\deploy\SchedulerTestsImportedFileSync -f netcoreapp1.1
 
 cd ..
 cd utilities

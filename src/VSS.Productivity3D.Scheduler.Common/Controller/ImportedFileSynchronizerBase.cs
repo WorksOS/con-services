@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           { "fileDescriptor", fileDescriptor},
           { "legacyImportedFileId", legacyImportedFileId}
         };
-        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       Log.LogDebug(
         $"NotifyRaptorFileCreatedInCGen: projectUid:{projectUid} importedFileUid: {importedFileUid} FileDescriptor:{fileDescriptor}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
@@ -105,7 +105,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           { "fileDescriptor", fileDescriptor},
           { "legacyImportedFileId", legacyImportedFileId}
         };
-        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       else
       {
@@ -143,7 +143,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid}
         };
-        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       Log.LogDebug(
         $"NotifyRaptorFileUpdatedInCGen: projectUid:{projectUid} importedFileUid: {importedFileUid}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
@@ -157,7 +157,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid}
         };
-        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       else
       {
@@ -197,7 +197,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           { "fileDescriptor", fileDescriptor},
           { "legacyImportedFileId", legacyImportedFileId}
         };
-        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       Log.LogDebug(
         $"NotifyRaptorFileDeletedInCGen: projectUid:{projectUid} importedFileUid: {importedFileUid} FileDescriptor:{fileDescriptor}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
@@ -213,7 +213,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           { "fileDescriptor", fileDescriptor},
           { "legacyImportedFileId", legacyImportedFileId}
         };
-        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       else
       {

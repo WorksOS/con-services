@@ -83,21 +83,30 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddMvc();
 
       var hangfireConnectionString = _configStore.GetConnectionString("VSPDB");
-      _log.LogDebug($"Scheduler.ConfigureServices: Scheduler database string: {hangfireConnectionString}.");
+      int queuePollIntervalSeconds;
+      int jobExpirationCheckIntervalHours;
+      int countersAggregateIntervalMinutes;
+      // queuePollIntervalSeconds needs to be low for acceptance tests of FilterSchedulerTask_WaitForCleanup
+      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_QUE_POLL_INTERVAL_SECONDS"), out queuePollIntervalSeconds))
+        queuePollIntervalSeconds = 60;
+      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_JOB_EXPIRATION_CHECK_HOURS"), out jobExpirationCheckIntervalHours))
+        jobExpirationCheckIntervalHours = 1;
+      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_COUNTER_AGGREGATE_MINUTES"), out countersAggregateIntervalMinutes))
+        countersAggregateIntervalMinutes = 55;
+
+      _log.LogDebug($"Scheduler.ConfigureServices: Scheduler database string: {hangfireConnectionString} queuePollIntervalSeconds {queuePollIntervalSeconds} jobExpirationCheckIntervalHours {jobExpirationCheckIntervalHours} countersAggregateIntervalMinutes {countersAggregateIntervalMinutes}.");
       _storage = new MySqlStorage(hangfireConnectionString,
         new MySqlStorageOptions
         {
-          QueuePollInterval = TimeSpan.FromSeconds(15),
-          JobExpirationCheckInterval = TimeSpan.FromHours(1),
-          CountersAggregateInterval = TimeSpan.FromMinutes(5),
-          PrepareSchemaIfNecessary = false,
-          DashboardJobListLimit = 50000,
-          TransactionTimeout = TimeSpan.FromMinutes(1)
+          QueuePollInterval = TimeSpan.FromSeconds(queuePollIntervalSeconds), 
+          JobExpirationCheckInterval = TimeSpan.FromHours(jobExpirationCheckIntervalHours),
+          CountersAggregateInterval = TimeSpan.FromMinutes(countersAggregateIntervalMinutes),
+          PrepareSchemaIfNecessary = false
         });
 
       try
       {
-        services.AddHangfire(x => x.UseStorage(_storage));
+        services.AddHangfire(x => x.UseStorage(_storage));  
       }
       catch (Exception ex)
       {
@@ -129,7 +138,40 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       try
       {
-        app.UseHangfireServer();
+        var hangfireServerName = string.Format($"vss-3dpScheduler{Guid.NewGuid()}");
+        // WorkerCount will be internally set based on #cores - on prod = 10. For a single scheduled task we need a low number
+        // these affect CPU usage and number of db connections
+        // things more specific to each task e.g. Hangfire.AutomaticRetryAttribute.DefaultRetryAttempts are attributes on the task
+        int workerCount; // Math.Min(Environment.ProcessorCount * 5, 20)
+        // schedulePollingIntervalSeconds may need to be low for acceptance tests of FilterSchedulerTask_WaitForCleanup?
+        int schedulePollingIntervalSeconds; // DelayedJobScheduler.DefaultPollingDelay = 15 seconds
+        //int heartbeatIntervalSeconds; // hangfire ServerHeartbeat.DefaultHeartbeatInterval default = 30 secs
+        //int serverCheckIntervalSeconds; // ServerWatchdog.DefaultCheckInterval
+        if (!int.TryParse(_configStore.GetValueString("SCHEDULER_WORKER_COUNT"), out workerCount))
+          workerCount = 2;
+        if (!int.TryParse(_configStore.GetValueString("SCHEDULER_SCHEDULE_POLLING_INTERVAL_SECONDS"), out schedulePollingIntervalSeconds))
+          schedulePollingIntervalSeconds = 60;
+        //if (!int.TryParse(_configStore.GetValueString("SCHEDULER_HEARTBEAT_INTERVAL_SECONDS"), out heartbeatIntervalSeconds))
+        //  heartbeatIntervalSeconds = 60;
+        //if (!int.TryParse(_configStore.GetValueString("SCHEDULER_SERVER_CHECK_INTERVAL_SECONDS"), out serverCheckIntervalSeconds))
+        //  serverCheckIntervalSeconds = 60;
+
+        _log.LogDebug($"Scheduler.Configure: workerCount: {workerCount} schedulePollingIntervalSeconds {schedulePollingIntervalSeconds}.");
+
+        var options = new BackgroundJobServerOptions
+        {
+          ServerName = hangfireServerName,
+          WorkerCount = workerCount,
+          SchedulePollingInterval = TimeSpan.FromSeconds(schedulePollingIntervalSeconds)
+          //HeartbeatInterval = TimeSpan.FromSeconds(heartbeatIntervalSeconds),
+          //ServerCheckInterval = TimeSpan.FromSeconds(serverCheckIntervalSeconds)
+        };
+        app.UseHangfireServer(options);
+
+        int expirationManagerWaitMs = 2000;
+        Console.WriteLine($"Scheduler.Startup: expirationManagerWaitMs {expirationManagerWaitMs}");
+        Thread.Sleep(expirationManagerWaitMs);
+        Console.WriteLine($"Scheduler.Startup: after expirationManagerWaitMs wait, proceed....");
       }
       catch (Exception ex)
       {

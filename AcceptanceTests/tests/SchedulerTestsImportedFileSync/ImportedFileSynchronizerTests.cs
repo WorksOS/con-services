@@ -11,7 +11,7 @@ using VSS.Productivity3D.Scheduler.Common.Repository;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace SchedulerTests
+namespace SchedulerTestsImportedFileSync
 {
   [TestClass]
   public class ImportedFileSynchronizerTests : TestControllerBase
@@ -39,7 +39,7 @@ namespace SchedulerTests
 
       var importedFileProject = new ImportedFileProject()
       {
-        LegacyProjectId = new Random().Next(1, 1000000),
+        LegacyProjectId = new Random().Next(1, 900000),
         LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),
@@ -118,7 +118,7 @@ namespace SchedulerTests
 
       var importedFileProject = new ImportedFileProject()
       {
-        LegacyProjectId = new Random().Next(1, 1000000),
+        LegacyProjectId = new Random().Next(1, 900000),
         LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),
@@ -200,7 +200,7 @@ namespace SchedulerTests
 
       var importedFileProject = new ImportedFileProject()
       {
-        LegacyProjectId = new Random().Next(1, 1000000),
+        LegacyProjectId = new Random().Next(1, 900000),
         LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),

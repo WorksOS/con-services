@@ -1,9 +1,7 @@
-USE [NH_OP];
-
 SET ANSI_NULLS, QUOTED_IDENTIFIER, ANSI_PADDING ON
 GO
 
-CREATE TABLE dbo.Customer(
+CREATE TABLE NH_OP..Customer(
 	[ID] [bigint] IDENTITY(1,1) NOT FOR REPLICATION NOT NULL,
 	[Name] [nvarchar](200) NOT NULL,
 	[UpdateUTC] [datetime] NOT NULL CONSTRAINT [DF_Customer_UpdateUTC]  DEFAULT (getutcdate()),

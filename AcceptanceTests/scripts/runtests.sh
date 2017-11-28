@@ -12,9 +12,13 @@ sleep 30s
 # Run the component tests
 echo "Run the component tests"
 
-echo "Run Scheduler tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/SchedulerTestResults project=SchedulerTests messages=false
-echo "Scheduler tests finished"
+echo "Run SchedulerTestsFilterCleanup tests starting...."
+dotnet TestRun/TestRun.dll results=/testresults/SchedulerTestResults project=SchedulerTestsFilterCleanup messages=false
+echo "SchedulerTestsFilterCleanup tests finished"
+
+echo "Run SchedulerTestsImportedFileSync tests starting...."
+dotnet TestRun/TestRun.dll results=/testresults/SchedulerTestResults project=SchedulerTestsImportedFileSync messages=false
+echo "SchedulerTestsImportedFileSync tests finished"
 
 echo "Run Repository tests starting...."
 dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestResults project=RepositoryTests messages=false

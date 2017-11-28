@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 
-namespace SchedulerTests
+namespace SchedulerTestsImportedFileSync
 {
   [TestClass]
   public class ImportedFileSyncTaskTests : TestControllerBase

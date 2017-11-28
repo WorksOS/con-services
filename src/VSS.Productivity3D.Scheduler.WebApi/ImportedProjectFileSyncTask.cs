@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private readonly ILoggerFactory _logger;
     private readonly ILogger _log;
     private readonly IRaptorProxy _raptorProxy;
-    private static int DefaultTaskIntervalDefaultMinutes { get; } = 5;
+    private static int DefaultTaskIntervalDefaultMinutes { get; } = 4;
 
     /// <summary>
     /// Initializes the ImportedProjectFileSyncTask 
@@ -44,7 +44,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     public void AddTask()
     {
       var startUtc = DateTime.UtcNow;
-      _log.LogDebug($"ImportedProjectFileSyncTask.AddTask. configStore: {_configStore}");
      
       // lowest interval is minutes 
       int taskIntervalMinutes;
@@ -54,19 +53,19 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
 
       var ImportedProjectFileSyncTask = "ImportedProjectFileSyncTask";
-      _log.LogInformation($"ImportedProjectFileSyncTask: taskIntervalSeconds: {taskIntervalMinutes}.");
-      Console.WriteLine($"ImportedProjectFileSyncTask: taskIntervalSeconds: {taskIntervalMinutes}.");
+      _log.LogInformation($"ImportedProjectFileSyncTask: taskIntervalMinutes: {taskIntervalMinutes}.");
+      Console.WriteLine($"ImportedProjectFileSyncTask: taskIntervalMinutes: {taskIntervalMinutes}.");
 
       try
       {
-        RecurringJob.AddOrUpdate(ImportedProjectFileSyncTask,() => DatabaseSyncTask(), Cron.MinuteInterval(taskIntervalMinutes));
+        RecurringJob.AddOrUpdate(ImportedProjectFileSyncTask,() => ImportedFilesSyncTask(), Cron.MinuteInterval(taskIntervalMinutes));
       }
       catch (Exception ex)
       {
         var newRelicAttributes = new Dictionary<string, object> {
           { "message", string.Format($"Unable to schedule recurring job: exception {ex.Message}") }
         };
-        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Fatal", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Fatal", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
         throw;
       }
     }
@@ -74,14 +73,19 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <summary>
     /// bi-sync between 2 databases, 1 table in each
     /// </summary>
-    public async Task DatabaseSyncTask()
+    [AutomaticRetry(Attempts = 1, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
+    [DisableConcurrentExecution(5)]
+    public async Task ImportedFilesSyncTask()
     {
       var startUtc = DateTime.UtcNow;
    
       var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy);
       await sync.SyncTables().ConfigureAwait(false);
 
-      NewRelicUtils.NotifyNewRelic("DatabaseCleanupTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds);
+      var newRelicAttributes = new Dictionary<string, object> {
+        { "message", string.Format($"Task completed.") }
+      };
+      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
     }
   }
 }

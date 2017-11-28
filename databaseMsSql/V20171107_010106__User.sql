@@ -1,9 +1,7 @@
-USE [NH_OP];
-
 SET ANSI_NULLS, QUOTED_IDENTIFIER, ANSI_PADDING ON
 GO
 
-CREATE TABLE dbo.[User](
+CREATE TABLE NH_OP..[User](
 	[ID] [bigint] IDENTITY(1,1) NOT FOR REPLICATION NOT NULL,
 	[fk_CustomerID] [bigint] NULL,
 	[Name] [nvarchar](200) NOT NULL,
