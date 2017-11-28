@@ -122,7 +122,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         {
             try
             {
-                if (SubgridResultArray.Count() > 0 && SubgridResultArray[0] != null)
+                if (SubgridResultArray != null)
                 {
                     ClientLeafSubGridFactory.ReturnClientSubGrids(SubgridResultArray, SubgridResultArray.Count());
                 }
@@ -138,71 +138,64 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         private void ConvertIntermediarySubgridsToResult(GridDataType RequestGridDataType,
                                                          ref IClientLeafSubGrid[] SubgridResultArray)
         {
-            IClientLeafSubGrid[] NewClientGrids = null;
+            IClientLeafSubGrid[] NewClientGrids = new IClientLeafSubGrid[SubgridResultArray.Length];
 
             try
             {
-                if (SubgridResultArray.Length == 0 || SubgridResultArray[0] == null)
+                if (SubgridResultArray.Length == 0)
                 {
-                    CleanSubgridResultArray(SubgridResultArray);
-
-                    // TODO Readd when logging available
-                    //SIGLogMessage.PublishNoODS(Self, Format('SubgridResultArray passed to ConvertIntermediarySubgridsToResult is empty, or contains nil subgrid references (count = %d)', [Length(SubgridResultArray)]), slmcWarning);
                     return;
                 }
 
-                switch (RequestGridDataType)
+                try
                 {
-                    case GridDataType.SimpleVolumeOverlay:
-                        Debug.Assert(false, "SimpleVolumeOverlay not implemented");
-                        break;
-
-                    case GridDataType.Height:
-                        NewClientGrids = new IClientLeafSubGrid[SubgridResultArray.Length];
-
-                        for (int I = 0; I < SubgridResultArray.Length; I++)
+                    for (int I = 0; I < SubgridResultArray.Length; I++)
+                    {
+                        if (SubgridResultArray[I] == null)
                         {
-                            if (SubgridResultArray[I]?.GridDataType != RequestGridDataType)
-                            {
-                                NewClientGrids[I] = ClientLeafSubGridFactory.GetSubGrid(RequestGridDataType);
-                                NewClientGrids[I].CellSize = siteModel.Grid.CellSize;
-
-                                Debug.Assert(NewClientGrids[I] is ClientHeightLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {NewClientGrids[I].GetType().Name}/{NewClientGrids[I]}");
-
-                                if (!(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid))
-                                {
-                                    Debug.Assert(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid failed, is actually {SubgridResultArray[I].GetType().Name}/{SubgridResultArray[I]}");
-                                }
-                                //Debug.Assert(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid failed, is actually {SubgridResultArray[I].GetType().Name}/{SubgridResultArray[I]}");
-
-                                (NewClientGrids[I] as ClientHeightLeafSubGrid).Assign(SubgridResultArray[I] as ClientHeightAndTimeLeafSubGrid);
-                            }
-                            else
-                            {
-                                NewClientGrids[I] = SubgridResultArray[I];
-                                SubgridResultArray[I] = null;
-                            }
+                            continue;
                         }
 
-                        CleanSubgridResultArray(SubgridResultArray);
+                        if (SubgridResultArray[I]?.GridDataType != RequestGridDataType)
+                        {
+                            switch (RequestGridDataType)
+                            {
+                                case GridDataType.SimpleVolumeOverlay:
+                                    Debug.Assert(false, "SimpleVolumeOverlay not implemented");
+                                    break;
 
-                        SubgridResultArray = NewClientGrids;
-                        break;
+                                case GridDataType.Height:
+                                    NewClientGrids[I] = ClientLeafSubGridFactory.GetSubGrid(GridDataType.Height);
+                                    NewClientGrids[I].CellSize = siteModel.Grid.CellSize;
+
+                                    Debug.Assert(NewClientGrids[I] is ClientHeightLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {NewClientGrids[I].GetType().Name}/{NewClientGrids[I]}");
+
+                                    if (!(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid))
+                                    {
+                                        Debug.Assert(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid failed, is actually {SubgridResultArray[I].GetType().Name}/{SubgridResultArray[I]}");
+                                    }
+
+                                    (NewClientGrids[I] as ClientHeightLeafSubGrid).Assign(SubgridResultArray[I] as ClientHeightAndTimeLeafSubGrid);
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            NewClientGrids[I] = SubgridResultArray[I];
+                            SubgridResultArray[I] = null;
+                        }
+                    }
                 }
+                finally
+                {
+                    CleanSubgridResultArray(SubgridResultArray);
+                }
+
+                SubgridResultArray = NewClientGrids;
             }
             catch
             {
-                CleanSubgridResultArray(SubgridResultArray);
-
-                if (NewClientGrids != null)
-                {
-                    for (int i = 0; i < NewClientGrids.Count(); i++)
-                    {
-                        ClientLeafSubGridFactory.ReturnClientSubGrid(ref NewClientGrids[i]);
-                    }
-                }
-
-
+                CleanSubgridResultArray(NewClientGrids);
                 throw;
             }
         }
