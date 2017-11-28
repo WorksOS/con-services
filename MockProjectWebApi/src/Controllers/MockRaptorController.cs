@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
+using System.Threading.Tasks;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -9,6 +10,18 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockRaptorController : Controller
   {
+
+    [Route("api/v1/mock/vetaexport")]
+    [HttpGet]
+    public ExportResult GetExportReportVeta(
+      [FromQuery] Guid projectUid,
+      [FromQuery] string fileName,
+      [FromQuery] string machineNames,
+      [FromQuery] Guid? filterUid)
+    {
+      return new ExportResult() {ResultCode = 0, ExportData = new byte[3] {0x01,0x02,0x03} };
+    }
+
 
     /// <summary>
     /// Dummies the post.

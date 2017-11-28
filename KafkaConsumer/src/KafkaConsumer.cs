@@ -112,6 +112,8 @@ namespace VSS.KafkaConsumer
               messageResolver.GetConverter<T>());
             log.LogDebug($"KafkaConsumer: Saving type {deserializedObject.GetType()}");
             await dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
+            log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
+            await kafkaDriver.Commit();
           }
           catch (Exception ex)
           {
@@ -124,8 +126,7 @@ namespace VSS.KafkaConsumer
             }
           }
         }
-        log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
-        await kafkaDriver.Commit();
+
       }
       return 0;
     }

@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -119,6 +120,38 @@ namespace VSS.MasterData.Proxies
       return response;
     }
 
+
+    /// <summary>
+    /// Gets the veta export data.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="fileName">Name of the file.</param>
+    /// <param name="machineNames">The machine names.</param>
+    /// <param name="filterUid">The filter uid.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    /// <returns></returns>
+    public async Task<ExportData> GetVetaExportData(Guid projectUid,
+      string fileName,
+      string machineNames,
+      Guid? filterUid,
+      IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.GetVetaExportData: filterUid: {filterUid}, projectUid: {projectUid}");
+      var result = await GetMasterDataItem<ExportResult>("VETA_EXPORT_URL",
+        customHeaders,
+        $"?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}&filterUid={filterUid}");
+      if (result.ResultCode==0)
+      {
+        log.LogDebug("RaptorProxy.GetVetaExportData: Successfull Export" );
+        return new ExportData {Data = result.ExportData, Code = result.ResultCode, Message = result.Message};
+      }
+      else
+      {
+        log.LogDebug("Failed to execute Veta Export");
+        return null;
+      }
+
+    }
 
     /// <summary>
     /// Validates that filterUid has changed i.e. updated/deleted but not inserted
