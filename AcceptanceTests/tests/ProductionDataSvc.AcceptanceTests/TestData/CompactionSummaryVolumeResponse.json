@@ -116,6 +116,19 @@
     "Code": 0,
     "Message": "success"
   },
+  "SummaryVolumesFilterNull20121101": {
+    "volumeSummaryData": {
+      "netVolume": 41.934217504882653,
+      "totalVolume": 170.10149821777355,
+      "totalCutVolume": 106.01785786132811,
+      "totalFillVolume": 64.083640356445457,
+      "totalMachineCoveragePlanArea": 2409.5664000000006,
+      "shrinkage": 0,
+      "bulking": 0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
   "FilterAndInvalidDesign": {
     "Code": -1,
     "Message": "Invalid surface parameter(s)."

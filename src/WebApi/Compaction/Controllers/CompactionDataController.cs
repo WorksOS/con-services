@@ -413,8 +413,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var volumeCalcType = volumeSummaryHelper.GetVolumesType(baseFilter, topFilter);
       var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
 
-      request.FiltersAreMatchingGroundToGround = VolumeSummaryHelper.DoGroundToGroundComparison(baseFilterDescriptor, topFilterDescriptor);
-
       CompactionSummaryVolumesResult returnResult;
 
       try

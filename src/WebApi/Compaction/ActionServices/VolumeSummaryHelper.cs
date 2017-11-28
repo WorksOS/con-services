@@ -1,5 +1,4 @@
-﻿using VSS.MasterData.Models.Internal;
-using VSS.Productivity3D.Common.Models;
+﻿using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 
 namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
@@ -26,19 +25,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
       }
 
       return RaptorConverters.VolumesType.None;
-    }
-
-    /// <inheritdoc />
-    public static bool DoGroundToGroundComparison(MasterData.Models.Models.Filter baseFilter, MasterData.Models.Models.Filter topFilter)
-    {
-      if (baseFilter == null || topFilter == null)
-      {
-        return false;
-      }
-
-      return baseFilter.DateRangeType != DateRangeType.ProjectExtents &&
-             baseFilter.DateRangeType == topFilter.DateRangeType &&
-             baseFilter.elevationType == null && topFilter.elevationType == null;
     }
   }
 }
