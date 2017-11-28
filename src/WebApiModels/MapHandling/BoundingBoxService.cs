@@ -363,38 +363,46 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>A GeoJSON representation of the design boundary</returns>
     private string GetDesignBoundary(long projectId, DesignDescriptor designDescriptor)
     {
-      MemoryStream memoryStream;
-      TDesignProfilerRequestResult designProfilerResult;
+      MemoryStream memoryStream = null;
+      try
+      {        
+        TDesignProfilerRequestResult designProfilerResult;
 
+        bool success = raptorClient.GetDesignBoundary(
+          DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args(
+            projectId,
+            RaptorConverters.DesignDescriptor(designDescriptor),
+            DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtJson,
+            DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL,
+            TVLPDDistanceUnits.vduMeters,
+            0),
+          out memoryStream,
+          out designProfilerResult);
 
-      bool success = raptorClient.GetDesignBoundary(
-        DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args(
-          projectId,
-          RaptorConverters.DesignDescriptor(designDescriptor),
-          DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtJson,
-          DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL,
-          TVLPDDistanceUnits.vduMeters,
-          0),
-        out memoryStream,
-        out designProfilerResult);
-
-      if (success)
-      {
-        if (designProfilerResult == TDesignProfilerRequestResult.dppiOK && memoryStream != null && memoryStream.Length > 0)
+        if (success)
         {
-          memoryStream.Position = 0;
-          var sr = new StreamReader(memoryStream);
-          string geoJSONStr = sr.ReadToEnd();
-          return geoJSONStr;
+          if (designProfilerResult == TDesignProfilerRequestResult.dppiOK && memoryStream != null &&
+              memoryStream.Length > 0)
+          {
+            memoryStream.Position = 0;
+            using (StreamReader sr = new StreamReader(memoryStream))
+            {
+              return sr.ReadToEnd();
+            }
+          }
         }
+        else
+        {
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+              $"Failed to get design boundary for file: {designDescriptor.file.fileName}"));
+        }
+        return null;
       }
-      else
+      finally
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            $"Failed to get design boundary for file: {designDescriptor.file.fileName}"));
+        memoryStream?.Close();
       }
-      return null;
     }
 
   }

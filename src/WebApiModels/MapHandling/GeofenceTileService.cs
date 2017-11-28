@@ -40,14 +40,14 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       const int STROKE_TRANSPARENCY = 0x73; //0.45 of FF
       const int SITE_OUTLINE_WIDTH = 2;
 
-      // Exclude sites that are too small to be displayed in the current viewport. 
-      double viewPortArea = Math.Abs(parameters.bbox.minLatDegrees - parameters.bbox.maxLatDegrees) * Math.Abs(parameters.bbox.minLngDegrees - parameters.bbox.maxLngDegrees);
-      double minArea = viewPortArea / 10000;
-
       byte[] sitesImage = null;
 
       if (sites.Any())
       {
+        // Exclude sites that are too small to be displayed in the current viewport. 
+        double viewPortArea = Math.Abs(parameters.bbox.minLatDegrees - parameters.bbox.maxLatDegrees) * Math.Abs(parameters.bbox.minLngDegrees - parameters.bbox.maxLngDegrees);
+        double minArea = viewPortArea / 10000;
+
         using (Bitmap bitmap = new Bitmap(parameters.mapWidth, parameters.mapHeight))
         using (Graphics g = Graphics.FromImage(bitmap))
         {
