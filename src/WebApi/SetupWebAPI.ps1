@@ -18,6 +18,7 @@ Write-host "IONODEIP=$IONIP"
 $SHAREUNC = (Get-ChildItem Env:\SHAREUNC).Value
 Write-host "SHAREUNC=$SHAREUNC"
 
+
 if ($ASNIP -eq $null)
   { Write-host "Error! Environment variable ASNODEIP is not set"  -ForegroundColor Red; $OKTORUN = "Bad"}
 else 
@@ -37,9 +38,8 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
-   $myCmd = "net use Z: "+ $SHAREUNC +" #fwww700945 /user:vssSupport /persistent:yes"
+   $myCmd = "net use z: "+ $SHAREUNC +" #fwww700945 /user:vssSupport /persistent:yes"
    Write-Host "Mapping Raptor ProductionData folder to Z: drive"
-   Write-Host $myCmd
    & cmd /c $myCmd
    & Z:
    $DL = (get-location).Drive.Name
