@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -118,13 +119,16 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="clientGrid"></param>
         public void ReturnClientSubGrid(ref IClientLeafSubGrid clientGrid)
         {
-            clientGrid = null;
-            //return; // Temporarily remove subgrid repatriation
-
             if (clientGrid == null)
             {
                 return;
             }
+
+            // Make sure the type of the client grid being returned matches it's advertised grid type
+            // if (!typeMap[(int)clientGrid.GridDataType].Equals(clientGrid.GetType()))
+            // {
+            //    Debug.Assert(false, "Type of client grid being returned does not match advertised grid data type.");
+            // }
 
             ClientLeaves[(int)clientGrid.GridDataType].Add(clientGrid);
             clientGrid = null;

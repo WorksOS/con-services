@@ -28,12 +28,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <summary>
         /// Enumeration indicating type of grid data held in this client leaf sub grid
         /// </summary>
-        // private GridDataType _gridDataType;
+        protected GridDataType _gridDataType;
 
         /// <summary>
         /// Enumeration indicating type of grid data held in this client leaf sub grid
         /// </summary>
-        public GridDataType GridDataType { get; set; } // { get { return _gridDataType; } }
+        public GridDataType GridDataType { get { return _gridDataType; } } 
 
         /// <summary>
         /// Cellsize is a copy of the cell size from the parent subgrid. It is replicated here
@@ -119,7 +119,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             CellSize = cellSize;
             IndexOriginOffset = indexOriginOffset;
 
-            GridDataType = GridDataType.All; // Default to 'all', descendant specialized classes will set appropriately
+            _gridDataType = GridDataType.All; // Default to 'all', descendant specialized classes will set appropriately
 
             TopLayerOnly = false;
             ProfileDisplayMode = DisplayMode.Height;
@@ -221,7 +221,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             Level = source.Level;
             OriginX = source.OriginX;
             OriginY = source.OriginY;
-            GridDataType = source.GridDataType;
+
+            // Grid data type is never assigned from one client grid to another...
+            //GridDataType = source.GridDataType;
+
             CellSize = source.CellSize;
             IndexOriginOffset = source.IndexOriginOffset;
             ProdDataMap.Assign(source.ProdDataMap);
@@ -272,7 +275,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             OriginX = (uint)formatter.Deserialize(stream);
             OriginY = (uint)formatter.Deserialize(stream);
             Level = (byte)formatter.Deserialize(stream);
-            GridDataType = (GridDataType)formatter.Deserialize(stream);
+
+            if ((GridDataType)formatter.Deserialize(stream) != GridDataType)
+            {
+                Debug.Assert(false, "GridDataType in stream does not match GridDataType of local subgrid instance");
+            }
+
             CellSize = (double)formatter.Deserialize(stream);
             IndexOriginOffset = (uint)formatter.Deserialize(stream);
 
@@ -306,7 +314,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         {
             base.Read(reader, buffer);
 
-            GridDataType = (GridDataType)reader.ReadInt32();
+            if ((GridDataType)reader.ReadInt32() != GridDataType)
+            {
+                Debug.Assert(false, "GridDataType in stream does not match GridDataType of local subgrid instance");
+            }
+
             CellSize = reader.ReadDouble();
             IndexOriginOffset = reader.ReadUInt32();
 

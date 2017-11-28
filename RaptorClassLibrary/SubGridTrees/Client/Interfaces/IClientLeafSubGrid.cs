@@ -15,7 +15,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
     {
         double CellSize { set; get; }
 
-        GridDataType GridDataType { get; set; }
+        GridDataType GridDataType { get; }
 
         bool WantsLiftProcessingResults();
 

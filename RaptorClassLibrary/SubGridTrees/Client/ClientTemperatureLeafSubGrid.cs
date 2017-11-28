@@ -25,7 +25,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
-        /// Constructor. Set the grid to HeightAndTime.
+        /// Constructor. Set the grid to Temperature.
         /// </summary>
         /// <param name="owner"></param>
         /// <param name="parent"></param>
@@ -34,7 +34,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="indexOriginOffset"></param>
         public ClientTemperatureLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
-            GridDataType = Raptor.Types.GridDataType.Temperature;
+            _gridDataType = Raptor.Types.GridDataType.Temperature;
         }
 
         /// <summary>

@@ -44,7 +44,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="indexOriginOffset"></param>
         public ClientHeightLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
-            GridDataType = Raptor.Types.GridDataType.Height;
+            _gridDataType = Raptor.Types.GridDataType.Height;
         }
 
         
