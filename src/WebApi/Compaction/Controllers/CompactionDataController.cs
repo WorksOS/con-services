@@ -338,6 +338,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
     }
 
+    private async Task<T> WithSwallowExceptionExecute<T>(Func<Task<T>> a) where T : class
+    {
+      try
+      {
+        return await a.Invoke();
+      }
+      catch
+      { }
+
+      return default(T);
+    }
+
     /// <summary>
     /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results.
     /// </summary>
@@ -367,27 +379,46 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       DesignDescriptor baseDesign = null;
       DesignDescriptor topDesign = null;
+      Filter baseFilter = null;
+      Filter topFilter = null;
 
-      var baseFilter = await GetCompactionFilter(projectUid, baseUid, returnEarliest: true);
-      if (baseFilter == null)
+      var baseFilterDescriptor = await WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, baseUid));
+
+      if (baseFilterDescriptor == null)
       {
-        baseDesign = await GetAndValidateDesignDescriptor(projectUid, baseUid);
+        baseDesign = await WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, baseUid));
+      }
+      else
+      {
+        baseFilter = await WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
       }
 
-      var topFilter = await GetCompactionFilter(projectUid, topUid);
-      if (topFilter == null)
+      var topFilterDescriptor = await WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, topUid));
+      if (topFilterDescriptor == null)
       {
-        topDesign = await GetAndValidateDesignDescriptor(projectUid, topUid);
+        topDesign = await WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, topUid));
+      }
+      else
+      {
+        topFilter = await WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
       }
 
-      var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeSummaryHelper.GetVolumesType(baseFilter, topFilter));
+      if (baseFilter == null && baseDesign == null || topFilter == null && topDesign == null)
+      {
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Can not resolve either baseSurface or topSurface"));
+      }
+
+      var volumeCalcType = volumeSummaryHelper.GetVolumesType(baseFilter, topFilter);
+      var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
 
       CompactionSummaryVolumesResult returnResult;
 
       try
       {
         var result = RequestExecutorContainerFactory
-          .Build<SummaryVolumesExecutor>(logger, raptorClient)
+          .Build<CompactionSummaryVolumesExecutor>(logger, raptorClient)
           .Process(request) as SummaryVolumesResult;
 
         returnResult = CompactionSummaryVolumesResult.CreateInstance(result, await GetProjectSettings(projectUid));

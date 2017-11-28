@@ -299,3 +299,6 @@ __pycache__/
 *.xsd.cs
 
 Log.*
+coverage.xml
+outputCobertura.xml
+CoverageReport/

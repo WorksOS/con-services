@@ -327,6 +327,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom || filter.DateRangeType.Value == DateRangeType.ProjectExtents)
       {
+        log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom or ProjectExtents. Returning without setting filter start and end dates.");
         return filter;
       }
 
@@ -335,7 +336,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         throw new ServiceException(
           HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,"Failed to retrieve project."));
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to retrieve project."));
       }
 
       var utcNow = DateTime.UtcNow;
@@ -348,7 +349,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         filter.vibeStateOn, filter.polygonLL, filter.forwardDirection, filter.layerNumber, filter.polygonUID, filter.polygonName);
     }
 
-    private async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
+    public async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await this.FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), this.CustomHeaders);
 
@@ -365,7 +366,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeTopUid">Top Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <returns>Tuple of base filter, top filter and volume design descriptor</returns>
-    protected async Task<Tuple<Filter,Filter,DesignDescriptor>> GetSummaryVolumesParameters(Guid projectUid, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
+    protected async Task<Tuple<Filter, Filter, DesignDescriptor>> GetSummaryVolumesParameters(Guid projectUid, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
     {
       Filter baseFilter = null;
       Filter topFilter = null;

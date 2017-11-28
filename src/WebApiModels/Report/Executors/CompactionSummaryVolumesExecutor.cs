@@ -15,7 +15,10 @@ using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
-  public class SummaryVolumesExecutor : RequestExecutorContainer
+  /// <summary>
+  /// Summary volumes executor for use with API v2.
+  /// </summary>
+  public class CompactionSummaryVolumesExecutor : RequestExecutorContainer
   {
     private static BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
@@ -58,13 +61,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.VolumeCalcType);
 
-      if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
-      {
-        RaptorConverters.AdjustFilterToFilter(baseFilter, topFilter);
-      }
-
-      RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref baseFilter, ref topFilter, request.VolumeCalcType);
-
       bool success;
 
       if (request.CutTolerance != null && request.FillTolerance != null)
@@ -90,9 +86,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             TASNodeCancellationDescriptorType.cdtVolumeSummary),
           volType,
           baseFilter,
-          RaptorConverters.DesignDescriptor(request.BaseDesignDescriptor),
+          baseDesignDescriptor,
           topFilter,
-          RaptorConverters.DesignDescriptor(request.TopDesignDescriptor),
+          topDesignDescriptor,
           RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
             request.AdditionalSpatialFilter, request.projectId),
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),

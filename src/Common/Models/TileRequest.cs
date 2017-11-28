@@ -16,7 +16,6 @@ namespace VSS.Productivity3D.Common.Models
   /// </summary>
   public class TileRequest : RaptorHelper
   {
-
     /// <summary>
     /// An identifying string from the caller
     /// </summary>
@@ -133,6 +132,8 @@ namespace VSS.Productivity3D.Common.Models
     [Required]
     public ushort height { get; protected set; }
 
+    [JsonIgnore]
+    public bool IsSummaryVolumeCutFillRequest { get; set; }
 
     /// <summary>
     /// Private constructor
@@ -214,7 +215,7 @@ namespace VSS.Productivity3D.Common.Models
          computeVolType == RaptorConverters.VolumesType.BetweenDesignAndFilter || 
          computeVolType == RaptorConverters.VolumesType.BetweenFilterAndDesign)))
       {
-        ValidateVolumesFilters(computeVolType, filter1, filterId1, filter2, filterId2);
+        ValidateVolumesFilters(computeVolType, this.filter1, this.filterId1, this.filter2, this.filterId2);
       }
 
       if (boundBoxLL == null && boundBoxGrid == null)
