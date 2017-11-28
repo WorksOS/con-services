@@ -168,12 +168,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                                     NewClientGrids[I] = ClientLeafSubGridFactory.GetSubGrid(GridDataType.Height);
                                     NewClientGrids[I].CellSize = siteModel.Grid.CellSize;
 
+                                    /*
                                     Debug.Assert(NewClientGrids[I] is ClientHeightLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {NewClientGrids[I].GetType().Name}/{NewClientGrids[I]}");
 
                                     if (!(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid))
                                     {
                                         Debug.Assert(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid failed, is actually {SubgridResultArray[I].GetType().Name}/{SubgridResultArray[I]}");
                                     }
+                                    */
 
                                     (NewClientGrids[I] as ClientHeightLeafSubGrid).Assign(SubgridResultArray[I] as ClientHeightAndTimeLeafSubGrid);
                                     break;
