@@ -178,7 +178,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
           }
         }
         var key = builder.ToString();
-        logger.LogDebug($"Cache key: {key}");
+        logger?.LogDebug($"Cache key: {key}");
         return key;
       }
       finally
