@@ -83,6 +83,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         [NonSerialized]
         private SurveyedSurfaces FilteredSurveyedSurfaces = null;
 
+        [NonSerialized]
+        private bool ReturnEarliestFilteredCellPass = false;
 
         /// <summary>
         /// Default no-arg constructor
@@ -112,27 +114,48 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                              areaControlSet
                                              );
 
-            surfaceElevationPatchRequest = new SurfaceElevationPatchRequest();
+            ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
 
-            // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
-            // the common elements for this set of subgrids being requested
-            SurfaceElevationPatchArg = new SurfaceElevationPatchArgument()
-            {
-                SiteModelID = SiteModel.ID,
-                EarliestSurface = Filter.AttributeFilter.ReturnEarliestFilteredCellPass
-            };
+            surfaceElevationPatchRequest = new SurfaceElevationPatchRequest();
 
             AreaControlSet = areaControlSet;
 
+            ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+
+            // Construct the appropriate list of surveyed surfaces
+            // Obtain local reference to surveyed surface list. If it is replaced while processing the
+            // list then the local reference will still be valid allowing lock free read access to the list.
+            SurveyedSurfaces SurveyedSurfaceList = SiteModel.SurveyedSurfaces;
             FilteredSurveyedSurfaces = new SurveyedSurfaces();
 
-            ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
-       }
+            if (SurveyedSurfaceList.Count() > 0)
+            {
+                // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
+                SurveyedSurfaceList.FilterSurveyedSurfaceDetails(Filter.AttributeFilter.HasTimeFilter,
+                                                                 Filter.AttributeFilter.StartTime, Filter.AttributeFilter.EndTime,
+                                                                 Filter.AttributeFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
+                                                                 Filter.AttributeFilter.SurveyedSurfaceExclusionList);
 
-    // InitialiseFilterContext performs any required filter initialisation and configuration
-    // that is external to the filter prior to engaging in cell by cell processing of
-    // this subgrid
-    private bool InitialiseFilterContext(CombinedFilter Filter)
+                // Ensure that the filtered surveyed surfaces are in a known ordered state
+                FilteredSurveyedSurfaces.SortChronologically();
+            }
+
+            // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
+            // the common elements for this set of subgrids being requested. We always want to request all surface elevations to 
+            // promote cacheability.
+            SurfaceElevationPatchArg = new SurfaceElevationPatchArgument()
+            {
+                SiteModelID = SiteModel.ID,
+                IncludedSurveyedSurfaces = FilteredSurveyedSurfaces,
+                EarliestSurface = ReturnEarliestFilteredCellPass,
+                ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled)
+            };
+        }
+
+        // InitialiseFilterContext performs any required filter initialisation and configuration
+        // that is external to the filter prior to engaging in cell by cell processing of
+        // this subgrid
+        private bool InitialiseFilterContext(CombinedFilter Filter)
         {
             if (Filter == null)
             {
@@ -350,6 +373,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// </summary>
         private ServerRequestResult PerformHeightAnnotation()
         {
+            if (FilteredSurveyedSurfaces.Count() == 0)
+            {
+                return ServerRequestResult.NoError;
+            }
+
             ClientHeightAndTimeLeafSubGrid ClientGridAsHeightAndTime = null;
             ClientHeightAndTimeLeafSubGrid SurfaceElevations = null;
             bool SurveyedSurfaceElevationWanted;
@@ -369,40 +397,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 return ServerRequestResult.NoError;
             }
 
-            SurveyedSurfaces SurveyedSurfaceList = SiteModel.SurveyedSurfaces;
-            if (SurveyedSurfaceList.Count() == 0)
-            {
-                return ServerRequestResult.NoError;
-            }
-
-            // Obtain local reference to surveyed surface list. If it is replaced while processing the
-            // list then the local reference will still be valid allowing lock free read access to the list.
-            FilteredSurveyedSurfaces.Clear(); // = new SurveyedSurfaces();
-
-            // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
-            SurveyedSurfaceList.FilterSurveyedSurfaceDetails(Filter.AttributeFilter.HasTimeFilter,
-                 Filter.AttributeFilter.StartTime, Filter.AttributeFilter.EndTime,
-                 Filter.AttributeFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
-                 Filter.AttributeFilter.SurveyedSurfaceExclusionList);
-
-            if (FilteredSurveyedSurfaces.Count == 0)
-            {
-                return ServerRequestResult.NoError;
-            }
-
-            bool ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
-
-            // Ensure that the filtered ground surfaces are in a known ordered state
-            FilteredSurveyedSurfaces.SortChronologically();
-
             if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
             {
                 ClientGridAsHeightAndTime = ClientGrid as ClientHeightAndTimeLeafSubGrid;
 
-                // Temporarily just fill the processing map as not doing so results in no surveyed surfaced information being requested
-                ProcessingMap.Fill();
-
-                // ProcessingMap.Assign(ClientGridAsHeightAndTime.FilterMap);
+                ProcessingMap.Assign(ClientGridAsHeightAndTime.FilterMap);
 
                 // If we're interested in a particular cell, but we don't have any
                 // surveyed surfaces later (or earlier) than the cell production data
@@ -413,7 +412,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 ProcessingMap.ForEachSetBit((x, y) =>
                 {
                     if (ClientGridAsHeightAndTime.Cells[x, y] != Consts.NullHeight &&
-                        (ReturnEarliestFilteredCellPass ? !FilteredSurveyedSurfaces.HasSurfaceEarlierThan(Times[x, y]) : !FilteredSurveyedSurfaces.HasSurfaceLaterThan(Times[x, y])))
+                        (!(ReturnEarliestFilteredCellPass ? FilteredSurveyedSurfaces.HasSurfaceEarlierThan(Times[x, y]) : FilteredSurveyedSurfaces.HasSurfaceLaterThan(Times[x, y]))))
                     {
                         ProcessingMap.ClearBit(x, y);
                     }
@@ -470,10 +469,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 SurfaceElevationPatchArg.CellSize = ClientGrid.CellSize;
                 SurfaceElevationPatchArg.OTGCellBottomLeftX = ClientGrid.OriginX;
                 SurfaceElevationPatchArg.OTGCellBottomLeftY = ClientGrid.OriginY;
-                SurfaceElevationPatchArg.ProcessingMap = ProcessingMap;
-                SurfaceElevationPatchArg.IncludedSurveyedSurfaces = FilteredSurveyedSurfaces;
 
                 SurfaceElevations = surfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg);
+
                 if (SurfaceElevations == null)
                 {
                     return Result;
@@ -490,12 +488,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 float SurveyedSurfaceCellHeight;
                 Int64 SurveyedSurfaceCellTime;
 
+                // Note: The surveyed surface will return all cells in the requested subgrid, not just the ones indicated in the processing map
+                // IE: It is unsafe to test for null top indicate not-filtered, use the processing map iterators to cover only those cells required
                 ProcessingMap.ForEachSetBit((x, y) =>
                 {
                     SurveyedSurfaceCellHeight = SurfaceElevations.Cells[x, y];
                     SurveyedSurfaceCellTime = SurfaceElevations.Times[x, y];
 
-                    // If we got back a surveyed surface elevation...ComputeFuncs
+                    // If we got back a surveyed surface elevation...
 
                     if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
                     {
@@ -516,16 +516,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                         ProdTime = DateTime.MinValue.ToBinary();
                     }
 
-                    if (ReturnEarliestFilteredCellPass)
-                    {
-                        SurveyedSurfaceElevationWanted = (SurveyedSurfaceCellHeight != Consts.NullHeight) &&
-                                                         ((ProdHeight == Consts.NullHeight) || (SurveyedSurfaceCellTime < ProdTime));
-                    }
-                    else
-                    {
-                        SurveyedSurfaceElevationWanted = (SurveyedSurfaceCellHeight != Consts.NullHeight) &&
-                                                         ((ProdHeight == Consts.NullHeight) || (SurveyedSurfaceCellTime > ProdTime));
-                    }
+                    // Determine if the elevation from the surveyed surface data is required based on the nullness of the production data elevation, and
+                    // the relative age of the measured surveyed surface elevation compared with a non-null production data height
+                    SurveyedSurfaceElevationWanted = SurveyedSurfaceCellHeight != Consts.NullHeight &&
+                                                     (ProdHeight == Consts.NullHeight ||
+                                                      ReturnEarliestFilteredCellPass ? SurveyedSurfaceCellTime < ProdTime : SurveyedSurfaceCellTime < ProdTime);
 
                     if (SurveyedSurfaceElevationWanted)
                     {
@@ -610,8 +605,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             SurveyedSurfaceDataRequested = surveyedSurfaceDataRequested;
             ClientGrid = clientGrid;
 
-            ServerRequestResult Result = ServerRequestResult.UnknownError;
-
             if (!(ProdDataRequested || SurveyedSurfaceDataRequested))
             {
                 return ServerRequestResult.MissingInputParameters;
@@ -621,6 +614,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             {
                 return ServerRequestResult.FilterInitialisationFailure;
             }
+
+            ServerRequestResult Result = ServerRequestResult.UnknownError;
 
             // For now, it is safe to assume all subgrids containing on-the-ground cells have kSubGridTreeLevels levels
             CellX = subGridAddress.X << ((SubGridTree.SubGridTreeLevels - TreeLevel) * SubGridTree.SubGridIndexBitsPerLevel);
@@ -645,7 +640,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             if (SurveyedSurfaceDataRequested)
             {
-                // Construct the filter mask (e.g. spatial filtering) to be applied to the results of surveyd surface analysis
+                // Construct the filter mask (e.g. spatial filtering) to be applied to the results of surveyed surface analysis
                 if (SubGridFilterMasks.ConstructSubgridCellFilterMask(ClientGrid, SiteModel, Filter,
                                                                       CellOverrideMask,
                                                                       HasOverrideSpatialCellRestriction,
