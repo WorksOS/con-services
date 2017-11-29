@@ -24,7 +24,7 @@ namespace VSS.VisionLink.Raptor.Common
         private int count = 0;
 
         /// <summary>
-        /// The number of 
+        /// The number of items contained in the simple concurrent bag
         /// </summary>
         public int Count
         {
@@ -41,14 +41,9 @@ namespace VSS.VisionLink.Raptor.Common
         {
             get
             {
-                Monitor.Enter(Items);
-                try
+                lock (Items)
                 {
                     return Items.Count();
-                }
-                finally
-                {
-                    Monitor.Exit(Items);
                 }
             }
         }
@@ -66,8 +61,7 @@ namespace VSS.VisionLink.Raptor.Common
         /// <param name="item"></param>
         public void Add(T item)
         {
-            Monitor.Enter(Items);
-            try
+            lock (Items)
             {
                 if (count < Items.Count)
                 {
@@ -81,10 +75,6 @@ namespace VSS.VisionLink.Raptor.Common
                     count++;
                 }
             }
-            finally
-            {
-                Monitor.Exit(Items);
-            }
         }
 
         /// <summary>
@@ -93,8 +83,7 @@ namespace VSS.VisionLink.Raptor.Common
         /// <param name="item"></param>
         public void Add(T[] itemArray, int itemCount)
         {
-            Monitor.Enter(Items);
-            try
+            lock (Items)
             {
                 for (int i = 0; i < itemCount; i++)
                 {
@@ -116,10 +105,6 @@ namespace VSS.VisionLink.Raptor.Common
                     }
                 }
             }
-            finally
-            {
-                Monitor.Exit(Items);
-            }
         }
 
         /// <summary>
@@ -129,8 +114,7 @@ namespace VSS.VisionLink.Raptor.Common
         /// <returns></returns>
         public bool TryTake(out T item)
         {
-            Monitor.Enter(Items);
-            try
+            lock (Items)
             {
                 if (count == 0)
                 {
@@ -143,10 +127,6 @@ namespace VSS.VisionLink.Raptor.Common
                 }
 
                 return item != null;
-            }
-            finally
-            {
-                Monitor.Exit(Items);
             }
         }
     }
