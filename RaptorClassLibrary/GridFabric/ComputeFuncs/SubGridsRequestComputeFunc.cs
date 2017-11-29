@@ -120,18 +120,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
         private void CleanSubgridResultArray(IClientLeafSubGrid[] SubgridResultArray)
         {
-            try
+            if (SubgridResultArray != null)
             {
-                if (SubgridResultArray != null)
-                {
-                    ClientLeafSubGridFactory.ReturnClientSubGrids(SubgridResultArray, SubgridResultArray.Count());
-                }
-            }
-            catch // (Exception E)
-            {
-                throw;
-                // TODO Readd when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format('E:%s', [E.Message]), slmcException);
+                ClientLeafSubGridFactory.ReturnClientSubGrids(SubgridResultArray, SubgridResultArray.Count());
             }
         }
 
@@ -458,7 +449,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
             Log.Info(String.Format("Num subgrids present in request = {0} [All divisions]", result.NumSubgridsExamined));
 
-            IClusterGroup group = _ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
+            IClusterGroup group = _Ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
 
             Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
 

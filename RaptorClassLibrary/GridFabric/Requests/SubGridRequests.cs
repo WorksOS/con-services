@@ -174,7 +174,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
 
             // Create a messaging group the cluster can use to send messages back to and establish
             // a local listener
-            var msgGroup = _compute.ClusterGroup.GetMessaging();
+            var msgGroup = _Compute.ClusterGroup.GetMessaging();
             msgGroup.LocalListen(new SubGridListener(Task), arg.MessageTopic);
 
             Task<ICollection<SubGridRequestsResponse>> taskResult = null;
@@ -188,7 +188,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
                 // until the internal Ignite timeout expires
                 //result = _compute.Broadcast(func, arg);
 
-                taskResult = _compute.BroadcastAsync(func, arg);
+                taskResult = _Compute.BroadcastAsync(func, arg);
                 taskResult.Wait(30000);
             }
             finally

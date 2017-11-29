@@ -34,7 +34,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             // Construct the function to be used
             IComputeFunc<TileRenderRequestArgument, Bitmap> func = new TileRenderRequestComputeFunc();
 
-            Task<Bitmap> taskResult = _compute.ApplyAsync(func, arg);
+            Task<Bitmap> taskResult = _Compute.ApplyAsync(func, arg);
 
             //Bitmap result = compute.Apply(func, arg);
 

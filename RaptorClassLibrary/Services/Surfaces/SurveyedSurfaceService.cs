@@ -144,7 +144,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
                 _svcName = context.Name;
             }
 
-            mutableNonSpatialCache = _ignite.GetCache<String, Byte[]>(CacheName /*RaptorCaches.MutableNonSpatialCacheName()*/);
+            mutableNonSpatialCache = _Ignite.GetCache<String, Byte[]>(CacheName /*RaptorCaches.MutableNonSpatialCacheName()*/);
         }
 
         /// <summary>

@@ -22,19 +22,27 @@ namespace VSS.VisionLink.Raptor.GridFabric
         /// </summary>
         [NonSerialized]
         [InstanceResource]
-        protected readonly IIgnite _ignite;
+        private readonly IIgnite _ignite;
+
+        protected IIgnite _Ignite { get { return _ignite; } }
 
         /// <summary>
         /// The cluster group of nodes in the grid that are available for responding to design/profile requests
         /// </summary>
         [NonSerialized]
-        protected readonly IClusterGroup _group = null;
+        private IClusterGroup _group = null;
+
+        protected IClusterGroup _Group { get { return _group; } }
 
         /// <summary>
         /// The compute interface from the cluster group projection
         /// </summary>
         [NonSerialized]
-        protected readonly ICompute _compute = null;
+        private ICompute _compute = null;
+
+        protected ICompute _Compute { get { return _compute; } }
+
+        private string Role { get; set; } = "";
 
         /// <summary>
         /// Default no-arg constructor
@@ -65,7 +73,17 @@ namespace VSS.VisionLink.Raptor.GridFabric
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public BaseRaptorIgniteClass(string Role) : this()
+        public BaseRaptorIgniteClass(string role) : this()
+        {
+            Role = role;
+
+            AcquireIgniteTopologyProjections();
+        }
+
+        /// <summary>
+        /// Acquires references to group and compute topology projections on the Ignite grid that may accept requests from this requestor
+        /// </summary>
+        public void AcquireIgniteTopologyProjections()
         {
             if (!String.IsNullOrEmpty(Role))
             {

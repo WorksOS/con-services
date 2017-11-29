@@ -47,7 +47,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
             CacheName = cacheName;
 
             // Delete to the service Init() method if this becomes an Ignite sercvice
-            mutableNonSpatialCache = _ignite.GetCache<String, Byte[]>(CacheName /*RaptorCaches.MutableNonSpatialCacheName()*/);
+            mutableNonSpatialCache = _Ignite.GetCache<String, Byte[]>(CacheName /*RaptorCaches.MutableNonSpatialCacheName()*/);
         }
 
         public void Add(long SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)

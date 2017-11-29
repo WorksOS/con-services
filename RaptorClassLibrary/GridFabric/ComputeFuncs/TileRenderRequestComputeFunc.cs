@@ -33,7 +33,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             {
                 // Supply the Raptor ID of the Ignite node currently running this code to permit processing contexts to send
                 // subgrid results to it.
-                arg.RaptorNodeID = _ignite.GetCluster().GetLocalNode().GetAttribute<string>("RaptorNodeID");
+                arg.RaptorNodeID = _Ignite.GetCluster().GetLocalNode().GetAttribute<string>("RaptorNodeID");
 
                 Log.InfoFormat("Assigned RaptorNodeID from local node is {0}", arg.RaptorNodeID);
 
