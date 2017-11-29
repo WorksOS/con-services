@@ -23,6 +23,7 @@
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtents.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesTemperature.json" />
     <Content Remove="Json\Filters\ElevationRangeAndPaletteNoDataFilter.json" />
     <Content Remove="Json\Filters\ReportDxfTile.json" />
     <Content Remove="Json\Filters\SummaryVolumesBaseFilter.json" />
@@ -44,6 +45,7 @@
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonToday.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonYesterday.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesTemperature.json" />
     <EmbeddedResource Include="Json\Filters\ElevationRangeAndPaletteNoDataFilter.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
     <EmbeddedResource Include="Json\Filters\ReportDxfTile.json" />

@@ -104,6 +104,12 @@ namespace MockProjectWebApi.Utils
         FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterNull20121101")
       };
 
+      public static FilterDescriptor SummaryVolumesTemperature => new FilterDescriptor
+      {
+        FilterUid = "601afff6-844e-448d-a16c-bd40a5dc9124",
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesTemperature")
+      };
+
       public static FilterDescriptor ReportDxfTile => new FilterDescriptor
       {
         FilterUid = "7b2bd262-8355-44ba-938a-d50f9712dafc",

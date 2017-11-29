@@ -91,6 +91,26 @@ namespace MockProjectWebApi.Controllers
             ImportedFileUid = "6ece671b-7959-4a14-86fa-6bfe6ef4dd62",
             LegacyFileId = 112,
             IsActivated = true
+          },
+          new FileData
+          {
+            Name = "Topcon Road - Topcon Phil.svl",
+            ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+            CustomerUid = "StationOffsetReportTest",
+            ImportedFileType = ImportedFileType.Alignment,
+            ImportedFileUid = "c6662be1-0f94-4897-b9af-28aeeabcd09b",
+            LegacyFileId = 113,
+            IsActivated = true
+          },
+          new FileData
+          {
+            Name = "Milling - Milling.svl",
+            ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+            CustomerUid = "StationOffsetReportTest",
+            ImportedFileType = ImportedFileType.Alignment,
+            ImportedFileUid = "3ead0c55-1e1f-4d30-aaf8-873526a2ab82",
+            LegacyFileId = 114,
+            IsActivated = true
           }
         };
       }
