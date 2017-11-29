@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies;
@@ -30,8 +31,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
     private readonly ObjectPool<StringBuilder> builderPool;
     private readonly ResponseCachingOptions options;
     private readonly IFilterServiceProxy filterServiceProxy;
+    private ILogger<CustomResponseCachingKeyProvider> logger;
 
-    public CustomResponseCachingKeyProvider(ObjectPoolProvider poolProvider, IFilterServiceProxy filterProxy, IOptions<ResponseCachingOptions> options)
+    public CustomResponseCachingKeyProvider(ObjectPoolProvider poolProvider, IFilterServiceProxy filterProxy, ILogger<CustomResponseCachingKeyProvider> logger, IOptions<ResponseCachingOptions> options)
     {
       if (poolProvider == null)
       {
@@ -45,6 +47,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
       this.builderPool = poolProvider.CreateStringBuilderPool();
       this.options = options.Value;
       this.filterServiceProxy = filterProxy;
+      this.logger = logger;
     }
 
     public IEnumerable<string> CreateLookupVaryByKeys(ResponseCachingContext context)
@@ -174,8 +177,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
             }
           }
         }
-
-        return builder.ToString();
+        var key = builder.ToString();
+        logger.LogDebug($"Cache key: {key}");
+        return key;
       }
       finally
       {
