@@ -61,21 +61,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.VolumeCalcType);
 
-      if (volType == TComputeICVolumesType.ic_cvtBetween2Filters && request.FiltersAreMatchingGroundToGround)
-      {
-        RaptorConverters.AdjustBaseFilter(baseFilter);
-      }
-
-      if (baseFilter == null && baseDesignDescriptor.IsNull() ||
-          topFilter == null && topDesignDescriptor.IsNull() ||
-          baseFilter != null && !baseDesignDescriptor.IsNull() ||
-          topFilter != null && !topDesignDescriptor.IsNull())
-      {
-        throw new ServiceException(
-          HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Invalid surface configuration."));
-      }
-
       bool success;
 
       if (request.CutTolerance != null && request.FillTolerance != null)
