@@ -29,6 +29,9 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests
         /// </summary>
         private static SurveyedSurfaceResultCache _cache = new SurveyedSurfaceResultCache();
 
+        /// <summary>
+        /// Local reference to the client subgrid factory
+        /// </summary>
         [NonSerialized]
         private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
 
@@ -47,11 +50,8 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests
 
             if (cachedResult != null)
             {
-                // It was presnet in the cache, return it
+                // It was present in the cache, return it
                 return cachedResult;
-
-                //ClientHeightAndTimeLeafSubGrid clientResultFromCache = ClientLeafSubGridFactory.GetSubGrid(Types.GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
-                //return clientResultFromCache;
             }
 
             // Request the subgrid from the surveyed surface engine

@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
+using VSS.VisionLink.Raptor.SubGridTrees.Client;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Surfaces.Executors;
 using VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments;
 
@@ -18,6 +20,17 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        /// <summary>
+        /// Local reference to the client subgrid factory
+        /// </summary>
+        [NonSerialized]
+        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+
+        /// <summary>
+        /// Invokes the surface elevation patch computation function on the server nodes the request has been sent to
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
         public byte[] Invoke(SurfaceElevationPatchArgument arg)
         {
             try
@@ -26,7 +39,23 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs
 
                 CalculateSurfaceElevationPatch Executor = new CalculateSurfaceElevationPatch(arg);
 
-                return Executor.Execute().ToBytes();
+                /*ClientHeightAndTimeLeafSubGrid*/ IClientLeafSubGrid result = Executor.Execute();
+
+                if (result != null)
+                {
+                    try
+                    {
+                        return (result as ClientHeightAndTimeLeafSubGrid).ToBytes();
+                    }
+                    finally
+                    {
+                        ClientLeafSubGridFactory.ReturnClientSubGrid(ref result);
+                    }
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (Exception E)
             {
@@ -34,6 +63,5 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs
                 return null; // Todo .....
             }
         }
-
     }
 }

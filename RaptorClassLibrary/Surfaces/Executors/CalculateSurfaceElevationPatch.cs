@@ -11,6 +11,7 @@ using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs;
 
@@ -18,6 +19,11 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
 {
     public class CalculateSurfaceElevationPatch
     {
+        /// <summary>
+        /// Local reference to the client subgrid factory
+        /// </summary>
+        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+
         /// <summary>
         /// Private reference to the arguments provided to the executor
         /// </summary>
@@ -56,13 +62,14 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
 
                 try
                 {
-                    Patch = new ClientHeightAndTimeLeafSubGrid(null, null, SubGridTree.SubGridTreeLevels, Args.CellSize, SubGridTree.DefaultIndexOriginOffset);
+                    Patch = ClientLeafSubGridFactory.GetSubGrid(Types.GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
 
                     if (Patch == null)
                     {
                         return null;
                     }
 
+                    Patch.CellSize = Args.CellSize;
                     Patch.SetAbsoluteOriginPosition(Args.OTGCellBottomLeftX, Args.OTGCellBottomLeftY);
                     Patch.CalculateWorldOrigin(out double OriginX, out double OriginY);
 
