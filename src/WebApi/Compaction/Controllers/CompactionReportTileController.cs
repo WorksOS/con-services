@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting tiles for reporting requests
   /// </summary>
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionReportController : BaseController
+  public class CompactionReportTileController : BaseController
   {
     /// <summary>
     /// Logger for logging
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="tileGenerator">Tile generator</param>
     /// <param name="prefProxy">User preferences proxy</param>
     /// <param name="requestFactory">The request factory.</param>
-    public CompactionReportController(ILoggerFactory logger, IConfigurationStore configStore, IGeofenceProxy geofenceProxy,
+    public CompactionReportTileController(ILoggerFactory logger, IConfigurationStore configStore, IGeofenceProxy geofenceProxy,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator, 
       IPreferenceProxy prefProxy, IProductionDataRequestFactory requestFactory) 
