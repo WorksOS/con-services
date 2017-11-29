@@ -58,18 +58,19 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
 
             try
-            {           
+            {
                 CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter(siteModel)
                 {
                     ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
-                    ElevationType = returnEarliestFilteredCellPass ? ElevationType.First : ElevationType.Last
+                    ElevationType = returnEarliestFilteredCellPass ? ElevationType.First : ElevationType.Last,
+                    SurveyedSurfaceExclusionList = (siteModel.SurveyedSurfaces == null || !chkIncludeSurveyedSurfaces.Checked) ? new long[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray()
                 };
 
                 CellSpatialFilter SpatialFilter = new CellSpatialFilter()
                 {
                     CoordsAreGrid = true,
                     IsSpatial = true,
-                    Fence = new Fence(extents)
+                    Fence = new Fence(extents)                    
                 };
 
                 return tileRender.RenderTile(new TileRenderRequestArgument

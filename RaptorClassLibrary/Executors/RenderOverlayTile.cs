@@ -300,15 +300,21 @@ namespace VSS.VisionLink.Raptor.Executors
                 return true;
             }
 
-            SubGridTreeSubGridExistenceBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.ExistenceMaps.GetCombinedExistenceMap(siteModelID,
-            FilteredSurveyedSurfaces.Select(x => new Tuple<long, long>(ExistenceMaps.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
-
-            if (OverallExistenceMap == null)
+            if (FilteredSurveyedSurfaces.Count() > 0)
             {
-                return false;
-            }
+                SubGridTreeSubGridExistenceBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.ExistenceMaps.GetCombinedExistenceMap(siteModelID,
+                FilteredSurveyedSurfaces.Select(x => new Tuple<long, long>(ExistenceMaps.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
 
-            OverallExistenceMap.SetOp_OR(SurveyedSurfaceExistanceMap);
+                if (OverallExistenceMap == null)
+                {
+                    return false;
+                }
+
+                if (SurveyedSurfaceExistanceMap != null)
+                {
+                    OverallExistenceMap.SetOp_OR(SurveyedSurfaceExistanceMap);
+                }
+            }
 
             return true;
         }

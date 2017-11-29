@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.edtNumRuns = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.edtNumImages = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -51,8 +53,7 @@
             this.btnZoomAll = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.edtNumRuns = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.chkIncludeSurveyedSurfaces = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -62,6 +63,7 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.chkIncludeSurveyedSurfaces);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.edtNumRuns);
             this.panel1.Controls.Add(this.button1);
@@ -88,6 +90,23 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(187, 539);
             this.panel1.TabIndex = 15;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(143, 494);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(32, 13);
+            this.label4.TabIndex = 36;
+            this.label4.Text = "Runs";
+            // 
+            // edtNumRuns
+            // 
+            this.edtNumRuns.Location = new System.Drawing.Point(100, 491);
+            this.edtNumRuns.Name = "edtNumRuns";
+            this.edtNumRuns.Size = new System.Drawing.Size(34, 20);
+            this.edtNumRuns.TabIndex = 35;
+            this.edtNumRuns.Text = "10";
             // 
             // button1
             // 
@@ -184,7 +203,7 @@
             // lblCellsPerPixel
             // 
             this.lblCellsPerPixel.AutoSize = true;
-            this.lblCellsPerPixel.Location = new System.Drawing.Point(14, 413);
+            this.lblCellsPerPixel.Location = new System.Drawing.Point(14, 397);
             this.lblCellsPerPixel.Name = "lblCellsPerPixel";
             this.lblCellsPerPixel.Size = new System.Drawing.Size(73, 13);
             this.lblCellsPerPixel.TabIndex = 24;
@@ -193,7 +212,7 @@
             // lblViewHeight
             // 
             this.lblViewHeight.AutoSize = true;
-            this.lblViewHeight.Location = new System.Drawing.Point(14, 389);
+            this.lblViewHeight.Location = new System.Drawing.Point(14, 378);
             this.lblViewHeight.Name = "lblViewHeight";
             this.lblViewHeight.Size = new System.Drawing.Size(64, 13);
             this.lblViewHeight.TabIndex = 23;
@@ -202,7 +221,7 @@
             // lblViewWidth
             // 
             this.lblViewWidth.AutoSize = true;
-            this.lblViewWidth.Location = new System.Drawing.Point(14, 365);
+            this.lblViewWidth.Location = new System.Drawing.Point(14, 359);
             this.lblViewWidth.Name = "lblViewWidth";
             this.lblViewWidth.Size = new System.Drawing.Size(61, 13);
             this.lblViewWidth.TabIndex = 22;
@@ -300,22 +319,15 @@
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
-            // edtNumRuns
+            // chkIncludeSurveyedSurfaces
             // 
-            this.edtNumRuns.Location = new System.Drawing.Point(100, 491);
-            this.edtNumRuns.Name = "edtNumRuns";
-            this.edtNumRuns.Size = new System.Drawing.Size(34, 20);
-            this.edtNumRuns.TabIndex = 35;
-            this.edtNumRuns.Text = "10";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(143, 494);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(32, 13);
-            this.label4.TabIndex = 36;
-            this.label4.Text = "Runs";
+            this.chkIncludeSurveyedSurfaces.AutoSize = true;
+            this.chkIncludeSurveyedSurfaces.Location = new System.Drawing.Point(17, 416);
+            this.chkIncludeSurveyedSurfaces.Name = "chkIncludeSurveyedSurfaces";
+            this.chkIncludeSurveyedSurfaces.Size = new System.Drawing.Size(150, 17);
+            this.chkIncludeSurveyedSurfaces.TabIndex = 37;
+            this.chkIncludeSurveyedSurfaces.Text = "Include surveyed surfaces";
+            this.chkIncludeSurveyedSurfaces.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -361,6 +373,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox edtNumRuns;
+        private System.Windows.Forms.CheckBox chkIncludeSurveyedSurfaces;
     }
 }
 
