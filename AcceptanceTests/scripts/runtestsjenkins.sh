@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Accept tests are starting .... "
-echo "Wait for 120 seconds"
-sleep 120s
+echo "Wait for 30 seconds"
+sleep 30s
 echo "Check the database and kafka to see if port is available"
 # Polling the database and kafka status before test
 /bin/bash wait-for-it.sh db:3306 -t 0

@@ -48,12 +48,12 @@ namespace SchedulerTestsFilterCleanup
       this.LoggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
       Log = loggerFactory.CreateLogger<TestControllerBase>();
 
-      FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
-      if (string.IsNullOrEmpty(FileSpaceId))
-      {
-        throw new InvalidOperationException(
-          "ImportedFileSynchroniser unable to establish FileSpaceId");
-      }
+      //FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
+      //if (string.IsNullOrEmpty(FileSpaceId))
+      //{
+      //  throw new InvalidOperationException(
+      //    "ImportedFileSynchroniser unable to establish FileSpaceId");
+      //}
 
       RaptorProxy = new RaptorProxy(ConfigStore, LoggerFactory);
 
