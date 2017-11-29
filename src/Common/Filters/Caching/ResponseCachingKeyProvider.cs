@@ -154,7 +154,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
             foreach (var query in context.HttpContext.Request.Query.OrderBy(q => q.Key,
               StringComparer.OrdinalIgnoreCase))
             {
-              if (query.Key.ToUpperInvariant() != "FILTERUID")
+              if (query.Key.ToUpperInvariant() != "FILTERUID" && query.Key.ToUpperInvariant() != "TIMESTAMP")
                 builder.Append(KEY_DELIMITER)
                   .Append(query.Key.ToUpperInvariant())
                   .Append("=")
@@ -165,7 +165,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
           {
             foreach (var queryKey in varyByRules.QueryKeys)
             {
-              if (queryKey.ToUpperInvariant() != "FILTERUID")
+              if (queryKey.ToUpperInvariant() != "FILTERUID" && queryKey.ToUpperInvariant()!="TIMESTAMP")
                 builder.Append(KEY_DELIMITER)
                 .Append(queryKey)
                 .Append("=")
