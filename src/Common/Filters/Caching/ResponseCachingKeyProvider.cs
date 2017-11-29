@@ -71,6 +71,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
     public string GenerateBaseKeyFromRequest(HttpRequest request)
     {
       var builder = this.builderPool.Get();
+      builder.Clear();
 
       try
       {
@@ -92,8 +93,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
               request.Query["filterUid"], request.Headers.GetCustomHeaders()));
           }
         }
-
-        return builder.ToString();
+        var baseKey = builder.ToString();
+        logger?.LogDebug($"Cache key: {baseKey}");
+        return baseKey;
       }
       finally
       {
@@ -121,6 +123,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
       }
 
       var builder = this.builderPool.Get();
+      builder.Clear();
 
       try
       {
