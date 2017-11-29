@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
           }
         }
         var baseKey = builder.ToString();
-        logger?.LogDebug($"Cache key: {baseKey}");
+        logger?.LogDebug($"Base cache key: {baseKey}");
         return baseKey;
       }
       finally
