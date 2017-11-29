@@ -43,8 +43,9 @@ node('Ubuntu_Slave') {
     stage 'Run unit tests'
     sh "bash ./unittests.sh" 
     stage 'Prepare Acceptance tests'
-    sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
     sh "(cp ./AcceptanceTests/DockerfileJenkins ./AcceptanceTests/Dockerfile)"
+    sh "(cp ./AcceptanceTests/scripts/runtestsjenkins.sh ./AcceptanceTests/scripts/runtests.sh)"
+    sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
     stage 'Compose containers'
     sh "bash ./awslogin.sh"
     sh "bash ./start_containers.sh"
