@@ -199,6 +199,7 @@
             this.chkSelectEarliestPass.TabIndex = 25;
             this.chkSelectEarliestPass.Text = "Select earliest pass";
             this.chkSelectEarliestPass.UseVisualStyleBackColor = true;
+            this.chkSelectEarliestPass.CheckedChanged += new System.EventHandler(this.chkSelectEarliestPass_CheckedChanged);
             // 
             // lblCellsPerPixel
             // 
@@ -328,6 +329,7 @@
             this.chkIncludeSurveyedSurfaces.TabIndex = 37;
             this.chkIncludeSurveyedSurfaces.Text = "Include surveyed surfaces";
             this.chkIncludeSurveyedSurfaces.UseVisualStyleBackColor = true;
+            this.chkIncludeSurveyedSurfaces.CheckedChanged += new System.EventHandler(this.chkIncludeSurveyedSurfaces_CheckedChanged);
             // 
             // Form1
             // 

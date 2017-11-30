@@ -63,7 +63,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 {
                     ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
                     ElevationType = returnEarliestFilteredCellPass ? ElevationType.First : ElevationType.Last,
-                    SurveyedSurfaceExclusionList = (siteModel.SurveyedSurfaces == null || !chkIncludeSurveyedSurfaces.Checked) ? new long[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray()
+                    SurveyedSurfaceExclusionList = (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new long[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray()
                 };
 
                 CellSpatialFilter SpatialFilter = new CellSpatialFilter()
@@ -160,11 +160,16 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             lblCellsPerPixel.Text = String.Format("Cells Per Pixel (X): {0:F3}", (extents.SizeX / pictureBox1.Width) / 0.34);
         }
 
+        private void DoScreenUpdate()
+        {
+            DoUpdateLabels();
+            DoRender();
+        }
+
         private void ViewPortChange(Action viewPortAction)
         {
             viewPortAction();
-            DoUpdateLabels();
-            DoRender();
+            DoScreenUpdate();
         }
 
         private void ZoomAll_Click(object sender, EventArgs e)
@@ -386,6 +391,16 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             {
                 MessageBox.Show(ee.ToString());
             }
+        }
+
+        private void chkSelectEarliestPass_CheckedChanged(object sender, EventArgs e)
+        {
+            DoScreenUpdate();
+        }
+
+        private void chkIncludeSurveyedSurfaces_CheckedChanged(object sender, EventArgs e)
+        {
+            DoScreenUpdate();
         }
     }
 }
