@@ -25,7 +25,7 @@ Scenario: Report Tile - Alignments
 	Then the Report Tile result should be
   """
   {
-    "tileData": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHjSURBVHhe7dohS0NRGMfhowiaLaIfQKtgsDsRqx9gRVDQZlHDihi0aPADq/8Lr0WGLixsO88DPzYO2256X+7YGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACy3z9Y2095/1cuBVZLh3k8fM3SbLmds/NXaWl0CWHYZ6otfQ/5XV+k9TVskP02yJA7zuFuXAFZFBnsnTf06MZThP0qvef6S7uptQE8y/NtZBNfDEsjjVh0DPckCOMkCeEwbdQT0JEvgLN27E4BOZQGM0kOWwHodAT3J8J9mCbyl8zoCepLhPx7uBNLws+KojoGeZPhv0lN6nnPjugSw6PK1YPjT0HBXMK8O6qMBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFhgrX0Dvm6vv9qpKYEAAAAASUVORK5CYII=",
+    "tileData": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKFSURBVHhe7drPSxRhGAfwMQ3rEtElirBDVNegQx3CQ4aEdBGkS3gxin5dgugHBFEdFCLFoH83+77wCBHirjCwrvP5wJeRd2feeXfZ52FmnQ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACm25+um08uj0rtDpwkKe4bya8x8irZGDPre103U6cApl2KevW/Ij8sz5Lt5KBGsp/PaRK3sr1UpwBOihT2xeTA24mWFP/tZCt/byZv6zBgSFL8F9IInrcmkO2ZGgaGJA3gfhrAx2SuhoAhSRNYTt67EoCBSgNYSj6kCZyqIWBIUvwP0gR+Jg9rCBiSFP+ddiWQtH8rLtUwMCQp/pfJ1+R7z1mvUwDHXW4L2kND7aqgr9ysqQEAABi49jBKcn5EFnIv+SX51mMe1RImKus4m3yqNa2095vtuXq5V5l3vj7P2RqCycqXsj2V9ntEfiSL+eLe6yuZ71otYaKylrms5W6t6UXS3u9u8iR5XFms3ceW+WZy3No/c7S0X+Xb/FdqN+C4SfGeTpE+TV5X3iU7R0xrmm+S/TlartYpgGmS4r1+lKSJLNShAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANC/rvsLivlVUXkHz+8AAAAASUVORK5CYII=",
     "tileOutsideProjectExtents": false,
     "Code": 0,
     "Message": "success"
@@ -99,7 +99,7 @@ Scenario: Report Tile - ProductionData - CutFill
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And an overlayType "ProductionData"
   And a mode "8"
-  And a cutFillDesignUid "127c9897-cdf5-4dcf-b46c-ef8fba01f64d"
+  And a cutFillDesignUid "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"
 	When I request a Report Tile
 	Then the Report Tile result should be
   """
@@ -181,7 +181,7 @@ Scenario: Report Tile - Missing Base Filter
   And an overlayType "ProductionData"
   And a mode "8"
   And a volumeCalcType "GroundToDesign"
-  And a volumeTopUid "127c9897-cdf5-4dcf-b46c-ef8fba01f64d"
+  And a volumeTopUid "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"
 	When I request a Report Tile Expecting BadRequest
 	Then I should get error code -1 and message "Missing base filter for summary volumes production data overlay"
 
@@ -191,7 +191,7 @@ Scenario: Report Tile - Missing Top Filter
   And an overlayType "ProductionData"
   And a mode "8"
   And a volumeCalcType "DesignToGround"
-  And a volumeBaseUid "127c9897-cdf5-4dcf-b46c-ef8fba01f64d"
+  And a volumeBaseUid "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"
 	When I request a Report Tile Expecting BadRequest
 	Then I should get error code -1 and message "Missing top filter for summary volumes production data overlay"
 
