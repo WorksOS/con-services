@@ -137,7 +137,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                                                  Filter.AttributeFilter.SurveyedSurfaceExclusionList);
 
                 // Ensure that the filtered surveyed surfaces are in a known ordered state
-                FilteredSurveyedSurfaces.SortChronologically();
+                FilteredSurveyedSurfaces.SortChronologically(ReturnEarliestFilteredCellPass);
             }
 
             // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 

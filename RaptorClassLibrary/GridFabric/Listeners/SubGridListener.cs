@@ -48,6 +48,10 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
         [ThreadStaticAttribute]
         private static MemoryStream MS = null; //= new MemoryStream();
 
+        /// <summary>
+        /// Processes a response containing a set of subgrids from the subgrid processor for a request
+        /// </summary>
+        /// <param name="message"></param>
         private void ProcessResponse(byte[] message)
         {
             try
@@ -142,6 +146,10 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
             return true;
         }
 
+        /// <summary>
+        /// Constructor accepting a task to pass subgrids into
+        /// </summary>
+        /// <param name="task"></param>
         public SubGridListener(ITask task)
         {
             Task = task;

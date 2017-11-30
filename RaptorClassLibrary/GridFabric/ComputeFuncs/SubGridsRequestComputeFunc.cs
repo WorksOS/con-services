@@ -118,6 +118,10 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
         }
 
+        /// <summary>
+        /// Cleans an array of client leaf subgrids by repatriating them to the client leaf subgrid factory
+        /// </summary>
+        /// <param name="SubgridResultArray"></param>
         private void CleanSubgridResultArray(IClientLeafSubGrid[] SubgridResultArray)
         {
             if (SubgridResultArray != null)
@@ -126,6 +130,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             }
         }
 
+        /// <summary>
+        /// Performs conversions from the internal subgrid client leaf type to the requested client leaf type
+        /// </summary>
+        /// <param name="RequestGridDataType"></param>
+        /// <param name="SubgridResultArray"></param>
         private void ConvertIntermediarySubgridsToResult(GridDataType RequestGridDataType,
                                                          ref IClientLeafSubGrid[] SubgridResultArray)
         {
@@ -262,20 +271,16 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 if (result != ServerRequestResult.NoError)
                 {
                     Log.Info(String.Format("Request for subgrid {0} request failed with code {1}", address, result));
-                    //throw new ArgumentException(String.Format("Subgrid request failed with code {0}", result));
                 }
 
-                if (clientGrid != null)
+                // Some request types require additional processing of the subgrid results prior to repatriating the answers back to the caller
+                // Convert the computed intermediary grids into the client grid form expected by the caller
+                if (clientGrid?.GridDataType != localArg.GridDataType)
                 {
-                    // Some request types require additional processing of the subgrid results prior to repatriating the answers back to the caller
-                    // Convert the computed intermediary grids into the client grid form expected by the caller
-                    if (clientGrid.GridDataType != localArg.GridDataType)
-                    {
-                        // Convert to an array to preserve the multiple filter semantic giving a list of subgrids to be converted (eg: volumes)
-                        IClientLeafSubGrid[] ClientArray = new IClientLeafSubGrid[1] { clientGrid };
-                        ConvertIntermediarySubgridsToResult(localArg.GridDataType, ref ClientArray);
-                        clientGrid = ClientArray[0];
-                    }
+                    // Convert to an array to preserve the multiple filter semantic giving a list of subgrids to be converted (eg: volumes)
+                    IClientLeafSubGrid[] ClientArray = new IClientLeafSubGrid[1] { clientGrid };
+                    ConvertIntermediarySubgridsToResult(localArg.GridDataType, ref ClientArray);
+                    clientGrid = ClientArray[0];
                 }
 
                 return result;
