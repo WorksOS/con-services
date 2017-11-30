@@ -27,13 +27,20 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
         /// <summary>
         /// Private reference to the arguments provided to the executor
         /// </summary>
-        private SurfaceElevationPatchArgument Args { get; set; }
+        private SurfaceElevationPatchArgument Args { get; set; } = null;
+
+        /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public CalculateSurfaceElevationPatch()
+        {
+        }
 
         /// <summary>
         /// Constructor for the executor accepting the arguments for its operation
         /// </summary>
         /// <param name="args"></param>
-        public CalculateSurfaceElevationPatch(SurfaceElevationPatchArgument args)
+        public CalculateSurfaceElevationPatch(SurfaceElevationPatchArgument args) : this()
         {
             this.Args = args;
         }
@@ -57,7 +64,6 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
             {
                 // if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
                 //   SIGLogMessage.PublishNoODS(Self, Format('In %s.Execute for DataModel:%d  OTGCellBottomLeftX:%d  OTGCellBottomLeftY:%d', [Self.ClassName, Args.DataModelID, Args.OTGCellBottomLeftX, Args.OTGCellBottomLeftY]), slmcDebug);
-
                 // InterlockedIncrement64(DesignProfilerRequestStats.NumSurfacePatchesComputed);
 
                 try
@@ -74,26 +80,17 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
                     Patch.CalculateWorldOrigin(out double OriginX, out double OriginY);
 
                     double CellSize = Args.CellSize;
-                    uint CellsToCheck = Args.ProcessingMap.CountBits();
-
                     double HalfCellSize = CellSize / 2;
                     double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
                     double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
 
-                    // Sort surveyed surfaces in correct order so that we only peer down/up if we don't find an upper/lower elevation
-                    // TODO: Validate this is needed, or if processing can be performed in the opposite direction as needed, rather than
-                    // potentially sorting the list each time. ALso check if the required order is guaranteed to be provided by the caller
-                    Args.IncludedSurveyedSurfaces.SortChronologically(!Args.EarliestSurface);
-
-                    // Work down through the list of surfaces from newest to oldest
+                    // Work down through the list of surfaces in the time ordering provided by the caller
                     for (int i = 0; i < Args.IncludedSurveyedSurfaces.Count; i++)
                     {
-                        if (CellsToCheck == 0)
+                        if (Args.ProcessingMap.IsEmpty())
                         {
                             break;
                         }
-
-                        // Reset hint object to prevent interpolation contamination from previous surface
 
                         ThisSurveyedSurface = Args.IncludedSurveyedSurfaces[i];
 
@@ -140,7 +137,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
 
                                     Args.ProcessingMap.ClearBit(x, y);
 
-                                    return --CellsToCheck > 0;
+                                    return true;
                                 });
                             }
                             finally

@@ -77,6 +77,9 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments
             EarliestSurface = earliestSurface;
             ProcessingMap = processingMap;
             IncludedSurveyedSurfaces = includedSurveyedSurfaces;
+
+            // Prepare the list of surveyed surfaces for use by all invocations usign this argument
+            IncludedSurveyedSurfaces.SortChronologically(EarliestSurface);
         }
 
         /// <summary>

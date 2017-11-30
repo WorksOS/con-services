@@ -178,7 +178,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             msgGroup.LocalListen(new SubGridListener(Task), arg.MessageTopic);
 
             Task<ICollection<SubGridRequestsResponse>> taskResult = null;
-            ICollection<SubGridRequestsResponse> result = null;
+            //ICollection<SubGridRequestsResponse> result = null;
 
             Stopwatch sw = new Stopwatch();
             sw.Start();

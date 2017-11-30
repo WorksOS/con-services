@@ -128,7 +128,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
                 return true;  
             }
-            catch (Exception E)
+            catch //(Exception E)
             {
                 // TODO Readd when logging available
                 // SIGLogMessage.PublishNoODS(Self, Format('Exception: ''%s''', [E.Message]), slmcException);

@@ -873,7 +873,7 @@ namespace VSS.Velociraptor.DesignProfiling
 
                 return true;
             }
-            catch (Exception E)
+            catch //(Exception E)
             {
                 // TODO readd when logging available
                 //  SIGLogMessage.PublishNoODS(Self, Format('Exception in TTTMDesign.ConstructSubgridIndex: %s', [E.Message]), slmcException);
@@ -914,7 +914,7 @@ namespace VSS.Velociraptor.DesignProfiling
 
                 return DesignLoadResult.Success;
             }
-            catch (Exception E)
+            catch //(Exception E)
             {
                 // Readd when logging avbailable
                 // SIGLogMessage.PublishNoODS(Self, Format('Exception ''%s'' in %s.LoadFromFile', [E.Message, Self.ClassName]), slmcException);

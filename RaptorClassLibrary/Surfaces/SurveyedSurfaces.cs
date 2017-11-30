@@ -21,6 +21,8 @@ namespace VSS.VisionLink.Raptor.Surfaces
         private bool FSorted = false;
         private bool FSortDescending = false;
 
+        public bool Sorted { get { return FSorted; } }
+
         /// <summary>
         /// No-arg constructor
         /// </summary>
