@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.chkIncludeSurveyedSurfaces = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.edtNumRuns = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
@@ -53,7 +54,6 @@
             this.btnZoomAll = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.chkIncludeSurveyedSurfaces = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -90,6 +90,19 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(187, 539);
             this.panel1.TabIndex = 15;
+            // 
+            // chkIncludeSurveyedSurfaces
+            // 
+            this.chkIncludeSurveyedSurfaces.AutoSize = true;
+            this.chkIncludeSurveyedSurfaces.Checked = true;
+            this.chkIncludeSurveyedSurfaces.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkIncludeSurveyedSurfaces.Location = new System.Drawing.Point(17, 416);
+            this.chkIncludeSurveyedSurfaces.Name = "chkIncludeSurveyedSurfaces";
+            this.chkIncludeSurveyedSurfaces.Size = new System.Drawing.Size(150, 17);
+            this.chkIncludeSurveyedSurfaces.TabIndex = 37;
+            this.chkIncludeSurveyedSurfaces.Text = "Include surveyed surfaces";
+            this.chkIncludeSurveyedSurfaces.UseVisualStyleBackColor = true;
+            this.chkIncludeSurveyedSurfaces.CheckedChanged += new System.EventHandler(this.chkIncludeSurveyedSurfaces_CheckedChanged);
             // 
             // label4
             // 
@@ -319,17 +332,6 @@
             this.pictureBox1.Size = new System.Drawing.Size(862, 527);
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
-            // 
-            // chkIncludeSurveyedSurfaces
-            // 
-            this.chkIncludeSurveyedSurfaces.AutoSize = true;
-            this.chkIncludeSurveyedSurfaces.Location = new System.Drawing.Point(17, 416);
-            this.chkIncludeSurveyedSurfaces.Name = "chkIncludeSurveyedSurfaces";
-            this.chkIncludeSurveyedSurfaces.Size = new System.Drawing.Size(150, 17);
-            this.chkIncludeSurveyedSurfaces.TabIndex = 37;
-            this.chkIncludeSurveyedSurfaces.Text = "Include surveyed surfaces";
-            this.chkIncludeSurveyedSurfaces.UseVisualStyleBackColor = true;
-            this.chkIncludeSurveyedSurfaces.CheckedChanged += new System.EventHandler(this.chkIncludeSurveyedSurfaces_CheckedChanged);
             // 
             // Form1
             // 
