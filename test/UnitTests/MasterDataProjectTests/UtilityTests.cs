@@ -213,5 +213,13 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(request.FileDescriptor, copyOfRequest.FileDescriptor, "FileDescriptor has not been mapped correctly");
     }
+
+    [TestMethod]
+    public void CanCalculateProjectBoundaryArea()
+    {
+      var geometryWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362, -115.025723657623 36.2101347890754))";
+      var area = ProjectBoundaryValidator.CalculateAreaSqMeters(geometryWKT);
+      Assert.AreEqual(375300.594251673, area, 0.000000001);
+    }
   }
 }

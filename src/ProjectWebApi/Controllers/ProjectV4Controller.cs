@@ -625,9 +625,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       try
       {
+        var area = ProjectBoundaryValidator.CalculateAreaSqMeters(project.ProjectBoundary);
+
         geofenceUidCreated = await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",
           project.ProjectBoundary,
-          0, true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+          0, true, Guid.Parse(userUid), area, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       }
       catch (Exception e)
       {
@@ -645,6 +647,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
     }
 
+  
     #endregion private
   }
 }
