@@ -87,6 +87,12 @@ namespace VSS.VisionLink.Raptor.Filters
         public DesignDescriptor ReferenceDesign = DesignDescriptor.Null(); // : TVLPDDesignDescriptor;
 
         /// <summary>
+        /// A design that acts as a spatial filter for cell selection. Only cells that have center locations that lie over the 
+        /// design recorded in DesignFilter will be included
+        /// </summary>
+        public DesignDescriptor DesignFilter = DesignDescriptor.Null(); // : TVLPDDesignDescriptor;
+
+        /// <summary>
         /// The starting station of the parametrically defined alignment spatial filter
         /// </summary>
         public double StartStation { get; set; } = Consts.NullDouble;
@@ -123,14 +129,19 @@ namespace VSS.VisionLink.Raptor.Filters
         public bool IsPositional { get; set; } = false;
 
         /// <summary>
-        /// Using a load design to 'mask' the cells that should be included in the filter
+        /// Using a loaded surface design to 'mask' the cells that should be included in the filter
         /// </summary>
         public bool IsDesignMask { get; set; } = false;
 
         /// <summary>
-        /// Using a load design to 'mask' the cells that should be included in the filter
+        /// Using a load alignment design to 'mask' the cells that should be included in the filter
         /// </summary>
         public bool IsAlignmentMask { get; set; } = false;
+
+        /// <summary>
+        /// Using a design to spatiall cut-out the cells to be included in the filter. This appears similar to DesignMask (TODO: Resolve this).
+        /// </summary>
+        public bool IsDesignFilter { get; set; } = false;
 
         /// <summary>
         ///  Spatial cell fitler constructor
@@ -151,8 +162,8 @@ namespace VSS.VisionLink.Raptor.Filters
 
         /// <summary>
         /// Clears all filter state to a state that will pass (accept) all cells
-        /// </summary>
         public void Clear()
+        /// </summary>
         {
             ClearPositional();
             ClearSpatial();
@@ -168,6 +179,16 @@ namespace VSS.VisionLink.Raptor.Filters
             IsAlignmentMask = false;
 
             AlignmentFence.Clear();
+        }
+
+        /// <summary>
+        /// Clear all state related to using a design for a filter
+        /// </summary>
+        public void ClearDesignFilter()
+        {
+            IsDesignFilter = false;
+
+            DesignFilter.Clear();
         }
 
         /// <summary>
@@ -223,7 +244,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <summary>
         /// Determines if the type of the spatial filter is Spatial or Positional
         /// </summary>
-        public bool HasSpatialOrPostionalFilters => IsSpatial || IsPositional;
+        public bool HasSpatialOrPostionalFilters => IsSpatial || IsPositional || IsDesignFilter;
 
         /// <summary>
         /// Determines if a cell given by it's central location is included in the spatial filter
