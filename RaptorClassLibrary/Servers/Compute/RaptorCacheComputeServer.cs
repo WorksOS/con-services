@@ -51,7 +51,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             cfg.DataStorageConfiguration = new DataStorageConfiguration()
             {
-                PageSize = 2048,
+                PageSize = DataRegions.DEFAULT_DATA_REGION_PAGE_SIZE,
 
                 StoragePath = Path.Combine(PersistentCacheStoreLocation, "Persistence"),
                 WalArchivePath = Path.Combine(PersistentCacheStoreLocation, "WalArchive"),

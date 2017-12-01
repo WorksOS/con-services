@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.VisionLink.Raptor.Servers.Client
 {
@@ -68,7 +69,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                         // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
                         DataStorageConfiguration = new DataStorageConfiguration()
                         {
-                            PageSize = 2048,
+                            PageSize = DataRegions.DEFAULT_DATA_REGION_PAGE_SIZE,
 
                             DefaultDataRegionConfiguration = new DataRegionConfiguration
                             {

@@ -12,6 +12,11 @@ namespace VSS.VisionLink.Raptor.Storage
     public static class DataRegions
     {
         /// <summary>
+        /// Default size of pages in the persitent storage
+        /// </summary>
+        public const int DEFAULT_DATA_REGION_PAGE_SIZE = 2 * 1024;
+
+        /// <summary>
         /// The name of the default data region (an undifferentiated data region in the grid)
         /// </summary>
         public const string DEFAULT_DATA_REGION = "Default";
