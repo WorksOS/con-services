@@ -32,11 +32,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Apache.Ignite, Version=2.2.0.22980, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
-      <HintPath>..\packages\Apache.Ignite.2.2.0\lib\net40\Apache.Ignite.exe</HintPath>
+    <Reference Include="Apache.Ignite, Version=2.3.0.24009, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Ignite.2.3.0\lib\net40\Apache.Ignite.exe</HintPath>
     </Reference>
-    <Reference Include="Apache.Ignite.Core, Version=2.2.0.22980, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Apache.Ignite.2.2.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
+    <Reference Include="Apache.Ignite.Core, Version=2.3.0.24009, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Ignite.2.3.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -103,6 +103,6 @@
   <PropertyGroup>
     <PostBuildEvent>
 if not exist "$(TargetDir)Libs" md "$(TargetDir)Libs"
-xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.2.0\Libs\*.*" "$(TargetDir)Libs"</PostBuildEvent>
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.3.0\Libs\*.*" "$(TargetDir)Libs"</PostBuildEvent>
   </PropertyGroup>
 </Project>

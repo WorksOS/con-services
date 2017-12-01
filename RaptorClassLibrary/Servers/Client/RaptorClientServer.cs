@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Eviction;
+using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Log4Net;
 using log4net;
@@ -40,7 +41,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
-//                        SpringConfigUrl = @".\RaptorIgniteConfig.xml",
+                        //                        SpringConfigUrl = @".\RaptorIgniteConfig.xml",
 
                         // GridName = RaptorGrids.RaptorGridName(),
                         IgniteInstanceName = RaptorGrids.RaptorGridName(),
@@ -65,6 +66,18 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                         Logger = new IgniteLog4NetLogger(Log),
 
                         // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
+                        DataStorageConfiguration = new DataStorageConfiguration()
+                        {
+                            DefaultDataRegionConfiguration = new DataRegionConfiguration
+                            {
+                                Name = "Default",
+                                InitialSize = 128 * 1024 * 1024,  // 128 MB
+                                MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB                               
+                            },
+                        },
+
+/*
+ // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
                         MemoryConfiguration = new MemoryConfiguration()
                         {
                             SystemCacheMaxSize = (long)1 * 1024 * 1024 * 1024,
@@ -79,10 +92,11 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                               }
                             }
                         },
+*/
 
                         // Set an Ignite metrics heartbeat of 10 seconds 
                         MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
-                       
+
                         PublicThreadPoolSize = 50
                     };
 
