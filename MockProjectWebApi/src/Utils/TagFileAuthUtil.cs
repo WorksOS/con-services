@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MockProjectWebApi.Common;
 using Newtonsoft.Json;
 
@@ -43,11 +44,23 @@ namespace MockProjectWebApi.Utils
     {
       WorkingFilePath = "";
       if (listGA != null)
+      {
         listGA.Clear();
+      }
+      else
+      {
+        listGA = new List<GetAssetIDData>();
+      }
+
       if (listGP != null)
+      {
         listGP.Clear();
-      listGP = new List<GetProjectIDData>();
-      listGA = new List<GetAssetIDData>();
+      }
+      else
+      {
+        listGP = new List<GetProjectIDData>();
+      }
+
       LoadData();
     }
 
