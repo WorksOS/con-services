@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     protected ILoggerFactory Logger;
     protected string FileSpaceId;
     protected IRaptorProxy RaptorProxy;
-    protected string JwtToken;
+    protected string _3dPmSchedulerBearerToken;
 
     /// <summary>
     /// </summary>
@@ -41,24 +41,15 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       }
 
       // application token for "3dPmScheduler" to access 3dpm NotificationController
-      JwtToken = ConfigStore.GetValueString("RAPTOR_JWT_TOKEN");
+      _3dPmSchedulerBearerToken = ConfigStore.GetValueString("3DPMSCHEDULER_BEARER_TOKEN");
       if (string.IsNullOrEmpty(FileSpaceId))
       {
         throw new InvalidOperationException(
-          "ImportedFileSynchroniser unable to establish filespaceId");
+          "ImportedFileSynchroniser unable to establish 3DPMSCHEDULER_BEARER_TOKEN");
       }
     }
 
-    private Dictionary<string, string> CustomHeaders(string customerUid)
-    {
-      var customHeaders = new Dictionary<string, string>()
-      {
-        { "X-JWT-Assertion", JwtToken },
-        { "X-VisionLink-CustomerUid", customerUid }
-      };
-      return customHeaders;
-    }
-
+    
     /// <summary>
     /// Notify raptor of new file
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
@@ -71,7 +62,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       var isNotified = false;
 
       BaseDataResult notificationResult = null;
-      var customHeaders = CustomHeaders(customerUid);
+      var customHeaders = GetCustomHeaders(customerUid);
       try
       {
         notificationResult = await RaptorProxy
@@ -126,7 +117,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       var isNotified = false;
 
       BaseDataResult notificationResult = null;
-      var customHeaders = CustomHeaders(customerUid);
+      var customHeaders = GetCustomHeaders(customerUid);
       try
       {
         notificationResult = await RaptorProxy
@@ -179,7 +170,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       var isNotified = false;
 
       BaseDataResult notificationResult = null;
-      var customHeaders = CustomHeaders(customerUid);
+      var customHeaders = GetCustomHeaders(customerUid);
       try
       {
         notificationResult = await RaptorProxy
@@ -221,6 +212,21 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       }
 
       return isNotified;
+    }
+
+
+    private IDictionary<string, string> GetCustomHeaders(string customerUid)
+    {
+      var customHeaders = new Dictionary<string, string>();
+
+      // todo on startup (or periodically) do we need to call TPaas to Refresh and get same/new? token ?
+
+      string bearerToken = _3dPmSchedulerBearerToken; // = CallTPaaSToGetBearerToken(); todo
+      customHeaders.Add("X-VisionLink-CustomerUid", customerUid);
+      customHeaders.Add("Authorization", string.Format($"Bearer {bearerToken}"));
+      customHeaders.Add("X-VisionLink-ClearCache", "true");
+
+      return customHeaders;
     }
   }
 }
