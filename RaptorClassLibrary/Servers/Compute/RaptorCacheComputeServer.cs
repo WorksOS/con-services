@@ -21,6 +21,7 @@ using Apache.Ignite.Core.PersistentStore;
 using VSS.VisionLink.Raptor.Servers.Client;
 using System.Threading;
 using Apache.Ignite.Core.Discovery.Tcp;
+using Apache.Ignite.Core.Configuration;
 
 namespace VSS.VisionLink.Raptor.Servers.Compute
 {
@@ -47,32 +48,26 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             };
 
             // Configure the Ignite 2.1 persistence layer to store our data
-
-            cfg.PersistentStoreConfiguration = new PersistentStoreConfiguration()
+            // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
+            cfg.DataStorageConfiguration = new DataStorageConfiguration()
             {
-                //MetricsEnabled = true,
-                PersistentStorePath = Path.Combine(PersistentCacheStoreLocation, "Persistence"),
+                PageSize = 2048,
+
+                StoragePath = Path.Combine(PersistentCacheStoreLocation, "Persistence"),
                 WalArchivePath = Path.Combine(PersistentCacheStoreLocation, "WalArchive"),
-                WalStorePath = Path.Combine(PersistentCacheStoreLocation, "WalStore"),
+                WalPath = Path.Combine(PersistentCacheStoreLocation, "WalStore"),
+
+                DefaultDataRegionConfiguration = new DataRegionConfiguration
+                {
+                    Name = DataRegions.DEFAULT_DATA_REGION,
+                    InitialSize = 128 * 1024 * 1024,  // 128 MB
+                    MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB                               
+
+                    PersistenceEnabled = true                    
+                }
             };
 
             //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
-
-            // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
-            cfg.MemoryConfiguration = new MemoryConfiguration()
-            {
-                SystemCacheMaxSize = (long)1 * 1024 * 1024 * 1024,
-                DefaultMemoryPolicyName = "defaultPolicy",
-                MemoryPolicies = new[]
-                {
-                    new MemoryPolicyConfiguration
-                    {
-                        Name = "defaultPolicy",
-                        InitialSize = 128 * 1024 * 1024,  // 128 MB
-                        MaxSize = 1L * 1024 * 1024 * 1024  // 1 GB
-                    }
-                }
-            };
 
             cfg.DiscoverySpi = new TcpDiscoverySpi()
             {

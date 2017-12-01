@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
 {
@@ -95,7 +96,9 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
                 CacheMode = CacheMode.Replicated,
 
                 // No backups for now
-                Backups = 0
+                Backups = 0,
+
+                DataRegionName = DataRegions.SPATIAL_EXISTENCEMAP_DATA_REGION
             };
         }
 

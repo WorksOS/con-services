@@ -68,31 +68,15 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                         // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
                         DataStorageConfiguration = new DataStorageConfiguration()
                         {
+                            PageSize = 2048,
+
                             DefaultDataRegionConfiguration = new DataRegionConfiguration
                             {
                                 Name = "Default",
                                 InitialSize = 128 * 1024 * 1024,  // 128 MB
-                                MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB                               
+                                MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB    
                             },
                         },
-
-/*
- // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
-                        MemoryConfiguration = new MemoryConfiguration()
-                        {
-                            SystemCacheMaxSize = (long)1 * 1024 * 1024 * 1024,
-                            DefaultMemoryPolicyName = "defaultPolicy",
-                            MemoryPolicies = new[]
-                            {
-                              new MemoryPolicyConfiguration
-                              {
-                                 Name = "defaultPolicy",
-                                 InitialSize = 128 * 1024 * 1024,  // 128 MB
-                                 MaxSize = 1L * 1024 * 1024 * 1024  // 1 GB
-                              }
-                            }
-                        },
-*/
 
                         // Set an Ignite metrics heartbeat of 10 seconds 
                         MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),

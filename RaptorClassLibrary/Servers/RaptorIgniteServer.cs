@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Servers.Compute;
+using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.VisionLink.Raptor.Servers
 {
@@ -47,26 +48,50 @@ namespace VSS.VisionLink.Raptor.Servers
             SetupServerSpecificConfiguration();
         }
 
+        /// <summary>
+        /// Base configuration for the grid
+        /// </summary>
+        /// <param name="cfg"></param>
         public virtual void ConfigureRaptorGrid(IgniteConfiguration cfg)
         {
         }
 
+        /// <summary>
+        /// Base configuration for the mutable non-spatial cache
+        /// </summary>
+        /// <param name="cfg"></param>
         public virtual void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
         {
+            cfg.DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION;
         }
 
+        /// <summary>
+        /// Base configuration for the immutable non-spatial cache
+        /// </summary>
+        /// <param name="cfg"></param>
         public virtual void ConfigureNonSpatialImmutableCache(CacheConfiguration cfg)
         {
+            cfg.DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION;
         }
 
         public abstract ICache<String, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg);
 
+        /// <summary>
+        /// Base configuration for the mutable spatial cache
+        /// </summary>
+        /// <param name="cfg"></param>
         public virtual void ConfigureMutableSpatialCache(CacheConfiguration cfg)
         {
+            cfg.DataRegionName = DataRegions.MUTABLE_SPATIAL_DATA_REGION;
         }
 
+        /// <summary>
+        /// Base configuration for the immutable spatial cache
+        /// </summary>
+        /// <param name="cfg"></param>
         public virtual void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
         {
+            cfg.DataRegionName = DataRegions.IMMUTABLE_SPATIAL_DATA_REGION;
         }
 
         public abstract ICache<String, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg);

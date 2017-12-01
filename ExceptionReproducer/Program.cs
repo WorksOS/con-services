@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Eviction;
+using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.PersistentStore;
 using System;
 using System.Collections.Generic;
@@ -30,9 +31,9 @@ namespace ExceptionReproducer
                 { "Role", "PSNode" },
                 { "Division", GetDescriptor() }
             };
-            cfg.PersistentStoreConfiguration = new PersistentStoreConfiguration()
+            cfg.DataStorageConfiguration = new DataStorageConfiguration()
             {
-                PersistentStorePath = "C:\\Temp\\RaptorIgniteData\\Persistence" // PersistentCacheStoreLocation
+                StoragePath = "C:\\Temp\\RaptorIgniteData\\Persistence" // PersistentCacheStoreLocation
             };
         }
 
