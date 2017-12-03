@@ -8,11 +8,11 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -113,27 +113,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
 
       var reportGridRequest = await requestFactory.Create<CompactionReportGridRequestHelper>(r => r
-        .ProjectId(projectId)
-        .Headers(CustomHeaders)
-        .ProjectSettings(projectSettings)
-        .Filter(filter))
-      .SetRaptorClient(raptorClient)
-      .CreateCompactionReportGridRequest(
-        reportElevation,
-        reportCmv,
-        reportMdp,
-        reportPassCount,
-        reportTemperature,
-        reportCutFill,
-        cutFillDesign,
-        gridInterval,
-        gridReportOption,
-        startNorthing,
-        startEasting,
-        endNorthing,
-        endEasting,
-        azimuth
-      );
+          .ProjectId(projectId)
+          .Headers(CustomHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter))
+        .SetRaptorClient(raptorClient)
+        .CreateCompactionReportGridRequest(
+          reportElevation,
+          reportCmv,
+          reportMdp,
+          reportPassCount,
+          reportTemperature,
+          reportCutFill,
+          cutFillDesign,
+          gridInterval,
+          gridReportOption,
+          startNorthing,
+          startEasting,
+          endNorthing,
+          endEasting,
+          azimuth
+        );
 
       reportGridRequest.Validate();
 

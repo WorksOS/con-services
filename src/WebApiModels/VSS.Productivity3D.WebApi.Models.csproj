@@ -24,15 +24,15 @@
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
     <WarningsAsErrors />
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
-  </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>

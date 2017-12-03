@@ -13,13 +13,14 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.Productivity3D.WebApiModels.Report.Executors;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -66,6 +67,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="requestFactory">The request factory.</param>
     /// <param name="exceptionHandler">The exception handler.</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
+    /// <param name="prefProxy">User preferences proxy</param>
     /// <param name="prefProxy">The user preferences proxy</param>
     public CompactionExportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,

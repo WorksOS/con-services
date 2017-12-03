@@ -11,11 +11,12 @@ using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
-using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Point = VSS.Productivity3D.WebApi.Models.Notification.Helpers.Point;
+using Point = VSS.Productivity3D.WebApi.Models.MapHandling.Point;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 {
@@ -36,9 +37,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       string filespaceId = FileDescriptor.GetFileSpaceId(configStore, log);
 
       //Calculate zoom level
-      int zoomLevel = CalculateZoomLevel(request.bbox);
-      int numTiles = 1 << zoomLevel; //equivalent to 2 to the power of zoomLevel
-      Point topLeftLatLng = new Point(WebMercatorProjection.RadiansToDegrees(request.bbox.topRightLat), WebMercatorProjection.RadiansToDegrees(request.bbox.bottomLeftLon));
+      int zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.topRightLat - request.bbox.bottomLeftLat, request.bbox.topRightLon - request.bbox.bottomLeftLon);
+      int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
+      Point topLeftLatLng = new Point(request.bbox.topRightLat.LatRadiansToDegrees(), request.bbox.bottomLeftLon.LonRadiansToDegrees());
       Point topLeftTile = WebMercatorProjection.LatLngToTile(topLeftLatLng, numTiles);
       log.LogDebug("DxfTileExecutor: zoomLevel={0}, numTiles={1}, xtile={2}, ytile={3}", zoomLevel, numTiles, topLeftTile.x, topLeftTile.y);
 
@@ -102,32 +103,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       }      
 
       return TileResult.CreateTileResult(overlayData, TASNodeErrorStatus.asneOK);
-    }
-
-    /// <summary>
-    /// Calculates the zoom level from the bounding box
-    /// </summary>
-    /// <param name="bbox">The bounding box of the tile</param>
-    /// <returns>The zoom level</returns>
-    private int CalculateZoomLevel(BoundingBox2DLatLon bbox)
-    {
-      const int MAXZOOM = 24;
-
-      double selectionLatSize = Math.Abs(bbox.topRightLat - bbox.bottomLeftLat);
-      double selectionLongSize = Math.Abs(bbox.topRightLon - bbox.bottomLeftLon);
-
-      //Google maps zoom level starts at 0 for whole world (-90.0 to 90.0, -180.0 to 180.0)
-      //and doubles the precision both horizontally and vertically for each suceeding level.
-      int zoomLevel = 0;
-      double latSize = Math.PI; //180.0;
-      double longSize = 2 * Math.PI; //360.0;
-      while (latSize > selectionLatSize && longSize > selectionLongSize && zoomLevel < MAXZOOM)
-      {
-        zoomLevel++;
-        latSize /= 2;
-        longSize /= 2;
-      }
-      return zoomLevel;
     }
   }
 }

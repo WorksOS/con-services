@@ -22,6 +22,7 @@ using SVOICStatistics;
 using SVOICVolumeCalculationsDecls;
 using System;
 using System.IO;
+using DesignProfiler.ComputeDesignFilterBoundary.RPC;
 using ASNode.GridReport.RPC;
 using VLPDDecls;
 
@@ -267,6 +268,11 @@ namespace VSS.Productivity3D.Common.Interfaces
       TCutFillSettings cutFillSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TCutFillDetails cutFillDetails);
 
+    bool GetStationExtents(long projectID, TVLPDDesignDescriptor designDescriptor, out double startStation,
+      out double endStation);
+
+    bool GetDesignFilterBoundaryAsPolygon(TDesignProfilerServiceRPCVerb_ComputeDesignFilterBoundary_Args args,
+      out TWGS84Point[] fence);
     /// <summary>
     /// Gets a grid report of the production data from Raptor.
     /// </summary>
