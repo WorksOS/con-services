@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using Dapper;
 using log4net;
@@ -22,7 +20,7 @@ namespace VSS.Project.Data
       if (evt is CreateProjectEvent)
       {
         var projectEvent = (CreateProjectEvent)evt;
-        var project = new Models.Project();
+        var project = new Common.Models.Project();
         project.ProjectID = projectEvent.ProjectID;
         project.Name = projectEvent.ProjectName;
         project.ProjectTimeZone = projectEvent.ProjectTimezone;
@@ -37,7 +35,7 @@ namespace VSS.Project.Data
       else if (evt is UpdateProjectEvent)
       {
         var projectEvent = (UpdateProjectEvent)evt;
-        var project = new Models.Project();
+        var project = new Common.Models.Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.Name = projectEvent.ProjectName;
         project.ProjectEndDate = projectEvent.ProjectEndDate;
@@ -48,7 +46,7 @@ namespace VSS.Project.Data
       else if (evt is DeleteProjectEvent)
       {
         var projectEvent = (DeleteProjectEvent)evt;
-        var project = new Models.Project();
+        var project = new Common.Models.Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.LastActionedUTC = projectEvent.ActionUTC;
         upsertedCount = UpsertProjectDetail(project, "DeleteProjectEvent");
@@ -66,7 +64,7 @@ namespace VSS.Project.Data
       else if (evt is AssociateProjectGeofence)
       {
         var projectEvent = (AssociateProjectGeofence)evt;
-        var projectGeofence = new Models.ProjectGeofence();
+        var projectGeofence = new Common.Models.ProjectGeofence();
         projectGeofence.ProjectUID = projectEvent.ProjectUID.ToString();
         projectGeofence.GeofenceUID = projectEvent.GeofenceUID.ToString();
         projectGeofence.LastActionedUTC = projectEvent.ActionUTC;
@@ -84,7 +82,7 @@ namespace VSS.Project.Data
     /// <param name="project"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private int UpsertProjectDetail(Models.Project project, string eventType)
+    private int UpsertProjectDetail(Common.Models.Project project, string eventType)
     {
       int upsertedCount = 0;
       
@@ -92,7 +90,7 @@ namespace VSS.Project.Data
       
       Log.DebugFormat("ProjectRepository: Upserting eventType={0} projectUid={1}", eventType, project.ProjectUID);
 
-      var existing = Connection.Query<Models.Project>
+      var existing = Connection.Query<Common.Models.Project>
         (@"SELECT 
                 ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, 
                 LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID AS ProjectType, IsDeleted
@@ -121,7 +119,7 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private int CreateProject(Models.Project project, Models.Project existing)
+    private int CreateProject(Common.Models.Project project, Common.Models.Project existing)
     {
       if (existing == null)
       {
@@ -155,7 +153,7 @@ namespace VSS.Project.Data
       return 0;
     }
 
-    private int DeleteProject(Models.Project project, Models.Project existing)
+    private int DeleteProject(Common.Models.Project project, Common.Models.Project existing)
     {
       if (existing != null)
       {
@@ -182,7 +180,7 @@ namespace VSS.Project.Data
       return 0;
     }
 
-    private int UpdateProject(Models.Project project, Models.Project existing)
+    private int UpdateProject(Common.Models.Project project, Common.Models.Project existing)
     {
       if (existing != null)
       {
@@ -256,7 +254,7 @@ namespace VSS.Project.Data
       return 0;
     }
 
-    private int UpsertProjectGeofenceDetail(Models.ProjectGeofence projectGeofence, string eventType)
+    private int UpsertProjectGeofenceDetail(Common.Models.ProjectGeofence projectGeofence, string eventType)
     {
       int upsertedCount = 0;
 
@@ -265,7 +263,7 @@ namespace VSS.Project.Data
       Log.DebugFormat("ProjectRepository: Upserting eventType={0} ProjectUid={1}, GeofenceUid={2}",
         eventType, projectGeofence.ProjectUID, projectGeofence.GeofenceUID);
 
-      var existing = Connection.Query<Models.ProjectGeofence>
+      var existing = Connection.Query<Common.Models.ProjectGeofence>
         (@"SELECT 
             fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
               FROM ProjectGeofence
@@ -284,7 +282,7 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private int AssociateProjectGeofence(Models.ProjectGeofence projectGeofence, Models.ProjectGeofence existing)
+    private int AssociateProjectGeofence(Common.Models.ProjectGeofence projectGeofence, Common.Models.ProjectGeofence existing)
     {
       if (existing == null)
       {
@@ -301,121 +299,62 @@ namespace VSS.Project.Data
       return 0;
     }
 
-    public Models.Project GetProject(string projectUid)
-    {
-      PerhapsOpenConnection();
 
-      var project = Connection.Query<Models.Project>
-        (@"SELECT 
-            p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
-            cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, ps.fk_SubscriptionUID AS SubscriptionUID, 
-            p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-            p.fk_ProjectTypeID as ProjectType
-          FROM Project p JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
-               JOIN ProjectSubscription ps on p.ProjectUID = ps.fk_ProjectUID
-          WHERE p.ProjectUID = @projectUid AND p.IsDeleted = 0"
-          , new {projectUid}
-        ).FirstOrDefault();
+    //public IEnumerable<Models.Project> GetProjectsForUser(string userUid)
+    //{
+    //  PerhapsOpenConnection();
 
-      PerhapsCloseConnection();
+    //  var projects = Connection.Query<Models.Project>
+    //     (@"SELECT 
+    //          p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
+    //          cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
+    //          p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
+    //          p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
+    //      FROM Project p
+    //      JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
+    //      JOIN Subscription s on ps.fk_SubscriptionUID = s.SubscriptionUID
+    //      JOIN CustomerProject cp on p.ProjectUID = cp.fk_ProjectUID
+    //      JOIN CustomerUser cu on cp.fk_CustomerUID = cu.fk_CustomerUID
+    //      WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0",
+    //     new { userUid }
+    //     );
 
-      return project;
-    }
+    //  PerhapsCloseConnection();
 
-    public IEnumerable<Models.Project> GetProjectsBySubcription(string subscriptionUid)
-    {
-      PerhapsOpenConnection();
+    //  return projects;
+    //}
 
-      var projects = Connection.Query<Models.Project>
-          (@"SELECT 
-              p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
-              cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, ps.fk_SubscriptionUID AS SubscriptionUID, 
-              p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-              p.fk_ProjectTypeID as ProjectType
-          FROM Project p JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
-               JOIN ProjectSubscription ps on p.ProjectUID = ps.fk_ProjectUID
-          WHERE ps.fk_SubscriptionUID = @subscriptionUid AND p.IsDeleted = 0"
-          );
+    //public IEnumerable<Models.Project> GetLandfillProjectsForUser(string userUid)
+    //{
+    //  PerhapsOpenConnection();
 
-      PerhapsCloseConnection();
+    //  var projects = Connection.Query<Models.Project>
+    //     (@"SELECT 
+    //          p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
+    //          cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
+    //          p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
+    //          p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
+    //      FROM Project p
+    //      JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
+    //      JOIN Subscription s on ps.fk_SubscriptionUID = s.SubscriptionUID
+    //      JOIN CustomerProject cp on p.ProjectUID = cp.fk_ProjectUID
+    //      JOIN CustomerUser cu on cp.fk_CustomerUID = cu.fk_CustomerUID
+    //      WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1",
+    //     new { userUid }
+    //     );
 
-      return projects;
-    }
+    //  PerhapsCloseConnection();
 
-    public IEnumerable<Models.Project> GetProjects()
-    {
-      PerhapsOpenConnection();
-
-      var projects = Connection.Query<Models.Project>
-          (@"SELECT 
-            p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
-            cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, ps.fk_SubscriptionUID AS SubscriptionUID, 
-            p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-            p.fk_ProjectTypeID as ProjectType
-          FROM Project p JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
-               JOIN ProjectSubscription ps on p.ProjectUID = ps.fk_ProjectUID
-          WHERE p.IsDeleted = 0");
-
-      PerhapsCloseConnection();
-
-      return projects;
-    }
-
-    public IEnumerable<Models.Project> GetProjectsForUser(string userUid)
-    {
-      PerhapsOpenConnection();
-
-      var projects = Connection.Query<Models.Project>
-         (@"SELECT 
-              p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
-              cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
-              p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-              p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
-          FROM Project p
-          JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
-          JOIN Subscription s on ps.fk_SubscriptionUID = s.SubscriptionUID
-          JOIN CustomerProject cp on p.ProjectUID = cp.fk_ProjectUID
-          JOIN CustomerUser cu on cp.fk_CustomerUID = cu.fk_CustomerUID
-          WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0", 
-         new { userUid }
-         );
-
-      PerhapsCloseConnection();
-
-      return projects;
-    }
-
-    public IEnumerable<Models.Project> GetLandfillProjectsForUser(string userUid)
-    {
-      PerhapsOpenConnection();
-
-      var projects = Connection.Query<Models.Project>
-         (@"SELECT 
-              p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
-              cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
-              p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-              p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
-          FROM Project p
-          JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
-          JOIN Subscription s on ps.fk_SubscriptionUID = s.SubscriptionUID
-          JOIN CustomerProject cp on p.ProjectUID = cp.fk_ProjectUID
-          JOIN CustomerUser cu on cp.fk_CustomerUID = cu.fk_CustomerUID
-          WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1",
-         new { userUid }
-         );
-
-      PerhapsCloseConnection();
-
-      return projects;
-    }
+    //  return projects;
+    //}
 
 
     //for unit tests - so we don't have to create everything (associations) for a test
-    public Models.Project GetProject_UnitTest(string projectUid)
+    public Common.Models.Project GetProject_UnitTest(string projectUid)
     {
       PerhapsOpenConnection();
 
-      var project = Connection.Query<Models.Project>
+      var project = Connection.Query<Common.Models.Project>
          (@"SELECT 
                 p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, ps.fk_SubscriptionUID AS SubscriptionUID, 

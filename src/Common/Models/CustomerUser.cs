@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Customer.Data.Models
+namespace Common.Models
 {
   public class CustomerUser
   {

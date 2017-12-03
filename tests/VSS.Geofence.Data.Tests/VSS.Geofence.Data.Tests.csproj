@@ -44,9 +44,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.1232.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.1232.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.1365.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.1365.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -68,20 +67,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\VSS.Geofence.Data\VSS.Geofence.Data.csproj">
-      <Project>{740f7458-cb19-4422-9b45-173d7a6e9b51}</Project>
-      <Name>VSS.Geofence.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\VSS.MasterData.Common\VSS.MasterData.Common.csproj">
-      <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
-      <Name>VSS.MasterData.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\VSS.Project.Data\VSS.Project.Data.csproj">
-      <Project>{225fbdea-c77f-4208-8942-1ca40eceef2d}</Project>
-      <Name>VSS.Project.Data</Name>
-    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

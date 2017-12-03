@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Geofence.Data.Models
+namespace Common.Models
 {
   public class Geofence
   {

@@ -229,7 +229,7 @@ namespace LandfillService.Common.ApiClients
         /// Retrieves volume summary from Raptor and saves it to the landfill DB
         /// </summary>
         /// <param name="userUid">User ID</param>
-        /// <param name="project">Project</param>
+        /// <param name="project">ProjectDb</param>
         /// <param name="geofence">Geofence</param>
         /// <param name="entry">Weight entry from the client</param>
         /// <returns></returns>
@@ -387,7 +387,7 @@ namespace LandfillService.Common.ApiClients
         /// Retrieves CCA summary from Raptor and saves it to the landfill DB
         /// </summary>
         /// <param name="userUid">User ID</param>
-        /// <param name="project">Project</param>
+        /// <param name="project">ProjectDb</param>
         /// <param name="geofence">Geofence boundary</param>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="date">Date to retrieve CCA for (in project time zone)</param>
@@ -437,7 +437,7 @@ namespace LandfillService.Common.ApiClients
       /// Retrieves a list of machines and lifts for the project for the given datetime range.
       /// </summary>
       /// <param name="userUid">User ID</param>
-      /// <param name="project">Project to retrieve machines and lifts for</param>
+      /// <param name="project">ProjectDb to retrieve machines and lifts for</param>
         /// <param name="startUtc">Start UTC to retrieve machines and lifts for</param>
         /// <param name="endUtc">End UTC to retrieve machines and lifts for</param>
         /// <returns>Machines and lifts</returns>
@@ -452,7 +452,7 @@ namespace LandfillService.Common.ApiClients
       /// Retrieves a list of machines and lifts for the project for the given date range.
       /// </summary>
       /// <param name="userUid">User ID</param>
-      /// <param name="project">Project</param>
+      /// <param name="project">ProjectDb</param>
       /// <param name="startDate">Start date in project time zone</param>
       /// <param name="endDate">End date in project time zone</param>
       /// <returns>List of machines and lifts in project time zone</returns>

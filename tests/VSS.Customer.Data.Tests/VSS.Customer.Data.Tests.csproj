@@ -38,9 +38,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.1232.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.1232.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.1365.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.1365.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -58,16 +57,6 @@
   <ItemGroup>
     <Compile Include="Customers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\VSS.Customer.Data\VSS.Customer.Data.csproj">
-      <Project>{70ca8791-9379-4236-8849-d29cbeb2e251}</Project>
-      <Name>VSS.Customer.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\VSS.MasterData.Common\VSS.MasterData.Common.csproj">
-      <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
-      <Name>VSS.MasterData.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

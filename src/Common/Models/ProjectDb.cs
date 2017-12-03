@@ -1,9 +1,9 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Project.Data.Models
+namespace Common.Models
 {
-  public class Project
+  public class ProjectDb
   {
     public DateTime LastActionedUTC { get; set; }
     public int ProjectID { get; set; }
@@ -25,7 +25,7 @@ namespace VSS.Project.Data.Models
   
     public override bool Equals(object obj)
     {
-      var otherProject = obj as Project;
+      var otherProject = obj as ProjectDb;
       if (otherProject == null) return false;
       return otherProject.ProjectID == this.ProjectID && otherProject.Name == this.Name && otherProject.ProjectTimeZone == this.ProjectTimeZone
              && otherProject.ProjectUID == this.ProjectUID;

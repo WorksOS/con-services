@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Subscription.Data.Models
+namespace Common.Models
 {
   public class Subscription
   {

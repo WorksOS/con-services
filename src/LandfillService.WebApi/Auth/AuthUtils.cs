@@ -2,23 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using Common.Models;
+using LandfillService.Common.Context;
 using VSP.MasterData.Customer.WebAPI.Models;
-using VSS.Customer.Data.Interfaces;
-using VSS.Project.Data.Interfaces;
-using VSS.Subscription.Data.Interfaces;
 using VSS.Authentication.JWT;
+using Project = LandfillService.Common.Models.Project;
 
 public class AuthUtilities
 {
-  private readonly ICustomerService _customerService;
-  private readonly ISubscriptionService _subscriptionService;
-  private readonly IProjectService _projectService;
 
-  public AuthUtilities(ICustomerService customerService, ISubscriptionService subscriptionService, IProjectService projectService)
+  public AuthUtilities()
   {
-    _subscriptionService = subscriptionService;
-    _customerService = customerService;
-    _projectService = projectService;
   }
 
   public AssociatedCustomer GetContext(HttpRequestHeaders headers, out string errorMessage, out string userId)
@@ -40,7 +34,7 @@ public class AuthUtilities
         userId = jwtToken.UserUid.ToString();
         var customerUid = headers.GetValues("X-VisionLink-CustomerUid").ElementAt(0);
 
-        var customer = this._customerService.GetCustomer(Guid.Parse(customerUid));
+        var customer = LandfillDb.GetCustomer(Guid.Parse(customerUid));
 
         if (customer == null)
         {
@@ -48,7 +42,7 @@ public class AuthUtilities
           return null;
         }
 
-        var customerbyUser = this._customerService.GetAssociatedCustomerbyUserUid(Guid.Parse(userId));
+        var customerbyUser = LandfillDb.GetAssociatedCustomerbyUserUid(Guid.Parse(userId));
 
         if (customerbyUser == null || customerbyUser.All(cui => cui.CustomerUID != customer.CustomerUID))
         {
@@ -77,23 +71,11 @@ public class AuthUtilities
     }
   }
 
-  public List<VSS.Project.Data.Models.Project> GetProjectsForUser(string userUid)
+  public IEnumerable<ProjectDb> GetLandfillProjectsForUser(string userUid)
   {
     try
     {
-      return _projectService.GetProjectsForUser(userUid).ToList();  
-    }
-    catch (Exception ex)
-    {
-      return null;
-    }
-  }
-
-  public List<VSS.Project.Data.Models.Project> GetLandfillProjectsForUser(string userUid)
-  {
-    try
-    {
-      return _projectService.GetLandfillProjectsForUser(userUid).ToList();
+      return LandfillDb.GetLandfillProjectsForUser(userUid);
     }
     catch (Exception ex)
     {

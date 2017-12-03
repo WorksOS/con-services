@@ -194,14 +194,6 @@
       <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
       <Name>VSS.MasterData.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.Project.Data\VSS.Project.Data.csproj">
-      <Project>{225fbdea-c77f-4208-8942-1ca40eceef2d}</Project>
-      <Name>VSS.Project.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VSS.Subscription.Data\VSS.Subscription.Data.csproj">
-      <Project>{c455920e-769a-42ce-95a5-fc7cc5cbc3a6}</Project>
-      <Name>VSS.Subscription.Data</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.1">

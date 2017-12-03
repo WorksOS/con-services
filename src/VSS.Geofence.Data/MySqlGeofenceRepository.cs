@@ -203,42 +203,42 @@ namespace VSS.Geofence.Data
       return 0;
     }
 
-    public IEnumerable<Models.Geofence> GetProjectGeofences(string customerUid)
-    {
-      PerhapsOpenConnection();
+    //public IEnumerable<Models.Geofence> GetProjectGeofences(string customerUid)
+    //{
+    //  PerhapsOpenConnection();
 
-      var projectGeofences = Connection.Query<Models.Geofence>
-         (@"SELECT GeofenceUID, Name, CustomerUID, GeometryWKT
-            FROM Geofence 
-            WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND fk_GeofenceTypeID = 1",//Project type
-          new { customerUid }
-         );
+    //  var projectGeofences = Connection.Query<Models.Geofence>
+    //     (@"SELECT GeofenceUID, Name, CustomerUID, GeometryWKT
+    //        FROM Geofence 
+    //        WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND fk_GeofenceTypeID = 1",//Project type
+    //      new { customerUid }
+    //     );
 
-      PerhapsCloseConnection();
+    //  PerhapsCloseConnection();
 
-      Log.DebugFormat("GeofenceRepository: Found {0} Project geofences for customer {1}", projectGeofences.Count(), customerUid);
+    //  Log.DebugFormat("GeofenceRepository: Found {0} Project geofences for customer {1}", projectGeofences.Count(), customerUid);
 
-      return projectGeofences;
-    }
+    //  return projectGeofences;
+    //}
 
-    //for unit tests
-    public Models.Geofence GetGeofence(string geofenceUid)
-    {
-      PerhapsOpenConnection();
+    ////for unit tests
+    //public Models.Geofence GetGeofence(string geofenceUid)
+    //{
+    //  PerhapsOpenConnection();
       
-      var geofence = Connection.Query<Models.Geofence>
-          (@"SELECT 
-               GeofenceUID, Name, CustomerUID, GeometryWKT, FillColor, IsTransparent,
-                LastActionedUTC, fk_GeofenceTypeID AS GeofenceType, IsDeleted
-              FROM Geofence
-              WHERE GeofenceUID = @geofenceUid"
-          , new { geofenceUid }
-        ).FirstOrDefault(); 
+    //  var geofence = Connection.Query<Models.Geofence>
+    //      (@"SELECT 
+    //           GeofenceUID, Name, CustomerUID, GeometryWKT, FillColor, IsTransparent,
+    //            LastActionedUTC, fk_GeofenceTypeID AS GeofenceType, IsDeleted
+    //          FROM Geofence
+    //          WHERE GeofenceUID = @geofenceUid"
+    //      , new { geofenceUid }
+    //    ).FirstOrDefault(); 
 
-      PerhapsCloseConnection();
+    //  PerhapsCloseConnection();
 
-      return geofence;
-    }
+    //  return geofence;
+    //}
 
   }
 }

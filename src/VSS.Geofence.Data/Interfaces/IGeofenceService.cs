@@ -7,8 +7,8 @@ namespace VSS.Geofence.Data.Interfaces
   public interface IGeofenceService
   {
     int StoreGeofence(IGeofenceEvent evt);
-    IEnumerable<Models.Geofence> GetProjectGeofences(string customerUid);
-    Models.Geofence GetGeofence(string geofenceUid);
+    //IEnumerable<Models.Geofence> GetProjectGeofences(string customerUid);
+    //Models.Geofence GetGeofence(string geofenceUid);
 
   }
 }

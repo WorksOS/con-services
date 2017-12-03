@@ -11,6 +11,7 @@ using VSS.Subscription.Data.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
+// todo do we even need this?
 namespace VSS.Subscription.Data
 {
   public class MySqlSubscriptionRepository : RepositoryBase, ISubscriptionService
@@ -229,37 +230,37 @@ namespace VSS.Subscription.Data
         return serviceTypes;
       }
 
-      public Models.Subscription GetSubscription(string subscriptionUid)
-      {
-        PerhapsOpenConnection();
+      //public Models.Subscription GetSubscription(string subscriptionUid)
+      //{
+      //  PerhapsOpenConnection();
 
-        var subscription = Connection.Query<Models.Subscription>
-          (@"SELECT 
-                  SubscriptionUID, CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, EffectiveUTC, LastActionedUTC
-              FROM Subscription
-              WHERE SubscriptionUID = @subscriptionUid"
-            , new { subscriptionUid }
-          ).FirstOrDefault();
+      //  var subscription = Connection.Query<Models.Subscription>
+      //    (@"SELECT 
+      //            SubscriptionUID, CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, EffectiveUTC, LastActionedUTC
+      //        FROM Subscription
+      //        WHERE SubscriptionUID = @subscriptionUid"
+      //      , new { subscriptionUid }
+      //    ).FirstOrDefault();
 
-        PerhapsCloseConnection();
+      //  PerhapsCloseConnection();
 
-        return subscription;
-      }
+      //  return subscription;
+      //}
 
-      public IEnumerable<Models.Subscription> GetSubscriptions()
-      {
-        PerhapsOpenConnection();
+      //public IEnumerable<Models.Subscription> GetSubscriptions()
+      //{
+      //  PerhapsOpenConnection();
 
-        var subscriptions = Connection.Query<Models.Subscription>
-          (@"SELECT 
-                  SubscriptionUID, CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, EffectiveUTC, LastActionedUTC
-              FROM Subscription"
-           );
+      //  var subscriptions = Connection.Query<Models.Subscription>
+      //    (@"SELECT 
+      //            SubscriptionUID, CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, EffectiveUTC, LastActionedUTC
+      //        FROM Subscription"
+      //     );
 
-        PerhapsCloseConnection();
+      //  PerhapsCloseConnection();
 
-        return subscriptions;
-      }
+      //  return subscriptions;
+      //}
 
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Common.Models;
 using Dapper;
 using log4net;
 using Newtonsoft.Json;
@@ -23,7 +24,7 @@ namespace VSS.Customer.Data
       if (evt is CreateCustomerEvent)
       {
         var customerEvent = (CreateCustomerEvent)evt;
-        var customer = new Models.Customer();
+        var customer = new Common.Models.Customer();
         customer.CustomerName = customerEvent.CustomerName;
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.CustomerType = (CustomerType) Enum.Parse(typeof (CustomerType), customerEvent.CustomerType, true);
@@ -33,7 +34,7 @@ namespace VSS.Customer.Data
       else if (evt is UpdateCustomerEvent)
       {
         var customerEvent = (UpdateCustomerEvent)evt;
-        var customer = new Models.Customer();
+        var customer = new Common.Models.Customer();
         customer.CustomerName = customerEvent.CustomerName;
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.LastActionedUTC = customerEvent.ActionUTC;
@@ -42,7 +43,7 @@ namespace VSS.Customer.Data
       else if (evt is DeleteCustomerEvent)
       {
         var customerEvent = (DeleteCustomerEvent)evt;
-        var customer = new Models.Customer();
+        var customer = new Common.Models.Customer();
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.LastActionedUTC = customerEvent.ActionUTC;
         upsertedCount = UpsertCustomerDetail(customer, "DeleteCustomerEvent");
@@ -50,7 +51,7 @@ namespace VSS.Customer.Data
       else if (evt is AssociateCustomerUserEvent)
       {
         var customerEvent = (AssociateCustomerUserEvent)evt;
-        var customerUser = new Models.CustomerUser();
+        var customerUser = new CustomerUser();
         customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
         customerUser.UserUID = customerEvent.UserUID.ToString();
         customerUser.LastActionedUTC = customerEvent.ActionUTC;
@@ -59,7 +60,7 @@ namespace VSS.Customer.Data
       else if (evt is DissociateCustomerUserEvent)
       {
         var customerEvent = (DissociateCustomerUserEvent)evt;
-        var customerUser = new Models.CustomerUser();
+        var customerUser = new CustomerUser();
         customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
         customerUser.UserUID = customerEvent.UserUID.ToString();
         customerUser.LastActionedUTC = customerEvent.ActionUTC;
@@ -77,13 +78,13 @@ namespace VSS.Customer.Data
     /// <param name="customer"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private int UpsertCustomerDetail(Models.Customer customer, string eventType)
+    private int UpsertCustomerDetail(Common.Models.Customer customer, string eventType)
     {
       int upsertedCount = 0;
 
       PerhapsOpenConnection();
 
-      var existing = Connection.Query<Models.Customer>
+      var existing = Connection.Query<Common.Models.Customer>
         (@"SELECT 
                   CustomerUID, CustomerName, fk_CustomerTypeID AS CustomerType, LastActionedUTC
               FROM Customer
@@ -111,7 +112,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private int CreateCustomer(Models.Customer customer, Models.Customer existing)
+    private int CreateCustomer(Common.Models.Customer customer, Common.Models.Customer existing)
     {
       if (existing == null)
       {
@@ -131,7 +132,7 @@ namespace VSS.Customer.Data
       return 0;
     }
 
-    private int UpdateCustomer(Models.Customer customer, Models.Customer existing)
+    private int UpdateCustomer(Common.Models.Customer customer, Common.Models.Customer existing)
     {
       if (existing != null)
       {
@@ -156,7 +157,7 @@ namespace VSS.Customer.Data
       return 0;
     }
 
-    private int DeleteCustomer(Models.Customer customer, Models.Customer existing)
+    private int DeleteCustomer(Common.Models.Customer customer, Common.Models.Customer existing)
     {
       if (existing != null)
       {
@@ -180,33 +181,33 @@ namespace VSS.Customer.Data
       return 0;
     }
 
-    public IEnumerable<Models.Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
-    {
-      PerhapsOpenConnection();
+    //public IEnumerable<Common.Models.Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
+    //{
+    //  PerhapsOpenConnection();
 
-      var customer = Connection.Query<Models.Customer>
-          (@"SELECT c.* 
-            FROM Customer c JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
-            WHERE cu.fk_UserUID = @userUid", new {userUid = userUid.ToString()});
+    //  var customer = Connection.Query<Common.Models.Customer>
+    //      (@"SELECT c.* 
+    //        FROM Customer c JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
+    //        WHERE cu.fk_UserUID = @userUid", new {userUid = userUid.ToString()});
 
-      PerhapsCloseConnection();
+    //  PerhapsCloseConnection();
 
-      return customer;
-    }
+    //  return customer;
+    //}
 
-    public Models.Customer GetCustomer(System.Guid customerUid)
-    {
-      PerhapsOpenConnection();
+    //public Common.Models.Customer GetCustomer(System.Guid customerUid)
+    //{
+    //  PerhapsOpenConnection();
 
-      var customer = Connection.Query<Models.Customer>
-          (@"SELECT * 
-             FROM Customer 
-             WHERE CustomerUID = @customerUid", new { customerUid = customerUid.ToString() }).FirstOrDefault();
+    //  var customer = Connection.Query<Common.Models.Customer>
+    //      (@"SELECT * 
+    //         FROM Customer 
+    //         WHERE CustomerUID = @customerUid", new { customerUid = customerUid.ToString() }).FirstOrDefault();
 
-      PerhapsCloseConnection();
+    //  PerhapsCloseConnection();
 
-      return customer;
-    }
+    //  return customer;
+    //}
 
     /// <summary>
     /// All CustomerUser detail-related columns can be inserted, 
@@ -216,7 +217,7 @@ namespace VSS.Customer.Data
     /// <param name="customerUser"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private int UpsertCustomerUserDetail(Models.CustomerUser customerUser, string eventType)
+    private int UpsertCustomerUserDetail(CustomerUser customerUser, string eventType)
     {
       int upsertedCount = 0;
 
@@ -225,7 +226,7 @@ namespace VSS.Customer.Data
       Log.DebugFormat("CustomerRepository: Upserting eventType={0} CustomerUid={1}, UserUid={2}",
         eventType, customerUser.CustomerUID, customerUser.UserUID);
 
-      var existing = Connection.Query<Models.CustomerUser>
+      var existing = Connection.Query<CustomerUser>
         (@"SELECT 
             fk_UserUID AS UserUID, fk_CustomerUID AS CustomerUID, LastActionedUTC
               FROM CustomerUser
@@ -248,7 +249,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private int AssociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
+    private int AssociateCustomerUser(CustomerUser customerUser, CustomerUser existing)
     {
       if (existing == null)
       {
@@ -265,7 +266,7 @@ namespace VSS.Customer.Data
       return 0;
     }
 
-    private int DissociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
+    private int DissociateCustomerUser(CustomerUser customerUser, CustomerUser existing)
     {
       if (existing != null)
       {

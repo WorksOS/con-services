@@ -548,7 +548,7 @@
             If no date range specified, returns data for the last 2 years to today in the project time zone
             otherwise returns data for the specified date range.
             </summary>
-            <param name="id">Project ID</param>
+            <param name="id">ProjectDb ID</param>
             <param name="geofenceUid">Geofence UID</param>
             <param name="startDate">Start date in project time zone for which to return data</param>
             <param name="endDate">End date in project time zone for which to return data</param>
@@ -559,47 +559,29 @@
             Returns the weights for all geofences for the project for the date range 
             of the last 2 years to today in the project time zone.
             </summary>
-            <param name="id">Project ID</param>
+            <param name="id">ProjectDb ID</param>
             <returns>List of entries for each day in date range and the weight for each geofence for that day</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofenceWeights(LandfillService.Common.Models.Project)">
             <summary>
             Retrieves weights entries for each geofence in the project.
             </summary>
-            <param name="project">Project</param>
+            <param name="project">ProjectDb</param>
             <returns>List of dates with the weight for each geofence for that date</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PostWeights(System.UInt32,System.Nullable{System.Guid})">
             <summary>
             Saves weights submitted in the request.
             </summary>
-            <param name="id">Project ID</param>
+            <param name="id">ProjectDb ID</param>
             <param name="geofenceUid">Geofence UID</param>
-            <returns>Project data and status of volume retrieval</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetMissingVolumesInBackground(System.String,LandfillService.Common.Models.Project)">
-            <summary>
-            Retries volume summary retrieval from Raptor for volumes marked not retrieved
-            </summary>
-            <param name="userUid">User ID</param>
-            <param name="project">Project</param>
-            <returns></returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumesInBackground(System.String,LandfillService.Common.Models.Project,System.Collections.Generic.IEnumerable{LandfillService.Common.Models.DateEntry},System.Action)">
-            <summary>
-            Retrieves volumes via a background task in batches of 10 parallel requests
-            </summary>
-            <param name="userUid">User ID</param>
-            <param name="project">Project</param>
-            <param name="entries">Date entries (providing dates and geofence uids to request)</param>
-            <param name="onComplete">Code to execute on completion</param>
-            <returns></returns>
+            <returns>ProjectDb data and status of volume retrieval</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeTimeSummary(System.UInt32)">
             <summary>
             Gets volume and time summary for a landfill project.
             </summary>
-            <param name="id">Project ID</param>
+            <param name="id">ProjectDb ID</param>
             <returns>Current week volume, current month volume, remaining volume (air space) and time remaining (days)</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.CurrentWeekMonday(System.DateTime)">
@@ -614,7 +596,7 @@
             Retrieves airspace volume summary from Raptor.
             </summary>
             <param name="userUid">User ID</param>
-            <param name="project">Project</param>
+            <param name="project">ProjectDb</param>
             <param name="returnEarliest">Indicates if filtering by earliest or latest cell pass</param>
             <returns></returns>
         </member>
@@ -623,7 +605,7 @@
             Retrieves project statistics from Raptor.
             </summary>
             <param name="userUid">User ID</param>
-            <param name="project">Project</param>
+            <param name="project">ProjectDb</param>
             <returns>Date extents from project statistics</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofences(System.UInt32)">
@@ -632,14 +614,14 @@
             boundary is inside or intersects that of the project and it is of type 'Landfill'. The project
             geofence is also returned.
             </summary>
-            <param name="id">Project ID</param>
+            <param name="id">ProjectDb ID</param>
             <returns>List of geofences with their bounding boxes</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofenceBoundary(System.UInt32,System.Guid)">
             <summary>
             Returns a geofence boundary.
             </summary>
-            <param name="id">Project ID</param>
+            <param name="id">ProjectDb ID</param>
             <param name="geofenceUid">Geofence UID</param>
             <returns>List of WGS84 boundary points in radians</returns>
         </member>
@@ -650,7 +632,7 @@
             If no date range specified, returns CCA ratio data for the last 2 years to today in the project time zone
             otherwise returns CCA ratio data for the specified date range.
             </summary>
-            <param name="id">Project ID</param>
+            <param name="id">ProjectDb ID</param>
             <param name="geofenceUid">Geofence UID</param>
             <param name="startDate">Start date in project time zone for which to return data</param>
             <param name="endDate">End date in project time zone for which to return data</param>
@@ -663,7 +645,7 @@
             If machine (asset ID, machine name and John Doe flag) is not specified, returns data for all machines 
             else for the specified machine. If lift ID is not specified returns data for all lifts else for the specified lift.
             </summary>
-            <param name="id">Project ID</param>
+            <param name="id">ProjectDb ID</param>
             <param name="date">Date in project time zone for which to return data</param>
             <param name="geofenceUid">Geofence UID</param>
             <param name="assetId">Asset ID (from MachineDetails)</param>
@@ -677,7 +659,7 @@
             Gets a list of machines and lifts for a landfill project. If no date range specified, 
             the last 2 years to today in the project time zone is used.
             </summary>
-            <param name="id">Project ID</param>
+            <param name="id">ProjectDb ID</param>
             <param name="startDate">Start date in project time zone for which to return data</param>
             <param name="endDate">End date in project time zone for which to return data</param>
             <returns>List of machines and lifts in project time zone</returns>

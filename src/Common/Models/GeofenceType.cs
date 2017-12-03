@@ -1,6 +1,6 @@
 ﻿
 
-namespace VSS.Geofence.Data.Models
+namespace Common.Models
 {
   public enum GeofenceType
   {
@@ -15,5 +15,6 @@ namespace VSS.Geofence.Data.Models
     Import = 8,
     Export = 9,
     Landfill = 10
+      // todo use interfaces
   }
 }

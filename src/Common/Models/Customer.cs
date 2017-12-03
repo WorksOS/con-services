@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Customer.Data.Models
+namespace Common.Models
 {
   public class Customer
   {

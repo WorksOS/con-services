@@ -131,9 +131,8 @@
       <HintPath>..\packages\VSS.Authentication.JWT.1.2.0\lib\net452\VSS.Authentication.JWT.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.1232.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.1232.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.1365.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.1365.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease">
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
@@ -141,7 +140,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -281,22 +279,6 @@
     <ProjectReference Include="..\Common\LandfillService.Common.csproj">
       <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
       <Name>LandfillService.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VSS.Customer.Data\VSS.Customer.Data.csproj">
-      <Project>{70ca8791-9379-4236-8849-d29cbeb2e251}</Project>
-      <Name>VSS.Customer.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VSS.MasterData.Common\VSS.MasterData.Common.csproj">
-      <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
-      <Name>VSS.MasterData.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VSS.Project.Data\VSS.Project.Data.csproj">
-      <Project>{225fbdea-c77f-4208-8942-1ca40eceef2d}</Project>
-      <Name>VSS.Project.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VSS.Subscription.Data\VSS.Subscription.Data.csproj">
-      <Project>{C455920E-769A-42CE-95A5-FC7CC5CBC3A6}</Project>
-      <Name>VSS.Subscription.Data</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
