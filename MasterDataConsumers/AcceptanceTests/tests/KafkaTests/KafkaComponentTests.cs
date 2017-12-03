@@ -422,6 +422,8 @@ namespace KafkaTests
         ImportedBy = "JoeSmoe",
         SurveyedUTC = actionUtc.AddDays(-1),
         DxfUnitsType = DxfUnitsType.UsSurveyFeet,
+        MinZoomLevel = 0,
+        MaxZoomLevel = 0,
         ActionUTC = actionUtc
       };
 

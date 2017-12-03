@@ -128,7 +128,7 @@ namespace RepositoryTests
       const string tableName = "ImportedFile";
       List<string> columnNames = new List<string>
       {
-        "fk_ProjectUID", "ImportedFileUID", "ImportedFileID", "LegacyImportedFileId", "fk_CustomerUID", "fk_ImportedFileTypeID", "Name", "FileDescriptor", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "SurveyedUTC", "fk_DXFUnitsTypeID", "IsDeleted", "IsActivated", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+        "fk_ProjectUID", "ImportedFileUID", "ImportedFileID", "LegacyImportedFileId", "fk_CustomerUID", "fk_ImportedFileTypeID", "Name", "FileDescriptor", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "SurveyedUTC", "fk_DXFUnitsTypeID", "MinZoomLevel", "MaxZoomLevel", "IsDeleted", "IsActivated", "LastActionedUTC", "InsertUTC", "UpdateUTC"
       };
       CheckSchema(tableName, columnNames);
     }

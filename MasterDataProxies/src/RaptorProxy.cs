@@ -1,10 +1,8 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -60,13 +58,13 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">Custom request headers</param>
     /// <param name="fileType">Type of the file</param>
     /// <returns></returns>
-    public async Task<BaseDataResult> AddFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders = null)
+    public async Task<AddFileResult> AddFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.AddFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} dxfUnitsType: {dxfUnitsType}");
       var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&dxfUnitsType={dxfUnitsType}";
       //log.LogDebug($"RaptorProxy.AddFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
 
-      return await NotifyFile("/addfile", queryParams, customHeaders);
+      return await NotifyFile<AddFileResult>("/addfile", queryParams, customHeaders);
     }
 
     /// <summary>
@@ -85,7 +83,7 @@ namespace VSS.MasterData.Proxies
       var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}";
       //log.LogDebug($"RaptorProxy.DeleteFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
 
-      return await NotifyFile("/deletefile", queryParams, customHeaders);
+      return await NotifyFile<BaseDataResult>("/deletefile", queryParams, customHeaders);
     }
 
     /// <summary>
@@ -101,7 +99,7 @@ namespace VSS.MasterData.Proxies
       var queryParams = $"?projectUid={projectUid}&fileUids={string.Join("&fileUids=", fileUids)}";
       //log.LogDebug($"RaptorProxy.UpdateFiles: queryParams: {JsonConvert.SerializeObject(queryParams)}");
 
-      return await NotifyFile("/updatefiles", queryParams, customHeaders);
+      return await NotifyFile<BaseDataResult>("/updatefiles", queryParams, customHeaders);
     }
 
     /// <summary>
@@ -176,9 +174,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParams">Query parameters for the request</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns></returns>
-    private async Task<BaseDataResult> NotifyFile(string route, string queryParams, IDictionary<string, string> customHeaders)
+    private async Task<T> NotifyFile<T>(string route, string queryParams, IDictionary<string, string> customHeaders)
     {
-      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL", customHeaders, queryParams, route);
+      T response = await GetMasterDataItem<T>("RAPTOR_NOTIFICATION_API_URL", customHeaders, queryParams, route);
       var message = string.Format("RaptorProxy.NotifyFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       log.LogDebug(message);
 

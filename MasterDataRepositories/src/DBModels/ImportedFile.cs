@@ -18,6 +18,8 @@ namespace VSS.MasterData.Repositories.DBModels
     public string ImportedBy { get; set; }
     public DateTime? SurveyedUtc { get; set; }
     public DxfUnitsType DxfUnitsType { get; set; }
+    public int MinZoomLevel { get; set; }
+    public int MaxZoomLevel { get; set; }
     public bool IsDeleted { get; set; }
     public bool IsActivated { get; set; }
     public DateTime LastActionedUtc { get; set; }
@@ -42,7 +44,9 @@ namespace VSS.MasterData.Repositories.DBModels
              && otherImportedFile.IsActivated == IsActivated
              && otherImportedFile.SurveyedUtc == SurveyedUtc
              && otherImportedFile.DxfUnitsType == DxfUnitsType
-             && otherImportedFile.LastActionedUtc == LastActionedUtc;
+             && otherImportedFile.LastActionedUtc == LastActionedUtc
+             && otherImportedFile.MinZoomLevel == MinZoomLevel
+             && otherImportedFile.MaxZoomLevel == MaxZoomLevel;
     }
 
     public override int GetHashCode()

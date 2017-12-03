@@ -54,6 +54,8 @@ namespace RepositoryTests
         FileUpdatedUtc = actionUtc,
         ImportedBy = "JoeSmoe",
         SurveyedUTC = actionUtc.AddDays(-1),
+        MinZoomLevel = 0,
+        MaxZoomLevel = 0,
         ActionUTC = actionUtc
       };
 
@@ -139,6 +141,8 @@ namespace RepositoryTests
         FileUpdatedUtc = actionUtc,
         ImportedBy = "JoeSmoe",
         SurveyedUTC = actionUtc.AddDays(-1),
+        MinZoomLevel = 0,
+        MaxZoomLevel = 0,
         ActionUTC = actionUtc
       };
 
@@ -155,6 +159,8 @@ namespace RepositoryTests
         FileUpdatedUtc = actionUtc,
         ImportedBy = "JoeSmoe",
         SurveyedUTC = actionUtc.AddDays(-1),
+        MinZoomLevel = 13,
+        MaxZoomLevel = 16,
         ActionUTC = actionUtc
       };
 
@@ -171,6 +177,8 @@ namespace RepositoryTests
         FileUpdatedUtc = actionUtc,
         ImportedBy = "JoeSmoe",
         SurveyedUTC = actionUtc.AddDays(-1),
+        MinZoomLevel = 0,
+        MaxZoomLevel = 0,
         ActionUTC = actionUtc
       };
 
@@ -222,6 +230,8 @@ namespace RepositoryTests
         FileUpdatedUtc = actionUtc,
         ImportedBy = "JoeSmoe",
         SurveyedUTC = actionUtc.AddDays(-1),
+        MinZoomLevel = 18,
+        MaxZoomLevel = 20,
         ActionUTC = actionUtc
       };
 
@@ -232,6 +242,8 @@ namespace RepositoryTests
         ProjectUID = createImportedFileEvent.ProjectUID,
         ImportedFileUID = createImportedFileEvent.ImportedFileUID,
         FileDescriptor = "fd",
+        MinZoomLevel = 16,
+        MaxZoomLevel = 19,
         FileCreatedUtc = actionUtc,
         FileUpdatedUtc = actionUtc,
         ImportedBy = "JoeSmoe2",
@@ -247,6 +259,8 @@ namespace RepositoryTests
         "ImportedFile actionUtc was not updated");
       Assert.AreEqual(updateImportedFileEvent.FileDescriptor, g.Result.FileDescriptor,
         "ImportedFile FileDescriptor was not updated");
+      Assert.AreEqual(updateImportedFileEvent.MinZoomLevel, g.Result.MinZoomLevel, "ImportedFile MinZoomLevel was not updated");
+      Assert.AreEqual(updateImportedFileEvent.MaxZoomLevel, g.Result.MaxZoomLevel, "ImportedFile MaxZoomLevel was not updated");
     }
 
 

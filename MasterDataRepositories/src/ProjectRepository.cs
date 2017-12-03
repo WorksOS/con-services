@@ -157,6 +157,8 @@ namespace VSS.MasterData.Repositories
           ImportedBy = projectEvent.ImportedBy,
           SurveyedUtc = projectEvent.SurveyedUTC,
           DxfUnitsType = projectEvent.DxfUnitsType,
+          MinZoomLevel = projectEvent.MinZoomLevel,
+          MaxZoomLevel = projectEvent.MaxZoomLevel,
           LastActionedUtc = projectEvent.ActionUTC,
           IsActivated = true
         };
@@ -174,6 +176,8 @@ namespace VSS.MasterData.Repositories
           FileUpdatedUtc = projectEvent.FileUpdatedUtc,
           ImportedBy = projectEvent.ImportedBy,
           SurveyedUtc = projectEvent.SurveyedUtc,
+          MinZoomLevel = projectEvent.MinZoomLevel,
+          MaxZoomLevel = projectEvent.MaxZoomLevel,
           LastActionedUtc = projectEvent.ActionUTC,
           IsActivated = projectEvent.IsActivated
         };
@@ -633,7 +637,7 @@ namespace VSS.MasterData.Repositories
               fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID,
               fk_ImportedFileTypeID as ImportedFileType, Name, 
               FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, 
-              fk_DXFUnitsTypeID as DxfUnitsType,
+              fk_DXFUnitsTypeID as DxfUnitsType, MinZoomLevel, MaxZoomLevel,
               IsDeleted, IsActivated, LastActionedUTC
             FROM ImportedFile
             WHERE ImportedFileUID = @importedFileUid", new {importedFileUid = importedFile.ImportedFileUid}
@@ -665,9 +669,9 @@ namespace VSS.MasterData.Repositories
 
         var insert = string.Format(
           "INSERT ImportedFile " +
-          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, IsDeleted, IsActivated, LastActionedUTC) " +
+          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsDeleted, IsActivated, LastActionedUTC) " +
           "  VALUES " +
-          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, @DxfUnitsType, 0, 1, @LastActionedUtc)");
+          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, 1, @LastActionedUtc)");
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
         log.LogDebug(
@@ -697,6 +701,8 @@ namespace VSS.MasterData.Repositories
                 FileUpdatedUTC = @fileUpdatedUTC,
                 ImportedBy = @importedBy, 
                 SurveyedUTC = @surveyedUTC,
+                MinZoomLevel = @MinZoomLevel,
+                MaxZoomLevel = @MaxZoomLevel,
                 fk_DXFUnitsTypeID = @dxfUnitsType
               WHERE ImportedFileUID = @ImportedFileUid";
 
@@ -731,6 +737,8 @@ namespace VSS.MasterData.Repositories
                   FileUpdatedUTC = @fileUpdatedUtc,
                   ImportedBy = @importedBy, 
                   SurveyedUTC = @surveyedUTC,
+                  MinZoomLevel = @MinZoomLevel,
+                  MaxZoomLevel = @MaxZoomLevel,
                   LastActionedUTC = @LastActionedUTC,
                   IsActivated = @IsActivated
                 WHERE ImportedFileUID = @ImportedFileUid";
@@ -1197,7 +1205,7 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
-            IsDeleted, IsActivated, LastActionedUTC
+            MinZoomLevel, MaxZoomLevel, IsDeleted, IsActivated, LastActionedUTC
           FROM ImportedFile
             WHERE fk_ProjectUID = @projectUid
               AND IsDeleted = 0",
@@ -1213,7 +1221,7 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType, 
-            IsDeleted, IsActivated, LastActionedUTC
+            MinZoomLevel, MaxZoomLevel, IsDeleted, IsActivated, LastActionedUTC
           FROM ImportedFile
             WHERE importedFileUID = @importedFileUid",
         new {importedFileUid}
