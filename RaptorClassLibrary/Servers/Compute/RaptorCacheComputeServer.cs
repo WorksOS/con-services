@@ -38,8 +38,9 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         {
             base.ConfigureRaptorGrid(cfg);
 
-            // cfg.GridName = RaptorGrids.RaptorGridName();
-            cfg.IgniteInstanceName = RaptorGrids.RaptorGridName();// + RaptorServerConfig.Instance().SpatialSubdivisionDescriptor.ToString();
+            cfg.IgniteInstanceName = RaptorGrids.RaptorGridName();;
+            //cfg.ConsistentId = "SpatialDivision"+RaptorServerConfig.Instance().SpatialSubdivisionDescriptor.ToString();
+
             cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
             cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
             cfg.UserAttributes = new Dictionary<String, object>

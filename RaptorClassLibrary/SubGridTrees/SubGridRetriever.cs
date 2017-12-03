@@ -47,7 +47,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private GridDataType _GridDataType = GridDataType.All;
         private bool SeiveFilterInUse = false;
         private SubGridTreeBitmapSubGridBits SeiveBitmask;
-        private SubGridTreeBitmapSubGridBits CellIterationBitmask = SubGridTreeBitmapSubGridBits.FullMask;
+//        private SubGridTreeBitmapSubGridBits CellIterationBitmask = SubGridTreeBitmapSubGridBits.FullMask;
         ISubGrid _SubGrid = null;
         ServerSubGridTreeLeaf _SubGridAsLeaf = null;
 
@@ -1477,8 +1477,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                         // Compute a mask of the cells that should be visited for this subgrid retrieval operation
                         if (SeiveFilterInUse)
                         {
-                            // Remove cells that do not match the filter mask and should not be processed, and those which are not identified
-                            // by any active seive
+                            // Remove cells that do not match the filter mask and should not be processed, and those which are not identified by any active seive
                             CellIterationBitmask.SetAndOf(SeiveBitmask, ClientGridAsLeaf.ProdDataMap);
                         }
                         else
@@ -1490,24 +1489,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                 CellIterationBitmask.Assign(ClientGridAsLeaf.ProdDataMap);
                             }
                         }
-
-                        // Iterate over the cells in the cell iteration mask and retrieve them
-                        CellIterationBitmask.ForEachSetBit((x, y) => RetrieveSubGridCell(// TODO PopulationControl,
-                                                  (byte)x, (byte)y
-                                                  // TODO LiftBuildSettings
-                                                  ));
 */
-                        // Iterate over the stripes in the subgrid processing each on in turn.
-                        /**/
+                        // Iterate over the cells in the cell iteration mask and retrieve them
+//                        CellIterationBitmask.ForEachSetBit((x, y) => RetrieveSubGridCell(/* TODO PopulationControl, */  (byte)x, (byte)y /*, LiftBuildSettings */));
+
+                        // Iterate over the stripes in the subgrid processing each one in turn.
                         for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
                         {
-                            RetrieveSubGridStripe(// TODO PopulationControl,
-                                                  I, 
-                                                  CellX, CellY
-                                                  // TODO LiftBuildSettings
-                                                  );
+                            RetrieveSubGridStripe(/* TODO PopulationControl, */ I, CellX, CellY /* TODO , LiftBuildSettings*/);
                         }
-                        /**/
 
                         /* TODO
                         if VLPDSvcLocations.Debug_ExtremeLogSwitchC then

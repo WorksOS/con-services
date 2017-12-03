@@ -87,7 +87,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private bool ReturnEarliestFilteredCellPass = false;
 
         /// <summary>
-        /// Default no-arg constructor
+        /// Constructor that accepts the common parameters around a set of subgrids the requestor will be asked to process
+        /// and initialises the requestor state ready to start processing indivudla subgrid requests.
         /// </summary>
         public SubGridRequestor(SiteModel sitemodel,
                                 CombinedFilter filter,
@@ -640,13 +641,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             if (SurveyedSurfaceDataRequested)
             {
+                ClientLeafSubGrid ClientGridAsLeafSubgrid = ClientGrid as ClientLeafSubGrid;
+
                 // Construct the filter mask (e.g. spatial filtering) to be applied to the results of surveyed surface analysis
                 if (SubGridFilterMasks.ConstructSubgridCellFilterMask(ClientGrid, SiteModel, Filter,
                                                                       CellOverrideMask,
                                                                       HasOverrideSpatialCellRestriction,
                                                                       OverrideSpatialCellRestriction,
-                                                                      ref (ClientGrid as ClientLeafSubGrid).ProdDataMap,
-                                                                      ref (ClientGrid as ClientLeafSubGrid).FilterMap))
+                                                                      ref ClientGridAsLeafSubgrid.ProdDataMap,
+                                                                      ref ClientGridAsLeafSubgrid.FilterMap))
                 {
                     Result = ServerRequestResult.NoError;
                 }
