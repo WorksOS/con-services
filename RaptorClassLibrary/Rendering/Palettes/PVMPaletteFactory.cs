@@ -16,7 +16,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Palettes
     /// </summary>
     public static class PVMPaletteFactory
     {
-        public static IPlanViewPalette GetPallete(SiteModel siteModel, DisplayMode mode)
+        public static IPlanViewPalette GetPallete(SiteModel siteModel, DisplayMode mode, BoundingWorldExtent3D spatialExtents)
         {
             switch (mode)
             {
@@ -24,6 +24,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Palettes
                     {
                         BoundingWorldExtent3D extent = siteModel.GetAdjustedDataModelSpatialExtents(new long[0]);
                         return new HeightPalette(extent.MinZ, extent.MaxZ);
+                        //return new HeightPalette(spatialExtents.MinZ, spatialExtents.MaxZ);
                     }
 
                 case DisplayMode.MachineSpeed:       return new SpeedPalette();
@@ -34,6 +35,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Palettes
                 default: // Just use the elevation palette as a default...
                     BoundingWorldExtent3D extent2 = siteModel.GetAdjustedDataModelSpatialExtents(new long[0]);
                     return new HeightPalette(extent2.MinZ, extent2.MaxZ);
+                    //return new HeightPalette(spatialExtents.MinZ, spatialExtents.MaxZ);
             }
 
             /*

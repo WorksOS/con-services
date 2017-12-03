@@ -149,20 +149,26 @@ namespace VSS.VisionLink.Raptor.Surfaces
 
         /// <summary>
         /// Determines if there is at least one surveyed surface with an as at date later than the data provided as a DateTime
+        /// Optimal performance will be observed if the list is sorted in ascending chronological order
         /// </summary>
         /// <param name="TimeStamp"></param>
         /// <returns></returns>
         public bool HasSurfaceLaterThan(DateTime TimeStamp)
         {
             for (int i = Count - 1; i >= 0; i--)
+            {
                 if (this[i].AsAtDate.CompareTo(TimeStamp) > 0)
+                {
                     return true;
+                }
+            }
 
             return false;
         }
 
         /// <summary>
         /// Determines if there is at least one surveyed surface with an as at date later than the data provided as a DateTime.ToBinary() Int64
+        /// Optimal performance will be observed if the list is sorted in ascending chronological order
         /// </summary>
         /// <param name="TimeStamp"></param>
         /// <returns></returns>
@@ -171,28 +177,38 @@ namespace VSS.VisionLink.Raptor.Surfaces
             DateTime _TimeStamp = DateTime.FromBinary(TimeStamp);
 
             for (int i = Count - 1; i >= 0; i--)
+            {
                 if (this[i].AsAtDate.CompareTo(_TimeStamp) > 0)
+                {
                     return true;
+                }
+            }
 
             return false;
         }
 
         /// <summary>
         /// Determines if there is at least one surveyed surface with an as at date earlier than the data provided as a DateTime
+        /// Optimal performance will be observed if the list is sorted in ascending chronological order
         /// </summary>
         /// <param name="TimeStamp"></param>
         /// <returns></returns>
         public bool HasSurfaceEarlierThan(DateTime TimeStamp)
         {
-            for (int i = Count - 1; i >= 0; i--)
+            for (int i = 0; i < Count; i++)
+            {
                 if (this[i].AsAtDate.CompareTo(TimeStamp) < 0)
+                {
                     return true;
+                }
+            }
 
             return false;
         }
 
         /// <summary>
         /// Determines if there is at least one surveyed surface with an as at date earlier than the data provided as a DateTime.ToBinary() Int64
+        /// Optimal performance will be observed if the list is sorted in ascending chronological order
         /// </summary>
         /// <param name="TimeStamp"></param>
         /// <returns></returns>
@@ -200,9 +216,13 @@ namespace VSS.VisionLink.Raptor.Surfaces
         {
             DateTime _TimeStamp = DateTime.FromBinary(TimeStamp);
 
-            for (int i = 0; i < Count; i--)
+            for (int i = 0; i < Count; i++)
+            {
                 if (this[i].AsAtDate.CompareTo(_TimeStamp) < 0)
+                {
                     return true;
+                }
+            }
 
             return false;
         }

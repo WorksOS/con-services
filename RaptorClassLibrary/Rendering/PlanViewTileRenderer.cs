@@ -331,7 +331,7 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         protected void SetDisplayerPalette()
         {
-            Palette = PVMPaletteFactory.GetPallete(SiteModels.SiteModels.Instance().GetSiteModel(DataModelID), Mode);
+            Palette = PVMPaletteFactory.GetPallete(SiteModels.SiteModels.Instance().GetSiteModel(DataModelID), Mode, SpatialExtents);
             Displayer.Palette = Palette;
         }
 

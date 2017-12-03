@@ -79,7 +79,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                  extents,
                  true, // CoordsAreGrid
                  (ushort)width, // PixelsX
-                 (ushort)Height, // PixelsY
+                 (ushort)height, // PixelsY
                  new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
                  null, // filter 2
                  new DesignDescriptor()
@@ -98,6 +98,15 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 MessageBox.Show(String.Format("Exception: {0}", E));
                 return null;
             }
+        }
+
+        private BoundingWorldExtent3D GetZoomAllExtents()
+        {
+            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
+
+            long[] SurveyedSurfaceExclusionList = (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new long[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
+
+            return ProjectExtents.ProductionDataAndSurveyedSurfaces(ID(), SurveyedSurfaceExclusionList);
         }
 
         public Form1()
@@ -121,23 +130,47 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void fitExtentsToView(int width, int height)
         {
-            // Modify extents to match the shape of the panel it is being displayed in
-            if ((extents.SizeX / extents.SizeY) < (width / height))
+
+double Aspect = (1.0 * height) / (1.0 * width);
+
+            if ((extents.SizeX / extents.SizeY) > Aspect)
             {
-                double pixelSize = extents.SizeX / width;
-                extents = new BoundingWorldExtent3D(extents.CenterX - (width / 2) * pixelSize,
-                                                    extents.CenterY - (height / 2) * pixelSize,
-                                                    extents.CenterX + (width / 2) * pixelSize,
-                                                    extents.CenterY + (height / 2) * pixelSize);
+                extents = new BoundingWorldExtent3D(extents.CenterX - (extents.SizeY / Aspect) / 2,
+                                                    extents.CenterY - (extents.SizeY / 2),
+                                                    extents.CenterX + (extents.SizeY / Aspect) / 2,
+                                                    extents.CenterY + (extents.SizeY / 2),
+                                                    extents.MinZ, extents.MaxZ);
             }
             else
             {
-                double pixelSize = extents.SizeY / height;
-                extents = new BoundingWorldExtent3D(extents.CenterX - (width / 2) * pixelSize,
-                                                    extents.CenterY - (height / 2) * pixelSize,
-                                                    extents.CenterX + (width / 2) * pixelSize,
-                                                    extents.CenterY + (height / 2) * pixelSize);
+                extents = new BoundingWorldExtent3D(extents.CenterX - (extents.SizeX / 2),
+                                                    extents.CenterY - (extents.SizeX * Aspect)  / 2,
+                                                    extents.CenterX + (extents.SizeX / 2),
+                                                    extents.CenterY + (extents.SizeX * Aspect) / 2,
+                                                    extents.MinZ, extents.MaxZ);
             }
+            /*
+
+                                    // Modify extents to match the shape of the panel it is being displayed in
+                                    if ((extents.SizeX / extents.SizeY) < (width / height))
+                                    {
+                                        double pixelSize = extents.SizeX / width;
+                            extents = new BoundingWorldExtent3D(extents.CenterX - (width / 2) * pixelSize,
+                                                                extents.CenterY - (height / 2) * pixelSize,
+                                                                extents.CenterX + (width / 2) * pixelSize,
+                                                                extents.CenterY + (height / 2) * pixelSize);//,
+            //                                                    extents.MinZ, extents.MaxZ);
+                                    }
+                                    else
+                                    {
+                                        double pixelSize = extents.SizeY / height;
+                            extents = new BoundingWorldExtent3D(extents.CenterX - (width / 2) * pixelSize,
+                                                                extents.CenterY - (height / 2) * pixelSize,
+                                                                extents.CenterX + (width / 2) * pixelSize,
+                                                                extents.CenterY + (height / 2) * pixelSize); //,                                                                
+            //                                                    extents.MinZ, extents.MaxZ);
+        }            
+            */
         }
 
         private void DoRender()
@@ -175,7 +208,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         private void ZoomAll_Click(object sender, EventArgs e)
         {
             // Get the project extent so we know where to render
-            ViewPortChange(() => extents = ProjectExtents.ProductionDataOnly(ID()));
+            ViewPortChange(() => extents = GetZoomAllExtents());
+            // GetAdjustedDataModelSpatialExtents
         }
 
         private void btmZoomIn_Click(object sender, EventArgs e)
@@ -220,7 +254,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             // Pull the sitemodel extents using the ProjectExtents executor which will use the Ignite instance created by the generic application service server above
             if (ID() != -1)
             {
-                extents = ProjectExtents.ProductionDataOnly(ID());
+                extents = GetZoomAllExtents();
                 DoUpdateLabels();
             }
         }

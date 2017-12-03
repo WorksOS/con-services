@@ -44,20 +44,19 @@ namespace VSS.VisionLink.Raptor.Rendering.Palettes
         {
             MinElevation = minElevation;
             MaxElevation = maxElevation;
-            ElevationPerBand = (MaxElevation - MinElevation) / (ElevationPalette.Count() - 1);
+            ElevationPerBand = (MaxElevation - MinElevation) / ElevationPalette.Count();
         }
 
         public Color ChooseColour(double value)
         {
-            if (Range.InRange(value, MinElevation, MaxElevation))
+            if (value == Consts.NullDouble)
             {
-                int index = (int)Math.Floor((value - MinElevation) / ElevationPerBand);
-                return ElevationPalette[index];
+                return Color.Black;
             }
-            else
-            {
-                return Color.Black; // Color.Empty;
-            }
+
+            int index = (int)Math.Floor((value - MinElevation) / ElevationPerBand);
+
+            return Range.InRange(index, 0, ElevationPalette.Count() - 1) ?  ElevationPalette[index] : Color.Black; // Color.Empty;
         }
     }
 }

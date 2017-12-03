@@ -9,14 +9,36 @@ using VSS.VisionLink.Raptor.Utilities.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Surfaces
 {
+    /// <summary>
+    /// Defines all the state information describing a surveyed surface based on a design descriptor
+    /// </summary>
     [Serializable]
     public class SurveyedSurface : IEquatable<SurveyedSurface>, IBinaryReaderWriter
     {
+        /// <summary>
+        /// Unique identified for the surveyd surfaced
+        /// </summary>
         long FID = long.MinValue;
+
+        /// <summary>
+        /// Underlying design the surveyed surface is based on
+        /// </summary>
         DesignDescriptor FDesignDescriptor;
+
+        /// <summary>
+        /// The effective data the surveyed surface represents a snapshot of the ground topology recorded in the design descriptor+
+        /// </summary>
         DateTime FAsAtDate = DateTime.MinValue;
+
+        /// <summary>
+        /// 3D extents bounding box enclosing the underlying design represented by the design descriptor (excluding any vertical offset(
+        /// </summary>
         BoundingWorldExtent3D FExtents;
 
+        /// <summary>
+        /// Serialises state to a binary writer
+        /// </summary>
+        /// <param name="writer"></param>
         public void Write(BinaryWriter writer)
         {
             writer.Write(FID);
@@ -25,8 +47,17 @@ namespace VSS.VisionLink.Raptor.Surfaces
             FExtents.Write(writer);
         }
 
+        /// <summary>
+        /// Serialises state to a binary writer with a supplied intermediary buffer
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="buffer"></param>
         public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
+        /// <summary>
+        /// Serialises state in from a binary reader
+        /// </summary>
+        /// <param name="reader"></param>
         public void Read(BinaryReader reader)
         {
             FID = reader.ReadInt64();
@@ -35,10 +66,36 @@ namespace VSS.VisionLink.Raptor.Surfaces
             FExtents.Read(reader);
         }
 
+        /// <summary>
+        /// Readonly property exposing the surveyed surface ID
+        /// </summary>
         public long ID { get { return FID; } }
+
+        /// <summary>
+        /// Readonlhy property exposing the design decriptor for the underlying topology surface
+        /// </summary>
         public DesignDescriptor DesignDescriptor { get { return FDesignDescriptor; } }
+
+        /// <summary>
+        /// Readonly attribute for AsAtData
+        /// </summary>
         public DateTime AsAtDate { get { return FAsAtDate; } }
-        public BoundingWorldExtent3D Extents { get { return FExtents; } }
+
+        /// <summary>
+        /// Returns the real world 3D enclosing extents for the surveyed surface topology, including any configured vertical offset
+        /// </summary>
+        public BoundingWorldExtent3D Extents
+        {
+            get
+            {
+                BoundingWorldExtent3D result = FExtents;
+
+                // Incorporate any vertical offset from the underlying design the surveyed surface is based on
+                result.Offset(DesignDescriptor.Offset);
+
+                return result;
+            }
+        }
 
         /// <summary>
         /// No-arg constructor

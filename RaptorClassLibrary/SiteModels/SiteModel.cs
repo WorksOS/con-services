@@ -515,8 +515,31 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// <returns></returns>
         public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(long[] SurveyedSurfaceExclusionList)
         {
+            if (SurveyedSurfaces == null || SurveyedSurfaces.Count == 0)
+            {
+                return SiteModelExtent;
+            }
+
             // Start with the data model extents
             BoundingWorldExtent3D SpatialExtents = SiteModelExtent;
+
+            if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
+            {
+                foreach (SurveyedSurface surveyedSurface in SurveyedSurfaces)
+                {
+                    SpatialExtents.Include(surveyedSurface.Extents);
+                }
+            }
+            else
+            {
+                foreach (SurveyedSurface surveyedSurface in SurveyedSurfaces)
+                {
+                    if (!SurveyedSurfaceExclusionList.Any(x => x == surveyedSurface.ID))
+                    {
+                        SpatialExtents.Include(surveyedSurface.Extents);
+                    }
+                }
+            }
 
             // TODO: Surveyed surfaces are not supported yet
             // Iterate over all non-exluded surveyed surfaces and expand the SpatialExtents as necessary
