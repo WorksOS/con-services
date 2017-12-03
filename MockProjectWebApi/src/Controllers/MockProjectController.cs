@@ -50,7 +50,9 @@ namespace MockProjectWebApi.Controllers
             ImportedFileType = ImportedFileType.Linework,
             ImportedFileUid = "cfcd4c01-6fc8-45d5-872f-513a0f619f03",
             LegacyFileId = 1,
-            IsActivated = true
+            IsActivated = true,
+            MinZoomLevel = 15,
+            MaxZoomLevel = 18
           },
           new FileData
           {
@@ -60,7 +62,9 @@ namespace MockProjectWebApi.Controllers
             ImportedFileType = ImportedFileType.Linework,
             ImportedFileUid = "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b",
             LegacyFileId = 2,
-            IsActivated = true
+            IsActivated = true,
+            MinZoomLevel = 18,
+            MaxZoomLevel = 19
           },
           new FileData
           {
@@ -70,7 +74,9 @@ namespace MockProjectWebApi.Controllers
             ImportedFileType = ImportedFileType.DesignSurface,
             ImportedFileUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
             LegacyFileId = 3,
-            IsActivated = true
+            IsActivated = true,
+            MinZoomLevel = 15,
+            MaxZoomLevel = 20
           },
           new FileData
           {
@@ -80,7 +86,9 @@ namespace MockProjectWebApi.Controllers
             ImportedFileType = ImportedFileType.DesignSurface,
             ImportedFileUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
             LegacyFileId = 111,
-            IsActivated = true
+            IsActivated = true,
+            MinZoomLevel = 15,
+            MaxZoomLevel = 20
           },
           new FileData
           {
@@ -90,7 +98,9 @@ namespace MockProjectWebApi.Controllers
             ImportedFileType = ImportedFileType.Alignment,
             ImportedFileUid = "6ece671b-7959-4a14-86fa-6bfe6ef4dd62",
             LegacyFileId = 112,
-            IsActivated = true
+            IsActivated = true,
+            MinZoomLevel = 15,
+            MaxZoomLevel = 17
           },
           new FileData
           {
@@ -100,7 +110,9 @@ namespace MockProjectWebApi.Controllers
             ImportedFileType = ImportedFileType.Alignment,
             ImportedFileUid = "c6662be1-0f94-4897-b9af-28aeeabcd09b",
             LegacyFileId = 113,
-            IsActivated = true
+            IsActivated = true,
+            MinZoomLevel = 16,
+            MaxZoomLevel = 18
           },
           new FileData
           {
@@ -110,7 +122,9 @@ namespace MockProjectWebApi.Controllers
             ImportedFileType = ImportedFileType.Alignment,
             ImportedFileUid = "3ead0c55-1e1f-4d30-aaf8-873526a2ab82",
             LegacyFileId = 114,
-            IsActivated = true
+            IsActivated = true,
+            MinZoomLevel = 15,
+            MaxZoomLevel = 19
           }
         };
       }
@@ -187,7 +201,9 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.SurveyedSurface,
         ImportedFileUid = Guid.NewGuid().ToString(),
         LegacyFileId = 14177,
-        IsActivated = true
+        IsActivated = true,
+        MinZoomLevel = 0,
+        MaxZoomLevel = 0
       },
       new FileData
       {
@@ -197,7 +213,9 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.SurveyedSurface,
         ImportedFileUid = Guid.NewGuid().ToString(),
         LegacyFileId = 14176,
-        IsActivated = true
+        IsActivated = true,
+        MinZoomLevel = 0,
+        MaxZoomLevel = 0
       },
       new FileData
       {
@@ -207,7 +225,9 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.SurveyedSurface,
         ImportedFileUid = Guid.NewGuid().ToString(),
         LegacyFileId = 14175,
-        IsActivated = true
+        IsActivated = true,
+        MinZoomLevel = 0,
+        MaxZoomLevel = 0
       },
       new FileData
       {
@@ -217,7 +237,9 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.SurveyedSurface,
         ImportedFileUid = Guid.NewGuid().ToString(),
         LegacyFileId = 14174,
-        IsActivated = true
+        IsActivated = true,
+        MinZoomLevel = 0,
+        MaxZoomLevel = 0
       },
       new FileData
       {
@@ -227,7 +249,9 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.SurveyedSurface,
         ImportedFileUid = Guid.NewGuid().ToString(),
         LegacyFileId = 14222,
-        IsActivated = true
+        IsActivated = true,
+        MinZoomLevel = 0,
+        MaxZoomLevel = 0
       }
     };
 
@@ -241,7 +265,9 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.DesignSurface,
         ImportedFileUid = Guid.NewGuid().ToString(),
         LegacyFileId = 15177,
-        IsActivated = true
+        IsActivated = true,
+        MinZoomLevel = 15,
+        MaxZoomLevel = 19
       },
       new FileData
       {
@@ -251,7 +277,9 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.DesignSurface,
         ImportedFileUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
         LegacyFileId = 15176,
-        IsActivated = true
+        IsActivated = true,
+        MinZoomLevel = 15,
+        MaxZoomLevel = 18
       },
       new FileData
       {
@@ -261,7 +289,9 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.DesignSurface,
         ImportedFileUid = "220e12e5-ce92-4645-8f01-1942a2d5a57f",
         LegacyFileId = 15175,
-        IsActivated = true
+        IsActivated = true,
+        MinZoomLevel = 16,
+        MaxZoomLevel = 17
       },
       new FileData
       {
@@ -271,7 +301,9 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.DesignSurface,
         ImportedFileUid = "ea97efb9-c0c4-4a7f-9eee-e2b0ef0b0916",
         LegacyFileId = 15174,
-        IsActivated = true
+        IsActivated = true,
+        MinZoomLevel = 16,
+        MaxZoomLevel = 18
       },
       new FileData
       {
@@ -281,7 +313,9 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.DesignSurface,
         ImportedFileUid = Guid.NewGuid().ToString(),
         LegacyFileId = 15222,
-        IsActivated = true
+        IsActivated = true,
+        MinZoomLevel = 19,
+        MaxZoomLevel = 20
       }
     };
 

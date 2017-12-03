@@ -116,5 +116,14 @@ namespace VSS.MasterData.Models.Models
     /// Path of the imported file
     /// </value>
     public string Path => "/" + CustomerUid + "/" + ProjectUid;
+
+    /// <summary>
+    /// The minimum zoom level for DXF tiles
+    /// </summary>
+    public int MinZoomLevel { get; set; }
+    /// <summary>
+    /// The maximum zoom level for DXF tiles
+    /// </summary>
+    public int MaxZoomLevel { get; set; }
   }
 }

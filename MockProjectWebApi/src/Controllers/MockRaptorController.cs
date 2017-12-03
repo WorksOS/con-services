@@ -83,7 +83,7 @@ namespace MockProjectWebApi.Controllers
     }
 
     /// <summary>
-    /// Dummies the get.
+    /// Dummies the add.
     /// </summary>
     [Route("api/v2/notification/addfile")]
     [HttpGet]
@@ -95,7 +95,7 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] long fileId,
       [FromQuery] DxfUnitsType dXfUnitsType)
     {
-      var res = new BaseDataResult();
+      var res = new AddFileResult{MinZoomLevel = fileType == ImportedFileType.Linework ? 15 : 0, MaxZoomLevel = fileType == ImportedFileType.Linework ? 19 : 0};
       var message = $"DummyAddFileGet: res {res}. projectUid {projectUid} fileType {fileType} fileUid {fileUid} fileDescriptor {fileDescriptor} fileId {fileId} dXfUnitsType {dXfUnitsType}";
       Console.WriteLine(message);
       return res;

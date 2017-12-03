@@ -11,6 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Internal\**" />
+    <Content Remove="Internal\**" />
+    <EmbeddedResource Remove="Internal\**" />
+    <None Remove="Internal\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Json\Filters\DimensionsBoundaryCMV.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilter.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
@@ -68,18 +75,14 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.3.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.9.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.4.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.10.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
     <PackageReference Include="Topshelf" Version="4.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Internal\" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
