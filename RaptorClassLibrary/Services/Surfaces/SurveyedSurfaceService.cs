@@ -10,6 +10,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Caches;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
 
@@ -39,7 +41,8 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
 
         public SurveyedSurfaceService() : base()
         {
-
+            GridName = RaptorGrids.RaptorGridName();
+            CacheName = RaptorCaches.MutableNonSpatialCacheName();
         }
 
         public SurveyedSurfaceService(string gridName, string cacheName) : this()
@@ -144,7 +147,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
                 _svcName = context.Name;
             }
 
-            mutableNonSpatialCache = _Ignite.GetCache<String, Byte[]>(CacheName /*RaptorCaches.MutableNonSpatialCacheName()*/);
+            mutableNonSpatialCache = _Ignite.GetCache<String, Byte[]>(CacheName);
         }
 
         /// <summary>

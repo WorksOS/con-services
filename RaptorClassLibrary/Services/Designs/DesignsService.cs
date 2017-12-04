@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.GridFabric.Caches;
 
 namespace VSS.VisionLink.Raptor.Services.Designs
 {
@@ -33,21 +35,25 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         private string GridName;
         private string CacheName;
 
-
         /// <summary>
-        /// Default no-arg constructor
+        /// Default no-arg constructor that sets the grid and cache name to default values
         /// </summary>
         public DesignsService() : base()
         {
+            GridName = RaptorGrids.RaptorGridName();
+            CacheName = RaptorCaches.MutableNonSpatialCacheName();
         }
 
         public DesignsService(string gridName, string cacheName) : this()
         {
             GridName = gridName;
             CacheName = cacheName;
+        }
 
-            // Delete to the service Init() method if this becomes an Ignite sercvice
-            mutableNonSpatialCache = _Ignite.GetCache<String, Byte[]>(CacheName /*RaptorCaches.MutableNonSpatialCacheName()*/);
+        public void init()
+        {
+            // Delegate to the service Init() method if this becomes an Ignite service
+            mutableNonSpatialCache = _Ignite.GetCache<String, Byte[]>(CacheName);
         }
 
         public void Add(long SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)

@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VSS.VisionLink.Raptor;
+using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.Executors;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
@@ -23,7 +24,10 @@ using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Servers.Client;
+using VSS.VisionLink.Raptor.Services.Designs;
+using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.Raptor.IgnitePOC.TestApp
@@ -82,15 +86,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                  (ushort)height, // PixelsY
                  new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
                  null, // filter 2
-                 new DesignDescriptor()
-                 {
-                     // Folder = @"C:\Temp",
-                     //FileName = @"Bug36372.ttm"
-
-                     Folder = @"J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Dimensions 2012\BC Data\Sites\BootCamp 2012\Designs(linework in USFt)\Original Ground Survey",
-                     FileName = @"Original Ground Survey - Dimensions 2012.ttm"
-
-                 }
+                 (cmbDesigns.Items.Count == 0) ? DesignDescriptor.Null() : (cmbDesigns.SelectedValue as Design).DesignDescriptor
                 ));
             }
             catch (Exception E)
@@ -130,8 +126,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void fitExtentsToView(int width, int height)
         {
-
-double Aspect = (1.0 * height) / (1.0 * width);
+            double Aspect = (1.0 * height) / (1.0 * width);
 
             if ((extents.SizeX / extents.SizeY) > Aspect)
             {
@@ -191,6 +186,39 @@ double Aspect = (1.0 * height) / (1.0 * width);
             lblViewHeight.Text = String.Format("View height: {0:F3}m", extents.SizeY);
             lblViewWidth.Text = String.Format("View width: {0:F3}m", extents.SizeX);
             lblCellsPerPixel.Text = String.Format("Cells Per Pixel (X): {0:F3}", (extents.SizeX / pictureBox1.Width) / 0.34);
+        }
+
+        private void DoUpdateDesignsAndSurveyedSurfaces()
+        {
+            DesignsService designsService = new DesignsService();
+            designsService.init();
+            Designs designs = designsService.List(ID());
+
+            if (designs != null)
+            {
+                cmbDesigns.DropDownStyle = ComboBoxStyle.DropDownList;
+
+                //cmbDesigns.Items.Clear();
+
+                cmbDesigns.DisplayMember = "Text";
+                cmbDesigns.ValueMember = "Value";
+                cmbDesigns.DataSource = designs.Select(x => new { Text = x.DesignDescriptor.FullPath, Value = x }).ToArray();
+            }
+
+            SurveyedSurfaceService surveyedSurfacesService = new SurveyedSurfaceService();
+            surveyedSurfacesService.Init(null);
+            SurveyedSurfaces surveyedSurfaces = surveyedSurfacesService.List(ID());
+
+            if (surveyedSurfaces != null)
+            {
+                cmbDesigns.DropDownStyle = ComboBoxStyle.DropDownList;
+
+                //cmbSurveyedSurfaces.Items.Clear();
+
+                cmbSurveyedSurfaces.DisplayMember = "Text";
+                cmbSurveyedSurfaces.ValueMember = "Value";
+                cmbSurveyedSurfaces.DataSource = surveyedSurfaces.Select(x => new { Text = x.DesignDescriptor.FullPath, Value = x }).ToArray();
+            }
         }
 
         private void DoScreenUpdate()
@@ -256,6 +284,7 @@ double Aspect = (1.0 * height) / (1.0 * width);
             {
                 extents = GetZoomAllExtents();
                 DoUpdateLabels();
+                DoUpdateDesignsAndSurveyedSurfaces();
             }
         }
 
@@ -412,7 +441,6 @@ double Aspect = (1.0 * height) / (1.0 * width);
                         IIgnite ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
 
 //                        retriveAllItems(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
-
 
                         writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
                         writeKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));

@@ -54,9 +54,15 @@
             this.btnZoomAll = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.cmbSurveyedSurfaces = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.cmbDesigns = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -317,9 +323,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel2.Controls.Add(this.pictureBox1);
-            this.panel2.Location = new System.Drawing.Point(2, 2);
+            this.panel2.Location = new System.Drawing.Point(2, 58);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(875, 539);
+            this.panel2.Size = new System.Drawing.Size(875, 483);
             this.panel2.TabIndex = 16;
             // 
             // pictureBox1
@@ -329,15 +335,69 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Location = new System.Drawing.Point(10, 9);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(862, 527);
+            this.pictureBox1.Size = new System.Drawing.Size(862, 471);
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
+            // 
+            // panel3
+            // 
+            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel3.Controls.Add(this.cmbSurveyedSurfaces);
+            this.panel3.Controls.Add(this.label6);
+            this.panel3.Controls.Add(this.cmbDesigns);
+            this.panel3.Controls.Add(this.label5);
+            this.panel3.Location = new System.Drawing.Point(2, 2);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(872, 50);
+            this.panel3.TabIndex = 17;
+            // 
+            // cmbSurveyedSurfaces
+            // 
+            this.cmbSurveyedSurfaces.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbSurveyedSurfaces.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSurveyedSurfaces.FormattingEnabled = true;
+            this.cmbSurveyedSurfaces.Location = new System.Drawing.Point(105, 25);
+            this.cmbSurveyedSurfaces.Name = "cmbSurveyedSurfaces";
+            this.cmbSurveyedSurfaces.Size = new System.Drawing.Size(764, 21);
+            this.cmbSurveyedSurfaces.TabIndex = 33;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(7, 28);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(100, 13);
+            this.label6.TabIndex = 32;
+            this.label6.Text = "Surveyed Surfaces:";
+            // 
+            // cmbDesigns
+            // 
+            this.cmbDesigns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbDesigns.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbDesigns.FormattingEnabled = true;
+            this.cmbDesigns.Location = new System.Drawing.Point(105, 3);
+            this.cmbDesigns.Name = "cmbDesigns";
+            this.cmbDesigns.Size = new System.Drawing.Size(764, 21);
+            this.cmbDesigns.TabIndex = 31;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 6);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(40, 13);
+            this.label5.TabIndex = 30;
+            this.label5.Text = "Design";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1072, 546);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
@@ -347,6 +407,8 @@
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -378,6 +440,11 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox edtNumRuns;
         private System.Windows.Forms.CheckBox chkIncludeSurveyedSurfaces;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.ComboBox cmbDesigns;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cmbSurveyedSurfaces;
+        private System.Windows.Forms.Label label6;
     }
 }
 

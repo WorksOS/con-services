@@ -166,11 +166,11 @@ namespace SurveyedSurfaceManager
         /// <param name="e"></param>
         private void button1_Click_1(object sender, EventArgs e)
         {
-            SurveyedSurfaceService = new SurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName());
+            SurveyedSurfaceService = new SurveyedSurfaceService();
             SurveyedSurfaceService.Init(null);
 
-            DesignsService = new DesignsService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName());
-            //DesignsService.Init(null);
+            DesignsService = new DesignsService();
+            DesignsService.init(); //DesignsService.Init(null);
         }
 
         private void btnRemoveSurveyedSurface_Click(object sender, EventArgs e)
