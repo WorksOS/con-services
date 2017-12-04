@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core;
+using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using System;
@@ -362,7 +363,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             foreach (ICacheEntry<String, byte[]> cacheEntry in queryCursor)
             {
-                writer.WriteLine(String.Format("{0}:{1}", count++, cacheEntry.Key));
+                writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
 //                writeCacheMetrics(writer, cache.GetMetrics());
             }
 
@@ -463,6 +464,64 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         private void chkIncludeSurveyedSurfaces_CheckedChanged(object sender, EventArgs e)
         {
             DoScreenUpdate();
+        }
+
+        private string CalculateCacheStatistics(string title, ICache<Object, byte[]> cache)
+        {
+
+            if (cache == null)
+            {
+                return $"Cache {title} is null";
+            }
+
+            var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>
+            {
+                PageSize = 1 // Restrict the number of keys requested in each page to reduce memory consumption
+            };
+
+            long count = 0;
+            long sumBytes = 0;
+            long smallestBytes = long.MaxValue;
+            long largestBytes = long.MinValue;
+
+            IQueryCursor<ICacheEntry<Object, byte[]>> queryCursor = cache.Query(scanQuery);
+
+            foreach (ICacheEntry<Object, byte[]> cacheEntry in queryCursor)
+            {
+                count++;
+                sumBytes += cacheEntry.Value.Length;
+                if (smallestBytes > cacheEntry.Value.Length) smallestBytes = cacheEntry.Value.Length;
+                if (largestBytes < cacheEntry.Value.Length) largestBytes = cacheEntry.Value.Length;
+            }
+
+            if (count == 0) return "No elements in cache {title}";
+
+            return $"Cache {title}: {count} entries totalling {sumBytes} bytes. Average: {sumBytes / count} bytes, smallest: {smallestBytes} bytes, largest: {largestBytes} bytes";
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("This may take some time...", "Confirmation", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            // Calculate statistics on the numbers and sizes of elements in a cache
+            try
+            {
+                IIgnite ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
+
+                string result = CalculateCacheStatistics(RaptorCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName())) + "\n" +
+                                CalculateCacheStatistics(RaptorCaches.ImmutableSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.ImmutableSpatialCacheName())) + "\n" +
+                                CalculateCacheStatistics(RaptorCaches.MutableNonSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.MutableNonSpatialCacheName())) + "\n" +
+                                CalculateCacheStatistics(RaptorCaches.MutableSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
+
+                MessageBox.Show(result, "Statistics");
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show(ee.ToString());
+            }
         }
     }
 }

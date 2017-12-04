@@ -59,6 +59,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.cmbDesigns = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -69,6 +70,7 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.chkIncludeSurveyedSurfaces);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.edtNumRuns);
@@ -102,7 +104,7 @@
             this.chkIncludeSurveyedSurfaces.AutoSize = true;
             this.chkIncludeSurveyedSurfaces.Checked = true;
             this.chkIncludeSurveyedSurfaces.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkIncludeSurveyedSurfaces.Location = new System.Drawing.Point(17, 416);
+            this.chkIncludeSurveyedSurfaces.Location = new System.Drawing.Point(17, 379);
             this.chkIncludeSurveyedSurfaces.Name = "chkIncludeSurveyedSurfaces";
             this.chkIncludeSurveyedSurfaces.Size = new System.Drawing.Size(150, 17);
             this.chkIncludeSurveyedSurfaces.TabIndex = 37;
@@ -113,7 +115,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(143, 494);
+            this.label4.Location = new System.Drawing.Point(143, 457);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(32, 13);
             this.label4.TabIndex = 36;
@@ -121,7 +123,7 @@
             // 
             // edtNumRuns
             // 
-            this.edtNumRuns.Location = new System.Drawing.Point(100, 491);
+            this.edtNumRuns.Location = new System.Drawing.Point(100, 454);
             this.edtNumRuns.Name = "edtNumRuns";
             this.edtNumRuns.Size = new System.Drawing.Size(34, 20);
             this.edtNumRuns.TabIndex = 35;
@@ -129,17 +131,17 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(17, 520);
+            this.button1.Location = new System.Drawing.Point(14, 494);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(152, 19);
+            this.button1.Size = new System.Drawing.Size(120, 19);
             this.button1.TabIndex = 34;
-            this.button1.Text = "Scan all keys...";
+            this.button1.Text = "Scan all keys to file...";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // edtNumImages
             // 
-            this.edtNumImages.Location = new System.Drawing.Point(17, 491);
+            this.edtNumImages.Location = new System.Drawing.Point(17, 454);
             this.edtNumImages.Name = "edtNumImages";
             this.edtNumImages.Size = new System.Drawing.Size(34, 20);
             this.edtNumImages.TabIndex = 33;
@@ -148,7 +150,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(57, 494);
+            this.label3.Location = new System.Drawing.Point(57, 457);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(41, 13);
             this.label3.TabIndex = 32;
@@ -156,7 +158,7 @@
             // 
             // btnMultiThreadTest
             // 
-            this.btnMultiThreadTest.Location = new System.Drawing.Point(17, 462);
+            this.btnMultiThreadTest.Location = new System.Drawing.Point(17, 425);
             this.btnMultiThreadTest.Name = "btnMultiThreadTest";
             this.btnMultiThreadTest.Size = new System.Drawing.Size(152, 23);
             this.btnMultiThreadTest.TabIndex = 31;
@@ -185,7 +187,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 303);
+            this.label1.Location = new System.Drawing.Point(14, 266);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(70, 13);
             this.label1.TabIndex = 28;
@@ -194,14 +196,14 @@
             // displayMode
             // 
             this.displayMode.FormattingEnabled = true;
-            this.displayMode.Location = new System.Drawing.Point(14, 322);
+            this.displayMode.Location = new System.Drawing.Point(14, 285);
             this.displayMode.Name = "displayMode";
             this.displayMode.Size = new System.Drawing.Size(121, 21);
             this.displayMode.TabIndex = 27;
             // 
             // btnRedraw
             // 
-            this.btnRedraw.Location = new System.Drawing.Point(53, 162);
+            this.btnRedraw.Location = new System.Drawing.Point(53, 125);
             this.btnRedraw.Name = "btnRedraw";
             this.btnRedraw.Size = new System.Drawing.Size(75, 23);
             this.btnRedraw.TabIndex = 26;
@@ -212,7 +214,7 @@
             // chkSelectEarliestPass
             // 
             this.chkSelectEarliestPass.AutoSize = true;
-            this.chkSelectEarliestPass.Location = new System.Drawing.Point(17, 439);
+            this.chkSelectEarliestPass.Location = new System.Drawing.Point(17, 402);
             this.chkSelectEarliestPass.Name = "chkSelectEarliestPass";
             this.chkSelectEarliestPass.Size = new System.Drawing.Size(117, 17);
             this.chkSelectEarliestPass.TabIndex = 25;
@@ -223,7 +225,7 @@
             // lblCellsPerPixel
             // 
             this.lblCellsPerPixel.AutoSize = true;
-            this.lblCellsPerPixel.Location = new System.Drawing.Point(14, 397);
+            this.lblCellsPerPixel.Location = new System.Drawing.Point(14, 360);
             this.lblCellsPerPixel.Name = "lblCellsPerPixel";
             this.lblCellsPerPixel.Size = new System.Drawing.Size(73, 13);
             this.lblCellsPerPixel.TabIndex = 24;
@@ -232,7 +234,7 @@
             // lblViewHeight
             // 
             this.lblViewHeight.AutoSize = true;
-            this.lblViewHeight.Location = new System.Drawing.Point(14, 378);
+            this.lblViewHeight.Location = new System.Drawing.Point(14, 341);
             this.lblViewHeight.Name = "lblViewHeight";
             this.lblViewHeight.Size = new System.Drawing.Size(64, 13);
             this.lblViewHeight.TabIndex = 23;
@@ -241,7 +243,7 @@
             // lblViewWidth
             // 
             this.lblViewWidth.AutoSize = true;
-            this.lblViewWidth.Location = new System.Drawing.Point(14, 359);
+            this.lblViewWidth.Location = new System.Drawing.Point(14, 322);
             this.lblViewWidth.Name = "lblViewWidth";
             this.lblViewWidth.Size = new System.Drawing.Size(61, 13);
             this.lblViewWidth.TabIndex = 22;
@@ -249,7 +251,7 @@
             // 
             // bntTranslateSouth
             // 
-            this.bntTranslateSouth.Location = new System.Drawing.Point(53, 264);
+            this.bntTranslateSouth.Location = new System.Drawing.Point(53, 227);
             this.bntTranslateSouth.Name = "bntTranslateSouth";
             this.bntTranslateSouth.Size = new System.Drawing.Size(75, 23);
             this.bntTranslateSouth.TabIndex = 21;
@@ -259,7 +261,7 @@
             // 
             // bntTranslateWest
             // 
-            this.bntTranslateWest.Location = new System.Drawing.Point(14, 235);
+            this.bntTranslateWest.Location = new System.Drawing.Point(14, 198);
             this.bntTranslateWest.Name = "bntTranslateWest";
             this.bntTranslateWest.Size = new System.Drawing.Size(74, 23);
             this.bntTranslateWest.TabIndex = 20;
@@ -269,7 +271,7 @@
             // 
             // bntTranslateEast
             // 
-            this.bntTranslateEast.Location = new System.Drawing.Point(94, 235);
+            this.bntTranslateEast.Location = new System.Drawing.Point(94, 198);
             this.bntTranslateEast.Name = "bntTranslateEast";
             this.bntTranslateEast.Size = new System.Drawing.Size(75, 23);
             this.bntTranslateEast.TabIndex = 19;
@@ -279,7 +281,7 @@
             // 
             // btmZoomIn
             // 
-            this.btmZoomIn.Location = new System.Drawing.Point(53, 104);
+            this.btmZoomIn.Location = new System.Drawing.Point(53, 67);
             this.btmZoomIn.Name = "btmZoomIn";
             this.btmZoomIn.Size = new System.Drawing.Size(75, 23);
             this.btmZoomIn.TabIndex = 18;
@@ -289,7 +291,7 @@
             // 
             // btnZoomOut
             // 
-            this.btnZoomOut.Location = new System.Drawing.Point(53, 133);
+            this.btnZoomOut.Location = new System.Drawing.Point(53, 96);
             this.btnZoomOut.Name = "btnZoomOut";
             this.btnZoomOut.Size = new System.Drawing.Size(75, 23);
             this.btnZoomOut.TabIndex = 17;
@@ -299,7 +301,7 @@
             // 
             // bntTranslateNorth
             // 
-            this.bntTranslateNorth.Location = new System.Drawing.Point(53, 206);
+            this.bntTranslateNorth.Location = new System.Drawing.Point(53, 169);
             this.bntTranslateNorth.Name = "bntTranslateNorth";
             this.bntTranslateNorth.Size = new System.Drawing.Size(75, 23);
             this.bntTranslateNorth.TabIndex = 16;
@@ -309,7 +311,7 @@
             // 
             // btnZoomAll
             // 
-            this.btnZoomAll.Location = new System.Drawing.Point(53, 75);
+            this.btnZoomAll.Location = new System.Drawing.Point(53, 38);
             this.btnZoomAll.Name = "btnZoomAll";
             this.btnZoomAll.Size = new System.Drawing.Size(75, 23);
             this.btnZoomAll.TabIndex = 15;
@@ -392,6 +394,16 @@
             this.label5.TabIndex = 30;
             this.label5.Text = "Design";
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(14, 513);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(121, 19);
+            this.button2.TabIndex = 38;
+            this.button2.Text = "Statistics...";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -445,6 +457,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cmbSurveyedSurfaces;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button button2;
     }
 }
 
