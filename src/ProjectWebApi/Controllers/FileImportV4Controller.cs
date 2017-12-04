@@ -239,9 +239,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, dxfUnitsType, fileDescriptor,
+      var result = await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, dxfUnitsType, fileDescriptor,
         createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true).ConfigureAwait(false);
-
+      createImportedFileEvent.MinZoomLevel = result.MinZoomLevel;
+      createImportedFileEvent.MaxZoomLevel = result.MaxZoomLevel;
+      var existing = await projectService.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
+        .ConfigureAwait(false);
+      //Need to update zoom levels in Db 
+      var updateImportedFileEvent = await UpdateImportedFileInDb(existing, JsonConvert.SerializeObject(fileDescriptor),
+          surveyedUtc, result.MinZoomLevel, result.MaxZoomLevel,
+          fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
+        .ConfigureAwait(false);
 
       var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
       producer.Send(kafkaTopicName,
@@ -323,7 +331,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                  importedFileType != ImportedFileType.SurveyedSurface
                ));
       }
-      if (existing == null)
+      bool creating = existing == null;
+      if (creating)
         log.LogInformation(
           $"UpdateImportedFileV4. file doesn't exist already in DB: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
       else
@@ -338,7 +347,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var importedFileUid = existing?.ImportedFileUid;
       var importedFileId = existing?.ImportedFileId;
       CreateImportedFileEvent createImportedFileEvent = null;
-      if (existing == null)
+      if (creating)
       {
         // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
         createImportedFileEvent = await CreateImportedFileinDb(Guid.Parse(customerUid), projectUid,
@@ -349,18 +358,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, dxfUnitsType, fileDescriptor, importedFileId.Value,
+      var result = await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, dxfUnitsType, fileDescriptor, importedFileId.Value,
           Guid.Parse(importedFileUid), (existing == null))
         .ConfigureAwait(false);
 
-      // if all succeeds, update Db (if not Create) and send create/update to kafka que
-      if (existing != null) // update
+      if (creating)
       {
-        var updateImportedFileEvent = await UpdateImportedFileInDb(existing, JsonConvert.SerializeObject(fileDescriptor),
-            surveyedUtc,
-            fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
+        createImportedFileEvent.MinZoomLevel = result.MinZoomLevel;
+        createImportedFileEvent.MaxZoomLevel = result.MaxZoomLevel;
+        existing = await projectService.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
           .ConfigureAwait(false);
+      }
 
+      //Need to update zoom levels in Db for both create  and update
+      var updateImportedFileEvent = await UpdateImportedFileInDb(existing, JsonConvert.SerializeObject(fileDescriptor),
+          surveyedUtc, result.MinZoomLevel, result.MaxZoomLevel,
+          fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
+        .ConfigureAwait(false);
+
+      // if all succeeds, update Db (if not Create) and send create/update to kafka que
+      if (!creating) // update
+      {
         var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
         producer.Send(kafkaTopicName,
           new List<KeyValuePair<string, string>>

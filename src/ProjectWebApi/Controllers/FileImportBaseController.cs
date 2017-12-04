@@ -48,7 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private readonly IConfigurationStore store;
     private readonly IRaptorProxy raptorProxy;
     private readonly IFileRepository fileRepo;
-    private readonly ProjectRepository projectService;
+    protected readonly ProjectRepository projectService;
 
     /// <summary>
     /// 
@@ -220,19 +220,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="existing">The existing imported file event from the database</param>
     /// <param name="fileDescriptor"></param>
     /// <param name="surveyedUtc"></param>
+    /// <param name="minZoom"></param>
+    /// <param name="maxZoom"></param>
     /// <param name="fileCreatedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="importedBy"></param>
     /// <returns></returns>
     protected async Task<UpdateImportedFileEvent> UpdateImportedFileInDb(
       ImportedFile existing,
-      string fileDescriptor, DateTime? surveyedUtc,
+      string fileDescriptor, DateTime? surveyedUtc, int minZoom, int maxZoom,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy)
     {
       var nowUtc = DateTime.UtcNow;
       var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(existing);
       updateImportedFileEvent.FileDescriptor = fileDescriptor;
       updateImportedFileEvent.SurveyedUtc = surveyedUtc;
+      updateImportedFileEvent.MinZoomLevel = minZoom;
+      updateImportedFileEvent.MaxZoomLevel = maxZoom;
       updateImportedFileEvent.FileCreatedUtc = fileCreatedUtc; // as per Barret 19th June 2017
       updateImportedFileEvent.FileUpdatedUtc = fileUpdatedUtc;
       updateImportedFileEvent.ImportedBy = importedBy;
@@ -409,9 +413,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid, bool isCreate)
+    protected async Task<AddFileResult> NotifyRaptorAddFile(long? projectId, Guid projectUid, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid, bool isCreate)
     {
-      BaseDataResult notificationResult = null;
+      AddFileResult notificationResult = null;
       try
       {
         notificationResult = await raptorProxy
@@ -438,6 +442,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, notificationResult.Code.ToString(), notificationResult.Message);
       }
+      return notificationResult;
     }
 
     /// <summary>
