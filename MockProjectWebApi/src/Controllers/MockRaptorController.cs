@@ -95,7 +95,9 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] long fileId,
       [FromQuery] DxfUnitsType dXfUnitsType)
     {
-      var res = new AddFileResult{MinZoomLevel = fileType == ImportedFileType.Linework ? 15 : 0, MaxZoomLevel = fileType == ImportedFileType.Linework ? 19 : 0};
+      var hasDxfTiles = fileType == ImportedFileType.Linework || fileType == ImportedFileType.Alignment ||
+                         fileType == ImportedFileType.DesignSurface;
+      var res = new AddFileResult{MinZoomLevel = hasDxfTiles ? 15 : 0, MaxZoomLevel = hasDxfTiles ? 19 : 0};
       var message = $"DummyAddFileGet: res {res}. projectUid {projectUid} fileType {fileType} fileUid {fileUid} fileDescriptor {fileDescriptor} fileId {fileId} dXfUnitsType {dXfUnitsType}";
       Console.WriteLine(message);
       return res;
