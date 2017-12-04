@@ -1,19 +1,17 @@
-﻿using System.Reflection;
-using Common.Utilities;
-using LandfillService.Common.Models;
-using log4net;
-using MySql.Data.MySqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Reflection;
 using Common.Models;
+using Common.Utilities;
+using log4net;
+using LandfillService.Common.Models;
+using MySql.Data.MySqlClient;
 using NodaTime;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Geofence = LandfillService.Common.Models.Geofence;
-using Project = LandfillService.Common.Models.Project;
 
-namespace LandfillService.Common.Context
+namespace Common.Repository
 {
   /// <summary>
   /// Encapsulates DB queries
@@ -126,38 +124,38 @@ namespace LandfillService.Common.Context
     #region(Projects)
 
     // from customRepo
-    public static IEnumerable<ProjectDb> GetLandfillProjectsForUser(string userUid)
+    public static IEnumerable<Project> GetLandfillProjectsForUser(string userUid)
     {
       return InTransaction((conn) =>
       {
         var command = @"SELECT 
-              p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
+              p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
               cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
               p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
               p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
-          FROM ProjectDb p
-          JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
-          JOIN Subscription s on ps.fk_SubscriptionUID = s.SubscriptionUID
-          JOIN CustomerProject cp on p.ProjectUID = cp.fk_ProjectUID
-          JOIN CustomerUser cu on cp.fk_CustomerUID = cu.fk_CustomerUID
-          WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
+          FROM Project p
+            JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
+            JOIN Subscription s on ps.fk_SubscriptionUID = s.SubscriptionUID
+            JOIN CustomerProject cp on p.ProjectUID = cp.fk_ProjectUID
+            JOIN CustomerUser cu on cp.fk_CustomerUID = cu.fk_CustomerUID
+          WHERE cu.UserUID = @userUid and p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
 
 
-        var projects = new List<ProjectDb>();
+        var projects = new List<Project>();
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid)))
         {
           while (reader.Read())
           {
-            projects.Add(new ProjectDb
+            projects.Add(new Project
             {
-              ProjectID = reader.GetUInt16(reader.GetOrdinal("ProjectID")),
+              LegacyProjectID = reader.GetUInt16(reader.GetOrdinal("LegacyProjectID")),
               ProjectUID = reader.GetString(reader.GetOrdinal("ProjectUID")),
               Name = reader.GetString(reader.GetOrdinal("Name")),
               LandfillTimeZone = reader.GetString(reader.GetOrdinal("LandfillTimeZone")),
               ProjectTimeZone = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
               LegacyCustomerID = reader.GetInt64(reader.GetOrdinal("LegacyCustomerID")),
-              SubEndDate = reader.GetDateTime(reader.GetOrdinal("SubEndDate")),
+              SubscriptionEndDate = reader.GetDateTime(reader.GetOrdinal("SubEndDate")),
               IsDeleted = reader.GetBoolean(reader.GetOrdinal("IsDeleted"))
             });
           }
@@ -174,7 +172,7 @@ namespace LandfillService.Common.Context
     /// <param name="userUid">User ID used to associate projects with a user</param>
     /// <param name="customerUid">Customer ID used to associate projects with a user</param>
     /// <returns>A list of projects</returns>
-    public static IEnumerable<Project> GetProjects(string userUid, string customerUid)
+    public static IEnumerable<ProjectResponse> GetProjects(string userUid, string customerUid)
     {
       return InTransaction((conn) =>
       {
@@ -183,14 +181,14 @@ namespace LandfillService.Common.Context
                                      p.ProjectUID, p.ProjectTimeZone,
                                      s.StartDate AS SubStartDate, s.EndDate AS SubEndDate,
 									                   cp.LegacyCustomerID
-                              FROM ProjectDb p  
+                              FROM Project p  
                               JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
                               JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
                               JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
                               JOIN Subscription s ON ps.fk_SubscriptionUID = s.SubscriptionUID
                               WHERE cu.fk_UserUID = @userUid AND cu.fk_CustomerUID = @customerUid AND p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
 
-        var projects = new List<Project>();
+        var projects = new List<ProjectResponse>();
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid),
           new MySqlParameter("@customerUid", customerUid)))
@@ -216,7 +214,7 @@ namespace LandfillService.Common.Context
               daysToSubExpiry = 0;
             }
 
-            projects.Add(new Project
+            projects.Add(new ProjectResponse
             {
               id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
               projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
@@ -238,13 +236,13 @@ namespace LandfillService.Common.Context
     #region(Entries)
 
     /// <summary>
-    /// Saves a weight entry for a given project
+    /// Saves a weight entry for a given projectResponse
     /// </summary>
-    /// <param name="project">ProjectDb</param>
-    /// <param name="geofenceUid">Geofence UID</param>
+    /// <param name="projectResponse">Project</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
     /// <param name="entry">Weight entry from the client</param>
     /// <returns></returns>
-    public static void SaveEntry(Project project, string geofenceUid, WeightEntry entry)
+    public static void SaveEntry(ProjectResponse projectResponse, string geofenceUid, WeightEntry entry)
     {
       WithConnection<object>((conn) =>
       {
@@ -253,8 +251,8 @@ namespace LandfillService.Common.Context
                                 ON DUPLICATE KEY UPDATE Weight = @weight";
 
         MySqlHelper.ExecuteNonQuery(conn, command,
-          new MySqlParameter("@projectId", project.id),
-          new MySqlParameter("@projectUid", project.projectUid),
+          new MySqlParameter("@projectId", projectResponse.id),
+          new MySqlParameter("@projectUid", projectResponse.projectUid),
           new MySqlParameter("@geofenceUid", geofenceUid),
           new MySqlParameter("@date", entry.date),
           new MySqlParameter("@weight", entry.weight));
@@ -263,14 +261,14 @@ namespace LandfillService.Common.Context
       });
     }
 
-    public static bool IfNeedToTouchEntries(Project project, string geofenceUid, DateTime date)
+    public static bool IfNeedToTouchEntries(ProjectResponse projectResponse, string geofenceUid, DateTime date)
     {
       return WithConnection((conn) =>
       {
         var command = @"SELECT count(*) FROM Entries 
                             WHERE ProjectUID = @projectUid  AND GeofenceUID = @geofenceUid and Date=@date";
         var result = MySqlHelper.ExecuteScalar(conn, command,
-          new MySqlParameter("@projectUid", project.projectUid),
+          new MySqlParameter("@projectUid", projectResponse.projectUid),
           new MySqlParameter("@geofenceUid", geofenceUid),
           new MySqlParameter("@date", date.Date));
         return (int) result == 0;
@@ -280,10 +278,10 @@ namespace LandfillService.Common.Context
 
 
     /// <summary>
-    /// Saves a volume for a given project, geofence and date
+    /// Saves a volume for a given projectResponse, geofence and date
     /// </summary>
-    /// <param name="projectUid">ProjectDb UID</param>
-    /// <param name="geofenceUid">Geofence UID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
     /// <param name="date">Date</param>
     /// <param name="volume">Volume</param>
     /// <returns></returns>
@@ -291,7 +289,7 @@ namespace LandfillService.Common.Context
     {
       //If we are getting 0 value whereas the actual value was non zero assume 3d subsystmen failure and exit
       var project = LandfillDb.GetProject(projectUid).First();
-      /*  var entries = LandfillDb.GetEntries(project, geofenceUid, date, date);
+      /*  var entries = LandfillDb.GetEntries(projectResponse, geofenceUid, date, date);
           if (entries.Any())
             if (entries.First().volume > 0 && volume == 0)
               return;*/
@@ -321,8 +319,8 @@ namespace LandfillService.Common.Context
     /// <summary>
     /// Marks an entry with "volume not retrieved" so it can be retried later
     /// </summary>
-    /// <param name="projectUid">ProjectDb UID</param>
-    /// <param name="geofenceUid">Geofence UID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
     /// <param name="date">Date of the entry</param>
     /// <returns></returns>
     public static void MarkVolumeNotRetrieved(string projectUid, string geofenceUid, DateTime date)
@@ -342,13 +340,13 @@ namespace LandfillService.Common.Context
     }
 
 
-    public static List<Project> GetListOfAvailableProjects()
+    public static List<ProjectResponse> GetListOfAvailableProjects()
     {
       return InTransaction((conn) =>
       {
         var command =
           @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name, cp.LegacyCustomerID
-                          FROM ProjectDb prj 
+                          FROM Project prj 
                           JOIN CustomerProject cp on prj.ProjectUID = cp.fk_ProjectUID
 						              JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
                           JOIN ProjectSubscription ps ON prj.ProjectUID = ps.fk_ProjectUID
@@ -356,10 +354,10 @@ namespace LandfillService.Common.Context
                           WHERE prj.fk_ProjectTypeID = 1 AND prj.IsDeleted = 0";
         using (var reader = MySqlHelper.ExecuteReader(conn, command))
         {
-          var projects = new List<Project>();
+          var projects = new List<ProjectResponse>();
           while (reader.Read())
           {
-            projects.Add(new Project
+            projects.Add(new ProjectResponse
             {
               id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
               timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone")),
@@ -376,8 +374,8 @@ namespace LandfillService.Common.Context
     /// <summary>
     /// Marks an entry with "volume not available" to indicate that there is no volume information in Raptor for that date
     /// </summary>
-    /// <param name="projectUid">ProjectDb UID</param>
-    /// <param name="geofenceUid">Geofence UID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
     /// <param name="date">Date of the entry</param>
     /// <returns></returns>
     public static void MarkVolumeNotAvailable(string projectUid, string geofenceUid, DateTime date)
@@ -398,17 +396,17 @@ namespace LandfillService.Common.Context
       });
     }
 
-    public static List<Project> GetProject(string projectUid)
+    public static List<ProjectResponse> GetProject(string projectUid)
     {
       return InTransaction((conn) =>
       {
 
         var command = @"SELECT ProjectID, Name, LandfillTimeZone,
                                      ProjectUID, ProjectTimeZone
-                              FROM ProjectDb
+                              FROM Project
                               WHERE ProjectUID = @projectUid";
 
-        var projects = new List<Project>();
+        var projects = new List<ProjectResponse>();
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", projectUid)))
         {
@@ -416,7 +414,7 @@ namespace LandfillService.Common.Context
           {
 
 
-            projects.Add(new Project
+            projects.Add(new ProjectResponse
             {
               id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
               projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
@@ -432,25 +430,25 @@ namespace LandfillService.Common.Context
     }
 
     /// <summary>
-    /// Retrieves data entries for a given project. If date range is not specified, returns data 
-    /// for 2 years ago to today in project time zone. If geofence is not specified returns data for 
-    /// entire project area otherwise for geofenced area.
+    /// Retrieves data entries for a given projectResponse. If date range is not specified, returns data 
+    /// for 2 years ago to today in projectResponse time zone. If geofence is not specified returns data for 
+    /// entire projectResponse area otherwise for geofenced area.
     /// </summary>
-    /// <param name="project">ProjectDb</param>
-    /// <param name="geofenceUid">Geofence UID</param>
-    /// <param name="startDate">Start date in project time zone</param>
-    /// <param name="endDate">End date in project time zone</param>
+    /// <param name="projectResponse">Project</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
+    /// <param name="startDate">Start date in projectResponse time zone</param>
+    /// <param name="endDate">End date in projectResponse time zone</param>
     /// <returns>A list of data entries</returns>
-    public static IEnumerable<DayEntry> GetEntries(Project project, string geofenceUid, DateTime? startDate,
+    public static IEnumerable<DayEntry> GetEntries(ProjectResponse projectResponse, string geofenceUid, DateTime? startDate,
       DateTime? endDate)
     {
-      string projectGeofenceUid = GetGeofenceUidForProject(project);
+      string projectGeofenceUid = GetGeofenceUidForProject(projectResponse);
       if (string.IsNullOrEmpty(geofenceUid))
         geofenceUid = projectGeofenceUid;
 
       return WithConnection((conn) =>
       {
-        var dateRange = CheckDateRange(project.timeZoneName, startDate, endDate);
+        var dateRange = CheckDateRange(projectResponse.timeZoneName, startDate, endDate);
 
         var entriesLookup = (from dr in dateRange
           select new DayEntry
@@ -468,7 +466,7 @@ namespace LandfillService.Common.Context
                                 ORDER BY Date";
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command,
-          new MySqlParameter("@projectUid", project.projectUid),
+          new MySqlParameter("@projectUid", projectResponse.projectUid),
           new MySqlParameter("@geofenceUid", geofenceUid),
           new MySqlParameter("@startDate", dateRange.First()),
           new MySqlParameter("@endDate", dateRange.Last())
@@ -498,9 +496,9 @@ namespace LandfillService.Common.Context
     }
 
     /// <summary>
-    /// Gets today's date in the project time zone.
+    /// Gets today's date in the projectResponse time zone.
     /// </summary>
-    /// <param name="timeZoneName">ProjectDb time zone name</param>
+    /// <param name="timeZoneName">Project time zone name</param>
     /// <returns></returns>
     public static DateTime GetTodayInProjectTimeZone(string timeZoneName)
     {
@@ -511,21 +509,21 @@ namespace LandfillService.Common.Context
     }
 
     /// <summary>
-    /// Gets the geofence UID for the project from the Geofence table
+    /// Gets the geofence UID for the projectResponse from the GeofenceResponse table
     /// </summary>
-    /// <param name="project">ProjectDb</param>
-    /// <returns>The geofence UID. If none was specified returns the project geofence UID</returns>
-    private static string GetGeofenceUidForProject(Project project)
+    /// <param name="projectResponse">Project</param>
+    /// <returns>The geofence UID. If none was specified returns the projectResponse geofence UID</returns>
+    private static string GetGeofenceUidForProject(ProjectResponse projectResponse)
     {
       return WithConnection((conn) =>
       {
-        //Get the project geofence uid
+        //Get the projectResponse geofence uid
         string projectGeofenceUid = null;
         var command = @"SELECT g.GeofenceUID
-                              FROM Geofence g JOIN ProjectGeofence pg ON g.GeofenceUID = pg.fk_GeofenceUID 
-                              WHERE pg.fk_ProjectUID = @projectUid AND g.fk_GeofenceTypeID = 1"; //ProjectDb type
+                              FROM GeofenceResponse g JOIN ProjectGeofence pg ON g.GeofenceUID = pg.fk_GeofenceUID 
+                              WHERE pg.fk_ProjectUID = @projectUid AND g.fk_GeofenceTypeID = 1"; //Project type
         using (var reader =
-          MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", project.projectUid)))
+          MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", projectResponse.projectUid)))
         {
           while (reader.Read())
           {
@@ -551,7 +549,7 @@ namespace LandfillService.Common.Context
 
     private static IEnumerable<DateTime> CheckDateRange(string timeZoneName, DateTime? startDate, DateTime? endDate)
     {
-      //Check date range within 2 years ago to today in project time zone
+      //Check date range within 2 years ago to today in projectResponse time zone
       var projTimeZone = DateTimeZoneProviders.Tzdb[timeZoneName];
       DateTime utcNow = DateTime.UtcNow;
       Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
@@ -574,25 +572,25 @@ namespace LandfillService.Common.Context
     #region Geofences
 
     /// <summary>
-    /// Retrieves the geofences associated with the project.
+    /// Retrieves the geofences associated with the projectResponse.
     /// </summary>
-    /// <param name="projectUid">ProjectDb UID</param>
+    /// <param name="projectUid">Project UID</param>
     /// <returns>A list of geofences</returns>
-    public static IEnumerable<Geofence> GetGeofences(string projectUid)
+    public static IEnumerable<GeofenceResponse> GetGeofences(string projectUid)
     {
       return WithConnection((conn) =>
       {
-        var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID, g.GeometryWKT FROM Geofence g
+        var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID, g.GeometryWKT FROM GeofenceResponse g
                             JOIN ProjectGeofence pg on g.GeofenceUID = pg.fk_GeofenceUID
                             WHERE pg.fk_ProjectUID = @projectUid AND g.IsDeleted = 0 
                                 AND (g.fk_GeofenceTypeID = 1 OR g.fk_GeofenceTypeID = 10)";
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", projectUid)))
         {
-          List<Geofence> geofences = new List<Geofence>();
+          List<GeofenceResponse> geofences = new List<GeofenceResponse>();
           while (reader.Read())
           {
-            geofences.Add(new Geofence
+            geofences.Add(new GeofenceResponse
             {
               uid = Guid.Parse(reader.GetString(reader.GetOrdinal("GeofenceUID"))),
               name = reader.GetString(reader.GetOrdinal("Name")),
@@ -634,13 +632,13 @@ namespace LandfillService.Common.Context
     /// <summary>
     /// Retrieves a geofence boundary
     /// </summary>
-    /// <param name="geofenceUid">Geofence UID</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
     /// <returns>A list of WGS84 points</returns>
     public static IEnumerable<WGSPoint> GetGeofencePoints(string geofenceUid)
     {
       return WithConnection((conn) =>
       {
-        var command = @"SELECT GeometryWKT FROM Geofence
+        var command = @"SELECT GeometryWKT FROM GeofenceResponse
                             WHERE GeofenceUID = @geofenceUid";
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@geofenceUid", geofenceUid)))
@@ -660,10 +658,10 @@ namespace LandfillService.Common.Context
     #region CCA
 
     /// <summary>
-    /// Saves a CCA summary for a given project, geofence, date, machine and lift
+    /// Saves a CCA summary for a given projectResponse, geofence, date, machine and lift
     /// </summary>
-    /// <param name="projectUid">ProjectDb UID</param>
-    /// <param name="geofenceUid">Geofence UID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
     /// <param name="date">Date</param>
     /// <param name="machineId">Machine ID</param>
     /// <param name="liftId">Lift/Layer ID</param>
@@ -680,8 +678,8 @@ namespace LandfillService.Common.Context
     /// <summary>
     /// Marks an entry with "CCA not retrieved" so it can be retried later
     /// </summary>
-    /// <param name="projectUid">ProjectDb UID</param>
-    /// <param name="geofenceUid">Geofence UID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
     /// <param name="date">Date of the entry</param>
     /// <param name="machineId">Machine ID</param>
     /// <param name="liftId">Lift/Layer ID</param>
@@ -695,8 +693,8 @@ namespace LandfillService.Common.Context
     /// <summary>
     /// Marks an entry with "CCA not available" to indicate that there is no CCA information in Raptor for that date
     /// </summary>
-    /// <param name="projectUid">ProjectDb UID</param>
-    /// <param name="geofenceUid">Geofence UID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
     /// <param name="date">Date of the entry</param>
     /// <param name="machineId">Machine ID</param>
     /// <param name="liftId">Lift/Layer ID</param>
@@ -710,8 +708,8 @@ namespace LandfillService.Common.Context
     /// <summary>
     /// Inserts or updates a CCA entry in the database.
     /// </summary>
-    /// <param name="projectUid">ProjectDb UID</param>
-    /// <param name="geofenceUid">Geofence UID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
     /// <param name="date">Date of the entry</param>
     /// <param name="machineId">Machine ID</param>
     /// <param name="liftId">Lift/Layer ID</param>
@@ -760,28 +758,28 @@ namespace LandfillService.Common.Context
     }
 
     /// <summary>
-    /// Gets CCA data for the project for all machines for all lifts. If date range is not specified, returns data 
-    /// for 2 years ago to today in project time zone. If geofence is not specified returns data for 
-    /// entire project area otherwise for geofenced area. If machineId is not specified returns data for all machines.
+    /// Gets CCA data for the projectResponse for all machines for all lifts. If date range is not specified, returns data 
+    /// for 2 years ago to today in projectResponse time zone. If geofence is not specified returns data for 
+    /// entire projectResponse area otherwise for geofenced area. If machineId is not specified returns data for all machines.
     /// If liftId is not specified returns data for all lifts.
     /// </summary>
-    /// <param name="project">ProjectDb</param>
-    /// <param name="geofenceUid">Geofence UID</param>
-    /// <param name="startDate">Start date in project time zone</param>
-    /// <param name="endDate">End date in project time zone</param>
+    /// <param name="projectResponse">Project</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
+    /// <param name="startDate">Start date in projectResponse time zone</param>
+    /// <param name="endDate">End date in projectResponse time zone</param>
     /// <param name="machineId">Machine ID</param>
     /// <param name="liftId">Lift ID</param>
     /// <returns>A list of CCA entries</returns>
-    public static IEnumerable<CCA> GetCCA(Project project, string geofenceUid, DateTime? startDate, DateTime? endDate,
+    public static IEnumerable<CCA> GetCCA(ProjectResponse projectResponse, string geofenceUid, DateTime? startDate, DateTime? endDate,
       long? machineId, int? liftId)
     {
-      string projectGeofenceUid = GetGeofenceUidForProject(project);
+      string projectGeofenceUid = GetGeofenceUidForProject(projectResponse);
       if (string.IsNullOrEmpty(geofenceUid))
         geofenceUid = projectGeofenceUid;
 
       return WithConnection((conn) =>
       {
-        var dateRange = CheckDateRange(project.timeZoneName, startDate, endDate).ToList();
+        var dateRange = CheckDateRange(projectResponse.timeZoneName, startDate, endDate).ToList();
         var firstDate = dateRange.First();
         var lastDate = dateRange.Last();
         liftId = liftId ?? -1;
@@ -799,7 +797,7 @@ namespace LandfillService.Common.Context
 
         List<MySqlParameter> parms = new List<MySqlParameter>
         {
-          new MySqlParameter("@projectUid", project.projectUid),
+          new MySqlParameter("@projectUid", projectResponse.projectUid),
           new MySqlParameter("@geofenceUid", geofenceUid),
           new MySqlParameter("@startDate", firstDate),
           new MySqlParameter("@endDate", lastDate),
@@ -862,7 +860,7 @@ namespace LandfillService.Common.Context
     /// <summary>
     /// Get the ID of the machine with the given details. If it doesn't exist then create it.
     /// </summary>
-    /// <param name="projectUid">ProjectDb UID</param>
+    /// <param name="projectUid">Project UID</param>
     /// <param name="details">Machine details</param>
     /// <returns>ID of the machine</returns>
     public static long GetMachineId(string projectUid, MachineDetails details)
@@ -882,7 +880,7 @@ namespace LandfillService.Common.Context
           var existingId = GetMachineId(conn, parms, details.machineName);
           if (existingId == 0)
           {
-            Log.DebugFormat("Inserting machine {1} for project {0}", projectUid, details);
+            Log.DebugFormat("Inserting machine {1} for projectResponse {0}", projectUid, details);
 
             var command =
               @"INSERT INTO Machine (AssetID, MachineName, IsJohnDoe, ProjectUID)
@@ -891,7 +889,7 @@ namespace LandfillService.Common.Context
             MySqlHelper.ExecuteNonQuery(conn, command, parms);
             existingId = GetMachineId(conn, parms, details.machineName);
           }
-          Log.DebugFormat("GetMachineId for project {0}, machine {1} is {2}", projectUid, details, existingId);
+          Log.DebugFormat("GetMachineId for projectResponse {0}, machine {1} is {2}", projectUid, details, existingId);
           return existingId;
         }
       });
@@ -920,13 +918,13 @@ namespace LandfillService.Common.Context
           updateName =
             !machineName.Equals(reader.GetString(reader.GetOrdinal("MachineName")),
               StringComparison.OrdinalIgnoreCase);
-          Log.DebugFormat("Found machine ({0},{1},{2}) for project {3} machineId {4}",
+          Log.DebugFormat("Found machine ({0},{1},{2}) for projectResponse {3} machineId {4}",
             sqlParams[0].Value, sqlParams[1].Value, sqlParams[2].Value, sqlParams[3].Value, existingId);
         }
       }
       if (updateName)
       {
-        Log.DebugFormat("Updating machine ({0},{1},{2}) for project {3} machineId {4}",
+        Log.DebugFormat("Updating machine ({0},{1},{2}) for projectResponse {3} machineId {4}",
           sqlParams[0].Value, sqlParams[1].Value, sqlParams[2].Value, sqlParams[3].Value, existingId);
 
         var command = @"UPDATE Machine SET MachineName = @machineName WHERE ID = @machineId";

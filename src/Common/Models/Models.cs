@@ -6,13 +6,13 @@ namespace LandfillService.Common.Models
   #region Web API Models
 
   /// <summary>
-  /// ProjectDb representation
+  /// Project representation
   /// </summary>
-  public class Project
+  public class ProjectResponse
   {
     public uint id { get; set; }
     public string name { get; set; }
-    public string timeZoneName { get; set; } // project time zone name (NodaTime)
+    public string timeZoneName { get; set; } // projectResponse time zone name (NodaTime)
     public int? daysToSubscriptionExpiry { get; set; }
     public string projectUid { get; set; }
     public string legacyTimeZoneName { get; set; }
@@ -20,9 +20,9 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  /// Geofence representation
+  /// GeofenceResponse representation
   /// </summary>
-  public class Geofence
+  public class GeofenceResponse
   {
     public Guid uid { get; set; }
     public string name { get; set; }
@@ -46,7 +46,7 @@ namespace LandfillService.Common.Models
   /// </summary>
   public class DateEntry
   {
-    public DateTime date { get; set; } // date of the entry; always in the project time zone
+    public DateTime date { get; set; } // date of the entry; always in the projectResponse time zone
     public string geofenceUid { get; set; }
 
     /// <summary>
@@ -64,7 +64,7 @@ namespace LandfillService.Common.Models
   /// </summary>
   public class WeightEntry
   {
-    public DateTime date { get; set; } // date of the entry; always in the project time zone
+    public DateTime date { get; set; } // date of the entry; always in the projectResponse time zone
     public double weight { get; set; }
 
     /// <summary>
@@ -78,7 +78,7 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  /// Data entry for a given date - part of project data sent to the client 
+  /// Data entry for a given date - part of projectResponse data sent to the client 
   /// </summary>
   public class DayEntry
   {
@@ -122,18 +122,18 @@ namespace LandfillService.Common.Models
   public class WeightData
   {
     public IEnumerable<GeofenceWeightEntry> entries { get; set; }
-    public bool retrievingVolumes { get; set; } // is the service currently retrieving volumes for this project?
-    public Project project { get; set; }
+    public bool retrievingVolumes { get; set; } // is the service currently retrieving volumes for this projectResponse?
+    public ProjectResponse projectResponse { get; set; }
   }
 
   /// <summary>
-  /// Encapsulates project data sent to the client 
+  /// Encapsulates projectResponse data sent to the client 
   /// </summary>
   public class ProjectData
   {
     public IEnumerable<DayEntry> entries { get; set; }
-    public bool retrievingVolumes { get; set; } // is the service currently retrieving volumes for this project?
-    public Project project { get; set; }
+    public bool retrievingVolumes { get; set; } // is the service currently retrieving volumes for this projectResponse?
+    public ProjectResponse projectResponse { get; set; }
   }
 
   /// <summary>
@@ -396,7 +396,7 @@ namespace LandfillService.Common.Models
 
 
   /// <summary>
-  /// ProjectDb extents entry returned from the Raptor API
+  /// Project extents entry returned from the Raptor API
   /// </summary>
   public class ProjectExtentsResult
   {
@@ -405,40 +405,40 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  /// A representation of a set of spatial and temporal stastics for the project as a whole
+  /// A representation of a set of spatial and temporal stastics for the projectResponse as a whole
   /// </summary>
   public class ProjectStatisticsResult
   {
     /// <summary>
-    /// Earlist time stamped data present in the project, including both production and surveyed surface data.
+    /// Earlist time stamped data present in the projectResponse, including both production and surveyed surface data.
     /// </summary>
     public DateTime startTime;
 
     /// <summary>
-    /// Latest time stamped data present in the project, including both production and surveyed surface data.
+    /// Latest time stamped data present in the projectResponse, including both production and surveyed surface data.
     /// </summary>
     public DateTime endTime;
 
     /// <summary>
-    /// Size of spatial data cells in the project (the default value is 34cm)
+    /// Size of spatial data cells in the projectResponse (the default value is 34cm)
     /// </summary>
     public Double cellSize;
 
     /// <summary>
     /// The index origin offset from the absolute bottom left origin of the subgrid tree cartesian coordinate system to the centered origin of the cartesian
-    /// grid coordinate system used in the project, and the centered origin cartesian coordinates of cell addresses.
+    /// grid coordinate system used in the projectResponse, and the centered origin cartesian coordinates of cell addresses.
     /// </summary>
     public Int32 indexOriginOffset;
 
     /// <summary>
-    /// The three dimensional extents of the project including both production and surveyed surface data.
+    /// The three dimensional extents of the projectResponse including both production and surveyed surface data.
     /// </summary>
     public BoundingBox3DGrid extents;
 
     /// <summary>
     /// ToString override
     /// </summary>
-    /// <returns>Formatted string representation of the project statistics information.</returns>
+    /// <returns>Formatted string representation of the projectResponse statistics information.</returns>
     public override string ToString()
     {
       return String.Format("Start time:{0}, end time:{1}, cellsize:{2}, indexOriginOffset:{3}, extents:{4}",
@@ -601,7 +601,7 @@ namespace LandfillService.Common.Models
   public class Lift
   {
     public int layerId { get; set; }
-    public DateTime endTime { get; set; } //in project time zone
+    public DateTime endTime { get; set; } //in projectResponse time zone
   }
 
   #endregion

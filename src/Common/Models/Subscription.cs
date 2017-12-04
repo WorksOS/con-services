@@ -9,7 +9,6 @@ namespace Common.Models
     public int ServiceTypeID { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public DateTime EffectiveUTC { get; set; }
     public DateTime LastActionedUTC { get; set; }
   }
 

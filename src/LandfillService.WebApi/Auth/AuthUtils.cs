@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using Common.Models;
-using LandfillService.Common.Context;
+using Common.Repository;
 using VSP.MasterData.Customer.WebAPI.Models;
 using VSS.Authentication.JWT;
-using Project = LandfillService.Common.Models.Project;
 
 public class AuthUtilities
 {
@@ -71,7 +70,7 @@ public class AuthUtilities
     }
   }
 
-  public IEnumerable<ProjectDb> GetLandfillProjectsForUser(string userUid)
+  public IEnumerable<Project> GetLandfillProjectsForUser(string userUid)
   {
     try
     {

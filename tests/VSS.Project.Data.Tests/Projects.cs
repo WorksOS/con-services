@@ -1,199 +1,180 @@
-﻿//using System;
-//using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using MySql.Data.MySqlClient;
-//using VSS.Geofence.Data;
-//using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+﻿using System;
+using System.Linq;
+using Common.Repository;
+using MasterDataRepo;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 
-//namespace VSS.Project.Data.Tests
-//{
-//  [TestClass]
-//  public class Projects
-//  {
-//     private readonly MySqlProjectRepository _projectService;
+namespace VSS.Project.Data.Tests
+{
+  [TestClass]
+  public class Projects
+  {
+    private readonly CustomerRepo _customerRepo;
+    private readonly ProjectRepo _projectRepo;
+    private readonly GeofenceRepo _geofenceRepo;
+    private readonly SubscriptionRepo _subscriptionRepo;
 
-//     public Projects()
-//    {
-//      _projectService = new MySqlProjectRepository();
-//    }
+    public Projects()
+    {
+      _customerRepo = new CustomerRepo();
+      _projectRepo = new ProjectRepo();
+      _geofenceRepo = new GeofenceRepo();
+      _subscriptionRepo = new SubscriptionRepo();
+    }
 
-//    private CreateProjectEvent GetNewCreateProjectEvent()
-//    {
-//      return new CreateProjectEvent()
-//      {
-//        ProjectUID = Guid.NewGuid(),
-//        ProjectID = 123,
-//        ProjectName = "Test Project",
-//        ProjectTimezone = "New Zealand Standard Time",
-//        ProjectType = ProjectType.LandFill,
-//        ProjectStartDate = DateTime.UtcNow.AddDays(-1).Date,
-//        ProjectEndDate = DateTime.UtcNow.AddDays(1).Date,
-//        ActionUTC = DateTime.UtcNow,
-//        ReceivedUTC = DateTime.UtcNow.AddMilliseconds(1000)
-//      };
-//    }
+    private CreateCustomerEvent CreateCustomerEvent()
+    {
+      return new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "blah",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = DateTime.UtcNow
+      };
+    }
+    private AssociateCustomerUserEvent CreateAssociateCustomerUserEvent(Guid customerUid)
+    {
+      return new AssociateCustomerUserEvent()
+      {
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = DateTime.UtcNow
+      };
+    }
 
-//    private UpdateProjectEvent GetNewUpdateProjectEvent(Guid projectUID, string projectName, string projectTimeZone, DateTime projectEndDate, DateTime lastActionedUTC)
-//    {
-//      return new UpdateProjectEvent()
-//      {
-//        ProjectUID = projectUID,
-//        ProjectName = projectName,
-//        ProjectTimezone = projectTimeZone,
-//        ProjectType = ProjectType.LandFill,
-//        ProjectEndDate = projectEndDate,
-//        ActionUTC = lastActionedUTC,
-//        ReceivedUTC = DateTime.UtcNow.AddMilliseconds(100)
-//      };
-//    }
+    private CreateProjectEvent CreateCreateProjectEvent()
+    {
+      return new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = new Random().Next(1, 19999),
+        ProjectName = "Test Project",
+        ProjectTimezone = "New Zealand Standard Time",
+        ProjectType = ProjectType.LandFill,
+        ProjectStartDate = DateTime.UtcNow.AddYears(-1).AddDays(-1).Date,
+        ProjectEndDate = DateTime.UtcNow.AddYears(1).AddDays(1).Date,
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = DateTime.UtcNow
+      };
+    }
 
-//    private DeleteProjectEvent GetNewDeleteProjectEvent(Guid projectUID, DateTime lastActionedUTC)
-//    {
-//      return new DeleteProjectEvent()
-//      {
-//        ProjectUID = projectUID,
-//        ActionUTC = lastActionedUTC,
-//        ReceivedUTC = DateTime.UtcNow.AddMilliseconds(100)
-//      };
-//    }
+    private AssociateProjectCustomer CreateAssociateProjectCustomer(Guid customerUid, long legacyCustomerId,
+      Guid projectUid)
+    {
+      return new AssociateProjectCustomer()
+      {
+        CustomerUID = customerUid,
+        LegacyCustomerID = legacyCustomerId,
+        ProjectUID = projectUid,
+        ActionUTC = DateTime.UtcNow
+      };
+    }
 
-//    private AssociateProjectCustomer GetNewAssociateProjectCustomerEvent(Guid projectUID, Guid customerUID, long legacyCustomerID, DateTime receivedUTC)
-//    {
-//      return new AssociateProjectCustomer()
-//      {
-//        ProjectUID = projectUID,
-//        CustomerUID = customerUID,
-//        LegacyCustomerID = legacyCustomerID,
-//        ActionUTC = DateTime.UtcNow,
-//        ReceivedUTC = receivedUTC
-//      };
-//    }
+    private CreateGeofenceEvent CreateCreateGeofenceEvent(Guid customerUid, string geofenceType)
+    {
+      // Geofence type 1 = Project, 10=Landfill
+      return new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = geofenceType,
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT =
+          "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        AreaSqMeters = 123.456
+      };
+    }
 
-//    private AssociateProjectGeofence GetNewAssociateProjectGeofenceEvent(Guid projectUID, Guid geofenceUID, DateTime receivedUTC)
-//    {
-//      return new AssociateProjectGeofence
-//      {
-//        ProjectUID = projectUID,
-//        GeofenceUID = geofenceUID,
-//        ActionUTC = DateTime.UtcNow,
-//        ReceivedUTC = receivedUTC
-//      };
-//    }
+    private AssociateProjectGeofence CreateAssociateProjectGeofenceEvent(Guid projectUid, Guid geofenceUid)
+    {
+      return new AssociateProjectGeofence
+      {
+        ProjectUID = projectUid,
+        GeofenceUID = geofenceUid,
+        ActionUTC = DateTime.UtcNow
+      };
+    }
 
-//    [TestMethod]
-//    public void CreateNewProject_Succeeds()
-//    {
-//      _projectService.InRollbackTransaction<object>(o =>
-//      {
-//        var createProjectEvent = GetNewCreateProjectEvent();
-//        var upsertCount = _projectService.StoreProject(createProjectEvent);
-//        Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
+    private CreateProjectSubscriptionEvent CreateCreateProjectSubscriptionEvent(Guid customerUid, string subscriptionType)
+    {
+      return new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = customerUid,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = subscriptionType,
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = DateTime.UtcNow
+      };
+    }
 
-//        var project = _projectService.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
-//        Assert.IsNotNull(project, "Failed to get the created project!");
+    private AssociateProjectSubscriptionEvent CreateAssociateProjectSubscriptionEvent(Guid projectUid, Guid subscriptionUid)
+    {
+      return new AssociateProjectSubscriptionEvent()
+      {
+        ProjectUID = projectUid,
+        SubscriptionUID = subscriptionUid,
+        EffectiveDate = new DateTime(2016, 02, 03),
+        ActionUTC = DateTime.UtcNow
+      };
+    }
 
-//        return null;
-//      });
-//    }
 
-//    [TestMethod]
-//    public void UpsertProject_Fails()
-//    {
-//      var upsertCount = _projectService.StoreProject(null);
-//      Assert.IsTrue(upsertCount == 0, "Should fail to upsert a project!");
-//    }
+    [TestMethod]
+    public void GetLandfillProjectsForUser_Succeeds()
+    {
+      int legacyCustomerId = new Random().Next(1, 1999999);
 
-//    [TestMethod]
-//    public void UpdateProject_Succeeds()
-//    {
-//      _projectService.InRollbackTransaction<object>(o =>
-//      {
-//        var createProjectEvent = GetNewCreateProjectEvent();
-//        var upsertCount = _projectService.StoreProject(createProjectEvent);
-//        Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
+      var createCustomerEvent = CreateCustomerEvent();
+      var associateCustomerUserEvent = CreateAssociateCustomerUserEvent(createCustomerEvent.CustomerUID);
 
-//        var updateProjectEvent = GetNewUpdateProjectEvent(createProjectEvent.ProjectUID, 
-//                                                          createProjectEvent.ProjectName, 
-//                                                          createProjectEvent.ProjectTimezone,
-//                                                          createProjectEvent.ProjectEndDate.AddDays(3),
-//                                                          DateTime.UtcNow);
-//        upsertCount = _projectService.StoreProject(updateProjectEvent);
-//        Assert.IsTrue(upsertCount == 1, "Failed to update the project!");
+      var createProjectEvent = CreateCreateProjectEvent();
+      var associateProjectCustomer = CreateAssociateProjectCustomer(createCustomerEvent.CustomerUID, legacyCustomerId, createProjectEvent.ProjectUID);
 
-//        var project = _projectService.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
-//        Assert.IsNotNull(project, "Failed to get the updated project!");
+      var createGeofenceEventProject = CreateCreateGeofenceEvent(createCustomerEvent.CustomerUID, "Project");
+      var associateProjectGeofenceProject = CreateAssociateProjectGeofenceEvent(createProjectEvent.ProjectUID, createGeofenceEventProject.GeofenceUID);
 
-//        Assert.IsTrue(project.ProjectUID == updateProjectEvent.ProjectUID.ToString(), "ProjectUID should not be changed!");
-//        Assert.IsTrue(project.Name == updateProjectEvent.ProjectName, "Project Name should not be changed!");
-//        Assert.IsTrue(project.ProjectTimeZone == updateProjectEvent.ProjectTimezone, "Project Time Zone should not be changed!");
-//        Assert.IsTrue((project.ProjectEndDate - createProjectEvent.ProjectEndDate).Days == 3, "ProjectEndDate of the updated project was incorectly updated!");
-//        Assert.IsTrue(project.LastActionedUTC > createProjectEvent.ActionUTC, "LastActionedUtc of the updated project was incorectly updated!");
+      var createGeofenceEventLandfill = CreateCreateGeofenceEvent(createCustomerEvent.CustomerUID, "Landfill");
+      var associateProjectGeofenceLandfill = CreateAssociateProjectGeofenceEvent(createProjectEvent.ProjectUID, createGeofenceEventLandfill.GeofenceUID);
 
-//        return null;
-//      });
-//    }
+      var createProjectSubscriptionEvent = CreateCreateProjectSubscriptionEvent(createCustomerEvent.CustomerUID, "Landfill"); 
+      var associateProjectSubscriptionEvent = CreateAssociateProjectSubscriptionEvent(createProjectEvent.ProjectUID, createProjectSubscriptionEvent.SubscriptionUID);
 
-//    [TestMethod]
-//    public void DeleteProject_Succeeds()
-//    {
-//      _projectService.InRollbackTransaction<object>(o =>
-//      {
-//        var createProjectEvent = GetNewCreateProjectEvent();
-//        var upsertCount = _projectService.StoreProject(createProjectEvent);
-//        Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
+      var insertCount = _customerRepo.StoreCustomer(createCustomerEvent);
+      Assert.AreEqual(1, insertCount, "Failed to create a createCustomerEvent.");
+      insertCount = _customerRepo.StoreCustomer(associateCustomerUserEvent);
+      Assert.AreEqual(1, insertCount, "Failed to create a associateCustomerUserEvent.");
 
-//        var deleteProjectEvent = GetNewDeleteProjectEvent(createProjectEvent.ProjectUID, DateTime.UtcNow);
+      insertCount = _projectRepo.StoreProject(createProjectEvent);
+      Assert.AreEqual(1, insertCount, "Failed to create a project.");
+      insertCount = _projectRepo.StoreProject(associateProjectCustomer);
+      Assert.AreEqual(1, insertCount, "Failed to create a associateProjectCustomer.");
 
-//        upsertCount = _projectService.StoreProject(deleteProjectEvent);
-//        Assert.IsTrue(upsertCount == 1, "Failed to delete the project!");
+      insertCount = _geofenceRepo.StoreGeofence(createGeofenceEventProject);
+      Assert.AreEqual(1, insertCount, "Failed to create a createGeofenceEventProject.");
+      insertCount = _projectRepo.StoreProject(associateProjectGeofenceProject);
+      Assert.AreEqual(1, insertCount, "Failed to create a associateProjectGeofenceProject.");
+      insertCount = _geofenceRepo.StoreGeofence(createGeofenceEventLandfill);
+      Assert.AreEqual(1, insertCount, "Failed to create a createGeofenceEventLandfill.");
+      insertCount = _projectRepo.StoreProject(associateProjectGeofenceLandfill);
+      Assert.AreEqual(1, insertCount, "Failed to create a associateProjectGeofenceLandfill.");
 
-//        var project = _projectService.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
-//        Assert.IsNull(project, "Succeeded to get the deleted project!");
+      insertCount = _subscriptionRepo.StoreSubscription(createProjectSubscriptionEvent);
+      Assert.AreEqual(1, insertCount, "Failed to create a createProjectSubscriptionEvent.");
+      insertCount = _subscriptionRepo.StoreSubscription(associateProjectSubscriptionEvent);
+      Assert.AreEqual(1, insertCount, "Failed to create a associateProjectSubscriptionEvent.");
 
-//        return null;
-//      });
-//    }
 
-//    [TestMethod]
-//    public void AssociateProjectCustomer_Succeeds()
-//    {
-//      _projectService.InRollbackTransaction<object>(o =>
-//      {
-//        var createProjectEvent = GetNewCreateProjectEvent();
-//        var upsertCount = _projectService.StoreProject(createProjectEvent);
-//        Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
-//        long legacyCustomerID = 8888;
-
-//        var associateProjectCustomerEvent = GetNewAssociateProjectCustomerEvent(createProjectEvent.ProjectUID, Guid.NewGuid(), legacyCustomerID, DateTime.UtcNow);
-
-//        upsertCount = _projectService.StoreProject(associateProjectCustomerEvent);
-//        Assert.IsTrue(upsertCount == 1, "Failed to associate the project with a customer!");
-
-//        var project = _projectService.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
-//        Assert.IsNotNull(project, "Failed to get the customer associated project!");
-
-//        Assert.IsTrue(project.CustomerUID == associateProjectCustomerEvent.CustomerUID.ToString(), "The project was associated with wrong customer!");
-
-//        return null;
-//      });
-//    }
-
-//    [TestMethod]
-//    public void AssociateProjectGeofence_Succeeds()
-//    {
-//      _projectService.InRollbackTransaction<object>(o =>
-//      {
-//        var createProjectEvent = GetNewCreateProjectEvent();
-//        var upsertCount = _projectService.StoreProject(createProjectEvent);
-//        Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
-
-//        var associateProjectGeofenceEvent = GetNewAssociateProjectGeofenceEvent(createProjectEvent.ProjectUID, Guid.NewGuid(), DateTime.UtcNow);
-
-//        upsertCount = _projectService.StoreProject(associateProjectGeofenceEvent);
-//        Assert.IsTrue(upsertCount == 1, "Failed to associate the project with a geofence!");
-
-//        return null;
-//      });
-//    }
-//  }
-//}
+      var project = LandfillDb.GetLandfillProjectsForUser(associateCustomerUserEvent.UserUID.ToString());
+      Assert.IsNotNull(project, "Error trying to get the created project.");
+      Assert.AreEqual(1, project.Count(), "Failed to get the created project.");
+      Assert.AreEqual(createProjectEvent.ProjectUID.ToString(), project?.ToList()[0].ProjectUID, "Failed to get the correct projectUID.");
+    }
+  }
+}

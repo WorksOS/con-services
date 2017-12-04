@@ -41,16 +41,16 @@ namespace LandfillService.WebApi.Auth
 
         if (customer != null)
         {
-          IEnumerable<ProjectDb> userProjects = utils.GetLandfillProjectsForUser(userUid);
+          IEnumerable<Project> userProjects = utils.GetLandfillProjectsForUser(userUid);
           projectList = new Dictionary<long, ProjectDescriptor>();
           
           foreach (var userProject in userProjects)
           {
-            projectList.Add(userProject.ProjectID,
+            projectList.Add(userProject.LegacyProjectID,
               new ProjectDescriptor
               {
                 isLandFill = true,
-                isArchived = userProject.IsDeleted || userProject.SubEndDate < DateTime.UtcNow
+                isArchived = userProject.IsDeleted || userProject.SubscriptionEndDate < DateTime.UtcNow
               });
           }
           Log.DebugFormat("Authorization: for Customer: {0} projectList is: {1}", customer, projectList.ToString());
