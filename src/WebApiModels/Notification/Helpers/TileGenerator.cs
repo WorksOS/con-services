@@ -51,8 +51,9 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
     /// and the tiles are generated for this. If it is a design file then a DXF file of the surface boundary has been created and the tiles are
     /// generated for this.</param>
     /// <param name="suffix">The suffix to apply to a file name for the generated associated DXF file</param>
+    /// <param name="zoomResult">The zoom level range for the file calculated from the DXF extents</param>
     /// <param name="regenerate">True indicates tiles should always be generated even if present</param>
-    public async Task<bool> CreateDxfTiles(long projectId, FileDescriptor fileDescr, string suffix, bool regenerate)
+    public async Task<bool> CreateDxfTiles(long projectId, FileDescriptor fileDescr, string suffix, ZoomRangeResult zoomResult, bool regenerate)
     {
       //TODO: How are we going to handle not repeating tile generation
       //In CG this was min/max/lat/lng in database as a flag
@@ -66,14 +67,13 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
         //Do we care if this fails?
       }
 
-      var timeout = GetJobTimeoutConfig();
       var fullGeneratedName = string.Format("{0}/{1}", fileDescr.path, generatedName);
-      var zoomResult = await CalculateTileZoomRange(fileDescr.filespaceId, fullGeneratedName, timeout);
       success = zoomResult.success;
       if (success)
       {
         //Now do the rendering
         string tilePath = FileUtils.TilePath(fileDescr.path, generatedName);
+        var timeout = GetJobTimeoutConfig();
 
         // Generate .DXF file tiles and place the tiles in TCC...
         if (regenerate || ! await fileRepo.FolderExists(fileDescr.filespaceId, tilePath))
@@ -100,9 +100,8 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
     /// </summary>
     /// <param name="filespaceId">The filespace ID in TCC where the DXF file is located</param>
     /// <param name="fullGeneratedName">The full DXF file name, including path, which is a generated associated name for design and alignment files</param>
-    /// <param name="timeout">Maximum time to wait for the completion of the TCC job</param>
     /// <returns>Zoom range and success or failure</returns>
-    private async Task<ZoomRangeResult> CalculateTileZoomRange(string filespaceId, string fullGeneratedName, TimeSpan timeout)
+    public async Task<ZoomRangeResult> CalculateTileZoomRange(string filespaceId, string fullGeneratedName)
     {
       var result = new ZoomRangeResult { success = true };
 
@@ -113,6 +112,8 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       const int MIN_PIXELS_SQUARED = 100;
       const int MIN_MAP_ZOOM_LEVEL = 5;
       const int MAX_MAP_ZOOM_LEVEL = 24;
+
+      var timeout = GetJobTimeoutConfig();
 
       int waitInterval;
       int maxZoomLevel;
@@ -238,7 +239,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       maxZoomRange = configStore.GetValueInt("TILE_RENDER_MAX_ZOOM_RANGE");
       waitInterval = configStore.GetValueInt("TILE_RENDER_WAIT_INTERVAL");
 
-      if (maxZoomLevel == 0 || maxZoomRange == 0 || waitInterval == 0)
+      if (maxZoomLevel <= 0 || maxZoomRange <= 0 || waitInterval <= 0)
       {
         var errorString = "Your application is missing an environment variable TILE_RENDER_MAX_ZOOM_LEVEL or TILE_RENDER_MAX_ZOOM_RANGE or TILE_RENDER_WAIT_INTERVAL";
         log.LogError(errorString);
@@ -310,6 +311,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
     private async Task<bool> GenerateDxfTiles(long projectId, string generatedName, string tilePath, string filespaceId, int zoomLevel, TimeSpan timeout, int waitInterval = -1)
     {
       bool success = true;
+
       //Check if tiles already exist
       if (! await fileRepo.FolderExists(filespaceId, tilePath))
       {
@@ -366,13 +368,5 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       }
       return success;
     }
-
-    private class ZoomRangeResult
-    {
-      public int minZoom;
-      public int maxZoom;
-      public bool success;
-    }
-
   }
 }

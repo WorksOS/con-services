@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
+using VSS.Productivity3D.WebApi.Models.Notification.Models;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -51,6 +52,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
     {
       try
       {
+        ZoomRangeResult zoomResult = new ZoomRangeResult();
         ProjectFileDescriptor request = item as ProjectFileDescriptor;
         ImportedFileType fileType = request.FileType;//FileUtils.GetFileType(request.File.fileName);
         log.LogDebug($"FileType is: {fileType}");
@@ -118,8 +120,12 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             //Get alignment or surface boundary as DXF file from Raptor
             await CreateDxfFile(request.projectId.Value, request.File, suffix, request.DXFUnitsType);    
           }
+          //Calculate the zoom range
+          string generatedName = FileUtils.GeneratedFileName(request.File.fileName, suffix, FileUtils.DXF_FILE_EXTENSION);
+          var fullGeneratedName = string.Format("{0}/{1}", request.File.path, generatedName);
+          zoomResult = await tileGenerator.CalculateTileZoomRange(request.File.filespaceId, fullGeneratedName).ConfigureAwait(false); 
           //Generate DXF tiles
-          await tileGenerator.CreateDxfTiles(request.projectId.Value, request.File, suffix, false).ConfigureAwait(false);
+          await tileGenerator.CreateDxfTiles(request.projectId.Value, request.File, suffix, zoomResult, false).ConfigureAwait(false);
         }
 
         else if (fileType == ImportedFileType.SurveyedSurface)
@@ -142,7 +148,8 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           }
         }
 
-        return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification successful");
+        return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification successful")
+        { minZoomLevel = zoomResult.minZoom, maxZoomLevel = zoomResult.maxZoom };
       }
       finally
       {

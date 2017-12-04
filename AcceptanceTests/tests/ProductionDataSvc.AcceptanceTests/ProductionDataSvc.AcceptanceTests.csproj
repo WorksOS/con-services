@@ -273,6 +273,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Helpers\BeforeAndAfter.cs" />
+    <Compile Include="Models\AddFileResult.cs" />
     <Compile Include="Models\CCA.cs" />
     <Compile Include="Models\CCAColorPaletteResult.cs" />
     <Compile Include="Models\CellDatumRequest.cs" />

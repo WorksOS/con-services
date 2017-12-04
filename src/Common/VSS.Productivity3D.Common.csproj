@@ -12,6 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Helpers\**" />
+    <EmbeddedResource Remove="Helpers\**" />
+    <None Remove="Helpers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.DataAnnotations" Version="1.1.3" />
@@ -58,10 +64,6 @@
     <Reference Update="System.Xml.Linq">
       <Private>true</Private>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>
