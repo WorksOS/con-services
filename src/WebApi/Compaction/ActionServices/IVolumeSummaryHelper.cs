@@ -11,9 +11,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     /// <summary>
     /// Get the Volumes Type for the given base and top surfaces.
     /// </summary>
-    /// <param name="baseFilter">The base Filter.</param>
-    /// <param name="topFilter">The top Filter.</param>
+    /// <param name="filter1">Filter to compare against filter2</param>
+    /// <param name="filter2">Filter to compare against filter1</param>
     /// <returns>Returns the <see cref="RaptorConverters.VolumesType"/> type for the two input surfaces.</returns>
-    RaptorConverters.VolumesType GetVolumesType(Filter baseFilter, Filter topFilter);
+    RaptorConverters.VolumesType GetVolumesType(Filter filter1, Filter filter2);
   }
 }
