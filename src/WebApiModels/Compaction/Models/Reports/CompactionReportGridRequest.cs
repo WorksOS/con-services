@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
@@ -62,8 +62,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     { }
 
     public static CompactionReportGridRequest CreateCompactionReportGridRequest(
-      long projectId, 
-      Filter filter, 
+      long projectId,
+      Filter filter,
       long filterId,
       LiftBuildSettings liftBuildSettings,
       bool reportElevation,
@@ -130,6 +130,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 
       if (Azimuth < 0 || Azimuth > (2 * Math.PI))
       {
+        // TODO (Aaron) Unreachable code; this check is already performed in the base class validation that occurs in the above base.Validate() call.
         if (!(ReportPassCount || ReportTemperature || ReportMDP || ReportCutFill || ReportCMV || ReportElevation))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
@@ -138,27 +139,5 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
         }
       }
     }
-    
-  }
-
-  /// <summary>
-  /// 
-  /// </summary>
-  /// 
-  public enum CompactionReportType
-  {
-    Grid = 1,
-    StationOffset = 2,
-  }
-
-  /// <summary>
-  /// Grid report option enum.
-  /// </summary>
-  /// 
-  public enum GridReportOption
-  {
-    Direction = 0,
-    EndPoint = 1,
-    Automatic = 2
   }
 }
