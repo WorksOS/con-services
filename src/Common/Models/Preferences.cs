@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ASNode.UserPreferences;
+﻿using ASNode.UserPreferences;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -22,6 +17,5 @@ namespace VSS.Productivity3D.Common.Models
     {
       return __Global.Construct_TASNodeUserPreferences(null, null, null, null, null, 0.0, 0, 0, 0, 0, 0, 0);
     }
-
   }
 }

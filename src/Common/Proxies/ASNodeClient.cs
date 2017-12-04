@@ -1,9 +1,11 @@
 ﻿using ASNode.CMVChange.RPC;
 using ASNode.ElevationStatistics.RPC;
 using ASNode.ExportProductionDataCSV.RPC;
+using ASNode.GridReport.RPC;
 using ASNode.RequestSummaryVolumesAlignmentProfile.RPC;
 using ASNode.RequestSummaryVolumesProfile.RPC;
 using ASNode.SpeedSummary.RPC;
+using ASNode.StationOffsetReport.RPC;
 using ASNode.ThicknessSummary.RPC;
 using ASNode.UserPreferences;
 using ASNode.Volumes.RPC;
@@ -503,6 +505,12 @@ namespace VSS.Productivity3D.Common.Proxies
     public int GetReportGrid(TASNodeServiceRPCVerb_GridReport_Args args, out MemoryStream dataReport)
     {
       return client.GetGridReport(args, out dataReport);
+    }
+
+    /// <inheritdoc />
+    public int GetReportStationOffset(TASNodeServiceRPCVerb_StationOffsetReport_Args args, out MemoryStream dataReport)
+    {
+      return client.GetStationOffsetReport(args, out dataReport);
     }
   }
 }
