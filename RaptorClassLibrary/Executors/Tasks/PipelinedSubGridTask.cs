@@ -11,10 +11,12 @@ using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Executors.Tasks
 {
+    /// <summary>
+    /// A base class implementing activities that accept subgrids from a pipelined subgrid query process
+    /// </summary>
     public class PipelinedSubGridTask : TaskBase, ITask
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
 
         public PipelinedSubGridTask(long requestDescriptor, string raptorNodeID, GridDataType gridDataType) : base(requestDescriptor, raptorNodeID, gridDataType)
         {

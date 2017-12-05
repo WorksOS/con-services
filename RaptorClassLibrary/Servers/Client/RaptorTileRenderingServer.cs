@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
+﻿using System.Drawing;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.Requests;
 
 namespace VSS.VisionLink.Raptor.Servers.Client
 {

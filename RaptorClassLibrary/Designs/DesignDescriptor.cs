@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.VisionLink.Raptor.Designs
 {
     [Serializable]
     public struct DesignDescriptor : IEquatable<DesignDescriptor>

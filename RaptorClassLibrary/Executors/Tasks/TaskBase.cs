@@ -17,14 +17,32 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
     /// </summary>
     public abstract class TaskBase : ITask
     {
+        /// <summary>
+        /// The request descriptor assigned to the task.
+        /// </summary>
         public long RequestDescriptor = -1;
+
+        /// <summary>
+        /// Determines if the processing of the task activities as been cencelled by external control
+        /// </summary>
         public bool IsCancelled = false;
+
+        /// <summary>
+        /// The type od grid data being processed by this task
+        /// </summary>
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 
         /// <summary>
         /// The raptor node wanting to recieve the results of task bases subgrid requests to the PSNode clustered processing layer
         /// </summary>
         public string RaptorNodeID { get; set; } = String.Empty;
+
+        /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public TaskBase()
+        {
+        }
 
         /// <summary>
         /// Constructor accepting a request descriptor identifying the overall request this task is associated with

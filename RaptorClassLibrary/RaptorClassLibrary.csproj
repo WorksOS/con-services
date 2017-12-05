@@ -80,7 +80,7 @@
     <Compile Include="Compression\BitFieldArray.cs" />
     <Compile Include="Compression\BitFieldArrayRecordsDescriptor.cs" />
     <Compile Include="Compression\EncodedBitFieldDescriptor.cs" />
-    <Compile Include="DesignDescriptor.cs" />
+    <Compile Include="Designs\DesignDescriptor.cs" />
     <Compile Include="Designs\DesignBase.cs" />
     <Compile Include="Designs\DesignFiles.cs" />
     <Compile Include="Designs\Storage\Design.cs" />
@@ -98,8 +98,7 @@
     <Compile Include="Events\StartEndRecordedDataEvent.cs" />
     <Compile Include="Designs\Executors\CalculateDesignElevationPatch.cs" />
     <Compile Include="Executors\ProjectExtents.cs" />
-    <Compile Include="Executors\RenderOverlayTile.cs" />
-    <Compile Include="Executors\RenderOverlayTile_Old.cs" />
+    <Compile Include="Rendering\Executors\RenderOverlayTile.cs" />
     <Compile Include="Executors\TAGFileConverter.cs" />
     <Compile Include="Executors\TAGFilePreScan.cs" />
     <Compile Include="Executors\Tasks\Interfaces\ITask.cs" />
@@ -134,7 +133,7 @@
     <Compile Include="GridFabric\Arguments\BaseApplicationServiceRequestArgument.cs" />
     <Compile Include="Designs\GridFabric\Arguments\CalculateDesignElevationPatchArgument.cs" />
     <Compile Include="GridFabric\Arguments\SubGridsRequestArgument.cs" />
-    <Compile Include="GridFabric\Arguments\TileRenderRequestArgument.cs" />
+    <Compile Include="Rendering\GridFabric\Arguments\TileRenderRequestArgument.cs" />
     <Compile Include="GridFabric\BaseRaptorIgniteClass.cs" />
     <Compile Include="GridFabric\Caches\RaptorCaches.cs" />
     <Compile Include="GridFabric\Caches\RaptorCacheStoreFactory.cs" />
@@ -144,7 +143,7 @@
     <Compile Include="GridFabric\ComputeFuncs\BaseRaptorComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\CacheComputeComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFunc.cs" />
-    <Compile Include="GridFabric\ComputeFuncs\TileRenderRequestComputeFunc.cs" />
+    <Compile Include="Rendering\GridFabric\ComputeFuncs\TileRenderRequestComputeFunc.cs" />
     <Compile Include="GridFabric\Grids\RaptorGrids.cs" />
     <Compile Include="GridFabric\Listeners\SubGridListener.cs" />
     <Compile Include="Designs\GridFabric\Requests\DesignElevationPatchRequest.cs" />
@@ -152,7 +151,7 @@
     <Compile Include="GridFabric\Requests\BaseRaptorRequest.cs" />
     <Compile Include="GridFabric\Requests\ApplicationServicePoolRequest.cs" />
     <Compile Include="GridFabric\Requests\SubGridRequests.cs" />
-    <Compile Include="GridFabric\Requests\TileRenderRequest.cs" />
+    <Compile Include="Rendering\GridFabric\Requests\TileRenderRequest.cs" />
     <Compile Include="GridFabric\Responses\SubGridRequestsResponse.cs" />
     <Compile Include="GridFabric\Types\SubGridRequestsResponseResult.cs" />
     <Compile Include="Filters\Interfaces\IFilter.cs" />
@@ -161,7 +160,7 @@
     <Compile Include="Machines\Interfaces\IMachinesTargetValuesList.cs" />
     <Compile Include="Pipelines\RequestAnalyser.cs" />
     <Compile Include="Pipelines\SubGridPipelineBase.cs" />
-    <Compile Include="ProductionDataExistanceMap.cs" />
+    <Compile Include="ExistenceMaps\ProductionDataExistanceMap.cs" />
     <Compile Include="RaptorServerConfig.cs" />
     <Compile Include="Rendering\MapSurface.cs" />
     <Compile Include="Rendering\Palettes\CutFillPalette.cs" />

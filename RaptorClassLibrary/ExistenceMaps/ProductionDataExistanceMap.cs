@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees;
+﻿using VSS.VisionLink.Raptor.SubGridTrees;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.VisionLink.Raptor.ExistenceMaps
 {
     /// <summary>
     /// ProductionDataExistanceMap stores a map of existing subgrids that contain data processed into the datamodel

@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Types;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Arguments
+namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments
 {
     [Serializable]
     public class TileRenderRequestArgument : BaseApplicationServiceRequestArgument

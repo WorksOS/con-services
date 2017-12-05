@@ -1,13 +1,7 @@
 ﻿using log4net;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Requests;
-using VSS.Velociraptor.DesignProfiling.Servers.Client;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Rendering;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
@@ -15,6 +9,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Services.Designs;
+using VSS.VisionLink.Raptor.Designs;
 
 namespace VSS.VisionLink.Raptor.Executors.Tasks
 {
@@ -25,7 +20,14 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        /// <summary>
+        /// Local instance of the design elevation calculation argument for use by this task
+        /// </summary>
         private CalculateDesignElevationPatchArgument arg = null;
+
+        /// <summary>
+        /// Local instance of the design elevation calculation request for use by this task
+        /// </summary>
         private DesignElevationPatchRequest request = null;
 
         /// <summary>
@@ -33,6 +35,9 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         /// </summary>
         public PlanViewTileRenderer TileRenderer { get; set; } = null;
 
+        /// <summary>
+        /// The design descriptor derived from the design ID to be used by the elevation calculation engine
+        /// </summary>
         public DesignDescriptor CutFillDesign { get; set; } = DesignDescriptor.Null();
 
         /// <summary>

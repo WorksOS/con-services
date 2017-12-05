@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
+using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Filters.Interfaces;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;

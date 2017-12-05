@@ -1,19 +1,14 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Compute;
+﻿using Apache.Ignite.Core.Compute;
 using log4net;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Executors;
 using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
+using VSS.VisionLink.Raptor.Rendering.Executors;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 
-namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
+namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// The grid compute function responsible for coordinating rendering of a tile on a server compute node in response to 

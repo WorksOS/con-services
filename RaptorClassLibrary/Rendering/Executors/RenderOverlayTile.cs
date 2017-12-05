@@ -15,7 +15,7 @@ using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
-namespace VSS.VisionLink.Raptor.Executors
+namespace VSS.VisionLink.Raptor.Rendering.Executors
 {
     /// <summary>
     /// Renders a tile of themmatic imgagery for a location in the project

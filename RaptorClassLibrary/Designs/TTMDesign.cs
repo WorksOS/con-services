@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using VSS.Velociraptor.Designs.TTM;
 using VSS.VisionLink.Raptor;
+using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;

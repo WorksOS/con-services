@@ -1,23 +1,11 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cluster;
-using Apache.Ignite.Core.Compute;
-using log4net;
-using System;
-using System.Collections.Generic;
+﻿using Apache.Ignite.Core.Compute;
 using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Executors;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Types;
+using VSS.VisionLink.Raptor.GridFabric.Requests;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Requests
+namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Requests
 {
     /// <summary>
     /// Sends a request to the grid for a tile to be rendered

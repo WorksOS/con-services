@@ -1,13 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.VisionLink.Raptor.Executors;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Geometry;
 using System.Drawing;
+using VSS.VisionLink.Raptor.Rendering.Executors;
 
 namespace VSS.VisionLink.Raptor.Executors.Tests
 {

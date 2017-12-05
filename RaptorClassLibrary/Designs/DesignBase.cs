@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor;
+﻿using System.Threading;
+using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.Velociraptor.DesignProfiling
