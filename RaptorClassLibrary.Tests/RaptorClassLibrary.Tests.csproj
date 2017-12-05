@@ -97,6 +97,7 @@
     <Compile Include="SubGridTreePersistorTests.cs" />
     <Compile Include="SubGridUtilitiesTests.cs" />
     <Compile Include="SubGridSpatialAffinityKeyTests.cs" />
+    <Compile Include="TypesHelperTests.cs" />
     <Compile Include="UTMCoordPointPairTests.cs" />
     <Compile Include="Utility\GPSTests.cs" />
     <Compile Include="Geometry\LineIntersectionTests.cs" />

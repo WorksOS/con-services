@@ -43,7 +43,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         /// Ensure the IsEmpty mechanism reports the cell empty of cell passes
         /// </summary>
         [TestMethod]
-        public void Test_Cell_EmptyCellPassesOnCreation()
+        public void Test_FromToBytes()
         {
             testFromToBytesClass testInstance = new testFromToBytesClass();
             byte[] toBytes = testInstance.ToBytes();
