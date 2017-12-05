@@ -54,7 +54,7 @@ namespace VSS.VisionLink.Raptor.Types
         /// <summary>
         /// 'Location' RTK GPS mode
         /// </summary>
-        LocationRTK = 7,
+        LocationRTK = 8,
 
         /// <summary>
         /// No GPS location available

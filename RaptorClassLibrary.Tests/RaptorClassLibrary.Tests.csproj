@@ -72,6 +72,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AttributeValueModifierTests.cs" />
     <Compile Include="AttributeValueRangeCalculatorTests.cs" />
     <Compile Include="BitFieldArrayTests.cs" />
     <Compile Include="CellPassAttributeFilterTests.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="EncodedBitFieldDescriptorTests.cs" />
     <Compile Include="Geometry\FencePointTests.cs" />
     <Compile Include="Geometry\FenceTests.cs" />
+    <Compile Include="GPSModeTests.cs" />
     <Compile Include="MutabilityConverterTests.cs" />
     <Compile Include="RenderOverlayTileTests.cs" />
     <Compile Include="ServerSubGridTreeLeafTests.cs" />
