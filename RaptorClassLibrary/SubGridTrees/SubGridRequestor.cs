@@ -129,7 +129,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             SurveyedSurfaces SurveyedSurfaceList = SiteModel.SurveyedSurfaces;
             FilteredSurveyedSurfaces = new SurveyedSurfaces();
 
-            if (SurveyedSurfaceList.Count() > 0)
+            if (SurveyedSurfaceList?.Count() > 0)
             {
                 // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
                 SurveyedSurfaceList.FilterSurveyedSurfaceDetails(Filter.AttributeFilter.HasTimeFilter,
