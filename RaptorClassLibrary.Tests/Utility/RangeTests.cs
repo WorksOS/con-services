@@ -83,6 +83,36 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         }
 
         [TestMethod]
+        public void Test_Range_EnsureRange_long()
+        {
+            long value = 100;
+            long lowerConstraint = 10;
+            long upperConstraint = 200;
+
+            // Test in range
+            Assert.IsTrue(value == Range.EnsureRange(value, long.MinValue, long.MaxValue), "Range truncation failed on full underlying type value range");
+
+            // Test out of range
+            Assert.IsTrue(10 == Range.EnsureRange(value, long.MinValue, lowerConstraint), "Range truncation failed on partial underlying type value range");
+            Assert.IsTrue(200 == Range.EnsureRange(value, upperConstraint, long.MaxValue), "Range truncation failed on partial underlying type value range");
+        }
+
+        [TestMethod]
+        public void Test_Range_EnsureRange_ulong()
+        {
+            ulong value = 100;
+            ulong lowerConstraint = 10;
+            ulong upperConstraint = 200;
+
+            // Test in range
+            Assert.IsTrue(value == Range.EnsureRange(value, ulong.MinValue, ulong.MaxValue), "Range truncation failed on full underlying type value range");
+
+            // Test out of range
+            Assert.IsTrue(10 == Range.EnsureRange(value, ulong.MinValue, lowerConstraint), "Range truncation failed on partial underlying type value range");
+            Assert.IsTrue(200 == Range.EnsureRange(value, upperConstraint, ulong.MaxValue), "Range truncation failed on partial underlying type value range");
+        }
+
+        [TestMethod]
         public void Test_Range_EnsureRange_float()
         {
             float value = 100;
@@ -185,6 +215,36 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             // Test out of range
             Assert.IsFalse(Range.InRange(value, uint.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
             Assert.IsFalse(Range.InRange(value, upperConstraint, uint.MaxValue), "InRange failed on partial underlying type value range");
+        }
+
+        [TestMethod]
+        public void Test_Range_InRange_long()
+        {
+            long value = 100;
+            long lowerConstraint = 10;
+            long upperConstraint = 200;
+
+            // Test in range
+            Assert.IsTrue(Range.InRange(value, long.MinValue, long.MaxValue), "InRange failed on full underlying type value range");
+
+            // Test out of range
+            Assert.IsFalse(Range.InRange(value, long.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.IsFalse(Range.InRange(value, upperConstraint, long.MaxValue), "InRange failed on partial underlying type value range");
+        }
+
+        [TestMethod]
+        public void Test_Range_InRange_ulong()
+        {
+            ulong value = 100;
+            ulong lowerConstraint = 10;
+            ulong upperConstraint = 200;
+
+            // Test in range
+            Assert.IsTrue(Range.InRange(value, ulong.MinValue, ulong.MaxValue), "InRange failed on full underlying type value range");
+
+            // Test out of range
+            Assert.IsFalse(Range.InRange(value, ulong.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.IsFalse(Range.InRange(value, upperConstraint, ulong.MaxValue), "InRange failed on partial underlying type value range");
         }
 
         [TestMethod]
