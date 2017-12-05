@@ -73,8 +73,9 @@ namespace Common.Repository
       return InTransaction((conn) =>
       {
         var command = @"SELECT c.* 
-            FROM Customer c JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
-            WHERE cu.fk_UserUID = @userUid";
+            FROM Customer c 
+              JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
+            WHERE cu.UserUID = @userUid";
         var customers = new List<Customer>();
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid)))
@@ -102,8 +103,7 @@ namespace Common.Repository
              WHERE CustomerUID = @customerUid";
         var customer = new Customer();
 
-        using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@customerUid", customerUid),
-          new MySqlParameter("@customerUid", customerUid)))
+        using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@customerUid", customerUid)))
         {
           while (reader.Read())
           {
@@ -375,9 +375,10 @@ namespace Common.Repository
     {
       WithConnection<object>((conn) =>
       {
-        var command = @"INSERT INTO Entries (ProjectID, ProjectUID, Date, Weight, GeofenceUID) 
-                                VALUES (@projectId, @projectUid, @date, @weight, @geofenceUid) 
-                                ON DUPLICATE KEY UPDATE Weight = @weight";
+        var command = @"INSERT INTO Entries 
+                              (ProjectID, ProjectUID, Date, Weight, GeofenceUID) 
+                            VALUES (@projectId, @projectUid, @date, @weight, @geofenceUid) 
+                            ON DUPLICATE KEY UPDATE Weight = @weight";
 
         MySqlHelper.ExecuteNonQuery(conn, command,
           new MySqlParameter("@projectId", projectResponse.id),
@@ -389,23 +390,7 @@ namespace Common.Repository
         return null;
       });
     }
-
-    public static bool IfNeedToTouchEntries(ProjectResponse projectResponse, string geofenceUid, DateTime date)
-    {
-      return WithConnection((conn) =>
-      {
-        var command = @"SELECT count(*) FROM Entries 
-                            WHERE ProjectUID = @projectUid  AND GeofenceUID = @geofenceUid and Date=@date";
-        var result = MySqlHelper.ExecuteScalar(conn, command,
-          new MySqlParameter("@projectUid", projectResponse.projectUid),
-          new MySqlParameter("@geofenceUid", geofenceUid),
-          new MySqlParameter("@date", date.Date));
-        return (int) result == 0;
-      });
-    }
-
-
-
+    
     /// <summary>
     /// Saves a volume for a given projectResponse, geofence and date
     /// </summary>
@@ -428,11 +413,11 @@ namespace Common.Repository
         // replace negative volumes with 0; they are possible (e.g. due to extra compaction 
         // without new material coming in) but don't make sense in the context of the application
         var command = @"INSERT Entries 
-            (ProjectID, ProjectUID, Date, GeofenceUID, Volume, VolumeNotRetrieved, VolumeNotAvailable, VolumesUpdatedTimestampUTC)
-            VALUES
-            (@projectId, @projectUid, @date, @geofenceUid, GREATEST(@volume, 0.0),0,0,UTC_TIMESTAMP())
-            ON DUPLICATE KEY UPDATE
-            Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, VolumeNotAvailable = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP(), ProjectId=@projectId";
+                              (ProjectID, ProjectUID, Date, GeofenceUID, Volume, VolumeNotRetrieved, VolumeNotAvailable, VolumesUpdatedTimestampUTC)
+                            VALUES
+                              (@projectId, @projectUid, @date, @geofenceUid, GREATEST(@volume, 0.0),0,0,UTC_TIMESTAMP())
+                              ON DUPLICATE KEY UPDATE
+                              Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, VolumeNotAvailable = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP(), ProjectId=@projectId";
 
         MySqlHelper.ExecuteNonQuery(conn, command,
           new MySqlParameter("@projectId", project.id),
@@ -456,8 +441,11 @@ namespace Common.Repository
     {
       WithConnection<object>((conn) =>
       {
-        var command = @"UPDATE Entries SET VolumeNotRetrieved = 1
-                                WHERE ProjectUID = @projectUid AND Date = @date AND GeofenceUID = @geofenceUid";
+        var command = @"UPDATE Entries 
+                            SET VolumeNotRetrieved = 1
+                          WHERE ProjectUID = @projectUid 
+                            AND Date = @date 
+                            AND GeofenceUID = @geofenceUid";
 
         MySqlHelper.ExecuteNonQuery(conn, command,
           new MySqlParameter("@projectUid", projectUid),
@@ -787,7 +775,8 @@ namespace Common.Repository
         liftId = liftId ?? -1;
 
         //Get the actual data 
-        var command = @"SELECT Date, GeofenceUID, MachineID, LiftID, Incomplete, Complete, Overcomplete FROM CCA 
+        var command = @"SELECT Date, GeofenceUID, MachineID, LiftID, Incomplete, Complete, Overcomplete 
+                          FROM CCA 
                           WHERE Date >= CAST(@startDate AS DATE) AND Date <= CAST(@endDate AS DATE)
                             AND ProjectUID = @projectUid 
                             AND GeofenceUID = @geofenceUid 

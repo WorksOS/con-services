@@ -218,8 +218,9 @@ namespace MasterDataRepo
 
       var serviceTypes = Connection.Query<ServiceType>
       (@"SELECT 
-                s.ID, s.Description AS Name, sf.ID AS ServiceTypeFamilyID, sf.Description AS ServiceTypeFamilyName
-              FROM ServiceTypeEnum s JOIN ServiceTypeFamilyEnum sf on s.fk_ServiceTypeFamilyID = sf.ID"
+            s.ID, s.Description AS Name, sf.ID AS ServiceTypeFamilyID, sf.Description AS ServiceTypeFamilyName
+          FROM ServiceTypeEnum s 
+            JOIN ServiceTypeFamilyEnum sf on s.fk_ServiceTypeFamilyID = sf.ID"
       );
 
       PerhapsCloseConnection();

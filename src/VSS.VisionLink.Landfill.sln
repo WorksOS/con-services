@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{950A1645-323
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A37BDD9A-7FFD-49DA-8369-FD4CE6E1F8B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LandfillDatabase.Tests", "..\tests\VSS.Project.Data.Tests\LandfillDatabase.Tests.csproj", "{1D17C611-A087-4832-B232-1AE0276DC06C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LandfillDatabase.Tests", "..\tests\LandfillDatabase.Tests\LandfillDatabase.Tests.csproj", "{1D17C611-A087-4832-B232-1AE0276DC06C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterDataRepo", "..\tests\MasterDataRepo\MasterDataRepo.csproj", "{3789A6BB-3207-4275-B50F-B75D2D55C387}"
 EndProject
