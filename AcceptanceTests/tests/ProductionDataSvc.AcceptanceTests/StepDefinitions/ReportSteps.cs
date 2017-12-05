@@ -1,10 +1,10 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
+using System;
+using System.Globalization;
+using System.Linq;
+using System.Net;
 using TechTalk.SpecFlow;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -12,20 +12,19 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   [Binding, Scope(Feature = "Report")]
   public class ReportSteps
   {
-    private Getter<CompactionReportGridResult> gridReportRequester;    
+    private Getter<CompactionReportResult> gridReportRequester;
     private string url;
 
     [Given(@"the report service uri ""(.*)""")]
     public void GivenTheReportServiceUri(string uri)
     {
       url = RaptorClientConfig.CompactionSvcBaseUri + uri;
-
     }
 
     [Given(@"the result file '(.*)'")]
     public void GivenTheResultFile(string resultFile)
     {
-      gridReportRequester = new Getter<CompactionReportGridResult>(url, resultFile);
+      gridReportRequester = new Getter<CompactionReportResult>(url, resultFile);
     }
 
     [Given(@"I set request parameters projectUid '(.*)' and filterUid '(.*)'")]
@@ -65,17 +64,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
     }
 
-    [Given(@"I select Station offset report parameters '(.*)' '(.*)' '(.*)' '(.*)' '(.*)' '(.*)'")]
-    public void GivenISelectStationOffsetReportParameters(string cutfillDesignUid, string alignmentDesignUid,
+    [Given(@"I select Station offset report parameters '(.*)' '(.*)' '(.*)' '(.*)' '(.*)' '(.*)' '(.*)'")]
+    public void GivenISelectStationOffsetReportParameters(string cutfillDesignUid, string filterUid, string alignmentDesignUid,
       double crossSectionInterval, double startStation, double endStation, string offsets)
     {
       if (!string.IsNullOrEmpty(cutfillDesignUid))
       {
         gridReportRequester.QueryString.Add("cutfillDesignUid", cutfillDesignUid);
-      }
-      if (!string.IsNullOrEmpty(alignmentDesignUid))
-      {
-        gridReportRequester.QueryString.Add("alignmentDesignUid", alignmentDesignUid);
       }
       if (crossSectionInterval > 0)
       {
@@ -93,9 +88,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       if (!string.IsNullOrEmpty(offsets))
       {
         var laoArray = Array.ConvertAll(offsets.Split(','), double.Parse);
-        foreach (var oneoffset in laoArray)
+
+        for (var i = 0; i < laoArray.Length; i++)
         {
-          gridReportRequester.QueryString.Add("offsets", oneoffset.ToString(CultureInfo.InvariantCulture));
+          gridReportRequester.QueryString.Add($"offsets[{i}]", laoArray[i].ToString(CultureInfo.InvariantCulture));
         }
       }
     }
@@ -145,14 +141,36 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       gridReportRequester.DoValidRequest(url);
     }
 
+    [When(@"I request a report the response body should contain http code '(.*)'")]
+    public void WhenIRequestAReportTheResponseBodyShouldContainHttpCode(HttpStatusCode httpCode)
+    {
+      gridReportRequester.DoValidRequest(url, httpCode);
+    }
+
+    [Then(@"the report '(.*)' and result should match the '(.*)' from the repository")]
+    public void ThenTheReportAndResultShouldMatchTheFromTheRepository(int errorCode, string resultName)
+    {
+      Assert.AreEqual(errorCode, gridReportRequester.CurrentResponse.Code);
+      Assert.AreEqual(gridReportRequester.CurrentResponse.Message, gridReportRequester.CurrentResponse.Message);
+    }
+    
     [Then(@"the grid report result should match the '(.*)' from the repository")]
     public void ThenTheGridReportResultShouldMatchTheFromTheRepository(string resultName)
     {
       Assert.AreEqual(0, gridReportRequester.CurrentResponse.Code);
       Assert.AreEqual("success", gridReportRequester.CurrentResponse.Message);
 
-      // Now get the actual results 
-      //Console.WriteLine("Actual:" + gridReportRequester.CurrentResponse);
+      ValidateResponse(resultName);
+    }
+
+    [Then(@"The response body should contain Http Code '(.*)'")]
+    public void ThenTheResponseBodyShouldContainHttpCode(int httpCode)
+    {
+      Assert.AreEqual(httpCode, (int)gridReportRequester.CurrentServiceResponse.HttpCode);
+    }
+
+    private void ValidateResponse(string resultName)
+    {
       var actualResult = gridReportRequester.CurrentResponse.ReportData;
       var expectedResult = gridReportRequester.ResponseRepo[resultName].ReportData;
 
@@ -178,5 +196,19 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
     }
 
+    private bool CompareDouble(double expectedDouble, double actualDouble, string field, int rowCount,int precision = 6)
+    {
+      if (expectedDouble == actualDouble)
+      {
+        return true;
+      }
+
+      if (Math.Round(expectedDouble, precision) != Math.Round(actualDouble, precision))
+      {
+        Console.WriteLine("RowCount:" + rowCount + " " + field + " actual: " + actualDouble + " expected: " + expectedDouble);
+        Assert.Fail("Expected: " + expectedDouble + " Actual: " + actualDouble + " at row index " + rowCount + " for field " + field);
+      }
+      return true;
+    }
   }
 }

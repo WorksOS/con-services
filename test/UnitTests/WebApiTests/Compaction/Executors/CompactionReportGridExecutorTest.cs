@@ -128,7 +128,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportGridExecutor>(logger, raptorClient.Object);
 
-      var result = executor.Process(request) as CompactionReportGridResult;
+      var result = executor.Process(request) as CompactionReportResult;
 
       Assert.IsNotNull(result, "Result should not be null");
 

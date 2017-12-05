@@ -21,7 +21,6 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using Filter = VSS.Productivity3D.Common.Models.Filter;

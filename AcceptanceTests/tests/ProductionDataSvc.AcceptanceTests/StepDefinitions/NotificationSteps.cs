@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
@@ -20,7 +21,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private int fileTypeId = 0;
     private int dxfUnitsType = -1;
 
-    private Getter<RequestResult> fileNotificationRequester;
+    private Getter<AddFileResult> addFileNotificationRequester;
+    private Getter<RequestResult> deleteFileNotificationRequester;
 
     [Given(@"the Add File Notification service URI ""(.*)""")]
     public void GivenTheAddFileNotificationServiceURI(string url)
@@ -66,34 +68,49 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       this.dxfUnitsType = dxfUnitsType;
     }
 
-    [When(@"I request File Notification")]
-    public void WhenIRequestFileNotification()
+    [When(@"I request Add File Notification")]
+    public void WhenIRequestAddFileNotification()
     {
       MakeUrl();
-      fileNotificationRequester = new Getter<RequestResult>(this.url);
-      fileNotificationRequester.DoValidRequest();
+      addFileNotificationRequester = new Getter<AddFileResult>(this.url);
+      addFileNotificationRequester.DoValidRequest();
     }
 
-    [Then(@"the File Notification result should be")]
-    public void ThenTheFileNotificationResultShouldBe(string multilineText)
+    [When(@"I request Delete File Notification")]
+    public void WhenIRequestDeleteFileNotification()
+    {
+      MakeUrl();
+      deleteFileNotificationRequester = new Getter<RequestResult>(this.url);
+      deleteFileNotificationRequester.DoValidRequest();
+    }
+
+    [Then(@"the Add File Notification result should be")]
+    public void ThenTheAddFileNotificationResultShouldBe(string multilineText)
+    {
+      AddFileResult expected = JsonConvert.DeserializeObject<AddFileResult>(multilineText);
+      Assert.AreEqual(expected, addFileNotificationRequester.CurrentResponse);
+    }
+
+    [Then(@"the Delete File Notification result should be")]
+    public void ThenTheDeleteFileNotificationResultShouldBe(string multilineText)
     {
       RequestResult expected = JsonConvert.DeserializeObject<RequestResult>(multilineText);
-      Assert.IsTrue(expected.Code == fileNotificationRequester.CurrentResponse.Code && expected.Message == fileNotificationRequester.CurrentResponse.Message);
+      Assert.IsTrue(expected.Code == deleteFileNotificationRequester.CurrentResponse.Code && expected.Message == deleteFileNotificationRequester.CurrentResponse.Message);
     }
 
-    [When(@"I request File Notification Expecting BadRequest")]
-    public void WhenIRequestADxfTileExpectingBadRequest()
+    [When(@"I request Delete File Notification Expecting BadRequest")]
+    public void WhenIRequestDeleteFileNotificationExpectingBadRequest()
     {
       MakeUrl();
-      fileNotificationRequester = new Getter<RequestResult>(this.url);
-      fileNotificationRequester.DoInvalidRequest(HttpStatusCode.BadRequest);
+      deleteFileNotificationRequester = new Getter<RequestResult>(this.url);
+      deleteFileNotificationRequester.DoInvalidRequest(HttpStatusCode.BadRequest);
     }
 
     [Then(@"I should get error code (.*) and message ""(.*)""")]
     public void ThenIShouldGetErrorCodeAndMessage(int errorCode, string message)
     {
-      Assert.AreEqual(errorCode, fileNotificationRequester.CurrentResponse.Code);
-      Assert.AreEqual(message, fileNotificationRequester.CurrentResponse.Message);
+      Assert.AreEqual(errorCode, deleteFileNotificationRequester.CurrentResponse.Code);
+      Assert.AreEqual(message, deleteFileNotificationRequester.CurrentResponse.Message);
     }
 
     private void MakeUrl()
