@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -166,6 +167,38 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         sb.Append(Environment.NewLine);
       }
       return sb.ToString();
+    }
+
+    /// <summary>
+    /// Convert an byte stream to image
+    /// </summary>
+    /// <param name="imageStream">byte array</param>
+    /// <returns>image</returns>
+    public static Image ConvertToImage(byte[] imageStream)
+    {
+      using (var ms = new MemoryStream(imageStream))
+      {
+        return Image.FromStream(ms);
+      }
+    }
+
+    /// <summary>
+    /// Compare the images and return the differnce
+    /// </summary>
+    /// <param name="expectedTileData">byte array of expected tile data</param>
+    /// <param name="actualTileData">byte array of actual tile data</param>
+    /// <param name="expFileName">expected file name that is saved</param>
+    /// <param name="actFileName">actual file name that is saved</param>
+    /// <param name="threshold">threshold for comparison. Used to ignore minor differences</param>
+    /// <returns>the differnce of the images as a percentage</returns>
+    public static float CompareImagesAndGetDifferencePercent(byte[] expectedTileData, byte[] actualTileData, string expFileName, string actFileName, byte threshold = 0)
+    {
+      var expectedImage = ConvertToImage(expectedTileData);
+      var actualImage = ConvertToImage(actualTileData);
+      expectedImage.Save(expFileName);
+      actualImage.Save(actFileName);
+      var diff = XnaFan.ImageComparison.ExtensionMethods.PercentageDifference(expectedImage, actualImage, threshold);
+      return diff;
     }
   }
 }
