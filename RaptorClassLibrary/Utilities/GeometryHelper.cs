@@ -12,7 +12,8 @@ namespace VSS.VisionLink.Raptor.Utilities
     public static class GeometryHelper
     {
         /// <summary>
-        /// Rotates a point in cartesian coordinates about an origin point by a specified rotation in radians
+        /// Rotates a point in cartesian coordinates about an origin point by a specified rotation in radians in an anti clockwise direction
+        /// (ie: a positive rotation rotates the point in a mathematical sense in an anit-clockwise direction)
         /// </summary>
         /// <param name="rotation"></param>
         /// <param name="fromX"></param>

@@ -8,7 +8,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
     public class GeometryHelperTests
     {
         [TestMethod]
-        public void Test_GeometryHelper_AntiClockwise()
+        public void Test_GeometryHelper_AntiClockwise_AtOrigin()
         {
             GeometryHelper.RotatePointAbout((Math.PI / 2), 0, 100, out double toX, out double toY, 0, 0);
 
@@ -16,11 +16,27 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         }
 
         [TestMethod]
-        public void Test_GeometryHelper_Clockwise()
+        public void Test_GeometryHelper_Clockwise_AtOrigin()
         {
             GeometryHelper.RotatePointAbout(-(Math.PI / 2), 0, 100, out double toX, out double toY, 0, 0);
 
-            Assert.IsTrue(Math.Abs(toX - 100) < 1E-10 && Math.Abs(toY) < 1E-10, $"Rotated end point of X:{toX}, Y:{toY} is not {100,0} as expected.");
+            Assert.IsTrue(Math.Abs(toX - 100) < 1E-10 && Math.Abs(toY) < 1E-10, $"Rotated end point of X:{toX}, Y:{toY} is not {100, 0} as expected.");
+        }
+
+        [TestMethod]
+        public void Test_GeometryHelper_AntiClockwise_NotAtOrigin()
+        {
+            GeometryHelper.RotatePointAbout((Math.PI / 2), 100, 200, out double toX, out double toY, 100, 100);
+
+            Assert.IsTrue(Math.Abs(toX) < 1E-10 && Math.Abs(toY - 100) < 1E-10, $"Rotated end point of X:{toX}, Y:{toY} is not {0, 100} as expected.");
+        }
+
+        [TestMethod]
+        public void Test_GeometryHelper_Clockwise_NotAtOrigin()
+        {
+            GeometryHelper.RotatePointAbout(-(Math.PI / 2), 100, 200, out double toX, out double toY, 100, 100);
+
+            Assert.IsTrue(Math.Abs(toX - 200) < 1E-10 && Math.Abs(toY - 100) < 1E-10, $"Rotated end point of X:{toX}, Y:{toY} is not {200, 100} as expected.");
         }
     }
 }
