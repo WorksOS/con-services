@@ -100,6 +100,7 @@
     <Compile Include="TypesHelperTests.cs" />
     <Compile Include="PassCountTests.cs" />
     <Compile Include="MinMaxTests.cs" />
+    <Compile Include="MathUtilities.cs" />
     <Compile Include="UTMCoordPointPairTests.cs" />
     <Compile Include="Utility\GPSTests.cs" />
     <Compile Include="Geometry\LineIntersectionTests.cs" />
