@@ -10,14 +10,14 @@ namespace MasterDataRepo
   public class RepositoryBase
   {
     protected static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    private readonly string connectionString;
+    private readonly string _connectionString;
 
     protected MySqlConnection Connection;
     private bool isInTransaction;
 
     protected RepositoryBase()
     {
-      connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
+      _connectionString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
     }
 
     public void SetInTransactionState(bool value)
@@ -27,7 +27,7 @@ namespace MasterDataRepo
 
     private T WithConnection<T>(Func<MySqlConnection, T> body)
     {
-      using (var connection = new MySqlConnection(connectionString))
+      using (var connection = new MySqlConnection(_connectionString))
       {
         connection.Open();
         Connection = connection;
@@ -77,7 +77,7 @@ namespace MasterDataRepo
       {
         if (Connection == null || Connection.State == ConnectionState.Closed)
         {
-          Connection = new MySqlConnection(connectionString);
+          Connection = new MySqlConnection(_connectionString);
         }
         if (Connection != null && Connection.State == ConnectionState.Closed)
         {

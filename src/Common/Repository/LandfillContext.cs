@@ -177,7 +177,7 @@ namespace Common.Repository
       return InTransaction((conn) =>
       {
 
-        var command = @"SELECT p.ProjectID, p.Name, p.LandfillTimeZone,
+        var command = @"SELECT p.LegacyProjectID AS ProjectID, p.Name, p.LandfillTimeZone,
                                      p.ProjectUID, p.ProjectTimeZone,
                                      s.StartDate AS SubStartDate, s.EndDate AS SubEndDate,
 									                   cp.LegacyCustomerID
@@ -186,7 +186,7 @@ namespace Common.Repository
                               JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
                               JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
                               JOIN Subscription s ON ps.fk_SubscriptionUID = s.SubscriptionUID
-                              WHERE cu.fk_UserUID = @userUid AND cu.fk_CustomerUID = @customerUid AND p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
+                              WHERE cu.UserUID = @userUid AND cu.fk_CustomerUID = @customerUid AND p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
 
         var projects = new List<ProjectResponse>();
 
@@ -231,9 +231,138 @@ namespace Common.Repository
       });
     }
 
+    public static List<ProjectResponse> GetListOfAvailableProjects()
+    {
+      return InTransaction((conn) =>
+      {
+        var command =
+          @"SELECT DISTINCT prj.LegacyProjectID AS ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name, cp.LegacyCustomerID
+                          FROM Project prj 
+                          JOIN CustomerProject cp on prj.ProjectUID = cp.fk_ProjectUID
+						              JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
+                          JOIN ProjectSubscription ps ON prj.ProjectUID = ps.fk_ProjectUID
+                          JOIN Subscription s ON ps.fk_SubscriptionUID = s.SubscriptionUID
+                          WHERE prj.fk_ProjectTypeID = 1 AND prj.IsDeleted = 0";
+        using (var reader = MySqlHelper.ExecuteReader(conn, command))
+        {
+          var projects = new List<ProjectResponse>();
+          while (reader.Read())
+          {
+            projects.Add(new ProjectResponse
+            {
+              id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
+              timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone")),
+              projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
+              name = reader.GetString(reader.GetOrdinal("Name")),
+              legacyCustomerID = reader.GetInt64(reader.GetOrdinal("LegacyCustomerID"))
+            });
+          }
+          return projects;
+        }
+      });
+    }
+
+
+    public static List<ProjectResponse> GetProject(string projectUid)
+    {
+      return InTransaction((conn) =>
+      {
+        var command = @"SELECT LegacyProjectID AS ProjectID, Name, LandfillTimeZone,
+                                     ProjectUID, ProjectTimeZone
+                              FROM Project
+                              WHERE ProjectUID = @projectUid";
+
+        var projects = new List<ProjectResponse>();
+
+        using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", projectUid)))
+        {
+          while (reader.Read())
+          {
+            projects.Add(new ProjectResponse
+            {
+              id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
+              projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
+              name = reader.GetString(reader.GetOrdinal("Name")),
+              timeZoneName = reader.GetString(reader.GetOrdinal("LandfillTimeZone")),
+              legacyTimeZoneName = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
+            });
+          }
+        }
+
+        return projects;
+      });
+    }
+
     #endregion
 
     #region(Entries)
+
+    /// <summary>
+    /// Retrieves data entries for a given projectResponse. If date range is not specified, returns data 
+    /// for 2 years ago to today in projectResponse time zone. If geofence is not specified returns data for 
+    /// entire projectResponse area otherwise for geofenced area.
+    /// </summary>
+    /// <param name="projectResponse">Project</param>
+    /// <param name="geofenceUid">GeofenceResponse UID</param>
+    /// <param name="startDate">Start date in projectResponse time zone</param>
+    /// <param name="endDate">End date in projectResponse time zone</param>
+    /// <returns>A list of data entries</returns>
+    public static IEnumerable<DayEntry> GetEntries(ProjectResponse projectResponse, string geofenceUid, DateTime? startDate,
+      DateTime? endDate)
+    {
+      string projectGeofenceUid = GetGeofenceUidForProject(projectResponse);
+      if (string.IsNullOrEmpty(geofenceUid))
+        geofenceUid = projectGeofenceUid;
+
+      return WithConnection((conn) =>
+      {
+        var dateRange = CheckDateRange(projectResponse.timeZoneName, startDate, endDate);
+
+        var entriesLookup = (from dr in dateRange
+          select new DayEntry
+          {
+            date = dr.Date,
+            entryPresent = false,
+            weight = 0.0,
+            volume = 0.0
+          }).ToDictionary(k => k.date, v => v);
+
+        //Now get the actual data and merge       
+        var command = @"SELECT Date, Weight, Volume 
+                            FROM Entries 
+                          WHERE Date >= CAST(@startDate AS DATE) AND Date <= CAST(@endDate AS DATE)
+                            AND ProjectUID = @projectUid AND GeofenceUID = @geofenceUid
+                          ORDER BY Date";
+
+        using (var reader = MySqlHelper.ExecuteReader(conn, command,
+          new MySqlParameter("@projectUid", projectResponse.projectUid),
+          new MySqlParameter("@geofenceUid", geofenceUid),
+          new MySqlParameter("@startDate", dateRange.First()),
+          new MySqlParameter("@endDate", dateRange.Last())
+        ))
+        {
+          const double EPSILON = 0.001;
+
+          while (reader.Read())
+          {
+            DateTime date = reader.GetDateTime(reader.GetOrdinal("Date"));
+            DayEntry entry = entriesLookup[date];
+            entry.entryPresent = true;
+            entry.weight = reader.GetDouble(reader.GetOrdinal("Weight"));
+            double volume = 0.0;
+            if (!reader.IsDBNull(reader.GetOrdinal("Volume")))
+            {
+              volume = reader.GetDouble(reader.GetOrdinal("Volume"));
+              if (volume <= EPSILON)
+                volume = 0.0;
+            }
+            entry.volume = volume;
+          }
+
+          return entriesLookup.Select(v => v.Value).ToList();
+        }
+      });
+    }
 
     /// <summary>
     /// Saves a weight entry for a given projectResponse
@@ -340,37 +469,6 @@ namespace Common.Repository
     }
 
 
-    public static List<ProjectResponse> GetListOfAvailableProjects()
-    {
-      return InTransaction((conn) =>
-      {
-        var command =
-          @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name, cp.LegacyCustomerID
-                          FROM Project prj 
-                          JOIN CustomerProject cp on prj.ProjectUID = cp.fk_ProjectUID
-						              JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
-                          JOIN ProjectSubscription ps ON prj.ProjectUID = ps.fk_ProjectUID
-                          JOIN Subscription s ON ps.fk_SubscriptionUID = s.SubscriptionUID
-                          WHERE prj.fk_ProjectTypeID = 1 AND prj.IsDeleted = 0";
-        using (var reader = MySqlHelper.ExecuteReader(conn, command))
-        {
-          var projects = new List<ProjectResponse>();
-          while (reader.Read())
-          {
-            projects.Add(new ProjectResponse
-            {
-              id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
-              timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone")),
-              projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
-              name = reader.GetString(reader.GetOrdinal("Name")),
-              legacyCustomerID = reader.GetInt64(reader.GetOrdinal("LegacyCustomerID"))
-            });
-          }
-          return projects;
-        }
-      });
-    }
-
     /// <summary>
     /// Marks an entry with "volume not available" to indicate that there is no volume information in Raptor for that date
     /// </summary>
@@ -395,106 +493,7 @@ namespace Common.Repository
         return null;
       });
     }
-
-    public static List<ProjectResponse> GetProject(string projectUid)
-    {
-      return InTransaction((conn) =>
-      {
-
-        var command = @"SELECT ProjectID, Name, LandfillTimeZone,
-                                     ProjectUID, ProjectTimeZone
-                              FROM Project
-                              WHERE ProjectUID = @projectUid";
-
-        var projects = new List<ProjectResponse>();
-
-        using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", projectUid)))
-        {
-          while (reader.Read())
-          {
-
-
-            projects.Add(new ProjectResponse
-            {
-              id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
-              projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
-              name = reader.GetString(reader.GetOrdinal("Name")),
-              timeZoneName = reader.GetString(reader.GetOrdinal("LandfillTimeZone")),
-              legacyTimeZoneName = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
-            });
-          }
-        }
-
-        return projects;
-      });
-    }
-
-    /// <summary>
-    /// Retrieves data entries for a given projectResponse. If date range is not specified, returns data 
-    /// for 2 years ago to today in projectResponse time zone. If geofence is not specified returns data for 
-    /// entire projectResponse area otherwise for geofenced area.
-    /// </summary>
-    /// <param name="projectResponse">Project</param>
-    /// <param name="geofenceUid">GeofenceResponse UID</param>
-    /// <param name="startDate">Start date in projectResponse time zone</param>
-    /// <param name="endDate">End date in projectResponse time zone</param>
-    /// <returns>A list of data entries</returns>
-    public static IEnumerable<DayEntry> GetEntries(ProjectResponse projectResponse, string geofenceUid, DateTime? startDate,
-      DateTime? endDate)
-    {
-      string projectGeofenceUid = GetGeofenceUidForProject(projectResponse);
-      if (string.IsNullOrEmpty(geofenceUid))
-        geofenceUid = projectGeofenceUid;
-
-      return WithConnection((conn) =>
-      {
-        var dateRange = CheckDateRange(projectResponse.timeZoneName, startDate, endDate);
-
-        var entriesLookup = (from dr in dateRange
-          select new DayEntry
-          {
-            date = dr.Date,
-            entryPresent = false,
-            weight = 0.0,
-            volume = 0.0
-          }).ToDictionary(k => k.date, v => v);
-
-        //Now get the actual data and merge       
-        var command = @"SELECT Date, Weight, Volume FROM Entries 
-                                WHERE Date >= CAST(@startDate AS DATE) AND Date <= CAST(@endDate AS DATE)
-                                AND ProjectUID = @projectUid AND GeofenceUID = @geofenceUid
-                                ORDER BY Date";
-
-        using (var reader = MySqlHelper.ExecuteReader(conn, command,
-          new MySqlParameter("@projectUid", projectResponse.projectUid),
-          new MySqlParameter("@geofenceUid", geofenceUid),
-          new MySqlParameter("@startDate", dateRange.First()),
-          new MySqlParameter("@endDate", dateRange.Last())
-        ))
-        {
-          const double EPSILON = 0.001;
-
-          while (reader.Read())
-          {
-            DateTime date = reader.GetDateTime(reader.GetOrdinal("Date"));
-            DayEntry entry = entriesLookup[date];
-            entry.entryPresent = true;
-            entry.weight = reader.GetDouble(reader.GetOrdinal("Weight"));
-            double volume = 0.0;
-            if (!reader.IsDBNull(reader.GetOrdinal("Volume")))
-            {
-              volume = reader.GetDouble(reader.GetOrdinal("Volume"));
-              if (volume <= EPSILON)
-                volume = 0.0;
-            }
-            entry.volume = volume;
-          }
-
-          return entriesLookup.Select(v => v.Value).ToList();
-        }
-      });
-    }
-
+    
     /// <summary>
     /// Gets today's date in the projectResponse time zone.
     /// </summary>
@@ -507,33 +506,6 @@ namespace Common.Repository
       Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
       return (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;
     }
-
-    /// <summary>
-    /// Gets the geofence UID for the projectResponse from the GeofenceResponse table
-    /// </summary>
-    /// <param name="projectResponse">Project</param>
-    /// <returns>The geofence UID. If none was specified returns the projectResponse geofence UID</returns>
-    private static string GetGeofenceUidForProject(ProjectResponse projectResponse)
-    {
-      return WithConnection((conn) =>
-      {
-        //Get the projectResponse geofence uid
-        string projectGeofenceUid = null;
-        var command = @"SELECT g.GeofenceUID
-                              FROM GeofenceResponse g JOIN ProjectGeofence pg ON g.GeofenceUID = pg.fk_GeofenceUID 
-                              WHERE pg.fk_ProjectUID = @projectUid AND g.fk_GeofenceTypeID = 1"; //Project type
-        using (var reader =
-          MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", projectResponse.projectUid)))
-        {
-          while (reader.Read())
-          {
-            projectGeofenceUid = reader.GetString(0);
-          }
-        }
-        return projectGeofenceUid;
-      });
-    }
-
 
     private static IEnumerable<DateTime> GetDateRange(DateTime startDate, DateTime endDate)
     {
@@ -571,6 +543,34 @@ namespace Common.Repository
 
     #region Geofences
 
+
+    /// <summary>
+    /// Gets the geofence UID for the projectResponse from the GeofenceResponse table
+    /// </summary>
+    /// <param name="projectResponse">Project</param>
+    /// <returns>The geofence UID. If none was specified returns the projectResponse geofence UID</returns>
+    public static string GetGeofenceUidForProject(ProjectResponse projectResponse)
+    {
+      return WithConnection((conn) =>
+      {
+        //Get the projectResponse geofence uid
+        string projectGeofenceUid = null;
+        var command = @"SELECT g.GeofenceUID
+                            FROM Geofence g 
+                              JOIN ProjectGeofence pg ON g.GeofenceUID = pg.fk_GeofenceUID 
+                            WHERE pg.fk_ProjectUID = @projectUid AND g.fk_GeofenceTypeID = 1"; //Project type
+        using (var reader =
+          MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", projectResponse.projectUid)))
+        {
+          while (reader.Read())
+          {
+            projectGeofenceUid = reader.GetString(0);
+          }
+        }
+        return projectGeofenceUid;
+      });
+    }
+
     /// <summary>
     /// Retrieves the geofences associated with the projectResponse.
     /// </summary>
@@ -580,9 +580,10 @@ namespace Common.Repository
     {
       return WithConnection((conn) =>
       {
-        var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID, g.GeometryWKT FROM GeofenceResponse g
+        var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID, g.GeometryWKT 
+                          FROM Geofence g
                             JOIN ProjectGeofence pg on g.GeofenceUID = pg.fk_GeofenceUID
-                            WHERE pg.fk_ProjectUID = @projectUid AND g.IsDeleted = 0 
+                          WHERE pg.fk_ProjectUID = @projectUid AND g.IsDeleted = 0 
                                 AND (g.fk_GeofenceTypeID = 1 OR g.fk_GeofenceTypeID = 10)";
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", projectUid)))
@@ -638,8 +639,9 @@ namespace Common.Repository
     {
       return WithConnection((conn) =>
       {
-        var command = @"SELECT GeometryWKT FROM GeofenceResponse
-                            WHERE GeofenceUID = @geofenceUid";
+        var command = @"SELECT GeometryWKT 
+                          FROM Geofence
+                          WHERE GeofenceUID = @geofenceUid";
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@geofenceUid", geofenceUid)))
         {
