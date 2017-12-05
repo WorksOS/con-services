@@ -84,7 +84,7 @@ namespace VSS.VisionLink.Raptor.Client
                              }
                          },
                          null, // filter 2
-                         DesignDescriptor.Null()
+                         long.MinValue // DesignDescriptor.Null()
                         ));
 
                         if (bmp != null)

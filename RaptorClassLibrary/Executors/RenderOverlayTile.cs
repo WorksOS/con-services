@@ -50,7 +50,13 @@ namespace VSS.VisionLink.Raptor.Executors
         CombinedFilter Filter1 = null;
         CombinedFilter Filter2 = null;
 
-        DesignDescriptor CutFillDesign; // DesignDescriptor
+        /// <summary>
+        /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
+        /// </summary>
+        public long CutFillDesignID { get; set; } = long.MinValue;
+        // DesignDescriptor CutFillDesign; // DesignDescriptor
+
+            
         // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
         // FColourPalettes: TColourPalettes;
         // ICOptions ICOptions = new ICOptions();
@@ -83,7 +89,7 @@ namespace VSS.VisionLink.Raptor.Executors
                                  ushort ANPixelsY,
                                  CombinedFilter AFilter1,
                                  CombinedFilter AFilter2,
-                                 DesignDescriptor ACutFillDesign,
+                                 long ACutFillDesignID, //DesignDescriptor ACutFillDesign,
                                  //AReferenceVolumeType : TComputeICVolumesType;
                                  //AColourPalettes: TColourPalettes;
                                  //AICOptions: TSVOICOptions;
@@ -101,7 +107,7 @@ namespace VSS.VisionLink.Raptor.Executors
             NPixelsY = ANPixelsY;
             Filter1 = AFilter1;
             Filter2 = AFilter2;
-            CutFillDesign = ACutFillDesign;
+            CutFillDesignID = ACutFillDesignID; // CutFillDesign = ACutFillDesign;
             //ReferenceVolumeType = AReferenceVolumeType;
             //ColourPalettes = AColourPalettes;
             //ICOptions = AICOptions;
@@ -668,19 +674,20 @@ namespace VSS.VisionLink.Raptor.Executors
             // subgrid requests that overlay the actual design
             if (Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*, ReferenceVolumeType*/))
             {
-                if (CutFillDesign.IsNull)
+                /*if (CutFillDesign.IsNull)
                 {
                     // TODO readd when logging available
                     //SIGLogMessage.PublishNoODS(Self, Format('No design provided to cut fill, summary volume or thickness overlay render request for datamodel %d', [FDataModelID]), slmcError);
                     ResultStatus = RequestErrorStatus.NoDesignProvided;
                     return null;
-                }
+                }*/
 
-                DesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(DataModelID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesign.DesignID);
+                DesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(DataModelID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
 
                 if (DesignSubgridOverlayMap == null)
                 {
                     // SIGLogMessage.PublishNoODS(Self, Format('Failed to request subgrid overlay index for design %s in datamodel %d", [FDesignDescriptor.ToString, FDataModelID]), slmcError);
+                    ResultStatus = RequestErrorStatus.NoDesignProvided;
                     return null;
                 }
 
@@ -737,7 +744,9 @@ namespace VSS.VisionLink.Raptor.Executors
                                    WorldTileWidth, WorldTileHeight,
                                    NPixelsX, NPixelsY);
 
-                Renderer.CutFillDesign = CutFillDesign;
+                Renderer.CutFillDesignID = CutFillDesignID;
+                //Renderer.CutFillDesign = CutFillDesign;
+
                 // Renderer.ReferenceVolumeType = FReferenceVolumeType;
 
                 Renderer.TileRotation = TileRotation;

@@ -43,6 +43,14 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
         public SubGridTreeBitmapSubGridBits ProcessingMap { get; set; }
 
         /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public CalculateDesignElevationPatchArgument()
+        {
+
+        }
+
+        /// <summary>
         /// Constructor taking the full state of the elevation patch computation operation
         /// </summary>
         /// <param name="siteModelID"></param>
@@ -56,7 +64,7 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
                                          uint originY,
                                          double cellSize,
                                          DesignDescriptor designDescriptor,
-                                         SubGridTreeBitmapSubGridBits processingMap)
+                                         SubGridTreeBitmapSubGridBits processingMap) : this()
         {
             SiteModelID = siteModelID;
             OriginX = originX;

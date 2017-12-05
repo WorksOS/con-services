@@ -45,7 +45,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                      arg.CoordsAreGrid,
                      arg.PixelsX, arg.PixelsY,
                      arg.Filter1, arg.Filter2,
-                     arg.CutFillDesign,
+                     arg.CutFillDesignID,//arg.CutFillDesign,
                      Color.Black,
                      arg.RaptorNodeID);
 

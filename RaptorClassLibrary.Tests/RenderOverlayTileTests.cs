@@ -26,7 +26,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
                                                              100, // PixelsY
                                                              null, // Filter1
                                                              null, // Filter2
-                                                             DesignDescriptor.Null(),
+                                                             long.MinValue, // DesignDescriptor.Null(),
                                                              Color.Black,
                                                              String.Empty);
 
@@ -46,7 +46,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
                                                              100, // PixelsY
                                                              null, // Filter1
                                                              null, // Filter2
-                                                             DesignDescriptor.Null(),
+                                                             long.MinValue,// DesignDescriptor.Null(),
                                                              Color.Black,
                                                              String.Empty);
            Bitmap bmp = render.Execute();

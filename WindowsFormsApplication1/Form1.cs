@@ -87,7 +87,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                  (ushort)height, // PixelsY
                  new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
                  null, // filter 2
-                 (cmbDesigns.Items.Count == 0) ? DesignDescriptor.Null() : (cmbDesigns.SelectedValue as Design).DesignDescriptor
+                 (cmbDesigns.Items.Count == 0) ? long.MinValue : (cmbDesigns.SelectedValue as Design).ID// DesignDescriptor
                 ));
             }
             catch (Exception E)
@@ -111,11 +111,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             InitializeComponent();
 
             // Set the display modes in the combo box
-            foreach (string mode in Enum.GetNames(typeof(DisplayMode)))
-            {
-                displayMode.Items.Add(mode);
-            }
-
+            displayMode.Items.AddRange(Enum.GetNames(typeof(DisplayMode)));
             displayMode.SelectedIndex = (int)DisplayMode.Height;
 
             tileRender = RaptorTileRenderingServer.NewInstance();
@@ -466,6 +462,12 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             DoScreenUpdate();
         }
 
+        /// <summary>
+        /// Calculate statistics across a single cache in the grid
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="cache"></param>
+        /// <returns></returns>
         private string CalculateCacheStatistics(string title, ICache<Object, byte[]> cache)
         {
 
@@ -499,6 +501,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             return $"Cache {title}: {count} entries totalling {sumBytes} bytes. Average: {sumBytes / count} bytes, smallest: {smallestBytes} bytes, largest: {largestBytes} bytes";
         }
 
+        /// <summary>
+        /// Calculate statistics on the numbers and sizes of elements in the major Raptor caches
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("This may take some time...", "Confirmation", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
@@ -506,7 +513,6 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 return;
             }
 
-            // Calculate statistics on the numbers and sizes of elements in a cache
             try
             {
                 IIgnite ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());

@@ -67,7 +67,12 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         public bool AbortedDueToTimeout;
 
-        public DesignDescriptor CutFillDesign; // =  // FCutFillDesignDescriptor : TVLPDDesignDescriptor;
+        /// <summary>
+        /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
+        /// </summary>
+        public long CutFillDesignID = long.MinValue;
+        //public DesignDescriptor CutFillDesign; // =  // FCutFillDesignDescriptor : TVLPDDesignDescriptor;
+
         // FReferenceVolumeType : TComputeICVolumesType;
 
         public int EpochCount;
@@ -267,7 +272,7 @@ namespace VSS.VisionLink.Raptor.Rendering
 
                 // Displayer.ICOptions  = ICOptions;
 
-                PipelinedTask = new PVMRenderingTask(RequestDescriptor, RequestingRaptorNodeID, GridDataFromModeConverter.Convert(Mode), this, CutFillDesign);
+                PipelinedTask = new PVMRenderingTask(RequestDescriptor, RequestingRaptorNodeID, GridDataFromModeConverter.Convert(Mode), this, CutFillDesignID /*CutFillDesign*/);
 
                 // ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.ASTasks.Add(PipelinedTask);
                 try

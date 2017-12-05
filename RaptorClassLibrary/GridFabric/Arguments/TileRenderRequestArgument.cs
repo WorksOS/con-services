@@ -29,7 +29,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         public CombinedFilter Filter1 { get; set; } = null;
         public CombinedFilter Filter2 { get; set; } = null;
 
-        public DesignDescriptor CutFillDesign { get; set; }
+        /// <summary>
+        /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
+        /// </summary>
+        public long CutFillDesignID { get; set; } = long.MinValue;
+        //public DesignDescriptor CutFillDesign { get; set; }
 
         public TileRenderRequestArgument(long siteModelID,
                                          DisplayMode mode,
@@ -39,7 +43,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
                                          ushort pixelsY,
                                          CombinedFilter filter1,
                                          CombinedFilter filter2,
-                                         DesignDescriptor cutFillDesign)
+                                         long cutFillDesignID /*DesignDescriptor cutFillDesign*/)
         {
             SiteModelID = siteModelID;
             Mode = mode;
@@ -49,7 +53,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
             PixelsY = pixelsY;
             Filter1 = filter1;
             Filter2 = filter2;
-            CutFillDesign = cutFillDesign;
+            CutFillDesignID = cutFillDesignID; // CutFillDesign = cutFillDesign;
         }
     }
 }
