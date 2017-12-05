@@ -9,6 +9,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using XnaFan.ImageComparison;
 
 namespace RaptorSvcAcceptTestsCommon.Utils
 {
@@ -197,7 +198,13 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       var actualImage = ConvertToImage(actualTileData);
       expectedImage.Save(expFileName);
       actualImage.Save(actFileName);
-      var diff = XnaFan.ImageComparison.ExtensionMethods.PercentageDifference(expectedImage, actualImage, threshold);
+      var diff = expectedImage.PercentageDifference(actualImage, threshold);
+      if (diff > 0.0)
+      {
+        var diffImage = expectedImage.GetDifferenceImage(actualImage);
+        diffImage.Save(actFileName + "Differences.jpg");
+      }
+
       return diff;
     }
   }

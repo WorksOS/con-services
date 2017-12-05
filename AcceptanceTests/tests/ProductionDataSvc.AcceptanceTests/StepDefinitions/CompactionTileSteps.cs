@@ -15,7 +15,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   {
     private Getter<TileResult> tileRequester;
     private string url;
-    private int testCount;
 
     [Given(@"the Compaction service URI ""(.*)""")]
     public void GivenTheCompactionServiceURI(string url)
@@ -66,9 +65,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }    
       var expectedTileData = tileRequester.ResponseRepo[resultName].TileData;
       var actualTileData = tileRequester.CurrentResponse.TileData;
-      testCount++;
-      var expFileName = "Expected" + testCount + ".jpg";
-      var actFileName = "Actual" + testCount + ".jpg";
+      var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + ".jpg";
+      var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + ".jpg";
       var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
       Console.WriteLine("Actual Difference % = " + diff*100); 
       Console.WriteLine("Actual filename = " + actFileName);
