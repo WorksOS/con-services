@@ -103,6 +103,23 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
+    /// Notifies Raptor that a file has been CRUD to a project via CGen
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="fileUid">File UID</param>
+    /// <param name="customHeaders">Custom request headers</param>
+    /// <returns></returns>
+    public async Task<BaseDataResult> NotifyImportedFileChange(Guid projectUid, Guid fileUid, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.NotifyImportedFileChange: projectUid: {projectUid} fileUid: {fileUid}");
+      var queryParams = $"?projectUid={projectUid}&fileUid={fileUid}";
+      //log.LogDebug($"RaptorProxy.DeleteFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
+
+      return await NotifyFile<BaseDataResult>("/importedfilechange", queryParams, customHeaders);
+    }
+
+
+    /// <summary>
     /// Validates the Settings for the project.
     /// </summary>
     /// <param name="projectUid"></param>

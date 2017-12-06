@@ -137,6 +137,21 @@ namespace MockProjectWebApi.Controllers
     }
 
     /// <summary>
+    /// Dummies the nofication of change.
+    /// </summary>
+    [Route("api/v2/notification/importedfilechange")]
+    [HttpGet]
+    public BaseDataResult DummyNotifyImportedFileChange(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid fileUid)
+    {
+      var res = new BaseDataResult();
+      var message = $"DummyNotifyImportedFileChange: res {res}. projectUid {projectUid} fileUid {fileUid}";
+      Console.WriteLine(message);
+      return res;
+    }
+
+    /// <summary>
     /// Dummies the project projectSettings validation.
     /// </summary>
     [Route("api/v2/compaction/validatesettings")]
