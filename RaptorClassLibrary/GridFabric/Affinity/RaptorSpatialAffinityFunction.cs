@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
@@ -53,7 +54,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
 
                 Log.InfoFormat("RaptorSpatialAffinityFunction: Assigning partitions from topology");
 
-                List<IClusterNode> PSNodes = context.CurrentTopologySnapshot.Where(x => { string role; return x.TryGetAttribute<string>("Role", out role) && role == "PSNode"; }).ToList();
+                List<IClusterNode> PSNodes = context.CurrentTopologySnapshot.Where(x => { string role; return x.TryGetAttribute<string>(ServerRoles.ROLE_ATTRIBUTE_NAME, out role) && role == ServerRoles.PSNODE; }).ToList();
 
                 if (PSNodes.Count < RaptorConfig.numSpatialProcessingDivisions)
                 {

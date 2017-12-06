@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Raptor.Utilities;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Utilities.Tests
 {
     [TestClass]
     public class MathUtilitiesTests

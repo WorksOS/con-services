@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
+using VSS.VisionLink.Raptor.Servers;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {
@@ -17,7 +18,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public CacheComputeComputeFunc() : base("PSNode")
+        public CacheComputeComputeFunc() : base(ServerRoles.PSNODE)
         {
         }
     }

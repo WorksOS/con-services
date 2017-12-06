@@ -5,7 +5,7 @@ using VSS.VisionLink.Raptor.Utilities.Interfaces;
 using System.Linq;
 using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Extensions.Tests
 {
     [TestClass]
     public class FromToBytesTests

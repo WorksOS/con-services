@@ -7,6 +7,7 @@ using Apache.Ignite.Core.PersistentStore;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using VSS.VisionLink.Raptor.Servers;
 
 namespace ExceptionReproducer
 {
@@ -28,7 +29,7 @@ namespace ExceptionReproducer
             cfg.UserAttributes = new Dictionary<String, object>
             {
                 { "Owner", "Raptor" },
-                { "Role", "PSNode" },
+                { ServerRoles.ROLE_ATTRIBUTE_NAME, ServerRoles.PSNODE },
                 { "Division", GetDescriptor() }
             };
             cfg.DataStorageConfiguration = new DataStorageConfiguration()

@@ -3,10 +3,12 @@ using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Resource;
 using Apache.Ignite.Core.Services;
 using System;
+using System.Collections.Generic;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
+using VSS.VisionLink.Raptor.GridFabric.NodeFilters;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.Surfaces;
 
 namespace VSS.VisionLink.Raptor.Services.Surfaces
@@ -28,11 +30,6 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         private readonly IIgnite _ignite;
 
         /// <summary>
-        /// The cluster group the service id deployed onto
-        /// </summary>
-        private IClusterGroup cacheGrp = null;
-
-        /// <summary>
         /// Services interface for the clustergroup projection
         /// </summary>
         private IServices services = null;
@@ -49,10 +46,8 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         {
             _ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
 
-            cacheGrp = _ignite.GetCluster().ForCacheNodes(RaptorCaches.MutableNonSpatialCacheName()).ForAttribute("Role", "PSNode");
-
             // Get an instance of IServices for the cluster group.
-            services = cacheGrp.GetServices();
+            services = _ignite.GetCluster().GetServices();
         }
 
         public void Deploy()
@@ -60,12 +55,22 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
             // Attempt to cancel any previously deployed service
             services.Cancel(ServiceName);
 
-            // Deploy per-node singleton. An instance of the service
-            // will be deployed on every node within the cluster group.
-            //services.DeployNodeSingleton(ServiceName, new AddSurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName()));
-            services.DeployClusterSingleton(ServiceName, new SurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName()));
+            // Deploy per-node singleton. An instance of the service will be deployed on every node within the cluster group.
+            //services.DeployNodeSingleton(ServiceName, new AddSurveyedSurfaceService());
 
-            proxy = services.GetServiceProxy<ISurveyedSurfaceService>(ServiceName, true);
+            // Deploy a cluster singleton instance of the service
+            //services.DeployClusterSingleton(ServiceName, new SurveyedSurfaceService());
+
+            services.Deploy(new ServiceConfiguration()
+            {
+                Name = ServiceName,
+                Service = new SurveyedSurfaceService(),
+                TotalCount = 1,
+                MaxPerNodeCount = 1,
+                NodeFilter = new PSNodeRoleBasedNodeFilter()
+            });
+
+            proxy = services.GetServiceProxy<ISurveyedSurfaceService>(ServiceName);
         }
 
         /// <summary>

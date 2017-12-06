@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Raptor.Utilities;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.VisionLink.Raptor.RaptorClassLibrary.MinMax.Tests
 {
     [TestClass]
     public class MinMaxTests
@@ -13,10 +13,10 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             int a = 10;
             int b = 20;
 
-            MinMax.Swap(ref a, ref b);
+            Raptor.Utilities.MinMax.Swap(ref a, ref b);
             Assert.IsTrue(a == 20 && b == 10, "Swap failed to swap items");
 
-            MinMax.Swap<int>(ref a, ref b);
+            Raptor.Utilities.MinMax.Swap<int>(ref a, ref b);
             Assert.IsTrue(a == 10 && b == 20, "Swap failed to swap items");
         }
 
@@ -26,14 +26,14 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             double a = 10;
             double b = 20;
 
-            MinMax.SetMinMax(ref a, ref b);
-            Assert.IsTrue(a == 10 && b == 20, "SetMinMax swapped values when it did not");
+            Raptor.Utilities.MinMax.SetMinMax(ref a, ref b);
+            Assert.IsTrue(a == 10 && b == 20, "SetMinMax swapped values when it should not");
 
             double c = 20;
             double d = 10;
 
-            MinMax.SetMinMax(ref a, ref b);
-            Assert.IsTrue(a == 10 && b == 20, "SetMinMax did not swap values when it should");
+            Raptor.Utilities.MinMax.SetMinMax(ref c, ref d);
+            Assert.IsTrue(c == 10 && d == 20, "SetMinMax did not swap values when it should");
         }
 
         [TestMethod]
@@ -42,14 +42,14 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             int a = 10;
             int b = 20;
 
-            MinMax.SetMinMax<int>(ref a, ref b);
-            Assert.IsTrue(a == 10 && b == 20, "SetMinMax swapped values when it did not");
+            Raptor.Utilities.MinMax.SetMinMax<int>(ref a, ref b);
+            Assert.IsTrue(a == 10 && b == 20, "SetMinMax swapped values when it should not");
 
             int c = 20;
             int d = 10;
 
-            MinMax.SetMinMax<int>(ref a, ref b);
-            Assert.IsTrue(a == 10 && b == 20, "SetMinMax did not swap values when it should");
+            Raptor.Utilities.MinMax.SetMinMax<int>(ref c, ref d);
+            Assert.IsTrue(c == 10 && d == 20, "SetMinMax did not swap values when it should");
         }
     }
 }

@@ -345,7 +345,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             {
                 //// Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
                 //                localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
-                //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("Role"),
+                //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>(ServerRoles.ROLE_ATTRIBUTE_NAME),
                 //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("RaptorNodeID"));
                 byte[] bytes = new byte[MS.Position];
                 MS.Position = 0;

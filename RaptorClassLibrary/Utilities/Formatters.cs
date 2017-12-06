@@ -17,6 +17,5 @@ namespace VSS.VisionLink.Raptor.Utilities
         {
             return String.Format("{0:yyyy/MMM/dd HH:mm:ss.zzz}", offset ? dateTime + Time.GPS.GetLocalGMTOffset() : dateTime);
         }
-
     }
 }

@@ -52,7 +52,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                         UserAttributes = new Dictionary<string, object>()
                         {
-                            { "Role", role },
+                            { ServerRoles.ROLE_ATTRIBUTE_NAME, role },
                             { "RaptorNodeID", RaptorNodeID }
                         },
 

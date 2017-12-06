@@ -7,7 +7,7 @@ using VSS.VisionLink.Raptor.Utilities;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Utility.Tests
 {
     public class testClassBase : MemoryStream
     {

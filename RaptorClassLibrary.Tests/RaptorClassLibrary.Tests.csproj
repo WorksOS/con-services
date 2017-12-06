@@ -54,6 +54,12 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Apache.Ignite, Version=2.3.0.24009, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Ignite.2.3.0\lib\net40\Apache.Ignite.exe</HintPath>
+    </Reference>
+    <Reference Include="Apache.Ignite.Core, Version=2.3.0.24009, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Ignite.2.3.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
   </ItemGroup>
@@ -79,10 +85,11 @@
     <Compile Include="CellPassTests.cs" />
     <Compile Include="CellSpatialFilterTests.cs" />
     <Compile Include="EncodedBitFieldDescriptorTests.cs" />
-    <Compile Include="FromToBytesTests.cs" />
+    <Compile Include="Extensions\FromToBytesTests.cs" />
     <Compile Include="Geometry\FencePointTests.cs" />
     <Compile Include="Geometry\FenceTests.cs" />
     <Compile Include="GPSModeTests.cs" />
+    <Compile Include="MockedClasses\GridFabric\MockedClusterServerNode.cs" />
     <Compile Include="MutabilityConverterTests.cs" />
     <Compile Include="RenderOverlayTileTests.cs" />
     <Compile Include="ServerSubGridTreeLeafTests.cs" />
@@ -97,11 +104,12 @@
     <Compile Include="SubGridTreePersistorTests.cs" />
     <Compile Include="SubGridUtilitiesTests.cs" />
     <Compile Include="SubGridSpatialAffinityKeyTests.cs" />
-    <Compile Include="TypesHelperTests.cs" />
+    <Compile Include="Utility\TypesHelperTests.cs" />
     <Compile Include="PassCountTests.cs" />
-    <Compile Include="MinMaxTests.cs" />
-    <Compile Include="MathUtilities.cs" />
-    <Compile Include="GeometryHelperTests.cs" />
+    <Compile Include="Utility\MinMaxTests.cs" />
+    <Compile Include="Utility\MathUtilitiesTests.cs" />
+    <Compile Include="Utility\GeometryHelperTests.cs" />
+    <Compile Include="GridFabricNodeFilterTests.cs" />
     <Compile Include="UTMCoordPointPairTests.cs" />
     <Compile Include="Utility\GPSTests.cs" />
     <Compile Include="Geometry\LineIntersectionTests.cs" />
@@ -147,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
@@ -168,6 +177,11 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+if not exist "$(TargetDir)Libs" md "$(TargetDir)Libs"
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.3.0\Libs\*.*" "$(TargetDir)Libs"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

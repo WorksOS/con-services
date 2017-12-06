@@ -98,6 +98,8 @@
     <Compile Include="Events\StartEndRecordedDataEvent.cs" />
     <Compile Include="Designs\Executors\CalculateDesignElevationPatch.cs" />
     <Compile Include="Executors\ProjectExtents.cs" />
+    <Compile Include="GridFabric\NodeFilters\PSNodeRoleBasedNodeFilter.cs" />
+    <Compile Include="GridFabric\NodeFilters\RoleBasedNodeFilter.cs" />
     <Compile Include="Rendering\Executors\RenderOverlayTile.cs" />
     <Compile Include="Executors\TAGFileConverter.cs" />
     <Compile Include="Executors\TAGFilePreScan.cs" />
@@ -193,6 +195,7 @@
     <Compile Include="Servers\RaptorIgniteServer.cs" />
     <Compile Include="Servers\Client\RaptorProjectStatisticsServer.cs" />
     <Compile Include="Servers\Client\RaptorTileRenderingServer.cs" />
+    <Compile Include="Servers\ServerRoles.cs" />
     <Compile Include="Services\BaseRaptorService.cs" />
     <Compile Include="Services\Designs\DesignsService.cs" />
     <Compile Include="Services\Designs\IDesignsService.cs" />
@@ -466,7 +469,12 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Volumes\Executors\" />
+    <Folder Include="Volumes\GridFabric\Arguments\" />
+    <Folder Include="Volumes\GridFabric\ComputeFuncs\" />
+    <Folder Include="Volumes\GridFabric\Requests\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

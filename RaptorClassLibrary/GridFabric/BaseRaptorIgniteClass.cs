@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.Servers;
 
 namespace VSS.VisionLink.Raptor.GridFabric
 {
@@ -87,7 +88,7 @@ namespace VSS.VisionLink.Raptor.GridFabric
         {
             if (!String.IsNullOrEmpty(Role))
             {
-                _group = _ignite.GetCluster().ForRemotes().ForAttribute("Role", Role);
+                _group = _ignite.GetCluster().ForRemotes().ForAttribute(ServerRoles.ROLE_ATTRIBUTE_NAME, Role);
 
                 if (_group != null)
                 {
