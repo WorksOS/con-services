@@ -171,7 +171,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
     private void ValidateResponse(string resultName)
     {
-      Console.WriteLine("Actual:" + gridReportRequester.CurrentResponse);
       var actualResult = gridReportRequester.CurrentResponse.ReportData;
       var expectedResult = gridReportRequester.ResponseRepo[resultName].ReportData;
 
@@ -186,23 +185,22 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       // Check the rows are the same
       for (int rowIdx = 0; rowIdx < rowCount; rowIdx++)
       {
-        CompareDouble(expectedrowList[rowIdx].Easting, actualrowList[rowIdx].Easting, "Easting", rowIdx);
-        CompareDouble(expectedrowList[rowIdx].Northing, actualrowList[rowIdx].Northing, "Northing", rowIdx);
-        CompareDouble(expectedrowList[rowIdx].Elevation, actualrowList[rowIdx].Elevation, "Elevation", rowIdx);
-        CompareDouble(expectedrowList[rowIdx].CMV, actualrowList[rowIdx].CMV, "CMV", rowIdx);
-        CompareDouble(expectedrowList[rowIdx].CutFill, actualrowList[rowIdx].CutFill, "CutFill", rowIdx);
-        CompareDouble(expectedrowList[rowIdx].MDP, actualrowList[rowIdx].MDP, "MDP", rowIdx);
-        CompareDouble(expectedrowList[rowIdx].PassCount, actualrowList[rowIdx].PassCount, "PassCount", rowIdx);
-        CompareDouble(expectedrowList[rowIdx].Temperature, actualrowList[rowIdx].Temperature, "Temperature", rowIdx);
+        Common.CompareDouble(expectedrowList[rowIdx].Easting, actualrowList[rowIdx].Easting, "Easting", rowIdx);
+        Common.CompareDouble(expectedrowList[rowIdx].Northing, actualrowList[rowIdx].Northing, "Northing", rowIdx);
+        Common.CompareDouble(expectedrowList[rowIdx].Elevation, actualrowList[rowIdx].Elevation, "Elevation", rowIdx);
+        Common.CompareDouble(expectedrowList[rowIdx].CMV, actualrowList[rowIdx].CMV, "CMV", rowIdx);
+        Common.CompareDouble(expectedrowList[rowIdx].CutFill, actualrowList[rowIdx].CutFill, "CutFill", rowIdx);
+        Common.CompareDouble(expectedrowList[rowIdx].MDP, actualrowList[rowIdx].MDP, "MDP", rowIdx);
+        Common.CompareDouble(expectedrowList[rowIdx].PassCount, actualrowList[rowIdx].PassCount, "PassCount", rowIdx);
+        Common.CompareDouble(expectedrowList[rowIdx].Temperature, actualrowList[rowIdx].Temperature, "Temperature", rowIdx);
       }
     }
 
-
-    private static void CompareDouble(double expectedDouble, double actualDouble, string field, int rowCount, int precision = 6)
+    private bool CompareDouble(double expectedDouble, double actualDouble, string field, int rowCount,int precision = 6)
     {
       if (expectedDouble == actualDouble)
       {
-        return;
+        return true;
       }
 
       if (Math.Round(expectedDouble, precision) != Math.Round(actualDouble, precision))
@@ -210,6 +208,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         Console.WriteLine("RowCount:" + rowCount + " " + field + " actual: " + actualDouble + " expected: " + expectedDouble);
         Assert.Fail("Expected: " + expectedDouble + " Actual: " + actualDouble + " at row index " + rowCount + " for field " + field);
       }
+      return true;
     }
   }
 }

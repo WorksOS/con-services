@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using System.Net;
+using System.Text;
 using TechTalk.SpecFlow;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -90,6 +92,25 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       Assert.AreEqual(exportReportRequester.ResponseRepo[resultName], exportReportRequester.CurrentResponse);
     }
+
+    /// <summary>
+    /// This method unzips the csv file. It then sorts it by date time and lat/long or northing then compares to expected 
+    /// </summary>
+    /// <param name="resultName"></param>
+    [Then(@"the report result csv should match the ""(.*)"" from the repository")]
+    public void ThenTheReportResultCsvShouldMatchTheFromTheRepository(string resultName)
+    {
+      Assert.AreEqual(0, exportReportRequester.CurrentResponse.Code);
+      Assert.AreEqual("success", exportReportRequester.CurrentResponse.Message);
+
+      var actualResult = Encoding.Default.GetString(Common.Decompress(exportReportRequester.CurrentResponse.ExportData));
+      var expectedResult = Encoding.Default.GetString(Common.Decompress(exportReportRequester.ResponseRepo[resultName].ExportData));
+      var expSorted = Common.SortCsvFileIntoString(expectedResult.Substring(3));
+      var actSorted = Common.SortCsvFileIntoString(actualResult.Substring(3));
+
+      Assert.IsTrue(expSorted == actSorted, "Expected CSV file does not match actual");
+    }
+
 
     [Then(@"the report result should contain error code (.*) and error message ""(.*)""")]
     public void ThenTheReportResultShouldContainErrorCodeAndErrorMessage(int errorCode, string errorMessage)
