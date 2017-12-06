@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
@@ -51,7 +52,8 @@ namespace VSS.MasterData.Proxies
       /// <returns></returns>
       public async Task<List<GeofenceData>> GetGeofences(string customerUid, IDictionary<string, string> customHeaders = null)
       {
-        return await GetMasterDataList<GeofenceData>(customerUid, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders);
+        var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders);
+        return result.Geofences;
       }
 
         public async Task<Guid> CreateGeofence(Guid customerGuid, string geofenceName, string description,
