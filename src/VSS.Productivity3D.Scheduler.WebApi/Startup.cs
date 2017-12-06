@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
@@ -218,6 +217,10 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       Console.WriteLine($"Scheduler.Startup: importedProjectFileTaskToRun {importedProjectFileSyncTaskToRun}");
       if (importedProjectFileSyncTaskToRun)
       {
+        // stagger startup of 2nd task so the initial runs don't deadlock
+        if (filterCleanupTaskToRun)
+          Thread.Sleep(2000);
+
         var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(_configStore, _loggerFactory, _raptorProxy);
         importedProjectFileSyncTask.AddTask();
         expectedJobCount += 1;

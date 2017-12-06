@@ -55,8 +55,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task<bool> NotifyRaptorFileCreatedInCGenAsync(string customerUid, Guid projectUid, ImportedFileType importedFileType,
-      Guid importedFileUid, string fileDescriptor, long legacyImportedFileId, DxfUnitsType dxfUnitsType)
+    protected async Task<bool> NotifyRaptorImportedFileChange(string customerUid, Guid projectUid, Guid importedFileUid)
     {
       var startUtc = DateTime.UtcNow;
       var isNotified = false;
@@ -66,143 +65,31 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       try
       {
         notificationResult = await RaptorProxy
-          .AddFile(projectUid, importedFileType, importedFileUid, fileDescriptor, legacyImportedFileId, dxfUnitsType, customHeaders)
+          .NotifyImportedFileChange(projectUid, importedFileUid, customHeaders)
           .ConfigureAwait(false);
       }
       catch (Exception e)
       {
         // proceed with sync, but send alert to NewRelic
         var newRelicAttributes = new Dictionary<string, object> {
-          { "message", string.Format($"AddFile in RaptorServices failed with exception {e.Message}") },
+          { "message", string.Format($"NotifyImportedFileChange in RaptorServices failed with exception {e.Message}") },
           { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
           { "projectUid", projectUid},
-          { "importedFileUid", importedFileUid},
-          { "fileDescriptor", fileDescriptor},
-          { "legacyImportedFileId", legacyImportedFileId}
+          { "importedFileUid", importedFileUid}
         };
         NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }
       Log.LogDebug(
-        $"NotifyRaptorFileCreatedInCGen: projectUid:{projectUid} importedFileUid: {importedFileUid} FileDescriptor:{fileDescriptor}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+        $"NotifyRaptorImportedFileChange: projectUid:{projectUid} importedFileUid: {importedFileUid}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
 
       if (notificationResult == null || notificationResult.Code != 0)
       {
         // proceed with sync, but send alert to NewRelic
         var newRelicAttributes = new Dictionary<string, object> {
-          { "message", string.Format($"AddFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}") },
+          { "message", string.Format($"NotifyImportedFileChange in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}") },
           { "customHeaders",JsonConvert.SerializeObject(customHeaders)},
           { "projectUid", projectUid},
-          { "importedFileUid", importedFileUid},
-          { "fileDescriptor", fileDescriptor},
-          { "legacyImportedFileId", legacyImportedFileId}
-        };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
-      }
-      else
-      {
-        isNotified = true;
-      }
-
-      return isNotified;
-    }
-
-    /// <summary>
-    /// Notify raptor of updated file
-    ///     if it already knows about it, it will just update and re-notify raptor and return success.
-    /// </summary>
-    /// <returns></returns>
-    protected async Task<bool> NotifyRaptorFileUpdatedInCGen(string customerUid, Guid projectUid, Guid importedFileUid)
-    {
-      var startUtc = DateTime.UtcNow;
-      var isNotified = false;
-
-      BaseDataResult notificationResult = null;
-      var customHeaders = GetCustomHeaders(customerUid);
-      try
-      {
-        notificationResult = await RaptorProxy
-          .UpdateFiles(projectUid, new List<Guid>() {importedFileUid}, customHeaders)
-          .ConfigureAwait(false);
-        ;
-      }
-      catch (Exception e)
-      {
-        // proceed with sync, but send alert to NewRelic
-        var newRelicAttributes = new Dictionary<string, object> {
-          { "message", string.Format($"UpdateFile in RaptorServices failed with exception {e.Message}") },
-          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
-          { "projectUid", projectUid},
           { "importedFileUid", importedFileUid}
-        };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
-      }
-      Log.LogDebug(
-        $"NotifyRaptorFileUpdatedInCGen: projectUid:{projectUid} importedFileUid: {importedFileUid}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
-
-      if (notificationResult == null || notificationResult.Code != 0)
-      {
-        // proceed with sync, but send alert to NewRelic
-        var newRelicAttributes = new Dictionary<string, object> {
-          { "message", string.Format($"UpdateFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}") },
-          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
-          { "projectUid", projectUid},
-          { "importedFileUid", importedFileUid}
-        };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
-      }
-      else
-      {
-        isNotified = true;
-      }
-
-      return isNotified;
-    }
-
-    /// <summary>
-    /// Notify raptor of new file
-    ///     if it already knows about it, it will just update and re-notify raptor and return success.
-    /// </summary>
-    /// <returns></returns>
-    protected async System.Threading.Tasks.Task<bool> NotifyRaptorFileDeletedInCGenAsync(string customerUid, Guid projectUid,
-      Guid importedFileUid, string fileDescriptor, long legacyImportedFileId)
-    {
-      var startUtc = DateTime.UtcNow;
-      var isNotified = false;
-
-      BaseDataResult notificationResult = null;
-      var customHeaders = GetCustomHeaders(customerUid);
-      try
-      {
-        notificationResult = await RaptorProxy
-          .DeleteFile(projectUid, ImportedFileType.SurveyedSurface, importedFileUid, fileDescriptor, legacyImportedFileId, customHeaders)
-          .ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        // proceed with sync, but send alert to NewRelic
-        var newRelicAttributes = new Dictionary<string, object> {
-          { "message", string.Format($"DeleteFile in RaptorServices failed with exception {e.Message}") },
-          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
-          { "projectUid", projectUid},
-          { "importedFileUid", importedFileUid},
-          { "fileDescriptor", fileDescriptor},
-          { "legacyImportedFileId", legacyImportedFileId}
-        };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
-      }
-      Log.LogDebug(
-        $"NotifyRaptorFileDeletedInCGen: projectUid:{projectUid} importedFileUid: {importedFileUid} FileDescriptor:{fileDescriptor}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
-
-      if (notificationResult == null || notificationResult.Code != 0)
-      {
-        // proceed with sync, but send alert to NewRelic
-        var newRelicAttributes = new Dictionary<string, object> {
-          { "message", string.Format($"DeleteFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}") },
-          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
-          { "projectUid", projectUid},
-          { "importedFileUid", importedFileUid},
-          { "fileDescriptor", fileDescriptor},
-          { "legacyImportedFileId", legacyImportedFileId}
         };
         NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
       }

@@ -61,9 +61,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
           // Notify 3dpm of SS file created via Legacy
           if (projectEvent.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
-            await NotifyRaptorFileCreatedInCGenAsync(projectEvent.CustomerUid, Guid.Parse(projectEvent.ProjectUid), projectEvent.ImportedFileType,
-                Guid.Parse(projectEvent.ImportedFileUid), projectEvent.FileDescriptor,
-                projectEvent.LegacyImportedFileId.Value, projectEvent.DxfUnitsType)
+            await NotifyRaptorImportedFileChange(projectEvent.CustomerUid, Guid.Parse(projectEvent.ProjectUid), Guid.Parse(projectEvent.ImportedFileUid))
               .ConfigureAwait(false);
 
           var newRelicAttributes = new Dictionary<string, object>
@@ -132,7 +130,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 // Notify 3dpm of SS file updated via Legacy
                 if (gotMatchingProject.LegacyImportedFileId != null
                 ) // Note that LegacyImportedFileId will always be !null 
-                  await NotifyRaptorFileUpdatedInCGen(gotMatchingProject.CustomerUid, Guid.Parse(gotMatchingProject.ProjectUid),
+                  await NotifyRaptorImportedFileChange(gotMatchingProject.CustomerUid, Guid.Parse(gotMatchingProject.ProjectUid),
                       Guid.Parse(gotMatchingProject.ImportedFileUid))
                     .ConfigureAwait(false);
 
@@ -192,7 +190,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
             // Notify 3dpm of SS file deleted via Legacy
             if (ifp.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
-              await NotifyRaptorFileDeletedInCGenAsync(ifp.CustomerUid, Guid.Parse(ifp.ProjectUid), Guid.Parse(ifp.ImportedFileUid), ifp.FileDescriptor, (long) ifp.LegacyImportedFileId)
+              await NotifyRaptorImportedFileChange(ifp.CustomerUid, Guid.Parse(ifp.ProjectUid), Guid.Parse(ifp.ImportedFileUid))
                 .ConfigureAwait(false);
             
             var newRelicAttributes = new Dictionary<string, object>
