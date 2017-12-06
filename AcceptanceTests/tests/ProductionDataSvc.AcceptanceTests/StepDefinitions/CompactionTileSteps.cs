@@ -49,11 +49,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     }
 
 
-    [Then(@"the result should match the ""(.*)"" from the repository")]
-    public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
-    {
-      Assert.AreEqual(tileRequester.ResponseRepo[resultName], tileRequester.CurrentResponse);
-    }
+    //[Then(@"the result should match the ""(.*)"" from the repository")]
+    //public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
+    //{
+    //  Assert.AreEqual(tileRequester.ResponseRepo[resultName], tileRequester.CurrentResponse);
+    //}
 
     [Then(@"the result tile should match the ""(.*)"" from the repository within ""(.*)"" percent")]
     public void ThenTheResultTileShouldMatchTheFromTheRepositoryWithin(string resultName, string difference)

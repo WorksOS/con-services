@@ -8,7 +8,6 @@ And the result file "CompactionGetProductionDataTilesResponse.json"
 And projectUid "<ProjectUID>"
 And displayMode "0" and bbox "<BBox>" and width "<Width>" and height "<Height>"
 When I request result
-#Then the result should match the "<ResultName>" from the repository
 Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
 Examples: 
 | RequestName | ProjectUID                           | BBox                                                                                        | Width | Height | ResultName  | Difference |
@@ -44,7 +43,6 @@ And cutfillDesignUid "<cutfillDesignUid>"
 And displayMode "<Mode>" and bbox "<BBox>" and width "<Width>" and height "<Height>"
 And a summary volume file with volumeCalcType "<VolCalc>" and a topUid "<TopUid>" and a baseUid "<BaseUid>"
 When I request result
-#Then the result should match the "<ResultName>" from the repository
 Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
 Examples: 
 | RequestName       | ProjectUID                           | FilterUID                            | cutfillDesignUid                     | BBox                                                                          | Width | Height | Mode | VolCalc        | TopUid                               | BaseUid                              | ResultName                 | Difference |

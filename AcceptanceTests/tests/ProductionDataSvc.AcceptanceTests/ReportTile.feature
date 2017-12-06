@@ -7,7 +7,6 @@ Scenario: Report Tile - DxfLinework
   And a filterUid "7b2bd262-8355-44ba-938a-d50f9712dafc"
   And an overlayType "DxfLinework"
 	When I request a Report Tile
-#	Then the Report Tile result should be
 	Then the Report Tile result image should be match within "1" percent
   """
   {
@@ -23,7 +22,6 @@ Scenario: Report Tile - Alignments
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And an overlayType "Alignments"
 	When I request a Report Tile
-#	Then the Report Tile result should be
 	Then the Report Tile result image should be match within "1" percent
   """
   {
@@ -39,7 +37,6 @@ Scenario: Report Tile - Geofences
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And an overlayType "Geofences"
 	When I request a Report Tile
-#	Then the Report Tile result should be
 	Then the Report Tile result image should be match within "1" percent
   """
   {
@@ -55,7 +52,6 @@ Scenario: Report Tile - ProjectBoundary
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And an overlayType "ProjectBoundary"
 	When I request a Report Tile
-#	Then the Report Tile result should be
 	Then the Report Tile result image should be match within "1" percent
   """
   {
@@ -72,7 +68,6 @@ Scenario: Report Tile - BaseMap
   And an overlayType "BaseMap"
   And a mapType "MAP"
 	When I request a Report Tile
-#	Then the Report Tile result should be
 	Then the Report Tile result image should be match within "1" percent
   """
   {
@@ -89,7 +84,6 @@ Scenario: Report Tile - ProductionData - Elevation
   And an overlayType "ProductionData"
   And a mode "0"
 	When I request a Report Tile
-#	Then the Report Tile result should be
 	Then the Report Tile result image should be match within "3" percent
   """
   {
@@ -203,7 +197,6 @@ Scenario: Report Tile - ProductionData - CutFill
   And a mode "8"
   And a cutFillDesignUid "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"
 	When I request a Report Tile
-#	Then the Report Tile result should be
 	Then the Report Tile result image should be match within "3" percent
   """
   {
@@ -223,7 +216,6 @@ Scenario: Report Tile - ProductionData - SummaryVolumes
   And a volumeTopUid "A40814AA-9CDB-4981-9A21-96EA30FFECDD" 
   And a volumeBaseUid "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B"
 	When I request a Report Tile
-#	Then the Report Tile result should be
 	Then the Report Tile result image should be match within "1" percent
   """
   {

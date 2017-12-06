@@ -7,7 +7,6 @@ Scenario: Dxf Tile - Good Request
   And a bbox "-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625" and a width "256" and a height "256"
   And a fileType "linework"
 	When I request a Dxf Tile
-#	Then the Dxf Tile result should be
 	Then the Dxf Tile result image should be match within "1" percent
   """
   {
