@@ -1106,7 +1106,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 200
- testRunner.Then("the Report Tile result image should be match within \"3\" percent", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
+ testRunner.Then("the Report Tile result image should be match within \"5\" percent", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
                     "AARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAzoSURBVHhe7dp7cNVlfsfxn7qzszvu" +
                     "dGu73dnVGWZnR9fWNd2itrtYEENMIAkEFhCVGEUUsShiwIBoSiRAbuecXDgnJDm538PVIJdEcj/nJCf3" +
                     "kBsJkSgoIiqjrq1lmVo+fRLPH3a2/atQt+37NfOd5zmZ8/zO88/38/v9Jo8FAAAAAAAAAAAAAAAAAAAA" +
@@ -1195,7 +1195,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 219
- testRunner.Then("the Report Tile result image should be match within \"1\" percent", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
+ testRunner.Then("the Report Tile result image should be match within \"5\" percent", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
                     "AARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAUpSURBVHhe7dMxTQQAGIPR04cC5LAj" +
                     "AwEMSEDYsXT8pyYk1+S95BPQoQ8AAAAAAAAAAAAAAAAAAF7V5+/bc7VMAFrXsVbKBKB1HWulTABa17FW" +
                     "ygSgdR1rpUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWulTABa17FWygSgdR1rpUwAWtexVsoEoHUda6VM" +
