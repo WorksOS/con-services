@@ -100,13 +100,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       tileRequester.DoValidRequest();
     }
 
-    //[Then(@"the Report Tile result should be")]
-    //public void ThenTheReportTileResultShouldBe(string multilineText)
-    //{
-    //  TileResult expected = JsonConvert.DeserializeObject<TileResult>(multilineText);
-    //  Assert.AreEqual(expected, tileRequester.CurrentResponse);
-    //}
-
     [Then(@"the Report Tile result image should be match within ""(.*)"" percent")]
     public void ThenTheReportTileResultImageShouldBeMatchWithinPercent(string difference, string multilineText)
     {
@@ -123,7 +116,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
       Console.WriteLine("Actual Difference % = " + diff * 100);
       Console.WriteLine("Actual filename = " + actFileName);
-     // Console.WriteLine(tileRequester.CurrentResponse);
+      Console.WriteLine(tileRequester.CurrentResponse);
       Assert.IsTrue(Math.Abs(diff) < imageDifference, "Actual Difference:" + diff * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
     }
 
