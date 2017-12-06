@@ -100,12 +100,26 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       tileRequester.DoValidRequest();
     }
 
-    [Then(@"the Report Tile result should be")]
-    public void ThenTheReportTileResultShouldBe(string multilineText)
+    [Then(@"the Report Tile result image should be match within ""(.*)"" percent")]
+    public void ThenTheReportTileResultImageShouldBeMatchWithinPercent(string difference, string multilineText)
     {
+      double imageDifference = 0;
+      if (!string.IsNullOrEmpty(difference))
+      {
+        imageDifference = Convert.ToDouble(difference) / 100;
+      }
       TileResult expected = JsonConvert.DeserializeObject<TileResult>(multilineText);
-      Assert.AreEqual(expected, tileRequester.CurrentResponse);
+      var expectedTileData = expected.TileData;
+      var actualTileData = tileRequester.CurrentResponse.TileData;
+      var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + ".jpg";
+      var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + ".jpg";
+      var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
+      Console.WriteLine("Actual Difference % = " + diff * 100);
+      Console.WriteLine("Actual filename = " + actFileName);
+      Console.WriteLine(tileRequester.CurrentResponse);
+      Assert.IsTrue(Math.Abs(diff) < imageDifference, "Actual Difference:" + diff * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
     }
+
 
     [When(@"I request a Report Tile Expecting BadRequest")]
     public void WhenIRequestAReportTileExpectingBadRequest()

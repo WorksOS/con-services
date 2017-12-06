@@ -88,7 +88,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 10
- testRunner.Then("the Report Tile result should be", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
+ testRunner.Then("the Report Tile result image should be match within \"1\" percent", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
                     "AARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABWkSURBVHhe7d1brt02sgbgHm4yh4wk" +
                     "cwngaeQ1QAIYCYzgoNGv67CoKu2ftUiKkqgLtf4PqBbFOylKtneM9n+IiIiIiIiIiIiIiIiIiIiIiIiI" +
                     "iIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiI" +
@@ -206,7 +206,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 25
- testRunner.Then("the Report Tile result should be", @"{
+ testRunner.Then("the Report Tile result image should be match within \"1\" percent", @"{
   ""tileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKFSURBVHhe7drPSxRhGAfwMQ3rEtElirBDVNegQx3CQ4aEdBGkS3gxin5dgugHBFEdFCLFoH83+77wCBHirjCwrvP5wJeRd2feeXfZ52FmnQ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACm25+um08uj0rtDpwkKe4bya8x8irZGDPre103U6cApl2KevW/Ij8sz5Lt5KBGsp/PaRK3sr1UpwBOihT2xeTA24mWFP/tZCt/byZv6zBgSFL8F9IInrcmkO2ZGgaGJA3gfhrAx2SuhoAhSRNYTt67EoCBSgNYSj6kCZyqIWBIUvwP0gR+Jg9rCBiSFP+ddiWQtH8rLtUwMCQp/pfJ1+R7z1mvUwDHXW4L2kND7aqgr9ysqQEAABi49jBKcn5EFnIv+SX51mMe1RImKus4m3yqNa2095vtuXq5V5l3vj7P2RqCycqXsj2V9ntEfiSL+eLe6yuZ71otYaKylrms5W6t6UXS3u9u8iR5XFms3ceW+WZy3No/c7S0X+Xb/FdqN+C4SfGeTpE+TV5X3iU7R0xrmm+S/TlartYpgGmS4r1+lKSJLNShAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANC/rvsLivlVUXkHz+8AAAAASUVORK5CYII="",
   ""tileOutsideProjectExtents"": false,
   ""Code"": 0,
@@ -234,7 +234,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 40
- testRunner.Then("the Report Tile result should be", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
+ testRunner.Then("the Report Tile result image should be match within \"1\" percent", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
                     "AARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAjzSURBVHhe7d1ZrF1VGQfw3TJLoVKG" +
                     "MskgaSu0zFA6QQstk1Ba7r1taaVQOwGFIi0yFQpSSlssMwUiGgziBA+aEIIxKkZ9AqMmaOKQ+OiTbz6Y" +
                     "CO05/r/LbuWBB/Wp5/D7JV/W2fvss+/T9+2111p73wYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
@@ -298,7 +298,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 55
- testRunner.Then("the Report Tile result should be", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
+ testRunner.Then("the Report Tile result image should be match within \"1\" percent", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
                     "AARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAA7BSURBVHhe7d37lxT1mcfxRySI6A6G" +
                     "sN7QoJuLSIDErC4XdTVBwUsSFyPGBQkKARkuwWEGxrl1dfUMSXY9+cEf8y/4T+x/VpXPU/OYYxL2nOmu" +
                     "KvxW9/t1znNqfDj9Hbunv5/69qWqDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
@@ -388,7 +388,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 71
- testRunner.Then("the Report Tile result should be", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
+ testRunner.Then("the Report Tile result image should be match within \"1\" percent", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
                     "AARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABjmSURBVHhe7Z1ndxtHlobx43eOP63n" +
                     "OOx67HWSc5As2VrLQc6Wc1JiFEnERo4ECGbfve+trkYDaFJjnzPeYdfbR88BATQgAH3rqVxV6DTKchbd" +
                     "ZkVq5TUZ9CI5OTowWo0dqVc27Lms1xBCLg7nCgBEKoDRoGmJ/+hgKs36ljSqDygAQnLAQwRQshLAeNQx" +
@@ -522,7 +522,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 87
- testRunner.Then("the Report Tile result should be", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
+ testRunner.Then("the Report Tile result image should be match within \"3\" percent", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
                     "AARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABnWSURBVHhe7d0JeFXVuQbgz2pbpzpV" +
                     "b2m1ttZq+zjX21otiDOoOCtDEuYAKqBIr9bqVYEwOM+CVsWhVWRWlKGKFWcBaVG0RWYCZIBAQkIgCUnW" +
                     "ut+/snYa4mGQBLzY7+X5nnPOPiM8/P9ea+999oGIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiI" +
@@ -641,28 +641,472 @@ this.ScenarioSetup(scenarioInfo);
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tile - ProductionData - MDP")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        public virtual void ReportTile_ProductionData_MDP()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - ProductionData - MDP", ((string[])(null)));
+#line 97
+this.ScenarioSetup(scenarioInfo);
+#line 98
+testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 99
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 100
+testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 101
+testRunner.And("a mode \"20\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 102
+testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 103
+testRunner.Then("the Report Tile result image should be match within \"3\" percent", "{\n\"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAA" +
+                    "RnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAYJSURBVHhe7dp7bJVnHQfwg1EX94dozB" +
+                    "J0S5wXvP8xMuMSwoRBS885PS2lsAFOQRhSwMyNi6QJMIQN6PUUyqVQKKwbu4DGZWoVL1h6gbasrMwynC" +
+                    "wLWbI4E5fsn8Y4Yf58W49Ok2n8x6TOzyd58uZ9nvec56/n936f931TAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP91db3ZW1ovVz5c31n6hUIX8P+i+VxR5fdeq4ymsy" +
+                    "UvjZ6ffPXWLxU1PzCUmtc2VNNVOvToi7OH9vQVLa3rzE6qG3ir7U3anUdXT5pet37S3ovT/9qXHEfPU9" +
+                    "kTk1JL9ibHgUmpVEwYmwgYf5Y/8bXcfT9YETU95fHlHd/OHn/xtq2z9z8YqXkn4hsnVsbaH94Tm05Wvp" +
+                    "k/kx6p68n+ve07VzRS2bJ65LbvbBxpGZw51rf/mZkj03duGEmVt4+kKo+MXLf06Ehm15r63f3p9xemA8" +
+                    "aV0vZsat534zPrdsTk6saoPvmVyDTdH5OW747UnPZIZR6LRW2rom14VjT1l461fF8u9g6mY+3TX41Vx5" +
+                    "fGwQvFY/2tzxXFtJ2bIlX8/XjPwqOx9LGqaPt1Nmq6slMLswHjyrzWXGrhkzF128ZY9/SimNfyzbixqi" +
+                    "k++LcCkLQbVzfG5p9URn3P6GLOjR2TO360DM6KJe3Lo+qJJbG7vyTZRqRjzVOL4u6Dq6PqycWx75nZse" +
+                    "tcWTScTk8pzAaMFzWd6ZsePFV+5YGfLogvbtkcH122J27dvDm2nVoQt2yri4/c2xo3rd0X7158LCZWHY" +
+                    "5P31cXdx5YFa2/Ssfk9bUxcfG+ZKtwJCbMa4tPrNkZdd2l0dw/O1n4s2L/+ZJoHiyPfH8uGrozuS1bUu" +
+                    "8qTAuMB/me0o839WWj9cKsmFGzIa6rOBIL29fEoQszriSxvWP7L8s6dp+d3TFl4+aO1IJDP9/048prjf" +
+                    "3JHb03c/rz1Vt/98k19fGp9dtj8v01cXvjQ7Hn2fJo6MlE49nSJCFkfl/fkxlqHkyu78m8WjNYNLEwLT" +
+                    "Ae1HeVfSyJ8lf3nEsnEX523LwuH0uO3Tv8dpE9InV9Pon4By9VRG1Xuv3A+Tteahkqib1JzN8zUPzmgf" +
+                    "MzdyaL/vGmgbJoTgpBsk3oqO8pqTxwaW7Ud2deVwBgnMl3zf1w80Dx1a8/siKJ97WRuvt4pGYcP1oY/i" +
+                    "cnLn7uvbW96WxDb7a97cqCyO1ZFw+dKotd/dnRxX519Jra3tLb9z03ZywJJIXlVP2Z9PwDz48VgNcUAB" +
+                    "hnGjpz0xrPpK9t76yIzyZR/oaVR+KGFfnHC8Nvq7Yrs2DfcMXlzSfnvlHfUzoW90cLwOirvh2dmVzr87" +
+                    "k4NFzyp2SbcLj2dGZdy3DFaAF4o2lo+gcKfwGMB/Xd2RdGn9LvfbY0DlycE+0v3xW13ZkfFYb/lQnJdm" +
+                    "DCskeXvZI/VxH5fygArRem5zb87J4o2/2t17f+Ys6Ohp70n1sujiWAji2DuesLvwfGg7ru7G+PXpkfdd" +
+                    "2Z7vyZdPXBi7nqpr6S8sLwv3VDVX59TXf5tV0DbxWAtuFpudVPrYw7aqpj99D8OHx5bjSczXb4EAjGoY" +
+                    "Yz2alHXp5fPPqZb6HrP5akgInJnf2Pu86NfRdQ2AKU5dpeKIuW87P+kD+bvavl0tziLZ2iP7zj7Oybc/" +
+                    "PoK75Dv6kce+h3cLBoYs3pbOUjryyIpr5cci7ywzvWjoGKDyVbh4eTBHCsvjvb3nh2/vt2nk5P2T9cca" +
+                    "yut/Swp/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAwP+mVOovHACYjS7Vf00AAAAASUVORK5CYII=\",\n\"tileOutsideProject" +
+                    "Extents\": false,\n\"Code\": 0,\n\"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tile - ProductionData - CMV")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        public virtual void ReportTile_ProductionData_CMV()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - ProductionData - CMV", ((string[])(null)));
+#line 113
+this.ScenarioSetup(scenarioInfo);
+#line 114
+testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 115
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 116
+testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 117
+testRunner.And("a mode \"1\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 118
+testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 119
+testRunner.Then("the Report Tile result image should be match within \"3\" percent", "{\n\"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAA" +
+                    "RnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAASeSURBVHhe7d3fa5ZVHADw8w6zLcXY2k" +
+                    "xbGU77iYZhUFQgFCuYUVHvnHOb88d0bP4At7JF5AgqirKCMnXvnOudc+7V+TNL0SwJEqlIQjDqtoxu66" +
+                    "IG0elZPX9AF12M+fnA4cD3e855rs73POfi4QkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAMD/68Z1w/MffPOLDW2FixvWDH27/tG3Pl/36Ftn16VpYCK7cX2h86HcD7Hz1C" +
+                    "9x48eX4+N9l+KTuy/Fh984c3Jux0j/nGcO98/pONh7e9fB69IpwEQxs2Ow/P63zy9oL1xcUJs737x427" +
+                    "mf733pxM8PvHLqz/mvnovzXvsy3tZ9Nt7SdaAqnQJMVI35C1Oub8xPmd42WHX3i8dO3ffyJ2dmbzpwsq" +
+                    "pzZHo6BAAAAAAAAAAAAAAAALhi1PXdlFmx//2Q3bkojQBXjNrcwsyqQzHpN6YR4IqxqHtSWHu0PGS3lq" +
+                    "QRAAAAAAAAYIKpLUwuax2uLGvtrwzZ7ZVh+XBlaBiYlmaBCe2xbYvKNx6LpS17/gpP7/g907Tv96K63m" +
+                    "fT7H+3tPeesDRfXda6t3ra6nx1yOaqw4rhpO+ZnY4Axp0ntt1U1lZ47Zrm/u/CsoEYGvbETF3ubKjLdY" +
+                    "Wmoa6Q7V2cjgz3bT1RNrOt8HyoTXJj+bG2pKc76bckc34LKw7G6R0nYunGj2JoPhAzbadjqOt5PZ0OjF" +
+                    "vZHbsmryrEspakCCzrj5nl+2JmZbKJl/T8mqnv25+c5LvmdoxU37DpeAxNSW4sv/rwWLH4LFPb83VSCP" +
+                    "5IrhANFa17s9euHMgm47PJdSKbFIc70icA48ojW+dOWZH/pmzN0Pfla/f8euvmI3Fm+74YancmrScWN/" +
+                    "bFirZCsuH3xkzDQCxa2nu5qC73V/nawViyvD+WNOdjxdq9P4antv90VeMHryT57nRlYDyb/cyRuyY1fn" +
+                    "Dpug1H4qyOo8lGH44z2oZissGTjb87XrVsV7y6oS9Wrk8KQDYpCEk81Cfx+t44Y8OheHXytjBlzUi8ue" +
+                    "t0nNaWrPH86TipvvdCujwwnlV1HtxX2nEm3tz5YaxYfygWrxyKU1sKsaghH5O3glicnO6la5LYyj1JG4" +
+                    "jFy/NjXxDGkpb9cWpz/6nw5PYtxU27t9z67OEtd24+3D178/GXiup6m9LlgfGsqnNkXmn7oZry1sGasP" +
+                    "i9mrAkV1O16UBNUX3uhVDXN1raMjB67ar8aHh6x2hyFRid3LBrNDn5R8vb958ID7/rd+UwYTUVZlU9d3" +
+                    "RWqN35b3vsnX/6he98Nav2vU+npqMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAALhChPA3fClgsu+RK30AAAAASUVORK5CYII=\",\n\"tileOutsideProjectExte" +
+                    "nts\": false,\n\"Code\": 0,\n\"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tile - ProductionData - CMV change")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        public virtual void ReportTile_ProductionData_CMVChange()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - ProductionData - CMV change", ((string[])(null)));
+#line 129
+this.ScenarioSetup(scenarioInfo);
+#line 130
+testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 131
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 132
+testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 133
+testRunner.And("a mode \"27\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 134
+testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 135
+testRunner.Then("the Report Tile result image should be match within \"3\" percent", "{\n\"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAA" +
+                    "RnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAARjSURBVHhe7d1NiJVVGADgV0wxzIRxtM" +
+                    "y84EBqYo1iolDhiIlyXTSZiwbRDBdSOoZJOBVoEYLRQihqlaBUm1y0aZFImRuDtMzxd378d9TJUaZRyw" +
+                    "Gd07n5LVy2aDGMzwMv937nO+d8q/ec91zu5QYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAPD/OhTxVEdE46lyubFt+vQ1Z+rqVue21cVtYCA7ErH+zqBB6ebixaln1qx0a+" +
+                    "HCdCVf//XNt7tubv9q+9GI7ccivsgxqhgCDBQHIqo7I6adLpenna2vf/XK6tWXzi1deun2z/tvp08+Sz" +
+                    "ci0tUczRE1xRBgoOrbtWt4X1/f8LPzFtUcGzZsd2vEj7kK2NUeMaboAgAAAAAAAAAAAAAAANwv2iLGd0" +
+                    "V83hwxp2gC7hfHI2b8efcnxmuLJuB+sSfigZ6I6n0RDxZNAAAAAAAAwMByJGLozVWrxnUtXz7uYMS4rh" +
+                    "ytEQ8Xt4GBbF/EnNT4ZupcvqIvLwB/X85xPOLt4vZ/1hzxTEfE/GP3RJ5r/omICUUXoL/5JWL89dff2H" +
+                    "JmxswTpyPS+Ry5Ktj7e0RTTuimnMiLiq6VaqEqX7+Tk7opv/83cuJv6tn66ca2Uul6dx577Z5Id+f6qB" +
+                    "gO9FenyuVtnaNGVb4inM5NfCKlDzennkfHVhK4py1iZ37d1jx48Py8KKTOHJdy9OQ4HPHTuXkv/NoyZs" +
+                    "yt/RENRyNezBXEkkrkfkvy/SeLRwD9xZ6Ih/JuX5sT9ODp2trW8+vX97RWVaXDQ4aklkkT040vv07t48" +
+                    "ano0MHpVMTqtPF0Y+kno+3XmybMaOvvbY2namvTx0NDSlXBBfyotGRY3NLxJZieqC/yrt5Ke/q3+WS/0" +
+                    "573sWvLn45XZg7N7XU1KRL69al088+l849X5eOlqrTzhWltHdNXTrzWE3qfm1lap08OXVMnJi66+pS94" +
+                    "IF6Uoe/0eOyvGhL0eee2vxGKA/yrt1Y8qJfDGX/JXE7Zo5K3W/0pAuz56duupfSleb3k3X1r6VmieNTT" +
+                    "/MHZPOliakttHVld0+VY4AuWrYnRN9YyVyW+V1Uy79P8jHgvfz3POLxwD90aGIx28sW1Zunzq1nBO3/F" +
+                    "uO9oULyy0jRpQPV1W917lyZW9LzYTe9qen9eayvvfE2LG9x0eO7M2LRe/JiO9z0vu7chio0o4dpZNTpp" +
+                    "Q6NmwoHRk2rHQgHxkqx4ZrOSqfHRTdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAC4T0T8A9LwZrube8KUAAAAAElFTkSuQmCC\",\n\"tileOutsideProjectExte" +
+                    "nts\": false,\n\"Code\": 0,\n\"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tile - ProductionData - CMV summary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        public virtual void ReportTile_ProductionData_CMVSummary()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - ProductionData - CMV summary", ((string[])(null)));
+#line 145
+this.ScenarioSetup(scenarioInfo);
+#line 146
+testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 147
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 148
+testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 149
+testRunner.And("a mode \"13\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 150
+testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 151
+testRunner.Then("the Report Tile result image should be match within \"3\" percent", @"{
+""tileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAO1SURBVHhe7d3PaxxlGAfw960/QC2IqAcpIv4BStFTDtKDFKV4kLq7s5ts0iSUiBT16skgOYpeKpqd2STdJtuaRFuMIoL3/gGiIB6lIAhe6sGeHN/Znf6IXjx4WJPPB74M++4zO6f3mfeFkDcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP+95kdHQ2cwFTr9qdBYHWd2eyos9e6rK4ADK8tfiGe/KOPi52Wc3y3jzMUyzn1ahqwYhFb+Zmjm58L01rlwuv9UfQdwYDTWHg+dCwuhVSyErP92zPI/4/SFMs5eHjeEhc/KuPR11RBO13cAB1Zj9ZkwvXE8vfmPh0bxcsyK67E7/CU1hxfrCuDQWOo9GLoXHwrNnXvqEQAAAAAAAAAAAAAAAOBQydafjPO7H4dG70Q9AhwazeL5uHi1TNe36hHg0DixfG9Y2nssND54oB4BAAAAAAAADpDp4SMxy3+InY2f0/XH2B1+F1v5+frbf6/678VzXx4LjU/uZG77WHj1/KN1BTBxmr2H08T/NrY3rqXrjdEpRa3i+9AoTo7SvXQytItn6+p/qv6asL1+Mt37VZzZ/CM1jzupDjbJet/UlcAkS5N4Pc5dLmN7rUyTeZzFq1VDuFKXhNGRZTODd0JWVFkZ1XaHZZwelHH20uhos3hme3ydHW4cyfL5+k5gksWs2Bo1gKxI6Y/T2ag+X4+dwW51iGka+y0upFVCNcFHzSLVVE0g698M2eobIctfCe21Rmj1Xqt/Fpg4zZ2jad/+dGzme3Fm8FNasle5MZ7MVQO4lXzcBEaNIf81jd0cN4e7arpbZWgV74eZzSdCc/n++gnAxGoVr8eze+MDSKtl/uKVMs7vjJfxf5/gt1I1glEzqN7+d6Va8lcnGy+k38mKa/UTgInVWn0u7dFX0p5+Oe3l372dVv7h7f18erPvSzXZs+L3ffV10urhvTizuXKkXZypnwD8L7Xyl0Jn/VRaJezP7PBUaPSn6ioAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOgxD+AvhkP0lb2I6tAAAAAElFTkSuQmCC"",
+""tileOutsideProjectExtents"": false,
+""Code"": 0,
+""Message"": ""success""
+}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tile - ProductionData - Speed")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        public virtual void ReportTile_ProductionData_Speed()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - ProductionData - Speed", ((string[])(null)));
+#line 161
+this.ScenarioSetup(scenarioInfo);
+#line 162
+testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 163
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 164
+testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 165
+testRunner.And("a mode \"26\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 166
+testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 167
+testRunner.Then("the Report Tile result image should be match within \"7\" percent", "{\n\"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAA" +
+                    "RnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAACsrSURBVHhe7d0HdFTXuS/wPRgwHWMwCI" +
+                    "tuEL2JIoRAvc9IGrUZ9d57QxKSUEG995FGo94lECDRixFFYDqYYuzYSUzi4CROufZTQnxx+L89wyQvvk" +
+                    "5ixy3Pud9vrb1mTj+jpf3tb5/Z5wwjhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEE" +
+                    "IIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEE" +
+                    "IIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEE" +
+                    "IIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEE" +
+                    "IIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYT8b+WiWCfw6ikRSBtUhYlbS7xaA0oWRReUMN" +
+                    "eBkhekjSbqNQkhP1gZw2OZe8dyJmkYZs7NwyG9nsOvBFUMM7uW9wW++8DcePHqBZMOwKsnFiv3VEDgcQ" +
+                    "gC946PmERuqt4LIeQHxb1jGi/avHUfEri3/455dPLK3g0bWTLmRtVhZlA9mLgFc8NKMc6dv3duwhSfGg" +
+                    "R3e2OKdy2YaycEUsUn7N+ZCWRgDAsc0mYMAvUcQshXIm0QCbx5y+7UBebYBYFLI6/QTdCKK8Ta3dlwbw" +
+                    "7Ga1HFcKyPwGRPHgDs2/i6LTAq2oUJnnVgEr6+J9/Ouf499R6/fRK5C7Pt8o065Ot76tfrJap5Nu2LmV" +
+                    "u7P7NtnMokimKBD89QpA2V/L0vs2r1Ne1P9K34kblv/TUjX9PieF9m1O+besLJN6jLy5eZ9voyr1Zf5n" +
+                    "fCUbWvLxN+dDNzlvsxA54lEfIfRaKwYR4HYFSaCnF9HARurbxSd2Bz9l64NkdiUVwZliUVY1qAsvL3YG" +
+                    "1aHpYnFYHZ9YC5NCtbfwhcm/h2bR+PcWrwV+/173OSGzD3Phmzb5bxrgYvjTLm1CxLO+4oq71uIqu+Zi" +
+                    "Zbm5YlSzwikTW/qS8zzE+UMZu2Zr5v3tXYh1UZlTAsTuXn1yATSBR3BX4HeeBRnBa4tjwPXMrsxZOfl9" +
+                    "sRRDl7YPCILup/bIfM8x6YF9WAhBMBqL5jj9XpFTzYHUSgjgS1JwzlVTfNZGWXLWSTPGtlK1JyZFXvWs" +
+                    "gOai+QLQ/PkQ2lLZfp6cb+nHn0g7GfTlB/EkL+Q6wansJWXVlVNmK1ue/dLbrMqV6XiRt1mahNN/qAqy" +
+                    "4z6dNl+rzwaWXxbPPTdaoO1xU4Nt3mweITXoF5RsArn1evMnM4y7xb/nElcWxMmBJ1AC+HN2GMF6+oHn" +
+                    "2YGNCJ3Wd8IX9gC8VbNliTUY5kPt37vjn0S3P5vg+oggzjlZy58IrOM44xAYP8tWFAea686/JU4NPPg5" +
+                    "BymQJjXeV4OaIRBct1MVi8CjlviqF4aAzjogQEdvmi5Z4+JE1hmGTXgDObNNB5wwyltyUouirFWN8ebN" +
+                    "xdhP1XjHFh/XzsDMrAjZiFSJgrxORAxaclN6TX5DcMw9SfhpD/DLee7VgFsBfUk1+NR/tkZtfuqBFZi5" +
+                    "cDqnhF5YHA8eCnTNQaq17jiyw6w40rs+Db7o9xbnKeRbTCu4tnGYm1WJtRBsPybLwgGcBiPi2sT8NYHi" +
+                    "AEnjyw8PR+nkUl4ksckX3RFhOC+vixmkuUu+TBoVvg3n6ZV/6fM+c2zODnEtDlh4hWD+SdsUHjeX3kN1" +
+                    "ki8ZgUNdfMUHfTGNVXzVE6YoW0fQ4Q10RirHOTqiszM6wexraRuL7jFdyeMg7Xp0/EoWUL0LdgCSraTd" +
+                    "D82BFZZx0HGfvRi6rPQ8j3oWjYWqP+jnnkpvT0yIBu78jmuwYRosqYcGbbEq5e5esRtrtbVyXK9/9SiL" +
+                    "rrJnbquV+dSbfl+pxyLIkqxCReoa3lGTArjk9TL/0ip4Y4FnDkeddB2aJ7HoCwIuqsZlhxDU/1a5i4tY" +
+                    "ZXxBrm0Pz8vVNjDa/gNcyrt8ZqdciV5gpDuO8Lx1i3jg+YQ4tYvdfnlPv24pmAMluw58HIrgv+RwJQFG" +
+                    "+EzEl6EHXFImKfB8TVUbCtiYKwKgYTfHm3xroLswIqYCRLgk+XP9anZUL+ExPcXzoO777M4HUkGF6DQW" +
+                    "i/txMlPGisySjl++7oZE6Kl9VHJuS7VXJRtKP3F7bYVlKC6GOhGHhsBueONN7qHsN0/6qTNXfNW81rd7" +
+                    "UyYW8jcz49Xb3Zl3Nq/tXUsC7oFuRANyfFQj33q/OrfpU5duxnzr2Y5FUL0+osGBXE71Yv/SJh0xLmcF" +
+                    "DKW+9f8hT+bebTI2UMk9RL/zmTZzOXZFYMjw/gldxRcVY99zkXxTrm2n6bSdvAAwO0EnKxMjEHi3cVwn" +
+                    "FPMNbsSIVmXClecGkAM+3H4qgCuMhDMM5djtmBlUg/74hzqfNR2WMCq7pYbMnMgsgyEDXFO9FVo43eig" +
+                    "0wa0rA0sgCXvk7Mcabd18kTevVRyfkuyW/IZrUcNtsw5aMjA0Bnd4b+t7b5i2uj/mQWXV9qOFf+lnXdR" +
+                    "s41WRgkbsCtQvXPWbO8neYR9dtXskuMQf5CubcoqEsGcPeGpVXLKepd8sb2yB9qSL0KXMYANMd8mQLr2" +
+                    "owgyMa7JWfaqhX+XLCplCHlt3QCC3hAekomE1LpnqJivJ4L3rKu5nH4O1JXrIU3tUYp5Odasik8u1sU9" +
+                    "A4ZUu6MKxIw7kmTMO6JkHDoChBw7slTHW+yumrBpM0Wo4YaHgf9H4prN+tNedGCCL3ux5Q7/45o30SvY" +
+                    "oyJB12wnhXOTZn7FGl+fMTSxA44Isx/o1gwg6M59nB4rQSyGN1EOQigUl9ItanZiLvqh1O7NREx5FtcB" +
+                    "6KALM6BlueKSisNmLXWgucDl8IltSKaVbVOLZ02WiallHsP73WQch3zaM9fjIza598ZMHaJTmr9U77r3" +
+                    "M6O5S47GznuuVXFxjlP1oorIDAq5unxPInPKUe5anuaNoZl9Guh9vfsK6NNWKiNoOLd3fMyDglHnVpCs" +
+                    "e6hNwnC6MKR18KqBpdn547alsd+eXdC6fSl5nrQJOpPB1zwqt4at/zhDnVu6mXqrTc21m2JKWedxG6YV" +
+                    "6WgNgBt9Hs121+xRwbf82EXaPMrnV0YXT+qEQeOmpYkDiqk5k66t0dOMoc9o/aySJHb1tMHu09vmXUUh" +
+                    "Y7alSY8rT+psmpn2L6S+rdP7dlSFfaHPMTxV0z1ViFFbtykHnGHobusdjV5wz7+ghM5YFhzwlHRAx4YJ" +
+                    "pYhnHiOvj3+WFMYBMEdm3w6g7E/q4NSEsUQkcvFXkdVhgxmI1u3zW4YDYHbppSSD0jMLx3Sa36qIT8/+" +
+                    "mPEROkwcGR4K0uBG77sSChFmJZHEzLkhF1yBeSlnieyvbz/m9ns1Z87h8a3zRC4GAAAvv98bK/DCknXC" +
+                    "G7aYa6N8V7S0esjdS7/aKgI/r65qlYbrKXH6v/d8yl9fl39H9DWBnTbC7bq8oQNqbx9ex7VF/lCavjYV" +
+                    "aahFlBNZjuqYBJSTLih9wRMBAIcWIE/EReMJHvxsD8JdhVLoFtEz9n2yGeqQysUe/6c2R3jJKr7jhiTk" +
+                    "gZvFoD4c377a2ztLDYPBvbitIQd9AVzXcNVAOYmKibB6s2JCkcINoagKnxDaiO18NjAcOveZ/kY15ioh" +
+                    "2QckOCq9tn4AM+PWIwC//FX99jrEx9yO+AXZvUuzemVyNG3svETaHquYT8S9qgt8Bwf7aUWbVJmahTun" +
+                    "xXToNx+R4YFe7CeN5C8kqJFQn5vC89hDVp+ai7Z4pC8U5kNwrh3RWEHTnJiD7qgaYP7JF/zeajgsvC3u" +
+                    "Jzlr01t017jSoSe63rYnrnRRX3Mvv+c2sN92CJsJBnGs0P1Yf/vG1D2jrZme8oxxnwNPwpc2r7I3Psfm" +
+                    "LDU+yet3WxcW8GmEU/Vu3J4QHIB+tSS7DCMxf5qaYwrEhCWYERIlvckX7ODbqZ6XXMruXzrb9a/WXjjN" +
+                    "IbUvCAhvxbthhK0cKhEC14NgYi+pAb6m6YoPINcxRftMaapGzo5OxBTr8QEi8/VCXp4ayPJlyFPrDaEg" +
+                    "LRtlA4JwXhuPdC5LkZI8lLiFPBC3CqaD16C9ZXqA/57Tn4wer59rKI+0zc8YfIE7GYl9IJJm4+zTzbFq" +
+                    "hXIeQbwDi25u0VucOiFUzUtcIgd/cK15agFRqB5RctKhN/b1W7G/aRQdgzYI8a3vInDLkgv98KtQOGqB" +
+                    "8ygfyKCDX37dF+zxyuVbHw4yn15j0FeCmgCRPCmpG82QLVe7d/emv+xIfNIRsfpl9zfFh80UpV6q4b31" +
+                    "gWn/2JVmI15kSUDYrFfuamy5Jd1yRn/qnqhiXyBoQIV3hisXce5nsW8/5367vMv+sBc+uEc10oyu9bQX" +
+                    "bPBl0fOKL7bR0P9Qf6q2GwsZd1FzuH7ZR+NCdarsoAFiRVY+8qffTKNmLvTXtknRIj56wt0k86IPt1O+" +
+                    "QO26DwvBAFIzZIuOCGpoN6yBy0g9vhMAQd90fYGR+s352Jra7JiBn2wKbKLEQXSpB/1x0Jl92+/QDAhL" +
+                    "IZL3opeBq1H8Y9ia/PCKz6HXNu+bPArfVT5lwfpV6LkG9VP5xfmBFUrcskHT9i3m0ouGIDu44oGFQm45" +
+                    "bRFLwzRoD3efTYF7UKaR+5oiNbG0fEi3BYshgNVduRc0WMzLtOGDaejeae7Wi5ZYIdxZmQHImD7H0bVF" +
+                    "5/XnKVlfCCPdJ/JvnTBYtZv32Xsd8Xn7J8lvemGOfM52AwWgsHHJfikP8qFEzZuTvd2slfw78K23PSeX" +
+                    "8+++muIcmp+geiI2UXLb5w09G9J/NfC+oMBDPt46l9B/J55RZVRkNYFgXFTSNM9JThBdt21dgDzYhiVY" +
+                    "Bovb8TDbeNUX7ZEg23jND00BArUnMwJ7gMTW8aouvhdmhG8mAk7sEL4hbYNMdiTl4lmP8JjHWRN6oP/e" +
+                    "2oumIs1oiWVTCH3mdbDHmfZ+KSxokOtY+ZcqSUJ++ruLdjjHP9N/u+l5B/xqExQxB8HC57QlAVqQe/Uw" +
+                    "G4qTUJ7/DKf9RvKRoa9NCRo41GmS4aG3Rx0mYemvjr3vcd0aTQxd05E3DEeTGKHtogMdIWrcYbMBilha" +
+                    "JLQhS9IURX7kYo2vRwhO/rTY2JeDhOgIrXzVFwwwZthZtR16nPly3Bac/50LHZjVOb5sOvyYdX6H1gjq" +
+                    "2/U5/l3/U7zJgef0TSZFObpOrieDQHwa0xGIsiSyGqjoZOFu962HRgVWIO7GojYVkeC9PCRFiUxSH1uK" +
+                    "Nq2qI0DjMCKjHOrR6mJfEwKdqlGjnIHJoxLaQeFQk7UbJOHx7LfB4xxyYr9aG/IbfODcx1/2Bon+fouu" +
+                    "wKOHQmYMDyNdVFiBn2lTA2iIZkmz9e8N2nHOP8bIykPkC9JSHfLmmDFvM9ZD/OqPYDU4v4zyL3u2OffD" +
+                    "2aKnWQ+bajqk/dVrQZ+TdtIW/egXvTx2Nk7Qy8bjUPRx0XoTt/E7rSN6DgDV6h23QwkLUWLcVbUXhNpO" +
+                    "pzX9g4UxU8+uPXoCd1vSqYlJyzQsE1G3SnrEflYVOUnzRHAw8SCc0SnFs9E/knRVieVoixDvX/nXvV7p" +
+                    "hTe8QhZt07yFzrlqnP+rnlI1PHOTQdjz7kw1vuHbCpilJV4OVx+ViTvBd2NZHQzdkNZteOdUk5sOIVfh" +
+                    "2fz0SdeC2qCEti86EVn8e7Hl08ULRjVlA5XBpCkXVajMBuHyScdEFH4xa8nrsaxzMXf378wTexxDLPeq" +
+                    "p9L49SSZidXAFvV3fVVcgHPAAMT56F62Nf/POPGbuzziz1OvPdD4FL0yHVrZuEfFfCD72qta8qttLPEo" +
+                    "WVZvA7HwTTuBi0ntBDzl0xyk5ZoL51J06K5qNrzwbU7jdGT8o6XN72Co45LEQBT/dzHtij9HVLVB0yQe" +
+                    "EVEYa8XkNzuY6qlW8p3YqutPU4ZaGJfN76594Xoz13E66sfAkVx83QUrYVd7ZOx1kDDRQ/EKG0zwxdxq" +
+                    "twrGkT3PKiMJ7Xg6h97g91du9ex1y7lrHtjVPnRpTpvezTBN29e5B9xg6bMvbgRVc5pnrXYmNaBnx46j" +
+                    "/FvR6b09Mxi7fyTNilyhSKzgvh2xbAuwpxeDW4AhrB5XjJtxpjXRuwgAeGWbwLotzetiIa1g2xaP3ICu" +
+                    "UPrS6q/1Lf3DPGtnbu3IAJQe1gQc2obTXALesZ+NFE1dcQv/0vniOM39KgNcG9w5vZtX3CJIee8Sjmo9" +
+                    "6ckO/EpADZJmbf9c7CtHKYNe2CROSN6qQdKHjbDo3129GVsQGZP3VSZQV7f+wEOQ8I1+dPVqXyCoUeDw" +
+                    "pGuD3zRZw218Rp4XwMRK5UXT9QBo+GJh5I3rJHybAV+pLXouqgMdp59vA6Dx5DbktQ16GP/Nu2qBo0QY" +
+                    "NcD30Za9FVtQlnXeZhj605PE+Govy2CBM8ap/xAPCMbRm0fCWo/JxhSRoEki686N8Jw/Is5X0CqhZeme" +
+                    "aH9nlhAg8A+vlJmOxdg0kuDfDv9EXqMSeYlcZjJa/symVtb+1A8SVLLI4peH49wbEJr0RUYFKgAvGHpE" +
+                    "g66Q2PxqAR9Z/pm+GVf9rAtMXtAV7+MGlJhF+BN6oitkO3IQd1/I89mLj8w/L3rdMW7yq8y7z2wboyBp" +
+                    "K2XbCtjPRT74KQ74x1fWxhe6YJvEsCoBlTCZPKXai/YYLSt2xU6fCwqyZau/XRz1v0tpbtuLVgAtqqt6" +
+                    "CjeRuGpYsxYj0Prf2GeMyz2RubZ+BI4DJc3DEbD14dh2MBS3HEawlGlDfcLJyMwRAtHIhajje2zcSQN8" +
+                    "8WeLdDmWW0F2xCzn2eTZy1RCfPNooe2GAoZwXE8SG8S9wG5tyl7L8fmuZT/ZjZH1T210/yip/EzHrKF8" +
+                    "cWQGtXvmpEYPIRZ9UYgKgBd0zglX+qRx2SDktUrfuW1Axs5N0BYWU0gni6b5Kdogoa9rzVnxtbhvRKG4" +
+                    "RYO8JGloAXffkxRR031H+ib+bZRDavbt4GftJHsToyCyXNZnDy8IdWXBFe5d2BrLcl6HrXGDtydj9j4j" +
+                    "asTsrGjpIc6GSm+qp3Qch35vDHOsvenDnhqmNc+J88O0KRecoeeedFny3Nzh/dKMmCsXYM4oNsgq7PnW" +
+                    "ym153b2b55C4Z0tLC6Ou/CCZv5ZtWDxmYVR83N3mLMzG2F5/5GH90nJ6fPerJzQ/yTLA/TJ63yHWgo3Y" +
+                    "nXd8x+cm7VHLzNXsR9Xt54bTr6E1bzLsAc7I9YqepSlJ22UAWFituW8AtxR5SGFSbzSsxcOhDUH4KoA1" +
+                    "6IORyC2AMuqnsQJm3p15gbVsbT/Rr4tfup7gAM6fXCDC8ZJnvWYaxUgUn8vWZ4iepiIBO3YnZgBab41M" +
+                    "KmNA5xh1yheNMQYXy/iuP6iNnlCGZ9gAec5o+ZtM5Q9Qf6pgA2JbnVYXRRQi3i11uidN5WMO9GCJxbYZ" +
+                    "KTgIZuHm3PWx5cGl7SziR9WJ+SieKb7kgecg5R74KQ79RBxl7yrgmyrL1lAfldc1TesfxQ2zA5jLkces" +
+                    "xc9v2M/xerno6TesTJc3tC9scalgowq7Zu1cZ/69mzicJnpZql27ZpspRnmhP/0Kc5I6X6jKZnYV9d3T" +
+                    "bNBZ75svn2FXc1TCoeu+6NQGfHZoysm4H+mNU4GrYEZ63movyYGQpv2SD+tjvqBw2QEGYPy/AorErOh/" +
+                    "aedNTdNINx6Z6P2YqL227/7GVN5UCnqV5yaPN+/+aULDjWhSNx0AWhXT4QVUWrLgTmnxMhvM8T00OrVR" +
+                    "XcoTYcHQ/1IL9ljOIRa0jkYSi8LIJFXRyv/Pt4F0P+mfoTfXMaQVUeIYf8Ps047YjF4QVYElys+hpic1" +
+                    "YGFvnlI8PYBKvi9v55ZXLOZ8r7lJ2bYxF/xPtxzVUzffUuCPnONTzQW111zQrhx4PQn7wDfxSwK45bgp" +
+                    "IMG1Lyiy9aRWQMGzx/RJZb8xkWNaJ8SMdJ1fTXYXlto93hpJ+8rz8DP9aYiIr3HVDoa4hzL7yE6hMmqN" +
+                    "lnhP7s9agdNMI1uzkItHTGq7G1PDOxQWC3r+phpUz0rjZvXMdLG0KxdncOvFoD4NwQBp/2ACxPzMUYnk" +
+                    "1rhJfBpyUQ2ecl8DoQi3S5M4zt4hF7zE11bSCUZwuVb1jwV09YlPIMwYu3/q5tN5lUUVvx6gZv5truzp" +
+                    "ybPJhd+d8dkfjV2HZ8oJVVDmFNtOrrCS9+grq8/9Hzji627E2Da08o/0CNYI4tvL/Tzl97fsHWDOmqty" +
+                    "bke1F43kJb8ZYQ1s1xbS1sUeQob/Z/yVhlzf+xNCm+aJ02/JcA4NQoZH6HoplEYa2a/poafm+w4Zbe7O" +
+                    "gbs8ZHK+4Zdm+pK0bV3C2ou2iM/rjV+Dk/fn3bTpR9IMTO8hQ4NEeg5T0DeHUF8joygLT5xvsPH16jcG" +
+                    "3j9ceyV3UhkNl38TrGiwOvRy6tqq4DczyErXlpDft+rxN4025m5S2fV5D3tpjXuWYsjc9H4x1DzIuuAD" +
+                    "PvecQcDwcypwuvKM+v86XXeEAYVA3Y+0a3A9voRJkdsVj8xL4iFhN56h/e74GX/KowN6YMk/xlqiuRY1" +
+                    "waIOBBQODeOSpwVpxQb0rI96b++k5t2QMRtGtybzHfZ6/cYWwHL1rqxd+pn2LhBFN59o7zL05/49a2mc" +
+                    "8OBi3Heb05uLRyOgru2aIiRR8ntTTxYO0U5JgawF7bH2+/8hK6Thljz3knhPb7IKZBilLhdhT5GaAwyB" +
+                    "CNeutw8OUFGJyphS1LY68x754DEXXul7fapWJNbBamWtequtuK20ZYllCIGX7Vvx98f9MBvZyk08yk/e" +
+                    "pay8zPDEoz4d4SVDzTr3Cq+lS/nhOzFz512ez1WyN58oeBXQGYHCjDBnEa5oiLoVOVoYwwYGIexcRton" +
+                    "90AwQh36XqNyXaAUV+sDJOga5u3Hb17O/V7eCJmlUnzXE0fQPemjwWbyuzgKYdKL1ujWsbpuGa1lSUhu" +
+                    "ljX/hKVL1ujqLz1ii9bIXKWxZoPLwDN7dPQXOkNpriNqPPTAuX2FT8ZgyDt7cvluZVYVt9Dhz0fdCZp4" +
+                    "0cS0NsTEyH7JYpdg1J8Vp8Icqu2cO0Mg1Lk8oROOCP+NMeqH5k9cuK94SfH5D0L3FtDGNuHb9m9s1mAm" +
+                    "lDD08zMDexDImuIqzRScGOLQnQDCmBZV0GzIpi9NRbEfL9Cj+vvd5wD2oW7UTeIh0d9dzvF4bHZvzEqe" +
+                    "yY+2s3fsOnLq+dgZE1M5D5M2ecEb0KG68QvJpWBvmbxqh60xzFV4QovC5CwS0blJ+xwLHEpQje543wA1" +
+                    "6YFl2LJSbZOFasBf8hf9XAodUJuVgaWYSSS1aIOeCmGj2ofHBo4XmR6rZix/owLI8uRM11UyRfliAs2x" +
+                    "uXM1ejP3rVBvUZ/ut4pf8jkyquqCaEHYbGpbt/w5zasSS9BCvic7HHxwLzY2oQvt9nX//9LV/96SyEfJ" +
+                    "vs6tcylx4w30Ngnm2fuwY1M7A8t/KGTZtxYXybW2NQW+KQc9v23N1tlhUxbcymo43ZtbUZFCS2mVUkt7" +
+                    "GNJ5aqN/vafsfYgpN+Wlcbz1uhuW0n2qt0cGfWBHgk+cL/qL/qZh/tnBwUt5ihL30tOjM2oLlVF2GXfO" +
+                    "HVGQjvzgBYlsXCtHoXXPtCEdLjhU3p6bCuiMGSmBJIm0JR/oalaijx9rQM1X0CykxiXmQFVu3Oh05JGj" +
+                    "xTQnBv05Qzv2Ys8BFjM9Sn9jVI6tYzSYO7wKPz6MsBFcfFefEhi2KK/5B12WF0v3jZn6p1tiofsPAntv" +
+                    "OQu3oLQr5nELg1+hntveQJSWNYFluqfhKudae/VV3qvZWJ2X8qvSSESVEC3JqCVYNrtufshhWvUMy2HT" +
+                    "wAgAcAmJUmgAnbL/NG76iyMMemoxqhZXf9Ov3vM5fua0zSKJ4rKpn1CWOzwNgY1TH+AYtnOXMvGGq8cV" +
+                    "lv9kfXX5309O6CyRgoWI0zoQsQe84dVdt0kFNmhc0+qVjvvwfrYnNg5RaGBB0rzHGvxsrdOVjOW3zl9b" +
+                    "b12dl4OaQSycecUTpkjoLD1qi7baIKEst4i69fkIz5PqWYasy3C8pG4ebtGJ65FO8ylq8+nW+Be8e85C" +
+                    "POJbpZKRbjfAcwJ6B6b+fJrUdXxnYqH254jDn3j1evScj3a86dya+GFf1k96kgJB9xylXNs2vxFLh3/X" +
+                    "myT91jzYjS9RnHLKdZVkZOc++InJZxzH3a1owM1TSz7FAVy0r1tH39XGbfMO8vRTOy+KC0OfIx8zsG5r" +
+                    "MP860L8VvGPv7JynHVDPinQeAZYxOVI2kVTTt8u+XbP/1gxnhc0J6FrF8740TIIjSXbEVWvy3Kio1Rma" +
+                    "GP4cWzcMxmAWSZeth1yw17Tjkg46w9SspNUMYrfvhpHzRGbkZ17k6knnfGivRcTAmtg0geg41eqRheMh" +
+                    "PXBFNQmmqI7rsWKD9q8i0GgL9w65rB3HsqmXHPzur75m4zUvsqmG0jtf7k3ydIPonZN/1menAjkofdkH" +
+                    "dRqBgjaXwi8BsCs/8W/jd1ehYJPNormHtbzQaPlN5+0RZU5Nmh/rF1Q9UlI1f1Wv/Uj3gT+hFjzfcXTs" +
+                    "HxXWtxOmwF7mi/jK4BA7y7aBx+xdOYc1avoid/PaofmqM/cw1qzpqg4r4VDmcuh2eaL5hNL2xqorEpMx" +
+                    "1GVYno7dyElHgRAgb8sKysEH1pa6C89rDWOBXW+1Igu2d9ruyiyRLl8X3bfcOZdH80E7e+pjohQv5jeG" +
+                    "dMYNKeX0rsA5ARboXQs6GYEdgA5tg1yFwUc9RrfWu2nNrrNitaNlR4MxA5F6Vgzoog9aIvxdNyCc8gXH" +
+                    "jf3OXmtHEuaR9KXJxc/I7a64ch/5otAo76Y0NCDmrTeBbQI4F7WzAcuyP5MXhXRdwCzYgSTPOuxYSAer" +
+                    "R1bUPcLnt4DQZDxz0JR6SL0Zuvjdc8c5+J6iKfNr8rRsmIpbv8lmF61NEwMK+TfD9NX3gWIiE/TE51ms" +
+                    "ypVVPg0tAl8Ox8OkssQ9JcE9yaPxv1Whvvr9udsYaJumYxrz5N4bZgzdh5Qk2nw7GalbcsVYNlvqmZIT" +
+                    "UDcxLaIJA2nWLONVPUs78gI8NgbNkVYW31XfHtnLfsh/eqS85d8XDReavh2FNuPw/g3ZeiESHST9gjpM" +
+                    "sH6fedIcvRQ6NkI9od1yIu2YkHtG7Vo8GThqTKp/1gS8EepJ13QtpJR2T12qK23xD57zhgdWr2h3uOid" +
+                    "Mrrlkrhwr/rOyyFQpHxMh+IwBxg1Jn9WkR8sMExgTRK62kzL3jiUCqeKL6rT3laFTeR89btF31nAqdpO" +
+                    "T/tu2J/i9m0fmEd1mfiDf6PImabvHEeTDmifym0Y9rrxuZGxckmjGbdjOeJZgxp+fFpTvczNg+yoyn0m" +
+                    "a8/z6ZeV1Yp2++WzVtrhfM1xkwW7M7y6zvZzsMguRB05m4/ccCvwOfMed6b/XpfU5/v/MLZZdFMtk9Ma" +
+                    "pu8kr6ph2a3nPixRHVt2xRecMGyiHMlVeePwS07JIVqq6aI/cde7TU6uBA/EociV2KaoUhtBKL4d4cpL" +
+                    "oHQPkVoEFBEmQ3TPk2lii/yiv5VRFK+D7yL4j+nHfL9mPl/ir4PPlDB+XPiz1temh5qvKa+b9ljAQh3x" +
+                    "oeAMZef3HqE4lBLJjfQTCPbt46tvAUtwdFC3WUQ4BRv10Hwd6uWL6Hp8zBCmx3SkRliiH0q1NRcskG+x" +
+                    "4ZwLomGcxhP9+uD8yF70PaDd9j4TCTJOAJ38cV19kDgqT+x/rGaeDHhIlRAg8y56CdX4mBX4ugn594mN" +
+                    "m2PWHe/BzsOo4HdHjHqE/xr4ovWNUrK72y8ssf2vNKbvVh0Yh1XtEFq6KSEWvU3bdHzR27/1f4ujW37T" +
+                    "CYo426KyJU8spb9YCvc88OigfWqL9no1pP8UAI+X3R57flhWcZaByxwlDhZtTw96pj37JrLr5k7ak+JU" +
+                    "J+2JQZwChjVhemzBQzz15rjaBiB7PSuN8z714ss8iC7fZguGj7YNmOTGjuLsVYvwaMDVNgbUkeRDVR2L" +
+                    "QnHZv3ZGBWcLXy3vyPBbZteasSs/+8LjUb86NrYWQahbY5K2EYm4VxER2YLa4d+T+MKU68tOAPG41zIt" +
+                    "bu3uvU8KaB0+K4fD/l4/G3ZydW+B/YhfK7nqi4bCZTnybjFbxaxiuhsvIXXbDOq70ndlD+srF6MSs5L7" +
+                    "SovC50KhkR2haes7RWlrwRoXXNG0bWd15+waGmz8Cp4IrQqeCCpVPx35S/nf7CMr5+XesOp+saE52K+f" +
+                    "viS0In9eH+QsAAgfo9IT9wzv3T54dXvzo/qPBXy23yMM6ujmcEA2DCbohzw2EZGwltm93wTfXCK1sq4V" +
+                    "3njwUxharn6k3yqsMrwWX/7d/m//Al/6pn0/14QBC3Y6JVA3YWJuOgzTIcHT8HAveej3hLX9Axf7W5+q" +
+                    "ifw9ODMbpZWWWp54N+WnnF7LR6Niu6JHxc8Y6jqkUvPi/8u12Ev+j/nfP0gtOm0+U3TKezTf/Cbyb+iw" +
+                    "TShlqB38EfCVybmviZ01f35AdMOUDNf5B3Aw5grXkuzk56FdbSUEwO7YC+VzzS3CyRIhGiSmMT7r4yDu" +
+                    "8vEUC0JQAOfZG8y9CsGmjDW3OEDfhC9Uu9Ll0QKJ9w7XoQS0rrIJMaoVLTAK9GKKCZ2sjnK59+3fMPbz" +
+                    "AyyBgeq3x8uXqSVR43r+2s2fa0lKfyRRetPisesQopVLb2/6PwbsKBqlu2T3mf/ansutlTnZz0p8y4L5" +
+                    "zv8PkdjN8igaThmMD3AA9qfcofJm1V3NL/RndFEvLvI2lcI/DsymYe7XtdtN0UpyYvRFadExL3S5DtYY" +
+                    "y58WWYG10Bf20Jqnfpw8UjFN5RPgg97AONmDI41EZgblgJtFOyMEb16C7FfiZVpI5xlacz25Z05ro/nb" +
+                    "kfSd+alZru2hSayWzb9zLPtpnqo38lvfFrPim9ZoOSy0LVRT9lNqAs1cqi6u/bovyGDYqvilDK12m4bY" +
+                    "qtOTlgovbPmEj+pb9G/IKkwULg1p7FnDP+2pqPkcjDmL0iWD35OTwD6BcoH+Fv0wFJcxza3zXHkti8JP" +
+                    "ViQn64njJmPRKlab09PfnRRqMcaPD+/JwQGSxEoZ+lnHb61KU98tOdsuRPs+vFSDK1g25RHqb51YKn9x" +
+                    "C4tULg2nKFiav/pQrO039Bf7/zeGf0j89Ahqqs4u9LzlrEXTede7rknNXT4jeeP3L8r2XEGiUXrFF+yk" +
+                    "I1XXnOCrKzlqi6LkLlTVvEDflgTWxOlCoAKEfYPh9lK2AZGWOU75UPEvlLEUgULQLvPjBJvRF/f1g1hN" +
+                    "mpA7NDqtDxlt7RLZmpR5ltK5/X+PzVufGXzKUFzL5F9cMjq/eUKH9j4MPnn4aQ/wTCji7mu+8hT/Ofl5" +
+                    "jDOyvumy74BWYseDG6bpGGe/HZ+dZFD5ltx0MmaYbAu1eV+gsChlQVSb2Xr6TkgpVW8RvCRzUHjR+VnT" +
+                    "R/VHbK/FHVAeNHvGI/u+y4EFVDpqrHdf1tAFD+CEn5SQucCluB2veclL9m9PF1zUkP60/rP3RpD36oEV" +
+                    "D1+/Ge8nd5ZX5f4NL0SCBtfMQ8ZLN5l2cbk/Y8EtdGPNp7xu6RTVX0I16RP+HrPePltzwbgsCjGy84t2" +
+                    "BdWjZKrjphXWYxmNN+vOjXjrkxdVD+qtdY13q85F+lHMIPJlU+Q5AHB0L+NxojbUgReHT1Clwae3kG0M" +
+                    "sc/sePeXyJ8hG7DdWPpTgvnI+uqm1ob9LDsP1CFDwQP2/peYUvVP7k2D0xSq6IoBwPoPzqr/aOHUrPWB" +
+                    "6R3RX3lh4z/Xw/3L6tW/n1psCjEwK/Q1D22Zl7wzzmWG8uCD6BsQH7MD6wn7/u58GrX5m5PC/K6xhOTX" +
+                    "glqBxhfZ7Kis0DGp9n14pVyXvR+yNd/pqNOaHlCOzy5evygCFRnGRusm9wtyAh/4uVDItmFdyy6e2r34" +
+                    "6aY2boKN+Kc1bzUPKuIyp5n7/sLXt0y3Qx4roElYMmTwov2CSVXrbexYNDrHoXX+SiMONdkj8qW3Umbd" +
+                    "zFpA27mEf7ZCatnc/cO3bxdH4Xc+BF+cqXCSQNv1BlMK48m5G2YKKXDOtSMp8HAGVxbMLMoEpYVSVgZn" +
+                    "ANJvk1Ys2eIgg8B/hy+Q71UQkhX0fp66bWVe85juZftxmVn7Ucbazdti/3tq1R6Yi1Ue5DB6MT1ppGTx" +
+                    "kzUlRt26re5MtJarcwt4av9iAPl4bVPDAE8O7CKM8CRpmL8oIm79a4d2CiXzPGevNpCS82naM8Q/iEBw" +
+                    "RXpr/fiHm1Gqlu7iOEfH2ll7dNrLnvrFEzbK1RA28NA7RMUC/6fnm3aDDnFg0eBHoE7m23mX3zbXFtxO" +
+                    "0FcVX8fWujcpmqEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIY" +
+                    "QQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIY" +
+                    "QQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIY" +
+                    "QQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIY" +
+                    "QQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEII+VKM/V9GOYVYnvuJgwAAAA" +
+                    "BJRU5ErkJggg==\",\n\"tileOutsideProjectExtents\": false,\n\"Code\": 0,\n\"Message\": \"succ" +
+                    "ess\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tile - ProductionData - Temperature")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        public virtual void ReportTile_ProductionData_Temperature()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - ProductionData - Temperature", ((string[])(null)));
+#line 177
+this.ScenarioSetup(scenarioInfo);
+#line 178
+testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 179
+testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 180
+testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 181
+testRunner.And("a mode \"10\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 182
+testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 183
+testRunner.Then("the Report Tile result image should be match within \"3\" percent", "{\n\"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAA" +
+                    "RnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAaZSURBVHhe7d1diFxXHQDwc1LB0kr7YN" +
+                    "Bqg9giGsSPIn49FGMfiloFTTNz78zObjabLy010BfB75WIPkpKQ3bnzuxnsmtNk9YkFqsFRSiieRKr9M" +
+                    "mkiElRQaqttKnR8dy7N7ExSR8kH3b394M/c+fcc2f25fzv/9w7e24AAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAuoebum0JrZkdo9XeErNgR8t7nQ2vq3tAs7q17AMtWu3" +
+                    "t73PL9QRx7aBA37U+RXscOpjgwiFnxo5gXs7E9NRuzXj80uzfWRwHLwvbudWFo5rYqmkWK3mhszz4T81" +
+                    "6K4nSVHLYeGsTNj6SE0DuZ2o/F1vSxtO+3qWL4cBiaurWqIkb33xQ6e2+oPxV41Rqev76Ku6duTQP98Z" +
+                    "hP/SQN/BTFL9Pr0aUot4tHy0QQRxYGcWj2VKoYfhGG+neELAWwAmTdD8SRxV1p8P8jbn54aRoxvG+QEs" +
+                    "iu0CoadS9gWSvP+sMLrZQQ9sbhVBGU04a8eKLeC6wIH7//tWH08NowurA2ZL2xuOnA8dDoNuu9wIrRLG" +
+                    "5L04ETsT19OlUHY6Ex8c56D7AiZJPjcdujS7cWO/O/D83u7fUeYNnLi7eHzuL6mHVPlLcSQ977Wr0HWD" +
+                    "Fa/TeHrYdu8WMiAAAAAABY9jrFmjj20K6wYfJDdQuwYjQmPlj9q3F79kTo+IUgrCzZ5Ptie3oQxx4ehK" +
+                    "HJj9StwIpQJoDhfWUF8ERoFLfUrcCK0Jh8d9x0YBCaxaa65ayY9b4VO3vnYt67eLT6c3FoZi40em+rDw" +
+                    "NeHQYxVQB3lOsPnrP4aF5siSOLT6YB/mJsTQ3S6ytHq1+uW/jzemWiOnq/jnn/N3F4/mjI+p8J7e7qsP" +
+                    "3w6hDGV9XfAlxVw/PXp4F6rFx4NCWAz1VtzT2bY2ffP2Nr+mTIJt4bOvffUK0x+IqR+qyffFNYX6w5E+" +
+                    "lzH4ntuZNx25FBtTBJmUiGF/4ahqYeSN8iCcBV96nudanM/3O5alDIuyNhw55PxPbMIG5J77OiU/f633" +
+                    "164q2pAtiVKoHdqUJ4MI5+r1rlOLSni9CcaNe9gKti3fi16Uz999iZf2xVXnwhzfdfKq8HpCRwKLR6b6" +
+                    "x7XTr55FBKBofjth8MygVMV+W97fUe4Ipqdm9Mc/eF6g5A1n0+JYK/pRL96diePpTm7O8K7YXVoTFx89" +
+                    "nYOHvzpUoKKcEcrJY3b0/9ODR3v65uBq6UmBffrlYPznp/SYlgfxr4x8PGhXvSWfqeNECfTe0vpLL9Pz" +
+                    "E090JsFr+qD7+wRndd2HTwzmop8w2994ThxTtT0jg3RubWVckn7/8uff/p0JwcrY8GrpQ0qPfEzz42SI" +
+                    "ngD+UdgPT6s7jxu+VzBdKZefr86MyVfZ8NWe9LIe99MR3z5fQZO0PWXXqf975ZXegr7yhkxcFUUTxTne" +
+                    "XLJxtVTzgqIyWc8leHWe9IlVRSW8j7P0z976v/LOCKaHfXhpF9d6dB/Vz1GLJy4GfFi2ng/ivFubf5qi" +
+                    "iWruRvfHDpmQNDM+WyYkXcuDioLu6VyaO8HVj2K7ez4vnQ7A2HRrE+NCY/mRLFhur5BFX0N6dj89S+q6" +
+                    "pCthxK/ft76r8MuOxGZ64tlwdLZ+M/VoM/75dn7q+mAfyn2Epn/AsmgTNR3vfvvZS2n0r9z08YVSLonY" +
+                    "oji0dXZVP3XXT5sfHxVTGf+U5KAsdT/8frVuByS2fcB+LWI9XV+LMDt0wE5T37lw/mi0Ya5EtVQ7nK8F" +
+                    "Jl8PIoq4IzU4CRfYPQ2fuO+qvPN/7T14Tm/mvqd8Dldk1WfCwN1J0hL3pVyV5GXkymKqBbbZd3B4b3Ls" +
+                    "3/y4rgv68JVO1pSpAGf2gWB1JJ/5UUXz8/pr4RW8XOMDL3+vqrgf8r7bm7qjij3M6m7wqN7kg62z+XSv" +
+                    "pTKTlcKE5XyaI982RYv+cN9dHAstEp1qSz91vSPP78yCc+mqYCT8XO3NNhw+T76yMAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFjmQvg3/LPU/VyQfsUAAAAASU" +
+                    "VORK5CYII=\",\n\"tileOutsideProjectExtents\": false,\n\"Code\": 0,\n\"Message\": \"success\"" +
+                    "\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tile - ProductionData - CutFill")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
         public virtual void ReportTile_ProductionData_CutFill()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - ProductionData - CutFill", ((string[])(null)));
-#line 97
+#line 193
 this.ScenarioSetup(scenarioInfo);
-#line 98
+#line 194
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 99
+#line 195
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 100
+#line 196
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 101
+#line 197
   testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 102
+#line 198
   testRunner.And("a cutFillDesignUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 103
+#line 199
  testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 104
- testRunner.Then("the Report Tile result should be", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
+#line 200
+ testRunner.Then("the Report Tile result image should be match within \"5\" percent", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
                     "AARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAzoSURBVHhe7dp7cNVlfsfxn7qzszvu" +
                     "dGu73dnVGWZnR9fWNd2itrtYEENMIAkEFhCVGEUUsShiwIBoSiRAbuecXDgnJDm538PVIJdEcj/nJCf3" +
                     "kBsJkSgoIiqjrq1lmVo+fRLPH3a2/atQt+37NfOd5zmZ8/zO88/38/v9Jo8FAAAAAAAAAAAAAAAAAAAA" +
@@ -731,27 +1175,27 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_ProductionData_SummaryVolumes()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - ProductionData - SummaryVolumes", ((string[])(null)));
-#line 114
+#line 210
 this.ScenarioSetup(scenarioInfo);
-#line 115
+#line 211
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 116
+#line 212
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 117
+#line 213
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 118
+#line 214
   testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 119
+#line 215
   testRunner.And("a volumeCalcType \"GroundToGround\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 120
+#line 216
   testRunner.And("a volumeTopUid \"A40814AA-9CDB-4981-9A21-96EA30FFECDD\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 121
+#line 217
   testRunner.And("a volumeBaseUid \"F07ED071-F8A1-42C3-804A-1BDE7A78BE5B\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 122
+#line 218
  testRunner.When("I request a Report Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 123
- testRunner.Then("the Report Tile result should be", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
+#line 219
+ testRunner.Then("the Report Tile result image should be match within \"5\" percent", "{\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAA" +
                     "AARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAUpSURBVHhe7dMxTQQAGIPR04cC5LAj" +
                     "AwEMSEDYsXT8pyYk1+S95BPQoQ8AAAAAAAAAAAAAAAAAAF7V5+/bc7VMAFrXsVbKBKB1HWulTABa17FW" +
                     "ygSgdR1rpUwAWtexVsoEoHUda6VMAFrXsVbKBKB1HWulTABa17FWygSgdR1rpUwAWtexVsoEoHUda6VM" +
@@ -786,17 +1230,17 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingMode()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Mode", ((string[])(null)));
-#line 133
+#line 229
 this.ScenarioSetup(scenarioInfo);
-#line 134
+#line 230
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 135
+#line 231
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 136
+#line 232
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 137
+#line 233
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 138
+#line 234
  testRunner.Then("I should get error code -1 and message \"Missing display mode parameter for produc" +
                     "tion data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -809,17 +1253,17 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingMapType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Map Type", ((string[])(null)));
-#line 140
+#line 236
 this.ScenarioSetup(scenarioInfo);
-#line 141
+#line 237
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 142
+#line 238
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 143
+#line 239
   testRunner.And("an overlayType \"BaseMap\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 144
+#line 240
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 145
+#line 241
  testRunner.Then("I should get error code -1 and message \"Missing map type parameter for base map o" +
                     "verlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -832,15 +1276,15 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingOverlays()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Overlays", ((string[])(null)));
-#line 147
+#line 243
 this.ScenarioSetup(scenarioInfo);
-#line 148
+#line 244
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 149
+#line 245
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 150
+#line 246
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 151
+#line 247
  testRunner.Then("I should get error code -1 and message \"[{\"Key\":\"overlays\",\"Value\":\"The value \'\' " +
                     "is invalid.\\r\\n\"}]\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -853,19 +1297,19 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_InvalidSize()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Invalid Size", ((string[])(null)));
-#line 153
+#line 249
 this.ScenarioSetup(scenarioInfo);
-#line 154
+#line 250
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 155
+#line 251
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 156
+#line 252
   testRunner.And("an overlayType \"BaseMap\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 157
+#line 253
   testRunner.And("a width \"16\" and a height \"16\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 158
+#line 254
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 159
+#line 255
  testRunner.Then("I should get error code -1 and message \"Tile size must be between 64 and 4096\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -877,19 +1321,19 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingCutFillDesign()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing CutFill Design", ((string[])(null)));
-#line 161
+#line 257
 this.ScenarioSetup(scenarioInfo);
-#line 162
+#line 258
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 163
+#line 259
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 164
+#line 260
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 165
+#line 261
   testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 166
+#line 262
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 167
+#line 263
  testRunner.Then("I should get error code -1 and message \"Missing design for cut-fill production da" +
                     "ta overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -902,21 +1346,21 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingVolumeDesign()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Volume Design", ((string[])(null)));
-#line 169
+#line 265
 this.ScenarioSetup(scenarioInfo);
-#line 170
+#line 266
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 171
+#line 267
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 172
+#line 268
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 173
+#line 269
   testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 174
+#line 270
   testRunner.And("a volumeCalcType \"DesignToGround\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 175
+#line 271
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 176
+#line 272
  testRunner.Then("I should get error code -1 and message \"Missing design for summary volumes produc" +
                     "tion data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -929,23 +1373,23 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingBaseFilter()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Base Filter", ((string[])(null)));
-#line 178
+#line 274
 this.ScenarioSetup(scenarioInfo);
-#line 179
+#line 275
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 180
+#line 276
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 181
+#line 277
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 182
+#line 278
   testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 183
+#line 279
   testRunner.And("a volumeCalcType \"GroundToDesign\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 184
+#line 280
   testRunner.And("a volumeTopUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 185
+#line 281
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 186
+#line 282
  testRunner.Then("I should get error code -1 and message \"Missing base filter for summary volumes p" +
                     "roduction data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -958,23 +1402,23 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ReportTile_MissingTopFilter()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Top Filter", ((string[])(null)));
-#line 188
+#line 284
 this.ScenarioSetup(scenarioInfo);
-#line 189
+#line 285
  testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 190
+#line 286
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 191
+#line 287
   testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 192
+#line 288
   testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 193
+#line 289
   testRunner.And("a volumeCalcType \"DesignToGround\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 194
+#line 290
   testRunner.And("a volumeBaseUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 195
+#line 291
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 196
+#line 292
  testRunner.Then("I should get error code -1 and message \"Missing top filter for summary volumes pr" +
                     "oduction data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

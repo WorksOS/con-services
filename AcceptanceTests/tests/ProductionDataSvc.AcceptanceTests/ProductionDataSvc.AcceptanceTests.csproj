@@ -65,8 +65,8 @@
     <Reference Include="VSS.Velociraptor.PDSInterface">
       <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\VSS.Velociraptor.PDSInterface.dll</HintPath>
     </Reference>
-    <Reference Include="XnaFan.ImageComparison">
-      <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\XnaFan.ImageComparison.dll</HintPath>
+    <Reference Include="XnaFan.ImageComparison, Version=2.0.3.0, Culture=neutral, PublicKeyToken=ce5ccd6a9e11ca21, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ImageComparison.2.0.3\lib\net45\XnaFan.ImageComparison.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -599,10 +599,6 @@
     <None Include="ExportReportToVETA.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ExportReportToVETA.feature.cs</LastGenOutput>
-    </None>
-    <None Include="FilterServices.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>FilterServices.feature.cs</LastGenOutput>
     </None>
     <None Include="GetDesignBoundaries.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
