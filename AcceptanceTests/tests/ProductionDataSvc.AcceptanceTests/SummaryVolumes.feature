@@ -15,11 +15,11 @@ Scenario Outline: SummaryVolumes - Good Request
 	| LatestFilterToDesign                 | LatestFilterToDesign                 |
 	| DesignToEarliestFilter               | DesignToEarliestFilter               |
 	| DesignToLatestFilter                 | DesignToLatestFilter                 |
-	#| FilterToCompositeWithSurveyedSurface | FilterToCompositeWithSurveyedSurface |
+	| FilterToCompositeWithSurveyedSurface | FilterToCompositeWithSurveyedSurface |
 	| FilterToCompositeNoSurveyedSurface   | FilterToCompositeNoSurveyedSurface   |
-	#| CompositeToDesignWithSurveyedSurface | CompositeToDesignWithSurveyedSurface |
+	| CompositeToDesignWithSurveyedSurface | CompositeToDesignWithSurveyedSurface |
 	| CompositeToDesignNoSurveyedSurface   | CompositeToDesignNoSurveyedSurface   |
-	#| DesignToCompositeWithSurveyedSurface | DesignToCompositeWithSurveyedSurface |
+	| DesignToCompositeWithSurveyedSurface | DesignToCompositeWithSurveyedSurface |
 	| DesignToCompositeNoSurveyedSurface   | DesignToCompositeNoSurveyedSurface   |
 	| SummationTestLotOneOfThree           | SummationTestLotOneOfThree           |
 	| SummationTestLotTwoOfThree           | SummationTestLotTwoOfThree           |
