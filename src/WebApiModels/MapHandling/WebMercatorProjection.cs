@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
+namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
   public class WebMercatorProjection
   {
@@ -10,11 +10,13 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
     private const int ONE_HALF_CIRCLE = 180;
     private const int ONE_FULL_CIRCLE = 360;
 
+    [Obsolete("Use extension method latDegreesToRadians or lonDegreesToRadians")]
     public static double DegreesToRadians(double deg)
     {
       return deg * (Math.PI / ONE_HALF_CIRCLE);
     }
 
+    [Obsolete("Use extension method LatRadiansToDegrees or LonRadiansToDegrees")]
     public static double RadiansToDegrees(double rad)
     {
       return rad / (Math.PI / ONE_HALF_CIRCLE);
@@ -41,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       return new Point(lat, lng);
     }
 
-    public static Point LatLngToTile(Point latLng, int numTiles)
+    public static Point LatLngToTile(Point latLng, long numTiles)
     {
       return PixelToTile(LatLngToPixel(latLng, numTiles));
     }
@@ -64,21 +66,21 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       };
     }
 
-    public static Point LatLngToPixel(Point latLng, int numTiles)
+    public static Point LatLngToPixel(Point latLng, long numTiles)
     {
       Point worldPt = FromLatLngToPoint(latLng);
       Point pixelPt = WorldToPixel(worldPt, numTiles);
       return pixelPt;
     }
 
-    public static Point PixelToLatLng(Point pixelPt, int numTiles)
+    public static Point PixelToLatLng(Point pixelPt, long numTiles)
     {
       Point worldPt = PixelToWorld(pixelPt, numTiles);
       Point latLng = FromPointToLatLng(worldPt);
       return latLng;
     }
 
-    public static Point WorldToPixel(Point worldPt, int numTiles)
+    public static Point WorldToPixel(Point worldPt, long numTiles)
     {
       return new Point
       {
@@ -87,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       };
     }
 
-    public static Point PixelToWorld(Point pixelPt, int numTiles)
+    public static Point PixelToWorld(Point pixelPt, long numTiles)
     {
       return new Point
       {
@@ -105,7 +107,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
     /// <param name="longitude">longitude in radians</param>
     /// <param name="numTiles">number of tiles (calcuated from zoom level)</param>
     /// <returns>x tile coordinate</returns>
-    public static int LongitudeToTile(double longitude, int numTiles)
+    public static int LongitudeToTile(double longitude, long numTiles)
     {
       var columnIndex = longitude;
       var columnNormalized = (1.0 + columnIndex / Math.PI) / 2.0;
@@ -120,7 +122,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
     /// <param name="latitude">latitude in radians</param>
     /// <param name="numTiles">number of tiles (calcuated from zoom level)</param>
     /// <returns>y tile coordinate</returns>
-    public static int LatitudeToTile(double latitude, int numTiles)
+    public static int LatitudeToTile(double latitude, long numTiles)
     {
       var rowIndex = Math.Log(Math.Tan(latitude) + (1.0 / Math.Cos(latitude)));
       var rowNormalized = (1.0 - rowIndex / Math.PI) / 2.0;

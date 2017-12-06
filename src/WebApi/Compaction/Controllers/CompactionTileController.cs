@@ -20,15 +20,12 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Factories.ProductionData;
-using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
-using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -45,6 +42,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
+    /// The tile generator
+    /// </summary>
+    private readonly IProductionDataTileService tileService;
+    /// <summary>
     /// Logger for logging
     /// </summary>
     private readonly ILogger log;
@@ -59,16 +60,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IFileRepository fileRepo;
 
-    /// <summary>
-    /// Proxy for getting elevation statistics from Raptor
-    /// </summary>
-    private readonly IElevationExtentsProxy elevProxy;
-
-    /// <summary>
-    /// The request factory
-    /// </summary>
-    private readonly IProductionDataRequestFactory requestFactory;
-
+ 
     /// <summary>
     /// Constructor with injected raptor client, logger and authenticated projects
     /// </summary>
@@ -76,25 +68,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="logger">Logger</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileRepo">Imported file repository</param>
-    /// <param name="elevProxy">Elevation extents proxy</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="settingsManager">Compaction settings manager</param>
-    /// <param name="requestFactory">The request factory.</param>
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
-    public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
-      IFileRepository fileRepo, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy,
+    /// <param name="tileService">Map tile generator</param>
+    public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
+      IFileRepository fileRepo, IFileListProxy fileListProxy, 
       IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) :
+      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService) : 
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionTileController>();
       this.fileRepo = fileRepo;
-      this.elevProxy = elevProxy;
-      this.requestFactory = requestFactory;
+      this.tileService = tileService;
     }
 
     /// <summary>
@@ -120,7 +110,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>TilesExecutor</executor> 
+    /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles")]
     [HttpGet]
@@ -147,17 +137,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
 
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue
-        ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value)
-        : null;
-
-      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
-
-      var tileResult = GetProductionDataTile(projectSettings, filter, projectUid, mode, (ushort)WIDTH, (ushort)HEIGHT,
-         GetBoundingBox(BBOX), cutFillDesign, sumVolParameters, volumeCalcType, volumeBaseUid, volumeTopUid);
+      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
+      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid ,volumeTopUid);
+      var tileResult = WithServiceExceptionTryExecute(() => 
+        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT, 
+          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, 
+          volumeCalcType, CustomHeaders));
 
       return tileResult;
     }
@@ -190,7 +178,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 
     /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).
     /// </returns>
-    /// <executor>TilesExecutor</executor> 
+    /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles/png")]
     [HttpGet]
@@ -217,6 +205,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
 
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
@@ -225,9 +214,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         : null;
 
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
-      var tileResult = GetProductionDataTile(projectSettings, filter, projectUid, mode, (ushort)WIDTH, (ushort)HEIGHT,
-        GetBoundingBox(BBOX), cutFillDesign, sumVolParameters, volumeCalcType, volumeBaseUid, volumeTopUid);
-
+      var tileResult = WithServiceExceptionTryExecute(() =>
+        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
+          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, 
+          volumeCalcType, CustomHeaders));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
@@ -251,7 +241,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>TilesExecutor</executor> 
+    /// <executor>DxfTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
@@ -302,7 +292,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>TilesExecutor</executor> 
+    /// <executor>DxfTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles/png")]
     [HttpGet]
@@ -501,97 +491,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat);
     }
 
-    /// <summary>
-    /// Get the elevation extents for the palette for elevation tile requests
-    /// </summary>
-    /// <param name="projectSettings">Project settings to use for Raptor</param>
-    /// <param name="filter">Filter to use for Raptor</param>
-    /// <param name="projectId">Legacy project ID</param>
-    /// <param name="mode">Display mode; type of data requested</param>
-    /// <returns>Elevation extents to use</returns>
-    private ElevationStatisticsResult GetElevationExtents(CompactionProjectSettings projectSettings, Common.Models.Filter filter, long projectId, DisplayMode mode)
-    {
-      var elevExtents = mode == DisplayMode.Height ? elevProxy.GetElevationRange(projectId, filter, projectSettings) : null;
-      //Fix bug in Raptor - swap elevations if required
-      elevExtents?.SwapElevationsIfRequired();
-      return elevExtents;
-    }
-
-    /// <summary>
-    /// Gets the requested tile from Raptor
-    /// </summary>
-    /// <param name="projectSettings">Project settings to use for Raptor</param>
-    /// <param name="filter">Filter to use for Raptor</param>
-    /// <param name="projectUid">Legacy project ID</param>
-    /// <param name="mode">Display mode; type of data requested</param>
-    /// <param name="width">Width of the tile</param>
-    /// <param name="height">Height of the tile in pixels</param>
-    /// <param name="bbox">Bounding box in radians</param>
-    /// <param name="cutFillDesign">Design descriptor for cut-fill design</param>
-    /// <param name="sumVolParameters">Filter(s) and/or design for summary volumes</param>
-    /// <param name="volumeCalcType">Volume calculation type</param>
-    /// <param name="volumeBaseUid">The base surface Uid</param>
-    /// <param name="volumeTopUid">The top surfance Uid</param>
-    /// <returns>Tile result</returns>
-    private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Common.Models.Filter filter, Guid projectUid, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, Tuple<Common.Models.Filter, Common.Models.Filter, DesignDescriptor> sumVolParameters, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
-    {
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-
-      var tileRequest = requestFactory.Create<TileRequestHelper>(r => r
-          .ProjectId(projectId)
-          .Headers(this.CustomHeaders)
-          .ProjectSettings(projectSettings)
-          .Filter(filter)
-          .DesignDescriptor(cutFillDesign))
-          .SetBaseFilter(sumVolParameters.Item1)
-          .SetTopFilter(sumVolParameters.Item2)
-          .SetVolumeCalcType(volumeCalcType)
-          .SetVolumeDesign(sumVolParameters.Item3)
-          .CreateTileRequest(mode, width, height, bbox,
-            GetElevationExtents(projectSettings, filter, projectId, mode));
-
-      //TileRequest is both v1 and v2 model so cannot change its validation directly.
-      //However for v2 we want to return a transparent empty tile for cut-fill if no design specified.
-      //So catch the validation exception for this case.
-      bool getTile = true;
-      try
-      {
-        tileRequest.Validate();
-      }
-      catch (ServiceException se)
-      {
-        if (tileRequest.mode == DisplayMode.CutFill &&
-            se.Code == HttpStatusCode.BadRequest &&
-            se.GetResult.Code == ContractExecutionStatesEnum.ValidationError)
-        {
-          if (se.GetResult.Message ==
-              "Design descriptor required for cut/fill and design to filter or filter to design volumes display" ||
-              se.GetResult.Message ==
-              "Two filters required for filter to filter volumes display" ||
-              se.GetResult.Message ==
-              "One filter required for design to filter or filter to design volumes display")
-          {
-            getTile = false;
-          }
-        }
-        //Rethrow any other exception
-        if (getTile)
-        {
-          throw se;
-        }
-      }
-
-      TileResult tileResult = null;
-      if (getTile)
-      {
-        tileResult = WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainerFactory
-            .Build<CompactionTilesExecutor>(logger, raptorClient)
-            .Process(tileRequest) as TileResult
-        );
-      }
-
-      return tileResult ?? TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
-    }
+ 
+  
   }
 }

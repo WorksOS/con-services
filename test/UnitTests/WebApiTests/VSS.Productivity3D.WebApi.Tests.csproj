@@ -33,9 +33,13 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <!-- References are required to support VSS.MasterData.Models.netcore for local unit testing only. -->
     <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.AppContext" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.9.*" />
+    <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.10.*" />
     <!-- END -->
   </ItemGroup>
 
@@ -65,6 +69,9 @@
   <ItemGroup>
     <None Update="app.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

@@ -6,7 +6,7 @@ using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
+namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
   /// <summary>
   /// Utilities for imported files
@@ -121,6 +121,26 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
       return string.Format("{0}/Z{1}", tilePath, zoomLevel);
     }
 
+    /// <summary>
+    /// Gets folder for a given zoom level
+    /// </summary>
+    /// <param name="zoomLevel">The zoom level.</param>
+    /// <returns></returns>
+    public static string ZoomFolder(int zoomLevel)
+    {
+      return string.Format("Z{0}", zoomLevel);
+    }
+        
+    /// <summary>
+    /// Not sure what this does???
+    /// </summary>
+    /// <param name="customerID">The customer identifier.</param>
+    /// <param name="projectID">The project identifier.</param>
+    /// <returns></returns>
+    public static string FilePath(long customerID, long projectID)
+    {
+      return projectID > 0 ? String.Format("/{0}/{1}", customerID, projectID) : String.Format("/{0}", customerID);
+    }
 
 
     private const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";

@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
-    /// <returns>An instance of the CompactionReportGridResult class if successful.</returns>
+    /// <returns>An instance of the CompactionReportResult class if successful.</returns>
     /// 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             //foreach (TGridRow row in reportPackager.GridReport.Rows)
             for (var i = 0; i < reportPackager.GridReport.NumberOfRows; i++)
             {
-              gridRows[i] = GridRow.CreateGridRow(
+              gridRows[i] = GridRow.CreateRow(
                 reportPackager.GridReport.Rows[i].Northing,
                 reportPackager.GridReport.Rows[i].Easting,
                 reportPackager.GridReport.Rows[i].Elevation,
@@ -118,7 +118,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
             var gridReport = GridReport.CreateGridReport(startTime, endTime, gridRows);
 
-            result = CompactionReportGridResult.CreateExportDataResult(gridReport, (short)returnedResult);
+            result = CompactionReportResult.CreateExportDataResult(gridReport, (short)returnedResult);
           }
           catch (Exception ex)
           {

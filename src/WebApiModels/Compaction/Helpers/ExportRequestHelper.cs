@@ -13,9 +13,10 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
   /// <summary>
   /// The request representation for a linear or alignment based profile request for all thematic types other than summary volumes.
@@ -28,7 +29,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     private ProjectDescriptor projectDescriptor;
 
     /// <summary>
-    /// Parameterless constructor is required to support factory create function in <see cref="VSS.Productivity3D.WebApi"/> project.
+    /// Parameterless constructor is required to support factory create function in <see cref="WebApi"/> project.
     /// </summary>
     public ExportRequestHelper()
     { }
@@ -36,10 +37,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     public ExportRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
-      Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
-      ConfigurationStore = configurationStore;
-      FileListProxy = fileListProxy;
-      SettingsManager = settingsManager;
+      this.Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
+      this.ConfigurationStore = configurationStore;
+      this.FileListProxy = fileListProxy;
+      this.SettingsManager = settingsManager;
     }
     public ExportRequestHelper SetRaptorClient(IASNodeClient raptorClient)
     {
@@ -49,10 +50,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
     public ExportRequestHelper SetUserPreferences(UserPreferenceData userPrefs)
     {
-      userPreferences = userPrefs;
+      this.userPreferences = userPrefs;
       return this;
     }
-    
+
     public ExportRequestHelper SetProjectDescriptor(ProjectDescriptor projectDescriptor)
     {
       this.projectDescriptor = projectDescriptor;
@@ -75,19 +76,19 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       string machineNames,
       double tolerance = 0.0)
     {
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
+      var liftSettings = this.SettingsManager.CompactionLiftBuildSettings(this.ProjectSettings);
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
 
       if (exportType == ExportTypes.kSurfaceExport)
       {
-        raptorClient.GetDataModelExtents(ProjectId,
-          RaptorConverters.convertSurveyedSurfaceExlusionList(Filter?.SurveyedSurfaceExclusionList), out projectExtents);
+        this.raptorClient.GetDataModelExtents(this.ProjectId,
+          RaptorConverters.convertSurveyedSurfaceExlusionList(this.Filter?.SurveyedSurfaceExclusionList), out projectExtents);
       }
       else
       {
-        TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(ProjectId);
+        TMachineDetail[] machineDetails = this.raptorClient.GetMachineIDs(this.ProjectId);
 
         if (machineDetails != null)
         {
@@ -102,7 +103,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       }
 
       // Set User Preferences' time zone to the project's one and retrieve...
-      userPreferences.Timezone = projectDescriptor.projectTimeZone;
+      this.userPreferences.Timezone = this.projectDescriptor.projectTimeZone;
 
       if (!string.IsNullOrEmpty(fileName))
       {
@@ -110,9 +111,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       }
 
       return ExportReport.CreateExportReportRequest(
-        ProjectId,
+        this.ProjectId,
         liftSettings,
-        Filter,
+        this.Filter,
         -1,
         null,
         false,
@@ -132,7 +133,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         false,
         fileName,
         exportType,
-        ConvertUserPreferences(userPreferences));
+        ConvertUserPreferences(this.userPreferences));
     }
 
     private static string StripInvalidCharacters(string str)
@@ -149,13 +150,14 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       return str;
     }
 
+    // TODO (Aaron) move to RaptopHelper
     /// <summary>
     /// Converts a set user preferences in the format understood by Raptor.
     /// It is solely used by production data export WebAPIs.
     /// </summary>
     /// <param name="userPref">The set of user preferences.</param>
     /// <returns>The set of user preferences in Raptor's format</returns>
-    private static TASNodeUserPreferences ConvertUserPreferences(UserPreferenceData userPref)
+    public static TASNodeUserPreferences ConvertUserPreferences(UserPreferenceData userPref)
     {
       TimeZoneInfo projecTimeZone = TimeZoneInfo.FindSystemTimeZoneById(userPref.Timezone);
       double projectTimeZoneOffset = projecTimeZone.GetUtcOffset(DateTime.Now).TotalHours;

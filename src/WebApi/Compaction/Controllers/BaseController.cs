@@ -114,6 +114,37 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
+    /// Asynch form of WithServiceExceptionTryExecute
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
+    {
+      TResult result = default(TResult);
+      try
+      {
+        result = await action.Invoke();
+        log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
+
+      }
+      catch (ServiceException)
+      {
+        throw;
+      }
+      catch (Exception ex)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+          ContractExecutionStatesEnum.InternalProcessingError - 2000, ex.Message);
+      }
+      finally
+      {
+        log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
+      }
+      return result;
+    }
+
+    /// <summary>
     /// Gets the project identifier.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
@@ -320,7 +351,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Custom date range is unaltered. Project extents is always null.
     /// Other types are calculated in the project time zone.
     /// </summary>
-    /// <param name="projectUid">The project uid.</param>
+    /// <param name="projectUid">The project UID</param>
     /// <param name="filter">The filter containg the date range type</param>
     /// <returns>The filter with the date range set</returns>
     private MasterData.Models.Models.Filter ApplyDateRange(Guid projectUid, MasterData.Models.Models.Filter filter)
@@ -391,5 +422,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       return new Tuple<Filter, Filter, DesignDescriptor>(baseFilter, topFilter, volumeDesign);
     }
+
+  
   }
 }

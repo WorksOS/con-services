@@ -18,6 +18,8 @@ using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApi.Models.Notification.Executors;
+using VSS.Productivity3D.WebApi.Models.Notification.Models;
 using VSS.Productivity3D.WebApiModels.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
@@ -114,7 +116,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/notification/addfile")]
     [HttpGet]
-    public async Task<ContractExecutionResult> GetAddFile(
+    public async Task<Models.Notification.Models.AddFileResult> GetAddFile(
       [FromQuery] Guid projectUid,
       [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
@@ -138,7 +140,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
-      var result = await executor.ProcessAsync(request);
+      var result = await executor.ProcessAsync(request) as Models.Notification.Models.AddFileResult;
       //Do we need to validate fileUid ?
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
       cacheBuilder.ClearMemoryCache(projectUid);

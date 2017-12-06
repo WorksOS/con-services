@@ -20,7 +20,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
-using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using Filter = VSS.Productivity3D.Common.Models.Filter;
@@ -196,7 +196,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       if (geofenceUid.HasValue)
       {
         //Todo this ahould be async
-        var geometryWKT = geofenceProxy.GetGeofenceBoundary(geofenceUid.ToString(), this.Request.Headers.GetCustomHeaders().ToString()).Result;
+        var geometryWKT = geofenceProxy.GetGeofenceBoundary((User as RaptorPrincipal).CustomerUid,  geofenceUid.ToString(), RequestUtils.GetCustomHeaders(Request.Headers)).Result;
 
         if (string.IsNullOrEmpty(geometryWKT))
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,

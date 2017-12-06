@@ -18,12 +18,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   /// <summary>
   /// V2 Tile executor. Same as V1 but without the reconcileTopFilterAndVolumeComputationMode as this is done externally.
   /// </summary>
-  public class CompactionTilesExecutor : RequestExecutorContainer
+  public class CompactionTileExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionTilesExecutor()
+    public CompactionTileExecutor()
     {
       ProcessErrorCodes();
     }
@@ -55,8 +55,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           RaptorConverters.AdjustBaseFilter(baseFilter);
         }
 
-        if (((baseFilter == null || topFilter == null) && designDescriptor.IsNull()) ||
-          (baseFilter == null && topFilter == null))
+        if ((baseFilter == null || topFilter == null) && designDescriptor.IsNull() ||
+          baseFilter == null && topFilter == null)
         {
           throw new ServiceException(
             HttpStatusCode.InternalServerError,

@@ -48,6 +48,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -59,6 +60,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="XnaFan.ImageComparison, Version=2.0.3.0, Culture=neutral, PublicKeyToken=ce5ccd6a9e11ca21, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ImageComparison.2.0.3\lib\net45\XnaFan.ImageComparison.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\BoundingBox.cs" />
@@ -102,7 +106,6 @@
     <Content Include="DLLs\ShineOn.Rtl.dll" />
     <Content Include="DLLs\VSS.Velociraptor.Library.dll" />
     <Content Include="DLLs\VSS.Velociraptor.PDSInterface.dll" />
-    <Content Include="DLLs\XnaFan.ImageComparison.dll" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

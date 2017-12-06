@@ -1,18 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -43,6 +46,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProductionDataRequestFactory requestFactory;
 
     /// <summary>
+    /// For retrieving user preferences
+    /// </summary>
+    private readonly IPreferenceProxy prefProxy;
+
+    /// <summary>
     /// Default constructor.
     /// </summary>
     /// <param name="raptorClient">The raptor client</param>
@@ -54,15 +62,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterServiceProxy">The filter service proxy.</param>
     /// <param name="settingsManager">The compaction settings manager.</param>
     /// <param name="requestFactory">The request factory.</param>
+    /// <param name="prefProxy">The User Preferences proxy.</param>
     public CompactionReportController(IASNodeClient raptorClient, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory) :
+      IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       log = logger.CreateLogger<CompactionReportController>();
       this.requestFactory = requestFactory;
+      this.prefProxy = prefProxy;
     }
 
     /// <summary>
@@ -87,7 +97,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An instance of the <see cref="ContractExecutionResult"/> class.</returns>
     [Route("api/v2/report/grid")]
     [HttpGet]
-    public async Task<CompactionReportGridResult> GetReporGrid(
+    public async Task<CompactionReportResult> GetReporGrid(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] bool reportElevation,
@@ -113,35 +123,104 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
 
       var reportGridRequest = await requestFactory.Create<CompactionReportGridRequestHelper>(r => r
-        .ProjectId(projectId)
-        .Headers(CustomHeaders)
-        .ProjectSettings(projectSettings)
-        .Filter(filter))
-      .SetRaptorClient(raptorClient)
-      .CreateCompactionReportGridRequest(
-        reportElevation,
-        reportCmv,
-        reportMdp,
-        reportPassCount,
-        reportTemperature,
-        reportCutFill,
-        cutFillDesign,
-        gridInterval,
-        gridReportOption,
-        startNorthing,
-        startEasting,
-        endNorthing,
-        endEasting,
-        azimuth
-      );
+          .ProjectId(projectId)
+          .Headers(CustomHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter))
+        .SetRaptorClient(raptorClient)
+        .CreateCompactionReportGridRequest(
+          reportElevation,
+          reportCmv,
+          reportMdp,
+          reportPassCount,
+          reportTemperature,
+          reportCutFill,
+          cutFillDesign,
+          gridInterval,
+          gridReportOption,
+          startNorthing,
+          startEasting,
+          endNorthing,
+          endEasting,
+          azimuth
+        );
 
       reportGridRequest.Validate();
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionReportGridExecutor>(logger, raptorClient, null, ConfigStore)
-          .Process(reportGridRequest) as CompactionReportGridResult
+          .Process(reportGridRequest) as CompactionReportResult
       );
+    }
+
+    /// <summary>
+    /// Get station offset report data for the given filter and design files.
+    /// </summary>
+    /// <returns>Returns the station offset report results as JSON.</returns>
+    [Route("api/v2/report/stationoffset")]
+    [HttpGet]
+    public async Task<CompactionReportResult> GetStationOffsetReport(
+      [FromQuery] Guid projectUid,
+      [FromQuery] bool reportElevation,
+      [FromQuery] bool reportCmv,
+      [FromQuery] bool reportMdp,
+      [FromQuery] bool reportPassCount,
+      [FromQuery] bool reportTemperature,
+      [FromQuery] bool reportCutFill,
+      [FromQuery] Guid filterUid,
+      [FromQuery] Guid? cutfillDesignUid,
+      [FromQuery] double crossSectionInterval,
+      [FromQuery] double startStation,
+      [FromQuery] double endStation,
+      [FromQuery] double[] offsets)
+    {
+      log.LogInformation("GetStationOffset: " + Request.QueryString);
+
+      var projectId = GetProjectId(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
+      var projectSettings = await GetProjectSettings(projectUid);
+      var userPreferences = await GetUserPreferences();
+
+      var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
+        .ProjectId(projectId)
+        .Headers(CustomHeaders)
+        .ProjectSettings(projectSettings)
+        .Filter(filter))
+      .CreateRequest(
+        reportElevation,
+        reportCmv,
+        reportMdp,
+        reportPassCount,
+        reportTemperature,
+        reportCutFill,
+        alignmentDescriptor,
+        crossSectionInterval,
+        startStation,
+        endStation,
+        offsets,
+        userPreferences);
+
+      reportRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<CompactionReportStationOffsetExecutor>(logger, raptorClient, null, ConfigStore)
+          .Process(reportRequest) as CompactionReportResult
+      );
+    }
+    
+    private async Task<UserPreferenceData> GetUserPreferences()
+    {
+      var userPreferences = await prefProxy.GetUserPreferences(this.CustomHeaders);
+      if (userPreferences == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+            "Failed to retrieve preferences for current user"));
+      }
+      return userPreferences;
     }
   }
 }

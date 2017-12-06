@@ -9,10 +9,12 @@
 	And a fileId "1234"
   And a fileUid "314cdcdd-1002-4431-a621-f5aa77be6f79"
   And a dxfUnitsType "1"
-	When I request File Notification
-	Then the File Notification result should be 
+	When I request Add File Notification
+	Then the Add File Notification result should be 
   """
 	{
+    "MinZoomLevel": 14,
+    "MaxZoomLevel": 21,
     "Code": 0,
     "Message": "Add file notification successful"
   }
@@ -23,10 +25,12 @@
 	And a filespaceId "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01" and a path "/NotificationAcceptanceTest" and a fileName "Milling - Milling.TTM"
 	And a fileId "15175"
   And a fileUid "220e12e5-ce92-4645-8f01-1942a2d5a57f"
-  When I request File Notification
-	Then the File Notification result should be 
+  When I request Add File Notification
+	Then the Add File Notification result should be 
   """
 	{
+    "MinZoomLevel": 15,
+    "MaxZoomLevel": 21,
     "Code": 0,
     "Message": "Add file notification successful"
   }
@@ -38,8 +42,8 @@
 	And a filespaceId "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01" and a path "/NotificationAcceptanceTest" and a fileName "Topcon Road - DesignMap.dxf"
 	And a fileId "1234"
   And a fileUid "314cdcdd-1002-4431-a621-f5aa77be6f79"
-	When I request File Notification
-	Then the File Notification result should be
+	When I request Delete File Notification
+	Then the Delete File Notification result should be
   """
 	{
     "Code": 0,
@@ -53,6 +57,6 @@
 	And a filespaceId "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01" and a path "/NotificationAcceptanceTest" and a fileName "Milling - Milling.TTM"
 	And a fileId "15175"
   And a fileUid "220e12e5-ce92-4645-8f01-1942a2d5a57f"
-	When I request File Notification Expecting BadRequest
+	When I request Delete File Notification Expecting BadRequest
 	Then I should get error code -1 and message "Cannot delete a design surface used in a filter"
 	
