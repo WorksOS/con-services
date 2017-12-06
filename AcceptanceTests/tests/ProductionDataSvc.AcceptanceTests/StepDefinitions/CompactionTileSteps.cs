@@ -49,12 +49,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     }
 
 
-    //[Then(@"the result should match the ""(.*)"" from the repository")]
-    //public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
-    //{
-    //  Assert.AreEqual(tileRequester.ResponseRepo[resultName], tileRequester.CurrentResponse);
-    //}
-
     [Then(@"the result tile should match the ""(.*)"" from the repository within ""(.*)"" percent")]
     public void ThenTheResultTileShouldMatchTheFromTheRepositoryWithin(string resultName, string difference)
     {
@@ -70,6 +64,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
       Console.WriteLine("Actual Difference % = " + diff*100); 
       Console.WriteLine("Actual filename = " + actFileName);
+      Console.WriteLine(tileRequester.CurrentResponse);
       Assert.IsTrue(Math.Abs(diff) < imageDifference, "Actual Difference:" + diff*100 + "% Expected tiles (" + expFileName +  ") doesn't match actual tiles (" + actFileName + ")");
     }
 
