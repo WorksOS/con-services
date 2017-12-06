@@ -37,6 +37,9 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         private string GridName;
         private string CacheName;
 
+        /// <summary>
+        /// Default no-arg constructor supplied default Raptor grid and MutableNonSpatial cache name for surveyed surface information
+        /// </summary>
         public SurveyedSurfaceService() : base()
         {
             GridName = RaptorGrids.RaptorGridName();
@@ -63,7 +66,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         }
 
         /// <summary>
-        /// Add a new surveyed surface to a sitemodel
+        /// Add a new surveyed surface to a sitemodel via direct manipulation of the information in the grid
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
@@ -98,6 +101,9 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
             mutableNonSpatialCache.Put(cacheKey, ssList.ToBytes());
         }
 
+        /// <summary>
+        /// List the surveyed surfaces for a site model
+        /// </summary>
         public SurveyedSurfaces List(long SiteModelID)
         {
             Log.InfoFormat($"Listing surveyed surfaces from {SurveyedSurfaces.CacheKey(SiteModelID)}");
@@ -114,6 +120,11 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
             }
         }
 
+        /// <summary>
+        /// List the surveyed surfaces for a site model
+        /// </summary>
+        /// <param name="SiteModelID"></param>
+        /// <returns></returns>
         public SurveyedSurfaces ListDirect(long SiteModelID) => List(SiteModelID);
 
         /// <summary>

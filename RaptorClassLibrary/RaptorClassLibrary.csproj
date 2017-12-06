@@ -98,6 +98,7 @@
     <Compile Include="Events\StartEndRecordedDataEvent.cs" />
     <Compile Include="Designs\Executors\CalculateDesignElevationPatch.cs" />
     <Compile Include="Executors\ProjectExtents.cs" />
+    <Compile Include="GridFabric\NodeFilters\ASNodeRoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\NodeFilters\PSNodeRoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\NodeFilters\RoleBasedNodeFilter.cs" />
     <Compile Include="Rendering\Executors\RenderOverlayTile.cs" />

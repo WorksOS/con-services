@@ -20,5 +20,10 @@ namespace VSS.VisionLink.Raptor.Servers
         /// The 'PSNode' role, meaning the server is a part of subgrid clustered processing engine
         /// </summary>
         public static string PSNODE = "PSNode";
+
+        /// <summary>
+        /// The 'ASNode', application service, role, meaning the server is a part of subgrid clustered processing engine
+        /// </summary>
+        public static string ASNODE = "ASNode";
     }
 }

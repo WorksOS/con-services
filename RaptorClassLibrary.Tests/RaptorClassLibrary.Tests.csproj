@@ -109,7 +109,7 @@
     <Compile Include="Utility\MinMaxTests.cs" />
     <Compile Include="Utility\MathUtilitiesTests.cs" />
     <Compile Include="Utility\GeometryHelperTests.cs" />
-    <Compile Include="GridFabricNodeFilterTests.cs" />
+    <Compile Include="GridFabric\NodeFilterTests.cs" />
     <Compile Include="UTMCoordPointPairTests.cs" />
     <Compile Include="Utility\GPSTests.cs" />
     <Compile Include="Geometry\LineIntersectionTests.cs" />

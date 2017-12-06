@@ -24,12 +24,6 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         public const string ServiceName = "AddSurveyedSurface";
 
         /// <summary>
-        /// Injected Ignite instance
-        /// </summary>
-        [InstanceResource]
-        private readonly IIgnite _ignite;
-
-        /// <summary>
         /// Services interface for the clustergroup projection
         /// </summary>
         private IServices services = null;
@@ -44,7 +38,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// </summary>
         public SurveyedSurfaceServiceProxy()
         {
-            _ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
+            IIgnite _ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
 
             // Get an instance of IServices for the cluster group.
             services = _ignite.GetCluster().GetServices();
@@ -54,12 +48,6 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         {
             // Attempt to cancel any previously deployed service
             services.Cancel(ServiceName);
-
-            // Deploy per-node singleton. An instance of the service will be deployed on every node within the cluster group.
-            //services.DeployNodeSingleton(ServiceName, new AddSurveyedSurfaceService());
-
-            // Deploy a cluster singleton instance of the service
-            //services.DeployClusterSingleton(ServiceName, new SurveyedSurfaceService());
 
             services.Deploy(new ServiceConfiguration()
             {
