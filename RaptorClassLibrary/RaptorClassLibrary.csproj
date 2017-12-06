@@ -101,6 +101,8 @@
     <Compile Include="GridFabric\NodeFilters\ASNodeRoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\NodeFilters\PSNodeRoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\NodeFilters\RoleBasedNodeFilter.cs" />
+    <Compile Include="GridFabric\Requests\GenericPSNodeBroadcastRequest.cs" />
+    <Compile Include="GridFabric\Requests\Interfaces\IResponseAggregateWith.cs" />
     <Compile Include="Rendering\Executors\RenderOverlayTile.cs" />
     <Compile Include="Executors\TAGFileConverter.cs" />
     <Compile Include="Executors\TAGFilePreScan.cs" />
@@ -451,6 +453,11 @@
     <Compile Include="Utilities\PassCountSize.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\TypesHelper.cs" />
+    <Compile Include="Volumes\GridFabric\Arguments\SimpleVolumesRequestArgument.cs" />
+    <Compile Include="Volumes\GridFabric\ComputeFuncs\SimpleVolumesRequestComputeFunc.cs" />
+    <Compile Include="Volumes\GridFabric\Requests\SimpleVolumesRequest.cs" />
+    <Compile Include="Volumes\GridFabric\Responses\SimpleVolumesResponse.cs" />
+    <Compile Include="Volumes\VolumeConputationType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Raptor.Common\Raptor.Common.csproj">
@@ -472,9 +479,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Volumes\Executors\" />
-    <Folder Include="Volumes\GridFabric\Arguments\" />
-    <Folder Include="Volumes\GridFabric\ComputeFuncs\" />
-    <Folder Include="Volumes\GridFabric\Requests\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -122,6 +122,15 @@ namespace VSS.VisionLink.Raptor.Geometry
         }
 
         /// <summary>
+        /// Creates a new bounding extent, sets its parameters to be null and returns the result
+        /// </summary>
+        /// <returns></returns>
+        public static BoundingWorldExtent3D Null()
+        {
+            return new BoundingWorldExtent3D(Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble);
+        }
+
+        /// <summary>
         /// Expand the plan X/Y extent of the bounding box by the quantities in dx & dy. Expansion is isotropic on both axes.
         /// </summary>
         /// <param name="dx"></param>

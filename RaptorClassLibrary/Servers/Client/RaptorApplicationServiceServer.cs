@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     /// </summary>
     public class RaptorApplicationServiceServer : RaptorClientServer
     {
-        public RaptorApplicationServiceServer() : base("ASNode")
+        public RaptorApplicationServiceServer() : base(ServerRoles.ASNODE)
         {
 
         }
