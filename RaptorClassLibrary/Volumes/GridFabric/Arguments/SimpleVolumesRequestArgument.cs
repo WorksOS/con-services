@@ -49,7 +49,7 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
         /// considered to be equivalent, or 'on-grade', and hence there is material still remaining to
         /// be cut
         /// </summary>
-        double CutTolerance = 0.001;
+        public double CutTolerance = VolumesConsts.DEFAULT_CELL_VOLUME_CUT_TOLERANCE;
 
         /// <summary>
         /// FillTolerance determines the tolerance (in meters) that the 'To' surface
@@ -57,7 +57,7 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
         /// considered to be equivalent, or 'on-grade', and hence there is material still remaining to
         /// be filled
         /// </summary>
-        double FillTolerance = 0.001;
+        public double FillTolerance = VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE;
 
         /// <summary>
         /// Default no-arg constructor

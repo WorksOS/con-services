@@ -17,37 +17,37 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
         /// <summary>
         /// Cut volume, expressed in cubic meters
         /// </summary>
-        public double Cut = Consts.NullDouble;
+        public double? Cut = null;
 
         /// <summary>
         /// Fill volume, expressed in cubic meters
         /// </summary>
-        public double Fill = Consts.NullDouble;
+        public double? Fill = null;
 
         /// <summary>
         /// Total area coverged by the volume computation, expressed in square meters
         /// </summary>
-        public double TotalCoverageArea = Consts.NullDouble;
+        public double? TotalCoverageArea = null;
 
         /// <summary>
         /// Total area coverged by the volume computation that produced cut volume, expressed in square meters
         /// </summary>
-        public double CutArea = Consts.NullDouble;
+        public double? CutArea = null;
 
         /// <summary>
         /// Total area coverged by the volume computation that produced fill volume, expressed in square meters
         /// </summary>
-        public double FillArea = Consts.NullDouble;
+        public double? FillArea = null;
 
         /// <summary>
         /// The bounding extent of the area covered by the volume computation expressed in the project site calibration/grid coordinate system
         /// </summary>
-        public BoundingWorldExtent3D BoundingExtentGrid { get; set; } = BoundingWorldExtent3D.Null();
+        public BoundingWorldExtent3D BoundingExtentGrid = BoundingWorldExtent3D.Null();
 
         /// <summary>
         /// The bounding extent of the area covered by the volume computation expressed in the WGS84 datum
         /// </summary>
-        public BoundingWorldExtent3D BoundingExtentLLH { get; set; } = BoundingWorldExtent3D.Null();
+        public BoundingWorldExtent3D BoundingExtentLLH = BoundingWorldExtent3D.Null();
 
         /// <summary>
         /// Default no-arg constructor
@@ -57,9 +57,16 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
 
         }
 
-        private double AggregateValue(ref double thisVal, double otherVal)
+        /// <summary>
+        /// Add two nullable numbers together and return a nullable result. 
+        /// The logic here permits null + number to return a number rather than the default double? semantic of returning null
+        /// </summary>
+        /// <param name="thisVal"></param>
+        /// <param name="otherVal"></param>
+        /// <returns></returns>
+        private double? AggregateValue(double? thisVal, double? otherVal)
         {
-            return thisVal == Consts.NullDouble ? otherVal : thisVal + (otherVal == Consts.NullDouble ? 0 : otherVal);
+            return thisVal.HasValue ? thisVal + (otherVal.HasValue ? otherVal : 0) : otherVal;
         }
 
         /// <summary>
@@ -68,13 +75,15 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
         /// <param name="other"></param>
         public SimpleVolumesResponse AggregateWith(SimpleVolumesResponse other)
         {
-            AggregateValue(ref Cut, other.Cut);
-            AggregateValue(ref Fill, other.Fill);
-            AggregateValue(ref TotalCoverageArea, other.TotalCoverageArea);
-            AggregateValue(ref CutArea, other.CutArea);
-            AggregateValue(ref FillArea, other.FillArea);
+            Cut = AggregateValue(Cut, other.Cut);
+            Fill = AggregateValue(Fill, other.Fill);
+            TotalCoverageArea = AggregateValue(TotalCoverageArea, other.TotalCoverageArea);
+            CutArea = AggregateValue(CutArea, other.CutArea);
+            FillArea = AggregateValue(FillArea, other.FillArea);
 
             BoundingExtentGrid.Include(other.BoundingExtentGrid);
+
+            // Note: WGS84 bounding rectangle is not enlarged - it is computed after all aggregations have occurred.
 
             return this;
         }

@@ -230,7 +230,9 @@ namespace VSS.VisionLink.Raptor.Geometry
             }
 
             if (TwoDOnlyValid)
+            {
                 return;
+            }
 
             if (!IsValidHeightExtent)
             {

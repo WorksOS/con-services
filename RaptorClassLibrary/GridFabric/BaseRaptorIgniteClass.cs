@@ -88,12 +88,8 @@ namespace VSS.VisionLink.Raptor.GridFabric
         {
             if (!String.IsNullOrEmpty(Role))
             {
-                _group = _ignite.GetCluster().ForRemotes().ForAttribute(ServerRoles.ROLE_ATTRIBUTE_NAME, Role);
-
-                if (_group != null)
-                {
-                    _compute = _group.GetCompute();
-                }
+                _group = _ignite?.GetCluster().ForRemotes().ForAttribute(ServerRoles.ROLE_ATTRIBUTE_NAME, Role);
+                _compute = _group?.GetCompute();
             }
         }
     }

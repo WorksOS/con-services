@@ -458,6 +458,7 @@
     <Compile Include="Volumes\GridFabric\Requests\SimpleVolumesRequest.cs" />
     <Compile Include="Volumes\GridFabric\Responses\SimpleVolumesResponse.cs" />
     <Compile Include="Volumes\VolumeConputationType.cs" />
+    <Compile Include="Volumes\VolumesConsts.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Raptor.Common\Raptor.Common.csproj">

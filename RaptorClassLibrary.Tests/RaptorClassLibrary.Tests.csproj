@@ -138,6 +138,10 @@
     <Compile Include="FilteredSinglePassInfoTests.cs" />
     <Compile Include="TAGProcessorStateBaseTests.cs" />
     <Compile Include="Geometry\XYZTests.cs" />
+    <Compile Include="Volumes\SimpleVolumesRequestTests.cs" />
+    <Compile Include="Volumes\SimpleVolumesResponseTests.cs" />
+    <Compile Include="Volumes\SimpleVolumesRequestComputeFuncTests.cs" />
+    <Compile Include="Volumes\SimpleVolumesRequestArgumentTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Raptor.Common\Raptor.Common.csproj">
