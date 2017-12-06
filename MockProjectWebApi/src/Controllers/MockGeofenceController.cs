@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -9,7 +10,7 @@ namespace MockProjectWebApi.Controllers
   {
     [Route("api/v1/mock/geofences")]
     [HttpGet]
-    public List<GeofenceData> GetMockGeofences()
+    public GeofenceDataResult GetMockGeofences()
     {
       Console.WriteLine("GetMockGeofences");
       var geofences = new List<GeofenceData>
@@ -30,7 +31,7 @@ namespace MockProjectWebApi.Controllers
           IsTransparent = false         
         }
       };
-      return geofences;
+      return new GeofenceDataResult {Geofences = geofences};
     }
   }
 }
