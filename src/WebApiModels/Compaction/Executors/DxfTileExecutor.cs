@@ -139,18 +139,15 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     {
       int zoomLevelFound = maxZoomLevel;
 
-      //**********************************************
-      //TODO: Check if xTile, yTile is BL or TL corner
-      //**********************************************
       // Calculate the tile coords of the higher zoom level tile that covers the requested tile
-      Point ptRequestedTile = new Point(topLeftTile.y, topLeftTile.x); //TODO: Is this correct? ****************
+      Point ptRequestedTile = new Point(topLeftTile.y, topLeftTile.x); 
       Point ptRequestedPixel = WebMercatorProjection.TileToPixel(ptRequestedTile);
 
-      int numTilesAtRequestedZoomLevel = TileServiceUtils.NumberOfTiles(zoomLevel);
+      int numTilesAtRequestedZoomLevel = numTiles;
       Point ptRequestedWorld =
         WebMercatorProjection.PixelToWorld(ptRequestedPixel, numTilesAtRequestedZoomLevel);
 
-      int numTilesAtFoundZoomLevel = numTiles;
+      int numTilesAtFoundZoomLevel = TileServiceUtils.NumberOfTiles(maxZoomLevel);
       Point ptHigherPixel = WebMercatorProjection.WorldToPixel(ptRequestedWorld, numTilesAtFoundZoomLevel);
 
       Point ptHigherTile = WebMercatorProjection.PixelToTile(ptHigherPixel);
