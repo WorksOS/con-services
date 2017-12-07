@@ -56,12 +56,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
             integrator.AddTaskToProcessList(siteModel, machine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
 
             // Construct an integration worker and ask it to perform the integration
-            List<AggregatedDataIntegratorTask> ProcessedTasks = null;
+            List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
 
-            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(/*StorageProxy.Instance()*/);
+            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
             worker.ProcessTask(ProcessedTasks);
 
-            //            Assert.Fail();
+            Assert.IsTrue(ProcessedTasks.Count == 1, "Worker did not process the task passed to it");
         }
     }
 }
