@@ -4,7 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.Utilities.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Designs.Storage
@@ -101,5 +104,41 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
                    FDesignDescriptor.Equals(other.DesignDescriptor) &&
                    (FExtents.Equals(other.Extents));
         }
+
+        public bool GetDesignHeights(long siteModelID,
+                                     SubGridCellAddress originCellAddress,
+                                     double cellSize,
+                                     out ClientHeightLeafSubGrid designHeights,
+                                     out DesignProfilerRequestResult errorCode)
+        {
+            return GetDesignHeights(DesignDescriptor, siteModelID, originCellAddress, cellSize, out designHeights, out errorCode);
+        }
+
+        public static bool GetDesignHeights(DesignDescriptor DesignDescriptor,
+                                     long siteModelID,
+                                     SubGridCellAddress originCellAddress,
+                                     double cellSize,
+                                     out ClientHeightLeafSubGrid designHeights,
+                                     out DesignProfilerRequestResult errorCode)
+        {
+            // Query the DesignProfiler service to get the patch of elevations calculated
+
+            errorCode = DesignProfilerRequestResult.OK;
+            designHeights = null;
+
+            /* Convert this into a request to the grid based profiling service call used in the Tiling example
+               errorCode = DesignProfiler.RequestDesignElevationPatch
+               (Construct_CalculateDesignElevationPatch_Args(DataModelID,
+                                                             OriginCellAddress.X, OriginCellAddress.Y,
+                                                             CellSize,
+                                                             ADesignDescriptor,
+                                                             TSubGridTreeLeafBitmapSubGridBits.FullMask),
+                DesignHeights);
+
+            */
+
+            return errorCode == DesignProfilerRequestResult.OK;
+        }
+
     }
 }

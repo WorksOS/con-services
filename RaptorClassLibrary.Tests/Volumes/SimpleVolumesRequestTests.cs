@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
         [TestMethod]
         public void TesT_SimpleVolumesRequest_Creation()
         {
-            SimpleVolumesRequest request = new SimpleVolumesRequest();
+            SimpleVolumesRequest_ClusterCompute request = new SimpleVolumesRequest_ClusterCompute();
 
             Assert.IsNotNull(request, "Volumes request failed to create");
         }
@@ -21,7 +21,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
         [TestMethod]
         public void Test_SimpleVolumesRequest_Execute()
         {
-            SimpleVolumesRequest request = new SimpleVolumesRequest();
+            SimpleVolumesRequest_ClusterCompute request = new SimpleVolumesRequest_ClusterCompute();
             SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument();
 
             SimpleVolumesResponse response = request.Execute(arg);

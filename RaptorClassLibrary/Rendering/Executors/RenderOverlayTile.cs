@@ -14,11 +14,12 @@ using VSS.VisionLink.Raptor.Utilities;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
+using VSS.VisionLink.Raptor.Designs;
 
 namespace VSS.VisionLink.Raptor.Rendering.Executors
 {
     /// <summary>
-    /// Renders a tile of themmatic imgagery for a location in the project
+    /// Renders a tile of themmatic imagery for a location in the project
     /// </summary>
     public class RenderOverlayTile
     {
@@ -270,60 +271,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
            end;
          end;
        */
-
-        /// <summary>
-        /// Determine which surveyed surfaces are application given the current filtering conditions. Extract a combined existence map that
-        /// defines the area of subgrids that should be requested given the matched surveyed surfaces
-        /// </summary>
-        /// <param name="siteModelID"></param>
-        /// <param name="LocalSurveyedSurfaces"></param>
-        /// <param name="Filter"></param>
-        /// <param name="ComparisonList"></param>
-        /// <param name="FilteredSurveyedSurfaces"></param>
-        /// <param name="DesignSubgridOverlayMap"></param>
-        /// <returns></returns>
-        private bool ProcessSurveyedSurfacesForFilter(long siteModelID,
-                                                      SurveyedSurfaces LocalSurveyedSurfaces,
-                                                      CombinedFilter Filter,
-                                                      SurveyedSurfaces ComparisonList,
-                                                      SurveyedSurfaces FilteredSurveyedSurfaces,
-                                                      SubGridTreeSubGridExistenceBitMask OverallExistenceMap)
-        {
-            if (LocalSurveyedSurfaces == null)
-            {
-                return true;
-            }
-
-            // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
-            LocalSurveyedSurfaces.FilterSurveyedSurfaceDetails(Filter.AttributeFilter.HasTimeFilter,
-                                                               Filter.AttributeFilter.StartTime, Filter.AttributeFilter.EndTime,
-                                                               Filter.AttributeFilter.ExcludeSurveyedSurfaces(),
-                                                               FilteredSurveyedSurfaces,
-                                                               Filter.AttributeFilter.SurveyedSurfaceExclusionList);
-
-            if (FilteredSurveyedSurfaces.Equals(ComparisonList))
-            {
-                return true;
-            }
-
-            if (FilteredSurveyedSurfaces.Count() > 0)
-            {
-                SubGridTreeSubGridExistenceBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.ExistenceMaps.GetCombinedExistenceMap(siteModelID,
-                FilteredSurveyedSurfaces.Select(x => new Tuple<long, long>(ExistenceMaps.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
-
-                if (OverallExistenceMap == null)
-                {
-                    return false;
-                }
-
-                if (SurveyedSurfaceExistanceMap != null)
-                {
-                    OverallExistenceMap.SetOp_OR(SurveyedSurfaceExistanceMap);
-                }
-            }
-
-            return true;
-        }
 
         /// <summary>
         /// Renders all subgrids in a representational style that indicates where there is data, but nothing else. This is used for large scale displays
@@ -582,7 +529,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
                 SurveyedSurfaces Filter1SurveyedSurfaces = new SurveyedSurfaces();
                 SurveyedSurfaces Filter2SurveyedSurfaces = new SurveyedSurfaces();
 
-                if (!ProcessSurveyedSurfacesForFilter(DataModelID, LocalSurveyedSurfaces, Filter1, Filter2SurveyedSurfaces, Filter1SurveyedSurfaces, OverallExistenceMap))
+                if (!SurfaceFilterUtilities.ProcessSurveyedSurfacesForFilter(DataModelID, LocalSurveyedSurfaces, Filter1, Filter2SurveyedSurfaces, Filter1SurveyedSurfaces, OverallExistenceMap))
                 {
                     ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap;
                     return null;
@@ -590,7 +537,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
 
                 if (Filter2 != null)
                 {
-                    if (!ProcessSurveyedSurfacesForFilter(DataModelID, LocalSurveyedSurfaces, Filter2, Filter1SurveyedSurfaces, Filter2SurveyedSurfaces, OverallExistenceMap))
+                    if (!SurfaceFilterUtilities.ProcessSurveyedSurfacesForFilter(DataModelID, LocalSurveyedSurfaces, Filter2, Filter1SurveyedSurfaces, Filter2SurveyedSurfaces, OverallExistenceMap))
                     {
                         ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap;
                         return null;
@@ -602,17 +549,12 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
 
             OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
 
-            if (Filter1 != null && Filter1.AttributeFilter.HasElevationRangeFilter && !Filter1.AttributeFilter.ElevationRangeDesign.IsNull)
+            if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel.ID, Filter1, OverallExistenceMap))
             {
-                SubGridTreeSubGridExistenceBitMask LiftDesignSubgridOverlayMap =
-                    ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(DataModelID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR,
-                                                                      Filter1.AttributeFilter.ElevationRangeDesign.DesignID);
-
-                if (LiftDesignSubgridOverlayMap != null)
-                {
-                    OverallExistenceMap.SetOp_AND(LiftDesignSubgridOverlayMap);
-                }
+                ResultStatus = RequestErrorStatus.NoDesignProvided;
+                return null;
             }
+
 
             // Test to see if the tile can be satisfied with a representational render indicating where
             // data is but not what it is (this is useful when the zoom level is far enough away that we
@@ -624,11 +566,11 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
                 return RenderTileAsRepresentationalDueToScale(); // There is no need to do anything else
             }
 
-            if (Filter1 != null && !Filter1.AttributeFilter.AnyFilterSelections)
+            if (Filter1?.AttributeFilter.AnyFilterSelections == true)
             {
                 if (Filter1.AttributeFilter.OverrideTimeBoundary && Filter1.AttributeFilter.EndTime == DateTime.MinValue)
                 {
-                    if (Filter2 != null && !Filter2.AttributeFilter.AnyFilterSelections)
+                    if (Filter2?.AttributeFilter.AnyFilterSelections == true)
                     {
                         // fix SV bug. Setup Filter 1 to look for early cell pass
                         Filter1.AttributeFilter.StartTime = DateTime.MinValue;

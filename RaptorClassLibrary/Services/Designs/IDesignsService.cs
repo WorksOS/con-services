@@ -9,7 +9,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
     public interface IDesignsService
     {
         /// <summary>
-        /// Add a new surveyd surface to a site model
+        /// Add a new design to a site model
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
@@ -17,17 +17,24 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         void Add(long SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents);
 
         /// <summary>
-        /// Request the list of surveyed surfaces from a site model
+        /// Request the list of designs from a site model
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        VSS.VisionLink.Raptor.Designs.Storage.Designs List(long SiteModelID);
+        Raptor.Designs.Storage.Design Find(long SiteModelID, long designID);
 
         /// <summary>
-        /// Removes a surveyed surfaces from a site model
+        /// Request the list of designs from a site model
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        bool Remove(long SiteModelID, long SurveySurfaceID);
+        Raptor.Designs.Storage.Designs List(long SiteModelID);
+
+        /// <summary>
+        /// Removes a design from a site model
+        /// </summary>
+        /// <param name="SiteModelID"></param>
+        /// <returns></returns>
+        bool Remove(long SiteModelID, long DesignID);
     }
 }

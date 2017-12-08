@@ -16,6 +16,9 @@ using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Pipelines
 {
+    /// <summary>
+    /// Derived from TSVOICSubGridPipelineBase = class(TObject)
+    /// </summary>
     public class SubGridPipelineBase
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -32,8 +35,6 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// </summary>
         private long SubgridsRemainingToProcess = 0;
 
-        // Derived from TSVOICSubGridPipelineBase = class(TObject)
-
         public int ID = 0;
         public PipelinedSubGridTask PipelineTask = null;
         public bool PipelineAborted = false;
@@ -43,28 +44,17 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         // public FExternalDescriptor: TASNodeRequestDescriptor;
 
-        //      FMaximumOutstandingSubgridRequests : Integer;
+        // FMaximumOutstandingSubgridRequests : Integer;
 
         private bool pipelineCompleted = false;
         protected void SetPipelineCompleted(bool value) => pipelineCompleted = value;
 
-        // FSubmissionNode deals with submitting the requests for subgrids to the
-        // production server via the asynchronous subgrid request PS API
-        //              FSubmissionNode : TSVOICSubGridSubmissionThread;
-
-        // FOperationNode performs some client defined operation upon the subgrids
-        // fetched from the PS
-        //              FOperationNode : TSVOICPipelineResultOperationThreadBase;
-
-        // FLiftBuildSettings is a reference to a lift build settings object
-        // provided by the caller
-        //       FLiftBuildSettings : TICLiftBuildSettings;
-
         public long DataModelID = -1;
 
-        // FOverallExistenceMap is the map which describes the combination of Prod Data and Surveyed Surfaces
-        // FProdDataExistenceMap is the subgrid existence map for the data model referenced by FDataModelID
+        // OverallExistenceMap is the map which describes the combination of Prod Data and Surveyed Surfaces
         public SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
+
+        // ProdDataExistenceMap is the subgrid existence map for the data model referenced by FDataModelID
         public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null;
 
         public bool IncludeSurveyedSurfaceInformation = true;
@@ -76,9 +66,9 @@ namespace VSS.VisionLink.Raptor.Pipelines
         public FilterSet FilterSet = null;
         public int MaxNumberOfPassesToReturn = 0;
 
-        //      public         FReferenceDesign : TVLPDDesignDescriptor;
-        //      public         FReferenceVolumeType : TComputeICVolumesType;
-        //      public         FNoChangeVolumeTolerance : Single;
+        // public         FReferenceDesign : TVLPDDesignDescriptor;
+        // public         FReferenceVolumeType : TComputeICVolumesType;
+        // public         FNoChangeVolumeTolerance : Single;
 
         public AreaControlSet AreaControlSet;
 
@@ -88,14 +78,12 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public bool Terminated = false;
 
-        //              property SubmissionNode : TSVOICSubGridSubmissionThread read FSubmissionNode;
-        //              property OperationNode : TSVOICPipelineResultOperationThreadBase read FOperationNode;
-
         public bool PipelineCompleted { get { return pipelineCompleted; } set { SetPipelineCompleted(value); } }
 
-        //              property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
-        //              property CompleteEvent : TSimpleEvent read FCompleteEvent;
-        //              property Terminated : Boolean read FTerminated;
+        // FLiftBuildSettings is a reference to a lift build settings object provided by the caller
+        //  property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
+        //  property CompleteEvent : TSimpleEvent read FCompleteEvent;
+        //  property Terminated : Boolean read FTerminated;
 
         public GridDataType GridDataType = GridDataType.All;
 
@@ -119,39 +107,25 @@ namespace VSS.VisionLink.Raptor.Pipelines
             ID = AID;
             // FCompleteEvent:= TSimpleEvent.Create;
 
-            //            FIP:= 0;
-            //            FPort:= 0;
-            //            FResponsePort:= 0;
+            // FMaxNumberOfPassesToReturn:= VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
 
-            //      FMaxNumberOfPassesToReturn:= VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
-
-            //            ReferenceDesign.Clear;
-            //          FReferenceVolumeType:= ic_cvtNone;
-            //        FNoChangeVolumeTolerance:= 0;
+            // ReferenceDesign.Clear;
+            // FReferenceVolumeType:= ic_cvtNone;
+            // FNoChangeVolumeTolerance:= 0;
 
             // FPixelXWorldSize := 0.0;
             // FPixelYWorldSize := 0.0;
             AreaControlSet = AreaControlSet.Null();
 
-            //    FLiftBuildSettings:= Nil;
+            // FLiftBuildSettings:= Nil;
 
-            //            FTimeToLiveSeconds:= kDefaultSubgridPipelineTimeToLiveSeconds;
+            // FTimeToLiveSeconds:= kDefaultSubgridPipelineTimeToLiveSeconds;
 
-            //            FMaximumOutstandingSubgridRequests:= VLPDSvcLocations.VLPDASNode_DefaultMaximumOutstandingSubgridRequestsInPipeline;
+            // FMaximumOutstandingSubgridRequests:= VLPDSvcLocations.VLPDASNode_DefaultMaximumOutstandingSubgridRequestsInPipeline;
 
-            //            FCompleteEvent.ResetEvent;
-
-            //            if Assigned(FSubmissionNode) then
-            //    FSubmissionNode.Clean;
-            //            if Assigned(FOperationNode) then
-            //    FOperationNode.Clean;
-
-            // TSVOICPipelineMonitor.Instance.RegisterPipeline(Self);
+            // FCompleteEvent.ResetEvent;
         }
 
-        //        Destructor Destroy; Override;
-
-        //              procedure Initiate; Virtual;
         public virtual void Abort()
         {
             PipelineAborted = true;
@@ -159,13 +133,13 @@ namespace VSS.VisionLink.Raptor.Pipelines
             PipelineSignalEvent.Set();
         }
 
-        //              procedure Terminate; Virtual;
-        //              Function TimeToLiveExpired : Boolean;
+        // procedure Terminate; Virtual;
+        // Function TimeToLiveExpired : Boolean;
 
         // AbortAndShutdown instructs the pipeline to abandon operations and abort itself.
         // It is used by the pipeline monitor shutdown pipelines when the service is
         // being restarted.
-        //              Procedure AbortAndShutdown;
+        // Procedure AbortAndShutdown;
 
         public bool Initiate()
         {            

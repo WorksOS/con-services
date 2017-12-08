@@ -1,9 +1,8 @@
 ﻿using Apache.Ignite.Core.Compute;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Designs.GridFabric.Requests;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Requests
@@ -14,7 +13,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// <typeparam name="Argument"></typeparam>
     /// <typeparam name="ComputeFunc"></typeparam>
     /// <typeparam name="Response"></typeparam>
-    public class GenericPSNodeBroadcastRequest<TArgument, TComputeFunc, TResponse> : ApplicationServicePoolRequest
+    public class GenericPSNodeBroadcastRequest<TArgument, TComputeFunc, TResponse> : CacheComputePoolRequest
         where TComputeFunc : IComputeFunc<TArgument, TResponse>, new()
         where TResponse : IResponseAggregateWith<TResponse>, new()
     {
@@ -23,12 +22,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public TResponse Execute(TArgument arg)
+        public virtual TResponse Execute(TArgument arg)
         {
             // Construct the function to be used
             IComputeFunc<TArgument, TResponse> func = new TComputeFunc();
 
-            // Broadcast the request to the compute pool and assembly a list of the results
+            // Broadcast the request to the compute pool and assemble a list of the results
             Task<ICollection<TResponse>> taskResult = _Compute?.BroadcastAsync(func, arg);
 
             // Reduce the set of results to a single volumes result and send the result back

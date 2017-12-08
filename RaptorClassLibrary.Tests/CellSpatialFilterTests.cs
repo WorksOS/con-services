@@ -45,7 +45,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
             filter.StartStation = 100;
             filter.LeftOffset = -1;
             filter.RightOffset = 1;
-            filter.ReferenceDesign = new DesignDescriptor(1, "A", "B", "C", "D", 11);
+            filter.ReferenceDesignID = 123456;
             filter.Fence.SetExtents(1, 1, 2, 2);
             filter.PositionRadius = 10;
             filter.PositionX = 10;
@@ -59,7 +59,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                           filter.StartStation == Consts.NullDouble &&
                           filter.LeftOffset == Consts.NullDouble &&
                           filter.RightOffset == Consts.NullDouble &&
-                          filter.ReferenceDesign.IsNull &&
+                          filter.ReferenceDesignID == long.MinValue &&
                           filter.PositionRadius == Consts.NullDouble &&
                           filter.PositionX == Consts.NullDouble &&
                           filter.PositionY == Consts.NullDouble,
@@ -73,8 +73,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
 
             filter.IsAlignmentMask = true;
             filter.AlignmentFence = new Fence(0, 0, 1, 1);
-            filter.ReferenceDesign = DesignDescriptor.Null();
-            filter.ReferenceDesign.FileName = "c:\\dir\\file.ext";
+            filter.ReferenceDesignID = 123456;
             filter.StartStation = 100;
             filter.EndStation = 1000;
             filter.LeftOffset = -1;
@@ -82,7 +81,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
 
             Assert.IsTrue(filter.IsAlignmentMask && !filter.AlignmentFence.IsNull() &&
                 filter.StartStation == 100 && filter.EndStation == 1000 && filter.LeftOffset == -1 && filter.RightOffset == 1 &&
-                !filter.ReferenceDesign.IsNull,
+                filter.ReferenceDesignID != long.MinValue,
                 "Alignment mask not initialised correctly");
         }
 
@@ -96,11 +95,11 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
             filter.EndStation = 1000;
             filter.LeftOffset = -1;
             filter.RightOffset = 1;
-            filter.ReferenceDesign.FileName = "Test.ttm";
+            filter.ReferenceDesignID = 123456;
 
             Assert.IsTrue(filter.IsDesignMask && 
                 filter.StartStation == 100 && filter.EndStation == 1000 && filter.LeftOffset == -1 && filter.RightOffset == 1 &&
-                !filter.ReferenceDesign.IsNull,
+                filter.ReferenceDesignID != long.MinValue,
                 "Alignment mask not initialised correctly");
         }
 
@@ -149,11 +148,11 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
             CellSpatialFilter filter = new CellSpatialFilter();
 
             filter.IsDesignMask = true;
-            filter.ReferenceDesign.FileName = "Test.ttm";
+            filter.ReferenceDesignID = 123456;
 
             filter.ClearDesignMask();
 
-            Assert.IsTrue(!filter.IsDesignMask && filter.ReferenceDesign.IsNull,
+            Assert.IsTrue(!filter.IsDesignMask && filter.ReferenceDesignID == long.MinValue,
                 "Design mask not cleared correctly");
         }
 

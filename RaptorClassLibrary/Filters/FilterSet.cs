@@ -24,5 +24,14 @@ namespace VSS.VisionLink.Raptor.Filters
         {
             Filters = new CombinedFilter[0];
         }
+
+        /// <summary>
+        /// Constructor accepting a preinitialised array of filters to be included in the filter set
+        /// </summary>
+        /// <param name="filters"></param>
+        public FilterSet(CombinedFilter[] filters)
+        {
+            Filters = filters;
+        }
     }
 }

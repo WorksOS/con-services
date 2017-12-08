@@ -83,6 +83,7 @@
     <Compile Include="Designs\DesignDescriptor.cs" />
     <Compile Include="Designs\DesignBase.cs" />
     <Compile Include="Designs\DesignFiles.cs" />
+    <Compile Include="Designs\DesignFilterUtilities.cs" />
     <Compile Include="Designs\Storage\Design.cs" />
     <Compile Include="Designs\DesignLoadResult.cs" />
     <Compile Include="Designs\Storage\Designs.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="GridFabric\NodeFilters\ASNodeRoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\NodeFilters\PSNodeRoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\NodeFilters\RoleBasedNodeFilter.cs" />
+    <Compile Include="GridFabric\Requests\GenericASNodeRequest.cs" />
     <Compile Include="GridFabric\Requests\GenericPSNodeBroadcastRequest.cs" />
     <Compile Include="GridFabric\Requests\Interfaces\IResponseAggregateWith.cs" />
     <Compile Include="Rendering\Executors\RenderOverlayTile.cs" />
@@ -108,7 +110,7 @@
     <Compile Include="Executors\TAGFilePreScan.cs" />
     <Compile Include="Executors\Tasks\Interfaces\ITask.cs" />
     <Compile Include="Executors\Tasks\PipelinedSubGridTask.cs" />
-    <Compile Include="Executors\Tasks\PVMRenderingTask.cs" />
+    <Compile Include="Rendering\Executors\Tasks\PVMRenderingTask.cs" />
     <Compile Include="Executors\Tasks\TaskBase.cs" />
     <Compile Include="ExistenceMaps\Consts.cs" />
     <Compile Include="ExistenceMaps\ExistenceMaps.cs" />
@@ -197,7 +199,7 @@
     <Compile Include="Servers\Compute\RaptorSubGridProcessingServer.cs" />
     <Compile Include="Servers\RaptorIgniteServer.cs" />
     <Compile Include="Servers\Client\RaptorProjectStatisticsServer.cs" />
-    <Compile Include="Servers\Client\RaptorTileRenderingServer.cs" />
+    <Compile Include="Rendering\Servers\Client\RaptorTileRenderingServer.cs" />
     <Compile Include="Servers\ServerRoles.cs" />
     <Compile Include="Services\BaseRaptorService.cs" />
     <Compile Include="Services\Designs\DesignsService.cs" />
@@ -311,6 +313,7 @@
     <Compile Include="Surfaces\GridFabric\Arguments\SurfaceElevationPatchArgument.cs" />
     <Compile Include="Surfaces\GridFabric\ComputeFuncs\SurfaceElevationPatchComputeFunc.cs" />
     <Compile Include="Surfaces\GridFabric\Requests\SurfaceElevationPatchRequest.cs" />
+    <Compile Include="Surfaces\SurfaceFilterUtilities.cs" />
     <Compile Include="Surfaces\SurveyedSurfaceResultCache.cs" />
     <Compile Include="Surfaces\SurveyedSurface.cs" />
     <Compile Include="Surfaces\SurveyedSurfaces.cs" />
@@ -453,12 +456,22 @@
     <Compile Include="Utilities\PassCountSize.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\TypesHelper.cs" />
+    <Compile Include="Volumes\CutFillVolume.cs" />
+    <Compile Include="Volumes\Executors\ComputeSimpleVolumes_Coordinator.cs" />
+    <Compile Include="Volumes\Executors\Tasks\SimpleVolumesComputationTask.cs" />
     <Compile Include="Volumes\GridFabric\Arguments\SimpleVolumesRequestArgument.cs" />
     <Compile Include="Volumes\GridFabric\ComputeFuncs\SimpleVolumesRequestComputeFunc.cs" />
-    <Compile Include="Volumes\GridFabric\Requests\SimpleVolumesRequest.cs" />
+    <Compile Include="Volumes\GridFabric\Requests\SimpleVolumesRequest_ApplicationService.cs" />
+    <Compile Include="Volumes\GridFabric\Requests\SimpleVolumesRequest_ClusterCompute.cs" />
     <Compile Include="Volumes\GridFabric\Responses\SimpleVolumesResponse.cs" />
+    <Compile Include="Volumes\ProdReportSelectionType.cs" />
+    <Compile Include="Volumes\Servers\Client\RaptorSimpleVolumesServer.cs" />
+    <Compile Include="Volumes\SimpleVolumesCalculationsAggregator.cs" />
+    <Compile Include="Volumes\SimpleVolumesComputor.cs" />
     <Compile Include="Volumes\VolumeConputationType.cs" />
+    <Compile Include="Volumes\VolumesCalculator.cs" />
     <Compile Include="Volumes\VolumesConsts.cs" />
+    <Compile Include="Volumes\VolumesDesign.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Raptor.Common\Raptor.Common.csproj">
@@ -478,9 +491,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Volumes\Executors\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

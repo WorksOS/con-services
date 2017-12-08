@@ -19,12 +19,15 @@ using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Servers.Client;
+using VSS.VisionLink.Raptor.Rendering.Servers.Client;
 using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.Types;
+using VSS.VisionLink.Raptor.Volumes;
+using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
 
 namespace VSS.Raptor.IgnitePOC.TestApp
 {
@@ -33,7 +36,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         BoundingWorldExtent3D extents = BoundingWorldExtent3D.Inverted();
 
         //        RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
-        RaptorTileRenderingServer tileRender = null;
+        RaptorTileRenderingServer tileRenderServer = null;
+        RaptorSimpleVolumesServer simpleVolumesServer = null;
 
         /// <summary>
         /// Convert the Project ID in the text box into a number. It if is invalid return project ID 2 as a default
@@ -63,7 +67,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 {
                     ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
                     ElevationType = returnEarliestFilteredCellPass ? ElevationType.First : ElevationType.Last,
-                    SurveyedSurfaceExclusionList = (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new long[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray()
+                    SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel)
                 };
 
                 CellSpatialFilter SpatialFilter = new CellSpatialFilter()
@@ -73,7 +77,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     Fence = new Fence(extents)                    
                 };
 
-                return tileRender.RenderTile(new TileRenderRequestArgument
+                return tileRenderServer.RenderTile(new TileRenderRequestArgument
                 (ID(),
                  displayMode,
                  extents,
@@ -109,7 +113,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             displayMode.Items.AddRange(Enum.GetNames(typeof(DisplayMode)));
             displayMode.SelectedIndex = (int)DisplayMode.Height;
 
-            tileRender = RaptorTileRenderingServer.NewInstance();
+            tileRenderServer = RaptorTileRenderingServer.NewInstance();
+            simpleVolumesServer = RaptorSimpleVolumesServer.NewInstance();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -182,9 +187,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void DoUpdateDesignsAndSurveyedSurfaces()
         {
-            DesignsService designsService = new DesignsService();
-            designsService.init();
-            Designs designs = designsService.List(ID());
+            Designs designs = DesignsService.Instance().List(ID());
 
             if (designs != null)
             {
@@ -523,6 +526,83 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             {
                 MessageBox.Show(ee.ToString());
             }
+        }
+
+        /// <summary>
+        /// Perform a simple volumes calc based on earliest to latest filters of the viewable screen area.
+        /// </summary>
+        /// <returns></returns>
+        private SimpleVolumesResponse PerformVolume()
+        {
+            // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
+            // SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
+            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
+
+            try
+            {
+                // Create the two filters
+                CombinedFilter FromFilter = new CombinedFilter()
+                {
+                    AttributeFilter = new CellPassAttributeFilter(siteModel)
+                    {
+                        ReturnEarliestFilteredCellPass = true,
+                        SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel),
+                    },
+
+                    SpatialFilter = new CellSpatialFilter()
+                    {
+                        CoordsAreGrid = true,
+                        IsSpatial = true,
+                        Fence = new Fence(extents)
+                    }
+                };
+
+                CombinedFilter ToFilter = new CombinedFilter()
+                {
+                    AttributeFilter = new CellPassAttributeFilter(siteModel)
+                    {
+                        SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel),
+                    },
+
+                    SpatialFilter = FromFilter.SpatialFilter
+                };
+
+                return simpleVolumesServer.ComputeSimpleVolues(new SimpleVolumesRequestArgument()
+                {
+                    SiteModelID = ID(),
+                    BaseFilter = FromFilter,
+                    TopFilter = ToFilter,
+                    VolumeType = VolumeComputationType.Between2Filters
+                });
+            }
+            catch (Exception E)
+            {
+                MessageBox.Show(String.Format("Exception: {0}", E));
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Determine the list of survyeed surfaces that shoudl be excluded depeneding on the
+        /// sitemodel and state of relevant UI components
+        /// </summary>
+        /// <param name="siteModel"></param>
+        /// <returns></returns>
+        private long[] GetSurveyedSurfaceExclusionList(SiteModel siteModel) => (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new long[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
+
+        private void btnCalculateVolumes_Click(object sender, EventArgs e)
+        {
+            // Calculate a simple volume based on a filter to filter, earliest to latest context
+
+            SimpleVolumesResponse volume = PerformVolume();
+
+            if (volume == null)
+            {
+                MessageBox.Show("Volume retuned no response");
+                return;
+            }
+
+            MessageBox.Show($"Simple Volume Response:\n{volume}");
         }
     }
 }

@@ -24,11 +24,9 @@ namespace SurveyedSurfaceManager
         private SurveyedSurfaceServiceProxy DeployedSurveyedSurfaceService = null;
         private SurveyedSurfaceService SurveyedSurfaceService = null;
 
-        private DesignsService DesignsService = null;
-
         private bool CheckConnection()
         {
-            if ((DeployedSurveyedSurfaceService == null && SurveyedSurfaceService == null) || (DesignsService == null))
+            if ((DeployedSurveyedSurfaceService == null && SurveyedSurfaceService == null) || (DesignsService.Instance() == null))
             {
                 MessageBox.Show("Not connected to service");
                 return false;
@@ -162,9 +160,6 @@ namespace SurveyedSurfaceManager
         {
             SurveyedSurfaceService = new SurveyedSurfaceService();
             SurveyedSurfaceService.Init(null);
-
-            DesignsService = new DesignsService();
-            DesignsService.init(); //DesignsService.Init(null);
         }
 
         private void btnRemoveSurveyedSurface_Click(object sender, EventArgs e)
@@ -234,7 +229,7 @@ namespace SurveyedSurfaceManager
             // Invoke the service to remove the design
             try
             {
-                bool result = DesignsService.RemoveDirect(SiteModelID, DesignID);
+                bool result = DesignsService.Instance().RemoveDirect(SiteModelID, DesignID);
 
                 MessageBox.Show($"Result for removing design ID {DesignID} from Site Model {SiteModelID}: {result}");
             }
@@ -260,7 +255,7 @@ namespace SurveyedSurfaceManager
                     return;
                 }
 
-                VSS.VisionLink.Raptor.Designs.Storage.Designs designList = DesignsService.ListDirect(ID);
+                VSS.VisionLink.Raptor.Designs.Storage.Designs designList = DesignsService.Instance().ListDirect(ID);
 
                 if (designList == null || designList.Count == 0)
                     MessageBox.Show("No designs");
@@ -306,7 +301,7 @@ namespace SurveyedSurfaceManager
                 TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
                 // Create the new design for the site model
-                DesignsService.AddDirect(ID,
+                DesignsService.Instance().AddDirect(ID,
                                          new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, offset),
                                          extents,
                                          out long DesignID);

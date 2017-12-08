@@ -138,6 +138,7 @@
     <Compile Include="FilteredSinglePassInfoTests.cs" />
     <Compile Include="TAGProcessorStateBaseTests.cs" />
     <Compile Include="Geometry\XYZTests.cs" />
+    <Compile Include="Volumes\CutFillVolumeTests.cs" />
     <Compile Include="Volumes\SimpleVolumesRequestTests.cs" />
     <Compile Include="Volumes\SimpleVolumesResponseTests.cs" />
     <Compile Include="Volumes\SimpleVolumesRequestComputeFuncTests.cs" />

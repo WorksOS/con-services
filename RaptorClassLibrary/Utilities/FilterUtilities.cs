@@ -124,6 +124,33 @@ namespace VSS.VisionLink.Raptor.Utilities
         }
 
         /// <summary>
+        /// Prepare a set of filter for use by performing any necessary coordinate conversions and requesting any
+        /// supplemental information such as alignment design boundary calculations.
+        /// </summary>
+        /// <param name="Filters"></param>
+        /// <param name="DataModelID"></param>
+        /// <returns></returns>
+        public static RequestErrorStatus PrepareFiltersForUse(CombinedFilter [] Filters, long DataModelID)
+        {
+            foreach (CombinedFilter filter in Filters)
+            {
+                if (filter == null)
+                {
+                    continue;
+                }
+
+                RequestErrorStatus status = PrepareFilterForUse(filter, DataModelID);
+
+                if (status != RequestErrorStatus.OK)
+                {
+                    return status;
+                }
+            }
+
+            return RequestErrorStatus.OK;
+        }
+
+        /// <summary>
         /// Performs filter preparation for a matched pair of filters being used by a request
         /// </summary>
         /// <param name="Filter1"></param>

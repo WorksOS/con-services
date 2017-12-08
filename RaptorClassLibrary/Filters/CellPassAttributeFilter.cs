@@ -129,7 +129,8 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <summary>
         /// The design to be used as the benchmark for a surface based elevation range filter
         /// </summary>
-        public DesignDescriptor ElevationRangeDesign = DesignDescriptor.Null();
+        public long ElevationRangeDesignID = long.MinValue;
+        //public DesignDescriptor ElevationRangeDesign = DesignDescriptor.Null();
 
         /// <summary>
         /// Elevation parameters have been initialised in preparation for elevation range filtering, either
@@ -222,6 +223,8 @@ namespace VSS.VisionLink.Raptor.Filters
             AnyFilterSelections = false;
             AnyMachineEventFilterSelections = false;
             AnyNonMachineEventFilterSelections = false;
+
+            ReturnEarliestFilteredCellPass = false;
         }
 
         public void ClearVibeState()
@@ -411,9 +414,9 @@ namespace VSS.VisionLink.Raptor.Filters
                 return Result;
 
             if (Result == -1)  // Check the contents of the elevation range filter
-                if (!ElevationRangeDesign.IsNull)
+                if (ElevationRangeDesignID != long.MinValue)
                 {
-                    Result = ElevationRangeDesign.FileName.CompareTo(AFilter.ElevationRangeDesign.FileName);
+                    Result = ElevationRangeDesignID.CompareTo(AFilter.ElevationRangeDesignID);
                     if (Result == 0)
                         Result = ElevationRangeOffset.CompareTo(AFilter.ElevationRangeOffset);
                     if (Result == 0)
@@ -474,7 +477,7 @@ namespace VSS.VisionLink.Raptor.Filters
             ElevationRangeLevel = Consts.NullDouble;
             ElevationRangeOffset = Consts.NullDouble;
             ElevationRangeThickness = Consts.NullDouble;
-            ElevationRangeDesign.Clear();
+            ElevationRangeDesignID = long.MinValue;
 
             ElevationRangeIsInitialised = false;
             ElevationRangeIsLevelAndThicknessOnly = false;
@@ -586,7 +589,7 @@ namespace VSS.VisionLink.Raptor.Filters
             ElevationRangeLevel = Source.ElevationRangeLevel;
             ElevationRangeOffset = Source.ElevationRangeOffset;
             ElevationRangeThickness = Source.ElevationRangeThickness;
-            ElevationRangeDesign = Source.ElevationRangeDesign;
+            ElevationRangeDesignID = Source.ElevationRangeDesignID;
 
             RestrictFilteredDataToCompactorsOnly = Source.RestrictFilteredDataToCompactorsOnly;
 

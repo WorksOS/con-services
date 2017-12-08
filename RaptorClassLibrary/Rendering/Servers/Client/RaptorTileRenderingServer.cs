@@ -1,8 +1,9 @@
 ﻿using System.Drawing;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Requests;
+using VSS.VisionLink.Raptor.Servers.Client;
 
-namespace VSS.VisionLink.Raptor.Servers.Client
+namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
 {
     /// <summary>
     /// The server used to house tile rendering services

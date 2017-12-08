@@ -3,15 +3,15 @@ using System.Reflection;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Rendering;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.Designs;
+using VSS.VisionLink.Raptor.Executors.Tasks;
 
-namespace VSS.VisionLink.Raptor.Executors.Tasks
+namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
 {
     /// <summary>
     /// A Task specialised towards rendering subgrid based information onto Plan View Map tiles
@@ -26,7 +26,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         private CalculateDesignElevationPatchArgument arg = null;
 
         /// <summary>
-        /// Local instance of the design elevation calculation request for use by this task
+        /// Local instance of the design elevation patch request for use by this task
         /// </summary>
         private DesignElevationPatchRequest request = null;
 
@@ -58,10 +58,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
 
             if (TileRenderer.Mode == DisplayMode.CutFill)
             {
-                /// This is rather clumsy - clean up later
-                DesignsService DesignsService = new DesignsService();
-                DesignsService.init(); //DesignsService.Init(null);
-                var Designs = DesignsService.List(tileRenderer.DataModelID);
+                var Designs = DesignsService.Instance().List(tileRenderer.DataModelID);
 
                 arg = new CalculateDesignElevationPatchArgument()
                 {
@@ -83,6 +80,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
                 return false;
             }
 
+            // If the display mode is cut/fill, perform a side lookup to convert the height information into cut/fill...
             if (TileRenderer.Mode == DisplayMode.CutFill)
             {
                 ClientHeightLeafSubGrid ProductionElevations = response as ClientHeightLeafSubGrid;

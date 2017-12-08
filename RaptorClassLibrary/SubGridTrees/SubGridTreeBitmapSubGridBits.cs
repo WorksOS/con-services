@@ -446,6 +446,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         public void SetBit(int CellX, int CellY) => Bits[CellY] |= SubGridBitMapHighBitMask >> CellX;
 
         /// <summary>
+        /// Set the bit at the location identified by [CellX, CellY] to set (1)
+        /// </summary>
+        /// <param name="CellX"></param>
+        /// <param name="CellY"></param>
+        public void SetBit(uint CellX, uint CellY) => Bits[CellY] |= SubGridBitMapHighBitMask >> (int)CellX;
+
+        /// <summary>
         /// Set the bit at the location identified by [CellX, CellY] to unset (0) or set (1) based on the value parameter
         /// </summary>
         /// <param name="CellX"></param>

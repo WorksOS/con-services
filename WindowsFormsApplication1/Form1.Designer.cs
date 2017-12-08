@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
             this.chkIncludeSurveyedSurfaces = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.edtNumRuns = new System.Windows.Forms.TextBox();
@@ -59,7 +60,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.cmbDesigns = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnCalculateVolumes = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -70,6 +71,7 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.btnCalculateVolumes);
             this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.chkIncludeSurveyedSurfaces);
             this.panel1.Controls.Add(this.label4);
@@ -98,6 +100,16 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(187, 539);
             this.panel1.TabIndex = 15;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(14, 518);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(121, 19);
+            this.button2.TabIndex = 38;
+            this.button2.Text = "Statistics...";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // chkIncludeSurveyedSurfaces
             // 
@@ -131,7 +143,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(14, 494);
+            this.button1.Location = new System.Drawing.Point(14, 499);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(120, 19);
             this.button1.TabIndex = 34;
@@ -394,15 +406,15 @@
             this.label5.TabIndex = 30;
             this.label5.Text = "Design";
             // 
-            // button2
+            // btnCalculateVolumes
             // 
-            this.button2.Location = new System.Drawing.Point(14, 513);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(121, 19);
-            this.button2.TabIndex = 38;
-            this.button2.Text = "Statistics...";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnCalculateVolumes.Location = new System.Drawing.Point(14, 480);
+            this.btnCalculateVolumes.Name = "btnCalculateVolumes";
+            this.btnCalculateVolumes.Size = new System.Drawing.Size(120, 19);
+            this.btnCalculateVolumes.TabIndex = 39;
+            this.btnCalculateVolumes.Text = "Calculate Volume...";
+            this.btnCalculateVolumes.UseVisualStyleBackColor = true;
+            this.btnCalculateVolumes.Click += new System.EventHandler(this.btnCalculateVolumes_Click);
             // 
             // Form1
             // 
@@ -458,6 +470,7 @@
         private System.Windows.Forms.ComboBox cmbSurveyedSurfaces;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnCalculateVolumes;
     }
 }
 

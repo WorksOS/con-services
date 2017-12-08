@@ -61,9 +61,10 @@ namespace VSS.Velociraptor.DesignProfiling.Executors
                                                  (uint)(Args.OriginY & ~SubGridTree.SubGridLocalKeyMask));
                 Result.CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
 
-                Design.AcquireExclusiveInterlock();
-                try
-                {
+// Exclusive serialisation of the Design is not required in the Ignite POC
+//                Design.AcquireExclusiveInterlock();
+//                try
+//                {
                     if (Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, Args.CellSize, Args.DesignDescriptor.Offset))
                     {
                         CalcResult = DesignProfilerRequestResult.OK;
@@ -72,11 +73,11 @@ namespace VSS.Velociraptor.DesignProfiling.Executors
                     {
                         CalcResult = DesignProfilerRequestResult.NoElevationsInRequestedPatch;
                     }
-                }
-                finally
-                {
-                    Design.ReleaseExclusiveInterlock();
-                }
+//                }
+//                finally
+//                {
+//                    Design.ReleaseExclusiveInterlock();
+//                }
 
                 return Result;
             }

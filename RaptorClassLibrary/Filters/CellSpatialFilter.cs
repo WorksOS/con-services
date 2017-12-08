@@ -81,13 +81,15 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <summary>
         /// The design used as a part of a design or alignment mask spatial filter
         /// </summary>
-        public DesignDescriptor ReferenceDesign = DesignDescriptor.Null(); // : TVLPDDesignDescriptor;
+        public long ReferenceDesignID = long.MinValue;
+        //        public DesignDescriptor ReferenceDesign = DesignDescriptor.Null(); // : TVLPDDesignDescriptor;
 
         /// <summary>
         /// A design that acts as a spatial filter for cell selection. Only cells that have center locations that lie over the 
         /// design recorded in DesignFilter will be included
         /// </summary>
-        public DesignDescriptor DesignFilter = DesignDescriptor.Null(); // : TVLPDDesignDescriptor;
+        public long DesignFilterID = long.MinValue;
+        //        public DesignDescriptor DesignFilter = DesignDescriptor.Null(); // : TVLPDDesignDescriptor;
 
         /// <summary>
         /// The starting station of the parametrically defined alignment spatial filter
@@ -185,7 +187,7 @@ namespace VSS.VisionLink.Raptor.Filters
         {
             IsDesignFilter = false;
 
-            DesignFilter.Clear();
+            DesignFilterID = long.MinValue;
         }
 
         /// <summary>
@@ -200,7 +202,7 @@ namespace VSS.VisionLink.Raptor.Filters
             LeftOffset = Consts.NullDouble;
             RightOffset = Consts.NullDouble;
 
-            ReferenceDesign = DesignDescriptor.Null();
+            ReferenceDesignID = long.MinValue;
         }
 
         /// <summary>
@@ -233,7 +235,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <returns></returns>
         public bool HasAlignmentDesignMask()
         {
-            return !(ReferenceDesign.IsNull) && 
+            return (ReferenceDesignID != long.MinValue) && 
                         ((StartStation != Consts.NullDouble) && (EndStation != Consts.NullDouble) &&
                       (LeftOffset != Consts.NullDouble) && (RightOffset != Consts.NullDouble));
         }

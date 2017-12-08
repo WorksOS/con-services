@@ -25,5 +25,10 @@ namespace VSS.VisionLink.Raptor.Servers
         /// The 'ASNode', application service, role, meaning the server is a part of subgrid clustered processing engine
         /// </summary>
         public static string ASNODE = "ASNode";
+
+        /// <summary>
+        /// A server responsible for processign TAG files into the production data models
+        /// </summary>
+        public static string TAG_PROCESING_NODE = "TagProc";
     }
 }

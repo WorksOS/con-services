@@ -1,15 +1,11 @@
 ﻿using log4net;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Pipelines;
+using VSS.VisionLink.Raptor.Rendering.Executors.Tasks;
 using VSS.VisionLink.Raptor.Rendering.Palettes;
 using VSS.VisionLink.Raptor.Rendering.Palettes.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees;
@@ -100,9 +96,9 @@ namespace VSS.VisionLink.Raptor.Rendering
         // taken into account (Value=False)
         public bool IsWhollyInTermsOfGridProjection;
 
-        protected void ProcessTransferredSubgridResponse() //(const AResult: TICAsyncRequestResult)
-        {
-        }
+//        protected void ProcessTransferredSubgridResponse() //(const AResult: TICAsyncRequestResult)
+//        {
+//        }
 
         // function GetWorkingPalette: TICDisplayPaletteBase;
         // procedure SetWorkingPalette(const Value: TICDisplayPaletteBase);
@@ -176,10 +172,7 @@ namespace VSS.VisionLink.Raptor.Rendering
             PipeLine.GridDataType = GridDataFromModeConverter.Convert(Mode);
 
             // Construct and assign the filter set into the pipeline
-            PipeLine.FilterSet = new FilterSet()
-            {
-                Filters = Filter2 == null ? new CombinedFilter[1] { Filter1 } : new CombinedFilter[2] { Filter1, Filter2 }
-            };
+            PipeLine.FilterSet = new FilterSet(Filter2 == null ? new CombinedFilter[] { Filter1 } : new CombinedFilter[] { Filter1, Filter2 });
 
             PipeLine.IncludeSurveyedSurfaceInformation = Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) && !SurveyedSurfacesExludedViaTimeFiltering;
             if (PipeLine.IncludeSurveyedSurfaceInformation)  // if required then check if filter turns off requirement due to filters used

@@ -10,6 +10,7 @@ using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.Rendering.Servers.Client;
 using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator;
@@ -108,7 +109,7 @@ namespace VSS.VisionLink.Raptor.Client
 
             // Construct an integration worker and ask it to perform the integration
             List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
-            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(/*StorageProxy.Instance(), */integrator.TasksToProcess);
+            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
 
             worker.ProcessTask(ProcessedTasks);
         }
@@ -120,7 +121,7 @@ namespace VSS.VisionLink.Raptor.Client
 
             // Create the integration machinery responsibvle for tracking tasks and integrating them into the database
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
-            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(/*StorageProxy.Instance(), */integrator.TasksToProcess);
+            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
             List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
 
             // Create the site model and machine etc to aggregate the processed TAG file into

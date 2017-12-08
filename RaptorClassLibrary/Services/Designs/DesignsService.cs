@@ -19,6 +19,20 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        [NonSerialized]
+        private static DesignsService _instance = null;
+
+        public static DesignsService Instance() 
+        {
+            if (_instance == null)
+            {
+                _instance = new DesignsService();
+                _instance.init();
+            }
+
+            return _instance;
+        }
+
         /// <summary>
         /// Cache storing sitemodel instances
         /// </summary>
@@ -142,7 +156,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
             /// <param name="context"></param>
             public void Execute(IServiceContext context)
             {
-                Log.Info($"Executing Raptor Service 'DesignsSurface'");
+                Log.Info($"Executing Raptor Service 'Designs'");
             }
 
             /// <summary>
@@ -214,6 +228,39 @@ namespace VSS.VisionLink.Raptor.Services.Designs
             catch (KeyNotFoundException)
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Finds a given design in a site model
+        /// </summary>
+        /// <param name="SiteModelID"></param>
+        /// <param name="DesignID"></param>
+        /// <returns></returns>
+        public Raptor.Designs.Storage.Design Find(long SiteModelID, long DesignID) => FindDirect(SiteModelID, DesignID);
+
+        /// <summary>
+        /// Finds a given design in a site model
+        /// </summary>
+        /// <param name="SiteModelID"></param>
+        /// <param name="DesignID"></param>
+        /// <returns></returns>
+        public Raptor.Designs.Storage.Design FindDirect(long SiteModelID, long DesignID)
+        {
+            try
+            {
+                string cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
+
+                // Get the designs, creating it if it does not exist
+                Raptor.Designs.Storage.Designs designList = new Raptor.Designs.Storage.Designs();
+                designList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
+
+                // Find the design and return it
+                return designList.Count == 0 ? null : designList.Find(x => x.ID == DesignID);
+            }
+            catch (KeyNotFoundException)
+            {
+                return null;
             }
         }
     }

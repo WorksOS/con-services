@@ -11,6 +11,7 @@ namespace VSS.Velociraptor.Designs.TTM.Tests
     [TestClass()]
     public class TrimbleTinModelTests
     {
+        [Ignore()]
         [TestMethod()]
         public void BuildStartPointListTest()
         {
@@ -25,24 +26,28 @@ namespace VSS.Velociraptor.Designs.TTM.Tests
             Assert.IsTrue(TTM != null, "Failed to create TrimbleTinModel instance");
         }
 
+        [Ignore()]
         [TestMethod()]
         public void SetUpSizesTest()
         {
             Assert.Fail();
         }
 
+        [Ignore()]
         [TestMethod()]
         public void ReadTest()
         {
             Assert.Fail();
         }
 
+        [Ignore()]
         [TestMethod()]
         public void WriteTest()
         {
             Assert.Fail();
         }
 
+        [Ignore()]
         [TestMethod()]
         public void WriteDefaultTest()
         {
@@ -60,30 +65,35 @@ namespace VSS.Velociraptor.Designs.TTM.Tests
             Assert.IsTrue(TTM.Triangles.Count > 0, "No triangles loaded from TTM file");
         }
 
+        [Ignore()]
         [TestMethod()]
         public void SaveToFileTest()
         {
             Assert.Fail();
         }
 
+        [Ignore()]
         [TestMethod()]
         public void SaveToFileTest1()
         {
             Assert.Fail();
         }
 
+        [Ignore()]
         [TestMethod()]
         public void BuildEdgeListTest()
         {
             Assert.Fail();
         }
 
+        [Ignore()]
         [TestMethod()]
         public void BuildStartPointListTest1()
         {
             Assert.Fail();
         }
 
+        [Ignore()]
         [TestMethod()]
         public void ClearTest()
         {
@@ -96,12 +106,14 @@ namespace VSS.Velociraptor.Designs.TTM.Tests
             Assert.IsTrue(TrimbleTINModel.IsTTMFile(@"C:\Temp\Bug36372.ttm", out string error), $"File is not a TTM file when it should be with error='{error}'");
         }
 
+        [Ignore()]
         [TestMethod()]
         public void ReadHeaderFromFileTest()
         {
             Assert.Fail();
         }
 
+        [Ignore()]
         [TestMethod()]
         public void GetElevationRangeTest()
         {

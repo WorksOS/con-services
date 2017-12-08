@@ -17,7 +17,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// Default constructor for the TAG file processor server. This server configures the local environment to be suitable for
         /// TAG file processing operations.
         /// </summary>
-        public TAGFileProcessingServer() : base("TAGProc")
+        public TAGFileProcessingServer() : base(ServerRoles.TAG_PROCESING_NODE)
         {
             // Ensure that the TAG file processor only reads data from the mutable cache to prevent the possibly lossy conversion from mutable to
             // immutable forms of the cached data polluting the result of processing additional TAG file data into the database

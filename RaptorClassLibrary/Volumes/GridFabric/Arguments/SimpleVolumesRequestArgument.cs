@@ -19,7 +19,7 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
         /// <summary>
         /// The volume computation method to use when calculating volume information
         /// </summary>
-        public VolumeConputationType VolumeType = VolumeConputationType.None;
+        public VolumeComputationType VolumeType = VolumeComputationType.None;
 
         // FLiftBuildSettings : TICLiftBuildSettings;
 
@@ -32,9 +32,12 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
         public CombinedFilter BaseFilter = null;
         public CombinedFilter TopFilter = null;
 
-        DesignDescriptor BaseDesign = DesignDescriptor.Null();
-        DesignDescriptor TopDesign = DesignDescriptor.Null();
+        // public DesignDescriptor BaseDesign = DesignDescriptor.Null();
+        // public DesignDescriptor TopDesign = DesignDescriptor.Null();
 
+        public long BaseDesignID = long.MinValue;
+        public long TopDesignID = long.MinValue;
+        
         /// <summary>
         /// BaseSpatialFilter, TopSpatialFilter and AdditionalSpatialFilter are
         /// three filters used to implement the spatial restrictions represented by
