@@ -57,9 +57,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     }
 
     [Given(@"a mode ""(.*)""")]
-    public void GivenAMode(int mode)
+    public void GivenAMode(string mode)
     {
-      this.mode = mode;
+      if (!string.IsNullOrEmpty(mode))
+      this.mode = Convert.ToInt32(mode);
     }
 
     [Given(@"a width ""(.*)"" and a height ""(.*)""")]
@@ -91,6 +92,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenAVolumeBaseUid(string volumeBaseUid)
     {
       this.volumeBaseUid = volumeBaseUid;
+    }
+    [When(@"I request a Report Tile and the result file ""(.*)""")]
+    public void WhenIRequestAReportTileAndTheResultFile(string resultFile)
+    {
+      tileRequester = new Getter<TileResult>(MakeUrl(), resultFile);
+      tileRequester.DoValidRequest();
     }
 
     [When(@"I request a Report Tile")]
@@ -134,6 +141,33 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       Assert.AreEqual(errorCode, tileRequester.CurrentResponse.Code);
       Assert.AreEqual(message, tileRequester.CurrentResponse.Message);
     }
+
+    [Given(@"the result file ""(.*)""")]
+    public void GivenTheResultFile(string resultFileName)
+    {
+      tileRequester = new Getter<TileResult>(url, resultFileName);
+    }
+
+    [Then(@"the result tile should match the ""(.*)"" from the repository within ""(.*)"" percent")]
+    public void ThenTheResultTileShouldMatchTheFromTheRepositoryWithinPercent(string resultName, string difference)
+    {
+      double imageDifference = 0;
+      if (!string.IsNullOrEmpty(difference))
+      {
+        imageDifference = Convert.ToDouble(difference) / 100;
+      }
+      var expectedTileData = tileRequester.ResponseRepo[resultName].TileData;
+      var actualTileData = tileRequester.CurrentResponse.TileData;
+      var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + ".jpg";
+      var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + ".jpg";
+      var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
+      Console.WriteLine("Actual Difference % = " + diff * 100);
+      Console.WriteLine("Actual filename = " + actFileName);
+      Console.WriteLine(tileRequester.CurrentResponse);
+      Assert.IsTrue(Math.Abs(diff) < imageDifference, "Actual Difference:" + diff * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
+
+    }
+
 
     private string MakeUrl()
     {
