@@ -113,7 +113,7 @@ namespace BookMark
         private int UpdateTheBookMarksInFileWithTheSelectedOnes(List<XmlBookMark> selectedBookmarks)
         {
             XmlFile xmlfile = new XmlFile();
-            var xmlDocument = xmlfile.UpdateSelectedBookMarksXmlDataWithNewDate(calendarSelected, ofd.FileName, selectedBookmarks);
+            var xmlDocument = xmlfile.UpdateSelectedBookMarksXmlDataWithNewDateTheSaveFullFile(calendarSelected, ofd.FileName, selectedBookmarks);
             saveFileName = GetTheFileNameForTheOutputXmlFile();
             if (string.IsNullOrEmpty(saveFileName))
             {

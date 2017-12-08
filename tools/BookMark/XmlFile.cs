@@ -32,7 +32,7 @@ namespace BookMark
         /// <param name="fileName">XML input file</param>
         /// <param name="selectedBookMarks">List of selected bookmarks</param>
         /// <returns>XML document</returns>
-        public XDocument UpdateSelectedBookMarksXmlDataWithNewDate(DateTime newDateTime, string fileName, List<XmlBookMark> selectedBookMarks)
+        public XDocument UpdateSelectedBookMarksXmlDataWithNewDateAndRemoveNotUpdated(DateTime newDateTime, string fileName, List<XmlBookMark> selectedBookMarks)
         {
             XDocument xDoc = XDocument.Load(fileName);
             var elementsToUpdate = xDoc.Descendants().Where(o => o.Name == "BookmarkUTC" || o.Name == "Key");
@@ -53,13 +53,39 @@ namespace BookMark
             return cutDownDocument;
         }
 
-        /// <summary>
-        /// Remove all the elements that weren't updated
-        /// </summary>
-        /// <param name="selectedBookMarks"></param>
-        /// <param name="xDoc"></param>
-        /// <returns></returns>
-        private XDocument RemoveAllElementsThatDidNotGetUpdated(List<XmlBookMark> selectedBookMarks, XDocument xDoc)
+      /// <summary>
+      /// Update the selected bookmarks from the data grid in the XML file then save whole file
+      /// </summary>
+      /// <param name="newDateTime">Date and time to set the bookmark to</param>
+      /// <param name="fileName">XML input file</param>
+      /// <param name="selectedBookMarks">List of selected bookmarks</param>
+      /// <returns>XML document</returns>
+      public XDocument UpdateSelectedBookMarksXmlDataWithNewDateTheSaveFullFile(DateTime newDateTime, string fileName, List<XmlBookMark> selectedBookMarks)
+      {
+        XDocument xDoc = XDocument.Load(fileName);
+        var elementsToUpdate = xDoc.Descendants().Where(o => o.Name == "BookmarkUTC" || o.Name == "Key");
+        bool containsItem = false;
+        foreach (XElement element in elementsToUpdate)
+        {
+          if (element.Name == "Key")
+          {
+            containsItem = selectedBookMarks.Any(item => item.Customer == element.Value); // found it in the list
+          }
+          if (element.Name == "BookmarkUTC" && containsItem)
+          {
+            element.Value = newDateTime.ToString("yyyy-MM-dd") + "T00:00:00";
+          }
+        }
+        return xDoc;
+    }
+
+    /// <summary>
+    /// Remove all the elements that weren't updated
+    /// </summary>
+    /// <param name="selectedBookMarks"></param>
+    /// <param name="xDoc"></param>
+    /// <returns></returns>
+    private XDocument RemoveAllElementsThatDidNotGetUpdated(List<XmlBookMark> selectedBookMarks, XDocument xDoc)
         {
             IEnumerable<XElement> selectXml = xDoc.Descendants("KeysAndValues");
             bool isThere = false;
