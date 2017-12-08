@@ -9,6 +9,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Repository;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Scheduler.Common.Controller
 {
@@ -30,231 +31,249 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
       var fileListProject = repoProject.Read();
       var fileListNhOp = repoNhOp.Read();
+
+      await SyncOldTableToNewTable(fileListNhOp, fileListProject, repoNhOp, repoProject);
+      //Only SS files need to be sync'd in reverse.
+      var ssListProject = fileListProject.Where(x => x.ImportedFileType == ImportedFileType.SurveyedSurface).ToList();
+      await SyncNewTableToOldTable(ssListProject, repoNhOp, repoProject);
+    }
+
+    /// <summary>
+    /// Synchronize nhOp to Project
+    /// </summary>
+    private async Task SyncOldTableToNewTable(List<ImportedFileNhOp> fileListNhOp, List<ImportedFileProject> fileListProject, 
+      ImportedFileRepoNhOp<ImportedFileNhOp> repoNhOp, ImportedFileRepoProject<ImportedFileProject> repoProject)
+    {
       var startUtc = DateTime.UtcNow;
 
       // cannot modify collectionB from within collectionA
       // put it in here and remove later
-      var fileListProjectToRemove = new List<ImportedFileProject>();
-
+      //var fileListProjectToRemove = new List<ImportedFileProject>();
 
       // row in  NH_OP and in project, nothing has changed (a)
-      // row in  NH_OP and in project, deleted in project. delete in NH_OP (b)
-      // row in  NH_OP and in project, a date has changed (c)
-      // row in  NH_OP NOT in project, create it {d}
-      foreach (var ifo in fileListNhOp.ToList())
+      // row in  NH_OP and in project, logically deleted in project. physically delete in NH_OP (b)
+      // row in  NH_OP and in project, a date has changed, update whichever is older (c)
+      // row in  NH_OP NOT in project, create it in project {d}
+      for (int i=fileListNhOp.Count-1; i>=0; i--)
       {
-        // (a)
         startUtc = DateTime.UtcNow;
-        var gotMatchingProject = fileListProject.FirstOrDefault(o => o.LegacyImportedFileId == ifo.LegacyImportedFileId);
+        var gotMatchingProject = fileListProject.FirstOrDefault(o => o.LegacyImportedFileId == fileListNhOp[i].LegacyImportedFileId);
 
         if (gotMatchingProject == null)
         {
           // (d)
-          var projectEvent = AutoMapperUtility.Automapper.Map<ImportedFileProject>(ifo);
-          projectEvent.Name = ImportedFileUtils.RemoveSurveyedUtcFromName(projectEvent.Name);
-          projectEvent.ImportedFileUid = Guid.NewGuid().ToString();
-          // for L&S if its come from CG then use legacyIds
-          projectEvent.FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(FileSpaceId,
-            projectEvent.LegacyCustomerId.ToString(), projectEvent.LegacyProjectId.ToString(), projectEvent.Name));
-          if (projectEvent.ImportedBy == null) projectEvent.ImportedBy = "";
-          repoProject.Create(projectEvent);
-
-          // Notify 3dpm of SS file created via Legacy
-          if (projectEvent.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
-            await NotifyRaptorImportedFileChange(projectEvent.CustomerUid, Guid.Parse(projectEvent.ProjectUid), Guid.Parse(projectEvent.ImportedFileUid))
-              .ConfigureAwait(false);
-
-          var newRelicAttributes = new Dictionary<string, object>
-          {
-            {"message", "SS file created in NhOp, now created in Project."},
-            { "projectUid", projectEvent.ProjectUid},
-            { "importedFileUid", projectEvent.ImportedFileUid},
-            { "fileDescriptor", projectEvent.FileDescriptor},
-            { "legacyImportedFileId", projectEvent.LegacyImportedFileId}
-          };
-          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
-          fileListNhOp.RemoveAt(0);
+          await CreateFileInNewTable(repoProject, startUtc, fileListNhOp[i]);
         }
         else
         {
           if (gotMatchingProject.IsDeleted)
           {
             // (b)
-            repoNhOp.Delete(ifo);
-            Log.LogTrace(
-              $"SyncTables: nhOp.IF is in nh_Op but was deleted in project. Deleted from NhOp: {JsonConvert.SerializeObject(ifo)}");
-
-            var newRelicAttributes = new Dictionary<string, object>
-            {
-              {"message", "SS file deleted in Project, now deleted in NhOp."},
-              { "projectUid", gotMatchingProject.ProjectUid},
-              { "importedFileUid", gotMatchingProject.ImportedFileUid},
-              { "fileDescriptor", gotMatchingProject.FileDescriptor},
-              { "legacyImportedFileId", gotMatchingProject.LegacyImportedFileId}
-            };
-            NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+            DeleteFileInOldTable(repoNhOp, gotMatchingProject, fileListNhOp[i], startUtc);
           }
-          else
+          else if (gotMatchingProject.FileCreatedUtc != fileListNhOp[i].FileCreatedUtc
+                   || gotMatchingProject.FileUpdatedUtc != fileListNhOp[i].FileUpdatedUtc)
           {
-            if (gotMatchingProject.FileCreatedUtc != ifo.FileCreatedUtc
-                || gotMatchingProject.FileUpdatedUtc != ifo.FileUpdatedUtc)
+            // (c)
+            if (gotMatchingProject.FileCreatedUtc > fileListNhOp[i].FileCreatedUtc
+                || gotMatchingProject.FileUpdatedUtc > fileListNhOp[i].FileUpdatedUtc)
             {
-              // (c)
-              if (gotMatchingProject.FileCreatedUtc > ifo.FileCreatedUtc
-                  || gotMatchingProject.FileUpdatedUtc > ifo.FileUpdatedUtc)
-              {
-                // project is more recent, update nh_op
-                ifo.FileCreatedUtc = gotMatchingProject.FileCreatedUtc;
-                ifo.FileUpdatedUtc = gotMatchingProject.FileUpdatedUtc;
-                ifo.LastActionedUtc = DateTime.UtcNow;
-                repoNhOp.Update(ifo);
-
-                var newRelicAttributes = new Dictionary<string, object>
-                {
-                  {"message", "SS file updated in project, now updated in NhOp."},
-                  { "projectUid", gotMatchingProject.ProjectUid},
-                  { "importedFileUid", gotMatchingProject.ImportedFileUid},
-                  { "fileDescriptor", gotMatchingProject.FileDescriptor},
-                  { "legacyImportedFileId", gotMatchingProject.LegacyImportedFileId}
-                };
-                NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
-              }
-              else
-              {
-                // nh_op is more recent, update project
-                gotMatchingProject.FileCreatedUtc = ifo.FileCreatedUtc;
-                gotMatchingProject.FileUpdatedUtc = ifo.FileUpdatedUtc;
-                gotMatchingProject.LastActionedUtc = DateTime.UtcNow;
-                repoProject.Update(gotMatchingProject);
-
-                // Notify 3dpm of SS file updated via Legacy
-                if (gotMatchingProject.LegacyImportedFileId != null
-                ) // Note that LegacyImportedFileId will always be !null 
-                  await NotifyRaptorImportedFileChange(gotMatchingProject.CustomerUid, Guid.Parse(gotMatchingProject.ProjectUid),
-                      Guid.Parse(gotMatchingProject.ImportedFileUid))
-                    .ConfigureAwait(false);
-
-                var newRelicAttributes = new Dictionary<string, object>
-                {
-                  {"message", "SS file updated in NhOp, now updated in Project."},
-                  { "projectUid", gotMatchingProject.ProjectUid},
-                  { "importedFileUid", gotMatchingProject.ImportedFileUid},
-                  { "fileDescriptor", gotMatchingProject.FileDescriptor},
-                  { "legacyImportedFileId", gotMatchingProject.LegacyImportedFileId}
-                };
-                NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
-              }
+              // project is more recent, update nh_op
+              UpdateFileInOldTable(repoNhOp, gotMatchingProject, fileListNhOp[i], startUtc);
+            }
+            else
+            {
+              // nh_op is more recent, update project
+              await UpdateFileInNewTable(repoProject, gotMatchingProject, fileListNhOp[i], startUtc);
             }
           }
-
-          // (a) no change
-          fileListProjectToRemove.Add(gotMatchingProject);
-          fileListNhOp.Remove(ifo);
+          // else (a) no change
+          //fileListProjectToRemove.Add(gotMatchingProject);
+          fileListProject.Remove(gotMatchingProject);
         }
+
+        fileListNhOp.Remove(fileListNhOp[i]);        
       }
 
       // internal error, have we forgotten some scenario?
       if (fileListNhOp.Count > 0)
       {
         // proceed with sync, but send alert to NewRelic
-        var newRelicAttributes = new Dictionary<string, object>
-        {
-          {"message", string.Format($"ImportedFileSynchroniser internal error as fileListNhOp list should be empty")},
-          {"fileListNhOpCount", fileListNhOp.Count}
-        };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc,
-          (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NotifyNewRelicError(startUtc, "fileListNhOp", fileListNhOp.Count);
       }
 
-      fileListProject.RemoveAll(
-        x => fileListProjectToRemove.Exists(y => y.LegacyImportedFileId == x.LegacyImportedFileId));
+      //fileListProject.RemoveAll(
+       // x => fileListProjectToRemove.Exists(y => y.LegacyImportedFileId == x.LegacyImportedFileId));
+    }
 
-      // row in Project but doesn't exist in nhOp
-      //        if project has LegacyImportedFileId ,  and not already deleted, then delete in Project (m)
+    /// <summary>
+    /// Synchronize Project to nhOp
+    /// </summary>
+    private async Task SyncNewTableToOldTable(List<ImportedFileProject> fileListProject,
+      ImportedFileRepoNhOp<ImportedFileNhOp> repoNhOp, ImportedFileRepoProject<ImportedFileProject> repoProject)
+    {
+      var startUtc = DateTime.UtcNow;
+
+      // row in Project but doesn't exist in nhOp. LegacyImportedFileId determines if previously from nhOp.
+      //        if project has LegacyImportedFileId, and not already deleted, then delete in Project (m)
       //        if project has no LegacyImportedFileId, and not already deleted, then create in nhOp (n)
-      //        if project has no LegacyImportedFileId, not deleted, but has no valid legacy customer or projectID then can't be added to NhOp (o)
-      //        deleted project in project but no link to nh_op, just ignore it. (p)
-      foreach (var ifp in fileListProject.ToList())
+      //        if project has no LegacyImportedFileId, not deleted, but has no valid legacy customer or projectID then can't be added to nhOp (o)
+      //        deleted project in project but no link to nhOp since in the list here so user must have created & deleted in project only , just ignore it. (p)
+      for (int i=fileListProject.Count-1; i>=0; i--)
       {
-        if (ifp.IsDeleted)
+        startUtc = DateTime.UtcNow;
+
+        if (fileListProject[i].IsDeleted)
         {
-          // (p)
-          fileListProject.RemoveAt(0);
+          // (p) ignore
+        }
+        else if (fileListProject[i].LegacyImportedFileId != null && fileListProject[i].LegacyImportedFileId > 0)
+        {
+          // (m)
+          await DeleteFileInNewTable(repoProject, startUtc, fileListProject[i]);
+        }
+        else if (fileListProject[i].LegacyCustomerId == 0 || fileListProject[i].LegacyProjectId >= 1000000)
+        {
+          // (o)
+          NotifyNewRelic(fileListProject[i], startUtc, "SS file in Project which has no legacyCustomerId so cannot be synced to NhOp.", "Warning");
         }
         else
         {
-          if (ifp.LegacyImportedFileId != null && ifp.LegacyImportedFileId > 0)
-          {
-            // (m)
-            repoProject.Delete(ifp);
-
-            // Notify 3dpm of SS file deleted via Legacy
-            if (ifp.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
-              await NotifyRaptorImportedFileChange(ifp.CustomerUid, Guid.Parse(ifp.ProjectUid), Guid.Parse(ifp.ImportedFileUid))
-                .ConfigureAwait(false);
-            
-            var newRelicAttributes = new Dictionary<string, object>
-            {
-              {"message", "SS file deleted in NhOp, now deleted from Project."},
-              { "projectUid", ifp.ProjectUid},
-              { "importedFileUid", ifp.ImportedFileUid},
-              { "fileDescriptor", ifp.FileDescriptor},
-              { "legacyImportedFileId", ifp.LegacyImportedFileId}
-            };
-            NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
-            fileListProject.RemoveAt(0);
-          }
-          else
-          {
-            if (ifp.LegacyCustomerId == 0 || ifp.LegacyProjectId >= 1000000)
-            {
-              // (o)
-              var newRelicAttributes = new Dictionary<string, object>
-              {
-                {"message", "SS file in Project which has no legacyCustomerId so cannot be synced to NhOp."},
-                { "projectUid", ifp.ProjectUid},
-                { "importedFileUid", ifp.ImportedFileUid},
-                { "fileDescriptor", ifp.FileDescriptor},
-                { "legacyImportedFileId", ifp.LegacyImportedFileId}
-              };
-              NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Warning", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
-              fileListProject.RemoveAt(0);
-            }
-            else
-            {
-              // (n)
-              var nhOpEvent = AutoMapperUtility.Automapper.Map<ImportedFileNhOp>(ifp);
-              nhOpEvent.Name = ImportedFileUtils.IncludeSurveyedUtcInName(nhOpEvent.Name, nhOpEvent.SurveyedUtc.Value);
-              var legacyImportedFileId = repoNhOp.Create(nhOpEvent);
-              ifp.LegacyImportedFileId = legacyImportedFileId;
-              repoProject.Update(ifp);
-
-              var newRelicAttributes = new Dictionary<string, object>
-              {
-                {"message", "SS file created in project, now created in NhOp."},
-                { "projectUid", ifp.ProjectUid},
-                { "importedFileUid", ifp.ImportedFileUid},
-                { "fileDescriptor", ifp.FileDescriptor},
-                { "legacyImportedFileId", ifp.LegacyImportedFileId}
-              };
-              NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
-              fileListProject.RemoveAt(0);
-            }
-          }
+          // (n)
+          CreateFileInOldTable(repoProject, repoNhOp, startUtc, fileListProject[i]);
         }
+        fileListProject.Remove(fileListProject[i]);
       }
 
       // internal error, have we forgotten some scenario?
       if (fileListProject.Count > 0)
-      {        // proceed with sync, but send alert to NewRelic
-        var newRelicAttributes = new Dictionary<string, object>
-        {
-          {"message", string.Format($"ImportedFileSynchroniser internal error as fileListProject list should be empty")},
-          {"fileListProjectCount", fileListProject.Count}
-        };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc,
-          (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+      {
+        // proceed with sync, but send alert to NewRelic
+        NotifyNewRelicError(startUtc, "fileListProject", fileListProject.Count);
       }
+    }
+
+    /// <summary>
+    /// Create the file in nhOp and update Project with the new legacy id.
+    /// </summary>
+    private void CreateFileInOldTable(ImportedFileRepoProject<ImportedFileProject> repoProject, ImportedFileRepoNhOp<ImportedFileNhOp> repoNhOp, DateTime startUtc, ImportedFileProject ifp)
+    {
+      var nhOpEvent = AutoMapperUtility.Automapper.Map<ImportedFileNhOp>(ifp);
+      nhOpEvent.Name = ImportedFileUtils.IncludeSurveyedUtcInName(nhOpEvent.Name, nhOpEvent.SurveyedUtc.Value);
+      var legacyImportedFileId = repoNhOp.Create(nhOpEvent);
+      ifp.LegacyImportedFileId = legacyImportedFileId;
+      repoProject.Update(ifp);
+
+      NotifyNewRelic(ifp, startUtc, "SS file created in project, now created in NhOp.");
+    }
+
+    /// <summary>
+    /// Create the file in Project
+    /// </summary>
+    private async Task CreateFileInNewTable(ImportedFileRepoProject<ImportedFileProject> repoProject, DateTime startUtc, ImportedFileNhOp ifo)
+    {
+      var projectEvent = AutoMapperUtility.Automapper.Map<ImportedFileProject>(ifo);
+      projectEvent.Name = ImportedFileUtils.RemoveSurveyedUtcFromName(projectEvent.Name);
+      projectEvent.ImportedFileUid = Guid.NewGuid().ToString();
+      // for L&S if its come from CG then use legacyIds
+      projectEvent.FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(FileSpaceId,
+        projectEvent.LegacyCustomerId.ToString(), projectEvent.LegacyProjectId.ToString(), projectEvent.Name));
+      if (projectEvent.ImportedBy == null) projectEvent.ImportedBy = "";
+      repoProject.Create(projectEvent);
+
+      // Notify 3dpm of SS file created via Legacy
+      if (projectEvent.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
+        await NotifyRaptorImportedFileChange(projectEvent.CustomerUid, Guid.Parse(projectEvent.ProjectUid), Guid.Parse(projectEvent.ImportedFileUid))
+          .ConfigureAwait(false);
+
+      NotifyNewRelic(projectEvent, startUtc, "SS file created in NhOp, now created in Project.");
+    }
+
+    /// <summary>
+    /// Delete the file in nhOp
+    /// </summary>
+    private void DeleteFileInOldTable(ImportedFileRepoNhOp<ImportedFileNhOp> repoNhOp, ImportedFileProject gotMatchingProject, ImportedFileNhOp ifo, DateTime startUtc)
+    {
+      repoNhOp.Delete(ifo);
+      Log.LogTrace(
+        $"SyncTables: nhOp.IF is in nh_Op but was deleted in project. Deleted from NhOp: {JsonConvert.SerializeObject(ifo)}");
+      NotifyNewRelic(gotMatchingProject, startUtc, "SS file deleted in Project, now deleted in NhOp.");
+    }
+
+    /// <summary>
+    /// Delete the file in Project
+    /// </summary>
+    private async Task DeleteFileInNewTable(ImportedFileRepoProject<ImportedFileProject> repoProject, DateTime startUtc, ImportedFileProject ifp)
+    {
+      repoProject.Delete(ifp);
+
+      // Notify 3dpm of SS file deleted via Legacy
+      if (ifp.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
+        await NotifyRaptorImportedFileChange(ifp.CustomerUid, Guid.Parse(ifp.ProjectUid), Guid.Parse(ifp.ImportedFileUid))
+          .ConfigureAwait(false);
+
+      NotifyNewRelic(ifp, startUtc, "SS file deleted in NhOp, now deleted from Project.");
+    }
+
+    /// <summary>
+    /// Update the file in nhOp
+    /// </summary>
+    private void UpdateFileInOldTable(ImportedFileRepoNhOp<ImportedFileNhOp> repoNhOp, ImportedFileProject gotMatchingProject, ImportedFileNhOp ifo, DateTime startUtc)
+    {
+      ifo.FileCreatedUtc = gotMatchingProject.FileCreatedUtc;
+      ifo.FileUpdatedUtc = gotMatchingProject.FileUpdatedUtc;
+      ifo.LastActionedUtc = DateTime.UtcNow;
+      repoNhOp.Update(ifo);
+      NotifyNewRelic(gotMatchingProject, startUtc, "SS file updated in project, now updated in NhOp.");
+    }
+
+    /// <summary>
+    /// Update the file in Project
+    /// </summary>
+    private async Task UpdateFileInNewTable(ImportedFileRepoProject<ImportedFileProject> repoProject, ImportedFileProject gotMatchingProject, ImportedFileNhOp ifo, DateTime startUtc)
+    {
+      gotMatchingProject.FileCreatedUtc = ifo.FileCreatedUtc;
+      gotMatchingProject.FileUpdatedUtc = ifo.FileUpdatedUtc;
+      gotMatchingProject.LastActionedUtc = DateTime.UtcNow;
+      repoProject.Update(gotMatchingProject);
+
+      // Notify 3dpm of SS file updated via Legacy
+      if (gotMatchingProject.LegacyImportedFileId != null
+      ) // Note that LegacyImportedFileId will always be !null 
+        await NotifyRaptorImportedFileChange(gotMatchingProject.CustomerUid, Guid.Parse(gotMatchingProject.ProjectUid),
+            Guid.Parse(gotMatchingProject.ImportedFileUid))
+          .ConfigureAwait(false);
+
+      NotifyNewRelic(gotMatchingProject, startUtc, "SS file updated in NhOp, now updated in Project.");
+    }
+
+    /// <summary>
+    /// Information or warning for NewRelic
+    /// </summary>
+    private void NotifyNewRelic(ImportedFileProject ifp, DateTime startUtc, string message, string errorLevel= "Information")
+    {
+      var newRelicAttributes = new Dictionary<string, object>
+      {
+        { "message", message },
+        { "projectUid", ifp.ProjectUid },
+        { "importedFileUid", ifp.ImportedFileUid },
+        { "fileDescriptor", ifp.FileDescriptor },
+        { "legacyImportedFileId", ifp.LegacyImportedFileId }
+      };
+      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", errorLevel, startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+    }
+
+    /// <summary>
+    /// Error for NewRelic
+    /// </summary>
+    private void NotifyNewRelicError(DateTime startUtc, string what, int count)
+    {
+      var newRelicAttributes = new Dictionary<string, object>
+      {
+        { "message", $"ImportedFileSynchroniser internal error as {what} list should be empty" },
+        { what, count }
+      };
+      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
     }
   }
 }

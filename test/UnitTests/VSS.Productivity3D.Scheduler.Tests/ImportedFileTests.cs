@@ -129,9 +129,9 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void MapNhOpImportedFile_RemoveSurveyedUtcFromName()
     {
-      // JB topo southern motorway_2010-11 - 29T153300Z.TTM   SS=2010-11-29 15:33:00.0000000
+      // JB topo southern motorway_2010-11-29T153300Z.TTM   SS=2010-11-29 15:33:00.0000000
 
-      var nhOpName = "JB topo southern motorway_2010-11 - 29T153300Z.TTM";
+      var nhOpName = "JB topo southern motorway_2010-11-29T153300Z.TTM";
       var expectedProjectName = "JB topo southern motorway.TTM";
       var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
 
@@ -141,10 +141,10 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void MapNhOpImportedFile_RemoveSurveyedUtcFromName_DoubleUtc()
     {
-      // Aerial Survey 120819_2012 - 08 - 19T035400Z_2016 - 08 - 16T003724Z.TTM ssUtc=2016-08-16 00:37:24.0000000
+      // Aerial Survey 120819_2012-08-19T035400Z_2016-08-16T003724Z.TTM ssUtc=2016-08-16 00:37:24.0000000
 
-      var nhOpName = "Aerial Survey 120819_2012 - 08 - 19T035400Z_2016 - 08 - 16T003724Z.TTM";
-      var expectedProjectName = "Aerial Survey 120819.TTM";
+      var nhOpName = "Aerial Survey 120819_2012-08-19T035400Z_2016-08-16T003724Z.TTM";
+      var expectedProjectName = "Aerial Survey 120819_2012-08-19T035400Z.TTM";
       var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
 
       Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
@@ -153,7 +153,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void MapNhOpImportedFile_IncludeSurveyedUtcInName()
     {
-      // JB topo southern motorway_2010-11 - 29T153300Z.TTM   SS=2010-11-29 15:33:00.0000000
+      // JB topo southern motorway_2010-11-29T153300Z.TTM   SS=2010-11-29 15:33:00.0000000
 
       var projectName = "JB topo southern motorway.TTM";
       var surveyUtc = new DateTime(2010, 11, 29, 15, 33, 00);
@@ -166,7 +166,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void MapNhOpImportedFile_IncludeSurveyedUtcInName_Double()
     {
-      // Aerial Survey 120819_2012 - 08 - 19T035400Z_2016 - 08 - 16T003724Z.TTM ssUtc=2016-08-16 00:37:24.0000000
+      // Aerial Survey 120819_2012-08-19T035400Z_2016-08-16T003724Z.TTM ssUtc=2016-08-16 00:37:24.0000000
 
       var projectName = "Aerial Survey 120819_2012-08-19T035400Z.TTM";
       var surveyUtc = new DateTime(2016, 8, 16, 0, 37, 24);
@@ -174,6 +174,26 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var nhOpName = ImportedFileUtils.IncludeSurveyedUtcInName(projectName, surveyUtc);
 
       Assert.AreEqual(expectedNhOpName, nhOpName, "File name has not been converted correctly");
+    }
+
+    [TestMethod]
+    public void MapNhOpImportedFile_RemoveSurveyedUtcFromNameWithUnderscores()
+    {
+      var nhOpName = "Surveyed_Surface_2010-11-29T153300Z.TTM";
+      var expectedProjectName = "Surveyed_Surface.TTM";
+      var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
+
+      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
+    }
+
+    [TestMethod]
+    public void MapNhOpImportedFile_RemoveSurveyedUtcFromNameWithNoSurveyedUtc()
+    {
+      var nhOpName = "Design_Surface.TTM";
+      var expectedProjectName = nhOpName;
+      var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
+
+      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
     }
   }
 }
