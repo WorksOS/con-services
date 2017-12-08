@@ -40,37 +40,37 @@ namespace Common.Repository
     }
 
 
-    /// <summary>
-    /// Wrapper for executing MySQL queries/statements in a DB transaction; rolls back the transaction in case of errors
-    /// </summary>
-    /// <param name="body">Code to execute</param>
-    /// <returns>The result of executing body()</returns>
-    private static T InTransaction<T>(Func<MySqlConnection, T> body)
-    {
-      return WithConnection<T>((conn) =>
-      {
-        MySqlTransaction transaction = null;
+    ///// <summary>
+    ///// Wrapper for executing MySQL queries/statements in a DB transaction; rolls back the transaction in case of errors
+    ///// </summary>
+    ///// <param name="body">Code to execute</param>
+    ///// <returns>The result of executing body()</returns>
+    //private static T InTransaction<T>(Func<MySqlConnection, T> body)
+    //{
+    //  return WithConnection<T>((conn) =>
+    //  {
+    //    MySqlTransaction transaction = null;
 
-        try
-        {
-          transaction = conn.BeginTransaction();
-          var result = body(conn);
-          transaction.Commit();
-          return result;
-        }
-        catch (Exception)
-        {
-          transaction.Rollback();
-          throw;
-        }
-      });
-    }
+    //    try
+    //    {
+    //      transaction = conn.BeginTransaction();
+    //      var result = body(conn);
+    //      transaction.Commit();
+    //      return result;
+    //    }
+    //    catch (Exception)
+    //    {
+    //      transaction.Rollback();
+    //      throw;
+    //    }
+    //  });
+    //}
 
     #region (Customer)
 
     public static List<Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
     {
-      return InTransaction((conn) =>
+      return WithConnection((conn) =>
       {
         var command = @"SELECT c.* 
             FROM Customer c 
@@ -96,7 +96,7 @@ namespace Common.Repository
 
     public static Customer GetCustomer(System.Guid customerUid)
     {
-      return InTransaction((conn) =>
+      return WithConnection((conn) =>
       {
         var command = @"SELECT * 
              FROM Customer 
@@ -126,7 +126,9 @@ namespace Common.Repository
     // from customRepo
     public static IEnumerable<Project> GetLandfillProjectsForUser(string userUid)
     {
-      return InTransaction((conn) =>
+      Log.DebugFormat($"GetLandfillProjectsForUser connString {connString} userUid {userUid} ");
+
+      return WithConnection((conn) =>
       {
         var command = @"SELECT 
               p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
@@ -174,7 +176,9 @@ namespace Common.Repository
     /// <returns>A list of projects</returns>
     public static IEnumerable<ProjectResponse> GetProjects(string userUid, string customerUid)
     {
-      return InTransaction((conn) =>
+      Log.DebugFormat($"GetProjects connString {connString} userUid {userUid} customerUid {customerUid}");
+
+      return WithConnection((conn) =>
       {
 
         var command = @"SELECT p.LegacyProjectID AS ProjectID, p.Name, p.LandfillTimeZone,
@@ -233,7 +237,9 @@ namespace Common.Repository
 
     public static List<ProjectResponse> GetListOfAvailableProjects()
     {
-      return InTransaction((conn) =>
+      Log.DebugFormat($"GetListOfAvailableProjects connString {connString}");
+
+      return WithConnection((conn) =>
       {
         var command =
           @"SELECT DISTINCT prj.LegacyProjectID AS ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name, cp.LegacyCustomerID
@@ -262,10 +268,11 @@ namespace Common.Repository
       });
     }
 
-
     public static List<ProjectResponse> GetProject(string projectUid)
     {
-      return InTransaction((conn) =>
+      Log.DebugFormat($"GetProject connString {connString} projectUid {projectUid}");
+
+      return WithConnection((conn) =>
       {
         var command = @"SELECT LegacyProjectID AS ProjectID, Name, LandfillTimeZone,
                                      ProjectUID, ProjectTimeZone
