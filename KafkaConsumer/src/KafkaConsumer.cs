@@ -110,8 +110,16 @@ namespace VSS.KafkaConsumer
             log.LogDebug("KafkaConsumer: " + typeof(T) + " : " + bytesAsString);
             var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString,
               messageResolver.GetConverter<T>());
-            log.LogDebug($"KafkaConsumer: Saving type {deserializedObject.GetType()}");
-            await dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
+
+            if (deserializedObject == null)
+            {
+              log.LogWarning("KafkaConsumer: unrecognized message type.");
+            }
+            else
+            {
+              log.LogDebug($"KafkaConsumer: Saving type {deserializedObject.GetType()}");
+              await dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
+            }
             log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
             await kafkaDriver.Commit();
           }
