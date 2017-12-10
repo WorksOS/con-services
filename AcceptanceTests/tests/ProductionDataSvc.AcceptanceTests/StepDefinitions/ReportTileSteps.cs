@@ -158,8 +158,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
       var expectedTileData = tileRequester.ResponseRepo[resultName].TileData;
       var actualTileData = tileRequester.CurrentResponse.TileData;
-      var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + ".jpg";
-      var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + ".jpg";
+      var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
+      var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
       var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
       Console.WriteLine("Actual Difference % = " + diff * 100);
       Console.WriteLine("Actual filename = " + actFileName);
@@ -171,8 +171,23 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
     private string MakeUrl()
     {
-      StringBuilder sb = new StringBuilder();
-      sb.Append($"{url}?projectUid={projectUid}&width={width}&height={height}&overlays={overlayType}");
+      var sb = new StringBuilder();
+      sb.Append($"{url}?projectUid={projectUid}&width={width}&height={height}");
+      if (!string.IsNullOrEmpty(overlayType))
+      {
+        if (overlayType.Contains(","))
+        {
+          var otArray = overlayType.Split(',');
+          foreach (var ot in otArray)
+          {
+            sb.Append($"&overlays={ot.Trim()}");
+          }
+        }
+        else
+        {
+          sb.Append($"&overlays={overlayType}");
+        }
+      }
       if (!string.IsNullOrEmpty(filterUid))
       {
         sb.Append($"&filterUid={filterUid}");
