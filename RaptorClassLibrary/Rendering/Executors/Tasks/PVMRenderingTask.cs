@@ -10,6 +10,7 @@ using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Executors.Tasks;
+using VSS.VisionLink.Raptor.GridFabric.Requests;
 
 namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
 {
@@ -83,7 +84,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
             // If the display mode is cut/fill, perform a side lookup to convert the height information into cut/fill...
             if (TileRenderer.Mode == DisplayMode.CutFill)
             {
-                ClientHeightLeafSubGrid ProductionElevations = response as ClientHeightLeafSubGrid;
+                ClientHeightLeafSubGrid[] ProductionElevationsList = response as ClientHeightLeafSubGrid[];
+                ClientHeightLeafSubGrid ProductionElevations = ProductionElevationsList[0];
 
                 // This is the old Legacy pattern of extracting surface elevations and calculating the cutfill, Alan has implemented
                 // cut/fill computatation on the PSNodes now, modify this to the new approach when things are brought up to date
@@ -111,7 +113,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
                 });
             }
 
-            return TileRenderer.Displayer.RenderSubGrid(response as IClientLeafSubGrid);
+            return TileRenderer.Displayer.RenderSubGrid((response as IClientLeafSubGrid[])[0]);
         }
     }
 }

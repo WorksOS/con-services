@@ -99,12 +99,19 @@
     <Compile Include="Events\StartEndRecordedDataEvent.cs" />
     <Compile Include="Designs\Executors\CalculateDesignElevationPatch.cs" />
     <Compile Include="Executors\ProjectExtents.cs" />
+    <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFuncAggregative.cs" />
+    <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFuncProgressive.cs" />
     <Compile Include="GridFabric\NodeFilters\ASNodeRoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\NodeFilters\PSNodeRoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\NodeFilters\RoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\Requests\GenericASNodeRequest.cs" />
     <Compile Include="GridFabric\Requests\GenericPSNodeBroadcastRequest.cs" />
     <Compile Include="GridFabric\Requests\Interfaces\IResponseAggregateWith.cs" />
+    <Compile Include="GridFabric\Requests\SubGridRequestsAggregative.cs" />
+    <Compile Include="GridFabric\Requests\SubGridRequestsProgressive.cs" />
+    <Compile Include="Pipelines\Interfaces\ISubGridPipelineBase.cs" />
+    <Compile Include="Pipelines\SubGridPipelineAggregative.cs" />
+    <Compile Include="Pipelines\SubGridPipelineProgressive.cs" />
     <Compile Include="Rendering\Executors\RenderOverlayTile.cs" />
     <Compile Include="Executors\TAGFileConverter.cs" />
     <Compile Include="Executors\TAGFilePreScan.cs" />
@@ -149,7 +156,7 @@
     <Compile Include="Designs\GridFabric\ComputeFuncs\CalculateDesignElevationPatchComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\BaseRaptorComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\CacheComputeComputeFunc.cs" />
-    <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFunc.cs" />
+    <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFuncBase.cs" />
     <Compile Include="Rendering\GridFabric\ComputeFuncs\TileRenderRequestComputeFunc.cs" />
     <Compile Include="GridFabric\Grids\RaptorGrids.cs" />
     <Compile Include="GridFabric\Listeners\SubGridListener.cs" />
@@ -157,7 +164,7 @@
     <Compile Include="GridFabric\Requests\CacheComputePoolRequest.cs" />
     <Compile Include="GridFabric\Requests\BaseRaptorRequest.cs" />
     <Compile Include="GridFabric\Requests\ApplicationServicePoolRequest.cs" />
-    <Compile Include="GridFabric\Requests\SubGridRequests.cs" />
+    <Compile Include="GridFabric\Requests\SubGridRequestsBase.cs" />
     <Compile Include="Rendering\GridFabric\Requests\TileRenderRequest.cs" />
     <Compile Include="GridFabric\Responses\SubGridRequestsResponse.cs" />
     <Compile Include="GridFabric\Types\SubGridRequestsResponseResult.cs" />
@@ -464,6 +471,7 @@
     <Compile Include="Volumes\GridFabric\Requests\SimpleVolumesRequest_ApplicationService.cs" />
     <Compile Include="Volumes\GridFabric\Requests\SimpleVolumesRequest_ClusterCompute.cs" />
     <Compile Include="Volumes\GridFabric\Responses\SimpleVolumesResponse.cs" />
+    <Compile Include="Volumes\Interfaces\ISubGridRequestsAggregator.cs" />
     <Compile Include="Volumes\ProdReportSelectionType.cs" />
     <Compile Include="Volumes\Servers\Client\RaptorSimpleVolumesServer.cs" />
     <Compile Include="Volumes\SimpleVolumesCalculationsAggregator.cs" />

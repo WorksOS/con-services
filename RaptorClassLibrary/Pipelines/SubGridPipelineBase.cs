@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
+using VSS.VisionLink.Raptor.Pipelines.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.Types;
 
@@ -19,7 +21,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
     /// <summary>
     /// Derived from TSVOICSubGridPipelineBase = class(TObject)
     /// </summary>
-    public class SubGridPipelineBase
+    public class SubGridPipelineBase<TSubGridRequestor, TSubGridRequestComputeFunc> : ISubGridPipelineBase where TSubGridRequestor : SubGridRequestsBase<TSubGridRequestComputeFunc>, new() where TSubGridRequestComputeFunc : SubGridsRequestComputeFuncBase, new()
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -37,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public int ID = 0;
         public PipelinedSubGridTask PipelineTask = null;
-        public bool PipelineAborted = false;
+        public bool PipelineAborted { get; set; } = false;
 
         public UInt32 TimeToLiveSeconds = 0;
         DateTime TimeToLiveExpiryTime = DateTime.MaxValue;
@@ -49,7 +51,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         private bool pipelineCompleted = false;
         protected void SetPipelineCompleted(bool value) => pipelineCompleted = value;
 
-        public long DataModelID = -1;
+        public long DataModelID { get; set; } = -1;
 
         // OverallExistenceMap is the map which describes the combination of Prod Data and Surveyed Surfaces
         public SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
@@ -144,7 +146,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         public bool Initiate()
         {            
             // First analyse the request to determine the set of subgrids that will need to be requested
-            RequestAnalyser analyser = new RequestAnalyser(this, WorldExtents);
+            RequestAnalyser<TSubGridRequestor, TSubGridRequestComputeFunc> analyser = new RequestAnalyser<TSubGridRequestor, TSubGridRequestComputeFunc>(this, WorldExtents);
             if (!analyser.Execute())
             {
                 // Leave gracefully...
@@ -166,15 +168,18 @@ namespace VSS.VisionLink.Raptor.Pipelines
             Log.InfoFormat($"START: Request for {analyser.TotalNumberOfSubgridsAnalysed } subgrids");
 
             // Send the subgrid request mask to the grid fabric layer for processing
-            SubGridRequests gridFabricRequest = new SubGridRequests(PipelineTask, 
-                                                                    DataModelID, 
-                                                                    PipelineTask.RequestDescriptor, 
-                                                                    PipelineTask.RaptorNodeID, 
-                                                                    GridDataType,
-                                                                    IncludeSurveyedSurfaceInformation,
-                                                                    analyser.ProdDataMask, 
-                                                                    analyser.SurveydSurfaceOnlyMask, 
-                                                                    FilterSet);
+            SubGridRequestsBase<TSubGridRequestComputeFunc> gridFabricRequest = new TSubGridRequestor()
+            {
+                Task = PipelineTask,
+                SiteModelID = DataModelID,
+                RequestID = PipelineTask.RequestDescriptor,
+                RaptorNodeID = PipelineTask.RaptorNodeID,
+                RequestedGridDataType = GridDataType,
+                IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaceInformation,
+                ProdDataMask = analyser.ProdDataMask,
+                SurveyedSurfaceOnlyMask = analyser.SurveydSurfaceOnlyMask,
+                Filters = FilterSet
+            };
 
             ICollection<SubGridRequestsResponse> responses = gridFabricRequest.Execute();
 

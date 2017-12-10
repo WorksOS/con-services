@@ -16,10 +16,11 @@ using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Utilities;
+using VSS.VisionLink.Raptor.Volumes.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Volumes
 {
-    public class SimpleVolumesCalculationsAggregator : IResponseAggregateWith<SimpleVolumesCalculationsAggregator>
+    public class SimpleVolumesCalculationsAggregator : ISubGridRequestsAggregator, IResponseAggregateWith<SimpleVolumesCalculationsAggregator>
     {
         /// <summary>
         /// Defines a subgrid full of null values to run through the volumes engine in cases when 
@@ -555,6 +556,15 @@ namespace VSS.VisionLink.Raptor.Volumes
                  //   TMonitor.Exit(Self);
                 }
             }        
+        }
+
+        /// <summary>
+        /// Implement the subgrids request aggregator method ro process subgrid results...
+        /// </summary>
+        /// <param name="subGrids"></param>
+        public void ProcessSubgridResult(IClientLeafSubGrid[] subGrids)
+        {
+            SummariseSubgridResult(subGrids as ClientHeightLeafSubGrid[]);
         }
     }
 }

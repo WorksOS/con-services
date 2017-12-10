@@ -32,7 +32,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         SiteModel SiteModel = null;
 
         [NonSerialized]
-        CombinedFilter Filter = null;
+        /*FilterSet Filters = null; */ CombinedFilter Filter = null;
 
         [NonSerialized]
         SurfaceElevationPatchRequest surfaceElevationPatchRequest = null;
@@ -91,7 +91,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// and initialises the requestor state ready to start processing indivudla subgrid requests.
         /// </summary>
         public SubGridRequestor(SiteModel sitemodel,
-                                CombinedFilter filter,
+                                /*FilterSet filters, */CombinedFilter filter,
                                 bool hasOverrideSpatialCellRestriction,
                                 BoundingIntegerExtent2D overrideSpatialCellRestriction,
                                 byte treeLevel,
@@ -99,7 +99,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                 AreaControlSet areaControlSet)
         {
             SiteModel = sitemodel;
-            Filter = filter;
+            /*Filters = filters;*/ Filter = filter;
             TreeLevel = treeLevel;
             HasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
             OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
@@ -115,7 +115,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                              areaControlSet
                                              );
 
-            ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
+            //Defer this to the point the actual filter is being references to process a subgrid
+            //ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
 
             surfaceElevationPatchRequest = new SurfaceElevationPatchRequest();
 

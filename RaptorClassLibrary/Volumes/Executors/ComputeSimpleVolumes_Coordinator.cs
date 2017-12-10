@@ -153,7 +153,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
 
             RequestErrorStatus ResultStatus = RequestErrorStatus.Unknown;
 
-            // RequestDescriptor: Int64;
+            long RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
 
             //NEECoords: TCSConversionCoordinates;
             //LLHCoords: TCSConversionCoordinates;
@@ -188,7 +188,6 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                           end;
                     */
 
-                    //RequestDescriptor:= ASNodeImplInstance.NextDescriptor;
                     // InterlockedIncrement64(ASNodeRequestStats.NumVolumeRequests);
 
                     ResultStatus = FilterUtilities.PrepareFiltersForUse(new CombinedFilter[] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
@@ -217,6 +216,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
 
                     VolumesCalculator ComputeVolumes = new VolumesCalculator()
                     {
+                        RequestDescriptor = RequestDescriptor,
                         SiteModel = SiteModel,
                         Aggregator = Aggregator,
                         BaseFilter = BaseFilter,

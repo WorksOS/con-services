@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
+using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Pipelines;
+using VSS.VisionLink.Raptor.Pipelines.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Executors.Tasks
@@ -15,7 +17,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
     /// subgrids and profile sections that require additional processing to arrive at 
     /// the final result (such as a rendered tile)
     /// </summary>
-    public abstract class TaskBase : ITask
+    public abstract class TaskBase : ITask //<TSubGridsRequestor> : ITask where TSubGridsRequestor : SubGridRequestsBase, new()
     {
         /// <summary>
         /// The request descriptor assigned to the task.
@@ -70,6 +72,6 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         /// <summary>
         /// A reference to a subgrid processing pipeline associated with this task
         /// </summary>
-        public SubGridPipelineBase PipeLine { get; set; } = null;
+        public ISubGridPipelineBase PipeLine { get; set; } = null;
     }
 }

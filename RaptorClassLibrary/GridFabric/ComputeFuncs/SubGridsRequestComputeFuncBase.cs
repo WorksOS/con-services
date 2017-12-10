@@ -31,9 +31,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     /// The closure/function that implements subgrid request processing on compute nodes
     /// </summary>
     [Serializable]
-    class SubGridsRequestComputeFunc : CacheComputeComputeFunc, IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse>
+    public class SubGridsRequestComputeFuncBase : CacheComputeComputeFunc, IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse>, IDisposable
     {
-        [NonSerialized]
         private const int addressBucketSize = 20;
 
         [NonSerialized]
@@ -54,7 +53,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         [NonSerialized]
         private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
 
-        //        private static int requestCount = 0;
+        // private static int requestCount = 0;
 
         /// <summary>
         /// Mask is the internal sub grid bit mask tree created from the serialised mask contained in the 
@@ -75,22 +74,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         private SubGridTreeSubGridExistenceBitMask SurveyedSurfaceOnlyMask = null;
 
         [NonSerialized]
-        private SubGridsRequestArgument localArg = null;
+        protected SubGridsRequestArgument localArg = null;
 
         [NonSerialized]
-        private string raptorNodeIDAsString = String.Empty;
+        protected string raptorNodeIDAsString = String.Empty;
 
         [NonSerialized]
-        private IMessaging rmtMsg = null;
+        protected IMessaging rmtMsg = null;
 
         [NonSerialized]
         private SiteModel siteModel = null;
 
         [NonSerialized]
-        private MemoryStream MS = null;
-
-        [NonSerialized]
-        private IClientLeafSubGrid[] clientGrids = null;
+        private IClientLeafSubGrid[][] clientGrids = null;
 
         /// <summary>
         /// The list of address being constructed prior to summission to the processing engine
@@ -105,7 +101,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         private int listCount = 0;
 
         [NonSerialized]
-        private SubGridRequestor requestor = null;
+        private SubGridRequestor[] Requestors = null;
 
         [NonSerialized]
         private AreaControlSet AreaControlSet = AreaControlSet.Null();
@@ -113,9 +109,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public SubGridsRequestComputeFunc()
+        public SubGridsRequestComputeFuncBase()
         {
-
         }
 
         /// <summary>
@@ -156,7 +151,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                             continue;
                         }
 
-                        if (SubgridResultArray[I]?.GridDataType != RequestGridDataType)
+                        if (SubgridResultArray[I].GridDataType != RequestGridDataType)
                         {
                             switch (RequestGridDataType)
                             {
@@ -170,11 +165,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
                                     /*
                                     Debug.Assert(NewClientGrids[I] is ClientHeightLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {NewClientGrids[I].GetType().Name}/{NewClientGrids[I]}");
-
                                     if (!(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid))
-                                    {
                                         Debug.Assert(SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"SubgridResultArray[I] is ClientHeightAndTimeLeafSubGrid failed, is actually {SubgridResultArray[I].GetType().Name}/{SubgridResultArray[I]}");
-                                    }
                                     */
 
                                     (NewClientGrids[I] as ClientHeightLeafSubGrid).Assign(SubgridResultArray[I] as ClientHeightAndTimeLeafSubGrid);
@@ -187,6 +179,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                             SubgridResultArray[I] = null;
                         }
                     }
+
                 }
                 finally
                 {
@@ -248,7 +241,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// Take a subgrid address and request the required client subgrid depending on GridDataType
         /// </summary>
         /// <param name="address"></param>
-        private ServerRequestResult PerformSubgridRequest(SubGridCellAddress address, out IClientLeafSubGrid clientGrid)
+        private ServerRequestResult PerformSubgridRequest(SubGridRequestor requestor, 
+                                                          SubGridCellAddress address, 
+                                                          out IClientLeafSubGrid clientGrid)
         {
             try
             {
@@ -293,6 +288,17 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         }
 
         /// <summary>
+        /// Method responsible for accepting subgrods from the query engine and processing them in the next step of
+        /// the request
+        /// </summary>
+        /// <param name="results"></param>
+        /// <param name="resultCount"></param>
+        public virtual void ProcessSubgridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
+        {
+
+        }
+
+        /// <summary>
         /// Process a subset of the full set of subgrids in the request
         /// </summary>
         private void PerformSubgridRequestList()
@@ -308,54 +314,25 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
             for (int i = 0; i < listCount; i++)
             {
-                ServerRequestResult result = PerformSubgridRequest(addresses[i], out IClientLeafSubGrid clientGrid);
-
-                if (result == ServerRequestResult.NoError)
+                // Execute a client grid request for each reqeustor and create an array of the results
+                clientGrids[resultCount++] = Requestors.Select(x =>
                 {
-                    clientGrids[resultCount++] = clientGrid;
-                }
+                    ServerRequestResult result = PerformSubgridRequest(x, addresses[i], out IClientLeafSubGrid clientGrid);
+                    return result == ServerRequestResult.NoError ? clientGrid : null;
+                }).ToArray();
             }
 
-            // Package the resulting subgrids into the MemoryStream
-            MS.Position = 0;
-
-            using (BinaryWriter writer = new BinaryWriter(MS, Encoding.UTF8, true))
+            if (resultCount > 0)
             {
-                byte[] buffer = new byte[10000];
-
-                writer.Write(resultCount);
-
-                for (int i = 0; i < resultCount; i++)
+                try
                 {
-                    clientGrids[i].Write(writer, buffer);
-
-                    // Return the client grid to the factory for recycling now its role is complete here... when using ConcurrentBag
-                    //ClientLeafSubGridFactory.ReturnClientSubGrid(ref clientGrids[i]);
+                    ProcessSubgridRequestResult(clientGrids, resultCount);
                 }
-
-                // Return the client grid to the factory for recycling now its role is complete here... when using SimpleConcurrentBag
-                if (resultCount > 0)
+                finally
                 {
+                    // Return the client grid to the factory for recycling now its role is complete here...
                     ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, resultCount);
                 }
-            }
-
-            // ... and send it to the message topic in the compute func
-            try
-            {
-                //// Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
-                //                localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
-                //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>(ServerRoles.ROLE_ATTRIBUTE_NAME),
-                //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("RaptorNodeID"));
-                byte[] bytes = new byte[MS.Position];
-                MS.Position = 0;
-                MS.Read(bytes, 0, bytes.Length);
-                rmtMsg.Send(bytes, localArg.MessageTopic);
-            }
-            catch (Exception E)
-            {
-                Log.Error("Exception sending message", E);
-                throw;
             }
         }
 
@@ -380,44 +357,43 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// </summary>
         private void PerformSubgridRequests()
         {
-            using (MS = new MemoryStream())
+            clientGrids = new IClientLeafSubGrid[addressBucketSize][];
+
+            // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
+            // noted with the 'set' bits in the bitmask, processing only those that matter for this server
+
+            Log.Info("Scanning subgrids in request");
+
+            siteModel = SiteModels.SiteModels.Instance().GetSiteModel(localArg.SiteModelID);
+
+            // Construct the set of requestors to be used for the filters present in the request
+            Requestors = localArg.Filters.Filters.Select(x => new SubGridRequestor(siteModel,
+                                                           x, //localArg.Filters.Filters.Count() > 0 ? localArg.Filters.Filters[0] : null,
+                                                           false, // Override cell restriction
+                                                           BoundingIntegerExtent2D.Inverted(), // Override cell restriction
+                                                           SubGridTree.SubGridTreeLevels,
+                                                           int.MaxValue, // MaxCellPasses
+                                                           AreaControlSet // No specifc paramters for selecting cells within the request area
+                                                           )).ToArray();
+
+            addresses = new SubGridCellAddress[addressBucketSize];
+
+            // Request production data only, or hybrid production data and surveyd surface data subgrids
+            ProdDataMask?.ScanAllSetBitsAsSubGridAddresses(address =>
             {
-                clientGrids = new IClientLeafSubGrid[addressBucketSize];
+                // Is this subgrid is the responsibility of this server?
+                if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
 
-                // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
-                // noted with the 'set' bits in the bitmask, processing only those that matter for this server
+                // Decorate the address with the production data and surveyed surface flags
+                address.ProdDataRequested = true;
+                address.SurveyedSurfaceDataRequested = localArg.IncludeSurveyedSurfaceInformation;
 
-                Log.Info("Scanning subgrids in request");
+                AddSubgridToAddressList(address);      // Assign the address into the group to be processed
+            });
 
-                siteModel = SiteModels.SiteModels.Instance().GetSiteModel(localArg.SiteModelID);
-
-                requestor = new SubGridRequestor(siteModel,
-                                                 localArg.Filters.Filters.Count() > 0 ? localArg.Filters.Filters[0] : null,
-                                                 false, // Override cell restriction
-                                                 BoundingIntegerExtent2D.Inverted(), // Override cell restriction
-                                                 SubGridTree.SubGridTreeLevels,
-                                                 int.MaxValue, // MaxCellPasses
-                                                 AreaControlSet // No specifc paramters for selecting cells within the request area
-                                                 );
-
-                addresses = new SubGridCellAddress[addressBucketSize];
-
-                // Request production data only, or hybrid production data and surveyd surface data subgrids
-                ProdDataMask?.ScanAllSetBitsAsSubGridAddresses(address =>
-                {
-                    // Is this subgrid is the responsibility of this server?
-                    if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
-
-                    // Decorate the address with the production data and surveyed surface flags
-                    address.ProdDataRequested = true;
-                    address.SurveyedSurfaceDataRequested = localArg.IncludeSurveyedSurfaceInformation;
-
-                    AddSubgridToAddressList(address);      // Assign the address into the group to be processed
-                });
-
-                // Request surveyd surface only subgrids
-                SurveyedSurfaceOnlyMask?.ScanAllSetBitsAsSubGridAddresses(address =>
-                {
+            // Request surveyd surface only subgrids
+            SurveyedSurfaceOnlyMask?.ScanAllSetBitsAsSubGridAddresses(address =>
+            {
                     // Is this subgrid is the responsibility of this server?
                     if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
 
@@ -425,11 +401,10 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     address.ProdDataRequested = false; // TODO: This is a bit of an assumption and assumes the subgrid request is not solely driven by the existance of a subgrid in a surveyed surface
                     address.SurveyedSurfaceDataRequested = localArg.IncludeSurveyedSurfaceInformation;
 
-                    AddSubgridToAddressList(address);      // Assign the address into the group to be processed
+                AddSubgridToAddressList(address);      // Assign the address into the group to be processed
                 });
 
-                PerformSubgridRequestList();    // Process the remaining subgrids...
-            }
+            PerformSubgridRequestList();    // Process the remaining subgrids...
         }
 
         /// <summary>
@@ -466,6 +441,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
             result.ResponseCode = SubGridRequestsResponseResult.OK;
             return result;
+        }
+
+        public virtual void DoDispose()
+        {
+           // No dispose behaviour for base compute function
+        }
+
+        /// <summary>
+        /// Implementation of the IDisposabe interface
+        /// </summary>
+        public void Dispose()
+        {
+            DoDispose();
         }
     }
 }

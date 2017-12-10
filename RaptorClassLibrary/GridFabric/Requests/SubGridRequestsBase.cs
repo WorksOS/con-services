@@ -1,23 +1,16 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cluster;
-using Apache.Ignite.Core.Compute;
-using Apache.Ignite.Core.Messaging;
+﻿using Apache.Ignite.Core.Compute;
 using log4net;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Designs.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.GridFabric.Listeners;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.Types;
@@ -29,7 +22,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// to relevant filters other parameters. The grid fabric responds with responses as the servers in the fabric compute them, sending
     /// them to the Raptor node identified by the RaptorNodeID property
     /// </summary>
-    public class SubGridRequests : CacheComputePoolRequest
+    public class SubGridRequestsBase<TSubGridsRequestComputeFunc> : CacheComputePoolRequest where TSubGridsRequestComputeFunc : SubGridsRequestComputeFuncBase, new()
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -38,6 +31,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// Task is the business logic that will handle the response to the subgrids request
         /// </summary>
         public ITask Task = null;
+
+        public SubGridsRequestArgument arg = null;
 
         /// <summary>
         /// The ID of the SiteModel to execute the request against
@@ -82,9 +77,10 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         public bool IncludeSurveyedSurfaceInformation { get; set; } = false;
 
         /// <summary>
-        /// No arg constructor that establishes this request as a cache compute request
+        /// No arg constructor that establishes this request as a cache compute request. 
+        /// of subgrid processing is returned as a set of partitioned results from the Broadcast() invocation.
         /// </summary>
-        public SubGridRequests() : base()
+        public SubGridRequestsBase() : base()
         {
         }
 
@@ -100,7 +96,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <param name="prodDataMask"></param>
         /// <param name="surveyedSurfacOnlyeMask"></param>
         /// <param name="filters"></param>
-        public SubGridRequests(ITask task, 
+        public SubGridRequestsBase(ITask task, 
                                long siteModelID, 
                                long requestID, 
                                string raptorNodeID, 
@@ -113,19 +109,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             Task = task;
             SiteModelID = siteModelID;
             RequestID = requestID;
+            RaptorNodeID = raptorNodeID;
             RequestedGridDataType = requestedGridDataType;
             IncludeSurveyedSurfaceInformation = includeSurveyedSurfaceInformation;
             ProdDataMask = prodDataMask;
             SurveyedSurfaceOnlyMask = surveyedSurfaceOnlyMask;
             Filters = filters;
-            RaptorNodeID = raptorNodeID;
         }
 
         /// <summary>
         /// Unpacks elements of the request argument that are represented as byte arrays in the Ignite request
         /// </summary>
         /// <returns></returns>
-        private SubGridsRequestArgument PrepareArgument()
+        protected void PrepareArgument()
         {
             using (MemoryStream ProdDataMS = new MemoryStream(), SurveyedSurfaceMS = new MemoryStream())
             {
@@ -134,16 +130,32 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
                     SubGridTreePersistor.Write(ProdDataMask, ProdDataWriter);
                     SubGridTreePersistor.Write(SurveyedSurfaceOnlyMask, SurveyedSurfaceWriter);
 
-                    return new SubGridsRequestArgument(SiteModelID,
-                                                       RequestID,
-                                                       RequestedGridDataType,
-                                                       IncludeSurveyedSurfaceInformation,
-                                                       ProdDataMS.ToArray(),
-                                                       SurveyedSurfaceMS.ToArray(),
-                                                       Filters,
-                                                       String.Format("SubGridRequest:{0}", RequestID),
-                                                       RaptorNodeID);
+                    arg = new SubGridsRequestArgument(SiteModelID,
+                                                      RequestID,
+                                                      RequestedGridDataType,
+                                                      IncludeSurveyedSurfaceInformation,
+                                                      ProdDataMS.ToArray(),
+                                                      SurveyedSurfaceMS.ToArray(),
+                                                      Filters,
+                                                      String.Format("SubGridRequest:{0}", RequestID),
+                                                      RaptorNodeID);
                 }
+            }
+        }
+
+        private void CheckArguments()
+        {
+            // Make sure things look kosher
+            if (ProdDataMask == null || SurveyedSurfaceOnlyMask == null || Filters == null || RequestID == -1)
+            {
+                if (ProdDataMask == null)
+                    throw new ArgumentException("ProdDataMask not initialised");
+                if (SurveyedSurfaceOnlyMask == null)
+                    throw new ArgumentException("SurveyedSurfaceOnlyMask not initialised");
+                if (Filters == null)
+                    throw new ArgumentException("Filters not initialised");
+                if (RequestID == -1)
+                    throw new ArgumentException("RequestID not initialised");
             }
         }
 
@@ -152,30 +164,18 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// parameters
         /// </summary>
         /// <returns></returns>
-        public ICollection<SubGridRequestsResponse> Execute()
+        public virtual ICollection<SubGridRequestsResponse> Execute()
         {
-            // Make sure things look kosher
-            if (ProdDataMask == null || SurveyedSurfaceOnlyMask == null || Filters == null || RequestID == -1)
-            {
-                throw new ArgumentException("Mask, Filters or RequestID not initialised");
-            }
+            CheckArguments();
 
             Log.InfoFormat("Preparing argument with RaptorNodeID = {0}", RaptorNodeID);
 
             // Construct the argument to be supplied to the compute cluster
-            SubGridsRequestArgument arg = PrepareArgument();
+            PrepareArgument();
 
             Log.InfoFormat("Prepared argument has RaptorNodeID = {0}", arg.RaptorNodeID);
             Log.Info($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
             Log.Info($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()}");
-
-            // Construct the function to be used
-            IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse> func = new SubGridsRequestComputeFunc();
-
-            // Create a messaging group the cluster can use to send messages back to and establish
-            // a local listener
-            var msgGroup = _Compute.ClusterGroup.GetMessaging();
-            msgGroup.LocalListen(new SubGridListener(Task), arg.MessageTopic);
 
             Task<ICollection<SubGridRequestsResponse>> taskResult = null;
             //ICollection<SubGridRequestsResponse> result = null;
@@ -184,6 +184,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             sw.Start();
             try
             {
+                // Construct the function to be used
+                IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse> func = new TSubGridsRequestComputeFunc();
+
                 // Note: Broadcast will block until all compute nodes receiving the request have responded, or
                 // until the internal Ignite timeout expires
                 //result = _compute.Broadcast(func, arg);

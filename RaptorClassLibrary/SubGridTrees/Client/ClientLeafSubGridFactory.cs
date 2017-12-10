@@ -146,5 +146,21 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
                 ReturnClientSubGrid(ref clientGrids[i]);
             }
         }
+
+        /// <summary>
+        /// Return an array of client grids (of the same type) previously obtained from the factory so it may reuse them
+        /// </summary>
+        /// <param name="clientGrids"></param>
+        /// <param name="count"></param>
+        public void ReturnClientSubGrids(IClientLeafSubGrid[][] clientGrids, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                for (int j = 0; j < clientGrids[i]?.Length; j++)
+                {
+                    ReturnClientSubGrid(ref clientGrids[i][j]);
+                }
+            }
+        }
     }
 }

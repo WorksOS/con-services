@@ -17,8 +17,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
 {
     /// <summary>
     /// SubGridListener implements a listening post for subgrid results being sent by processing nodes back
-    /// to the local context for further processing. Subgrids are sent in groups as serialised streams held in memory streams
-    /// to minimise serialization/deserialisation overhead
+    /// to the local context for further processing when using a proressive style of subgrid requesting. 
+    /// Subgrids are sent in groups as serialised streams held in memory streams to minimise serialization/deserialisation overhead
     /// </summary>
     [Serializable]
     public class SubGridListener : IMessageListener<byte[]>
@@ -69,26 +69,26 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
                 using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
                 {
                     // Read the number of subgrid present in the stream
-                    int subgridCount = reader.ReadInt32();
+                    int responseCount = reader.ReadInt32();
 
                     // Create a single instance of the client grid. The approach here is that TransferResponse does not move ownership 
                     // to the called context (it may clone the passed in client grid if desired)
-                    IClientLeafSubGrid [] clientGrids = new IClientLeafSubGrid[subgridCount];
-
-                    //IClientLeafSubGrid clientGrid = ClientLeafSubGridFactory.GetSubGrid(Task.GridDataType);
+                    IClientLeafSubGrid [][] clientGrids = new IClientLeafSubGrid[responseCount][];
 
                     try
                     {
                         byte[] buffer = new byte[10000];
 
-                        for (int i = 0; i < subgridCount; i++)
+                        for (int i = 0; i < responseCount; i++)
                         {
-                            // ######################################
-                            // Task.PipeLine.SubgridProcessed();
-                            // continue;
+                            int subgridCount = reader.ReadInt32();
+                            clientGrids[i] = new IClientLeafSubGrid[subgridCount];
 
-                            clientGrids[i] = ClientLeafSubGridFactory.GetSubGrid(Task.GridDataType);
-                            clientGrids[i].Read(reader, buffer);
+                            for (int j = 0; j < subgridCount; j++)
+                            {
+                                clientGrids[i][j] = ClientLeafSubGridFactory.GetSubGrid(Task.GridDataType);
+                                clientGrids[i][j].Read(reader, buffer);
+                            }
 
                             int thisResponseCount = ++responseCounter;
 
@@ -123,7 +123,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
                         // ClientLeafSubGridFactory.ReturnClientSubGrid(ref clientGrid);
 
                         // Return the client grid to the factory for recycling now its role is complete here... when using SimpleConcurrentBag
-                        ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, subgridCount);
+                        ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, responseCount);
                     }
                 }
             }

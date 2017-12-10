@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks;
+using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.Types;
 
@@ -28,7 +29,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors.Tasks
         /// Constructor accepting a simple volumes aggregator that hardwires the expected grid data type to height
         /// </summary>
         /// <param name="Aggregator"></param>
-        public SimpleVolumesComputationTask(SimpleVolumesCalculationsAggregator Aggregator) : base(-1, "", GridDataType.Height)
+        public SimpleVolumesComputationTask(SimpleVolumesCalculationsAggregator Aggregator) : base(Guid.NewGuid().GetHashCode(), "", GridDataType.Height)
         {
 
         }

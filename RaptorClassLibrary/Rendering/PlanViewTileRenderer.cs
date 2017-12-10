@@ -4,6 +4,7 @@ using System.Reflection;
 using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Pipelines;
 using VSS.VisionLink.Raptor.Rendering.Executors.Tasks;
 using VSS.VisionLink.Raptor.Rendering.Palettes;
@@ -53,7 +54,7 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         // ICOptions : TSVOICOptions;
 
-        SubGridPipelineBase PipeLine = null;
+        SubGridPipelineProgressive PipeLine = null;
 
         // LiftBuildSettings : TICLiftBuildSettings;
 
@@ -270,7 +271,7 @@ namespace VSS.VisionLink.Raptor.Rendering
                 // ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.ASTasks.Add(PipelinedTask);
                 try
                 {
-                    PipeLine = new SubGridPipelineBase(0, PipelinedTask);
+                    PipeLine = new SubGridPipelineProgressive(0, PipelinedTask);
                     // PipeLine = ASNodeImplInstance.SubgridPipelinePool.AcquirePipeline;
 
                     PipelinedTask.PipeLine = PipeLine;

@@ -10,6 +10,8 @@ using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
+using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Pipelines;
 using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.SiteModels;
@@ -152,21 +154,24 @@ namespace VSS.VisionLink.Raptor.Volumes
 
         //        FEpochCount           : Integer;
 
-        SurveyedSurfaces FilteredBaseGroundSurfaces = null;
-        SurveyedSurfaces FilteredTopGroundSurfaces = null;
+        SurveyedSurfaces FilteredBaseSurveyedSurfaces = new SurveyedSurfaces();
+        SurveyedSurfaces FilteredTopSurveyedSurfaces = new SurveyedSurfaces();
+
+        public long RequestDescriptor { get; set; } = -1;
+
         public abstract bool ComputeVolumeInformation();
 
         // ProcessVolumeInformationForSubgrid takes two sub grid leaves and calculates
         // the volume information between the two subgrids depending on the volume calculation type.
         public abstract void ProcessVolumeInformationForSubgrid(ClientHeightLeafSubGrid[] subGrids);
 
-        private void ConfigurePipeline(SubGridPipelineBase PipeLine,
-                                      out BoundingIntegerExtent2D CellExtents)
+        private void ConfigurePipeline(SubGridPipelineAggregative PipeLine,
+                                       out BoundingIntegerExtent2D CellExtents)
         {
             CellExtents = BoundingIntegerExtent2D.Inverted();
 
             //PipeLine.TimeToLiveSeconds := VLPDSvcLocations.VLPDPSNode_VolumePipelineTTLSeconds;
-            //PipeLine.RequestDescriptor := FRequestDescriptor;
+            PipeLine.RequestDescriptor = RequestDescriptor;
             //PipeLine.ExternalDescriptor := FExternalDescriptor;
 
             PipeLine.DataModelID = SiteModel.ID;
@@ -209,7 +214,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
             PipeLine.GridDataType = GridDataType.Height;
 
-            if (FilteredTopGroundSurfaces.Count > 0 || FilteredBaseGroundSurfaces.Count > 0)
+            if (FilteredTopSurveyedSurfaces.Count > 0 || FilteredBaseSurveyedSurfaces.Count > 0)
             {
                 PipeLine.IncludeSurveyedSurfaceInformation = true;
             }
@@ -218,7 +223,7 @@ namespace VSS.VisionLink.Raptor.Volumes
         public RequestErrorStatus ExecutePipeline()
         {
             PipelinedSubGridTask PipelinedTask = null;
-            SubGridPipelineBase PipeLine = null;
+            SubGridPipelineAggregative PipeLine = null;
 
             BoundingIntegerExtent2D CellExtents;
             RequestErrorStatus Result = RequestErrorStatus.Unknown;
@@ -256,31 +261,31 @@ namespace VSS.VisionLink.Raptor.Volumes
 
                     OverallExistenceMap = new SubGridTreeSubGridExistenceBitMask();
 
-                    // Work out the ground surfaces and coverage areas that need to be taken into account
+                    // Work out the surveyed surfaces and coverage areas that need to be taken into account
 
                     SurveyedSurfaces SurveyedSurface = SiteModel.SurveyedSurfaces;
 
-                    // See if we need to handle ground surface data for 'base'
-                    // Filter out any ground surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
+                    // See if we need to handle surveyed surface data for 'base'
+                    // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
                     if (Aggregator.VolumeType == VolumeComputationType.Between2Filters || Aggregator.VolumeType == VolumeComputationType.BetweenFilterAndDesign)
                     {
-                        if (!SurfaceFilterUtilities.ProcessSurveyedSurfacesForFilter(SiteModel.ID, SurveyedSurface, BaseFilter, FilteredTopGroundSurfaces, FilteredBaseGroundSurfaces, OverallExistenceMap))
+                        if (!SurfaceFilterUtilities.ProcessSurveyedSurfacesForFilter(SiteModel.ID, SurveyedSurface, BaseFilter, FilteredTopSurveyedSurfaces, FilteredBaseSurveyedSurfaces, OverallExistenceMap))
                         {
                             return RequestErrorStatus.Unknown;
                         }
                     }
 
-                    // See if we need to handle ground surface data for 'top'
-                    // Filter out any ground surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
+                    // See if we need to handle surveyed surface data for 'top'
+                    // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
                     if (Aggregator.VolumeType == VolumeComputationType.Between2Filters || Aggregator.VolumeType == VolumeComputationType.BetweenDesignAndFilter)
                     {
-                        if (!SurfaceFilterUtilities.ProcessSurveyedSurfacesForFilter(SiteModel.ID, SurveyedSurface, TopFilter, FilteredBaseGroundSurfaces, FilteredTopGroundSurfaces, OverallExistenceMap))
+                        if (!SurfaceFilterUtilities.ProcessSurveyedSurfacesForFilter(SiteModel.ID, SurveyedSurface, TopFilter, FilteredBaseSurveyedSurfaces, FilteredTopSurveyedSurfaces, OverallExistenceMap))
                         {
                             return RequestErrorStatus.Unknown;
                         }
                     }
 
-                    // Add in the production data existance map to the computed ground surfaces existance maps
+                    // Add in the production data existance map to the computed surveyed surfaces existance maps
                     OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
 
                     // If necessary, impose spatial constraints from Lift filter design(s)
@@ -304,7 +309,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
                     try
                     {
-                        PipeLine = new SubGridPipelineBase(0, PipelinedTask);
+                        PipeLine = new SubGridPipelineAggregative(0, PipelinedTask);
 
                         PipelinedTask.PipeLine = PipeLine;
 
