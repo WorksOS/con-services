@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
       // cannot modify collectionB from within collectionA
       // put it in here and remove later
-      //var fileListProjectToRemove = new List<ImportedFileProject>();
+      var fileListProjectToRemove = new List<ImportedFileProject>();
 
       // row in  NH_OP and in project, nothing has changed (a)
       // row in  NH_OP and in project, logically deleted in project. physically delete in NH_OP (b)
@@ -88,22 +88,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             }
           }
           // else (a) no change
-          //fileListProjectToRemove.Add(gotMatchingProject);
-          fileListProject.Remove(gotMatchingProject);
+          fileListProjectToRemove.Add(gotMatchingProject);
         }
 
-        fileListNhOp.Remove(fileListNhOp[i]);        
       }
 
-      // internal error, have we forgotten some scenario?
-      if (fileListNhOp.Count > 0)
-      {
-        // proceed with sync, but send alert to NewRelic
-        NotifyNewRelicError(startUtc, "fileListNhOp", fileListNhOp.Count);
-      }
-
-      //fileListProject.RemoveAll(
-       // x => fileListProjectToRemove.Exists(y => y.LegacyImportedFileId == x.LegacyImportedFileId));
+      fileListProject.RemoveAll(
+        x => fileListProjectToRemove.Exists(y => y.LegacyImportedFileId == x.LegacyImportedFileId));
     }
 
     /// <summary>
@@ -142,15 +133,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           // (n)
           CreateFileInOldTable(repoProject, repoNhOp, startUtc, fileListProject[i]);
         }
-        fileListProject.Remove(fileListProject[i]);
       }
 
-      // internal error, have we forgotten some scenario?
-      if (fileListProject.Count > 0)
-      {
-        // proceed with sync, but send alert to NewRelic
-        NotifyNewRelicError(startUtc, "fileListProject", fileListProject.Count);
-      }
     }
 
     /// <summary>
@@ -261,19 +245,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         { "legacyImportedFileId", ifp.LegacyImportedFileId }
       };
       NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", errorLevel, startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
-    }
-
-    /// <summary>
-    /// Error for NewRelic
-    /// </summary>
-    private void NotifyNewRelicError(DateTime startUtc, string what, int count)
-    {
-      var newRelicAttributes = new Dictionary<string, object>
-      {
-        { "message", $"ImportedFileSynchroniser internal error as {what} list should be empty" },
-        { what, count }
-      };
-      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
     }
   }
 }
