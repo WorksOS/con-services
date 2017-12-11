@@ -89,11 +89,13 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
             "At least one type of map tile overlay must be specified"));
       }
 
-      if (width < MIN_PIXELS || width > MAX_PIXELS || height < MIN_PIXELS || height > MAX_PIXELS)
+      bool hasBaseMap = overlays.Contains(TileOverlayType.BaseMap);
+      int maxPixels = hasBaseMap ? MAX_ALK_PIXELS : MAX_PIXELS;
+      if (width < MIN_PIXELS || width > maxPixels || height < MIN_PIXELS || height > maxPixels)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"Tile size must be between {MIN_PIXELS} and {MAX_PIXELS}"));
+            $"Tile size must be between {MIN_PIXELS} and {MAX_ALK_PIXELS} with a base map or {MIN_PIXELS} and {MAX_PIXELS} otherwise"));
       }
 
       if (overlays.Contains(TileOverlayType.BaseMap) && !mapType.HasValue)
@@ -149,5 +151,6 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
 
     private const int MIN_PIXELS = 64;
     private const int MAX_PIXELS = 4096;
+    private const int MAX_ALK_PIXELS = 2048;
   }
 }
