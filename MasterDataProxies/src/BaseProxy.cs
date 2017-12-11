@@ -47,15 +47,16 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="payload">The payload of the request</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <param name="method">Http method, defaults to POST</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null)
+    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null, string method="POST")
     {
       var url = ExtractUrl(urlKey, route);
       T result = default(T);
       try
       {
         GracefulWebRequest request = new GracefulWebRequest(logger);
-        result = await request.ExecuteRequest<T>(url, "POST", customHeaders, payload);
+        result = await request.ExecuteRequest<T>(url, method, customHeaders, payload);
         log.LogDebug("Result of send to master data request: {0}", result);
       }
       catch (Exception ex)
