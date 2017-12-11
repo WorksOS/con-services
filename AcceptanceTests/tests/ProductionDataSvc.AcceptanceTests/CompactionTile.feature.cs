@@ -68,9 +68,9 @@ namespace ProductionDataSvc.AcceptanceTests
             testRunner.CollectScenarioErrors();
         }
         
-        public virtual void CompactionGetTiles_NoDesignFilter_GoodRequest(string requestName, string projectUID, string bBox, string width, string height, string resultName, string difference, string[] exampleTags)
+        public virtual void GetTilesNoDesignFilter(string requestName, string projectUID, string bBox, string width, string height, string resultName, string difference, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Tiles - No Design Filter - Good Request", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get Tiles No Design Filter", exampleTags);
 #line 5
 this.ScenarioSetup(scenarioInfo);
 #line 6
@@ -90,7 +90,7 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles - No Design Filter - Good Request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Tiles No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
@@ -100,14 +100,14 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GoodRequest")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
-        public virtual void CompactionGetTiles_NoDesignFilter_GoodRequest_()
+        public virtual void GetTilesNoDesignFilter_()
         {
-            this.CompactionGetTiles_NoDesignFilter_GoodRequest("", "ff91dd40-1569-4765-a2bc-014321f76ace", "36.206964000089840283, -115.0203540002853231, 36.206956000089640213, -115.0203440" +
+            this.GetTilesNoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "36.206964000089840283, -115.0203540002853231, 36.206956000089640213, -115.0203440" +
                     "0028509253", "256", "256", "GoodRequest", "1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles - No Design Filter - Good Request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Tiles No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SS Included")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "SS Included")]
@@ -117,13 +117,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SSIncluded")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
-        public virtual void CompactionGetTiles_NoDesignFilter_GoodRequest_SSIncluded()
+        public virtual void GetTilesNoDesignFilter_SSIncluded()
         {
-            this.CompactionGetTiles_NoDesignFilter_GoodRequest("SS Included", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "36.207437, -115.019999, 36.207473, -115.019959", "256", "256", "SSIncluded", "1", ((string[])(null)));
+            this.GetTilesNoDesignFilter("SS Included", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "36.207437, -115.019999, 36.207473, -115.019959", "256", "256", "SSIncluded", "1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles - No Design Filter - Good Request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Tiles No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SS Excluded")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "SS Excluded")]
@@ -133,14 +133,14 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SSExcluded")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
-        public virtual void CompactionGetTiles_NoDesignFilter_GoodRequest_SSExcluded()
+        public virtual void GetTilesNoDesignFilter_SSExcluded()
         {
-            this.CompactionGetTiles_NoDesignFilter_GoodRequest("SS Excluded", "86a42bbf-9d0e-4079-850f-835496d715c5", "36.207437, -115.019999, 36.207473, -115.019959", "256", "256", "SSExcluded", "1", ((string[])(null)));
+            this.GetTilesNoDesignFilter("SS Excluded", "86a42bbf-9d0e-4079-850f-835496d715c5", "36.207437, -115.019999, 36.207473, -115.019959", "256", "256", "SSExcluded", "1", ((string[])(null)));
         }
         
-        public virtual void CompactionGetTiles(string requestName, string projectUID, string filterUID, string bBox, string width, string height, string mode, string resultName, string difference, string[] exampleTags)
+        public virtual void GetTiles(string requestName, string projectUID, string filterUID, string bBox, string width, string height, string mode, string resultName, string difference, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Tiles", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get Tiles", exampleTags);
 #line 18
 this.ScenarioSetup(scenarioInfo);
 #line 19
@@ -162,7 +162,7 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignOutside")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignOutside")]
@@ -174,13 +174,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "4")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignOutside")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
-        public virtual void CompactionGetTiles_DesignOutside()
+        public virtual void GetTiles_DesignOutside()
         {
-            this.CompactionGetTiles("DesignOutside", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "1cf81668-1739-42d5-b068-ea025588796a", "36.207022, -115.020854, 36.207563, -115.018414", "256", "64", "4", "DesignOutside", "3", ((string[])(null)));
+            this.GetTiles("DesignOutside", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "1cf81668-1739-42d5-b068-ea025588796a", "36.207022, -115.020854, 36.207563, -115.018414", "256", "64", "4", "DesignOutside", "3", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignIntersects")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignIntersects")]
@@ -192,13 +192,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "4")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignIntersects")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
-        public virtual void CompactionGetTiles_DesignIntersects()
+        public virtual void GetTiles_DesignIntersects()
         {
-            this.CompactionGetTiles("DesignIntersects", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "81422acc-9b0c-401c-9987-0aedbf153f1d", "36.207400, -115.020000, 36.207430, -115.020030", "256", "256", "4", "DesignIntersects", "3", ((string[])(null)));
+            this.GetTiles("DesignIntersects", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "81422acc-9b0c-401c-9987-0aedbf153f1d", "36.207400, -115.020000, 36.207430, -115.020030", "256", "256", "4", "DesignIntersects", "3", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BoundaryFilterCMV")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BoundaryFilterCMV")]
@@ -210,13 +210,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "27")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryFilterCMV")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
-        public virtual void CompactionGetTiles_BoundaryFilterCMV()
+        public virtual void GetTiles_BoundaryFilterCMV()
         {
-            this.CompactionGetTiles("BoundaryFilterCMV", "ff91dd40-1569-4765-a2bc-014321f76ace", "a37f3008-65e5-44a8-b406-9a078ec62ece", "36.206883952552914, -115.0203323364258, 36.207160975535146, -115.01998901367188", "256", "256", "27", "BoundaryFilterCMV", "3", ((string[])(null)));
+            this.GetTiles("BoundaryFilterCMV", "ff91dd40-1569-4765-a2bc-014321f76ace", "a37f3008-65e5-44a8-b406-9a078ec62ece", "36.206883952552914, -115.0203323364258, 36.207160975535146, -115.01998901367188", "256", "256", "27", "BoundaryFilterCMV", "3", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BoundaryFilterMDP")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BoundaryFilterMDP")]
@@ -228,13 +228,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "20")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryFilterMDP")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "5")]
-        public virtual void CompactionGetTiles_BoundaryFilterMDP()
+        public virtual void GetTiles_BoundaryFilterMDP()
         {
-            this.CompactionGetTiles("BoundaryFilterMDP", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "20", "BoundaryFilterMDP", "5", ((string[])(null)));
+            this.GetTiles("BoundaryFilterMDP", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "20", "BoundaryFilterMDP", "5", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BoundaryFilterELV")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BoundaryFilterELV")]
@@ -246,13 +246,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryFilterELV")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
-        public virtual void CompactionGetTiles_BoundaryFilterELV()
+        public virtual void GetTiles_BoundaryFilterELV()
         {
-            this.CompactionGetTiles("BoundaryFilterELV", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "0", "BoundaryFilterELV", "3", ((string[])(null)));
+            this.GetTiles("BoundaryFilterELV", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "0", "BoundaryFilterELV", "3", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BoundaryFilterSPD")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BoundaryFilterSPD")]
@@ -264,13 +264,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "26")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryFilterSPD")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
-        public virtual void CompactionGetTiles_BoundaryFilterSPD()
+        public virtual void GetTiles_BoundaryFilterSPD()
         {
-            this.CompactionGetTiles("BoundaryFilterSPD", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "26", "BoundaryFilterSPD", "3", ((string[])(null)));
+            this.GetTiles("BoundaryFilterSPD", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "26", "BoundaryFilterSPD", "3", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BoundaryFilterPCS")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BoundaryFilterPCS")]
@@ -282,14 +282,14 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "14")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryFilterPCS")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
-        public virtual void CompactionGetTiles_BoundaryFilterPCS()
+        public virtual void GetTiles_BoundaryFilterPCS()
         {
-            this.CompactionGetTiles("BoundaryFilterPCS", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "14", "BoundaryFilterPCS", "3", ((string[])(null)));
+            this.GetTiles("BoundaryFilterPCS", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624", "256", "256", "14", "BoundaryFilterPCS", "3", ((string[])(null)));
         }
         
-        public virtual void CompactionGetTilesForCutfill(string requestName, string projectUID, string filterUID, string cutfillDesignUid, string bBox, string width, string height, string mode, string volCalc, string topUid, string baseUid, string resultName, string difference, string[] exampleTags)
+        public virtual void GetCutFillTiles(string requestName, string projectUID, string filterUID, string cutfillDesignUid, string bBox, string width, string height, string mode, string volCalc, string topUid, string baseUid, string resultName, string difference, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Tiles for cutfill", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get CutFill Tiles", exampleTags);
 #line 37
 this.ScenarioSetup(scenarioInfo);
 #line 38
@@ -316,7 +316,7 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles for cutfill")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get CutFill Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "FilterAreaMachine")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "FilterAreaMachine")]
@@ -332,13 +332,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BaseUid", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryMachineFilterTiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
-        public virtual void CompactionGetTilesForCutfill_FilterAreaMachine()
+        public virtual void GetCutFillTiles_FilterAreaMachine()
         {
-            this.CompactionGetTilesForCutfill("FilterAreaMachine", "ff91dd40-1569-4765-a2bc-014321f76ace", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624", "256", "256", "8", "", "", "", "BoundaryMachineFilterTiles", "1", ((string[])(null)));
+            this.GetCutFillTiles("FilterAreaMachine", "ff91dd40-1569-4765-a2bc-014321f76ace", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624", "256", "256", "8", "", "", "", "BoundaryMachineFilterTiles", "1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles for cutfill")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get CutFill Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NoDesign")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "NoDesign")]
@@ -354,13 +354,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BaseUid", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignTiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
-        public virtual void CompactionGetTilesForCutfill_NoDesign()
+        public virtual void GetCutFillTiles_NoDesign()
         {
-            this.CompactionGetTilesForCutfill("NoDesign", "ff91dd40-1569-4765-a2bc-014321f76ace", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "", "36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624", "256", "256", "8", "", "", "", "NoDesignTiles", "1", ((string[])(null)));
+            this.GetCutFillTiles("NoDesign", "ff91dd40-1569-4765-a2bc-014321f76ace", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "", "36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624", "256", "256", "8", "", "", "", "NoDesignTiles", "1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles for cutfill")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get CutFill Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SVGroundToGround1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "SVGroundToGround1")]
@@ -376,13 +376,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BaseUid", "81422acc-9b0c-401c-9987-0aedbf153f1d")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummaryVolGroundGround1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
-        public virtual void CompactionGetTilesForCutfill_SVGroundToGround1()
+        public virtual void GetCutFillTiles_SVGroundToGround1()
         {
-            this.CompactionGetTilesForCutfill("SVGroundToGround1", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "81422acc-9b0c-401c-9987-0aedbf153f1d", "", "36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624", "256", "256", "8", "GroundToGround", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "81422acc-9b0c-401c-9987-0aedbf153f1d", "SummaryVolGroundGround1", "1", ((string[])(null)));
+            this.GetCutFillTiles("SVGroundToGround1", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "81422acc-9b0c-401c-9987-0aedbf153f1d", "", "36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624", "256", "256", "8", "GroundToGround", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "81422acc-9b0c-401c-9987-0aedbf153f1d", "SummaryVolGroundGround1", "1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles for cutfill")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get CutFill Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SVGroundToDesign")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "SVGroundToDesign")]
@@ -398,13 +398,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BaseUid", "9c27697f-ea6d-478a-a168-ed20d6cd9a20")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummaryVolDesignGround")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
-        public virtual void CompactionGetTilesForCutfill_SVGroundToDesign()
+        public virtual void GetCutFillTiles_SVGroundToDesign()
         {
-            this.CompactionGetTilesForCutfill("SVGroundToDesign", "ff91dd40-1569-4765-a2bc-014321f76ace", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "", "36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624", "256", "256", "8", "GroundToDesign", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "SummaryVolDesignGround", "1", ((string[])(null)));
+            this.GetCutFillTiles("SVGroundToDesign", "ff91dd40-1569-4765-a2bc-014321f76ace", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "", "36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624", "256", "256", "8", "GroundToDesign", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "SummaryVolDesignGround", "1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles for cutfill")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get CutFill Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SVDesignToGround")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "SVDesignToGround")]
@@ -420,13 +420,13 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BaseUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummaryVolGroundDesign")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
-        public virtual void CompactionGetTilesForCutfill_SVDesignToGround()
+        public virtual void GetCutFillTiles_SVDesignToGround()
         {
-            this.CompactionGetTilesForCutfill("SVDesignToGround", "ff91dd40-1569-4765-a2bc-014321f76ace", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "", "36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624", "256", "256", "8", "DesignToGround", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "SummaryVolGroundDesign", "1", ((string[])(null)));
+            this.GetCutFillTiles("SVDesignToGround", "ff91dd40-1569-4765-a2bc-014321f76ace", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "", "36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624", "256", "256", "8", "DesignToGround", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "SummaryVolGroundDesign", "1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles for cutfill")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get CutFill Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SVGroundToGround2")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "SVGroundToGround2")]
@@ -442,9 +442,9 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BaseUid", "9c27697f-ea6d-478a-a168-ed20d6cd9a20")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummaryVolGroundGround2")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
-        public virtual void CompactionGetTilesForCutfill_SVGroundToGround2()
+        public virtual void GetCutFillTiles_SVGroundToGround2()
         {
-            this.CompactionGetTilesForCutfill("SVGroundToGround2", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "", "36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624", "256", "256", "8", "GroundToGround", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "SummaryVolGroundGround2", "1", ((string[])(null)));
+            this.GetCutFillTiles("SVGroundToGround2", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "", "36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624", "256", "256", "8", "GroundToGround", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "SummaryVolGroundGround2", "1", ((string[])(null)));
         }
     }
 }

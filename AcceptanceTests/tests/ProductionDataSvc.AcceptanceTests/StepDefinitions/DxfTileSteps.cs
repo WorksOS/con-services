@@ -73,6 +73,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
       Console.WriteLine("Actual Difference % = " + diff * 100);
       Console.WriteLine("Actual filename = " + actFileName);
+      Console.WriteLine(tileRequester.CurrentResponse);
       Assert.IsTrue(Math.Abs(diff) < imageDifference, "Actual Difference:" + diff * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
     }
 

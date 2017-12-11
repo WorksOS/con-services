@@ -15,11 +15,11 @@ Scenario Outline: SummaryVolumes - Good Request
 	| LatestFilterToDesign                 | LatestFilterToDesign                 |
 	| DesignToEarliestFilter               | DesignToEarliestFilter               |
 	| DesignToLatestFilter                 | DesignToLatestFilter                 |
-	#| FilterToCompositeWithSurveyedSurface | FilterToCompositeWithSurveyedSurface |
+	| FilterToCompositeWithSurveyedSurface | FilterToCompositeWithSurveyedSurface |
 	| FilterToCompositeNoSurveyedSurface   | FilterToCompositeNoSurveyedSurface   |
-	#| CompositeToDesignWithSurveyedSurface | CompositeToDesignWithSurveyedSurface |
+	| CompositeToDesignWithSurveyedSurface | CompositeToDesignWithSurveyedSurface |
 	| CompositeToDesignNoSurveyedSurface   | CompositeToDesignNoSurveyedSurface   |
-	#| DesignToCompositeWithSurveyedSurface | DesignToCompositeWithSurveyedSurface |
+	| DesignToCompositeWithSurveyedSurface | DesignToCompositeWithSurveyedSurface |
 	| DesignToCompositeNoSurveyedSurface   | DesignToCompositeNoSurveyedSurface   |
 	| SummationTestLotOneOfThree           | SummationTestLotOneOfThree           |
 	| SummationTestLotTwoOfThree           | SummationTestLotTwoOfThree           |
@@ -35,7 +35,7 @@ Scenario Outline: SummaryVolumes - Good Request with Old SS
 	Then the response should match "<ResultName>" result from the repository
 	Examples: 
 	| ParameterName                        | ResultName                         |
-	#| FilterToCompositeWithSurveyedSurface | FilterToCompositeNoSurveyedSurface |
+	| FilterToCompositeWithSurveyedSurface | FilterToCompositeNoSurveyedSurface |
 	| CompositeToDesignWithSurveyedSurface | CompositeToDesignNoSurveyedSurface |
 	| DesignToCompositeWithSurveyedSurface | DesignToCompositeNoSurveyedSurface |
 

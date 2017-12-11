@@ -57,9 +57,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     }
 
     [Given(@"a mode ""(.*)""")]
-    public void GivenAMode(int mode)
+    public void GivenAMode(string mode)
     {
-      this.mode = mode;
+      if (!string.IsNullOrEmpty(mode))
+      this.mode = Convert.ToInt32(mode);
     }
 
     [Given(@"a width ""(.*)"" and a height ""(.*)""")]
@@ -91,6 +92,21 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenAVolumeBaseUid(string volumeBaseUid)
     {
       this.volumeBaseUid = volumeBaseUid;
+    }
+
+    [Given(@"I set width and height to ""(.*)""")]
+    public void GivenISetWidthAndHeightTo(int widthheight)
+    {
+      ScenarioContext.Current.Pending();
+    }
+
+
+
+    [When(@"I request a Report Tile and the result file ""(.*)""")]
+    public void WhenIRequestAReportTileAndTheResultFile(string resultFile)
+    {
+      tileRequester = new Getter<TileResult>(MakeUrl(), resultFile);
+      tileRequester.DoValidRequest();
     }
 
     [When(@"I request a Report Tile")]
@@ -135,10 +151,52 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       Assert.AreEqual(message, tileRequester.CurrentResponse.Message);
     }
 
+    [Given(@"the result file ""(.*)""")]
+    public void GivenTheResultFile(string resultFileName)
+    {
+      tileRequester = new Getter<TileResult>(url, resultFileName);
+    }
+
+    [Then(@"the result tile should match the ""(.*)"" from the repository within ""(.*)"" percent")]
+    public void ThenTheResultTileShouldMatchTheFromTheRepositoryWithinPercent(string resultName, string difference)
+    {
+      double imageDifference = 0;
+      if (!string.IsNullOrEmpty(difference))
+      {
+        imageDifference = Convert.ToDouble(difference) / 100;
+      }
+      var expectedTileData = tileRequester.ResponseRepo[resultName].TileData;
+      var actualTileData = tileRequester.CurrentResponse.TileData;
+      var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
+      var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
+      var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
+      Console.WriteLine("Actual Difference % = " + diff * 100);
+      Console.WriteLine("Actual filename = " + actFileName);
+      Console.WriteLine(tileRequester.CurrentResponse);
+      Assert.IsTrue(Math.Abs(diff) < imageDifference, "Actual Difference:" + diff * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
+
+    }
+
+
     private string MakeUrl()
     {
-      StringBuilder sb = new StringBuilder();
-      sb.Append($"{url}?projectUid={projectUid}&width={width}&height={height}&overlays={overlayType}");
+      var sb = new StringBuilder();
+      sb.Append($"{url}?projectUid={projectUid}&width={width}&height={height}");
+      if (!string.IsNullOrEmpty(overlayType))
+      {
+        if (overlayType.Contains(","))
+        {
+          var otArray = overlayType.Split(',');
+          foreach (var ot in otArray)
+          {
+            sb.Append($"&overlays={ot.Trim()}");
+          }
+        }
+        else
+        {
+          sb.Append($"&overlays={overlayType}");
+        }
+      }
       if (!string.IsNullOrEmpty(filterUid))
       {
         sb.Append($"&filterUid={filterUid}");

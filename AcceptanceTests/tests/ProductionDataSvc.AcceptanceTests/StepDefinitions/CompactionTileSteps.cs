@@ -59,8 +59,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }    
       var expectedTileData = tileRequester.ResponseRepo[resultName].TileData;
       var actualTileData = tileRequester.CurrentResponse.TileData;
-      var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + ".jpg";
-      var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + ".jpg";
+      var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
+      var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
       var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
       Console.WriteLine("Actual Difference % = " + diff*100); 
       Console.WriteLine("Actual filename = " + actFileName);
