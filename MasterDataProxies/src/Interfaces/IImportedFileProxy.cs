@@ -12,13 +12,13 @@ namespace VSS.MasterData.Proxies.Interfaces
   {
     Task<FileDataSingleResult> CreateImportedFile(
       FlowFile file, Guid projectUid, ImportedFileType importedFileType,
-      DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
-      DateTime? surveyedUtc = null, IDictionary<string, string> customHeaders = null);
+      DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
+      DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null);
 
     Task<FileDataSingleResult> UpdateImportedFile(
       FlowFile file, Guid projectUid, ImportedFileType importedFileType,
-      DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
-      DateTime? surveyedUtc = null, IDictionary<string, string> customHeaders = null);
+      DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
+      DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null);
 
     Task<BaseDataResult> DeleteImportedFile(Guid projectUid, Guid importedFileUid, IDictionary<string, string> customHeaders = null);
   }
