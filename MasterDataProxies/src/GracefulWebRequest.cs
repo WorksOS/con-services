@@ -137,7 +137,11 @@ namespace VSS.MasterData.Proxies
           //Apply payload if any
         if (!String.IsNullOrEmpty(payloadData))
         {
-          request.ContentType = "application/json";
+          // don't overwrite any existing one.
+          if (!customHeaders.ContainsKey("Content-Type"))
+          {
+            request.ContentType = "application/json";
+          }
           using (var writeStream = await request.GetRequestStreamAsync())
           {
             UTF8Encoding encoding = new UTF8Encoding();

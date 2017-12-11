@@ -99,34 +99,43 @@ namespace VSS.KafkaConsumer
     {
       log.LogTrace($"Polling with {requestTime} timeout");
       var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(requestTime));
+      bool success = true;
       if (messages.message == Error.NO_ERROR)
       {
+	try
+	{
         foreach (var message in messages.payload)
         {
-          try
-          {
             string bytesAsString = Encoding.UTF8.GetString(message, 0, message.Length);
             //Debugging only
             log.LogDebug("KafkaConsumer: " + typeof(T) + " : " + bytesAsString);
-            var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString,
-              messageResolver.GetConverter<T>());
-            log.LogDebug($"KafkaConsumer: Saving type {deserializedObject.GetType()}");
-            await dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
+	    var r_messageResolver = messageResolver.GetConverter<T>();
+            if (r_messageResolver == null)
+            {
+              log.LogWarning("KafkaConsumer: unrecognized message type.");
+	    }
+	    else
+	    {
+              var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString,r_messageResolver);
+              log.LogDebug($"KafkaConsumer: Saving type {deserializedObject.GetType()}");
+              await dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
+            }
             log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
-            await kafkaDriver.Commit();
-          }
+	   }
+         }
           catch (Exception ex)
           {
             log.LogError("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}",
               ex.Message, ex.StackTrace);
+	    success=false;
             if (ex.InnerException != null)
             {
               log.LogError("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message,
                 ex.InnerException.StackTrace);
             }
-          }
-        }
-
+         }
+        if (success)
+            await kafkaDriver.Commit();
       }
       return 0;
     }
