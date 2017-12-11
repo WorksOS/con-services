@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Scheduler.Common.Controller;
 using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -175,5 +180,17 @@ namespace VSS.Productivity3D.Scheduler.Tests
 
       Assert.AreEqual(expectedNhOpName, nhOpName, "File name has not been converted correctly");
     }
+
+    [TestMethod]
+    public async Task CanGet3DpmBearerToken()
+    {
+      var raptorProxy = serviceProvider.GetRequiredService<IRaptorProxy>();
+      var tPaasProxy = serviceProvider.GetRequiredService<ITPaasProxy>();
+      var importFileSync = new ImportedFileSynchronizerBase(_configStore, _logger, raptorProxy, tPaasProxy);
+      var bearer = await importFileSync.Get3DPmSchedulerBearerToken().ConfigureAwait(false);
+
+      Assert.AreNotEqual(string.Empty, bearer, "should have returned a bearer token");
+    }
+
   }
 }

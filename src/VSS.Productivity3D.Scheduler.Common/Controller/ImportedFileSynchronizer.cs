@@ -15,8 +15,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
   public class ImportedFileSynchronizer : ImportedFileSynchronizerBase
   {
 
-    public ImportedFileSynchronizer(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy) : base(configStore, logger, raptorProxy)
+    protected ILogger _log;
+
+    public ImportedFileSynchronizer(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy) 
+      : base(configStore, logger, raptorProxy, tPaasProxy)
     {
+      _log = logger.CreateLogger<ImportedFileSynchronizer>();
     }
 
     /// <summary>
@@ -81,7 +85,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           {
             // (b)
             repoNhOp.Delete(ifo);
-            Log.LogTrace(
+            _log.LogTrace(
               $"SyncTables: nhOp.IF is in nh_Op but was deleted in project. Deleted from NhOp: {JsonConvert.SerializeObject(ifo)}");
 
             var newRelicAttributes = new Dictionary<string, object>

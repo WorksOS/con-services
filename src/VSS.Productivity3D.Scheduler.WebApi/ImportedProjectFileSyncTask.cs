@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Controller;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
@@ -22,6 +23,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private readonly ILoggerFactory _logger;
     private readonly ILogger _log;
     private readonly IRaptorProxy _raptorProxy;
+    private readonly ITPaasProxy _tPaasProxy;
     private static int DefaultTaskIntervalDefaultMinutes { get; } = 4;
 
     /// <summary>
@@ -30,12 +32,14 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="configStore"></param>
     /// <param name="logger"></param>
     /// <param name="raptorProxy"></param>
-    public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy)
+    /// <param name="tPaasProxy"></param>
+    public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy)
     {
       _configStore = configStore;
       _logger = logger;
       _log = logger.CreateLogger<ImportedProjectFileSyncTask>();
       _raptorProxy = raptorProxy;
+      _tPaasProxy = tPaasProxy;
     }
 
     /// <summary>
@@ -55,7 +59,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var ImportedProjectFileSyncTask = "ImportedProjectFileSyncTask";
       _log.LogInformation($"ImportedProjectFileSyncTask: taskIntervalMinutes: {taskIntervalMinutes}.");
       Console.WriteLine($"ImportedProjectFileSyncTask: taskIntervalMinutes: {taskIntervalMinutes}.");
-
+      
       try
       {
         RecurringJob.AddOrUpdate(ImportedProjectFileSyncTask,() => ImportedFilesSyncTask(), Cron.MinuteInterval(taskIntervalMinutes));
@@ -79,7 +83,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     {
       var startUtc = DateTime.UtcNow;
    
-      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy);
+      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy, _tPaasProxy);
       await sync.SyncTables().ConfigureAwait(false);
 
       var newRelicAttributes = new Dictionary<string, object> {

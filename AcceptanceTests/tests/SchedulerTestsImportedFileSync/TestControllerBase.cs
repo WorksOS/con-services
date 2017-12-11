@@ -25,6 +25,7 @@ namespace SchedulerTestsImportedFileSync
     protected ILogger Log;
     protected string FileSpaceId;
     protected IRaptorProxy RaptorProxy;
+    protected ITPaasProxy TPaasProxy;
 
     protected void SetupDi()
     {
@@ -56,6 +57,7 @@ namespace SchedulerTestsImportedFileSync
       }
 
       RaptorProxy = new RaptorProxy(ConfigStore, LoggerFactory);
+      TPaasProxy = new TPaasProxy(ConfigStore, LoggerFactory);
 
       Assert.IsNotNull(ServiceProvider.GetService<IConfigurationStore>());
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());

@@ -8,12 +8,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
   {
     private static string newRelicServiceName = "3dPmScheduler";
 
-    public static void NotifyNewRelic(string scheduledTask, string errorLevel, DateTime startTimeUtc, double elapsedMs, Dictionary<string, object> eventAttributes = null)
+    public static void NotifyNewRelic(string scheduledTask, string messageLevel, DateTime startTimeUtc, double elapsedMs, Dictionary<string, object> eventAttributes = null)
     {
      var fullEventAttributes = new Dictionary<string, object>
      {
        {"scheduledTask", scheduledTask},
-       {"errorLevel", errorLevel},
+       {"messageLevel", messageLevel},
        {"startTimeUtc", startTimeUtc},
        {"elapsedMs", (DateTime.UtcNow - startTimeUtc).TotalMilliseconds}
      };
