@@ -93,6 +93,15 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       this.volumeBaseUid = volumeBaseUid;
     }
+
+    [Given(@"I set width and height to ""(.*)""")]
+    public void GivenISetWidthAndHeightTo(int widthheight)
+    {
+      ScenarioContext.Current.Pending();
+    }
+
+
+
     [When(@"I request a Report Tile and the result file ""(.*)""")]
     public void WhenIRequestAReportTileAndTheResultFile(string resultFile)
     {

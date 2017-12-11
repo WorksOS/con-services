@@ -39,6 +39,20 @@ Examples:
 | MDPOverlayAll         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary,Geofences,Alignments,DxfLinework | HYBRID    | 20   | 3          |
 | CMVOverlayAll         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary,Geofences,Alignments,DxfLinework | HYBRID    | 1    | 3          |
 
+Scenario Outline: Large Report Tiles
+Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+And a width "1024" and a height "1024"
+And a projectUid "<ProjectUID>"
+And a filterUid "<filterUID>"
+And an overlayType "<overlayType>"
+And a mapType "<mapType>"
+And a mode "<mode>"
+When I request a Report Tile and the result file "CompactionReportTileResponse.json"	
+Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
+Examples: 
+| ResultName            | ProjectUID                           | filterUID                            | overlayType                                                             | mapType   | mode | Difference |
+| CMVLarge              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary                                  | SATELLITE | 1    | 3          |
+
 Scenario Outline: Report cutfill and volume tiles
 Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
 And a projectUid "<ProjectUID>"
