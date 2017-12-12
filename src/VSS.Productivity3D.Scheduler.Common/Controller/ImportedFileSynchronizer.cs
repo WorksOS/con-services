@@ -100,8 +100,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           }
           else
           {
-            if (gotMatchingProject.FileCreatedUtc != ifo.FileCreatedUtc
-                || gotMatchingProject.FileUpdatedUtc != ifo.FileUpdatedUtc)
+            if (gotMatchingProject.FileCreatedUtc.ToString("yyyy-MM-dd HH:mm:ss") != ifo.FileCreatedUtc.ToString("yyyy-MM-dd HH:mm:ss")
+                || gotMatchingProject.FileUpdatedUtc.ToString("yyyy-MM-dd HH:mm:ss") != ifo.FileUpdatedUtc.ToString("yyyy-MM-dd HH:mm:ss"))
             {
               // (c)
               if (gotMatchingProject.FileCreatedUtc > ifo.FileCreatedUtc

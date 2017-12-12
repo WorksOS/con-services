@@ -29,6 +29,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
 
     public List<T> Read()
     {
+      var startUtc = DateTime.UtcNow;
       var members = new List<ImportedFileNhOp>();
 
       try
@@ -37,8 +38,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoNhOp.Read: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoNhOp.Read: open DB exeception {ex.Message}");
+        var message = $"ImportedFileRepoNhOp.Read: open DB exeception {ex.Message}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
         throw;
       }
 
@@ -72,8 +77,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoNhOp.Read:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoNhOp.Read:  execute exeception {ex.Message}");
+        var message = $"ImportedFileRepoNhOp.Read:  execute exeception {ex.Message}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
         throw;
       }
       finally
@@ -87,6 +96,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
 
     public long Create(T member)
     {
+      var startUtc = DateTime.UtcNow;
       long returnedImportedFileId = 0;
       try
       {
@@ -94,8 +104,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoNhOp.Create: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoNhOp.Create: open DB exeception {ex.Message}");
+        var message = $"ImportedFileRepoNhOp.Create: open DB exeception {ex.Message}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
         throw;
       }
 
@@ -119,8 +133,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoNhOp.Create:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoNhOp.Create:  execute exeception {ex.Message}");
+        var message = $"ImportedFileRepoNhOp.Create:  execute exeception {ex.Message}. nhOpToCreate: {JsonConvert.SerializeObject(member)}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
         throw;
       }
       finally
@@ -138,14 +156,19 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
 
     public int CreateHistory(T member)
     {
+      var startUtc = DateTime.UtcNow;
       try
       {
         _dbConnection.Open();
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoNhOp.CreateHistory: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoNhOp.CreateHistory: open DB exeception {ex.Message}");
+        var message = $"ImportedFileRepoNhOp.CreateHistory: open DB exeception {ex.Message}.";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
         throw;
       }
 
@@ -165,8 +188,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoNhOp.CreateHistory:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoNhOp.CreateHistory:  execute exeception {ex.Message}");
+        var message = $"ImportedFileRepoNhOp.CreateHistory:  execute exeception {ex.Message} nhOpHistoryToCreate: {JsonConvert.SerializeObject(member)}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
         throw;
       }
       finally
@@ -188,15 +215,21 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
 
     public int Delete(T member)
     {
+      var startUtc = DateTime.UtcNow;
       try
       {
         _dbConnection.Open();
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoNhOp.Delete: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoNhOp.Delete: open DB exeception {ex.Message}");
+        var message = $"ImportedFileRepoNhOp.Delete: open DB exeception {ex.Message}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
         throw;
+
       }
 
       var deleteImportedFileCommand =
@@ -221,8 +254,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoNhOp.Delete:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoNhOp.Delete:  execute exeception {ex.Message}");
+        var message = $"ImportedFileRepoNhOp.Delete:  execute exeception {ex.Message}. NhOpToDelete: {JsonConvert.SerializeObject(member)}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
         throw;
       }
       finally
