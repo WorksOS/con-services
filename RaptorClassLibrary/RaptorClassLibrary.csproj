@@ -476,7 +476,6 @@
     <Compile Include="Volumes\ProdReportSelectionType.cs" />
     <Compile Include="Volumes\Servers\Client\RaptorSimpleVolumesServer.cs" />
     <Compile Include="Volumes\SimpleVolumesCalculationsAggregator.cs" />
-    <Compile Include="Volumes\SimpleVolumesComputor.cs" />
     <Compile Include="Volumes\VolumeConputationType.cs" />
     <Compile Include="Volumes\VolumesCalculator.cs" />
     <Compile Include="Volumes\VolumesConsts.cs" />
