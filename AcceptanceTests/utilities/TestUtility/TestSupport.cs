@@ -63,7 +63,6 @@ namespace TestUtility
         { msg.DisplayEventsForDbInjectToConsole(eventArray); }
 
         var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
-        var kafkaDriver = new RdKafkaDriver();
         for (var rowCnt = 1; rowCnt <= eventArray.Length - 1; rowCnt++)
         {
           var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
@@ -118,7 +117,6 @@ namespace TestUtility
 
     public string CallFilterWebApi(string routeSuffix, string method, string body = null)
     {
-
       var uri = GetBaseUri() + routeSuffix;
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(uri, method, body, HttpStatusCode.OK, "application/json", CustomerUid.ToString());
@@ -133,7 +131,7 @@ namespace TestUtility
     }
 
     public string GetBaseUri()
-    {      
+    {
       var baseUri = tsCfg.webApiUri;
 
       if (Debugger.IsAttached || tsCfg.operatingSystem == "Windows_NT")
@@ -178,7 +176,7 @@ namespace TestUtility
             CustomerUID = new Guid(eventObject.CustomerUID),
             ProjectUID = new Guid(eventObject.ProjectUID),
             UserID = eventObject.UserID,
-            FilterJson = eventObject.FilterJson            
+            FilterJson = eventObject.FilterJson
           };
           jsonString = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent }, jsonSettings);
           break;
@@ -215,7 +213,7 @@ namespace TestUtility
         case "Geofence":
           sqlCmd += $@"(GeofenceUID,Name,fk_GeofenceTypeID,GeometryWKT,FillColor,IsTransparent,IsDeleted,Description,fk_CustomerUID,UserUID,LastActionedUTC) VALUES 
                 ('{eventObject.GeofenceUID}','{eventObject.Name}','{eventObject.fk_GeofenceTypeID}','{eventObject.GeometryWKT}','{eventObject.FillColor}','{eventObject.IsTransparent}','{eventObject.IsDeleted}','{eventObject.Description}','{eventObject.fk_CustomerUID}','{eventObject.UserUID}','{eventObject.LastActionedUTC}');";
-            break;
+          break;
         case "ProjectGeofence":
           sqlCmd += $@"(fk_GeofenceUID,fk_ProjectUID,LastActionedUTC) VALUES 
                 ('{eventObject.fk_GeofenceUID}','{eventObject.fk_ProjectUID}','{eventObject.LastActionedUTC}');";

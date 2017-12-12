@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using ExecutorTests.Internal;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
-using ExecutorTests.Internal;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;

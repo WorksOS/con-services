@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
     /// Gets or sets the service's log controller.
     /// </summary>
     protected ILogger Log;
-    
+
     /// <summary>
     /// Gets or sets the service's exception hander implementation of <see cref="IServiceExceptionHandler"/>.
     /// </summary>
@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
     /// <summary>
     /// Validates a <see cref="ProjectData"/> for a given customer and throws if invalid.
     /// </summary>
-    public static async Task ValidateProjectForCustomer(IProjectListProxy projectListProxy,
+    public static async Task<ProjectData> ValidateProjectForCustomer(IProjectListProxy projectListProxy,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
       string customerUid, string projectUid)
     {
@@ -50,8 +50,9 @@ namespace VSS.Productivity3D.Filter.Common.Validators
 
       try
       {
-        project = (await projectListProxy.GetProjectsV4(customerUid, customHeaders).ConfigureAwait(false))
-          .SingleOrDefault(p => p.ProjectUid == projectUid);
+        var projects = await projectListProxy.GetProjectsV4(customerUid, customHeaders).ConfigureAwait(false);
+
+        project = projects.SingleOrDefault(p => p.ProjectUid == projectUid);
       }
       catch (Exception e)
       {
@@ -69,16 +70,13 @@ namespace VSS.Productivity3D.Filter.Common.Validators
 
       log.LogInformation(
         $"{functionName}: succeeded: customerUid:{customerUid} ProjectUid:{projectUid}.");
+
+      return project;
     }
 
     /// <summary>
     /// Hydrates the filterJson string with the boundary data and uses the MasterData Models filter model to do so - to isolate logic there
     /// </summary>
-    /// <param name="geofenceRepository"></param>
-    /// <param name="log"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="filterRequestFull"></param>
-    /// <returns></returns>
     public static async Task<string> HydrateJsonWithBoundary(IGeofenceRepository geofenceRepository,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, FilterRequestFull filterRequestFull)
     {
@@ -94,7 +92,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       Geofence filterBoundary = null;
       try
       {
-        filterBoundary = await geofenceRepository.GetGeofence(filterTempForHydration.polygonUID).ConfigureAwait(false);          
+        filterBoundary = await geofenceRepository.GetGeofence(filterTempForHydration.polygonUID).ConfigureAwait(false);
       }
       catch (Exception e)
       {
@@ -130,7 +128,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
         // todo normally we incude e.Message. is e.GetBaseException.message specific to Json exception?
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 43, e.GetBaseException().Message);
       }
-      
+
 
       if (string.IsNullOrEmpty(newFilterJson))
       {
@@ -147,8 +145,6 @@ namespace VSS.Productivity3D.Filter.Common.Validators
     /// <summary>
     /// Returns polygons from wkt. Only returns unique ones (i.e 1st and last are not the same)
     /// </summary>
-    /// <param name="wkt"></param>
-    /// <returns></returns>
     private static List<WGSPoint> GetPointsFromWkt(string wkt)
     {
       List<WGSPoint> ret = new List<WGSPoint>();

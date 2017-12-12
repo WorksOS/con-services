@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using VSS.MasterData.Models.Handlers;
@@ -35,17 +34,17 @@ namespace VSS.Productivity3D.Filter.Common.Models
 
     public override void Validate(IServiceExceptionHandler serviceExceptionHandler)
     {
-      if (string.IsNullOrEmpty(CustomerUid) || Guid.TryParse(CustomerUid, out Guid customerUidGuid) == false)
+      if (string.IsNullOrEmpty(CustomerUid) || Guid.TryParse(CustomerUid, out Guid _) == false)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 27);
       }
 
-      if (string.IsNullOrEmpty(UserId) || (IsApplicationContext == false && Guid.TryParse(UserId, out Guid userUidGuid) == false))
+      if (string.IsNullOrEmpty(UserId) || (IsApplicationContext == false && Guid.TryParse(UserId, out Guid _) == false))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 28);
       }
 
-      if (string.IsNullOrEmpty(ProjectUid) || Guid.TryParse(ProjectUid, out Guid projectUidGuid) == false)
+      if (string.IsNullOrEmpty(ProjectUid) || Guid.TryParse(ProjectUid, out Guid _) == false)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }

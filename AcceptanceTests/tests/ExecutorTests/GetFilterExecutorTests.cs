@@ -1,9 +1,16 @@
 ﻿using ExecutorTests.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
@@ -54,7 +61,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid });
+      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest {FilterUid = filterUid});
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
@@ -110,6 +117,135 @@ namespace ExecutorTests
       Assert.AreEqual(filterUid, result.FilterDescriptor.FilterUid, Responses.IncorrectFilterDescriptorFilterUid);
       Assert.AreEqual(name, result.FilterDescriptor.Name, Responses.IncorrectFilterDescriptorName);
       Assert.AreEqual(filterJson, result.FilterDescriptor.FilterJson, Responses.IncorrectFilterDescriptorFilterJson);
+    }
+
+    [TestMethod]
+    [DataRow(DateRangeType.ProjectExtents)]
+    [DataRow(DateRangeType.Custom)]
+    public void GetFilterExecutor_Should_not_add_start_end_dates(int dateRangeType)
+    {
+      var filterCreateEvent = new CreateFilterEvent
+      {
+        CustomerUID = Guid.NewGuid(),
+        UserID = TestUtility.UIDs.JWT_USER_ID,
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
+        FilterUID = Guid.NewGuid(),
+        Name = $"dateRangeType={dateRangeType}",
+        FilterJson = $"{{\"startUTC\": null,\"endUTC\": null,\"dateRangeType\": {dateRangeType}}}",
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
+
+      WriteEventToDb(filterCreateEvent);
+
+      var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectUid: filterCreateEvent.ProjectUID.ToString(), filterUid: filterCreateEvent.FilterUID.ToString());
+
+      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+
+      var tcs = new TaskCompletionSource<List<ProjectData>>();
+      tcs.SetResult(new List<ProjectData> { projectData });
+
+      var projectListMock = new Mock<IProjectListProxy>();
+      projectListMock.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+
+      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new MemoryCache(new MemoryCacheOptions()));
+      var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
+      var result = executor.ProcessAsync(request).Result as FilterDescriptorSingleResult;
+
+      Assert.IsNotNull(result, Responses.ShouldReturnResult);
+      Assert.AreEqual(filterCreateEvent.FilterUID, Guid.Parse(result.FilterDescriptor.FilterUid), Responses.IncorrectFilterDescriptorFilterUid);
+
+      dynamic filterObj = JsonConvert.DeserializeObject(result.FilterDescriptor.FilterJson);
+      Assert.IsFalse(DateTime.TryParse(filterObj.startUTC.ToString(), out DateTime _));
+      Assert.IsFalse(DateTime.TryParse(filterObj.endUTC.ToString(), out DateTime _));
+    }
+
+    [TestMethod]
+    [DataRow(DateRangeType.Today)]
+    [DataRow(DateRangeType.Yesterday)]
+    [DataRow(DateRangeType.CurrentWeek)]
+    [DataRow(DateRangeType.CurrentMonth)]
+    [DataRow(DateRangeType.PreviousWeek)]
+    [DataRow(DateRangeType.PreviousMonth)]
+    public void GetFilterExecutor_Should_add_start_end_dates(int dateRangeType)
+    {
+      var filterCreateEvent = new CreateFilterEvent
+      {
+        CustomerUID = Guid.NewGuid(),
+        UserID = TestUtility.UIDs.JWT_USER_ID,
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
+        FilterUID = Guid.NewGuid(),
+        Name = $"dateRangeType={dateRangeType}",
+        FilterJson = $"{{\"startUTC\": null,\"endUTC\": null,\"dateRangeType\": {dateRangeType}}}",
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
+
+      WriteEventToDb(filterCreateEvent);
+
+      var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectUid: filterCreateEvent.ProjectUID.ToString(), filterUid: filterCreateEvent.FilterUID.ToString());
+
+      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+
+      var tcs = new TaskCompletionSource<List<ProjectData>>();
+      tcs.SetResult(new List<ProjectData> {projectData});
+
+      var projectListMock = new Mock<IProjectListProxy>();
+      projectListMock.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+
+      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new MemoryCache(new MemoryCacheOptions()));
+      var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
+      var result = executor.ProcessAsync(request).Result as FilterDescriptorSingleResult;
+
+      Assert.IsNotNull(result, Responses.ShouldReturnResult);
+      Assert.AreEqual(filterCreateEvent.FilterUID, Guid.Parse(result.FilterDescriptor.FilterUid), Responses.IncorrectFilterDescriptorFilterUid);
+
+      dynamic filterObj = JsonConvert.DeserializeObject(result.FilterDescriptor.FilterJson);
+      Assert.IsTrue(DateTime.TryParse(filterObj.startUTC.ToString(), out DateTime _));
+      Assert.IsTrue(DateTime.TryParse(filterObj.endUTC.ToString(), out DateTime _));
+    }
+
+    [TestMethod]
+    [DataRow(DateRangeType.ProjectExtents)]
+    [DataRow(DateRangeType.Custom)]
+    public async Task GetFilterExecutor_Should_not_alter_existing_start_end_dates(int dateRangeType)
+    {
+      const string startDate = "2017-12-10T08:00:00Z";
+      const string endDate = "2017-12-10T20:09:59.108671Z";
+
+      var filterCreateEvent = new CreateFilterEvent
+      {
+        CustomerUID = Guid.NewGuid(),
+        UserID = TestUtility.UIDs.JWT_USER_ID,
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
+        FilterUID = Guid.NewGuid(),
+        Name = $"dateRangeType={dateRangeType}",
+        FilterJson = $"{{\"startUTC\": \"{startDate}\",\"endUTC\": \"{endDate}\",\"dateRangeType\": {dateRangeType}}}",
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
+
+      WriteEventToDb(filterCreateEvent);
+
+      var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectUid: filterCreateEvent.ProjectUID.ToString(), filterUid: filterCreateEvent.FilterUID.ToString());
+
+      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+
+      var tcs = new TaskCompletionSource<List<ProjectData>>();
+      tcs.SetResult(new List<ProjectData> { projectData });
+
+      var projectListMock = new Mock<IProjectListProxy>();
+      projectListMock.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+
+      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new MemoryCache(new MemoryCacheOptions()));
+      var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
+      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+
+      Assert.IsNotNull(result, Responses.ShouldReturnResult);
+      Assert.AreEqual(filterCreateEvent.FilterUID, Guid.Parse(result.FilterDescriptor.FilterUid), Responses.IncorrectFilterDescriptorFilterUid);
+
+      dynamic filterObj = JsonConvert.DeserializeObject(result.FilterDescriptor.FilterJson);
+      Assert.AreEqual(DateTime.Parse(startDate).ToUniversalTime(), DateTime.Parse(filterObj.startUTC.ToString()));
     }
   }
 }

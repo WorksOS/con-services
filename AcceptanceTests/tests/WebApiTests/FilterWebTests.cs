@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using TestUtility;
-using TestUtility.Model.WebApi;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
@@ -13,17 +12,26 @@ namespace WebApiTests
   [TestClass]
   public class FilterWebTests : WebTestBase
   {
-    [TestMethod]
-    public void CreateSimpleFilter()
+    private TestSupport ts;
+
+    [TestInitialize]
+    public void Initialize()
     {
-      const string filterName = "Filter Web test 1";
-      Msg.Title(filterName, "Create filter with all the defaults in the filter json");
-      var ts = new TestSupport
+      ts = new TestSupport
       {
         IsPublishToWebApi = true,
         CustomerUid = CustomerUid
       };
+    }
+
+    [TestMethod]
+    public void CreateSimpleFilter()
+    {
       ts.DeleteAllFiltersForProject(ProjectUid.ToString());
+
+      const string filterName = "Filter Web test 1";
+      Msg.Title(filterName, "Create filter with all the defaults in the filter json");
+
       var filterJson = CreateTestFilter();
 
       var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson);
@@ -42,14 +50,11 @@ namespace WebApiTests
     [TestMethod]
     public void CreateFilterThenGetListOfFilters()
     {
+      ts.DeleteAllFiltersForProject(ProjectUid.ToString());
+
       const string filterName = "Filter Web test 2";
       Msg.Title(filterName, "Create filter then get a list of filters");
-      var ts = new TestSupport
-      {
-        IsPublishToWebApi = true,
-        CustomerUid = CustomerUid
-      };
-      ts.DeleteAllFiltersForProject(ProjectUid.ToString());
+
       var filterJson = CreateTestFilter(ElevationType.Last, null, null, 1, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
       var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -65,14 +70,11 @@ namespace WebApiTests
     [TestMethod]
     public void CreateThenUpdateFilter()
     {
+      ts.DeleteAllFiltersForProject(ProjectUid.ToString());
+
       const string filterName = "Filter Web test 3";
       Msg.Title(filterName, "Create and update filter");
-      var ts = new TestSupport
-      {
-        IsPublishToWebApi = true,
-        CustomerUid = CustomerUid
-      };
-      ts.DeleteAllFiltersForProject(ProjectUid.ToString());
+
       var filterJson = CreateTestFilter(ElevationType.Last, null, null, 1, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
       var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -96,15 +98,11 @@ namespace WebApiTests
     [TestMethod]
     public void CreateFilterWithBoundary()
     {
+      ts.DeleteAllBoundariesAndAssociations();
+
       const string filterName = "Filter Web test 4";
       Msg.Title(filterName, "Create filter with boundary in json string");
-      var ts = new TestSupport
-      {
-        IsPublishToWebApi = true,
-        CustomerUid = CustomerUid
-      };
 
-      ts.DeleteAllBoundariesAndAssociations();
       var boundaryWkt = GenerateWKTPolygon();
       var boundaryName = filterName + " - boundary";
       var boundaryRequest = BoundaryRequest.Create(string.Empty, boundaryName, boundaryWkt);
@@ -113,13 +111,12 @@ namespace WebApiTests
       var boundaryResponse = JsonConvert.DeserializeObject<GeofenceDataSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var boundaryUid = boundaryResponse.GeofenceData.GeofenceUID;
 
-      ts.DeleteAllFiltersForProject(ProjectUid.ToString());
-      var filterJson = CreateTestFilter(polygonUid:boundaryUid.ToString());
+      var filterJson = CreateTestFilter(polygonUid: boundaryUid.ToString());
       var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       responseCreate = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var hydratedFilterJson = CreateTestFilter(polygonUid: boundaryUid.ToString(), polygonName: boundaryName,polygonPoints: GetPointsFromWkt(boundaryWkt));
+      var hydratedFilterJson = CreateTestFilter(polygonUid: boundaryUid.ToString(), polygonName: boundaryName, polygonPoints: GetPointsFromWkt(boundaryWkt));
       Assert.AreEqual(filterRequest.Name, filterResponse.FilterDescriptor.Name, "Filter name doesn't match for PUT request");
       Assert.AreEqual(hydratedFilterJson, filterResponse.FilterDescriptor.FilterJson, "JSON Filter doesn't match for PUT request");
       var filterUid = filterResponse.FilterDescriptor.FilterUid;
@@ -132,15 +129,11 @@ namespace WebApiTests
     [TestMethod]
     public void CreateFilterWithBoundaryThenDeleteBoundary()
     {
+      ts.DeleteAllBoundariesAndAssociations();
+
       const string filterName = "Filter Web test 5";
       Msg.Title(filterName, "Create filter with boundary and delete boundary");
-      var ts = new TestSupport
-      {
-        IsPublishToWebApi = true,
-        CustomerUid = CustomerUid
-      };
 
-      ts.DeleteAllBoundariesAndAssociations();
       var boundaryWkt = GenerateWKTPolygon();
       var boundaryName = filterName + " - boundary";
       var boundaryRequest = BoundaryRequest.Create(string.Empty, boundaryName, boundaryWkt);
@@ -149,7 +142,6 @@ namespace WebApiTests
       var boundaryResponse = JsonConvert.DeserializeObject<GeofenceDataSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var boundaryUid = boundaryResponse.GeofenceData.GeofenceUID;
 
-      ts.DeleteAllFiltersForProject(ProjectUid.ToString());
       var filterJson = CreateTestFilter(polygonUid: boundaryUid.ToString());
       var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -174,12 +166,7 @@ namespace WebApiTests
     {
       const string filterName = "Filter Web test 6";
       Msg.Title(filterName, "Create filter with invalid DesignId");
-      var ts = new TestSupport
-      {
-        IsPublishToWebApi = true,
-        CustomerUid = CustomerUid
-      };
-      ts.DeleteAllFiltersForProject(ProjectUid.ToString());
+
       var filterRequest = FilterRequest.Create(string.Empty, filterName, string.Empty);
       filterRequest.FilterJson =
         "{\"startUTC\":null,\"designUid\":\"xxx\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}],\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true,\"forwardDirection\":false,\"layerNumber\":null,\"layerType\":null}";
@@ -195,12 +182,7 @@ namespace WebApiTests
     {
       const string filterName = "Filter Web test 7";
       Msg.Title(filterName, "Create then delete filter");
-      var ts = new TestSupport
-      {
-        IsPublishToWebApi = true,
-        CustomerUid = CustomerUid
-      };
-      ts.DeleteAllFiltersForProject(ProjectUid.ToString());
+
       var filterJson = CreateTestFilter(ElevationType.Lowest, true, false);
       var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -217,20 +199,16 @@ namespace WebApiTests
                       "Expecting an error message to say the filter does not exist.");
     }
 
-    [TestMethod] [Ignore]
+    [TestMethod]
+    [Ignore]
     public void PostMultipleFiltersThenGetListOfFilters()
     {
       const string filterName = "Filter Web test 8";
       Msg.Title(filterName, "Post filters then get a list of filters");
-      var ts = new TestSupport
-      {
-        IsPublishToWebApi = true,
-        CustomerUid = CustomerUid
-      };
-      ts.DeleteAllFiltersForProject(ProjectUid.ToString());
+
       var filterJson1 = CreateTestFilter(ElevationType.Last, null, null, 1, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
       var filterRequest1 = FilterRequest.Create(string.Empty, filterName + "- one", filterJson1);
-      var filterJson2 = CreateTestFilter(ElevationType.First,true, true, 3, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
+      var filterJson2 = CreateTestFilter(ElevationType.First, true, true, 3, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
       var filterRequest2 = FilterRequest.Create(string.Empty, filterName + "- two", filterJson2);
       var filterListRequest = new TestUtility.Model.WebApi.FilterListRequest();
       filterListRequest.FilterRequests.Add(filterRequest1);
@@ -246,7 +224,6 @@ namespace WebApiTests
       Assert.AreEqual(filterJson1, filterResponseGet.FilterDescriptors[0].FilterJson, "JSON Filter doesn't match for GET request");
     }
 
-
     /// <summary>
     /// Create the filter and convert it to json 
     /// </summary>
@@ -261,10 +238,10 @@ namespace WebApiTests
     /// <param name="polygonName"></param>
     /// <param name="polygonPoints"></param>
     /// <returns>complete filter in json format</returns>
-    private string CreateTestFilter(ElevationType? elevation = null, bool? vibestate = null, bool? forward = null,
-                                    int? layerNo = null, int? onMachineDesignId = null, DateTime? startUtc = null, 
-                                    DateTime? endUtc = null,string polygonUid = null, string polygonName=null, 
-                                    List<WGSPoint> polygonPoints=null)
+    private static string CreateTestFilter(ElevationType? elevation = null, bool? vibestate = null, bool? forward = null,
+                                    int? layerNo = null, int? onMachineDesignId = null, DateTime? startUtc = null,
+                                    DateTime? endUtc = null, string polygonUid = null, string polygonName = null,
+                                    List<WGSPoint> polygonPoints = null)
     {
       var listMachines = new List<MachineDetails>();
       var machine = MachineDetails.CreateMachineDetails(123456789, "TheMachineName", false);

@@ -1,14 +1,16 @@
-﻿using System.Net;
+﻿using Microsoft.Extensions.Logging;
+using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Productivity3D.Filter.Common.Models;
+using VSS.Productivity3D.Filter.Common.Validators;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -191,6 +193,19 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       };
 
       return executor;
+    }
+
+    protected async Task<ProjectData> GetProjectForRequest(FilterRequestFull filterRequest)
+    {
+      if (this.projectListProxy == null)
+      {
+        return null;
+      }
+
+      var project = await ValidationUtil.ValidateProjectForCustomer(this.projectListProxy, this.log, this.serviceExceptionHandler, filterRequest.CustomHeaders,
+        filterRequest.CustomerUid, filterRequest.ProjectUid).ConfigureAwait(false);
+
+      return project;
     }
   }
 }

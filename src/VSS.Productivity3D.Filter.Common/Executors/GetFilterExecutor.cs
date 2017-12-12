@@ -11,6 +11,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
@@ -43,8 +44,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <summary>
     /// Processes the GetFilters Request
     /// </summary>
-    /// <param name="item"></param>
-    /// <returns>a FiltersResult if successful</returns>     
+    /// <returns>If successful returns a <see cref="FilterDescriptorSingleResult"/> object containing the filter.</returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var filterRequest = item as FilterRequestFull;
@@ -77,6 +77,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 36);
       }
+
+      FilterResponseHelper.SetStartEndDates(await GetProjectForRequest(filterRequest), filter);
 
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
     }
