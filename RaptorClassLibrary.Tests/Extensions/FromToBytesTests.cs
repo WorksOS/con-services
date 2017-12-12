@@ -10,11 +10,11 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Extensions.Tests
     [TestClass]
     public class FromToBytesTests
     {
-        private class testFromToBytesClass : IBinaryReaderWriter
+        private class TestFromToBytesClass : IBinaryReaderWriter
         {
             public int[] testArray = null; 
 
-            public testFromToBytesClass()
+            public TestFromToBytesClass()
             {
                 testArray = Enumerable.Range(1, 1000).ToArray();
             }
@@ -45,10 +45,10 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Extensions.Tests
         [TestMethod]
         public void Test_FromToBytes()
         {
-            testFromToBytesClass testInstance = new testFromToBytesClass();
+            TestFromToBytesClass testInstance = new TestFromToBytesClass();
             byte[] toBytes = testInstance.ToBytes();
 
-            testFromToBytesClass testInstance2 = new testFromToBytesClass();
+            TestFromToBytesClass testInstance2 = new TestFromToBytesClass();
             testInstance2.FromBytes(toBytes);
 
             Assert.IsTrue(testInstance.testArray.Zip(testInstance2.testArray, (first, second) => first == second).All(x => x == true),

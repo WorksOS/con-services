@@ -29,9 +29,9 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors.Tasks
         /// Constructor accepting a simple volumes aggregator that hardwires the expected grid data type to height
         /// </summary>
         /// <param name="Aggregator"></param>
-        public SimpleVolumesComputationTask(SimpleVolumesCalculationsAggregator Aggregator) : base(Guid.NewGuid().GetHashCode(), "", GridDataType.Height)
+        public SimpleVolumesComputationTask(SimpleVolumesCalculationsAggregator aggregator) : base(Guid.NewGuid().GetHashCode(), "", GridDataType.Height)
         {
-
+            Aggregator = aggregator;
         }
 
         /// <summary>
@@ -49,7 +49,19 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors.Tasks
                 return false;
             }
 
-            Aggregator.SummariseSubgridResult(response as ClientHeightLeafSubGrid[]);
+            if (Aggregator == null)
+            {
+                throw new ArgumentException("Aggregator not defined in SimpleVolumesComputationTask");
+            }
+
+            if (!(response is VSS.VisionLink.Raptor.SubGridTrees.Interfaces.IClientLeafSubGrid[][]))
+            {
+                Log.Error($"response is not a IClientLeafSubGrid[][], --> {response}");
+                return false;
+            }
+
+            Aggregator.SummariseSubgridResult(response as VSS.VisionLink.Raptor.SubGridTrees.Interfaces.IClientLeafSubGrid[][]);
+            //            Aggregator.SummariseSubgridResult(response as ClientHeightLeafSubGrid[][]);
 
             return true;
         }

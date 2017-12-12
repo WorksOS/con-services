@@ -46,7 +46,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests
         public ClientHeightAndTimeLeafSubGrid Execute(SurfaceElevationPatchArgument arg)
         {
             // Check the item is available in the cache
-            ClientHeightAndTimeLeafSubGrid cachedResult = _cache.get(arg);
+            ClientHeightAndTimeLeafSubGrid cachedResult = _cache.Get(arg);
 
             if (cachedResult != null)
             {

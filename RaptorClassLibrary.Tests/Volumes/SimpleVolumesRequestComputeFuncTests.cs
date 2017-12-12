@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
         [TestMethod]
         public void Test_SimpleVolumesRequestComputeFunc_Creation()
         {
-            SimpleVolumesRequestComputeFunc func = new SimpleVolumesRequestComputeFunc();
+            SimpleVolumesRequestComputeFunc_ClusterCompute func = new SimpleVolumesRequestComputeFunc_ClusterCompute();
 
             Assert.IsNotNull(func, "Simple volumes compute func did not create");
         }

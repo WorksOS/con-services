@@ -25,7 +25,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
 
         public override bool TransferResponse(object response)
         {
-            if (PipeLine != null && !PipeLine.PipelineAborted /*&& PipeLine.OperationNode != null*/)
+            if (PipeLine != null && !PipeLine.Aborted /*&& PipeLine.OperationNode != null*/)
             {
                 // PipeLine.OperationNode.AddSubGridToOperateOn(response);
                 return true;
@@ -39,27 +39,29 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
 
         public override void Cancel()
         {
-            if (PipeLine != null)
+            if (PipeLine == null)
+            {
+                return;
+            }
+
+            try
             {
                 try
                 {
-                    try
-                    {
-                        Log.Debug("WARNING: Aborting pipeline due to cancellation");
-                        PipeLine.Abort();
-                    }
-                    catch
-                    {
-                        // Just in case the pipeline commits suicide before other related tasks are
-                        // cancelled (and so also inform the pipeline that it is cancelled), swallow
-                        // any exception generated for the abort request.
-                    }
+                    Log.Debug("WARNING: Aborting pipeline due to cancellation");
+                    PipeLine.Abort();
                 }
-                finally
+                catch
                 {
-                    Log.Info("Nulling pipeline reference");
-                    PipeLine = null;
+                    // Just in case the pipeline commits suicide before other related tasks are
+                    // cancelled (and so also inform the pipeline that it is cancelled), swallow
+                    // any exception generated for the abort request.
                 }
+            }
+            finally
+            {
+                Log.Info("Nulling pipeline reference");
+                PipeLine = null;
             }
         }
     }

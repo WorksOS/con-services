@@ -10,6 +10,9 @@ using VSS.VisionLink.Raptor.GridFabric.Arguments;
 
 namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
 {
+    /// <summary>
+    /// THe argument passed to simple volumes requests
+    /// </summary>
     public class SimpleVolumesRequestArgument : BaseApplicationServiceRequestArgument
     {
         public long SiteModelID = -1;

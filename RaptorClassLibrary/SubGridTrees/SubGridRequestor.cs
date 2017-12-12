@@ -32,7 +32,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         SiteModel SiteModel = null;
 
         [NonSerialized]
-        /*FilterSet Filters = null; */ CombinedFilter Filter = null;
+        CombinedFilter Filter = null;
 
         [NonSerialized]
         SurfaceElevationPatchRequest surfaceElevationPatchRequest = null;
@@ -91,7 +91,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// and initialises the requestor state ready to start processing indivudla subgrid requests.
         /// </summary>
         public SubGridRequestor(SiteModel sitemodel,
-                                /*FilterSet filters, */CombinedFilter filter,
+                                CombinedFilter filter,
                                 bool hasOverrideSpatialCellRestriction,
                                 BoundingIntegerExtent2D overrideSpatialCellRestriction,
                                 byte treeLevel,
@@ -99,7 +99,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                 AreaControlSet areaControlSet)
         {
             SiteModel = sitemodel;
-            /*Filters = filters;*/ Filter = filter;
+            Filter = filter;
             TreeLevel = treeLevel;
             HasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
             OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
@@ -115,8 +115,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                              areaControlSet
                                              );
 
-            //Defer this to the point the actual filter is being references to process a subgrid
-            //ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
+            ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
 
             surfaceElevationPatchRequest = new SurfaceElevationPatchRequest();
 
@@ -522,7 +521,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     // the relative age of the measured surveyed surface elevation compared with a non-null production data height
                     SurveyedSurfaceElevationWanted = SurveyedSurfaceCellHeight != Consts.NullHeight &&
                                                      (ProdHeight == Consts.NullHeight ||
-                                                      ReturnEarliestFilteredCellPass ? SurveyedSurfaceCellTime < ProdTime : SurveyedSurfaceCellTime < ProdTime);
+                                                      ReturnEarliestFilteredCellPass ? SurveyedSurfaceCellTime < ProdTime : SurveyedSurfaceCellTime > ProdTime);
 
                     if (SurveyedSurfaceElevationWanted)
                     {

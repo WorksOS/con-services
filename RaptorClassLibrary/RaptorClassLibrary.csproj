@@ -467,7 +467,8 @@
     <Compile Include="Volumes\Executors\ComputeSimpleVolumes_Coordinator.cs" />
     <Compile Include="Volumes\Executors\Tasks\SimpleVolumesComputationTask.cs" />
     <Compile Include="Volumes\GridFabric\Arguments\SimpleVolumesRequestArgument.cs" />
-    <Compile Include="Volumes\GridFabric\ComputeFuncs\SimpleVolumesRequestComputeFunc.cs" />
+    <Compile Include="Volumes\GridFabric\ComputeFuncs\SimpleVolumesRequestComputeFunc_ApplicationService.cs" />
+    <Compile Include="Volumes\GridFabric\ComputeFuncs\SimpleVolumesRequestComputeFunc_ClusterCompute.cs" />
     <Compile Include="Volumes\GridFabric\Requests\SimpleVolumesRequest_ApplicationService.cs" />
     <Compile Include="Volumes\GridFabric\Requests\SimpleVolumesRequest_ClusterCompute.cs" />
     <Compile Include="Volumes\GridFabric\Responses\SimpleVolumesResponse.cs" />

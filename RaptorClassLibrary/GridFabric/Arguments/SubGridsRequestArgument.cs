@@ -64,6 +64,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
 
         }
 
+        /*
         /// <summary>
         /// Full constructor for a subgrids request
         /// </summary>
@@ -95,5 +96,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
             MessageTopic = messageTopic;
             RaptorNodeID = raptorNodeID;
         }
+        */
     }
 }

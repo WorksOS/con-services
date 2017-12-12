@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Designs.GridFabric.Requests;
@@ -22,7 +23,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// to relevant filters other parameters. The grid fabric responds with responses as the servers in the fabric compute them, sending
     /// them to the Raptor node identified by the RaptorNodeID property
     /// </summary>
-    public class SubGridRequestsBase<TSubGridsRequestComputeFunc> : CacheComputePoolRequest where TSubGridsRequestComputeFunc : SubGridsRequestComputeFuncBase, new()
+    public abstract class SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : CacheComputePoolRequest 
+        where TSubGridsRequestArgument : SubGridsRequestArgument, new()
+        where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -32,7 +35,10 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// </summary>
         public ITask Task = null;
 
-        public SubGridsRequestArgument arg = null;
+        /// <summary>
+        /// The request argument to be passed to target of the request
+        /// </summary>
+        public TSubGridsRequestArgument arg = null;
 
         /// <summary>
         /// The ID of the SiteModel to execute the request against
@@ -123,6 +129,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <returns></returns>
         protected void PrepareArgument()
         {
+            Log.InfoFormat("Preparing argument with RaptorNodeID = {0}", RaptorNodeID);
+
             using (MemoryStream ProdDataMS = new MemoryStream(), SurveyedSurfaceMS = new MemoryStream())
             {
                 using (BinaryWriter ProdDataWriter = new BinaryWriter(ProdDataMS), SurveyedSurfaceWriter = new BinaryWriter(SurveyedSurfaceMS))
@@ -130,20 +138,23 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
                     SubGridTreePersistor.Write(ProdDataMask, ProdDataWriter);
                     SubGridTreePersistor.Write(SurveyedSurfaceOnlyMask, SurveyedSurfaceWriter);
 
-                    arg = new SubGridsRequestArgument(SiteModelID,
-                                                      RequestID,
-                                                      RequestedGridDataType,
-                                                      IncludeSurveyedSurfaceInformation,
-                                                      ProdDataMS.ToArray(),
-                                                      SurveyedSurfaceMS.ToArray(),
-                                                      Filters,
-                                                      String.Format("SubGridRequest:{0}", RequestID),
-                                                      RaptorNodeID);
+                    arg = new TSubGridsRequestArgument()
+                    {
+                        SiteModelID = SiteModelID,
+                        RequestID = RequestID,
+                        GridDataType = RequestedGridDataType,
+                        IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaceInformation,
+                        ProdDataMaskBytes = ProdDataMS.ToArray(),
+                        SurveyedSurfaceOnlyMaskBytes = SurveyedSurfaceMS.ToArray(),
+                        Filters = Filters,
+                        MessageTopic = String.Format("SubGridRequest:{0}", RequestID),
+                        RaptorNodeID = RaptorNodeID
+                    };
                 }
             }
         }
 
-        private void CheckArguments()
+        protected void CheckArguments()
         {
             // Make sure things look kosher
             if (ProdDataMask == null || SurveyedSurfaceOnlyMask == null || Filters == null || RequestID == -1)
@@ -164,46 +175,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// parameters
         /// </summary>
         /// <returns></returns>
-        public virtual ICollection<SubGridRequestsResponse> Execute()
-        {
-            CheckArguments();
-
-            Log.InfoFormat("Preparing argument with RaptorNodeID = {0}", RaptorNodeID);
-
-            // Construct the argument to be supplied to the compute cluster
-            PrepareArgument();
-
-            Log.InfoFormat("Prepared argument has RaptorNodeID = {0}", arg.RaptorNodeID);
-            Log.Info($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
-            Log.Info($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()}");
-
-            Task<ICollection<SubGridRequestsResponse>> taskResult = null;
-            //ICollection<SubGridRequestsResponse> result = null;
-
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            try
-            {
-                // Construct the function to be used
-                IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse> func = new TSubGridsRequestComputeFunc();
-
-                // Note: Broadcast will block until all compute nodes receiving the request have responded, or
-                // until the internal Ignite timeout expires
-                //result = _compute.Broadcast(func, arg);
-
-                taskResult = _Compute.BroadcastAsync(func, arg);
-                taskResult.Wait(30000);
-            }
-            finally
-            {
-                sw.Stop();
-                Log.InfoFormat("TaskResult {0}: SubgidRequests.Execute() for DM:{1} from node {2} for data type {3} took {4}ms", 
-                               taskResult.Status, Task.PipeLine.DataModelID, Task.RaptorNodeID, Task.GridDataType, sw.ElapsedMilliseconds);
-            }
-
-            // Send the appropriate response to the caller
-            //return result;
-            return taskResult.Result;
-        }
+        public abstract ICollection<TSubGridRequestsResponse> Execute();
     }
 }

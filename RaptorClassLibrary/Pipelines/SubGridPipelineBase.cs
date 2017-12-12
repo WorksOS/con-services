@@ -3,15 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
+using VSS.VisionLink.Raptor.GridFabric.Types;
 using VSS.VisionLink.Raptor.Pipelines.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.Types;
@@ -21,7 +21,11 @@ namespace VSS.VisionLink.Raptor.Pipelines
     /// <summary>
     /// Derived from TSVOICSubGridPipelineBase = class(TObject)
     /// </summary>
-    public class SubGridPipelineBase<TSubGridRequestor, TSubGridRequestComputeFunc> : ISubGridPipelineBase where TSubGridRequestor : SubGridRequestsBase<TSubGridRequestComputeFunc>, new() where TSubGridRequestComputeFunc : SubGridsRequestComputeFuncBase, new()
+    public class SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor, TSubGridRequestComputeFunc> : ISubGridPipelineBase
+        where TSubGridsRequestArgument : SubGridsRequestArgument, new()
+        where TSubGridRequestsResponse : SubGridRequestsResponse, new()
+        where TSubGridRequestor : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, new() 
+        where TSubGridRequestComputeFunc : SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, new()
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -39,7 +43,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public int ID = 0;
         public PipelinedSubGridTask PipelineTask = null;
-        public bool PipelineAborted { get; set; } = false;
+        public bool Aborted { get; set; } = false;
 
         public UInt32 TimeToLiveSeconds = 0;
         DateTime TimeToLiveExpiryTime = DateTime.MaxValue;
@@ -48,24 +52,30 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         // FMaximumOutstandingSubgridRequests : Integer;
 
-        private bool pipelineCompleted = false;
-        protected void SetPipelineCompleted(bool value) => pipelineCompleted = value;
-
         public long DataModelID { get; set; } = -1;
 
-        // OverallExistenceMap is the map which describes the combination of Prod Data and Surveyed Surfaces
-        public SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
+        /// <summary>
+        /// OverallExistenceMap is the map which describes the combination of Prod Data and Surveyed Surfaces
+        /// </summary>
+        public SubGridTreeSubGridExistenceBitMask OverallExistenceMap { get; set; } = null;
 
-        // ProdDataExistenceMap is the subgrid existence map for the data model referenced by FDataModelID
-        public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null;
+        /// <summary>
+        /// ProdDataExistenceMap is the subgrid existence map for the data model referenced by FDataModelID
+        /// </summary>
+        public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap { get; set; } = null;
 
         public bool IncludeSurveyedSurfaceInformation = true;
 
-        // FDesignSubgridOverlayMap is the subgrid index for subgrids that cover the
-        // design being related to for cut/fill operations
-        public SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap = null;
+        /// <summary>
+        /// DesignSubgridOverlayMap is the subgrid index for subgrids that cover the design being related to for cut/fill operations
+        /// </summary>
+        public SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap { get; set; } = null;
 
-        public FilterSet FilterSet = null;
+        /// <summary>
+        /// The set of filters to be made available to the subgrid processing for this request
+        /// </summary>
+        public FilterSet FilterSet { get; set; } = null;
+
         public int MaxNumberOfPassesToReturn = 0;
 
         // public         FReferenceDesign : TVLPDDesignDescriptor;
@@ -74,17 +84,29 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public AreaControlSet AreaControlSet;
 
-        //              FCompleteEvent : TSimpleEvent;
-
         public long RequestDescriptor = -1;
 
         public bool Terminated = false;
 
-        public bool PipelineCompleted { get { return pipelineCompleted; } set { SetPipelineCompleted(value); } }
+        protected bool pipelineCompleted = false;
+
+        public bool PipelineCompleted {
+            get
+            {
+                return pipelineCompleted;
+            }
+            set
+            {
+                pipelineCompleted = value;
+
+                // The pipeline has been signalled as complete so set its completion signal
+                // Don't modify AllFinished as all results may not have been received/processed before completion
+                PipelineSignalEvent.Set();
+            }
+        }
 
         // FLiftBuildSettings is a reference to a lift build settings object provided by the caller
         //  property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
-        //  property CompleteEvent : TSimpleEvent read FCompleteEvent;
         //  property Terminated : Boolean read FTerminated;
 
         public GridDataType GridDataType = GridDataType.All;
@@ -92,22 +114,54 @@ namespace VSS.VisionLink.Raptor.Pipelines
         public BoundingWorldExtent3D WorldExtents = BoundingWorldExtent3D.Inverted();
         public BoundingIntegerExtent2D OverrideSpatialCellRestriction = BoundingIntegerExtent2D.Inverted();
 
+        /// <summary>
+        /// Have all subgrids in the request been returned and processed?
+        /// </summary>
         public bool AllFinished = false;
 
+        private void AllSubgridsProcessed()
+        {
+            AllFinished = true;
+            PipelineSignalEvent.Set();
+        }
+
+        /// <summary>
+        /// Advises that a single subgrid has been processed and can be removed from the tally of
+        /// subgrids awaiting results. 
+        /// This is typically used by progressive queries where a SubGridListener
+        /// is reponsible for receiving and coordinating handling of subgrid results
+        /// </summary>
         public void SubgridProcessed()
         {
             if (System.Threading.Interlocked.Decrement(ref SubgridsRemainingToProcess) <= 0)
             {
-                AllFinished = true;
-                PipelineSignalEvent.Set();
+                AllSubgridsProcessed();
             }
         }
 
+        /// <summary>
+        /// Advises that a group of subgrids has been processed and can be removed from the tally of
+        /// subgrids awaiting results.
+        /// This is typically used by aggregative queries where the cache compute cluster aggregates
+        /// subgrid results within each partition and returns pre-aggregated results
+        /// </summary>
+        public void SubgridsProcessed(long numProcessed)
+        {
+            if (System.Threading.Interlocked.Add(ref SubgridsRemainingToProcess, numProcessed) <= 0)
+            {
+                AllSubgridsProcessed();
+            }
+        }
+
+        /// <summary>
+        /// Constructor accepting an identifier for the pipeline and a task for the pipeline to operate with
+        /// </summary>
+        /// <param name="AID"></param>
+        /// <param name="task"></param>
         public SubGridPipelineBase(int AID, PipelinedSubGridTask task)
         {
             PipelineTask = task;
             ID = AID;
-            // FCompleteEvent:= TSimpleEvent.Create;
 
             // FMaxNumberOfPassesToReturn:= VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
 
@@ -117,6 +171,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
             // FPixelXWorldSize := 0.0;
             // FPixelYWorldSize := 0.0;
+
             AreaControlSet = AreaControlSet.Null();
 
             // FLiftBuildSettings:= Nil;
@@ -124,13 +179,11 @@ namespace VSS.VisionLink.Raptor.Pipelines
             // FTimeToLiveSeconds:= kDefaultSubgridPipelineTimeToLiveSeconds;
 
             // FMaximumOutstandingSubgridRequests:= VLPDSvcLocations.VLPDASNode_DefaultMaximumOutstandingSubgridRequestsInPipeline;
-
-            // FCompleteEvent.ResetEvent;
         }
 
         public virtual void Abort()
         {
-            PipelineAborted = true;
+            Aborted = true;
 
             PipelineSignalEvent.Set();
         }
@@ -143,10 +196,10 @@ namespace VSS.VisionLink.Raptor.Pipelines
         // being restarted.
         // Procedure AbortAndShutdown;
 
-        public bool Initiate()
+        public virtual bool Initiate()
         {            
             // First analyse the request to determine the set of subgrids that will need to be requested
-            RequestAnalyser<TSubGridRequestor, TSubGridRequestComputeFunc> analyser = new RequestAnalyser<TSubGridRequestor, TSubGridRequestComputeFunc>(this, WorldExtents);
+            RequestAnalyser analyser = new RequestAnalyser(this, WorldExtents);
             if (!analyser.Execute())
             {
                 // Leave gracefully...
@@ -168,7 +221,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
             Log.InfoFormat($"START: Request for {analyser.TotalNumberOfSubgridsAnalysed } subgrids");
 
             // Send the subgrid request mask to the grid fabric layer for processing
-            SubGridRequestsBase<TSubGridRequestComputeFunc> gridFabricRequest = new TSubGridRequestor()
+            TSubGridRequestor gridFabricRequest = new TSubGridRequestor()
             {
                 Task = PipelineTask,
                 SiteModelID = DataModelID,
@@ -181,11 +234,11 @@ namespace VSS.VisionLink.Raptor.Pipelines
                 Filters = FilterSet
             };
 
-            ICollection<SubGridRequestsResponse> responses = gridFabricRequest.Execute();
+            ICollection<TSubGridRequestsResponse> Responses = gridFabricRequest.Execute();
 
             Log.InfoFormat($"COMPLETED: Request for {analyser.TotalNumberOfSubgridsAnalysed } subgrids");
 
-            return true;
+            return Responses.All(x => x.ResponseCode == SubGridRequestsResponseResult.OK);
         }
 
         public void WaitForCompletion()

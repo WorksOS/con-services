@@ -10,6 +10,7 @@ using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Pipelines;
@@ -20,12 +21,16 @@ using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Volumes.Executors.Tasks;
+using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Volumes
 {
-    // VolumesCalculatorBase provides a base class that may be extended/decorated
-    // to implement specific volume calculation engines that access production data and use
-    // it to derive volumes information.
+    /// <summary>
+    /// VolumesCalculatorBase provides a base class that may be extended/decorated
+    /// to implement specific volume calculation engines that access production data and use
+    /// it to derive volumes information.
+    /// </summary>
     public abstract class VolumesCalculatorBase
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -56,16 +61,17 @@ namespace VSS.VisionLink.Raptor.Volumes
             private
               function CheckCellIsInSpatialConstraints(const CellX, CellY: Integer): Boolean;
               function GetCellSize: Double;
-
-         protected
 */
-        //            protected BoundingWorldExtent3D DataExtents = BoundingWorldExtent3D.Inverted();
+        // protected BoundingWorldExtent3D DataExtents = BoundingWorldExtent3D.Inverted();
+
         protected BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted(); // No get;set; on purpose
 
-        // BaseFilter and TopFilter reference two sets of filter settings
-        // between which we may calculate volumes. At the current time, it is
-        // meaingful for a filter to have a spatial extent, and to denote an
-        // 'as-at' time only.
+        /// <summary>
+        /// BaseFilter and TopFilter reference two sets of filter settings
+        /// between which we may calculate volumes. At the current time, it is
+        /// meaingful for a filter to have a spatial extent, and to denote an
+        /// 'as-at' time only.
+        /// </summary>
         public CombinedFilter BaseFilter { get; set; } = null;
         public CombinedFilter TopFilter { get; set; } = null;
 
@@ -106,19 +112,19 @@ namespace VSS.VisionLink.Raptor.Volumes
 
         /*
         // FAborted keeps track of whether we've been buchwhacked or not!
-        FAborted : Boolean;
+        protected FAborted : Boolean;
 
         // TopScanSubGrid is a loose subgrid - we don't actually assign it to a tree
         // at all, because its context is identical to the context of BaseSubGrid
-        FTopScanSubGrid : TICClientSubGridTreeLeaf_Height;
+        protected FTopScanSubGrid : TICClientSubGridTreeLeaf_Height;
 
         // FCoverageMap maps the area of cells that we have considered and successfully
         // computed volume information from
-        FCoverageMap : TSubGridTreeBitMask;
+        protected FCoverageMap : TSubGridTreeBitMask;
 
         // FNoChangeMap maps the area of cells that we have considered and found to have
         // had no height change between to two surfaces considered
-        FNoChangeMap : TSubGridTreeBitMask;                      
+        protected FNoChangeMap : TSubGridTreeBitMask;                      
         */
 
         /// <summary>
@@ -161,11 +167,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
         public abstract bool ComputeVolumeInformation();
 
-        // ProcessVolumeInformationForSubgrid takes two sub grid leaves and calculates
-        // the volume information between the two subgrids depending on the volume calculation type.
-        public abstract void ProcessVolumeInformationForSubgrid(ClientHeightLeafSubGrid[] subGrids);
-
-        private void ConfigurePipeline(SubGridPipelineAggregative PipeLine,
+        private void ConfigurePipeline(SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine,
                                        out BoundingIntegerExtent2D CellExtents)
         {
             CellExtents = BoundingIntegerExtent2D.Inverted();
@@ -223,7 +225,7 @@ namespace VSS.VisionLink.Raptor.Volumes
         public RequestErrorStatus ExecutePipeline()
         {
             PipelinedSubGridTask PipelinedTask = null;
-            SubGridPipelineAggregative PipeLine = null;
+            SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine = null;
 
             BoundingIntegerExtent2D CellExtents;
             RequestErrorStatus Result = RequestErrorStatus.Unknown;
@@ -309,7 +311,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
                     try
                     {
-                        PipeLine = new SubGridPipelineAggregative(0, PipelinedTask);
+                        PipeLine = new SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse>(0, PipelinedTask);
 
                         PipelinedTask.PipeLine = PipeLine;
 
@@ -380,9 +382,9 @@ namespace VSS.VisionLink.Raptor.Volumes
                               end;
                          */
 
-                        PipelineAborted = PipeLine.PipelineAborted;
+                        PipelineAborted = PipeLine.Aborted;
 
-                        if (!PipeLine.Terminated && !PipeLine.PipelineAborted)
+                        if (!PipeLine.Terminated && !PipeLine.Aborted)
                         {
                             Result = RequestErrorStatus.OK;
                         }
@@ -418,6 +420,10 @@ namespace VSS.VisionLink.Raptor.Volumes
             return RequestErrorStatus.Unknown;
         }
 
+        /// <summary>
+        /// VolumesCalculator extends VolumesCalculatorBase to include volume
+        /// accumulation state tracking for simple volums calculations.
+        /// </summary>
         public class VolumesCalculator : VolumesCalculatorBase
         {
             /// <summary>
@@ -428,34 +434,14 @@ namespace VSS.VisionLink.Raptor.Volumes
 
             }
 
-            /*
-        // TICVolumesCalculator extends TICVolumesCalculatorBase to include volume
-        // accumulation state tracking and implementation for subgrid processing to
-        // compute it.
-        TICVolumesCalculator = class(TICVolumesCalculatorBase)
-        private
-          FVolumesData : TComputeICVolumesData;
-
-        protected
-          FLastProgressUpdateTime : TDateTime;
-
-          procedure DoProgressEvent(Sender : TObject);
-
-        public
-          property VolumesData : TComputeICVolumesData read FVolumesData;
-
-          Constructor Create(ARequestDescriptor : Int64;
-        AExternalDescriptor : TASNodeRequestDescriptor;
-                             ADataModelID : Int64; ACellSize: Double);
-    */
             private void ApplyFilterAndSubsetBoundariesToExtents()
             {
                 /*
                  * if VLPDSvcLocations.Debug_ExtremeLogSwitchM then
-                begin
-                SIGLogMessage.Publish(Self, Format('TICVolumesCalculator DEBUG  BaseFilter Dates : %s  %s ',[DateTimeToStr(FBaseFilter.StartTime), DateTimeToStr(FBaseFilter.EndTime)]), slmcDebug);
-                          SIGLogMessage.Publish(Self, Format('TICVolumesCalculator DEBUG  TopFilter Dates : %s  %s ',[DateTimeToStr(FTopFilter.StartTime), DateTimeToStr(FTopFilter.EndTime)]), slmcDebug);
-                          end;
+                   begin
+                     SIGLogMessage.Publish(Self, Format('TICVolumesCalculator DEBUG  BaseFilter Dates : %s  %s ',[DateTimeToStr(FBaseFilter.StartTime), DateTimeToStr(FBaseFilter.EndTime)]), slmcDebug);
+                     SIGLogMessage.Publish(Self, Format('TICVolumesCalculator DEBUG  TopFilter Dates : %s  %s ',[DateTimeToStr(FTopFilter.StartTime), DateTimeToStr(FTopFilter.EndTime)]), slmcDebug);
+                   end;
               */
 
                 if (FromSelectionType == ProdReportSelectionType.Filter)
@@ -525,11 +511,6 @@ namespace VSS.VisionLink.Raptor.Volumes
 
                 // Compute the volume as required
                 return ExecutePipeline() == RequestErrorStatus.OK;
-            }
-
-            public override void ProcessVolumeInformationForSubgrid(ClientHeightLeafSubGrid[] subGrids)
-            {
-                throw new NotImplementedException();
             }
         }
     }

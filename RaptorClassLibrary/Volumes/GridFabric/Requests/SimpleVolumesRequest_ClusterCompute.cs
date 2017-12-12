@@ -12,7 +12,7 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Requests
     /// <summary>
     /// A request that may be issued to compute a volume
     /// </summary>
-    public class SimpleVolumesRequest_ClusterCompute : GenericPSNodeBroadcastRequest<SimpleVolumesRequestArgument, SimpleVolumesRequestComputeFunc, SimpleVolumesResponse>
+    public class SimpleVolumesRequest_ClusterCompute : GenericPSNodeBroadcastRequest<SimpleVolumesRequestArgument, SimpleVolumesRequestComputeFunc_ClusterCompute, SimpleVolumesResponse>
     {
         /// <summary>
         /// Add specific behaviour here if needed

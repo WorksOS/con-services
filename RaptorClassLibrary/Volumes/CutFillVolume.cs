@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Volumes
         {
             get
             {
-                return _CutVolume.HasValue ? _CutVolume.Value : 0;
+                return _CutVolume ?? 0;
             }
         }
 
@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.Volumes
         {
             get
             {
-                return _FillVolume.HasValue ? _FillVolume.Value : 0;
+                return _FillVolume ?? 0;
             }
         }
 

@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
             if (_instance == null)
             {
                 _instance = new DesignsService();
-                _instance.init();
+                _instance.Init();
             }
 
             return _instance;
@@ -61,7 +61,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
             CacheName = cacheName;
         }
 
-        public void init()
+        public void Init()
         {
             // Delegate to the service Init() method if this becomes an Ignite service
             mutableNonSpatialCache = _Ignite.GetCache<String, Byte[]>(CacheName);

@@ -9,6 +9,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks.Interfaces
     public interface ITask  //<TSubGridRequestor> where TSubGridRequestor : SubGridRequestsBase, new()
     {
         void Cancel();
+
         bool TransferResponse(object response);
 
         GridDataType GridDataType { get; set; }

@@ -8,6 +8,7 @@ using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
+using VSS.VisionLink.Raptor.Pipelines.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
@@ -18,12 +19,12 @@ namespace VSS.VisionLink.Raptor.Pipelines
     /// the need to be requested, and the production data/surveyed surface aspects of those requests.
     /// Its implementation was modelled on the activities of the Legacy TSVOICSubGridSubmissionThread class.
     /// </summary>
-    public class RequestAnalyser<TSubGridsRequestor, TSubGridRequestComputeFunc> where TSubGridsRequestor : SubGridRequestsBase<TSubGridRequestComputeFunc>, new() where TSubGridRequestComputeFunc : SubGridsRequestComputeFuncBase, new()
-    { 
+    public class RequestAnalyser
+    {
         /// <summary>
         /// The pipeline that has initiated this request analysis
         /// </summary>
-        private SubGridPipelineBase<TSubGridsRequestor, TSubGridRequestComputeFunc> Owner = null;
+        private ISubGridPipelineBase Owner = null;
 
         /// <summary>
         /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
@@ -60,7 +61,8 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// </summary>
         /// <param name="owner"></param>
         /// <param name="worldExtents"></param>
-        public RequestAnalyser(SubGridPipelineBase<TSubGridsRequestor, TSubGridRequestComputeFunc> owner, BoundingWorldExtent3D worldExtents) : this()
+        public RequestAnalyser(ISubGridPipelineBase owner,
+            BoundingWorldExtent3D worldExtents) : this()
         {
             Owner = owner;
             ProdDataMask = new SubGridTreeSubGridExistenceBitMask();

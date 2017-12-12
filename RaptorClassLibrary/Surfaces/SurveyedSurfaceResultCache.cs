@@ -32,7 +32,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public ClientHeightAndTimeLeafSubGrid get(SurfaceElevationPatchArgument arg)
+        public ClientHeightAndTimeLeafSubGrid Get(SurfaceElevationPatchArgument arg)
         {
             lock (FCache)
             {

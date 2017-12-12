@@ -20,6 +20,9 @@ using VSS.VisionLink.Raptor.Volumes.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Volumes
 {
+    /// <summary>
+    /// Defines an aggregator that summaries simple volumes information for subgrids
+    /// </summary>
     public class SimpleVolumesCalculationsAggregator : ISubGridRequestsAggregator, IResponseAggregateWith<SimpleVolumesCalculationsAggregator>
     {
         /// <summary>
@@ -199,7 +202,7 @@ namespace VSS.VisionLink.Raptor.Volumes
             ClientHeightLeafSubGrid DesignHeights = null;
             DesignProfilerRequestResult ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;
 
-            ISubGrid CoverageMapSubgrid; //: TSubGridTreeSubGridFunctionalBase;
+            ISubGrid CoverageMapSubgrid;
 
             double BelowToleranceToCheck, AboveToleranceToCheck;
             double ElevationDiff;
@@ -210,246 +213,238 @@ namespace VSS.VisionLink.Raptor.Volumes
             // it all the time (value wont change);
             double CellArea = CellSize * CellSize;
 
-            try
+            // Query the patch of elevations from the surface model for this subgrid
+            if (ActiveDesign?.GetDesignHeights(SiteModelID, new SubGridCellAddress(), CellSize, out DesignHeights, out ProfilerRequestResult) == false)
             {
-                // Query the patch of elevations from the surface model for this subgrid
-                if (ActiveDesign?.GetDesignHeights(SiteModelID, new SubGridCellAddress(), CellSize, out DesignHeights, out ProfilerRequestResult) == false)
+                if (ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
                 {
-                    if (ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-                    {
-                        // TODO readd when logging available
-                        //SIGLogMessage.PublishNoODS(Self, Format('Design profiler subgrid elevation request for %s failed with error %d', [BaseScanSubGrid.OriginAsCellAddress.AsText, Ord(ProfilerRequestResult)]), slmcError);
-                        return;
-                    }
+                    // TODO readd when logging available
+                    //SIGLogMessage.PublishNoODS(Self, Format('Design profiler subgrid elevation request for %s failed with error %d', [BaseScanSubGrid.OriginAsCellAddress.AsText, Ord(ProfilerRequestResult)]), slmcError);
+                    return;
                 }
+            }
 
-                SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
 
-                // TODO: Liftbuildsettings not available in Ignite
-                bool StandardVolumeProcessing = true; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness == Consts.NullHeight || LiftBuildSettings.TargetLiftThickness <= 0)
+            // TODO: Liftbuildsettings not available in Ignite
+            bool StandardVolumeProcessing = true; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness == Consts.NullHeight || LiftBuildSettings.TargetLiftThickness <= 0)
 
-                // If we are interested in standard volume processing use this cycle
-                if (StandardVolumeProcessing)
+            // If we are interested in standard volume processing use this cycle
+            if (StandardVolumeProcessing)
+            {
+                CellsScanned += SubGridTree.SubGridTreeCellsPerSubgrid;
+
+                for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
                 {
-                    CellsScanned += SubGridTree.SubGridTreeCellsPerSubgrid;
-
-                    for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+                    for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                     {
-                        for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                        BaseZ = BaseScanSubGrid.Cells[I, J];
+
+                        /* TODO - removed for Ignite POC until LiftBuildSettings is available
+                        // If the user has configured a first pass thickness, then we need to subtract this height
+                        // difference from the BaseZ retrieved from the current cell if this measured height was
+                        // the first pass made in the cell.
+                        if (LiftBuildSettings.FirstPassThickness > 0)
                         {
-                            BaseZ = BaseScanSubGrid.Cells[I, J];
+                            BaseZ -= LiftBuildSettings.FirstPassThickness;
+                        }
+                        */
 
-                            /* TODO - removed for Ignite POC until LiftBuildSettings is available
-                            // If the user has configured a first pass thickness, then we need to subtract this height
-                            // difference from the BaseZ retrieved from the current cell if this measured height was
-                            // the first pass made in the cell.
-                            if (LiftBuildSettings.FirstPassThickness > 0)
+                        if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
+                        {
+                            TopZ = DesignHeights == null ? Consts.NullHeight : DesignHeights.Cells[I, J];
+
+                            if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
                             {
-                                BaseZ -= LiftBuildSettings.FirstPassThickness;
+                                MinMax.Swap(ref BaseZ, ref TopZ);
                             }
-                            */
+                        }
+                        else
+                        {
+                            TopZ = TopScanSubGrid.Cells[I, J];
+                        }
 
-                            if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
-                            {
-                                TopZ = DesignHeights == null ? Consts.NullHeight : DesignHeights.Cells[I, J];
+                        switch (VolumeType)
+                        {
+                            case VolumeComputationType.None:
+                                break;
 
-                                if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
+                            case VolumeComputationType.AboveLevel:
                                 {
-                                    MinMax.Swap(ref BaseZ, ref TopZ);
-                                }
-                            }
-                            else
-                            {
-                                TopZ = TopScanSubGrid.Cells[I, J];
-                            }
-
-                            switch (VolumeType)
-                            {
-                                case VolumeComputationType.None:
+                                    if (BaseZ != Consts.NullHeight)
+                                    {
+                                        CellsUsed++;
+                                        if (BaseZ > BaseLevel)
+                                            Volume += CellArea * (BaseZ - BaseLevel);
+                                    }
+                                    else
+                                    {
+                                        CellsDiscarded++;
+                                    }
                                     break;
+                                }
 
-                                case VolumeComputationType.AboveLevel:
+                            case VolumeComputationType.Between2Levels:
+                                {
+                                    if (BaseZ != Consts.NullHeight)
                                     {
-                                        if (BaseZ != Consts.NullHeight)
+                                        CellsUsed++;
+
+                                        if (BaseZ > BaseLevel)
                                         {
-                                            CellsUsed++;
-                                            if (BaseZ > BaseLevel)
-                                                Volume += CellArea * (BaseZ - BaseLevel);
+                                            Volume += CellArea * (BaseZ < TopLevel ? (BaseZ - BaseLevel) : (TopLevel - BaseLevel));
                                         }
-                                        else
-                                        {
-                                            CellsDiscarded++;
-                                        }
-                                        break;
                                     }
-
-                                case VolumeComputationType.Between2Levels:
+                                    else
                                     {
-                                        if (BaseZ != Consts.NullHeight)
-                                        {
-                                            CellsUsed++;
-
-                                            if (BaseZ > BaseLevel)
-                                            {
-                                                Volume += CellArea * (BaseZ < TopLevel ? (BaseZ - BaseLevel) : (TopLevel - BaseLevel));
-                                            }
-                                        }
-                                        else
-                                        {
-                                            CellsDiscarded++;
-                                        }
-                                        break;
+                                        CellsDiscarded++;
                                     }
+                                    break;
+                                }
 
-                                case VolumeComputationType.AboveFilter:
-                                case VolumeComputationType.Between2Filters:
-                                case VolumeComputationType.BetweenFilterAndDesign:
-                                case VolumeComputationType.BetweenDesignAndFilter:
+                            case VolumeComputationType.AboveFilter:
+                            case VolumeComputationType.Between2Filters:
+                            case VolumeComputationType.BetweenFilterAndDesign:
+                            case VolumeComputationType.BetweenDesignAndFilter:
+                                {
+                                    if (BaseZ != Consts.NullHeight && TopZ != Consts.NullHeight)
                                     {
-                                        if (BaseZ != Consts.NullHeight && TopZ != Consts.NullHeight)
+                                        CellsUsed++;
+
+                                        //  Note the fact we have processed this cell in the coverage map
+                                        Bits.SetBit(I, J);
+
+                                        // FCoverageMap.Cells[BaseScanSubGrid.OriginX + I,
+                                        //                    BaseScanSubGrid.OriginY + J] := True;
+
+                                        CellUsedInVolumeCalc = (TopZ - BaseZ >= FillTolerance) || (BaseZ - TopZ >= CutTolerance);
+
+                                        // Accumulate volumes
+                                        if (CellUsedInVolumeCalc)
                                         {
-                                            CellsUsed++;
+                                            VolumeDifference = CellArea * (TopZ - BaseZ);
 
-                                            //  Note the fact we have processed this cell in the coverage map
-                                            Bits.SetBit(I, J);
+                                            // Accumulate the 'surplus' volume. Ie: the simple summation of
+                                            // all cuts and fills.
+                                            Volume += VolumeDifference;
 
-                                            // FCoverageMap.Cells[BaseScanSubGrid.OriginX + I,
-                                            //                    BaseScanSubGrid.OriginY + J] := True;
-
-                                            CellUsedInVolumeCalc = (TopZ - BaseZ >= FillTolerance) || (BaseZ - TopZ >= CutTolerance);
-
-                                            // Accumulate volumes
-                                            if (CellUsedInVolumeCalc)
+                                            // Accumulate the cuts and fills into discrete cut and fill quantities
+                                            if (TopZ < BaseZ)
                                             {
-                                                VolumeDifference = CellArea * (TopZ - BaseZ);
-
-                                                // Accumulate the 'surplus' volume. Ie: the simple summation of
-                                                // all cuts and fills.
-                                                Volume += VolumeDifference;
-
-                                                // Accumulate the cuts and fills into discrete cut and fill quantities
-                                                if (TopZ < BaseZ)
-                                                {
-                                                    CellsUsedCut++;
-                                                    CutFillVolume.AddCutVolume(Math.Abs(VolumeDifference));
-                                                }
-                                                else
-                                                {
-                                                    CellsUsedFill++;
-                                                    CutFillVolume.AddFillVolume(Math.Abs(VolumeDifference));
-                                                }
+                                                CellsUsedCut++;
+                                                CutFillVolume.AddCutVolume(Math.Abs(VolumeDifference));
                                             }
                                             else
                                             {
-                                                // Note the fact there was no volume change in this cell
-                                                // NoChangeMap.Cells[BaseScanSubGrid.OriginX + I, BaseScanSubGrid.OriginY + J] := True;
+                                                CellsUsedFill++;
+                                                CutFillVolume.AddFillVolume(Math.Abs(VolumeDifference));
                                             }
                                         }
                                         else
                                         {
-                                            CellsDiscarded++;
+                                            // Note the fact there was no volume change in this cell
+                                            // NoChangeMap.Cells[BaseScanSubGrid.OriginX + I, BaseScanSubGrid.OriginY + J] := True;
                                         }
                                     }
-                                    break;
-
-                                default:
-                                    //SIGLogMessage.Publish(Self, Format('Unknown volume type %d in ProcessVolumeInformationForSubgrid()', [Ord(FVolumeType)]), slmcError);
-                                    break;
-                            }
-                        }
-                    }
-                }
-
-                // TODO: Liftbuildsettings not available in Ignite
-                bool TargetLiftThicknessCalculationsRequired = false; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness != Consts.NullHeight && LiftBuildSettings.TargetLiftThickness > 0)
-
-                //If we are interested in thickness calculations do them
-                if (TargetLiftThicknessCalculationsRequired)
-                {
-                    /* TODO: Commented out as lift build settings not in Ignite POC
-                    BelowToleranceToCheck = LiftBuildSettings.TargetLiftThickness - LiftBuildSettings.BelowToleranceLiftThickness;
-                    AboveToleranceToCheck = LiftBuildSettings.TargetLiftThickness + LiftBuildSettings.AboveToleranceLiftThickness;
-                    */
-                    BelowToleranceToCheck = 0; // Assign value for PCO to keep compiler happy
-                    AboveToleranceToCheck = 0; // Assign value for PCO to keep compiler happy
-
-                    SubGridUtilities.SubGridDimensionalIterator((I, J) =>
-                    {
-                        BaseZ = BaseScanSubGrid.Cells[I, J];
-                        TopZ = TopScanSubGrid.Cells[I, J];
-
-                        if (BaseZ != Consts.NullHeight || TopZ != Consts.NullHeight)
-                        {
-                            CellsScanned++;
-                        }
-
-                        //Test if we don't have NULL values and carry on
-                        if (BaseZ != Consts.NullHeight && TopZ != Consts.NullHeight)
-                        {
-                            Bits.SetBit(I, J);
-                            ElevationDiff = TopZ - BaseZ;
-
-                            if (ElevationDiff <= AboveToleranceToCheck && ElevationDiff >= BelowToleranceToCheck)
-                            {
-                                CellsUsed++;
-                            }
-                            else
-                            {
-                                if (ElevationDiff > AboveToleranceToCheck)
-                                {
-                                    CellsUsedFill++;
-                                }
-                                else
-                                {
-                                    if (ElevationDiff < BelowToleranceToCheck)
+                                    else
                                     {
-                                        CellsUsedCut++;
+                                        CellsDiscarded++;
                                     }
                                 }
-                            }
-                        }
-                        else
-                        {
-                            CellsDiscarded++;
-                        }
-                    });
-                }
+                                break;
 
-                // Record the bits for this subgrid in the coverage map by requesting the whole subgrid
-                // of bits from the leaf level and setting it in one operation under an exclusive lock
-                if (!Bits.IsEmpty())
-                {
-                    if (RequiresSerialisation)
-                    {
-                        //   TMonitor.Enter(CoverageMap);
-                    }
-                    try
-                    {
-                        CoverageMapSubgrid = CoverageMap.ConstructPathToCell(BaseScanSubGrid.OriginX, BaseScanSubGrid.OriginY, SubGridPathConstructionType.CreateLeaf);
-
-                        if (CoverageMapSubgrid != null)
-                        {
-                            Debug.Assert(CoverageMapSubgrid is SubGridTreeLeafBitmapSubGrid, "CoverageMapSubgrid in TICVolumesCalculationsAggregateState.ProcessVolumeInformationForSubgrid is not a TSubGridTreeLeafBitmapSubGrid");
-                            (CoverageMapSubgrid as SubGridTreeLeafBitmapSubGrid).Bits = Bits;
-                        }
-                        else
-                        {
-                            Debug.Assert(false, "Failed to request CoverageMapSubgrid from FCoverageMap in TICVolumesCalculationsAggregateState.ProcessVolumeInformationForSubgrid");
-                        }
-                    }
-                    finally
-                    {
-                        if (RequiresSerialisation)
-                        {
-                            //   TMonitor.Exit(CoverageMap);
+                            default:
+                                //SIGLogMessage.Publish(Self, Format('Unknown volume type %d in ProcessVolumeInformationForSubgrid()', [Ord(FVolumeType)]), slmcError);
+                                break;
                         }
                     }
                 }
             }
-            finally
+
+            // TODO: Liftbuildsettings not available in Ignite
+            bool TargetLiftThicknessCalculationsRequired = false; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness != Consts.NullHeight && LiftBuildSettings.TargetLiftThickness > 0)
+
+            //If we are interested in thickness calculations do them
+            if (TargetLiftThicknessCalculationsRequired)
             {
-                //if Assigned(DesignHeights) then
-                //  FreeAndNil(DesignHeights);
+                /* TODO: Commented out as lift build settings not in Ignite POC
+                BelowToleranceToCheck = LiftBuildSettings.TargetLiftThickness - LiftBuildSettings.BelowToleranceLiftThickness;
+                AboveToleranceToCheck = LiftBuildSettings.TargetLiftThickness + LiftBuildSettings.AboveToleranceLiftThickness;
+                */
+                BelowToleranceToCheck = 0; // Assign value for PCO to keep compiler happy
+                AboveToleranceToCheck = 0; // Assign value for PCO to keep compiler happy
+
+                SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+                {
+                    BaseZ = BaseScanSubGrid.Cells[I, J];
+                    TopZ = TopScanSubGrid.Cells[I, J];
+
+                    if (BaseZ != Consts.NullHeight || TopZ != Consts.NullHeight)
+                    {
+                        CellsScanned++;
+                    }
+
+                        //Test if we don't have NULL values and carry on
+                        if (BaseZ != Consts.NullHeight && TopZ != Consts.NullHeight)
+                    {
+                        Bits.SetBit(I, J);
+                        ElevationDiff = TopZ - BaseZ;
+
+                        if (ElevationDiff <= AboveToleranceToCheck && ElevationDiff >= BelowToleranceToCheck)
+                        {
+                            CellsUsed++;
+                        }
+                        else
+                        {
+                            if (ElevationDiff > AboveToleranceToCheck)
+                            {
+                                CellsUsedFill++;
+                            }
+                            else
+                            {
+                                if (ElevationDiff < BelowToleranceToCheck)
+                                {
+                                    CellsUsedCut++;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        CellsDiscarded++;
+                    }
+                });
+            }
+
+            // Record the bits for this subgrid in the coverage map by requesting the whole subgrid
+            // of bits from the leaf level and setting it in one operation under an exclusive lock
+            if (!Bits.IsEmpty())
+            {
+                if (RequiresSerialisation)
+                {
+                    //   TMonitor.Enter(CoverageMap);
+                }
+                try
+                {
+                    CoverageMapSubgrid = CoverageMap.ConstructPathToCell(BaseScanSubGrid.OriginX, BaseScanSubGrid.OriginY, SubGridPathConstructionType.CreateLeaf);
+
+                    if (CoverageMapSubgrid != null)
+                    {
+                        Debug.Assert(CoverageMapSubgrid is SubGridTreeLeafBitmapSubGrid, "CoverageMapSubgrid in TICVolumesCalculationsAggregateState.ProcessVolumeInformationForSubgrid is not a TSubGridTreeLeafBitmapSubGrid");
+                        (CoverageMapSubgrid as SubGridTreeLeafBitmapSubGrid).Bits = Bits;
+                    }
+                    else
+                    {
+                        Debug.Assert(false, "Failed to request CoverageMapSubgrid from FCoverageMap in TICVolumesCalculationsAggregateState.ProcessVolumeInformationForSubgrid");
+                    }
+                }
+                finally
+                {
+                    if (RequiresSerialisation)
+                    {
+                        //   TMonitor.Exit(CoverageMap);
+                    }
+                }
             }
         }
 
@@ -457,45 +452,49 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// Summarises the client height grids derived from subgrid processing into the running volumes aggregation state
         /// </summary>
         /// <param name="subGrids"></param>
-        public void SummariseSubgridResult(ClientHeightLeafSubGrid[] subGrids)
+        public void SummariseSubgridResult(IClientLeafSubGrid[][] subGrids)
         {
-            // We have a subgrid from the Production Database. If we are processing volumes
-            // between two filters, then there will be a second subgrid in the sungrids array.
-            // By convention BaseSubgrid is always the first subgrid in the array,
-            // regardless of whether it really forms the 'top' or 'bottom' of the interval.
-
-            ClientHeightLeafSubGrid TopSubGrid = null;
-            ClientHeightLeafSubGrid BaseSubGrid = subGrids[0]; //.Subgrid as TICClientSubGridTreeLeaf_Height;
-
-            if (BaseSubGrid == null)
-            {
-                // TODO readd when logging available
-                //SIGLogMessage.PublishNoODS(Self, Format('#W# TICVolumesCalculationsAggregateState.SummariseSubgridResult BaseSubGrid is nil', []), slmcWarning);
-                return;
-            }
-
-            if (subGrids.Length > 1)
-            {
-                TopSubGrid = subGrids[1]; //.Subgrid as TICClientSubGridTreeLeaf_Height;
-                if (BaseSubGrid == null)
-                {
-                    // TODO readd when logging available
-                    // SIGLogMessage.PublishNoODS(Self, Format('#W# TICVolumesCalculationsAggregateState.SummariseSubgridResult TopSubGrid is nil', []), slmcWarning);
-                    return;
-                };
-            }
-            else
-            {
-                TopSubGrid = NullHeightSubgrid;
-            }
-
             if (RequiresSerialisation)
             {
                 //   TMonitor.Enter(Self);
             }
+
             try
             {
-                ProcessVolumeInformationForSubgrid(BaseSubGrid, TopSubGrid);
+                foreach (IClientLeafSubGrid[] subGridResult in subGrids)
+                {
+                    // We have a subgrid from the Production Database. If we are processing volumes
+                    // between two filters, then there will be a second subgrid in the sungrids array.
+                    // By convention BaseSubgrid is always the first subgrid in the array,
+                    // regardless of whether it really forms the 'top' or 'bottom' of the interval.
+
+                    IClientLeafSubGrid TopSubGrid = null;
+                    IClientLeafSubGrid BaseSubGrid = subGridResult[0]; //.Subgrid as TICClientSubGridTreeLeaf_Height;
+
+                    if (BaseSubGrid == null)
+                    {
+                        // TODO readd when logging available
+                        //SIGLogMessage.PublishNoODS(Self, Format('#W# TICVolumesCalculationsAggregateState.SummariseSubgridResult BaseSubGrid is nil', []), slmcWarning);
+                        return;
+                    }
+
+                    if (subGrids.Length > 1)
+                    {
+                        TopSubGrid = subGridResult[1]; //.Subgrid as TICClientSubGridTreeLeaf_Height;
+                        if (BaseSubGrid == null)
+                        {
+                            // TODO readd when logging available
+                            // SIGLogMessage.PublishNoODS(Self, Format('#W# TICVolumesCalculationsAggregateState.SummariseSubgridResult TopSubGrid is nil', []), slmcWarning);
+                            return;
+                        };
+                    }
+                    else
+                    {
+                        TopSubGrid = NullHeightSubgrid;
+                    }
+
+                    ProcessVolumeInformationForSubgrid(BaseSubGrid as ClientHeightLeafSubGrid, TopSubGrid as ClientHeightLeafSubGrid);
+                }
             }
             finally
             {
@@ -562,9 +561,9 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// Implement the subgrids request aggregator method ro process subgrid results...
         /// </summary>
         /// <param name="subGrids"></param>
-        public void ProcessSubgridResult(IClientLeafSubGrid[] subGrids)
+        public void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
         {
-            SummariseSubgridResult(subGrids as ClientHeightLeafSubGrid[]);
+            SummariseSubgridResult(subGrids as ClientHeightLeafSubGrid[][]);
         }
     }
 }

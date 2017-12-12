@@ -9,16 +9,16 @@ using System.Reflection;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Utility.Tests
 {
-    public class testClassBase : MemoryStream
+    public class TestClassBase : MemoryStream
     {
-        public testClassBase()
+        public TestClassBase()
         {
         }
     }
 
-    public class testClass : testClassBase
+    public class TestClass : TestClassBase
     {
-        public testClass()
+        public TestClass()
         {
         }
     }
@@ -32,13 +32,13 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Utility.Tests
         [TestMethod]
         public void Test_TypesHelper_FindAllDerivedTypes()
         {
-            List<Type> types = TypesHelper.FindAllDerivedTypes<testClassBase>();
+            List<Type> types = TypesHelper.FindAllDerivedTypes<TestClassBase>();
 
-            Assert.IsTrue(types.Any(x => x.IsAssignableFrom(typeof(testClass))), "testClass not noted as a descendent of MemoryStream");
+            Assert.IsTrue(types.Any(x => x.IsAssignableFrom(typeof(TestClass))), "testClass not noted as a descendent of MemoryStream");
 
             List<Type> types2 = TypesHelper.FindAllDerivedTypes<List<Object>>();
 
-            Assert.IsFalse(types2.Any(x => x.IsAssignableFrom(typeof(testClass))), "testClass incorrectly noted as a descendent of List<>");
+            Assert.IsFalse(types2.Any(x => x.IsAssignableFrom(typeof(TestClass))), "testClass incorrectly noted as a descendent of List<>");
         }
 
         /// <summary> 
@@ -49,7 +49,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Utility.Tests
         {
             List<Type> types = TypesHelper.FindAllDerivedTypes<MemoryStream>();
 
-            Assert.IsFalse(types.Any(x => x.IsAssignableFrom(typeof(testClass))), "testClass noted as a descendent of MemoryStream (defined in different assembly)");
+            Assert.IsFalse(types.Any(x => x.IsAssignableFrom(typeof(TestClass))), "testClass noted as a descendent of MemoryStream (defined in different assembly)");
         }
 
         [TestMethod]
@@ -57,11 +57,11 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Utility.Tests
         {
             List<Type> types = TypesHelper.FindAllDerivedTypes<MemoryStream>(Assembly.GetExecutingAssembly());
 
-            Assert.IsTrue(types.Any(x => x.IsAssignableFrom(typeof(testClass))), "testClass not noted as a descendent of MemoryStream");
+            Assert.IsTrue(types.Any(x => x.IsAssignableFrom(typeof(TestClass))), "testClass not noted as a descendent of MemoryStream");
 
             List<Type> types2 = TypesHelper.FindAllDerivedTypes<List<Object>>(Assembly.GetExecutingAssembly());
 
-            Assert.IsFalse(types2.Any(x => x.IsAssignableFrom(typeof(testClass))), "testClass incorrectly noted as a descendent of List<>");
+            Assert.IsFalse(types2.Any(x => x.IsAssignableFrom(typeof(TestClass))), "testClass incorrectly noted as a descendent of List<>");
         }
     }
 }

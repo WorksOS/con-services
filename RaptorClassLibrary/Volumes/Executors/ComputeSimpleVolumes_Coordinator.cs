@@ -7,21 +7,16 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Rendering;
-using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
-using VSS.VisionLink.Raptor.Surfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
-using VSS.VisionLink.Raptor.Designs;
 using static VSS.VisionLink.Raptor.Volumes.VolumesCalculatorBase;
 using VSS.VisionLink.Raptor.SiteModels;
 
 namespace VSS.VisionLink.Raptor.Volumes.Executors
 {
     /// <summary>
-    /// Computes a simple volumes calculation
+    /// Computes a simple volumes calculation within a partition in the cache compute cluster
     /// </summary>
     public class ComputeSimpleVolumes_Coordinator
     {
@@ -255,7 +250,8 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                                               [CutFillVolume.CutVolume, CutFillVolume.FillVolume, CoverageArea]), slmcMessage);
                     */
 
-                    if (Aggregator.BoundingExtents.IsValidPlanExtent)
+                    Aggregator.Finalise();
+                    if (!Aggregator.BoundingExtents.IsValidPlanExtent)
                     {
                         // TODO: Read when loggin available
                         //SIGLogMessage.PublishNoODS(Self, 'Summary volume invalid PlanExtents. Possibly no data found', slmcMessage);
@@ -302,6 +298,8 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                         BoundingExtentGrid = Aggregator.BoundingExtents,
                         BoundingExtentLLH = ResultBoundingExtents
                     };
+
+                    return VolumesResult;
                 }
                 finally
                 {

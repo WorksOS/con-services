@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
+using VSS.VisionLink.Raptor.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
 {
     /// <summary>
     /// Describes the result of a simple volumes computation in terms of cut, fill and total volumes plus coverage areas
     /// </summary>
-    public class SimpleVolumesResponse : IResponseAggregateWith<SimpleVolumesResponse>
+    public class SimpleVolumesResponse : SubGridRequestsResponse, IResponseAggregateWith<SimpleVolumesResponse>
     {
         /// <summary>
         /// Cut volume, expressed in cubic meters
@@ -52,7 +53,7 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public SimpleVolumesResponse()
+        public SimpleVolumesResponse() : base()
         {
 
         }

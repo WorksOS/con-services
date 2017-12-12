@@ -4,9 +4,12 @@ using System.Reflection;
 using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
+using VSS.VisionLink.Raptor.GridFabric.Responses;
 using VSS.VisionLink.Raptor.Pipelines;
 using VSS.VisionLink.Raptor.Rendering.Executors.Tasks;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.Palettes;
 using VSS.VisionLink.Raptor.Rendering.Palettes.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees;
@@ -54,7 +57,7 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         // ICOptions : TSVOICOptions;
 
-        SubGridPipelineProgressive PipeLine = null;
+        private SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse> PipeLine = null;
 
         // LiftBuildSettings : TICLiftBuildSettings;
 
@@ -271,7 +274,7 @@ namespace VSS.VisionLink.Raptor.Rendering
                 // ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.ASTasks.Add(PipelinedTask);
                 try
                 {
-                    PipeLine = new SubGridPipelineProgressive(0, PipelinedTask);
+                    PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(0, PipelinedTask);
                     // PipeLine = ASNodeImplInstance.SubgridPipelinePool.AcquirePipeline;
 
                     PipelinedTask.PipeLine = PipeLine;
@@ -287,9 +290,9 @@ namespace VSS.VisionLink.Raptor.Rendering
 
                         PerformAnyRequiredDebugLevelDisplay();
 
-                        PipelineAborted = PipeLine.PipelineAborted;
+                        PipelineAborted = PipeLine.Aborted;
 
-                        if (!PipeLine.Terminated && !PipeLine.PipelineAborted)
+                        if (!PipeLine.Terminated && !PipeLine.Aborted)
                         {
                             Result = RequestErrorStatus.OK;
                         }
@@ -388,6 +391,11 @@ namespace VSS.VisionLink.Raptor.Rendering
             NPixelsY = ANPixelsY;
         }
 
+        /// <summary>
+        /// Basi constructor accepting the RaptorNodeID indicating the originating server of the request
+        /// to send responses to
+        /// </summary>
+        /// <param name="requestingRaptorNodeID"></param>
         public PlanViewTileRenderer(string requestingRaptorNodeID) : base()
         {
             RequestingRaptorNodeID = requestingRaptorNodeID;

@@ -12,7 +12,7 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Requests
     /// <summary>
     /// A request that may be issued to compute a volume
     /// </summary>
-    public class SimpleVolumesRequest_ApplicationService : GenericASNodeRequest<SimpleVolumesRequestArgument, SimpleVolumesRequestComputeFunc, SimpleVolumesResponse> 
+    public class SimpleVolumesRequest_ApplicationService : GenericASNodeRequest<SimpleVolumesRequestArgument, SimpleVolumesRequestComputeFunc_ApplicationService, SimpleVolumesResponse> 
     {
         /// <summary>
         /// Add specific behaviour here if needed

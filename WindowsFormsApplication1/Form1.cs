@@ -66,6 +66,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter(siteModel)
                 {
                     ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
+                    HasElevationTypeFilter = true,
                     ElevationType = returnEarliestFilteredCellPass ? ElevationType.First : ElevationType.Last,
                     SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel)
                 };
@@ -546,6 +547,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     AttributeFilter = new CellPassAttributeFilter(siteModel)
                     {
                         ReturnEarliestFilteredCellPass = true,
+                        HasElevationTypeFilter = true,
+                        ElevationType = ElevationType.First,
                         SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel),
                     },
 
@@ -561,6 +564,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 {
                     AttributeFilter = new CellPassAttributeFilter(siteModel)
                     {
+                        ReturnEarliestFilteredCellPass = false,
+                        HasElevationTypeFilter = true,
+                        ElevationType = ElevationType.Last,
                         SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel),
                     },
 

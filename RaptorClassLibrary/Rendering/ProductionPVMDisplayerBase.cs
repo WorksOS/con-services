@@ -289,6 +289,11 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         public bool RenderSubGrid(IClientLeafSubGrid ClientSubGrid)
         {
+            if (ClientSubGrid == null)
+            {
+                return true;
+            }
+
             if (!FDisplayParametersCalculated)
             {
                 _CellSize = ClientSubGrid.CellSize;

@@ -2,12 +2,8 @@
 using Apache.Ignite.Core.Compute;
 using Apache.Ignite.Core.Messaging;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
@@ -17,11 +13,9 @@ using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Interfaces;
 using log4net;
 using System.Reflection;
 using Apache.Ignite.Core.Cluster;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
 using System.Diagnostics;
 using VSS.VisionLink.Raptor.Utilities;
 
@@ -31,7 +25,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     /// The closure/function that implements subgrid request processing on compute nodes
     /// </summary>
     [Serializable]
-    public class SubGridsRequestComputeFuncBase : CacheComputeComputeFunc, IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse>, IDisposable
+    public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : CacheComputeComputeFunc, IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
+        where TSubGridsRequestArgument : SubGridsRequestArgument, new()
+        where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         private const int addressBucketSize = 20;
 
@@ -293,10 +289,15 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// </summary>
         /// <param name="results"></param>
         /// <param name="resultCount"></param>
-        public virtual void ProcessSubgridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
-        {
+        public abstract void ProcessSubgridRequestResult(IClientLeafSubGrid[][] results, int resultCount);
 
-        }
+        /// <summary>
+        /// Transforms the internal aggregation state into the desired response for the request
+        /// </summary>
+        /// <param name="results"></param>
+        /// <param name="resultCount"></param>
+        /// <returns></returns>
+        public abstract TSubGridRequestsResponse AcquireComputationResult();
 
         /// <summary>
         /// Process a subset of the full set of subgrids in the request
@@ -355,7 +356,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <summary>
         /// Process the full set of subgrids in the request
         /// </summary>
-        private void PerformSubgridRequests()
+        private TSubGridRequestsResponse PerformSubgridRequests()
         {
             clientGrids = new IClientLeafSubGrid[addressBucketSize][];
 
@@ -367,14 +368,15 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             siteModel = SiteModels.SiteModels.Instance().GetSiteModel(localArg.SiteModelID);
 
             // Construct the set of requestors to be used for the filters present in the request
-            Requestors = localArg.Filters.Filters.Select(x => new SubGridRequestor(siteModel,
-                                                           x, //localArg.Filters.Filters.Count() > 0 ? localArg.Filters.Filters[0] : null,
-                                                           false, // Override cell restriction
-                                                           BoundingIntegerExtent2D.Inverted(), // Override cell restriction
-                                                           SubGridTree.SubGridTreeLevels,
-                                                           int.MaxValue, // MaxCellPasses
-                                                           AreaControlSet // No specifc paramters for selecting cells within the request area
-                                                           )).ToArray();
+            Requestors = localArg.Filters.Filters.Select
+                (x => new SubGridRequestor(siteModel,
+                                           x,
+                                           false, // Override cell restriction
+                                           BoundingIntegerExtent2D.Inverted(),
+                                           SubGridTree.SubGridTreeLevels,
+                                           int.MaxValue, // MaxCellPasses
+                                           AreaControlSet) 
+                 ).ToArray();
 
             addresses = new SubGridCellAddress[addressBucketSize];
 
@@ -394,17 +396,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             // Request surveyd surface only subgrids
             SurveyedSurfaceOnlyMask?.ScanAllSetBitsAsSubGridAddresses(address =>
             {
-                    // Is this subgrid is the responsibility of this server?
-                    if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
+                // Is this subgrid is the responsibility of this server?
+                if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
 
-                    // Decorate the address with the production data and surveyed surface flags
-                    address.ProdDataRequested = false; // TODO: This is a bit of an assumption and assumes the subgrid request is not solely driven by the existance of a subgrid in a surveyed surface
-                    address.SurveyedSurfaceDataRequested = localArg.IncludeSurveyedSurfaceInformation;
+                // Decorate the address with the production data and surveyed surface flags
+                address.ProdDataRequested = false; // TODO: This is a bit of an assumption and assumes the subgrid request is not solely driven by the existance of a subgrid in a surveyed surface
+                address.SurveyedSurfaceDataRequested = localArg.IncludeSurveyedSurfaceInformation;
 
                 AddSubgridToAddressList(address);      // Assign the address into the group to be processed
-                });
+            });
 
             PerformSubgridRequestList();    // Process the remaining subgrids...
+
+            return AcquireComputationResult();
         }
 
         /// <summary>
@@ -412,34 +416,53 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public SubGridRequestsResponse Invoke(SubGridsRequestArgument arg)
+        public TSubGridRequestsResponse Invoke(TSubGridsRequestArgument arg)
         {
-            Debug.Assert(Range.InRange(spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions),
-                         String.Format("Invalid spatial sub division descriptor (must in be in range {0} -> [{1}, {2}])", spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions));
+            TSubGridRequestsResponse result = null;
 
             Log.Info("In SubGridsRequestComputeFunc.invoke()");
 
-            SubGridRequestsResponse result = new SubGridRequestsResponse();
+            try
+            {
+                try
+                {
+                    Debug.Assert(Range.InRange(spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions),
+                                 String.Format("Invalid spatial sub division descriptor (must in be in range {0} -> [{1}, {2}])", spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions));
 
-            UnpackArgument(arg);
+                    long NumSubgridsToBeExamined = (ProdDataMask != null ? ProdDataMask.CountBits() : 0) +
+                                                    (SurveyedSurfaceOnlyMask != null ? SurveyedSurfaceOnlyMask.CountBits() : 0);
+                    UnpackArgument(arg);
 
-            result.NumSubgridsExamined = (ProdDataMask != null ? ProdDataMask.CountBits() : 0) +
-                                         (SurveyedSurfaceOnlyMask != null ? SurveyedSurfaceOnlyMask.CountBits() : 0);
-            result.ResponseCode = SubGridRequestsResponseResult.Unknown;
+                    Log.Info(String.Format("Num subgrids present in request = {0} [All divisions]", NumSubgridsToBeExamined));
 
-            Log.Info(String.Format("Num subgrids present in request = {0} [All divisions]", result.NumSubgridsExamined));
+                    IClusterGroup group = _Ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
 
-            IClusterGroup group = _Ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
+                    Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
 
-            Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
+                    rmtMsg = group.GetMessaging();
 
-            rmtMsg = group.GetMessaging();
+                    result = PerformSubgridRequests();
+                    result.NumSubgridsExamined = (ProdDataMask != null ? ProdDataMask.CountBits() : 0) +
+                                                 (SurveyedSurfaceOnlyMask != null ? SurveyedSurfaceOnlyMask.CountBits() : 0);
 
-            PerformSubgridRequests();
+                    //TODO: Map the actual response code in to this
+                    result.ResponseCode = SubGridRequestsResponseResult.OK;
+                }
+                finally
+                {
+                    Log.Info("Out SubGridsRequestComputeFunc.invoke()");
+                }
+            }
+            catch (Exception E)
+            {
+                Log.Error($"Exception occurred:\n{E}");
 
-            Log.Info("Out SubGridsRequestComputeFunc.invoke()");
+                result = new TSubGridRequestsResponse
+                {
+                    ResponseCode = SubGridRequestsResponseResult.Unknown
+                };
+            }
 
-            result.ResponseCode = SubGridRequestsResponseResult.OK;
             return result;
         }
 

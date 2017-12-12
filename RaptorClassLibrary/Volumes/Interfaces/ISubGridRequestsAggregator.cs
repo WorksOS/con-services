@@ -16,6 +16,8 @@ namespace VSS.VisionLink.Raptor.Volumes.Interfaces
         /// Process the result of querying a subgrid against one or more filters. The argument is a generic lsit of client subgrids
         /// </summary>
         /// <param name="subGrids"></param>
-        void ProcessSubgridResult(IClientLeafSubGrid[] subGrids);
+        void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids);
+
+        void Finalise();
     }
 }
