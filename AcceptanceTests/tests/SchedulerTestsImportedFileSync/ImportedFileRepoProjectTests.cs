@@ -79,49 +79,6 @@ namespace SchedulerTestsImportedFileSync
     }
 
     [TestMethod]
-    public void ImportedFileRepoProject_OneFileIn_WrongFileType()
-    {
-      var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
-
-      var importedFile = new ImportedFileProject()
-      {
-        LegacyProjectId = new Random().Next(1, 900000),
-        LegacyCustomerId = new Random().Next(1, 9999999),
-        ProjectUid = Guid.NewGuid().ToString(),
-        ImportedFileUid = Guid.NewGuid().ToString(),
-        CustomerUid = Guid.NewGuid().ToString(),
-        ImportedFileType = ImportedFileType.Alignment,
-        Name = "ImportedFileRepoProject_OneFileIn_WrongFileType.TTM",
-        FileDescriptor =
-          "{ \"filespaceId\":\"u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01\",\"path\":\"/87bdf851-44c5-e311-aa77-00505688274d/62a52e4f-faa2-e511-80e5-0050568821e6\",\"fileName\":\"DesignSVL13072017034205.svl\"}",
-        FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
-        FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
-        ImportedBy = "someoneElse@gmail.com",
-        IsDeleted = false,
-        IsActivated = true,
-        SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
-        LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
-      };
-
-      var insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFile);
-      Assert.AreEqual(2, insertedCount, "should have written customer and project");
-
-      // need this for when sync occurs
-      var importedFileNhOp = AutoMapperUtility.Automapper.Map<ImportedFileNhOp>(importedFile);
-      insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFileNhOp);
-      Assert.AreEqual(2, insertedCount, "should have written customer and project to NhOpDb");
-
-      insertedCount = WriteToProjectDBImportedFile(_projectDbConnectionString, importedFile);
-      Assert.AreEqual(1, insertedCount, "should have been 1 ImportedFile written to ProjectDb");
-
-      var listOfProjectFiles = importedFileRepoProject.Read();
-      ImportedFile importFileResponse =
-        listOfProjectFiles.FirstOrDefault(x => (String.Compare(x.ImportedFileUid, importedFile.ImportedFileUid,
-                                                  StringComparison.OrdinalIgnoreCase) == 0));
-      Assert.IsNull(importFileResponse, "should not find the invalid one we tried to inserted");
-    }
-
-    [TestMethod]
     public void ImportedFileRepoProject_Create()
     {
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);

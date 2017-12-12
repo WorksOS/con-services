@@ -72,45 +72,6 @@ namespace SchedulerTestsImportedFileSync
       Assert.AreEqual(importedFile.Name, importFileResponse.Name, "should have returned the name");
     }
 
-    [TestMethod]
-    public void ImportedFileRepoNhOp_OneFileIn_WrongFileType()
-    {
-      var ImportedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
-
-      var importedFile = new ImportedFileNhOp()
-      {
-        LegacyImportedFileId = new Random().Next(100000, 1999999),
-        LegacyProjectId = new Random().Next(100000, 19999999),
-        ProjectUid = Guid.NewGuid().ToString(),
-        LegacyCustomerId = new Random().Next(1, 19999999),
-        CustomerUid = Guid.NewGuid().ToString(),
-        ImportedFileType = ImportedFileType.Alignment,
-        Name = "ImportedFileRepoNhOp_OneFileIn_WrongFileType.TTM",
-        SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
-        FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
-        FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
-        ImportedBy = "someoneElse@gmail.com",
-        LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
-      };
-
-      var insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFile);
-      Assert.AreEqual(2, insertedCount, "should have been customerETc written to NhOpDb");
-
-      // need this for when sync occurs
-      var importedFileProject = AutoMapperUtility.Automapper.Map<ImportedFileProject>(importedFile);
-      insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFileProject);
-      Assert.AreEqual(2, insertedCount, "should have written customer and project to ProjectDB");
-
-      insertedCount = WriteNhOpDbImportedFileAndHistory(_nhOpDbConnectionString, importedFile);
-      Assert.AreEqual(2, insertedCount, "should have been ImportedFile written to NhOpDb");
-
-      var listOfProjectFiles = ImportedFileRepoNhOp.Read();
-      ImportedFileNhOp importFileResponse =
-        listOfProjectFiles.FirstOrDefault(x => x.LegacyImportedFileId == importedFile.LegacyImportedFileId);
-      Assert.IsNull(importFileResponse, "should not find the invalid one we tried to inserted");
-
-    }
-
     
     [TestMethod]
     public void ImportedFileRepoNhOp_Create()
