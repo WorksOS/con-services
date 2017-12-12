@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Controller;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
@@ -48,28 +47,31 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     public void AddTask()
     {
       var startUtc = DateTime.UtcNow;
-     
+
       // lowest interval is minutes 
       int taskIntervalMinutes;
-      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_TASK_INTERVAL_MINUTES"), out taskIntervalMinutes))
+      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_TASK_INTERVAL_MINUTES"),
+        out taskIntervalMinutes))
       {
         taskIntervalMinutes = DefaultTaskIntervalDefaultMinutes;
       }
 
       var ImportedProjectFileSyncTask = "ImportedProjectFileSyncTask";
       _log.LogInformation($"ImportedProjectFileSyncTask: taskIntervalMinutes: {taskIntervalMinutes}.");
-      Console.WriteLine($"ImportedProjectFileSyncTask: taskIntervalMinutes: {taskIntervalMinutes}.");
-      
+
       try
       {
-        RecurringJob.AddOrUpdate(ImportedProjectFileSyncTask,() => ImportedFilesSyncTask(), Cron.MinuteInterval(taskIntervalMinutes));
+        RecurringJob.AddOrUpdate(ImportedProjectFileSyncTask, () => ImportedFilesSyncTask(),
+          Cron.MinuteInterval(taskIntervalMinutes));
       }
       catch (Exception ex)
       {
-        var newRelicAttributes = new Dictionary<string, object> {
-          { "message", string.Format($"Unable to schedule recurring job: exception {ex.Message}") }
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message", string.Format($"Unable to schedule recurring job: exception {ex.Message}")}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Fatal", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Fatal", startUtc,
+          (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
     }
@@ -82,14 +84,15 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     public async Task ImportedFilesSyncTask()
     {
       var startUtc = DateTime.UtcNow;
-   
+      _log.LogDebug($"ImportedFilesSyncTask()  beginning. startUtc: {startUtc}");
+
       var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy, _tPaasProxy);
       await sync.SyncTables().ConfigureAwait(false);
 
       var newRelicAttributes = new Dictionary<string, object> {
         { "message", string.Format($"Task completed.") }
       };
-      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
     }
   }
 }

@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
 
@@ -73,7 +73,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       {
         response = _dbConnection.Query<ImportedFileNhOp>(selectCommand).ToList();
         _log.LogTrace($"ImportedFileRepoNhOp.Read: responseCount {response.Count}");
-        Console.WriteLine($"ImportedFileRepoNhOp.Read: responseCount {response.Count}");
       }
       catch (Exception ex)
       {
@@ -82,7 +81,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
       finally
@@ -109,7 +108,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
 
@@ -128,8 +127,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
           countInserted++;
         _log.LogTrace(
           $"ImportedFileRepoNhOp.Create: member {JsonConvert.SerializeObject(member)} countInserted {countInserted}");
-        Console.WriteLine(
-          $"ImportedFileRepoNhOp.Create: member {JsonConvert.SerializeObject(member)} countInserted {countInserted}");
       }
       catch (Exception ex)
       {
@@ -138,7 +135,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
       finally
@@ -168,7 +165,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
 
@@ -184,7 +181,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         countInserted += _dbConnection.Execute(insertImportedFileHistoryeCommand,
           new {member.FileCreatedUtc, member.FileUpdatedUtc, member.LegacyImportedFileId});
         _log.LogTrace($"ImportedFileRepoNhOp.CreateHistory: countInserted {countInserted}");
-        Console.WriteLine($"ImportedFileRepoNhOp.CreateHistory: countInserted {countInserted}");
       }
       catch (Exception ex)
       {
@@ -193,7 +189,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
       finally
@@ -227,7 +223,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
 
       }
@@ -245,12 +241,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       {
         countDeleted += _dbConnection.Execute(deleteImportedFileHistoryCommand, member);
         _log.LogTrace($"ImportedFileRepoNhOp.Delete(ImportedFileHistory): countUpdatedSoFar {countDeleted}");
-        Console.WriteLine($"ImportedFileRepoNhOp.Delete(ImportedFileHistory): countUpdatedSoFar {countDeleted}");
 
         if (countDeleted > 0)
           countDeleted += _dbConnection.Execute(deleteImportedFileCommand, member);
         _log.LogTrace($"ImportedFileRepoNhOp.Delete(ImportedFile): countUpdatedFinal {countDeleted}");
-        Console.WriteLine($"ImportedFileRepoNhOp.Delete(ImportedFile): countUpdatedFinal {countDeleted}");
       }
       catch (Exception ex)
       {
@@ -259,7 +253,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
       finally

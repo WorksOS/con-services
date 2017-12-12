@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
 
@@ -66,7 +66,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       {
         response = _dbConnection.Query<ImportedFileProject>(selectCommand).ToList();
         _log.LogTrace($"ImportedFileRepoProject.Read: responseCount {response.Count}");
-        Console.WriteLine($"ImportedFileRepoProject.Read: responseCount {response.Count}");
       }
       catch (Exception ex)
       {
@@ -75,7 +74,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
       finally
@@ -101,7 +100,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
 
@@ -115,7 +114,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       {
         countInserted += _dbConnection.Execute(insertCommand, member);
         _log.LogTrace($"ImportedFileRepoProject.Create: countInserted {countInserted}");
-        Console.WriteLine($"ImportedFileRepoProject.Create: countInserted {countInserted}");
       }
       catch (Exception ex)
       {
@@ -124,7 +122,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
       finally
@@ -149,7 +147,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
 
@@ -167,7 +165,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       {
         countUpdated += _dbConnection.Execute(updateCommand, member);
         _log.LogTrace($"ImportedFileRepoProject.Update: countUpdated {countUpdated}");
-        Console.WriteLine($"ImportedFileRepoProject.Update: countUpdated {countUpdated}");
       }
       catch (Exception ex)
       {
@@ -176,7 +173,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
       finally
@@ -190,7 +187,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
     public int Delete(T member)
     {
       _log.LogTrace($"ImportedFileRepoProject.Delete: ");
-      Console.WriteLine($"ImportedFileRepoProject.Delete: ");
 
       member.IsDeleted = true;
       return Update(member);
