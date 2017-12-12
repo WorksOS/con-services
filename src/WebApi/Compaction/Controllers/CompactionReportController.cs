@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for report requests
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionReportController : BaseController
   {
     /// <summary>

@@ -103,7 +103,7 @@ Scenario: Report Tile - Invalid Size
   And an overlayType "BaseMap"
   And a width "16" and a height "16"
 	When I request a Report Tile Expecting BadRequest
-	Then I should get error code -1 and message "Tile size must be between 64 and 4096"
+	Then I should get error code -1 and message "Tile size must be between 64 and 2048 with a base map or 64 and 4096 otherwise"
 
 Scenario: Report Tile - Missing CutFill Design 
 	Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
