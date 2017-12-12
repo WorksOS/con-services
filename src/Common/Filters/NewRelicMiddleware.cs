@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Net.Http.Headers;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 
 namespace VSS.Productivity3D.Common.Filters
@@ -32,7 +33,12 @@ namespace VSS.Productivity3D.Common.Filters
       await this.NextRequestDelegate.Invoke(context);
       watch.Stop();
 
-      if (context.User is RaptorPrincipal principal)
+      bool cacheUsed = context.Response.Headers.ContainsKey(HeaderNames.Age);
+      int cacheAge = 0;
+      if (cacheUsed)
+        cacheAge = Int32.Parse(context.Response.Headers[HeaderNames.Age]);
+
+        if (context.User is RaptorPrincipal principal)
       {
         string projectUid = String.Empty;
         string origin = String.Empty;
@@ -50,6 +56,8 @@ namespace VSS.Productivity3D.Common.Filters
         var eventAttributes = new Dictionary<string, object>
         {
           {"endpoint", context.Request.Path.ToString()},
+          {"cacheUsed", cacheUsed.ToString()},
+          {"cacheAge", (Single) Convert.ToDouble(cacheAge)},
           {"userUid", principal.Identity.Name.ToString()},
           {"customerUid", principal.CustomerUid.ToString()},
           {"userName", principal.UserEmail.ToString()},
