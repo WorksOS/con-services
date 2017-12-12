@@ -31,6 +31,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private readonly ILogger _log;
     private readonly IConfigurationStore _configStore;
     private readonly IRaptorProxy _raptorProxy;
+    private readonly ITPaasProxy _tPaasProxy;
     IServiceCollection _serviceCollection;
 
     /// <summary>
@@ -58,6 +59,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       _log = GetLogger();
       _configStore = new GenericConfiguration(GetLoggerFactory());
       _raptorProxy = new RaptorProxy(_configStore, _loggerFactory);
+      _tPaasProxy = new TPaasProxy(_configStore, _loggerFactory);
 
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
@@ -115,9 +117,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<ITPaasProxy, TPaasProxy>();
       _serviceCollection = services;
     }
 
+    
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
     /// <summary>
     /// Configures the specified application.
@@ -144,16 +148,10 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         int workerCount; // Math.Min(Environment.ProcessorCount * 5, 20)
         // schedulePollingIntervalSeconds may need to be low for acceptance tests of FilterSchedulerTask_WaitForCleanup?
         int schedulePollingIntervalSeconds; // DelayedJobScheduler.DefaultPollingDelay = 15 seconds
-        //int heartbeatIntervalSeconds; // hangfire ServerHeartbeat.DefaultHeartbeatInterval default = 30 secs
-        //int serverCheckIntervalSeconds; // ServerWatchdog.DefaultCheckInterval
         if (!int.TryParse(_configStore.GetValueString("SCHEDULER_WORKER_COUNT"), out workerCount))
           workerCount = 2;
         if (!int.TryParse(_configStore.GetValueString("SCHEDULER_SCHEDULE_POLLING_INTERVAL_SECONDS"), out schedulePollingIntervalSeconds))
           schedulePollingIntervalSeconds = 60;
-        //if (!int.TryParse(_configStore.GetValueString("SCHEDULER_HEARTBEAT_INTERVAL_SECONDS"), out heartbeatIntervalSeconds))
-        //  heartbeatIntervalSeconds = 60;
-        //if (!int.TryParse(_configStore.GetValueString("SCHEDULER_SERVER_CHECK_INTERVAL_SECONDS"), out serverCheckIntervalSeconds))
-        //  serverCheckIntervalSeconds = 60;
 
         _log.LogDebug($"Scheduler.Configure: workerCount: {workerCount} schedulePollingIntervalSeconds {schedulePollingIntervalSeconds}.");
 
@@ -162,8 +160,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           ServerName = hangfireServerName,
           WorkerCount = workerCount,
           SchedulePollingInterval = TimeSpan.FromSeconds(schedulePollingIntervalSeconds)
-          //HeartbeatInterval = TimeSpan.FromSeconds(heartbeatIntervalSeconds),
-          //ServerCheckInterval = TimeSpan.FromSeconds(serverCheckIntervalSeconds)
         };
         app.UseHangfireServer(options);
 
@@ -221,7 +217,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         if (filterCleanupTaskToRun)
           Thread.Sleep(2000);
 
-        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(_configStore, _loggerFactory, _raptorProxy);
+        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(_configStore, _loggerFactory, _raptorProxy, _tPaasProxy);
         importedProjectFileSyncTask.AddTask();
         expectedJobCount += 1;
       }

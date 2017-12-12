@@ -1,6 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Scheduler.Common.Controller;
 using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -195,5 +203,30 @@ namespace VSS.Productivity3D.Scheduler.Tests
 
       Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
     }
+    public async Task CanGet3DpmBearerTokenMoq()
+    {
+      var raptorProxy = new Mock<IRaptorProxy>();
+      var tPaasProxy = new Mock<ITPaasProxy>();
+      var accessToken = "blah";
+      raptorProxy.Setup(ps => ps.NotifyImportedFileChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      tPaasProxy.Setup(ps => ps.Get3DPmSchedulerBearerToken(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(new TPaasOauthResult() { tPaasOauthRawResult = new TPaasOauthRawResult() { access_token = accessToken } });
+      var importFileSync = new ImportedFileSynchronizerBase(_configStore, _logger, raptorProxy.Object, tPaasProxy.Object);
+      var bearer = await importFileSync.Get3DPmSchedulerBearerToken().ConfigureAwait(false);
+
+      Assert.AreEqual(accessToken, bearer, "should have returned a bearer token");
+    }
+
+    //[TestMethod]
+    //public async Task CanGet3DpmBearerToken()
+    //{
+    // done as part of acceptance tests  
+    //  var raptorProxy = serviceProvider.GetRequiredService<IRaptorProxy>();
+    //  var tPaasProxy = serviceProvider.GetRequiredService<ITPaasProxy>();
+    //  var importFileSync = new ImportedFileSynchronizerBase(_configStore, _logger, raptorProxy, tPaasProxy);
+    //  var bearer = await importFileSync.Get3DPmSchedulerBearerToken().ConfigureAwait(false);
+
+    //  Assert.AreNotEqual(string.Empty, bearer, "should have returned a bearer token");
+    //}
+
   }
 }

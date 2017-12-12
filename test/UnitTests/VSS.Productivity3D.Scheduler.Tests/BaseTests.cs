@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.Productivity3D.Scheduler.Tests
 {
@@ -31,6 +33,8 @@ namespace VSS.Productivity3D.Scheduler.Tests
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      serviceCollection.AddTransient<IRaptorProxy, RaptorProxy>();
+      serviceCollection.AddTransient<ITPaasProxy, TPaasProxy>();
       serviceProvider = serviceCollection.BuildServiceProvider();
 
       _logger = serviceProvider.GetRequiredService<ILoggerFactory>();

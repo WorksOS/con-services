@@ -16,8 +16,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
   public class ImportedFileSynchronizer : ImportedFileSynchronizerBase
   {
 
-    public ImportedFileSynchronizer(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy) : base(configStore, logger, raptorProxy)
+    protected ILogger _log;
+
+    public ImportedFileSynchronizer(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy) 
+      : base(configStore, logger, raptorProxy, tPaasProxy)
     {
+      _log = logger.CreateLogger<ImportedFileSynchronizer>();
     }
 
     /// <summary>
