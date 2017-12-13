@@ -13,5 +13,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     public Point pixelTopLeft;
     public int mapWidth;
     public int mapHeight;
+    public bool addMargin;
   }
 }

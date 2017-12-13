@@ -840,7 +840,8 @@ this.ScenarioSetup(scenarioInfo);
 #line 105
  testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 106
- testRunner.Then("I should get error code -1 and message \"Tile size must be between 64 and 4096\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("I should get error code -1 and message \"Tile size must be between 64 and 2048 wit" +
+                    "h a base map or 64 and 4096 otherwise\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

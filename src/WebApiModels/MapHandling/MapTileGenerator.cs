@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       log.LogDebug("TileGenerationRequest: " + JsonConvert.SerializeObject(request));
 
       MapBoundingBox bbox = boundingBoxService.GetBoundingBox(request.project, request.filter,
-        request.overlays.Contains(TileOverlayType.ProductionData), request.baseFilter, request.topFilter);
+        request.overlays, request.baseFilter, request.topFilter);
 
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
       long numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
@@ -69,7 +69,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         zoomLevel = zoomLevel,
         numTiles = numTiles,
         mapWidth = request.width,
-        mapHeight = request.height
+        mapHeight = request.height,
+        addMargin = request.overlays.Contains(TileOverlayType.ProjectBoundary)
       };
 
       boundingBoxService.AdjustBoundingBoxToFit(parameters);
