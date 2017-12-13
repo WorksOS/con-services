@@ -75,7 +75,8 @@ namespace VSS.Productivity3D.Filter.WebApi
         options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
           .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
             "X-VisionLink-CustomerUID", "X-VisionLink-UserUid", "X-Jwt-Assertion", "X-VisionLink-ClearCache")
-          .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
+          .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE")
+	  .SetPreflightMaxAge(TimeSpan.FromSeconds(2520)));
       });
 
       // Add framework services.
