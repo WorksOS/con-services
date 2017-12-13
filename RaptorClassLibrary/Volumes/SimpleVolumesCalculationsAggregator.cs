@@ -32,9 +32,9 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// </summary>
         private static ClientHeightLeafSubGrid NullHeightSubgrid = new ClientHeightLeafSubGrid(null, null, 0, 0, 0);
 
-        // FCoverageMap maps the area of cells that we have considered and successfully
+        // CoverageMap maps the area of cells that we have considered and successfully
         // computed volume information from
-      //  public SubGridTreeBitMask CoverageMap = new SubGridTreeBitMask();
+        public SubGridTreeBitMask CoverageMap = new SubGridTreeBitMask();
 
         // NoChangeMap maps the area of cells that we have considered and found to have
         // had no height change between to two surfaces considered
