@@ -20,6 +20,5 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// The default elevation delta tolerance between two surfaces for there to be a meaningful fill volume to be calculated for a cell
         /// </summary>
         public static double DEFAULT_CELL_VOLUME_FILL_TOLERANCE = 0.001;
-
     }
 }

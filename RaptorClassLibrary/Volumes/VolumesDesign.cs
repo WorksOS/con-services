@@ -17,7 +17,6 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// </summary>
         public VolumesDesign()
         {
-
         }
 
         /// <summary>
@@ -25,23 +24,21 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// </summary>
         public DesignDescriptor DesignDescriptor = DesignDescriptor.Null();
 
-        public bool GetDesignHeights(//const DesignProfiler : TDesignProfilerPublicInterface;
-                                     long siteModelID,
+        public bool GetDesignHeights(long siteModelID,
                                      SubGridCellAddress originCellAddress,
                                      double cellSize,
                                      out ClientHeightLeafSubGrid designHeights,
                                      out DesignProfilerRequestResult errorCode)
         {
-            return GetDesignHeights(DesignDescriptor, /*DesignProfiler, */ siteModelID, originCellAddress, cellSize, out designHeights, out errorCode);
+            return GetDesignHeights(DesignDescriptor, siteModelID, originCellAddress, cellSize, out designHeights, out errorCode);
         }
 
         public static bool GetDesignHeights(DesignDescriptor DesignDescriptor,
-                                     //const DesignProfiler : TDesignProfilerPublicInterface;
-                                     long siteModelID,
-                                     SubGridCellAddress originCellAddress,
-                                     double cellSize,
-                                     out ClientHeightLeafSubGrid designHeights,
-                                     out DesignProfilerRequestResult errorCode)
+                                            long siteModelID,
+                                            SubGridCellAddress originCellAddress,
+                                            double cellSize,
+                                            out ClientHeightLeafSubGrid designHeights,
+                                            out DesignProfilerRequestResult errorCode)
         {
             // Query the DesignProfiler service to get the patch of elevations calculated
 

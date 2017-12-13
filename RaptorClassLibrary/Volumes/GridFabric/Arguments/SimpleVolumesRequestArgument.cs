@@ -11,7 +11,7 @@ using VSS.VisionLink.Raptor.GridFabric.Arguments;
 namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
 {
     /// <summary>
-    /// THe argument passed to simple volumes requests
+    /// The argument passed to simple volumes requests
     /// </summary>
     public class SimpleVolumesRequestArgument : BaseApplicationServiceRequestArgument
     {
@@ -35,17 +35,11 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
         public CombinedFilter BaseFilter = null;
         public CombinedFilter TopFilter = null;
 
-        // public DesignDescriptor BaseDesign = DesignDescriptor.Null();
-        // public DesignDescriptor TopDesign = DesignDescriptor.Null();
-
         public long BaseDesignID = long.MinValue;
         public long TopDesignID = long.MinValue;
         
         /// <summary>
-        /// BaseSpatialFilter, TopSpatialFilter and AdditionalSpatialFilter are
-        /// three filters used to implement the spatial restrictions represented by
-        /// spatial restrictions in the base and top filters and the additional
-        /// boundary specified by the user.
+        /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
         /// </summary>
         public CombinedFilter AdditionalSpatialFilter = null;
 

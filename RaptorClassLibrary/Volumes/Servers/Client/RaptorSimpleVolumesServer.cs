@@ -13,6 +13,9 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
     /// </summary>
     public class RaptorSimpleVolumesServer : RaptorApplicationServiceServer
     {
+        /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
         public RaptorSimpleVolumesServer() : base()
         {
         }

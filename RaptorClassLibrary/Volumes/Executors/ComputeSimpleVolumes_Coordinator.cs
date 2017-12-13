@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Types;
@@ -20,6 +14,9 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
     /// </summary>
     public class ComputeSimpleVolumes_Coordinator
     {
+        /// <summary>
+        /// The ID of the site model the volume is being calculated for 
+        /// </summary>
         public long SiteModelID = -1;
 
         //ExternalDescriptor : TASNodeRequestDescriptor;
@@ -40,17 +37,20 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
         public CombinedFilter BaseFilter = null;
         public CombinedFilter TopFilter = null;
 
-        // DesignDescriptor BaseDesign = DesignDescriptor.Null();
-        // DesignDescriptor TopDesign = DesignDescriptor.Null();
-
+        /// <summary>
+        /// The ID of the 'base' design. This is the design forming the 'from' surface in 
+        /// the volumes calculation
+        /// </summary>
         long BaseDesignID = long.MinValue;
+
+        /// <summary>
+        /// The ID of the 'to or top' design. This is the design forming the 'to or top' surface in 
+        /// the volumes calculation
+        /// </summary>
         long TopDesignID = long.MinValue;
 
         /// <summary>
-        /// BaseSpatialFilter, TopSpatialFilter and AdditionalSpatialFilter are
-        /// three filters used to implement the spatial restrictions represented by
-        /// spatial restrictions in the base and top filters and the additional
-        /// boundary specified by the user.
+        /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
         /// </summary>
         public CombinedFilter AdditionalSpatialFilter = null;
 
@@ -138,6 +138,10 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
             FillTolerance = fillTolerance;
         }
 
+        /// <summary>
+        /// Executes the simple volumes computation returning a SimpleVolumesResponse with the results
+        /// </summary>
+        /// <returns></returns>
         public SimpleVolumesResponse Execute()
         {
             SimpleVolumesResponse VolumesResult = new SimpleVolumesResponse();
@@ -174,8 +178,6 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                         if not ScheduledWithGovernor then
                           Exit;
 
-                        SetLength(SurveyedSurfaceExclusionList, 0);
-
                         if ASNodeImplInstance.PSLoadBalancer.LoadBalancedPSService.GetDataModelSpatialExtents(FDataModelID, SurveyedSurfaceExclusionList, SpatialExtent, CellSize, IndexOriginOffset) <> icsrrNoError then
                           begin
                             ResultStatus:= asneFailedToRequestDatamodelStatistics;
@@ -185,12 +187,14 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
 
                     // InterlockedIncrement64(ASNodeRequestStats.NumVolumeRequests);
 
+                    // Prepare filters for use in the request
                     ResultStatus = FilterUtilities.PrepareFiltersForUse(new CombinedFilter[] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
                     if (ResultStatus != RequestErrorStatus.OK)
                     {
                         return VolumesResult;
                     }
 
+                    // Obtain the site model context for the request
                     SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(SiteModelID);
 
                     if (SiteModel == null)
@@ -198,6 +202,8 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                         return VolumesResult;
                     }
 
+                    // Create and configure the aggregator that contains the business logic for the 
+                    // underlying volume calculation
                     SimpleVolumesCalculationsAggregator Aggregator = new SimpleVolumesCalculationsAggregator()
                     {
                         RequiresSerialisation = true,
@@ -209,6 +215,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                         FillTolerance = FillTolerance
                     };
 
+                    // Create and configure the volumes calculation engine
                     VolumesCalculator ComputeVolumes = new VolumesCalculator()
                     {
                         RequestDescriptor = RequestDescriptor,
@@ -250,7 +257,9 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                                               [CutFillVolume.CutVolume, CutFillVolume.FillVolume, CoverageArea]), slmcMessage);
                     */
 
+                    // Instrust the Aggregator to performing any finalisation logic before readin out the results
                     Aggregator.Finalise();
+
                     if (!Aggregator.BoundingExtents.IsValidPlanExtent)
                     {
                         // TODO: Read when loggin available
@@ -288,6 +297,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                                                  RadToDeg(LLHCoords[1].Y));
                     */
 
+                    // Construct the result object to pass back to the caller
                     VolumesResult = new SimpleVolumesResponse()
                     {
                         Cut = Aggregator.CutFillVolume.CutVolume,

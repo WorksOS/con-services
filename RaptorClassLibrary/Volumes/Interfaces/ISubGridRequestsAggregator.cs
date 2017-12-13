@@ -18,6 +18,9 @@ namespace VSS.VisionLink.Raptor.Volumes.Interfaces
         /// <param name="subGrids"></param>
         void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids);
 
+        /// <summary>
+        /// Perform any finalisation logic required once all subgrids have been processed into the aggregator
+        /// </summary>
         void Finalise();
     }
 }

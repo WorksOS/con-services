@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor.Common;
@@ -33,7 +34,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
         // FCoverageMap maps the area of cells that we have considered and successfully
         // computed volume information from
-        public SubGridTreeBitMask CoverageMap = new SubGridTreeBitMask();
+      //  public SubGridTreeBitMask CoverageMap = new SubGridTreeBitMask();
 
         // NoChangeMap maps the area of cells that we have considered and found to have
         // had no height change between to two surfaces considered
@@ -55,7 +56,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
         // The sum of the aggregated summarised information relating to volumes summary based reports
 
-        // FCellsUsed records how many cells were used in the volume calculation
+        // CellsUsed records how many cells were used in the volume calculation
         public long CellsUsed { get; set; } = 0;
         public long CellsUsedCut { get; set; } = 0;
         public long CellsUsedFill { get; set; } = 0;
@@ -92,13 +93,13 @@ namespace VSS.VisionLink.Raptor.Volumes
         public double TotalArea { get; set; } = 0;
         public BoundingWorldExtent3D BoundingExtents = BoundingWorldExtent3D.Inverted(); // no {get; set;} intentionally 
 
-        // FCutTolerance determines the tolerance (in meters) that the 'From' surface
+        // CutTolerance determines the tolerance (in meters) that the 'From' surface
         // needs to be above the 'To' surface before the two surfaces are not
         // considered to be equivalent, or 'on-grade', and hence there is material still remaining to
         // be cut
         public double CutTolerance { get; set; } = VolumesConsts.DEFAULT_CELL_VOLUME_CUT_TOLERANCE;
 
-        // FFillTolerance determines the tolerance (in meters) that the 'To' surface
+        // FillTolerance determines the tolerance (in meters) that the 'To' surface
         // needs to be above the 'From' surface before the two surfaces are not
         // considered to be equivalent, or 'on-grade', and hence there is material still remaining to
         // be cut
@@ -422,7 +423,7 @@ namespace VSS.VisionLink.Raptor.Volumes
             {
                 if (RequiresSerialisation)
                 {
-                    //   TMonitor.Enter(CoverageMap);
+                    Monitor.Enter(CoverageMap);
                 }
                 try
                 {
@@ -442,7 +443,7 @@ namespace VSS.VisionLink.Raptor.Volumes
                 {
                     if (RequiresSerialisation)
                     {
-                        //   TMonitor.Exit(CoverageMap);
+                        Monitor.Exit(CoverageMap);
                     }
                 }
             }
@@ -456,7 +457,7 @@ namespace VSS.VisionLink.Raptor.Volumes
         {
             if (RequiresSerialisation)
             {
-                //   TMonitor.Enter(Self);
+                Monitor.Enter(this);
             }
 
             try
@@ -500,7 +501,7 @@ namespace VSS.VisionLink.Raptor.Volumes
             {
                 if (RequiresSerialisation)
                 {
-                    //   TMonitor.Exit(Self);
+                    Monitor.Exit(this);
                 }
             }
         }

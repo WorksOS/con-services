@@ -90,7 +90,7 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
         }
 
         /// <summary>
-        /// Simpel textual represenation of the information in a simple volumes response
+        /// Simple textual represenation of the information in a simple volumes response
         /// </summary>
         public override string ToString() => $"Cut:{Cut}, Fill:{Fill}, Cut Area:{CutArea}, FillArea: {FillArea}, Total Area:{TotalCoverageArea}, BoundingGrid:{BoundingExtentGrid}, BoundingLLH:{BoundingExtentLLH}";
     }

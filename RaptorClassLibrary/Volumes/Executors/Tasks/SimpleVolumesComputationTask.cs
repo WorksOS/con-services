@@ -1,13 +1,8 @@
 ﻿using log4net;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Volumes.Executors.Tasks
@@ -54,14 +49,14 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors.Tasks
                 throw new ArgumentException("Aggregator not defined in SimpleVolumesComputationTask");
             }
 
-            if (!(response is VSS.VisionLink.Raptor.SubGridTrees.Interfaces.IClientLeafSubGrid[][]))
+            if (!(response is IClientLeafSubGrid[][]))
             {
                 Log.Error($"response is not a IClientLeafSubGrid[][], --> {response}");
                 return false;
             }
 
-            Aggregator.SummariseSubgridResult(response as VSS.VisionLink.Raptor.SubGridTrees.Interfaces.IClientLeafSubGrid[][]);
-            //            Aggregator.SummariseSubgridResult(response as ClientHeightLeafSubGrid[][]);
+            // Include this subgrid result into the aggregated volumes result
+            Aggregator.SummariseSubgridResult(response as IClientLeafSubGrid[][]);
 
             return true;
         }

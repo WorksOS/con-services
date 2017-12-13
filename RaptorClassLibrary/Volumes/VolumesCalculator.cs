@@ -52,6 +52,10 @@ namespace VSS.VisionLink.Raptor.Volumes
         {
         }
 
+        /// <summary>
+        /// Constructor accepting an instantiated aggregator instance
+        /// </summary>
+        /// <param name="aggregator"></param>
         public VolumesCalculatorBase(SimpleVolumesCalculationsAggregator aggregator) : this()
         {
             Aggregator = aggregator;
@@ -62,8 +66,6 @@ namespace VSS.VisionLink.Raptor.Volumes
               function CheckCellIsInSpatialConstraints(const CellX, CellY: Integer): Boolean;
               function GetCellSize: Double;
 */
-        // protected BoundingWorldExtent3D DataExtents = BoundingWorldExtent3D.Inverted();
-
         protected BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted(); // No get;set; on purpose
 
         /// <summary>
@@ -114,14 +116,6 @@ namespace VSS.VisionLink.Raptor.Volumes
         // FAborted keeps track of whether we've been buchwhacked or not!
         protected FAborted : Boolean;
 
-        // TopScanSubGrid is a loose subgrid - we don't actually assign it to a tree
-        // at all, because its context is identical to the context of BaseSubGrid
-        protected FTopScanSubGrid : TICClientSubGridTreeLeaf_Height;
-
-        // FCoverageMap maps the area of cells that we have considered and successfully
-        // computed volume information from
-        protected FCoverageMap : TSubGridTreeBitMask;
-
         // FNoChangeMap maps the area of cells that we have considered and found to have
         // had no height change between to two surfaces considered
         protected FNoChangeMap : TSubGridTreeBitMask;                      
@@ -137,18 +131,9 @@ namespace VSS.VisionLink.Raptor.Volumes
         /*
          FLiftBuildSettings : TICLiftBuildSettings;
 
-         {$IFDEF DEBUG}
-         // Is used to map the extent the processing engine has covered in its processing
-         FProcessingCoverageMap : TSubGridTreeBitMask;
-         {$ENDIF}
-
          {$IFDEF LOGVOLCALCANALYSIS}
          FLogFile : TextFile;
          {$ENDIF}
-
-         // FPipeLine is the subgrid pipeline used to drive the extraction of subgrid information
-         // for the purposes of computing volumes information
-         FReturnCode           : TICFSErrorStatus;
         */
 
         SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null; //: TProductionDataExistanceMap;      //FPDExistenceMap : TSubGridTreeBitMask;
@@ -205,15 +190,6 @@ namespace VSS.VisionLink.Raptor.Volumes
             };
 
             PipeLine.FilterSet = FilterSet;
-
-/* TODO Ignite POC: These quantities are not required for the activity of the pipeline proper...
-            if (ActiveDesign != null)
-            {
-                PipeLine.ReferenceDesign = ActiveDesign.DesignDescriptor;
-            }
-            PipeLine.ReferenceVolumeType = Aggregator.VolumeType;
-*/
-
             PipeLine.GridDataType = GridDataType.Height;
 
             if (FilteredTopSurveyedSurfaces.Count > 0 || FilteredBaseSurveyedSurfaces.Count > 0)
@@ -436,12 +412,12 @@ namespace VSS.VisionLink.Raptor.Volumes
             private void ApplyFilterAndSubsetBoundariesToExtents()
             {
                 /*
-                 * if VLPDSvcLocations.Debug_ExtremeLogSwitchM then
+                if VLPDSvcLocations.Debug_ExtremeLogSwitchM then
                    begin
                      SIGLogMessage.Publish(Self, Format('TICVolumesCalculator DEBUG  BaseFilter Dates : %s  %s ',[DateTimeToStr(FBaseFilter.StartTime), DateTimeToStr(FBaseFilter.EndTime)]), slmcDebug);
                      SIGLogMessage.Publish(Self, Format('TICVolumesCalculator DEBUG  TopFilter Dates : %s  %s ',[DateTimeToStr(FTopFilter.StartTime), DateTimeToStr(FTopFilter.EndTime)]), slmcDebug);
                    end;
-              */
+                */
 
                 if (FromSelectionType == ProdReportSelectionType.Filter)
                 {
@@ -488,13 +464,6 @@ namespace VSS.VisionLink.Raptor.Volumes
                 ApplyFilterAndSubsetBoundariesToExtents();
 
                 BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass = UseEarliestData;
-
-                // Configure our local spatial filter from the spatial constraints information in the base and top.
-
-                /*
-                 if (FFromSelectionType = prstFilter then FBaseSpatialFilter.Initialise(FBaseFilter);
-                 if FToSelectionType = prstFilter then FTopSpatialFilter.Initialise(FTopFilter);
-                */
 
                 if (FromSelectionType == ProdReportSelectionType.Surface)
                 {

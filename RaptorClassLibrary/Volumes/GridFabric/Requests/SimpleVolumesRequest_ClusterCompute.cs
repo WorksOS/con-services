@@ -23,27 +23,5 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Requests
         {
             return base.Execute(arg);
         }
-
-        /*
-        The non-generic version of the execute method would look like this:
-
-        /// <summary>
-        /// Computes a simple volume according to the parameters in the request. 
-        /// Execute2 is the literal implementation of the generic Execute method
-        /// </summary>
-        /// <param name="arg"></param>
-        /// <returns></returns>
-        public SimpleVolumesResponse Execute(SimpleVolumesRequestArgument arg)
-        {
-            // Construct the function to be used
-            IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse> func = new SimpleVolumesRequestComputeFunc();
-
-            // Broadcast the request to the compute pool and assembly a list of the results
-            Task<ICollection<SimpleVolumesResponse>> taskResult = _Compute.BroadcastAsync(func, arg);
-
-            // Reduce the set of results to a single volumes result and send the result back
-            return taskResult.Result.Aggregate((first, second) => first.AggregateWith(second));
-        }
-        */
     }
 }
