@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,7 +77,7 @@ namespace VSS.Productivity3D.Filter.WebApi
           .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
             "X-VisionLink-CustomerUID", "X-VisionLink-UserUid", "X-Jwt-Assertion", "X-VisionLink-ClearCache")
           .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE")
-	  .SetPreflightMaxAge(TimeSpan.FromSeconds(2520)));
+	        .SetPreflightMaxAge(TimeSpan.FromSeconds(2520)));
       });
 
       // Add framework services.
