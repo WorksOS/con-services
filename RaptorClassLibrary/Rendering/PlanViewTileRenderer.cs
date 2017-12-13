@@ -117,14 +117,12 @@ namespace VSS.VisionLink.Raptor.Rendering
             // selected as a part of this pipeline
             // Increase cell boundary by one cell to allow for cells on the boundary that cross the boundary
 
-            uint CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY;
-
             SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX, RotatedTileBoundingExtents.MinY,
                                                                CellSize, SubGridTree.DefaultIndexOriginOffset,
-                                                               out CellExtents_MinX, out CellExtents_MinY);
+                                                               out uint CellExtents_MinX, out uint CellExtents_MinY);
             SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX, RotatedTileBoundingExtents.MaxY,
                                                                CellSize, SubGridTree.DefaultIndexOriginOffset,
-                                                               out CellExtents_MaxX, out CellExtents_MaxY);
+                                                               out uint CellExtents_MaxX, out uint CellExtents_MaxY);
 
             CellExtents = new BoundingIntegerExtent2D((int)CellExtents_MinX, (int)CellExtents_MinY, (int)CellExtents_MaxX, (int)CellExtents_MaxY);
             CellExtents.Expand(1);
@@ -245,7 +243,6 @@ namespace VSS.VisionLink.Raptor.Rendering
         {
             PipelinedSubGridTask PipelinedTask = null;
 
-            BoundingIntegerExtent2D CellExtents;
             RequestErrorStatus Result = RequestErrorStatus.Unknown;
 
             bool PipelineAborted = false;
@@ -280,7 +277,7 @@ namespace VSS.VisionLink.Raptor.Rendering
                     PipelinedTask.PipeLine = PipeLine;
                     try
                     {
-                        ConfigurePipeline(out CellExtents);
+                        ConfigurePipeline(out BoundingIntegerExtent2D CellExtents);
 
                         // EpochCount = 0
                         if (PipeLine.Initiate())

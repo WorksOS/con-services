@@ -265,10 +265,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             uint ScanMaxY = (uint)Math.Min(OriginY + AxialCellCoverageByThisSubgrid() - 1, Extent.MaxY);
 
             // Convert the on-the-ground cell indexes into subgrid indexes at this level in the sub grid tree
-            byte SubGridMinX, SubGridMinY, SubGridMaxX, SubGridMaxY;
-
-            GetSubGridCellIndex(ScanMinX, ScanMinY, out SubGridMinX, out SubGridMinY);
-            GetSubGridCellIndex(ScanMaxX, ScanMaxY, out SubGridMaxX, out SubGridMaxY);
+            GetSubGridCellIndex(ScanMinX, ScanMinY, out byte SubGridMinX, out byte SubGridMinY);
+            GetSubGridCellIndex(ScanMaxX, ScanMaxY, out byte SubGridMaxX, out byte SubGridMaxY);
 
             ForEachSubGrid(subgrid =>
             {

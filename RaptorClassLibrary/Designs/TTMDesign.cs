@@ -272,7 +272,7 @@ namespace VSS.Velociraptor.DesignProfiling
                                                     Action<SubGridTree, uint, uint, Triangle> includeTriangleInLeaf,
                                                     TriVertex H1, TriVertex H2, TriVertex V, bool SingleRowOnly)
         {
-            uint LeftSubGridX, RightSubGridX, TestLeftSubGridX, TestRightSubGridX; ;
+            uint TestLeftSubGridX, TestRightSubGridX; ;
             double H1Slope, H2Slope;
             bool LastRow = false;
             bool WasLastRow = false;
@@ -344,8 +344,8 @@ namespace VSS.Velociraptor.DesignProfiling
                 // if they cover the body of the triangle
                 do
                 {
-                    index.CalculateIndexOfCellContainingPosition(H1X, H1Y, out LeftSubGridX, out _);
-                    index.CalculateIndexOfCellContainingPosition(H2X, H2Y, out RightSubGridX, out _);
+                    index.CalculateIndexOfCellContainingPosition(H1X, H1Y, out uint LeftSubGridX, out _);
+                    index.CalculateIndexOfCellContainingPosition(H2X, H2Y, out uint RightSubGridX, out _);
 
                     if (LeftSubGridX > RightSubGridX)
                     {

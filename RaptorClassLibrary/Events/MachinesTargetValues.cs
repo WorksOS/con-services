@@ -46,8 +46,7 @@ namespace VSS.VisionLink.Raptor.Events
         {
             get
             {
-                ProductionEventChanges result;
-                return MachineIDMap.TryGetValue(MachineID, out result) ? result : null;
+                return MachineIDMap.TryGetValue(MachineID, out ProductionEventChanges result) ? result : null;
             }
         }
 
@@ -61,8 +60,7 @@ namespace VSS.VisionLink.Raptor.Events
         {
             get
             {
-                ProductionEventChanges result;
-                return MachineIDMap.TryGetValue(MachineID, out result) ? result : null;
+                return MachineIDMap.TryGetValue(MachineID, out ProductionEventChanges result) ? result : null;
             }
         }
 

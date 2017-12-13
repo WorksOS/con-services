@@ -77,9 +77,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
 
         public override void ReadANSIStringValue(TAGDictionaryItem valueType, byte[] value)
         {
-            TAGValueMatcher valueMatcher = null;
-
-            if (ValueMatchers.TryGetValue(valueType.Name, out valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
             {
                 valueMatcher.ProcessANSIStringValue(valueType, value);
             }
@@ -87,9 +85,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
 
         public override void ReadEmptyValue(TAGDictionaryItem valueType)
         {
-            TAGValueMatcher valueMatcher = null;
-
-            if (ValueMatchers.TryGetValue(valueType.Name, out valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
             {
                 valueMatcher.ProcessEmptyValue(valueType);
             }
@@ -97,9 +93,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
 
         public override void ReadIEEEDoubleValue(TAGDictionaryItem valueType, double value)
         {
-            TAGValueMatcher valueMatcher = null;
-
-            if (ValueMatchers.TryGetValue(valueType.Name, out valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
             {
                 valueMatcher.ProcessDoubleValue(valueType, value);
             }
@@ -112,9 +106,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
 
         public override void ReadIntegerValue(TAGDictionaryItem valueType, int value)
         {
-            TAGValueMatcher valueMatcher = null;
-
-            if (ValueMatchers.TryGetValue(valueType.Name, out valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
             {
                 valueMatcher.ProcessIntegerValue(valueType, value);
             }
@@ -122,9 +114,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
 
         public override void ReadUnicodeStringValue(TAGDictionaryItem valueType, string value)
         {
-            TAGValueMatcher valueMatcher = null;
-
-            if (ValueMatchers.TryGetValue(valueType.Name, out valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
             {
                 valueMatcher.ProcessUnicodeStringValue(valueType, value);
             }
@@ -132,9 +122,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
 
         public override void ReadUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            TAGValueMatcher valueMatcher = null;
-
-            if (ValueMatchers.TryGetValue(valueType.Name, out valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
             {
                 valueMatcher.ProcessUnsignedIntegerValue(valueType, value);
             }

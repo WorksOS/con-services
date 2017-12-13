@@ -124,9 +124,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             // Locate both with the time present in each of the contributing cell passes to ensure exact time matches
             // at the boundaries are preserved
-            int cellPassIndex = 0;
 
-            c.LocateTime(cp1.Time, out cellPassIndex);
+            c.LocateTime(cp1.Time, out int cellPassIndex);
             Assert.IsTrue(cellPassIndex == 0, "Located cell pass (first) has incorrect index");
             Assert.IsTrue(c.Passes[cellPassIndex].Equals(cp1), "Select (first) cell pass does not match pass added to cell");
 
@@ -200,11 +199,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             Cell_NonStatic c2 = new Cell_NonStatic(0);
             c2.AddPass(cp2);
 
-            int addedCount = 0;
-            int modifiedCount = 0;
-
             // Test integration of later cell pass to list with earlier cell pass resulting in 1 added and 0 modified
-            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
+            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out int addedCount, out int modifiedCount);
 
             Assert.IsTrue(addedCount == 1, "Count of added cell pases is not 1, but {0}", addedCount);
             Assert.IsTrue(modifiedCount == 0, "Count of modified cell pases is not 0, but {0}", modifiedCount);
@@ -229,11 +225,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             Cell_NonStatic c2 = new Cell_NonStatic(0);
             c2.AddPass(cp1);
 
-            int addedCount = 0;
-            int modifiedCount = 0;
-
             // Test integration of the identical cell passes resulting in a single cell pass, 0 added and 0 modified (as identical cell passes are not a modification)
-            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
+            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out int addedCount, out int modifiedCount);
 
             Assert.IsTrue(addedCount == 0, "Count of added cell pases is not 0, but {0}", addedCount);
             Assert.IsTrue(modifiedCount == 0, "Count of modified cell pases is not 0, but {0}", modifiedCount);

@@ -227,7 +227,6 @@ namespace VSS.VisionLink.Raptor.Volumes
             PipelinedSubGridTask PipelinedTask = null;
             SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine = null;
 
-            BoundingIntegerExtent2D CellExtents;
             RequestErrorStatus Result = RequestErrorStatus.Unknown;
 
             bool PipelineAborted = false;
@@ -315,7 +314,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
                         PipelinedTask.PipeLine = PipeLine;
 
-                        ConfigurePipeline(PipeLine, out CellExtents);
+                        ConfigurePipeline(PipeLine, out BoundingIntegerExtent2D CellExtents);
 
                         if (PipeLine.Initiate())
                         {
