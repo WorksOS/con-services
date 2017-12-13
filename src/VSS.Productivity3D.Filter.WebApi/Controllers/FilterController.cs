@@ -29,20 +29,20 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
   /// </summary>
   public class FilterController : BaseController
   {
-    private readonly GeofenceRepository GeofenceRepository;
-    private readonly FilterRepository FilterRepo;
+    private readonly GeofenceRepository geofenceRepository;
+    private readonly FilterRepository filterRepo;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FilterController"/> class.
     /// </summary>
     public FilterController(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IRepository<IFilterEvent> filterRepo, 
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IRepository<IFilterEvent> filterRepo,
       IKafka producer, IRepository<IGeofenceEvent> geofenceRepo)
       : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, producer, "IFilterEvent")
     {
       Log = logger.CreateLogger<FilterController>();
-      FilterRepo = filterRepo as FilterRepository;
-      GeofenceRepository = geofenceRepo as GeofenceRepository;
+      this.filterRepo = filterRepo as FilterRepository;
+      this.geofenceRepository = geofenceRepo as GeofenceRepository;
     }
 
     /// <summary>
@@ -55,6 +55,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     public async Task<FilterDescriptorListResult> GetProjectFilters(string projectUid)
     {
       Log.LogInformation($"{ToString()}.GetProjectFilters: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} isApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid}");
+
       var requestFull =
         FilterRequestFull.Create(
           Request.Headers.GetCustomHeaders(),
@@ -66,7 +67,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler);
 
       var executor =
-        RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
+        RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null);
       var result = await executor.ProcessAsync(requestFull) as FilterDescriptorListResult;
 
       Log.LogInformation($"{ToString()}.GetProjectFilters Completed: resultCode: {result?.Code} filterCount={result?.FilterDescriptors.Count}");
@@ -74,18 +75,18 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets the filter requested
-    ///    If the calling context is == Application, then get it, 
-    ///       else get only if owned by the calling UserUid
+    /// Get a filter by ID.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="filterUid">The project uid.</param>
+    /// <remarks>
+    /// If the calling context is == Application, then get it, else get only if owned by the calling UserUid
+    /// </remarks>
     /// <returns>Returns an instance of <see cref="FilterDescriptorSingleResult"/></returns>
     [Route("api/v1/filter/{ProjectUid}")]
     [HttpGet]
     public async Task<FilterDescriptorSingleResult> GetProjectFilter(string projectUid, [FromUri] string filterUid)
     {
       Log.LogInformation($"{ToString()}.GetProjectFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} IsApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} ProjectUid: {projectUid} FilterUid: {filterUid}");
+
       var requestFull =
         FilterRequestFull.Create(
           Request.Headers.GetCustomHeaders(),
@@ -98,7 +99,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler);
 
       var executor =
-        RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
+        RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null, this.ProjectListProxy);
       var result = await executor.ProcessAsync(requestFull) as FilterDescriptorSingleResult;
 
       Log.LogInformation($"{ToString()}.GetProjectFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
@@ -109,8 +110,6 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Persistent filter is Created or Deleted/Created
     /// Transient filter is Upserted
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="request"></param>
     /// <returns>Returns an instance of <see cref="FilterDescriptorSingleResult"/></returns>
     [Route("api/v1/filter/{ProjectUid}")]
     [HttpPut]
@@ -126,7 +125,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, Request.Headers.GetCustomHeaders(),
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
-      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
+      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, this.geofenceRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
 
       var upsertFilterResult = await UpsertFilter(filterExecutor, projectUid, request);
 
@@ -134,11 +133,9 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     }
 
     /// <summary>
-    /// List of transient filters
+    /// Create one or more transient filters.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="request"></param>
-    /// <returns>FilterDescriptorListResult</returns>
+    /// <returns>Returns a collection of <see cref="FilterDescriptorListResult"/> which contain the created filter objects.</returns>
     [Route("api/v1/filters/{projectUid}")]
     [HttpPost]
     public async Task<FilterDescriptorListResult> CreateFilters(string projectUid, [FromBody] FilterListRequest request)
@@ -167,7 +164,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         }
       }
 
-      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
+      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, this.geofenceRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
 
       var newFilters = new List<FilterDescriptor>();
 
@@ -176,7 +173,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         var upsertFilterResult = await UpsertFilter(filterExecutor, projectUid, filterRequest);
         newFilters.Add(upsertFilterResult.FilterDescriptor);
       }
-      var result = new FilterDescriptorListResult() { FilterDescriptors = newFilters.ToImmutableList() };
+      var result = new FilterDescriptorListResult { FilterDescriptors = newFilters.ToImmutableList() };
       Log.LogInformation($"{ToString()}.CreateFilters Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result;
     }
@@ -184,10 +181,6 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <summary>
     /// Validates and saves a single filter. Also creates the project-geofence association if the filter contains a polygon boundary.
     /// </summary>
-    /// <param name="filterExecutor"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="filterRequest"></param>
-    /// <returns></returns>
     private async Task<FilterDescriptorSingleResult> UpsertFilter(UpsertFilterExecutor filterExecutor, string projectUid, FilterRequest filterRequest)
     {
       var requestFull = FilterRequestFull.Create(
@@ -230,7 +223,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, customHeaders,
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
-      var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
+      var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var result = await executor.ProcessAsync(requestFull);
 
       Log.LogInformation($"{ToString()}.DeleteFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");

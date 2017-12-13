@@ -37,7 +37,6 @@ WriteMsg "Building login credentials"
 $Cmd = 'aws'
 $Args = 'ecr', 'get-login'
 $LoginID = &$Cmd $Args
-#$LoginID = $LoginID -replace "-p", "--password-stdin"
 $LoginID = $LoginID -replace "-e none", " "
 
 Write-Host $LoginID;

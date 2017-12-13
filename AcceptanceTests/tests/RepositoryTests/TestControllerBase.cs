@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
@@ -12,11 +12,11 @@ namespace RepositoryTests
 {
   public class TestControllerBase
   {
-    protected IServiceProvider serviceProvider;
-    protected IConfigurationStore configStore;
-    protected FilterRepository filterRepo;
-    protected ProjectRepository projectRepo;
-    protected GeofenceRepository geofenceRepo;
+    protected IServiceProvider ServiceProvider;
+    protected IConfigurationStore ConfigStore;
+    protected FilterRepository FilterRepo;
+    protected ProjectRepository ProjectRepo;
+    protected GeofenceRepository GeofenceRepo;
 
     public void SetupLoggingAndRepos()
     {
@@ -29,23 +29,45 @@ namespace RepositoryTests
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
-      serviceProvider = new ServiceCollection()
+      this.ServiceProvider = new ServiceCollection()
         .AddLogging()
         .AddSingleton(loggerFactory)
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
           .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
           .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
-          .AddMemoryCache() 
+          .AddMemoryCache()
         .BuildServiceProvider();
 
-      configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      filterRepo = serviceProvider.GetRequiredService<IRepository<IFilterEvent>>() as FilterRepository;
-      projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
-      geofenceRepo = serviceProvider.GetRequiredService<IRepository<IGeofenceEvent>>() as GeofenceRepository;
-      Assert.IsNotNull(serviceProvider.GetService<ILoggerFactory>());
-  
+      this.ConfigStore = this.ServiceProvider.GetRequiredService<IConfigurationStore>();
+      this.FilterRepo = this.ServiceProvider.GetRequiredService<IRepository<IFilterEvent>>() as FilterRepository;
+      this.ProjectRepo = this.ServiceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
+      this.GeofenceRepo = this.ServiceProvider.GetRequiredService<IRepository<IGeofenceEvent>>() as GeofenceRepository;
+      Assert.IsNotNull(this.ServiceProvider.GetService<ILoggerFactory>());
+    }
+
+    protected void WriteEventToDb(IProjectEvent projectEvent, string errorMessage)
+    {
+      var task = this.ProjectRepo.StoreEvent(projectEvent);
+      task.Wait();
+
+      Assert.AreEqual(1, task.Result, errorMessage);
+    }
+
+    protected void WriteEventToDb(IGeofenceEvent geofenceEvent, string errorMessage)
+    {
+      var task = this.GeofenceRepo.StoreEvent(geofenceEvent);
+      task.Wait();
+
+      Assert.AreEqual(1, task.Result, errorMessage);
+    }
+
+    protected void WriteEventToDb(IFilterEvent filterEvent, string errorMessage = "Filter event not written", int returnCode = 1)
+    {
+      var task = this.FilterRepo.StoreEvent(filterEvent);
+      task.Wait();
+
+      Assert.AreEqual(returnCode, task.Result, errorMessage);
     }
   }
 }
- 

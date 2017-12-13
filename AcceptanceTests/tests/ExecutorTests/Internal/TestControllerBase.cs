@@ -68,5 +68,29 @@ namespace ExecutorTests.Internal
 
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
     }
+
+    protected void WriteEventToDb(IGeofenceEvent geofenceEvent)
+    {
+      var task = GeofenceRepo.StoreEvent(geofenceEvent);
+      task.Wait();
+
+      Assert.AreEqual(1, task.Result, "Geofence event not written");
+    }
+
+    protected void WriteEventToDb(IProjectEvent projectEvent)
+    {
+      var task = ProjectRepo.StoreEvent(projectEvent);
+      task.Wait();
+
+      Assert.AreEqual(1, task.Result, "Project event not written");
+    }
+
+    protected void WriteEventToDb(IFilterEvent filterEvent)
+    {
+      var task = FilterRepo.StoreEvent(filterEvent);
+      task.Wait();
+
+      Assert.AreEqual(1, task.Result, "Filter event not written");
+    }
   }
 }

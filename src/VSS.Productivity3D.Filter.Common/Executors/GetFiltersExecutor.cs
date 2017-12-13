@@ -14,6 +14,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
@@ -24,10 +25,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// This constructor allows us to mock raptorClient
     /// </summary>
     public GetFiltersExecutor(IConfigurationStore configStore, ILoggerFactory logger,
-      IServiceExceptionHandler serviceExceptionHandler, 
+      IServiceExceptionHandler serviceExceptionHandler,
       IProjectListProxy projectListProxy, IRaptorProxy raptorProxy,
-      RepositoryBase repository, IKafka producer, string kafkaTopicName) 
-      : base(configStore, logger, serviceExceptionHandler, 
+      RepositoryBase repository, IKafka producer, string kafkaTopicName)
+      : base(configStore, logger, serviceExceptionHandler,
           projectListProxy, raptorProxy,
           repository, producer, kafkaTopicName, null)
     { }
@@ -46,8 +47,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <summary>
     /// Processes the GetFilters Request for a project
     /// </summary>
-    /// <param name="item"></param>
-    /// <returns>a FiltersResult if successful</returns>     
+    /// <returns>a FiltersResult if successful</returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var filterRequest = item as FilterRequestFull;
@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         return null;
       }
 
-      IEnumerable<MasterData.Repositories.DBModels.Filter> filters = null;
+      List<MasterData.Repositories.DBModels.Filter> filters = null;
 
       // get all for ProjectUid where !deleted 
       //   must be ok for 
@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       //                     else get only those for the calling UserUid
       try
       {
-        filters = await ((IFilterRepository) Repository)
+        filters = (List<MasterData.Repositories.DBModels.Filter>)await ((IFilterRepository)this.Repository)
           .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId)
           .ConfigureAwait(false);
       }
@@ -74,6 +74,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 10, e.Message);
       }
+
+      FilterResponseHelper.SetStartEndDates(await GetProjectForRequest(filterRequest), filters);
 
       // may be none, return success and empty list
       return new FilterDescriptorListResult

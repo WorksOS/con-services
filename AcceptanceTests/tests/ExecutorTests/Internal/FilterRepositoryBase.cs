@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace ExecutorTests.Internal
 {
@@ -34,12 +32,13 @@ namespace ExecutorTests.Internal
       string customerUid = null)
     {
       var request = FilterRequestFull.Create(
-        null,
+        new Dictionary<string, string>(),
         customerUid ?? Guid.NewGuid().ToString(),
         isApplicationContext,
         userId ?? Guid.NewGuid().ToString(),
         projectUid ?? Guid.NewGuid().ToString(),
-        new FilterRequest {
+        new FilterRequest
+        {
           FilterUid = filterUid ?? Guid.NewGuid().ToString(),
           Name = Guid.NewGuid().ToString(),
           FilterJson = filterJson
@@ -48,14 +47,6 @@ namespace ExecutorTests.Internal
       request.Validate(ServiceExceptionHandler);
 
       return request;
-    }
-
-    protected void WriteEventToDb(IFilterEvent filterEvent)
-    {
-      var task = FilterRepo.StoreEvent(filterEvent);
-      task.Wait();
-
-      Assert.AreEqual(1, task.Result, "Filter event not written");
     }
   }
 }

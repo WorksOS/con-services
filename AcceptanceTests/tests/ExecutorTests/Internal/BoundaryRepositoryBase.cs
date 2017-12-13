@@ -1,8 +1,6 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using VSS.KafkaConsumer.Kafka;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace ExecutorTests.Internal
 {
@@ -19,22 +17,6 @@ namespace ExecutorTests.Internal
 
       KafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        ConfigStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
-    }
-
-    protected void WriteEventToDb(IGeofenceEvent geofenceEvent)
-    {
-      var task = GeofenceRepo.StoreEvent(geofenceEvent);
-      task.Wait();
-
-      Assert.AreEqual(1, task.Result, "Geofence event not written");
-    }
-
-    protected void WriteEventToDb(IProjectEvent projectEvent)
-    {
-      var task = ProjectRepo.StoreEvent(projectEvent);
-      task.Wait();
-
-      Assert.AreEqual(1, task.Result, "Project event not written");
     }
 
     protected static string GenerateWKTPolygon()

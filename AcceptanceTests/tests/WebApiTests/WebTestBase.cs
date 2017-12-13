@@ -9,9 +9,9 @@ namespace WebApiTests
   public class WebTestBase
   {
     protected readonly Msg Msg = new Msg();
-    protected readonly Guid ProjectUid = new Guid("7925f179-013d-4aaf-aff4-7b9833bb06d6");
+    protected static readonly Guid ProjectUid = new Guid("7925f179-013d-4aaf-aff4-7b9833bb06d6");
     protected readonly Guid ProjectUid2 = new Guid("86a42bbf-9d0e-4079-850f-835496d715c5");
-    protected readonly Guid CustomerUid = new Guid("48003241-851d-4145-8c2a-7b099bbfd117");
+    protected static readonly Guid CustomerUid = new Guid("48003241-851d-4145-8c2a-7b099bbfd117");
     protected readonly string UserId = new Guid("98cdb619-b06b-4084-b7c5-5dcccc82af3b").ToString();
 
     protected static string GenerateWKTPolygon()
@@ -52,9 +52,7 @@ namespace WebApiTests
               ret.Add(pt);
             }
           }
-
         }
-
       }
       catch (Exception)
       {

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using ExecutorTests.Internal;
+﻿using ExecutorTests.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Executors;
@@ -35,7 +33,6 @@ namespace ExecutorTests
       var serviceException = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
       Assert.IsTrue(serviceException.GetContent.Contains("2049"));
       Assert.IsTrue(serviceException.GetContent.Contains("GetBoundary By BoundaryUid. The requested Boundary does not exist, or does not belong to the requesting project or filter."));
-
     }
 
     [TestMethod]

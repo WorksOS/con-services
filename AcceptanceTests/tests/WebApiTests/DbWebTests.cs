@@ -13,14 +13,22 @@ namespace WebApiTests
   [TestClass]
   public class DbWebTests : WebTestBase
   {
+    private TestSupport ts;
+    private MySqlHelper mysql;
+
+    [TestInitialize]
+    public void Initialize()
+    {
+      ts = new TestSupport();
+      mysql = new MySqlHelper();
+    }
+
     #region Filters
     [TestMethod]
     public void InsertFilterInDatabaseAndGetItFromWebApi()
     {
       const string filterName = "Filter DbWeb test 1";
       Msg.Title(filterName, "Insert Filter In Database And Get It From WebApi");
-      var ts = new TestSupport();
-      var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter();
@@ -41,11 +49,9 @@ namespace WebApiTests
     {
       const string filterName = "Filter DbWeb test 2";
       Msg.Title(filterName, "Insert ElevationType.Last Filter In Database And Get It From WebApi");
-      var ts = new TestSupport();
-      var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
-      var filterJson = CreateTestFilter( ElevationType.Last);
+      var filterJson = CreateTestFilter(ElevationType.Last);
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -63,11 +69,9 @@ namespace WebApiTests
     {
       const string filterName = "Filter DbWeb test 3";
       Msg.Title(filterName, "Insert VibeStateOn Filter In Database And Get It From WebApi");
-      var ts = new TestSupport();
-      var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
-      var filterJson = CreateTestFilter( null, true);
+      var filterJson = CreateTestFilter(null, true);
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -85,11 +89,9 @@ namespace WebApiTests
     {
       const string filterName = "Filter DbWeb test 4";
       Msg.Title(filterName, "Insert forward direction filter In Database And Get It From WebApi");
-      var ts = new TestSupport();
-      var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
-      var filterJson = CreateTestFilter( null, null, true);
+      var filterJson = CreateTestFilter(null, null, true);
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -107,11 +109,9 @@ namespace WebApiTests
     {
       const string filterName = "Filter DbWeb test 5";
       Msg.Title(filterName, "Insert layer number filter In Database And Get It From WebApi");
-      var ts = new TestSupport();
-      var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
-      var filterJson = CreateTestFilter( null, null, null, 2);
+      var filterJson = CreateTestFilter(null, null, null, 2);
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -129,11 +129,9 @@ namespace WebApiTests
     {
       const string filterName = "Filter DbWeb test 6";
       Msg.Title(filterName, "Insert FilterLayerMethod None filter In Database And Get It From WebApi");
-      var ts = new TestSupport();
-      var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
-      var filterJson = CreateTestFilter( null, null, null, null);
+      var filterJson = CreateTestFilter(null, null, null, null);
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -151,8 +149,6 @@ namespace WebApiTests
     {
       const string filterName = "Filter DbWeb test 7";
       Msg.Title(filterName, "Insert FilterLayerMethod MapReset filter In Database And Get It From WebApi");
-      var ts = new TestSupport();
-      var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter();
@@ -173,8 +169,6 @@ namespace WebApiTests
     {
       const string filterName = "Filter DbWeb test 8";
       Msg.Title(filterName, "Insert FilterLayerMethod TagfileLayerNumber filter In Database And Get It From WebApi");
-      var ts = new TestSupport();
-      var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter();
@@ -195,11 +189,9 @@ namespace WebApiTests
     {
       const string filterName = "Filter DbWeb test 9";
       Msg.Title(filterName, "Insert Combination filter In Database And Get It From WebApi");
-      var ts = new TestSupport();
-      var mysql = new MySqlHelper();
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
-      var filterJson = CreateTestFilter( ElevationType.Highest, true, true, 1);
+      var filterJson = CreateTestFilter(ElevationType.Highest, true, true, 1);
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -217,17 +209,15 @@ namespace WebApiTests
     {
       const string filterName = "Filter DbWeb test 10";
       Msg.Title(filterName, "Insert mutilple filters In Database And Get It From WebApi");
-      var ts = new TestSupport();
-      var mysql = new MySqlHelper();
       ts.DeleteAllFiltersForProject(ProjectUid.ToString());
 
       var filterUid1 = Guid.NewGuid();
       var filterUid2 = Guid.NewGuid();
       var filterUid3 = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
-      var filterJson1 = CreateTestFilter( ElevationType.Highest, true, true, 1);
-      var filterJson2 = CreateTestFilter( ElevationType.Last, true, true, 1);
-      var filterJson3 = CreateTestFilter( ElevationType.Lowest, true, true, 1);
+      var filterJson1 = CreateTestFilter(ElevationType.Highest, true, true, 1);
+      var filterJson2 = CreateTestFilter(ElevationType.Last, true, true, 1);
+      var filterJson3 = CreateTestFilter(ElevationType.Lowest, true, true, 1);
       var eventsArray = new[] {
         $"| TableName | FilterUID    | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid1} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson1}  | 0         | {ts.EventDate:yyyy-MM-dd} |",
@@ -287,7 +277,7 @@ namespace WebApiTests
         WGSPoint.CreatePoint(38.8387897637231, -121.347275197506),
         WGSPoint.CreatePoint(38.8387145521594, -121.347189366818)
       };
-      var filter = Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), listMachines,123,
+      var filter = Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), listMachines, 123,
                                         elevation, vibestate, listPoints, forward, layerNo);
       return filter.ToJsonString();
     }
@@ -300,8 +290,6 @@ namespace WebApiTests
     {
       const string boundaryName = "Boundary DbWeb test 1";
       Msg.Title(boundaryName, "Insert Boundary In Database And Get It From WebApi");
-      var ts = new TestSupport();
-      var mysql = new MySqlHelper();
       var boundaryUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var boundaryWKT = GenerateWKTPolygon();
@@ -327,7 +315,7 @@ namespace WebApiTests
       Assert.AreEqual(boundaryResponseGet.GeofenceData.GeofenceName, boundaryName, "Boundary name doesn't match for GET request");
     }
 
-   
+
     #endregion
   }
 }

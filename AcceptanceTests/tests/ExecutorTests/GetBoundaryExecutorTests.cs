@@ -15,6 +15,14 @@ namespace ExecutorTests
   [TestClass]
   public class GetBoundaryExecutorTests : BoundaryRepositoryBase
   {
+    private static string boundaryPolygon;
+
+    [ClassInitialize]
+    public static void ClassInit(TestContext context)
+    {
+      boundaryPolygon = GenerateWKTPolygon();
+    }
+
     [TestInitialize]
     public void ClassInit()
     {
@@ -44,7 +52,6 @@ namespace ExecutorTests
       var projectUid = Guid.NewGuid();
       var boundaryUid = Guid.NewGuid();
       var name = "name";
-      var boundaryPolygon = GenerateWKTPolygon();
 
       WriteEventToDb(new CreateGeofenceEvent
       {
@@ -106,7 +113,6 @@ namespace ExecutorTests
       var projectUid = Guid.NewGuid();
       var boundaryUid = Guid.NewGuid();
       var name = "name";
-      var boundaryPolygon = GenerateWKTPolygon();
 
       WriteEventToDb(new CreateGeofenceEvent
       {

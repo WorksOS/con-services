@@ -26,12 +26,6 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public string FilterJson { get; set; } = string.Empty;
 
     /// <summary>
-    /// Private constructor
-    /// </summary>
-    public FilterRequest()
-    { }
-
-    /// <summary>
     /// Returns a new instance of <see cref="FilterRequest"/> using the provided inputs.
     /// </summary>
     public static FilterRequest Create(string filterUid, string name, string filterJson)
@@ -46,7 +40,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public virtual void Validate(IServiceExceptionHandler serviceExceptionHandler)
     {
       if (this.FilterUid == null
-          || (this.FilterUid != string.Empty && Guid.TryParse(this.FilterUid, out Guid filterUidGuid) == false))
+          || (this.FilterUid != string.Empty && Guid.TryParse(this.FilterUid, out Guid _) == false))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
       }
