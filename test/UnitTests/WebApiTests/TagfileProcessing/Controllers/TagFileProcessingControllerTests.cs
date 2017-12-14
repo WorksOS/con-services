@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       // Assert
       Assert.IsNotNull(result);
-      Assert.IsTrue(result.Message == "success");
+      Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage);
     }
 
     [TestMethod]

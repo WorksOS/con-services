@@ -38,7 +38,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public static bool operator ==(CompactionPassCountDetailedResult a, CompactionPassCountDetailedResult b)
     {
       if ((object)a == null || (object)b == null)
-        return Object.Equals(a, b);
+        return object.Equals(a, b);
 
       return a.Equals(b);
     }
@@ -95,12 +95,20 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       public bool Equals(PassCountDetailsData other)
       {
         if (other == null)
+        {
           return false;
+        }
+
+        if (other.PassCountTarget != null && this.PassCountTarget != null)
+        {
+          return Common.ArraysOfDoublesAreEqual(this.percents, other.percents) &&
+                 Math.Round(this.totalCoverageArea, 2) == Math.Round(other.totalCoverageArea, 2) &&
+                 this.PassCountTarget.MaxPassCountMachineTarget == other.PassCountTarget.MaxPassCountMachineTarget &&
+                 this.PassCountTarget.MinPassCountMachineTarget == other.PassCountTarget.MinPassCountMachineTarget;
+        }
 
         return Common.ArraysOfDoublesAreEqual(this.percents, other.percents) &&
-               Math.Round(this.totalCoverageArea, 2) == Math.Round(other.totalCoverageArea, 2) &&
-               this.PassCountTarget.MaxPassCountMachineTarget == other.PassCountTarget.MaxPassCountMachineTarget &&
-               this.PassCountTarget.MinPassCountMachineTarget == other.PassCountTarget.MinPassCountMachineTarget;
+               Math.Round(this.totalCoverageArea, 2) == Math.Round(other.totalCoverageArea, 2);
       }
     }
   }

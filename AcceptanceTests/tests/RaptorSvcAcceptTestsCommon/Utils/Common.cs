@@ -202,7 +202,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       if (diff > 0.0)
       {
         var diffImage = expectedImage.GetDifferenceImage(actualImage);
-        diffImage.Save(actFileName + "Differences.jpg");
+        diffImage.Save(actFileName + "Diff.jpg");
       }
 
       return diff;

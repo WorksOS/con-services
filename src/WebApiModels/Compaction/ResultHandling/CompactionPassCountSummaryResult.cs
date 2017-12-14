@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
+using System;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Pass Count Summary request for compaction
@@ -23,16 +23,21 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     private CompactionPassCountSummaryResult()
     { }
 
-
     /// <summary>
     /// PassCountSummaryResult create instance
     /// </summary>
     /// <param name="result">The pass count results from Raptor</param>
-    /// <param name="settings">The pass count settings used by Raptor</param>
     /// <returns>An instance of CompactionPassCountSummaryResult</returns>
     public static CompactionPassCountSummaryResult CreatePassCountSummaryResult(PassCountSummaryResult result)
     {
-      var passCountResult = new CompactionPassCountSummaryResult
+      const int noPassCountData = 0;
+
+      if (Math.Abs(result.totalAreaCoveredSqMeters - noPassCountData) < 0.001)
+      {
+        return new CompactionPassCountSummaryResult { SummaryData = new PassCountSummaryData { PassCountTarget = new PassCountTargetData() } };
+      }
+
+      return new CompactionPassCountSummaryResult
       {
         SummaryData = new PassCountSummaryData
         {
@@ -45,10 +50,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
             MinPassCountMachineTarget = result.constantTargetPassCountRange.min,
             MaxPassCountMachineTarget = result.constantTargetPassCountRange.max,
             TargetVaries = !result.isTargetPassCountConstant
-          }         
+          }
         }
       };
-      return passCountResult;
     }
 
     /// <summary>
@@ -82,6 +86,5 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
       [JsonProperty(PropertyName = "passCountTarget")]
       public PassCountTargetData PassCountTarget { get; set; }
     }
-
   }
 }

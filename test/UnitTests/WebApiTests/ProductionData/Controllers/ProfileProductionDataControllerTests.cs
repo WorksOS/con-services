@@ -12,8 +12,8 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       // Assert
       Assert.IsNotNull(result);
-      Assert.IsTrue(result.Message == "success", result.Message);
+      Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage, result.Message);
     }
 
     /// <summary>

@@ -33,16 +33,16 @@
   },
   "DesignOutside": {
     "mdpSummaryData": {
-      "percentEqualsTarget": 0,
-      "percentGreaterThanTarget": 0,
-      "percentLessThanTarget": 0,
-      "totalAreaCoveredSqMeters": 0,
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 0.0,
+      "totalAreaCoveredSqMeters": 0.0,
       "mdpTarget": {
-        "mdpMachineTarget": 3276,
+        "mdpMachineTarget": 0.0,
         "targetVaries": false
       },
-      "minMDPPercent": 80,
-      "maxMDPPercent": 130
+      "minMDPPercent": 0.0,
+      "maxMDPPercent": 0.0
     },
     "Code": 0,
     "Message": "success"

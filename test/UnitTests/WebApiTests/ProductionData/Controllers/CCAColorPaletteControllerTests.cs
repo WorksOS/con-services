@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       // Assert
       Assert.IsNotNull(result);
-      Assert.IsTrue(result.Message == "success", result.Message);
+      Assert.IsTrue(result.Message == ResponseMessages.Success, result.Message);
       */
     }
   }

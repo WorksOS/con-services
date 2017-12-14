@@ -32,6 +32,5 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
         Percents = result
       };
     }
-
   }
 }
