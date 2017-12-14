@@ -309,5 +309,11 @@ namespace VSS.MasterData.Models.Models
     {
       return !Equals(left, right);
     }
+
+    public void SetDates(DateTime? startUTC, DateTime? endUTC)
+    {
+      this.startUTC = startUTC;
+      this.endUTC = endUTC;
+    }
   }
 }
