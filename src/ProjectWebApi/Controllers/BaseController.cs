@@ -150,8 +150,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         this.producer.InitProducer(configStore);
       }
 
-      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                       configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      kafkaTopicName = (configStore.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
+                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
 
       this.projectRepo = projectRepo as ProjectRepository;
       subscriptionRepo = subscriptionsRepo as SubscriptionRepository;
