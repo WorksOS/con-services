@@ -412,10 +412,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             break;
           case VolumeCalcType.GroundToDesign:
             baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, true);
             break;
           case VolumeCalcType.DesignToGround:
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, true);
             topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
             break;
         }
