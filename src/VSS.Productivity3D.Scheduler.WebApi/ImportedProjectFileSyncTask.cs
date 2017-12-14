@@ -24,6 +24,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private readonly ILogger _log;
     private readonly IRaptorProxy _raptorProxy;
     private readonly ITPaasProxy _tPaasProxy;
+    private readonly IImportedFileProxy _impFileProxy;
     private static int DefaultTaskIntervalDefaultMinutes { get; } = 4;
 
     /// <summary>
@@ -33,13 +34,15 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="logger"></param>
     /// <param name="raptorProxy"></param>
     /// <param name="tPaasProxy"></param>
-    public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy)
+    /// <param name="impFileProxy"></param>
+    public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy, IImportedFileProxy impFileProxy)
     {
       _configStore = configStore;
       _logger = logger;
       _log = logger.CreateLogger<ImportedProjectFileSyncTask>();
       _raptorProxy = raptorProxy;
       _tPaasProxy = tPaasProxy;
+      _impFileProxy = impFileProxy;
     }
 
     /// <summary>
@@ -83,7 +86,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     {
       var startUtc = DateTime.UtcNow;
    
-      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy, _tPaasProxy);
+      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy, _tPaasProxy, _impFileProxy);
       await sync.SyncTables().ConfigureAwait(false);
 
       var newRelicAttributes = new Dictionary<string, object> {

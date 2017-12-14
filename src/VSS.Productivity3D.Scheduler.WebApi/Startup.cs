@@ -32,6 +32,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private readonly IConfigurationStore _configStore;
     private readonly IRaptorProxy _raptorProxy;
     private readonly ITPaasProxy _tPaasProxy;
+    private readonly IImportedFileProxy _impFileProxy;
     IServiceCollection _serviceCollection;
 
     /// <summary>
@@ -60,6 +61,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       _configStore = new GenericConfiguration(GetLoggerFactory());
       _raptorProxy = new RaptorProxy(_configStore, _loggerFactory);
       _tPaasProxy = new TPaasProxy(_configStore, _loggerFactory);
+      _impFileProxy = new ImportedFileProxy(_configStore,_loggerFactory);
 
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
@@ -217,7 +219,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         if (filterCleanupTaskToRun)
           Thread.Sleep(2000);
 
-        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(_configStore, _loggerFactory, _raptorProxy, _tPaasProxy);
+        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(_configStore, _loggerFactory, _raptorProxy, _tPaasProxy, _impFileProxy);
         importedProjectFileSyncTask.AddTask();
         expectedJobCount += 1;
       }

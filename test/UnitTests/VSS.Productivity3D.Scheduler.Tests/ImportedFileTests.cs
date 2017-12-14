@@ -207,10 +207,11 @@ namespace VSS.Productivity3D.Scheduler.Tests
     {
       var raptorProxy = new Mock<IRaptorProxy>();
       var tPaasProxy = new Mock<ITPaasProxy>();
+      var impFileProxy = new Mock<IImportedFileProxy>();
       var accessToken = "blah";
       raptorProxy.Setup(ps => ps.NotifyImportedFileChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
       tPaasProxy.Setup(ps => ps.Get3DPmSchedulerBearerToken(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(new TPaasOauthResult() { tPaasOauthRawResult = new TPaasOauthRawResult() { access_token = accessToken } });
-      var importFileSync = new ImportedFileSynchronizerBase(_configStore, _logger, raptorProxy.Object, tPaasProxy.Object);
+      var importFileSync = new ImportedFileSynchronizerBase(_configStore, _logger, raptorProxy.Object, tPaasProxy.Object, impFileProxy.Object);
       var bearer = await importFileSync.Get3DPmSchedulerBearerToken().ConfigureAwait(false);
 
       Assert.AreEqual(accessToken, bearer, "should have returned a bearer token");

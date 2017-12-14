@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -7,9 +8,12 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
+using VSS.FlowJSHandler;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
+using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.Scheduler.Common.Controller
 {
@@ -21,6 +25,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     protected string FileSpaceId;
     protected IRaptorProxy RaptorProxy;
     protected ITPaasProxy TPaasProxy;
+    protected IImportedFileProxy ImpFileProxy;
+    protected IFileRepository FileRepo;
 
     private DateTime _lastTPaasTokenObtainedUtc = DateTime.MinValue;
     private readonly int _refreshPeriodMinutes = 480;
@@ -29,17 +35,16 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
     /// <summary>
     /// </summary>
-    /// <param name="configStore"></param>
-    /// <param name="logger"></param>
-    /// <param name="raptorProxy"></param>
     public ImportedFileSynchronizerBase(IConfigurationStore configStore, ILoggerFactory logger,
-      IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy)
+      IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy, IImportedFileProxy impFileProxy, IFileRepository fileRepo)
     {
       ConfigStore = configStore;
       Logger = logger;
       Log = logger.CreateLogger<ImportedFileSynchronizerBase>();
       RaptorProxy = raptorProxy;
       TPaasProxy = tPaasProxy;
+      ImpFileProxy = impFileProxy;
+      FileRepo = FileRepo;
 
       FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(FileSpaceId))
@@ -116,7 +121,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     }
 
 
-    private async Task<IDictionary<string, string>> GetCustomHeaders(string customerUid)
+    protected async Task<IDictionary<string, string>> GetCustomHeaders(string customerUid)
     {
       var customHeaders = new Dictionary<string, string>();
 
@@ -189,6 +194,41 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
       Console.WriteLine($"ImportedFileSynchroniser: Get3dPmSchedulerBearerToken()  Got bearer token: {_3DPmSchedulerBearerToken}");
       return _3DPmSchedulerBearerToken;
+    }
+
+    private async Task DownloadFileAndCallProjectWebApi(ImportedFileProject projectEvent)
+    {
+      //TODO: If performance is a problem then may need to add 'Copy' command to TCCFileAccess and use it here
+      //to directly copy file from old to new structure in TCC.
+
+      await ImpFileProxy.CreateImportedFile(new FlowFile { flowFilename = projectEvent.Name, path = "TODO" }, new Guid(projectEvent.ProjectUid), projectEvent.ImportedFileType,
+        projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
+        await GetCustomHeaders(projectEvent.CustomerUid)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Tries to download a file from TCC
+    /// </summary>
+    /// <returns>The downloaded file if it exists</returns>
+    private async Task<byte[]> DownloadFile(string fullFileName)
+    {
+      byte[] tileData = null;
+
+      if (await FileRepo.FileExists(FileSpaceId, fullFileName))
+      {
+        using (Stream stream = await FileRepo.GetFile(FileSpaceId, fullFileName))
+        {
+
+          if (stream.Length > 0)
+          {
+            stream.Position = 0;
+            tileData = new byte[stream.Length];
+            stream.Read(tileData, 0, (int)stream.Length);
+          }
+        }
+      }
+  
+      return tileData;
     }
   }
 }

@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.FlowJSHandler;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Repository;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
+using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Scheduler.Common.Controller
@@ -18,8 +20,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
     protected ILogger _log;
 
-    public ImportedFileSynchronizer(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy) 
-      : base(configStore, logger, raptorProxy, tPaasProxy)
+    public ImportedFileSynchronizer(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy, 
+      ITPaasProxy tPaasProxy, IImportedFileProxy impFileProxy, IFileRepository fileRepo) 
+      : base(configStore, logger, raptorProxy, tPaasProxy, impFileProxy, fileRepo)
     {
       _log = logger.CreateLogger<ImportedFileSynchronizer>();
     }
@@ -37,7 +40,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       var fileListNhOp = repoNhOp.Read();
 
       await SyncOldTableToNewTable(fileListNhOp, fileListProject, repoNhOp, repoProject);
-      //Only SS files need to be sync'd in reverse.
+      //Only Files need to be sync'd in reverse.
       var ssListProject = fileListProject.Where(x => x.ImportedFileType == ImportedFileType.SurveyedSurface).ToList();
       await SyncNewTableToOldTable(ssListProject, repoNhOp, repoProject);
     }
@@ -57,7 +60,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       // row in  NH_OP and in project, nothing has changed (a)
       // row in  NH_OP and in project, logically deleted in project. physically delete in NH_OP (b)
       // row in  NH_OP and in project, a date has changed, update whichever is older (c)
-      // row in  NH_OP NOT in project, create it in project {d}
+      // row in  NH_OP NOT in project, create it in project (d)
       for (int i=fileListNhOp.Count-1; i>=0; i--)
       {
         startUtc = DateTime.UtcNow;
@@ -130,7 +133,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         else if (fileListProject[i].LegacyCustomerId == 0 || fileListProject[i].LegacyProjectId >= 1000000)
         {
           // (o)
-          NotifyNewRelic(fileListProject[i], startUtc, "SS file in Project which has no legacyCustomerId so cannot be synced to NhOp.", "Warning");
+          NotifyNewRelic(fileListProject[i], startUtc, "File in Project which has no legacyCustomerId so cannot be synced to NhOp.", "Warning");
         }
         else
         {
@@ -152,7 +155,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       ifp.LegacyImportedFileId = legacyImportedFileId;
       repoProject.Update(ifp);
 
-      NotifyNewRelic(ifp, startUtc, "SS file created in project, now created in NhOp.");
+      NotifyNewRelic(ifp, startUtc, "File created in project, now created in NhOp.");
     }
 
     /// <summary>
@@ -161,20 +164,34 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     private async Task CreateFileInNewTable(ImportedFileRepoProject<ImportedFileProject> repoProject, DateTime startUtc, ImportedFileNhOp ifo)
     {
       var projectEvent = AutoMapperUtility.Automapper.Map<ImportedFileProject>(ifo);
-      projectEvent.Name = ImportedFileUtils.RemoveSurveyedUtcFromName(projectEvent.Name);
+      if (projectEvent.ImportedFileType == ImportedFileType.SurveyedSurface)
+      {
+        projectEvent.Name = ImportedFileUtils.RemoveSurveyedUtcFromName(projectEvent.Name);
+      }
       projectEvent.ImportedFileUid = Guid.NewGuid().ToString();
-      // for L&S if its come from CG then use legacyIds
+      // for L&S if it has come from CG then use legacyIds
       projectEvent.FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(FileSpaceId,
         projectEvent.LegacyCustomerId.ToString(), projectEvent.LegacyProjectId.ToString(), projectEvent.Name));
-      if (projectEvent.ImportedBy == null) projectEvent.ImportedBy = "";
-      repoProject.Create(projectEvent);
+      if (projectEvent.ImportedBy == null) projectEvent.ImportedBy = string.Empty;
 
-      // Notify 3dpm of SS file created via Legacy
-      if (projectEvent.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
-        await NotifyRaptorImportedFileChange(projectEvent.CustomerUid, Guid.Parse(projectEvent.ProjectUid), Guid.Parse(projectEvent.ImportedFileUid))
-          .ConfigureAwait(false);
+      if (projectEvent.ImportedFileType == ImportedFileType.SurveyedSurface)
+      {
+        repoProject.Create(projectEvent);
 
-      NotifyNewRelic(projectEvent, startUtc, "SS file created in NhOp, now created in Project.");
+        // Notify 3dpm of File created via Legacy
+        if (projectEvent.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
+          await NotifyRaptorImportedFileChange(projectEvent.CustomerUid, Guid.Parse(projectEvent.ProjectUid),
+              Guid.Parse(projectEvent.ImportedFileUid))
+            .ConfigureAwait(false);
+      }
+      else
+      {
+        await ImpFileProxy.CreateImportedFile(new FlowFile{flowFilename = projectEvent.Name, path = "TODO"}, new Guid(projectEvent.ProjectUid), projectEvent.ImportedFileType,
+          projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
+          await GetCustomHeaders(projectEvent.CustomerUid)).ConfigureAwait(false);
+      }
+
+      NotifyNewRelic(projectEvent, startUtc, "File created in NhOp, now created in Project.");
     }
 
     /// <summary>
@@ -185,7 +202,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       repoNhOp.Delete(ifo);
       Log.LogTrace(
         $"SyncTables: nhOp.IF is in nh_Op but was deleted in project. Deleted from NhOp: {JsonConvert.SerializeObject(ifo)}");
-      NotifyNewRelic(gotMatchingProject, startUtc, "SS file deleted in Project, now deleted in NhOp.");
+      NotifyNewRelic(gotMatchingProject, startUtc, "File deleted in Project, now deleted in NhOp.");
     }
 
     /// <summary>
@@ -195,12 +212,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     {
       repoProject.Delete(ifp);
 
-      // Notify 3dpm of SS file deleted via Legacy
+      // Notify 3dpm of File deleted via Legacy
       if (ifp.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
         await NotifyRaptorImportedFileChange(ifp.CustomerUid, Guid.Parse(ifp.ProjectUid), Guid.Parse(ifp.ImportedFileUid))
           .ConfigureAwait(false);
 
-      NotifyNewRelic(ifp, startUtc, "SS file deleted in NhOp, now deleted from Project.");
+      NotifyNewRelic(ifp, startUtc, "File deleted in NhOp, now deleted from Project.");
     }
 
     /// <summary>
@@ -212,7 +229,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       ifo.FileUpdatedUtc = gotMatchingProject.FileUpdatedUtc;
       ifo.LastActionedUtc = DateTime.UtcNow;
       repoNhOp.Update(ifo);
-      NotifyNewRelic(gotMatchingProject, startUtc, "SS file updated in project, now updated in NhOp.");
+      NotifyNewRelic(gotMatchingProject, startUtc, "File updated in project, now updated in NhOp.");
     }
 
     /// <summary>
@@ -225,14 +242,14 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       gotMatchingProject.LastActionedUtc = DateTime.UtcNow;
       repoProject.Update(gotMatchingProject);
 
-      // Notify 3dpm of SS file updated via Legacy
+      // Notify 3dpm of File updated via Legacy
       if (gotMatchingProject.LegacyImportedFileId != null
       ) // Note that LegacyImportedFileId will always be !null 
         await NotifyRaptorImportedFileChange(gotMatchingProject.CustomerUid, Guid.Parse(gotMatchingProject.ProjectUid),
             Guid.Parse(gotMatchingProject.ImportedFileUid))
           .ConfigureAwait(false);
 
-      NotifyNewRelic(gotMatchingProject, startUtc, "SS file updated in NhOp, now updated in Project.");
+      NotifyNewRelic(gotMatchingProject, startUtc, "File updated in NhOp, now updated in Project.");
     }
 
     /// <summary>
