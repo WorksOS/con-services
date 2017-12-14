@@ -373,12 +373,12 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "8")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:VolCalc", "GroundToGroundE2L")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:TopUid", "9c27697f-ea6d-478a-a168-ed20d6cd9a21")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BaseUid", "81422acc-9b0c-401c-9987-0aedbf153f1d")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BaseUid", "9c27697f-ea6d-478a-a168-ed20d6cd9a22")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummaryVolGroundGround1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
         public virtual void GetCutFillTiles_SVGroundToGroundEarliestToLatest()
         {
-            this.GetCutFillTiles("SVGroundToGroundEarliestToLatest", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "81422acc-9b0c-401c-9987-0aedbf153f1d", "", "36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624", "256", "256", "8", "GroundToGroundE2L", "9c27697f-ea6d-478a-a168-ed20d6cd9a21", "81422acc-9b0c-401c-9987-0aedbf153f1d", "SummaryVolGroundGround1", "1", ((string[])(null)));
+            this.GetCutFillTiles("SVGroundToGroundEarliestToLatest", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "81422acc-9b0c-401c-9987-0aedbf153f1d", "", "36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624", "256", "256", "8", "GroundToGroundE2L", "9c27697f-ea6d-478a-a168-ed20d6cd9a21", "9c27697f-ea6d-478a-a168-ed20d6cd9a22", "SummaryVolGroundGround1", "1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
