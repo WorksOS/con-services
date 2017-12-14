@@ -12,9 +12,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
     public static string IncludeSurveyedUtcInName(string name, DateTime surveyedUtc)
     {
       //Note: ':' is an invalid character for filenames in Windows so get rid of them
-      return  Path.GetFileNameWithoutExtension(name) +
-                    "_" + surveyedUtc.ToIso8601DateTimeString().Replace(":", string.Empty) +
-                    Path.GetExtension(name);
+      return Path.GetFileNameWithoutExtension(name) +
+             "_" + surveyedUtc.ToIso8601DateTimeString().Replace(":", string.Empty) +
+             Path.GetExtension(name);
     }
 
     public static string RemoveSurveyedUtcFromName(string name)

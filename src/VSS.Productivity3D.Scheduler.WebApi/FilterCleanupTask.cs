@@ -27,7 +27,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="loggerFactory"></param>
     public FilterCleanupTask(IConfigurationStore configStore, ILoggerFactory loggerFactory)
     {
-      Console.WriteLine($"FilterCleanupTask configStore {configStore} loggerFactory: {loggerFactory}");
       _log = loggerFactory.CreateLogger<FilterCleanupTask>();
       _configStore = configStore;  
     }
@@ -55,7 +54,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var FilterCleanupTask = "FilterCleanupTask";
       string filterDbConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_FILTER");
       _log.LogInformation($"FilterCleanupTask: ageInMinutesToDelete: {ageInMinutesToDelete} taskIntervalSeconds: {taskIntervalMinutes} filterDbConnectionString: {filterDbConnectionString}.");
-      Console.WriteLine($"FilterCleanupTask: ageInMinutesToDelete: {ageInMinutesToDelete} taskIntervalSeconds: {taskIntervalMinutes} filterDbConnectionString: {filterDbConnectionString}.");
 
       try
       {
@@ -67,7 +65,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         var newRelicAttributes = new Dictionary<string, object> {
           { "message", string.Format($"Unable to schedule recurring job: exception {ex.Message}") }
         };
-        NewRelicUtils.NotifyNewRelic("FilterTableCleanupTask", "Fatal", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("FilterTableCleanupTask", "Fatal", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
     }
@@ -82,6 +80,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     public void FilterTableCleanupTask(string filterDbConnectionString, int ageInMinutesToDelete)
     {
       var startUtc = DateTime.UtcNow;
+      _log.LogDebug($"FilterTableCleanupTask() beginning. startUtc: {startUtc}");
+
       Dictionary<string, object> newRelicAttributes;
 
       var cutoffActionUtcToDelete = startUtc.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         newRelicAttributes = new Dictionary<string, object> {
           { "message", string.Format($"open filter DB exeception {ex.Message}") }
         };
-        NewRelicUtils.NotifyNewRelic("FilterTableCleanupTask", "Fatal", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("FilterTableCleanupTask", "Fatal", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
       finally
@@ -110,14 +110,14 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       try
       {
         deletedCount = dbConnection.Execute(deleteCommand, cutoffActionUtcToDelete);
-        Console.WriteLine($"FilterCleanupTask.FilterTableCleanupTask: connectionString {dbConnection.ConnectionString} deletedCount {deletedCount}");
+        _log.LogTrace($"FilterCleanupTask.FilterTableCleanupTask: connectionString {dbConnection.ConnectionString} deletedCount {deletedCount}");
       }
       catch (Exception ex)
       {
         newRelicAttributes = new Dictionary<string, object> {
           { "message", string.Format($"execute delete on filter DB exeception {ex.Message}") }
         };
-        NewRelicUtils.NotifyNewRelic("FilterTableCleanupTask", "Fatal", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("FilterTableCleanupTask", "Fatal", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
         throw;
       }
       finally
@@ -128,7 +128,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       newRelicAttributes = new Dictionary<string, object> {
         { "message", string.Format($"Task completed.") }, { "ageInMinutesToDelete", ageInMinutesToDelete }, {"cutoffActionUtcToDelete", cutoffActionUtcToDelete }, {"deletedCount", deletedCount}
       };
-      NewRelicUtils.NotifyNewRelic("FilterTableCleanupTask",  "Information", startUtc,  (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+      NewRelicUtils.NotifyNewRelic("FilterTableCleanupTask",  "Information", startUtc,  (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
     }
   }
 }

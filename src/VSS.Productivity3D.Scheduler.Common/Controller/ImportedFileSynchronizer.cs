@@ -34,7 +34,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     public async Task SyncTables()
     {
       ImportedFileRepoNhOp<ImportedFileNhOp> repoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, Logger);
-      ImportedFileRepoProject<ImportedFileProject> repoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, Logger);
+      ImportedFileRepoProject<ImportedFileProject> repoProject =
+        new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, Logger);
 
       var fileListProject = repoProject.Read();
       var fileListNhOp = repoNhOp.Read();
@@ -61,10 +62,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       // row in  NH_OP and in project, logically deleted in project. physically delete in NH_OP (b)
       // row in  NH_OP and in project, a date has changed, update whichever is older (c)
       // row in  NH_OP NOT in project, create it in project (d)
-      for (int i=fileListNhOp.Count-1; i>=0; i--)
+      for (int i = fileListNhOp.Count - 1; i >= 0; i--)
       {
         startUtc = DateTime.UtcNow;
-        var gotMatchingProject = fileListProject.FirstOrDefault(o => o.LegacyImportedFileId == fileListNhOp[i].LegacyImportedFileId);
+        var gotMatchingProject =
+          fileListProject.FirstOrDefault(o => o.LegacyImportedFileId == fileListNhOp[i].LegacyImportedFileId);
 
         if (gotMatchingProject == null)
         {
@@ -78,27 +80,36 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             // (b)
             DeleteFileInOldTable(repoNhOp, gotMatchingProject, fileListNhOp[i], startUtc);
           }
-          else if (gotMatchingProject.FileCreatedUtc != fileListNhOp[i].FileCreatedUtc
-                   || gotMatchingProject.FileUpdatedUtc != fileListNhOp[i].FileUpdatedUtc)
+          else
           {
-            // (c)
-            if (gotMatchingProject.FileCreatedUtc > fileListNhOp[i].FileCreatedUtc
-                || gotMatchingProject.FileUpdatedUtc > fileListNhOp[i].FileUpdatedUtc)
+            const string DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+            var projectCreatedUtcRounded = DateTime.Parse(gotMatchingProject.FileCreatedUtc.ToString(DATE_TIME_FORMAT));
+            var projectUpdatedUtcRounded = DateTime.Parse(gotMatchingProject.FileUpdatedUtc.ToString(DATE_TIME_FORMAT));
+            var nhOpCreatedUtcRounded = DateTime.Parse(fileListNhOp[i].FileCreatedUtc.ToString(DATE_TIME_FORMAT));
+            var nhOpUpdatedUtcRounded = DateTime.Parse(fileListNhOp[i].FileUpdatedUtc.ToString(DATE_TIME_FORMAT));
+
+            if (projectCreatedUtcRounded != nhOpCreatedUtcRounded 
+             || projectUpdatedUtcRounded != nhOpUpdatedUtcRounded)
             {
-              // project is more recent, update nh_op
-              UpdateFileInOldTable(repoNhOp, gotMatchingProject, fileListNhOp[i], startUtc);
-            }
-            else
-            {
-              // nh_op is more recent, update project
-              await UpdateFileInNewTable(repoProject, gotMatchingProject, fileListNhOp[i], startUtc);
+              // (c)
+              if (gotMatchingProject.FileCreatedUtc > fileListNhOp[i].FileCreatedUtc
+               || gotMatchingProject.FileUpdatedUtc > fileListNhOp[i].FileUpdatedUtc)
+              {
+                // project is more recent, update nh_op
+                UpdateFileInOldTable(repoNhOp, gotMatchingProject, fileListNhOp[i], startUtc);
+              }
+              else
+              {
+                // nh_op is more recent, update project
+                await UpdateFileInNewTable(repoProject, gotMatchingProject, fileListNhOp[i], startUtc);
+              }
             }
           }
           // else (a) no change
           fileListProjectToRemove.Add(gotMatchingProject);
         }
-
       }
+
 
       fileListProject.RemoveAll(
         x => fileListProjectToRemove.Exists(y => y.LegacyImportedFileId == x.LegacyImportedFileId));
@@ -143,7 +154,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       }
 
     }
-
     /// <summary>
     /// Create the file in nhOp and update Project with the new legacy id.
     /// </summary>
@@ -154,9 +164,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       var legacyImportedFileId = repoNhOp.Create(nhOpEvent);
       ifp.LegacyImportedFileId = legacyImportedFileId;
       repoProject.Update(ifp);
-
+  
       NotifyNewRelic(ifp, startUtc, "File created in project, now created in NhOp.");
     }
+    
 
     /// <summary>
     /// Create the file in Project
@@ -265,7 +276,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         { "fileDescriptor", ifp.FileDescriptor },
         { "legacyImportedFileId", ifp.LegacyImportedFileId }
       };
-      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", errorLevel, startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", errorLevel, startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
     }
   }
 }

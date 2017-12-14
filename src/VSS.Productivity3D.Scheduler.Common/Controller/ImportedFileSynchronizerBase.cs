@@ -95,10 +95,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, Log, newRelicAttributes);
       }
 
-      Console.WriteLine(
+      Log.LogInformation(
         $"ImportedFileSynchroniser: NotifyRaptorImportedFileChange() projectUid:{projectUid} importedFileUid: {importedFileUid}. customHeaders: {JsonConvert.SerializeObject(customHeaders)} RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
 
       if (notificationResult == null || notificationResult.Code != 0)
@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, Log, newRelicAttributes);
       }
       else
       {
@@ -154,11 +154,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         {
           
           var tPaasUrl = ConfigStore.GetValueString("TPAAS_OAUTH_URL") == null ? "null" : ConfigStore.GetValueString("TPAAS_OAUTH_URL");
-          Console.WriteLine($"ImportedFileSynchroniser: Get3DPmSchedulerBearerToken() Going to get bearer token: TPAAS_OAUTH_URL: {tPaasUrl} grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)} _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _refreshPeriodMinutes: {_refreshPeriodMinutes} DateTime.UtcNow: {DateTime.UtcNow}");
-
+ 
           tPaasOauthResult = await TPaasProxy
             .Get3DPmSchedulerBearerToken(grantType, customHeaders)
             .ConfigureAwait(false);
+
+          Log.LogInformation($"ImportedFileSynchroniser: Get3DPmSchedulerBearerToken() Going to get bearer token: TPAAS_OAUTH_URL: {tPaasUrl} grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)} _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _refreshPeriodMinutes: {_refreshPeriodMinutes} DateTime.UtcNow: {DateTime.UtcNow}");
         }
         catch (Exception e)
         {
@@ -168,7 +169,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
             { "grantType", grantType}
           };
-          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, Log, newRelicAttributes);
           throw new ServiceException(HttpStatusCode.InternalServerError,
             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
               message));
@@ -183,7 +184,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             { "tPaasOauthResult", JsonConvert.SerializeObject(tPaasOauthResult)},
             { "grantType", grantType}
           };
-          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, Log, newRelicAttributes);
           throw new ServiceException(HttpStatusCode.InternalServerError,
             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
               message));
@@ -192,7 +193,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         _lastTPaasTokenObtainedUtc = DateTime.UtcNow;
       }
 
-      Console.WriteLine($"ImportedFileSynchroniser: Get3dPmSchedulerBearerToken()  Got bearer token: {_3DPmSchedulerBearerToken}");
+      Log.LogInformation($"ImportedFileSynchroniser: Get3dPmSchedulerBearerToken()  Got bearer token: {_3DPmSchedulerBearerToken}");
       return _3DPmSchedulerBearerToken;
     }
 
