@@ -94,7 +94,12 @@ namespace VSS.Productivity3D.Common.Extensions
     /// <returns>The start or end date time for the range in the time zone</returns>
     public static DateTime DateTimeForDateRangeType(this DateTime nowInTimeZone, DateRangeType dateRangeType, bool isStart)
     {
+      //Note: This date range is used for filters to pass to Raptor. So that Raptor's caching works we pass the end of the current day
+      //rather than now for the end date time for current day/week/month. However in the filter service we use now as the value is
+      //displayed in the UI.
+
       DateTime startToday = nowInTimeZone.Date;
+      DateTime endToday = startToday.AddDays(1).AddSeconds(-1);
       var startThisWeek = startToday.CurrentWeekMonday();
       var startThisMonth = new DateTime(startToday.Year, startToday.Month, 1);
 
@@ -102,19 +107,19 @@ namespace VSS.Productivity3D.Common.Extensions
       switch (dateRangeType)
       {
         case DateRangeType.Today:
-          dateTimeInTimeZone = isStart ? startToday : nowInTimeZone;
+          dateTimeInTimeZone = isStart ? startToday : endToday;
           break;
         case DateRangeType.Yesterday:
           dateTimeInTimeZone = isStart ? startToday.AddDays(-1) : startToday.AddSeconds(-1);
           break;
         case DateRangeType.CurrentWeek:
-          dateTimeInTimeZone = isStart ? startThisWeek : nowInTimeZone;
+          dateTimeInTimeZone = isStart ? startThisWeek : endToday;
           break;
         case DateRangeType.PreviousWeek:
           dateTimeInTimeZone = isStart ? startThisWeek.AddDays(-7) : startThisWeek.AddSeconds(-1);
           break;
         case DateRangeType.CurrentMonth:
-          dateTimeInTimeZone = isStart ? startThisMonth : nowInTimeZone;
+          dateTimeInTimeZone = isStart ? startThisMonth : endToday;
           break;
         case DateRangeType.PreviousMonth:
           dateTimeInTimeZone = isStart ? startThisMonth.AddMonths(-1) : startThisMonth.AddSeconds(-1);
