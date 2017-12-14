@@ -102,7 +102,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             };
             NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, _log, newRelicAttributes);
           }
-          fileListNhOp.RemoveAt(0);
+          // fileListNhOp.RemoveAt(0);
         }
         else
         {
@@ -188,7 +188,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
           // (a) no change
           fileListProjectToRemove.Add(gotMatchingProject);
-          fileListNhOp.Remove(ifo);
+          // fileListNhOp.Remove(ifo);
         }
       }
 

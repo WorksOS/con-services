@@ -97,6 +97,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
           {"message",message}
         };
         NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+
+        // throw on system issues, not business rule failure
         throw;
       }
       finally
@@ -157,7 +159,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
           {"message",message}
         };
         NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
-        throw;
       }
       finally
       {
@@ -211,7 +212,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
           {"message",message}
         };
         NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
-        throw;
       }
       finally
       {
@@ -246,7 +246,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         };
         NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
         throw;
-
       }
 
       var deleteImportedFileCommand =
@@ -275,7 +274,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
           {"message",message}
         };
         NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
-        throw;
       }
       finally
       {
