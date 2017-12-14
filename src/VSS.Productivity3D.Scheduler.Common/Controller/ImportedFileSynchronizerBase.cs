@@ -90,7 +90,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, Log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
       }
 
       Log.LogInformation(
@@ -105,7 +105,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           { "projectUid", projectUid},
           { "importedFileUid", importedFileUid}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, Log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
       }
       else
       {
@@ -164,7 +164,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
             { "grantType", grantType}
           };
-          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, Log, newRelicAttributes);
+          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
           throw new ServiceException(HttpStatusCode.InternalServerError,
             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
               message));
@@ -179,7 +179,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             { "tPaasOauthResult", JsonConvert.SerializeObject(tPaasOauthResult)},
             { "grantType", grantType}
           };
-          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, Log, newRelicAttributes);
+          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
           throw new ServiceException(HttpStatusCode.InternalServerError,
             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
               message));

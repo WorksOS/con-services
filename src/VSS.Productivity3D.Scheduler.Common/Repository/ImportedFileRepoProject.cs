@@ -14,10 +14,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
 {
   public class ImportedFileRepoProject<T> : IImportedFileRepo<T> where T : ImportedFileProject
   {
-    private IConfigurationStore _configStore;
-    private ILogger _log;
-    private string _dbConnectionString;
-    private MySqlConnection _dbConnection;
+    private readonly IConfigurationStore _configStore;
+    private readonly ILogger _log;
+    private readonly string _dbConnectionString;
+    private readonly MySqlConnection _dbConnection;
+    private readonly List<CustomerProject> _customerProjectList;
 
     public ImportedFileRepoProject(IConfigurationStore configStore, ILoggerFactory logger)
     {
@@ -25,6 +26,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       _log = logger.CreateLogger<ImportedFileRepoProject<T>>();
       _dbConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_Project");
       _dbConnection = new MySqlConnection(_dbConnectionString);
+      _customerProjectList = new List<CustomerProject>();
     }
 
     public List<T> Read()
@@ -42,11 +44,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
-      string selectCommand =
+      string selectImportedFilesCommand =
         @"SELECT 
               p.LegacyProjectID, cp.LegacyCustomerID, 
               iff.fk_ProjectUID as ProjectUID, iff.ImportedFileUID, iff.ImportedFileID, 
@@ -61,11 +63,22 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
               INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
             WHERE fk_ImportedFileTypeID = 2";
 
-      List<ImportedFileProject> response;
+      string selectCustomerProjectCommand =
+        @"SELECT 
+              LegacyCustomerID, fk_CustomerUID as CustomerUID,
+              LegacyProjectID, ProjectUID              
+            FROM Project 
+              INNER JOIN CustomerProject ON fk_ProjectUID = ProjectUID";
+
       try
       {
-        response = _dbConnection.Query<ImportedFileProject>(selectCommand).ToList();
-        _log.LogTrace($"ImportedFileRepoProject.Read: responseCount {response.Count}");
+        var responseImportedFiles = _dbConnection.Query<ImportedFileProject>(selectImportedFilesCommand).ToList();
+        members.AddRange(responseImportedFiles);
+        _log.LogTrace($"ImportedFileRepoProject.Read: responseImportedFiles {responseImportedFiles.Count}");
+
+        var responseCustomerProject = _dbConnection.Query<CustomerProject>(selectCustomerProjectCommand).ToList();
+        _customerProjectList.AddRange(responseCustomerProject);
+        _log.LogTrace($"ImportedFileRepoProject.Read: responseCustomerProject {responseCustomerProject.Count}");
       }
       catch (Exception ex)
       {
@@ -74,16 +87,22 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
       finally
       {
         _dbConnection.Close();
       }
-      members.AddRange(response);
 
       return members as List<T>;
+    }
+
+    public bool ProjectAndCustomerExist(string customerUid, string projectUid)
+    {
+      return _customerProjectList
+        .Any(x => (String.Compare(x.CustomerUid, customerUid, StringComparison.OrdinalIgnoreCase) == 0) 
+            && (String.Compare(x.ProjectUid, projectUid, StringComparison.OrdinalIgnoreCase) == 0));
     }
 
     public long Create(T member)
@@ -100,7 +119,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
@@ -122,7 +141,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
       finally
@@ -147,7 +166,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
@@ -173,7 +192,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
       finally
