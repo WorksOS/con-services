@@ -55,10 +55,10 @@ namespace VSS.Productivity3D.Scheduler.Tests
         "LegacyImportedFileId has not been mapped correctly");
       Assert.AreEqual(source.LegacyProjectId, destination.LegacyProjectId,
         "LegacyProjectId has not been mapped correctly");
-      Assert.AreEqual(source.ProjectUid, destination.ProjectUid, "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(0, string.Compare(source.ProjectUid, destination.ProjectUid, StringComparison.OrdinalIgnoreCase), "ProjectUid has not been mapped correctly");
       Assert.AreEqual(source.LegacyCustomerId, destination.LegacyCustomerId,
         "LegacyCustomerId has not been mapped correctly");
-      Assert.AreEqual(source.CustomerUid, destination.CustomerUid, "CustomerUid has not been mapped correctly");
+      Assert.AreEqual(0, string.Compare(source.CustomerUid, destination.CustomerUid, StringComparison.OrdinalIgnoreCase), "CustomerUid has not been mapped correctly");
       Assert.AreEqual(source.ImportedFileType, destination.ImportedFileType,
         "ImportedFileType has not been mapped correctly");
       Assert.AreEqual(source.DxfUnitsType, destination.DxfUnitsType, "DxfUnitsType has not been mapped correctly");
