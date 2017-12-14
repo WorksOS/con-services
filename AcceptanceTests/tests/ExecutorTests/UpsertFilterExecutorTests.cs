@@ -1,6 +1,7 @@
 ﻿using ExecutorTests.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
@@ -24,12 +25,12 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Transient_NoExisting()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
+      string userUid = TestUtility.UIDs.JWT_USER_ID;
+      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = string.Empty;
       const string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -96,13 +97,13 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Transient_DuplicateNamesShouldBeAllowed()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
+      string userUid = TestUtility.UIDs.JWT_USER_ID;
+      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = string.Empty;
       string filterJson1 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJson2 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson1 });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson1 });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -112,7 +113,7 @@ namespace ExecutorTests
       Assert.AreEqual(name, result1.FilterDescriptor.Name, "executor returned incorrect filter Name");
       Assert.AreEqual(filterJson1, result1.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
 
-      request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson2 });
+      request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson2 });
       var result2 = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result2, "executor should always return a result");
@@ -130,8 +131,8 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Transient_Existing_NoFilterUidProvided()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
+      string userId = TestUtility.UIDs.JWT_USER_ID;
+      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = string.Empty;
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
@@ -149,7 +150,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest { Name = name, FilterJson = filterJsonUpdated });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, projectUid, new FilterRequest { Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -165,12 +166,12 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Persistent_NoExisting()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
+      string userUid = TestUtility.UIDs.JWT_USER_ID;
+      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = "the Name";
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -205,8 +206,8 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonIgnored()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
+      string userId = TestUtility.UIDs.JWT_USER_ID;
+      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
@@ -224,7 +225,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -249,8 +250,8 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonAndName()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
+      string userId = TestUtility.UIDs.JWT_USER_ID;
+      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = "theName updated";
@@ -269,7 +270,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonUpdated });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonUpdated });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -294,8 +295,8 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Persistent_ExistingName_AddNew_CaseInsensitive()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
+      string userId = TestUtility.UIDs.JWT_USER_ID;
+      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = name.ToUpper();
@@ -315,7 +316,7 @@ namespace ExecutorTests
       });
 
       // try to update a filter with same name but upper case (allowed!)
-      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonNew });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonNew });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);

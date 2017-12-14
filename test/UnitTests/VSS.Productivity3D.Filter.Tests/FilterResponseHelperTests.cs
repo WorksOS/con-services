@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Common.Utilities;
@@ -28,7 +29,20 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        FilterResponseHelper.SetStartEndDates(new ProjectData(), filter: null);
+        FilterResponseHelper.SetStartEndDates(new ProjectData(), filter: (MasterData.Repositories.DBModels.Filter)null);
+      }
+      catch (Exception exception)
+      {
+        Assert.Fail($"Expected no exception, but got: {exception.Message}");
+      }
+    }
+
+    [TestMethod]
+    public void Should_return_When_filterDescriptor_is_null()
+    {
+      try
+      {
+        FilterResponseHelper.SetStartEndDates(new ProjectData(), filter: (FilterDescriptor)null);
       }
       catch (Exception exception)
       {
@@ -73,7 +87,20 @@ namespace VSS.Productivity3D.Filter.Tests
       FilterResponseHelper.SetStartEndDates(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter);
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
+      Assert.IsNull(filterObj.startUTC);
+      Assert.IsNull(filterObj.endUTC);
+    }
 
+    [TestMethod]
+    [DataRow(DateRangeType.Custom)]
+    [DataRow(DateRangeType.ProjectExtents)]
+    public void Should_not_set_dates_based_on_DateRangeType_When_using_FilterDescriptor(DateRangeType dateRangeType)
+    {
+      var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" };
+
+      FilterResponseHelper.SetStartEndDates(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor);
+
+      MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
       Assert.IsNull(filterObj.startUTC);
       Assert.IsNull(filterObj.endUTC);
     }
@@ -85,13 +112,57 @@ namespace VSS.Productivity3D.Filter.Tests
     [DataRow(DateRangeType.PreviousWeek)]
     [DataRow(DateRangeType.Today)]
     [DataRow(DateRangeType.Yesterday)]
-    public void Should_set_dates_based_on_DateRangeType(DateRangeType dateRangeType)
+    public void Should_set_dates_based_on_DateRangeType_When_using_collection_of_Filters(DateRangeType dateRangeType)
+    {
+      var filters = new List<MasterData.Repositories.DBModels.Filter>();
+
+      for (int i = 0; i < 10; i++)
+      {
+        filters.Add(new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" });
+      }
+      FilterResponseHelper.SetStartEndDates(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filters);
+
+      foreach (var filter in filters)
+      {
+        ValidateDates(filter.FilterJson);
+      }
+    }
+
+    [TestMethod]
+    [DataRow(DateRangeType.CurrentMonth)]
+    [DataRow(DateRangeType.CurrentWeek)]
+    [DataRow(DateRangeType.PreviousMonth)]
+    [DataRow(DateRangeType.PreviousWeek)]
+    [DataRow(DateRangeType.Today)]
+    [DataRow(DateRangeType.Yesterday)]
+    public void Should_set_dates_based_on_DateRangeType_When_using_Filter(DateRangeType dateRangeType)
     {
       var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" };
 
       FilterResponseHelper.SetStartEndDates(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter);
 
-      MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
+      ValidateDates(filter.FilterJson);
+    }
+
+    [TestMethod]
+    [DataRow(DateRangeType.CurrentMonth)]
+    [DataRow(DateRangeType.CurrentWeek)]
+    [DataRow(DateRangeType.PreviousMonth)]
+    [DataRow(DateRangeType.PreviousWeek)]
+    [DataRow(DateRangeType.Today)]
+    [DataRow(DateRangeType.Yesterday)]
+    public void Should_set_dates_based_on_DateRangeType_When_using_FilterDescriptor(DateRangeType dateRangeType)
+    {
+      var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" };
+
+      FilterResponseHelper.SetStartEndDates(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor);
+
+      ValidateDates(filterDescriptor.FilterJson);
+    }
+
+    private static void ValidateDates(string filterJson)
+    {
+      MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
 
       Assert.IsNotNull(filterObj.startUTC);
       Assert.IsNotNull(filterObj.endUTC);

@@ -14,6 +14,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Filter.Common.Validators;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -48,7 +49,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns>a FiltersResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      ContractExecutionResult result;
+      FilterDescriptorSingleResult result;
       var filterRequest = item as FilterRequestFull;
       if (filterRequest == null)
       {
@@ -63,6 +64,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         result = await ProcessTransient(filterRequest).ConfigureAwait(false);
       else
         result = await ProcessPersistent(filterRequest).ConfigureAwait(false);
+
+      FilterResponseHelper.SetStartEndDates(await GetProjectForRequest(filterRequest), result.FilterDescriptor);
 
       return result;
     }
