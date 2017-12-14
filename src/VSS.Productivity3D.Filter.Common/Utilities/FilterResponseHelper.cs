@@ -41,14 +41,16 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       }
 
       var utcNow = DateTime.UtcNow;
-      dynamic filterObj = JsonConvert.DeserializeObject(filter.FilterJson);
+      MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
 
-      if (filterObj.dateRangeType != null &&
-          filterObj.dateRangeType != DateRangeType.ProjectExtents &&
-          filterObj.dateRangeType != DateRangeType.Custom)
+      if (filterObj.DateRangeType != null &&
+          filterObj.DateRangeType != DateRangeType.ProjectExtents &&
+          filterObj.DateRangeType != DateRangeType.Custom)
       {
-        filterObj.startUTC = utcNow.UtcForDateRangeType((DateRangeType)filterObj.dateRangeType, ianaTimeZone, true);
-        filterObj.endUTC = utcNow.UtcForDateRangeType((DateRangeType)filterObj.dateRangeType, ianaTimeZone, false);
+        var startUtc = utcNow.UtcForDateRangeType((DateRangeType)filterObj.DateRangeType, ianaTimeZone, true);
+        var endUtc = utcNow.UtcForDateRangeType((DateRangeType)filterObj.DateRangeType, ianaTimeZone, false);
+
+        filterObj.SetDates(startUtc, endUtc);
 
         filter.FilterJson = JsonConvert.SerializeObject(filterObj);
       }
