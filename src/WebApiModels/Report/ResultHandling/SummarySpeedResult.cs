@@ -1,6 +1,6 @@
 using VSS.Common.ResultsHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Summary Volumes request

@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
+using System;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
-
   /// <summary>
   /// Represents result returned by CMV % change request for compaction
   /// </summary>
@@ -20,9 +20,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// Private constructor
     /// </summary>
     private CompactionCmvPercentChangeResult()
-    {
-    }
-
+    { }
 
     /// <summary>
     /// CompactionCmvPercentChangeResult create instance
@@ -31,6 +29,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// <returns>An instance of CompactionCmvPercentChangeResult</returns>
     public static CompactionCmvPercentChangeResult CreateCmvPercentChangeResult(CMVChangeSummaryResult result)
     {
+      const int noCmvData = 0;
+
+      if (Math.Abs(result.CoverageArea - noCmvData) < 0.001)
+      {
+        return new CompactionCmvPercentChangeResult { SummaryData = new CmvChangeSummaryData { Percents = new double[0] } };
+      }
+
       return new CompactionCmvPercentChangeResult
       {
         SummaryData = new CmvChangeSummaryData
@@ -45,12 +50,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// CMV % change summary data returned
     /// </summary>
     public class CmvChangeSummaryData
-    { 
+    {
       /// <summary>
       /// The CMV % change values
       /// </summary>
       [JsonProperty(PropertyName = "percents")]
       public double[] Percents { get; set; }
+
       /// <summary>
       /// The total area covered by non-null cells in the request area
       /// </summary>

@@ -98,15 +98,18 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       public bool Equals(TemperatureSummaryData other)
       {
         if (other == null)
+        {
           return false;
+        }
+
+        var tempEquals = this.temperatureTarget?.Equals(other.temperatureTarget) ?? true;
 
         return Math.Round(this.percentEqualsTarget, 2) == Math.Round(other.percentEqualsTarget, 2) &&
                Math.Round(this.percentGreaterThanTarget, 2) == Math.Round(other.percentGreaterThanTarget, 2) &&
                Math.Round(this.percentLessThanTarget, 2) == Math.Round(other.percentLessThanTarget, 2) &&
                Math.Round(this.totalAreaCoveredSqMeters, 2) == Math.Round(other.totalAreaCoveredSqMeters, 2) &&
-               this.temperatureTarget.Equals(other.temperatureTarget);
+               tempEquals;
       }
-
     }
 
     /// <summary>
