@@ -66,7 +66,7 @@ namespace SchedulerTestsImportedFileSync
       var createdCount = importedFileRepoProject.Create(importedFileProject);
       Assert.AreEqual(1, createdCount, "Project importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
       await sync.SyncTables();
 
       // now lets see if it synced to NhOp
@@ -144,7 +144,7 @@ namespace SchedulerTestsImportedFileSync
       var createdCount = importedFileRepoProject.Create(importedFileProject);
       Assert.AreEqual(1, createdCount, "Project importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
       await sync.SyncTables();
 
       // now lets see if it synced to NhOp
@@ -225,7 +225,7 @@ namespace SchedulerTestsImportedFileSync
       
       importedFileRepoProject.Create(importedFileProject);
       
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
       await sync.SyncTables();
 
       // now lets see if it synced to NhOp
@@ -288,7 +288,7 @@ namespace SchedulerTestsImportedFileSync
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
       await sync.SyncTables();
 
       // now lets see if it synced to Project
@@ -361,7 +361,7 @@ namespace SchedulerTestsImportedFileSync
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
       await sync.SyncTables();
 
       // now lets see if it synced to Project
@@ -430,7 +430,7 @@ namespace SchedulerTestsImportedFileSync
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
       await sync.SyncTables();
 
       // now update in NhOp note only FileCreatedUtc and FileInsertedUtc can be updated

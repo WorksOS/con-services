@@ -14,6 +14,7 @@ using MySql.Data.MySqlClient;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Models;
+using VSS.TCCFileAccess;
 
 namespace SchedulerTestsImportedFileSync
 {
@@ -26,6 +27,8 @@ namespace SchedulerTestsImportedFileSync
     protected string FileSpaceId;
     protected IRaptorProxy RaptorProxy;
     protected ITPaasProxy TPaasProxy;
+    protected IImportedFileProxy ImpFileProxy;
+    protected IFileRepository FileRepo;
 
     protected void SetupDi()
     {
@@ -58,6 +61,8 @@ namespace SchedulerTestsImportedFileSync
 
       RaptorProxy = new RaptorProxy(ConfigStore, LoggerFactory);
       TPaasProxy = new TPaasProxy(ConfigStore, LoggerFactory);
+      ImpFileProxy = new ImportedFileProxy(ConfigStore, LoggerFactory);
+      FileRepo = new FileRepository(ConfigStore, LoggerFactory);
 
       Assert.IsNotNull(ServiceProvider.GetService<IConfigurationStore>());
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());

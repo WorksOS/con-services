@@ -40,6 +40,9 @@
 [Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://webapi:80/", "Machine")
 [Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://localhost:3001/", "Machine")
 [Environment]::SetEnvironmentVariable("DOWNLOAD_FOLDER", "C:/temp/", "Machine")
+[Environment]::SetEnvironmentVariable("TPAAS_OAUTH_URL", "https://identity-stg.trimble.com/i/oauth2/token", "Machine")
+[Environment]::SetEnvironmentVariable("3DPMSCHEDULER_CONSUMER_KEYS", "ZmFzRm9KV09QZ1FrV2tVREtYQUVQYVZZb180YTpnbno0M2dYX3MyN25VVGk1M1BKNG1meG91c1Vh", "Machine")
+
 #>
 <#  Dev environment
 [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB", "rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com", "Machine")
@@ -74,5 +77,8 @@
 [Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://10.97.96.103:3001/", "Machine")
 [Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://10.97.96.103:3001/", "Machine")
 Environment]::SetEnvironmentVariable("DOWNLOAD_FOLDER", "C:/temp/", "Machine")
+[Environment]::SetEnvironmentVariable("TPAAS_OAUTH_URL", "https://identity-stg.trimble.com/i/oauth2/token", "Machine")
+[Environment]::SetEnvironmentVariable("3DPMSCHEDULER_CONSUMER_KEYS", "ZmFzRm9KV09QZ1FrV2tVREtYQUVQYVZZb180YTpnbno0M2dYX3MyN25VVGk1M1BKNG1meG91c1Vh", "Machine")
+
 
 #>
