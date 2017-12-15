@@ -92,6 +92,18 @@ namespace MockProjectWebApi.Utils
         FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterCustom20121101First")
       };
 
+      public static FilterDescriptor SummaryVolumesFilterExtentsEarliest => new FilterDescriptor
+      {
+        FilterUid = "9c27697f-ea6d-478a-a168-ed20d6cd9a22",
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterProjectExtentsEarlist")
+      };
+
+      public static FilterDescriptor SummaryVolumesFilterExtentsLatest => new FilterDescriptor
+      {
+        FilterUid = "9c27697f-ea6d-478a-a168-ed20d6cd9a21",
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterExtentsLatest")
+      };
+
       public static FilterDescriptor SummaryVolumesFilterCustom20121101Last => new FilterDescriptor
       {
         FilterUid = "279ed62b-06a2-4184-ab14-dd7462dcc8c1",

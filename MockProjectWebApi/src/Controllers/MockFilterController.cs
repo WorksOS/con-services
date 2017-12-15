@@ -78,6 +78,8 @@ namespace MockProjectWebApi.Controllers
                 FilterDescriptors.Dimensions.DimensionsBoundaryCmv,
                 FilterDescriptors.Dimensions.SummaryVolumesBaseFilter,
                 FilterDescriptors.Dimensions.SummaryVolumesTopFilter,
+                FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsEarliest,
+                FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsLatest,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterToday,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonToday,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonYesterday,
@@ -143,20 +145,6 @@ namespace MockProjectWebApi.Controllers
         Name = "Dimensions boundary filter with machine",
         FilterJson =
           "{\"contributingMachines\":[{\"assetID\":4250986182719752,\"machineName\":\"VOLVO G946B\",\"isJohnDoe\":false}],\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":\"Dimensions boundary with machine 2\",\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}]}"
-      },
-      new FilterDescriptor
-      {
-        FilterUid = "9c27697f-ea6d-478a-a168-ed20d6cd9a21",
-        Name = "Dimensions boundary filter with machine latest",
-        FilterJson =
-          "{\"contributingMachines\":[{\"assetID\":4250986182719752,\"machineName\":\"VOLVO G946B\",\"isJohnDoe\":false}],\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":\"Dimensions boundary with machine 2\",\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"elevationType\": 0}"
-      },
-      new FilterDescriptor
-      {
-        FilterUid = "9c27697f-ea6d-478a-a168-ed20d6cd9a22",
-        Name = "Dimensions boundary filter with machine latest",
-        FilterJson =
-          "{\"contributingMachines\":[{\"assetID\":4250986182719752,\"machineName\":\"VOLVO G946B\",\"isJohnDoe\":false}],\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":\"Dimensions boundary with machine 2\",\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"elevationType\": 1}"
       },
       new FilterDescriptor
       {
