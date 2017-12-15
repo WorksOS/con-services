@@ -32,6 +32,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     private readonly int _refreshPeriodMinutes = 480;
     private readonly string _3DPmSchedulerConsumerKeys = null;
     private string _3DPmSchedulerBearerToken = null;
+    private string TemporaryDownloadFolder = null;
 
     /// <summary>
     /// </summary>
@@ -44,7 +45,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       RaptorProxy = raptorProxy;
       TPaasProxy = tPaasProxy;
       ImpFileProxy = impFileProxy;
-      FileRepo = FileRepo;
+      FileRepo = fileRepo;
 
       FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(FileSpaceId))
@@ -65,9 +66,20 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         throw new InvalidOperationException(
           "ImportedFileSynchroniser missing from environment variables:3DPMSCHEDULER_CONSUMER_KEYS");
       }
+
+      TemporaryDownloadFolder = ConfigStore.GetValueString("DOWNLOAD_FOLDER");
+      if (string.IsNullOrEmpty(TemporaryDownloadFolder))
+      {
+        var errorString = "Your application is missing an environment variable DOWNLOAD_FOLDER";
+        Log.LogError(errorString);
+        throw new InvalidOperationException(errorString);
+      }
+      if (!TemporaryDownloadFolder.EndsWith("/"))
+        TemporaryDownloadFolder += "/";
+
     }
 
-    
+
     /// <summary>
     /// Notify raptor of new file
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
@@ -121,7 +133,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     }
 
 
-    protected async Task<IDictionary<string, string>> GetCustomHeaders(string customerUid)
+    private async Task<IDictionary<string, string>> GetCustomHeaders(string customerUid)
     {
       var customHeaders = new Dictionary<string, string>();
 
@@ -197,39 +209,116 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       return _3DPmSchedulerBearerToken;
     }
 
-    private async Task DownloadFileAndCallProjectWebApi(ImportedFileProject projectEvent)
+    /// <summary>
+    /// Downloads a file from TCC, saves it to a temporary folder then calls the project web api
+    /// to import it into Project.
+    /// </summary>
+    /// <param name="projectEvent"></param>
+    /// <returns></returns>
+    protected async Task DownloadFileAndCallProjectWebApi(ImportedFileProject projectEvent)
     {
-      //TODO: If performance is a problem then may need to add 'Copy' command to TCCFileAccess and use it here
-      //to directly copy file from old to new structure in TCC.
+      //TODO: If performance is a problem then may need to add 'Copy' command to TCCFileAccess 
+      //and use it here to directly copy file from old to new structure in TCC.
 
-      await ImpFileProxy.CreateImportedFile(new FlowFile { flowFilename = projectEvent.Name, path = "TODO" }, new Guid(projectEvent.ProjectUid), projectEvent.ImportedFileType,
-        projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
-        await GetCustomHeaders(projectEvent.CustomerUid)).ConfigureAwait(false);
+      var startUtc = DateTime.UtcNow;
+
+      Log.LogInformation($"ImportedFileSynchroniser: DownloadFileAndCallProjectWebApi");
+
+      var fileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(projectEvent.FileDescriptor);
+      if (await DownloadFileAndSaveToTemp(fileDescriptor))
+      {
+        var customHeaders = await GetCustomHeaders(projectEvent.CustomerUid);
+        try
+        {     
+          Log.LogInformation($"ImportedFileSynchroniser: Calling project web api {FullTemporaryFileName(fileDescriptor)}");
+
+          await ImpFileProxy.CreateImportedFile(new FlowFile {flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path)},
+            new Guid(projectEvent.ProjectUid), projectEvent.ImportedFileType,
+            projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
+            customHeaders).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+          var message = string.Format($"DownloadFileAndCallProjectWebApi call failed with exception {e.Message}");
+          var newRelicAttributes = new Dictionary<string, object> {
+            { "message", message},
+            { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
+            { "fullTemporaryFileName", FullTemporaryFileName(fileDescriptor)}
+          };
+          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, Log, newRelicAttributes);
+        }
+
+        try
+        {
+          //Clean up - delete downloaded file
+          Log.LogInformation($"ImportedFileSynchroniser: Deleting temporaty file {FullTemporaryFileName(fileDescriptor)}");
+          File.Delete(FullTemporaryFileName(fileDescriptor));
+        }
+        catch (Exception e)
+        {
+          //We don't care really
+        }
+   
+      }
     }
 
     /// <summary>
-    /// Tries to download a file from TCC
+    /// Tries to download a file from TCC and saves it to a temporary location
     /// </summary>
-    /// <returns>The downloaded file if it exists</returns>
-    private async Task<byte[]> DownloadFile(string fullFileName)
+    private async Task<bool> DownloadFileAndSaveToTemp(FileDescriptor fileDescriptor)
     {
-      byte[] tileData = null;
+      var startUtc = DateTime.UtcNow;
+      var result = false;
+      var fullFileName = $"{fileDescriptor.path}/{fileDescriptor.fileName}";
+      Log.LogInformation($"ImportedFileSynchroniser: DownloadFileAndSaveToTemp {fullFileName}");
 
-      if (await FileRepo.FileExists(FileSpaceId, fullFileName))
+      if (await FileRepo.FileExists(fileDescriptor.filespaceId, fullFileName))
       {
-        using (Stream stream = await FileRepo.GetFile(FileSpaceId, fullFileName))
+        using (Stream inStream = await FileRepo.GetFile(FileSpaceId, fullFileName))
         {
-
-          if (stream.Length > 0)
+          if (inStream.Length > 0)
           {
-            stream.Position = 0;
-            tileData = new byte[stream.Length];
-            stream.Read(tileData, 0, (int)stream.Length);
+            inStream.Position = 0;
+
+            try
+            {
+              Log.LogInformation($"ImportedFileSynchroniser: Saving to temporary file {fullFileName}");
+
+              using (Stream outStream = File.Create($"{FullTemporaryFileName(fileDescriptor)}"))
+              {
+                inStream.CopyTo(outStream);
+                result = true;
+              }
+            }
+            catch (Exception e)
+            {
+              var message = string.Format($"DownloadFileAndSaveToTemp call failed with exception {e.Message}");
+              var newRelicAttributes = new Dictionary<string, object> {
+                { "message", message},
+                { "fullTemporaryFileName", FullTemporaryFileName(fileDescriptor)}
+              };
+              NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, Log, newRelicAttributes);
+            }
           }
         }
       }
-  
-      return tileData;
+      else
+      {
+        Log.LogWarning($"ImportedFileSynchroniser: DownloadFileAndSaveToTemp {fullFileName} not found!");
+      }
+      Log.LogInformation($"ImportedFileSynchroniser: DownloadFileAndSaveToTemp returning {result} for {fullFileName} ");
+
+      return result;
     }
+
+    private string FullTemporaryPath(string filePath)
+    {
+      return $"{TemporaryDownloadFolder}{filePath}";
+    }
+    private string FullTemporaryFileName(FileDescriptor fileDescriptor)
+    {
+      return $"{FullTemporaryPath(fileDescriptor.path)}/{fileDescriptor.fileName}";
+    }
+
   }
 }

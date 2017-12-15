@@ -82,11 +82,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           }
           else
           {
-            const string DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-            var projectCreatedUtcRounded = DateTime.Parse(gotMatchingProject.FileCreatedUtc.ToString(DATE_TIME_FORMAT));
-            var projectUpdatedUtcRounded = DateTime.Parse(gotMatchingProject.FileUpdatedUtc.ToString(DATE_TIME_FORMAT));
-            var nhOpCreatedUtcRounded = DateTime.Parse(fileListNhOp[i].FileCreatedUtc.ToString(DATE_TIME_FORMAT));
-            var nhOpUpdatedUtcRounded = DateTime.Parse(fileListNhOp[i].FileUpdatedUtc.ToString(DATE_TIME_FORMAT));
+            var projectCreatedUtcRounded = RoundDateTimeToSeconds(gotMatchingProject.FileCreatedUtc);
+            var projectUpdatedUtcRounded = RoundDateTimeToSeconds(gotMatchingProject.FileUpdatedUtc);
+            var nhOpCreatedUtcRounded = RoundDateTimeToSeconds(fileListNhOp[i].FileCreatedUtc);
+            var nhOpUpdatedUtcRounded = RoundDateTimeToSeconds(fileListNhOp[i].FileUpdatedUtc);
 
             if (projectCreatedUtcRounded != nhOpCreatedUtcRounded 
              || projectUpdatedUtcRounded != nhOpUpdatedUtcRounded)
@@ -110,9 +109,16 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         }
       }
 
-
       fileListProject.RemoveAll(
         x => fileListProjectToRemove.Exists(y => y.LegacyImportedFileId == x.LegacyImportedFileId));
+    }
+
+    /// <summary>
+    /// Round date time to nearest second
+    /// </summary>
+    private DateTime RoundDateTimeToSeconds(DateTime dateTime)
+    {
+      return DateTime.Parse(dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
     }
 
     /// <summary>
@@ -197,9 +203,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       }
       else
       {
-        await ImpFileProxy.CreateImportedFile(new FlowFile{flowFilename = projectEvent.Name, path = "TODO"}, new Guid(projectEvent.ProjectUid), projectEvent.ImportedFileType,
-          projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
-          await GetCustomHeaders(projectEvent.CustomerUid)).ConfigureAwait(false);
+        await DownloadFileAndCallProjectWebApi(projectEvent).ConfigureAwait(false);
       }
 
       NotifyNewRelic(projectEvent, startUtc, "File created in NhOp, now created in Project.");
@@ -253,12 +257,19 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       gotMatchingProject.LastActionedUtc = DateTime.UtcNow;
       repoProject.Update(gotMatchingProject);
 
-      // Notify 3dpm of File updated via Legacy
-      if (gotMatchingProject.LegacyImportedFileId != null
-      ) // Note that LegacyImportedFileId will always be !null 
-        await NotifyRaptorImportedFileChange(gotMatchingProject.CustomerUid, Guid.Parse(gotMatchingProject.ProjectUid),
-            Guid.Parse(gotMatchingProject.ImportedFileUid))
-          .ConfigureAwait(false);
+      if (gotMatchingProject.ImportedFileType == ImportedFileType.SurveyedSurface)
+      {
+        // Notify 3dpm of File updated via Legacy
+        if (gotMatchingProject.LegacyImportedFileId != null
+        ) // Note that LegacyImportedFileId will always be !null 
+          await NotifyRaptorImportedFileChange(gotMatchingProject.CustomerUid, Guid.Parse(gotMatchingProject.ProjectUid),
+              Guid.Parse(gotMatchingProject.ImportedFileUid))
+            .ConfigureAwait(false);
+      }
+      else
+      {
+        await DownloadFileAndCallProjectWebApi(gotMatchingProject).ConfigureAwait(false);
+      }
 
       NotifyNewRelic(gotMatchingProject, startUtc, "File updated in NhOp, now updated in Project.");
     }
