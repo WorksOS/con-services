@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.Local
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.FlowJSHandler", "..\MerinoSandbox\FlowJSMVC\src\VSS.FlowJSHandler.csproj", "{2B13D10C-7210-456B-B5D3-1D48ED7576D8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess.Local", "..\MerinoSandbox\TCCFileAccess\src\VSS.TCCFileAccess.Local.csproj", "{14FFD7D2-8E78-4F5D-9461-2762A36831DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{2B13D10C-7210-456B-B5D3-1D48ED7576D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B13D10C-7210-456B-B5D3-1D48ED7576D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B13D10C-7210-456B-B5D3-1D48ED7576D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14FFD7D2-8E78-4F5D-9461-2762A36831DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14FFD7D2-8E78-4F5D-9461-2762A36831DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14FFD7D2-8E78-4F5D-9461-2762A36831DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14FFD7D2-8E78-4F5D-9461-2762A36831DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
