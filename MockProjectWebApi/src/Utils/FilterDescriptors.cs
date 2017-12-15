@@ -101,7 +101,7 @@ namespace MockProjectWebApi.Utils
       public static FilterDescriptor SummaryVolumesFilterExtentsLatest => new FilterDescriptor
       {
         FilterUid = "9c27697f-ea6d-478a-a168-ed20d6cd9a21",
-        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterExtentsLatest")
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterProjectExtentsLatest")
       };
 
       public static FilterDescriptor SummaryVolumesFilterCustom20121101Last => new FilterDescriptor
