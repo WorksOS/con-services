@@ -50,6 +50,7 @@
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNull20121101.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtents.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliest.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatest.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
