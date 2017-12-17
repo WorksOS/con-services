@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
+using VSS.VisionLink.Raptor.GridFabric.Events;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Machines;
@@ -323,24 +324,31 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
         public bool SaveToPersistentStore(IStorageProxy storageProxy)
         {
-            MemoryStream MS = new MemoryStream();
-            BinaryWriter writer = new BinaryWriter(MS, Encoding.UTF8, true);
-
             bool Result = false;
 
-            lock (this)
+            using (MemoryStream MS = new MemoryStream())
             {
-                Write(writer);
-            }
+                using (BinaryWriter writer = new BinaryWriter(MS))
+                {
+                    lock (this)
+                    {
+                        Write(writer);
 
-            Result = storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemGranuleType.SiteModelInfo, out uint StoreGranuleIndex, out uint StoreGranuleCount, MS) == FileSystemErrorStatus.OK
-                     && SaveProductionDataExistanceMapToStorage() == FileSystemErrorStatus.OK;
+                        Result = storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemGranuleType.SiteModelInfo, out uint StoreGranuleIndex, out uint StoreGranuleCount, MS) == FileSystemErrorStatus.OK
+                                 && SaveProductionDataExistanceMapToStorage() == FileSystemErrorStatus.OK;
+                    }
+                }
+            }
 
             if (Result)
             {
-                // TODO - Leave to the Ignite grid notification architecture
                 //if (VLPDSvcLocations.VLPDTagProc_AdviseOtherServicesOfDataModelChanges)
+                // {
+                // Notify the SiteModel that it's attributes have changed
+              //  SiteModelAttributesChangedEventSender.ModelAttributesChanged(ID);
+
                 //        SIG_SiteModelStateEventControl.Publish(Self, sig_smscAttributesModified, FID);
+                //}
             }
             else
             {
@@ -357,72 +365,78 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
             try
             {
-                MemoryStream MS = new MemoryStream();
-
                 long SavedID = ID;
 
-                Result = storageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MS);
+                Result = storageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
                 if (Result == FileSystemErrorStatus.OK)
                 {
-                    if (SavedID != ID)
+                    try
                     {
-                        // The SiteModelID read from the FS file does not match the ID expected.
+                        if (SavedID != ID)
+                        {
+                            // The SiteModelID read from the FS file does not match the ID expected.
 
-                        // RPW 31/1/11: This used to be an error with it's own error code. This is now
-                        // changed to a warning, but loading of the sitemodel is allowed. This
-                        // is particularly useful for testing purposes where copying around projects
-                        // is much quicker than reprocessing large sets of TAG files
+                            // RPW 31/1/11: This used to be an error with it's own error code. This is now
+                            // changed to a warning, but loading of the sitemodel is allowed. This
+                            // is particularly useful for testing purposes where copying around projects
+                            // is much quicker than reprocessing large sets of TAG files
 
-                        // TODO readd when logging available
-                        //SIGLogMessage.PublishNoODS(Self, Format('Site model ID read from FS file (%d) does not match expected ID (%d), setting to expected', [FID, SavedID]), slmcWarning);
-                        ID = SavedID;
+                            // TODO readd when logging available
+                            //SIGLogMessage.PublishNoODS(Self, Format('Site model ID read from FS file (%d) does not match expected ID (%d), setting to expected', [FID, SavedID]), slmcWarning);
+                            ID = SavedID;
+                        }
+
+                        // Prior to reading the site model from the stream, ensure that we have
+                        // acquired locks to prevent access of the machine target values while the
+                        // machines list is destroyed and recreated. LockMachinesTargetValues creates
+                        // a list of items it obtains locks of and UnLockMachinesTargetValues releases
+                        // locks against that list. This is necessary as rereading the machines may cause
+                        // new machines to be created due to TAG file processing, and these new machines
+                        // will not have targets values participating in the lock.
+
+                        MS.Position = 0;
+                        using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
+                        {
+                            lock (this)
+                            {
+                                Read(reader);
+
+                                // Now read in the existance map
+                                Result = LoadProductionDataExistanceMapFromStorage();
+                            }
+                        }
+
+                        /* TODO ??
+                         * This type of management is not appropriate for Ignite based cache management as
+                         *  list updates will cause Ignite level cache invalidation can can then cause messaging
+                         *  to trigger reloading of target values/event lists
+                        if (!CreateMachinesTargetValues())
+                            Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
+                        else
+                        {
+                            //Mark override lists dirty
+                            for I := 0 to MachinesTargetValues.Count - 1 do
+                                    MachinesTargetValues.Items[I].TargetValueChanges.MarkOverrideEventListsAsOutOfDate;
+                        }
+                        */
+
+                        /* TODO readd when logging available
+                        if (Result == FileSystemErrorStatus.OK)
+                        {
+                            SIGLogMessage.PublishNoODS(Self, Format('Site model read from FS file (ID:%d) succeeded', [FID]), slmcDebug);
+                            SIGLogMessage.PublishNoODS(Self, Format('Data model extents: %s, CellSize: %.3f', [FSiteModelExtent.AsText, FGrid.CellSize]), slmcDebug);
+                        }
+                        else
+                        {
+                            SIGLogMessage.PublishNoODS(Self, Format('Site model ID read from FS file (%d) failed with error %d', [FID, Ord(Result)]), slmcWarning);
+                        }
+                        */
                     }
-
-                    // Prior to reading the site model from the stream, ensure that we have
-                    // acquired locks to prevent access of the machine target values while the
-                    // machines list is destroyed and recreated. LockMachinesTargetValues creates
-                    // a list of items it obtains locks of and UnLockMachinesTargetValues releases
-                    // locks against that list. This is necessary as rereading the machines may cause
-                    // new machines to be created due to TAG file processing, and these new machines
-                    // will not have targets values participating in the lock.
-
-                    MS.Position = 0;
-                    BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true);
-
-                    lock (this)
+                    finally
                     {
-                        Read(reader);
-
-                        // Now read in the existance map
-                        Result = LoadProductionDataExistanceMapFromStorage();
+                        MS.Dispose();
                     }
-
-                    /* TODO ??
-                     * This type of management is not appropriate for Ignite based cache management as
-                     *  list updates will cause Ignite level cache invalidation can can then cause messaging
-                     *  to trigger reloading of target values/event lists
-                    if (!CreateMachinesTargetValues())
-                        Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
-                    else
-                    {
-                        //Mark override lists dirty
-                        for I := 0 to MachinesTargetValues.Count - 1 do
-                                MachinesTargetValues.Items[I].TargetValueChanges.MarkOverrideEventListsAsOutOfDate;
-                    }
-                    */
-
-                    /* TODO readd when logging available
-                    if (Result == FileSystemErrorStatus.OK)
-                    {
-                        SIGLogMessage.PublishNoODS(Self, Format('Site model read from FS file (ID:%d) succeeded', [FID]), slmcDebug);
-                        SIGLogMessage.PublishNoODS(Self, Format('Data model extents: %s, CellSize: %.3f', [FSiteModelExtent.AsText, FGrid.CellSize]), slmcDebug);
-                    }
-                    else
-                    {
-                        SIGLogMessage.PublishNoODS(Self, Format('Site model ID read from FS file (%d) failed with error %d', [FID, Ord(Result)]), slmcWarning);
-                    }
-                    */
                 }
             }
             catch // (Exception E)
@@ -467,10 +481,14 @@ namespace VSS.VisionLink.Raptor.SiteModels
                 SubGridTreeSubGridExistenceBitMask localExistanceMap = existanceMap;
 
                 // Save its content to storage
-                MemoryStream MS = new MemoryStream();
-                SubGridTreePersistor.Write(localExistanceMap, "ExistanceMap", 1, new BinaryWriter(MS, Encoding.UTF8, true));
-
-                StorageProxy.RaptorInstance().WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemGranuleType.SubgridExistenceMap, MS);
+                using (MemoryStream MS = new MemoryStream())
+                {
+                    using (BinaryWriter writer = new BinaryWriter(MS))
+                    {
+                        SubGridTreePersistor.Write(localExistanceMap, "ExistanceMap", 1, writer);
+                        StorageProxy.RaptorInstance().WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemGranuleType.SubgridExistenceMap, MS);
+                    }
+                }
             }
             catch // (Exception E)
             {
@@ -491,10 +509,20 @@ namespace VSS.VisionLink.Raptor.SiteModels
                 // Create the new existance map instance
                 SubGridTreeSubGridExistenceBitMask localExistanceMap = new SubGridTreeSubGridExistenceBitMask();
 
-                // Read its content from storage
+                // Read its content from storage 
                 StorageProxy.RaptorInstance().ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
-
-                SubGridTreePersistor.Read(localExistanceMap, "ExistanceMap", 1, new BinaryReader(MS, Encoding.UTF8, true));
+ 
+                try
+                {
+                    using (BinaryReader reader = new BinaryReader(MS))
+                    {
+                        SubGridTreePersistor.Read(localExistanceMap, "ExistanceMap", 1, reader);
+                    }
+                }
+                finally
+                {
+                    MS?.Dispose();
+                }
 
                 // Replace existance map with the newly read map
                 existanceMap = localExistanceMap;
