@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Storage.Utilities;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
@@ -297,6 +298,10 @@ namespace VSS.VisionLink.Raptor.Storage
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
                     Log.Info(String.Format("Putting key:{0}, size:{1} -> {2}", cacheKey, Stream.Length, compressedStream.Length));
+
+//                    IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
+//                    ICache<string, byte[]> cache = ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
+//                    cache.Put(cacheKey, compressedStream.ToArray());
 
                     mutableNonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }

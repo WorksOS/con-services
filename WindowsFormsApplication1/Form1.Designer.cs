@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button3 = new System.Windows.Forms.Button();
+            this.btnCalculateVolumes = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.chkIncludeSurveyedSurfaces = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -60,7 +62,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.cmbDesigns = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.btnCalculateVolumes = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -71,6 +73,8 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.button4);
+            this.panel1.Controls.Add(this.button3);
             this.panel1.Controls.Add(this.btnCalculateVolumes);
             this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.chkIncludeSurveyedSurfaces);
@@ -96,10 +100,30 @@
             this.panel1.Controls.Add(this.btnZoomOut);
             this.panel1.Controls.Add(this.bntTranslateNorth);
             this.panel1.Controls.Add(this.btnZoomAll);
-            this.panel1.Location = new System.Drawing.Point(883, 2);
+            this.panel1.Location = new System.Drawing.Point(865, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(187, 539);
+            this.panel1.Size = new System.Drawing.Size(187, 606);
             this.panel1.TabIndex = 15;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(15, 543);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(120, 19);
+            this.button3.TabIndex = 40;
+            this.button3.Text = "Test Queue...";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // btnCalculateVolumes
+            // 
+            this.btnCalculateVolumes.Location = new System.Drawing.Point(14, 480);
+            this.btnCalculateVolumes.Name = "btnCalculateVolumes";
+            this.btnCalculateVolumes.Size = new System.Drawing.Size(120, 19);
+            this.btnCalculateVolumes.TabIndex = 39;
+            this.btnCalculateVolumes.Text = "Calculate Volume...";
+            this.btnCalculateVolumes.UseVisualStyleBackColor = true;
+            this.btnCalculateVolumes.Click += new System.EventHandler(this.btnCalculateVolumes_Click);
             // 
             // button2
             // 
@@ -339,7 +363,7 @@
             this.panel2.Controls.Add(this.pictureBox1);
             this.panel2.Location = new System.Drawing.Point(2, 58);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(875, 483);
+            this.panel2.Size = new System.Drawing.Size(857, 550);
             this.panel2.TabIndex = 16;
             // 
             // pictureBox1
@@ -349,9 +373,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Location = new System.Drawing.Point(4, 4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(867, 475);
+            this.pictureBox1.Size = new System.Drawing.Size(849, 542);
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // panel3
             // 
@@ -363,7 +388,7 @@
             this.panel3.Controls.Add(this.label5);
             this.panel3.Location = new System.Drawing.Point(2, 2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(872, 50);
+            this.panel3.Size = new System.Drawing.Size(854, 50);
             this.panel3.TabIndex = 17;
             // 
             // cmbSurveyedSurfaces
@@ -374,7 +399,7 @@
             this.cmbSurveyedSurfaces.FormattingEnabled = true;
             this.cmbSurveyedSurfaces.Location = new System.Drawing.Point(105, 25);
             this.cmbSurveyedSurfaces.Name = "cmbSurveyedSurfaces";
-            this.cmbSurveyedSurfaces.Size = new System.Drawing.Size(764, 21);
+            this.cmbSurveyedSurfaces.Size = new System.Drawing.Size(746, 21);
             this.cmbSurveyedSurfaces.TabIndex = 33;
             // 
             // label6
@@ -394,7 +419,7 @@
             this.cmbDesigns.FormattingEnabled = true;
             this.cmbDesigns.Location = new System.Drawing.Point(105, 3);
             this.cmbDesigns.Name = "cmbDesigns";
-            this.cmbDesigns.Size = new System.Drawing.Size(764, 21);
+            this.cmbDesigns.Size = new System.Drawing.Size(746, 21);
             this.cmbDesigns.TabIndex = 31;
             // 
             // label5
@@ -406,21 +431,21 @@
             this.label5.TabIndex = 30;
             this.label5.Text = "Design";
             // 
-            // btnCalculateVolumes
+            // button4
             // 
-            this.btnCalculateVolumes.Location = new System.Drawing.Point(14, 480);
-            this.btnCalculateVolumes.Name = "btnCalculateVolumes";
-            this.btnCalculateVolumes.Size = new System.Drawing.Size(120, 19);
-            this.btnCalculateVolumes.TabIndex = 39;
-            this.btnCalculateVolumes.Text = "Calculate Volume...";
-            this.btnCalculateVolumes.UseVisualStyleBackColor = true;
-            this.btnCalculateVolumes.Click += new System.EventHandler(this.btnCalculateVolumes_Click);
+            this.button4.Location = new System.Drawing.Point(15, 568);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(120, 19);
+            this.button4.TabIndex = 41;
+            this.button4.Text = "Test ProductionDataModel.xml add";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1072, 546);
+            this.ClientSize = new System.Drawing.Size(1054, 613);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
@@ -471,6 +496,8 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button btnCalculateVolumes;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
     }
 }
 

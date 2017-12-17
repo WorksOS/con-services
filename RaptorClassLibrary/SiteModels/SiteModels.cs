@@ -67,5 +67,15 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
             return result;
         }
+
+        /// <summary>
+        /// Handles the situation when TAG file processing or some other activity has modified the attributes of a site model
+        /// requiring the sitemodel to be reloaded
+        /// </summary>
+        /// <param name="SiteModelID"></param>
+        public void SiteModelAttributesHaveChanged(long SiteModelID)
+        {
+            GetSiteModel(SiteModelID, false)?.LoadFromPersistentStore(StorageProxy);
+        }
     }
 }

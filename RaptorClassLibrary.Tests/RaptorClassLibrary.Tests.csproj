@@ -93,6 +93,7 @@
     <Compile Include="MutabilityConverterTests.cs" />
     <Compile Include="RenderOverlayTileTests.cs" />
     <Compile Include="ServerSubGridTreeLeafTests.cs" />
+    <Compile Include="Servers\Server\RaptorCacheComputeServerTests.cs" />
     <Compile Include="StorageProxy_IgniteTests.cs" />
     <Compile Include="Storage\Utilities\MemoryStreamCompressionTests.cs" />
     <Compile Include="SubGridCellLatestPassDataWrapperTests.cs" />
@@ -162,6 +163,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -17,7 +18,9 @@ using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
+using VSS.VisionLink.Raptor.GridFabric.Events;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.GridFabric.Queues;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.Servers.Client;
 using VSS.VisionLink.Raptor.Services.Designs;
@@ -38,6 +41,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         //        RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
         RaptorTileRenderingServer tileRenderServer = null;
         RaptorSimpleVolumesServer simpleVolumesServer = null;
+
+        SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged = null;
 
         /// <summary>
         /// Convert the Project ID in the text box into a number. It if is invalid return project ID 2 as a default
@@ -60,6 +65,12 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
             // SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
             SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
+
+            if (siteModel == null)
+            {
+                MessageBox.Show($"Site model {ID()} is unavailable");
+                return null;
+            }
 
             try
             {
@@ -101,9 +112,16 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         {
             SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
 
-            long[] SurveyedSurfaceExclusionList = (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new long[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
+            if (siteModel != null)
+            {
+                long[] SurveyedSurfaceExclusionList = (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new long[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
 
-            return ProjectExtents.ProductionDataAndSurveyedSurfaces(ID(), SurveyedSurfaceExclusionList);
+                return ProjectExtents.ProductionDataAndSurveyedSurfaces(ID(), SurveyedSurfaceExclusionList);
+            }
+            else
+            {
+                return BoundingWorldExtent3D.Null();
+            }
         }
 
         public Form1()
@@ -116,6 +134,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             tileRenderServer = RaptorTileRenderingServer.NewInstance();
             simpleVolumesServer = RaptorSimpleVolumesServer.NewInstance();
+
+            // Instantiate a site model changed listener to catch changes to site model attributes
+            SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -378,7 +399,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 return;
             }
 
-            //            writeCacheMetrics(writer, cache.GetMetrics());
+            // writeCacheMetrics(writer, cache.GetMetrics());
 
             var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>
             {
@@ -390,7 +411,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             foreach (ICacheEntry<SubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
             {
                 writer.WriteLine(String.Format("{0}:{1}", count++, cacheEntry.Key.ToString()));
-//                writeCacheMetrics(writer, cache.GetMetrics());
+                // writeCacheMetrics(writer, cache.GetMetrics());
             }
 
             writer.WriteLine();
@@ -438,9 +459,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
 //                        retriveAllItems(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
 
-                        writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
+                        writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
                         writeKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
-                        writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<String, Byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
+                        writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
                         writeKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
                     }
                 }
@@ -475,7 +496,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 return $"Cache {title} is null";
             }
 
-            var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>
+            var scanQuery = new ScanQuery<Object, byte[]>
             {
                 PageSize = 1 // Restrict the number of keys requested in each page to reduce memory consumption
             };
@@ -495,7 +516,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 if (largestBytes < cacheEntry.Value.Length) largestBytes = cacheEntry.Value.Length;
             }
 
-            if (count == 0) return "No elements in cache {title}";
+            if (count == 0) return $"No elements in cache {title}";
 
             return $"Cache {title}: {count} entries totalling {sumBytes} bytes. Average: {sumBytes / count} bytes, smallest: {smallestBytes} bytes, largest: {largestBytes} bytes";
         }
@@ -609,6 +630,52 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             }
 
             MessageBox.Show($"Simple Volume Response:\n{volume}");
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            // Make a test queue object and see how it goes
+            TestQueueHolder queue = new TestQueueHolder();
+
+            IEnumerable<TestQueueItem> result = queue.Query(DateTime.Now);
+
+            if (result?.Count() > 0)
+            {
+                MessageBox.Show($"Items: {result.Aggregate("", (accumulator, item) => accumulator + item.Value + " ")}");
+            }
+            else
+            {
+                MessageBox.Show("Query result is null or empty");
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            // Test adding a stream for "5-ProductionDataModel.XML" to the mutable non-spatial cache 
+
+            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
+
+            ICache<string, byte[]> cache = ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
+
+            byte[] bytes = new byte[100];
+
+            string cacheKey = "50-ProductionDataModel.XML";
+
+            try
+            {
+                cache.Put(cacheKey, bytes);
+
+                byte[] readBytes = cache.Get(cacheKey);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex}");
+            }
         }
     }
 }

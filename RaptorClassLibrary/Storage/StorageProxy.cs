@@ -22,12 +22,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
         public static IStorageProxy RaptorInstance()
         {
-            if (raptorInstance == null)
-            {
-                raptorInstance = StorageProxyFactory.Storage(RaptorGrids.RaptorGridName());
-            }
-
-            return raptorInstance;
+            return raptorInstance == null ? StorageProxyFactory.Storage(RaptorGrids.RaptorGridName()) : raptorInstance;
         }
 
         public static IStorageProxy SpatialInstance(uint spatialDivision)
