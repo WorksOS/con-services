@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core;
+using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Eviction;
@@ -14,6 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.GridFabric.Queues;
 using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.VisionLink.Raptor.Servers.Client
@@ -26,7 +28,19 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public RaptorClientServer(string role) : base()
+        /// <summary>
+        /// Constructor that creates a new server instance with a single role
+        /// </summary>
+        /// <param name="role"></param>
+        public RaptorClientServer(string role) : this(new string[] { role })
+        {
+        }
+
+        /// <summary>
+        /// Constructor that creates a new server instance with a set of roles
+        /// </summary>
+        /// <param name="roles"></param>
+        public RaptorClientServer(string [] roles) : base()
         {
             if (raptorGrid == null)
             {
@@ -35,10 +49,12 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                 // If there was no connection obtained, attempt to create a new instance
                 if (raptorGrid == null)
-                {                    
+                {
+                    string roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
+
                     RaptorNodeID = Guid.NewGuid().ToString();
 
-                    Log.InfoFormat("Creating new Ignite node with Role = {0} & RaptorNodeID = {1}", role, RaptorNodeID);
+                    Log.InfoFormat("Creating new Ignite node with Roles = {0} & RaptorNodeID = {1}", roleNames, RaptorNodeID);
 
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
@@ -52,7 +68,6 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                         UserAttributes = new Dictionary<string, object>()
                         {
-                            { ServerRoles.ROLE_ATTRIBUTE_NAME, role },
                             { "RaptorNodeID", RaptorNodeID }
                         },
 
@@ -81,8 +96,15 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                         // Set an Ignite metrics heartbeat of 10 seconds 
                         MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
 
-                        PublicThreadPoolSize = 50
+                        PublicThreadPoolSize = 50,
+
+                        BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem))
                     };
+
+                    foreach (string roleName in roles)
+                    {
+                        cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{roleName}", "Yes");
+                    }
 
                     try
                     {
@@ -90,11 +112,11 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                     }
                     catch (Exception e)
                     {
-                        Log.InfoFormat("Creation of new Ignite node with Role = {0} & RaptorNodeID = {1} failed with exception {2}", role, RaptorNodeID, e);
+                        Log.InfoFormat("Creation of new Ignite node with Role = {0} & RaptorNodeID = {1} failed with exception {2}", roleNames, RaptorNodeID, e);
                     }
                     finally
                     {
-                        Log.InfoFormat("Completed creation of new Ignite node with Role = {0} & RaptorNodeID = {1}", role, RaptorNodeID);
+                        Log.InfoFormat("Completed creation of new Ignite node with Role = {0} & RaptorNodeID = {1}", roleNames, RaptorNodeID);
                     }
                 }
             }

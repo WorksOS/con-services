@@ -101,9 +101,16 @@
     <Compile Include="Executors\ProjectExtents.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFuncAggregative.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFuncProgressive.cs" />
+    <Compile Include="GridFabric\Events\SiteModelAttributesChangedEvent.cs" />
+    <Compile Include="GridFabric\Events\SiteModelAttributesChangedEventListener.cs" />
+    <Compile Include="GridFabric\Events\SiteModelAttributesChangedEventSender.cs" />
+    <Compile Include="GridFabric\NodeFilters\RoleBasedClientNodeFilter.cs" />
+    <Compile Include="GridFabric\NodeFilters\RoleBasedServerNodeFilter.cs" />
+    <Compile Include="GridFabric\NodeFilters\TAGProcessorRoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\NodeFilters\ASNodeRoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\NodeFilters\PSNodeRoleBasedNodeFilter.cs" />
     <Compile Include="GridFabric\NodeFilters\RoleBasedNodeFilter.cs" />
+    <Compile Include="GridFabric\Queues\TestQueue.cs" />
     <Compile Include="GridFabric\Requests\GenericASNodeRequest.cs" />
     <Compile Include="GridFabric\Requests\GenericPSNodeBroadcastRequest.cs" />
     <Compile Include="GridFabric\Requests\Interfaces\IResponseAggregateWith.cs" />
@@ -329,6 +336,8 @@
     <Compile Include="TAGFiles\Classes\Integrator\AggregatedDataIntegratorWorker.cs" />
     <Compile Include="TAGFiles\Classes\Integrator\EventIntegrator.cs" />
     <Compile Include="TAGFiles\Classes\Integrator\SubGridIntegrator.cs" />
+    <Compile Include="TAGFiles\Classes\Queues\SegmentRetirementQueueItem.cs" />
+    <Compile Include="TAGFiles\Classes\Queues\SegmentRetirementQueue.cs" />
     <Compile Include="TAGFiles\Classes\ValueMatcher\AccumulatedAttributes.cs" />
     <Compile Include="TAGFiles\Classes\States\TAGProcessorPreScanACSState.cs" />
     <Compile Include="TAGFiles\Classes\States\TAGProcessorPreScanState.cs" />

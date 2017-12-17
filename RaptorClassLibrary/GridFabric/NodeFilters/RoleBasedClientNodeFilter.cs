@@ -11,17 +11,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.NodeFilters
     /// <summary>
     /// Defines a node filter that filters nodes based on a defined role attribute
     /// </summary>
-    public abstract class RoleBasedNodeFilter : IClusterNodeFilter
+    public class RoleBasedClientNodeFilter : RoleBasedNodeFilter
     {
-        /// <summary>
-        /// The node role
-        /// </summary>
-        protected string Role { get; set; } = "";
-
         /// <summary>
         ///  Default no-arg constructor
         /// </summary>
-        public RoleBasedNodeFilter()
+        public RoleBasedClientNodeFilter()
         {
         }
 
@@ -29,9 +24,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.NodeFilters
         /// Constructor accepting the name of the role to filter nodes with
         /// </summary>
         /// <param name="role"></param>
-        public RoleBasedNodeFilter(string role) : this()
+        public RoleBasedClientNodeFilter(string role) : base(role)
         {
-            Role = role;
         }
 
         /// <summary>
@@ -39,10 +33,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.NodeFilters
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public virtual bool Invoke(IClusterNode node)
+        public override bool Invoke(IClusterNode node)
         {
-            // No implementation in base class, reject the node
-            return node.GetAttributes().Contains(new KeyValuePair<string, object>($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "Yes")); ;
+            return node.IsClient && base.Invoke(node);
         }
     }
 }

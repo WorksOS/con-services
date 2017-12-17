@@ -22,6 +22,8 @@ using VSS.VisionLink.Raptor.Servers.Client;
 using System.Threading;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Configuration;
+using VSS.VisionLink.Raptor.GridFabric.Queues;
+using Apache.Ignite.Core.Binary;
 
 namespace VSS.VisionLink.Raptor.Servers.Compute
 {
@@ -83,7 +85,9 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             // Set an Ignite metrics heartbeat of 10 seconds 
             cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10);
 
-            cfg.PublicThreadPoolSize = 50;            
+            cfg.PublicThreadPoolSize = 50;
+
+            cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
         }
 
         public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
+using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
@@ -54,9 +55,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             // ... and send it to the message topic in the compute func
             try
             {
-                //// Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
+                // Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
                 //                localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
-                //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>(ServerRoles.ROLE_ATTRIBUTE_NAME),
+                //                rmtMsg.ClusterGroup.GetNodes().Where(x => x.GetAttributes().Where(a => a.Key.StartsWith(ServerRoles.ROLE_ATTRIBUTE_NAME)).Count() > 0).Aggregate("|", (s1, s2) => s1 + s2 + "|"),
                 //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("RaptorNodeID"));
                 byte[] bytes = new byte[MS.Position];
                 MS.Position = 0;

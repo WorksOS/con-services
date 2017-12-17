@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.NodeFilters
     /// <summary>
     /// Defines a node filter that filters nodes based on membership of the "PSNode" role
     /// </summary>
-    public class ASNodeRoleBasedNodeFilter : RoleBasedNodeFilter
+    public class ASNodeRoleBasedNodeFilter : RoleBasedClientNodeFilter
     {
         /// <summary>
         /// Default no-arg constructor that instantiate the appropriate role

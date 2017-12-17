@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         {
             base.ConfigureRaptorGrid(cfg);
 
-            cfg.UserAttributes.Add(ServerRoles.ROLE_ATTRIBUTE_NAME, ServerRoles.PSNODE);
+            cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.PSNODE}", "Yes");
             cfg.UserAttributes.Add("SpatialDivision", RaptorServerConfig.Instance().SpatialSubdivisionDescriptor);
 
 //            (cfg.DiscoverySpi as TcpDiscoverySpi).LocalPort = 47500 + (int)RaptorServerConfig.Instance().SpatialSubdivisionDescriptor;

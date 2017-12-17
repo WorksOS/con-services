@@ -27,8 +27,13 @@ namespace VSS.VisionLink.Raptor.Servers
         public static string ASNODE = "ASNode";
 
         /// <summary>
-        /// A server responsible for processign TAG files into the production data models
+        /// A server responsible for processing TAG files into the production data models
         /// </summary>
         public static string TAG_PROCESING_NODE = "TagProc";
+
+        /// <summary>
+        /// A server responsible for rendering tiles from production data
+        /// </summary>
+        public static string TILE_RENDERING_NODE = "TileRendering";
     }
 }

@@ -54,7 +54,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
 
                 Log.InfoFormat("RaptorSpatialAffinityFunction: Assigning partitions from topology");
 
-                List<IClusterNode> PSNodes = context.CurrentTopologySnapshot.Where(x => { return x.TryGetAttribute(ServerRoles.ROLE_ATTRIBUTE_NAME, out string role) && role == ServerRoles.PSNODE; }).ToList();
+                List<IClusterNode> PSNodes = context.CurrentTopologySnapshot.Where(x => x.TryGetAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.PSNODE}", out string Yes) && Yes == "Yes").ToList();
 
                 if (PSNodes.Count < RaptorConfig.numSpatialProcessingDivisions)
                 {
@@ -67,7 +67,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
                 Log.Info("Assigning Raptor spatial partitions");
                 for (int divisionIndex = 0; divisionIndex < RaptorConfig.numSpatialProcessingDivisions; divisionIndex++)
                 {
-                    List<IClusterNode> spatialDivisionNodes = PSNodes.Where(x => { return x.TryGetAttribute("SpatialDivision", out int division) && division == divisionIndex; }).ToList();
+                    List<IClusterNode> spatialDivisionNodes = PSNodes.Where(x => x.TryGetAttribute("SpatialDivision", out int division) && division == divisionIndex).ToList();
 
                     foreach (IClusterNode node in spatialDivisionNodes)
                     {

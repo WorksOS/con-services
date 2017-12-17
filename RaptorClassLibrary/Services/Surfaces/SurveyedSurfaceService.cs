@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <summary>
         /// Cache storing sitemodel instances
         /// </summary>
-        private ICache<String, Byte[]> mutableNonSpatialCache;
+        private ICache<string, byte[]> mutableNonSpatialCache;
 
         /// <summary>
         /// Service name.
@@ -156,7 +156,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
                 _svcName = context.Name;
             }
 
-            mutableNonSpatialCache = _Ignite.GetCache<String, Byte[]>(CacheName);
+            mutableNonSpatialCache = _Ignite.GetCache<string, byte[]>(CacheName);
         }
 
         /// <summary>

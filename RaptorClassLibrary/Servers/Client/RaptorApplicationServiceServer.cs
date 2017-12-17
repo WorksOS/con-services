@@ -13,9 +13,17 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     /// </summary>
     public class RaptorApplicationServiceServer : RaptorClientServer
     {
-        public RaptorApplicationServiceServer() : base(ServerRoles.ASNODE)
+        public static string DEFAULT_ROLE = ServerRoles.ASNODE;
+
+        public RaptorApplicationServiceServer() : base(new string[] { DEFAULT_ROLE })
         {
 
         }
+
+        public RaptorApplicationServiceServer(string [] roles) : base(roles)
+        {
+
+        }
+
     }
 }

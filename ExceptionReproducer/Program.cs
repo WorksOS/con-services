@@ -29,7 +29,7 @@ namespace ExceptionReproducer
             cfg.UserAttributes = new Dictionary<String, object>
             {
                 { "Owner", "Raptor" },
-                { ServerRoles.ROLE_ATTRIBUTE_NAME, ServerRoles.PSNODE },
+                { $"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.PSNODE}", "Yes" },
                 { "Division", GetDescriptor() }
             };
             cfg.DataStorageConfiguration = new DataStorageConfiguration()
