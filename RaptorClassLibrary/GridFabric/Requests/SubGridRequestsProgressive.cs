@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
+using Apache.Ignite.Core.Messaging;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// Requests subgrids from the cache compute cluster allowing in-progress updates of results to be sent back to
     /// the calling context via a subgrid listener for processing.
     /// </summary>
-    public class SubGridRequestsProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>
+    public class SubGridRequestsProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
@@ -29,6 +30,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// The listener to which the processing mengine may send in-progress updates during processing of the overall subgrids request
         /// </summary>
         public SubGridListener Listener { get; set; } = null;
+
+        /// <summary>
+        /// The MsgGroup into which the listener has been added
+        /// </summary>
+        private IMessaging MsgGroup { get; set; } = null;
 
         /// <summary>
         /// Default no-arg constructor thje delgates construction to the base class
@@ -47,12 +53,30 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             {
                 Listener = new SubGridListener(Task);
 
-                // Create a messaging group the cluster can use to send messages back to and establish a local listener
-                var msgGroup = _Compute.ClusterGroup.GetMessaging();
-                msgGroup.LocalListen(Listener, arg.MessageTopic);
+                StartListening();
             }
         }
 
+        public void StartListening()
+        {
+            if (MsgGroup == null)
+            {
+                // Create a messaging group the cluster can use to send messages back to and establish a local listener
+                MsgGroup = _Compute.ClusterGroup.GetMessaging();
+                MsgGroup.LocalListen(Listener, arg.MessageTopic);
+            }
+        }
+
+        public void StopListening()
+        {
+            if (MsgGroup != null)
+            {
+                // Unregister the listener from the message group
+                MsgGroup.StopLocalListen(Listener);
+            }
+
+            MsgGroup = null;
+        }
         /// <summary>
         /// Overrides the base Execut() semantics to add a listener available for in-progress updates of information
         /// from the processing engine.
@@ -101,5 +125,40 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             //return result;
             return taskResult.Result;
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    StopListening();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~SubGridRequestsProgressive() {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
