@@ -20,8 +20,8 @@ namespace VSS.VisionLink.Raptor.Storage
 
         protected static ICache<SubGridSpatialAffinityKey, byte[]> mutableSpatialCache = null;
         protected static ICache<SubGridSpatialAffinityKey, byte[]> immutableSpatialCache = null;
-        protected static ICache<String, byte[]> mutableNonSpatialCache = null;
-        protected static ICache<String, byte[]> immutableNonSpatialCache = null;
+        protected static ICache<string, byte[]> mutableNonSpatialCache = null;
+        protected static ICache<string, byte[]> immutableNonSpatialCache = null;
 
         protected static Object LockObj = new Object();
 
@@ -97,7 +97,8 @@ namespace VSS.VisionLink.Raptor.Storage
             MemoryStream immutableStream = null;
             using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)))
             {
-                using (MemoryStream mutableStream = MemoryStreamCompression.Decompress(MS))
+                //using (MemoryStream mutableStream = MemoryStreamCompression.Decompress(MS))
+                MemoryStream mutableStream = MemoryStreamCompression.Decompress(MS);
                 {
                     // If successfully read, convert from the mutable to the immutable form and store it into the immutable cache
                     if (mutableStream != null)
@@ -117,6 +118,11 @@ namespace VSS.VisionLink.Raptor.Storage
 
                             immutableStream = null;
                         }
+                    }
+
+                    if (mutableStream != immutableStream)
+                    {
+                        mutableStream.Dispose();
                     }
                 }
             }
