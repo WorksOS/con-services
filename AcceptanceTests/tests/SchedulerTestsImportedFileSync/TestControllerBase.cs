@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using Dapper;
 using Hangfire.MySql;
 using Microsoft.Extensions.DependencyInjection;
@@ -138,9 +139,9 @@ namespace SchedulerTestsImportedFileSync
       dbConnection.Close();
       return insertedCount;
     }
-    protected int WriteNhOpDbImportedFileAndHistory(string projectDbConnectionString, ImportedFileNhOp importedFile)
+    protected int WriteNhOpDbImportedFileAndHistory(string nhOpDbConnectionString, ImportedFileNhOp importedFile)
     {
-      var dbConnection = new SqlConnection(projectDbConnectionString);
+      var dbConnection = new SqlConnection(nhOpDbConnectionString);
       dbConnection.Open();
 
       int insertedCount = 0;
@@ -170,9 +171,9 @@ namespace SchedulerTestsImportedFileSync
       return insertedCount;
     }
 
-    protected int WriteNhOpDbCustomerAndProject(string projectDbConnectionString, ImportedFileNhOp importedFile)
+    protected int WriteNhOpDbCustomerAndProject(string nhOpDbConnectionString, ImportedFileNhOp importedFile)
     {
-      var dbConnection = new SqlConnection(projectDbConnectionString);
+      var dbConnection = new SqlConnection(nhOpDbConnectionString);
       dbConnection.Open();
 
       int insertedCount = 0;
@@ -201,6 +202,23 @@ namespace SchedulerTestsImportedFileSync
 
       dbConnection.Close();
       return insertedCount;
+    }
+
+    protected bool NhOpDbCustomerAndProjectExists(string nhOpDbConnectionString, long legacyCustomerId, long legacyProjectId)
+    {
+      var dbConnection = new SqlConnection(nhOpDbConnectionString);
+      dbConnection.Open();
+
+      var customerId = dbConnection.QuerySingle<long>(
+        @"SELECT ID FROM Customer WHERE ID = @legacyCustomerId",
+        new { legacyCustomerId });
+
+      var projectId = dbConnection.QuerySingle<long>(
+        @"SELECT ID FROM Project WHERE ID = @legacyProjectId",
+        new { legacyProjectId });
+
+      dbConnection.Close();
+      return customerId > 0 && projectId > 0;
     }
   }
 }

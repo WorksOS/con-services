@@ -203,7 +203,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       }
       else
       {
-        await DownloadFileAndCallProjectWebApi(projectEvent).ConfigureAwait(false);
+        await DownloadFileAndCallProjectWebApi(projectEvent, true).ConfigureAwait(false);
       }
 
       NotifyNewRelic(projectEvent, startUtc, "File created in NhOp, now created in Project.");
@@ -268,7 +268,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       }
       else
       {
-        await DownloadFileAndCallProjectWebApi(gotMatchingProject).ConfigureAwait(false);
+        await DownloadFileAndCallProjectWebApi(gotMatchingProject, false).ConfigureAwait(false);
       }
 
       NotifyNewRelic(gotMatchingProject, startUtc, "File updated in NhOp, now updated in Project.");

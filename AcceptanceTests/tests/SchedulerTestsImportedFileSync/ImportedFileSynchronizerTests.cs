@@ -20,6 +20,11 @@ namespace SchedulerTestsImportedFileSync
     private string _projectDbConnectionString;
     private string _nhOpDbConnectionString;
 
+    private long _fixedLegacyCustomerId = 99999996;
+    private long _fixedLegacyProjectId = 1001158;
+    private string _fixedCustomerUid = Guid.NewGuid().ToString();
+    private string _fixedProjectUid = "ff91dd40-1569-4765-a2bc-014321f76ace";
+
     [TestInitialize]
     public void Init()
     {
@@ -30,10 +35,26 @@ namespace SchedulerTestsImportedFileSync
       _nhOpDbConnectionString = ConnectionUtils.GetConnectionStringMsSql(ConfigStore, Log, "NH_OP");
 
       Assert.IsNotNull(_log, "Log is null");
+
+      //For file types other than SS need fixed customer/project so can donwload from TCC
+      if (!NhOpDbCustomerAndProjectExists(_nhOpDbConnectionString, _fixedLegacyCustomerId, _fixedLegacyProjectId))
+      {
+        var importedFileNhOp = new ImportedFileNhOp
+        {
+          CustomerUid = _fixedCustomerUid,
+          ProjectUid = _fixedProjectUid,
+          LegacyCustomerId = _fixedLegacyCustomerId,
+          LegacyProjectId = _fixedLegacyProjectId,
+          Name = "My test customer"
+        };
+        WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFileNhOp);
+        var importedFileProject = AutoMapperUtility.Automapper.Map<ImportedFileProject>(importedFileNhOp);
+        WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFileProject);
+      }
     }
 
     [TestMethod]
-    public async Task ImportedFileSynchronizer_CreatedInProject()
+    public async Task ImpFileSyncSS_CreatedInProject()
     {
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
 
@@ -112,7 +133,7 @@ namespace SchedulerTestsImportedFileSync
     }
 
     [TestMethod]
-    public async Task ImportedFileSynchronizer_CreatedInProject_DeletedFromProject()
+    public async Task ImpFileSyncSS_CreatedInProject_DeletedFromProject()
     {
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
 
@@ -194,7 +215,7 @@ namespace SchedulerTestsImportedFileSync
     }
 
     [TestMethod]
-    public async Task ImportedFileSynchronizer_CreatedInProject_UpdatedInProject()
+    public async Task ImpFileSyncSS_CreatedInProject_UpdatedInProject()
     {
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
 
@@ -259,7 +280,7 @@ namespace SchedulerTestsImportedFileSync
     }
 
     [TestMethod]
-    public async System.Threading.Tasks.Task ImportedFileSynchronizer_CreatedInNhOp()
+    public async Task ImpFileSyncSS_CreatedInNhOp()
     {
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
 
@@ -333,7 +354,7 @@ namespace SchedulerTestsImportedFileSync
     }
 
     [TestMethod]
-    public async Task ImportedFileSynchronizer_CreatedInNhOp_DeletedFromNhOp()
+    public async Task ImpFileSyncSS_CreatedInNhOp_DeletedFromNhOp()
     {
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
 
@@ -402,7 +423,7 @@ namespace SchedulerTestsImportedFileSync
     }
 
     [TestMethod]
-    public async Task ImportedFileSynchronizer_CreatedInNhOp_UpdatedInNhOp()
+    public async Task ImpFileSyncSS_CreatedInNhOp_UpdatedInNhOp()
     {
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
 
@@ -453,5 +474,39 @@ namespace SchedulerTestsImportedFileSync
       Assert.AreEqual(importedFileNhOp.FileCreatedUtc, importFileProjectResponse.FileCreatedUtc, "should have the updated FilecreatedUtc in project");
       Assert.AreEqual(importedFileNhOp.FileUpdatedUtc, importFileProjectResponse.FileUpdatedUtc, "should have the updated FileUpdatedUtc in project");
     }
+
+    [TestMethod]
+    public async Task ImpFileSyncDxf_CreatedInNhOp()
+    {
+      var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
+
+      //The legacy customer and project IDs and the file must exist in TCC so we can download it.
+      var importedFileNhOp = new ImportedFileNhOp()
+      {
+        LegacyProjectId = _fixedLegacyProjectId,
+        ProjectUid = _fixedProjectUid,
+        LegacyCustomerId = _fixedLegacyCustomerId,
+        CustomerUid = _fixedCustomerUid,
+        ImportedFileType = ImportedFileType.Linework,
+        Name = "CERA.bg.dxf",
+        SurveyedUtc = null,
+        FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
+        FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
+        ImportedBy = "someoneElse@gmail.com",
+        LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
+      };
+
+      var importedFileProject = AutoMapperUtility.Automapper.Map<ImportedFileProject>(importedFileNhOp);
+
+      var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
+      Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
+
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
+      await sync.SyncTables();
+
+      //Since we mock the project web api and the mock does nothing, the imported file has not been saved in the Project database.
+      //Therefore we cannot check anything here. Above code just exercises the download and imported file proxy.
+    }
+
   }
 }

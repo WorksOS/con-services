@@ -215,7 +215,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     /// </summary>
     /// <param name="projectEvent"></param>
     /// <returns></returns>
-    protected async Task DownloadFileAndCallProjectWebApi(ImportedFileProject projectEvent)
+    protected async Task DownloadFileAndCallProjectWebApi(ImportedFileProject projectEvent, bool creating)
     {
       //TODO: If performance is a problem then may need to add 'Copy' command to TCCFileAccess 
       //and use it here to directly copy file from old to new structure in TCC.
@@ -232,10 +232,22 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         {     
           Log.LogInformation($"ImportedFileSynchroniser: Calling project web api {FullTemporaryFileName(fileDescriptor)}");
 
-          await ImpFileProxy.CreateImportedFile(new FlowFile {flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path)},
-            new Guid(projectEvent.ProjectUid), projectEvent.ImportedFileType,
-            projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
-            customHeaders).ConfigureAwait(false);
+          if (creating)
+          {
+            await ImpFileProxy.CreateImportedFile(
+              new FlowFile {flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path)},
+              new Guid(projectEvent.ProjectUid), projectEvent.ImportedFileType,
+              projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType,
+              projectEvent.SurveyedUtc,
+              customHeaders).ConfigureAwait(false);
+          }
+          else
+          {
+            await ImpFileProxy.UpdateImportedFile(new FlowFile { flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path) },
+              new Guid(projectEvent.ProjectUid), projectEvent.ImportedFileType,
+              projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
+              customHeaders).ConfigureAwait(false);
+          }
         }
         catch (Exception e)
         {
@@ -283,6 +295,21 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             try
             {
               Log.LogInformation($"ImportedFileSynchroniser: Saving to temporary file {fullFileName}");
+
+              var path = FullTemporaryPath(fileDescriptor.path);
+              DirectoryInfo dirInfo = new DirectoryInfo(path);
+              if (!dirInfo.Exists)
+              {
+                try
+                {
+                  dirInfo.Create();
+                }
+                catch (Exception e)
+                {
+                  Log.LogWarning($"Failed to create temporary download folder {path}: {e.Message}");
+                  throw;
+                }
+              }
 
               using (Stream outStream = File.Create($"{FullTemporaryFileName(fileDescriptor)}"))
               {
