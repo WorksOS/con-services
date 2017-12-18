@@ -10,6 +10,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using Hangfire.Storage;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -41,7 +43,12 @@ namespace SchedulerTests
       serviceCollection.AddLogging();
       serviceCollection
         .AddSingleton(loggerFactory)
-        .AddSingleton<IConfigurationStore, GenericConfiguration>();
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<IOptions<MemoryCacheOptions>>(new MemoryCacheOptions())
+        .AddTransient<IMemoryCache, MemoryCache>()
+        .AddTransient<IRaptorProxy, RaptorProxy>()
+        .AddTransient<ISchedulerProxy, SchedulerProxy>();
+
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -59,6 +66,8 @@ namespace SchedulerTests
 
       Assert.IsNotNull(ServiceProvider.GetService<IConfigurationStore>());
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
+      Assert.IsNotNull(ServiceProvider.GetService<IRaptorProxy>());
+      Assert.IsNotNull(ServiceProvider.GetService<ISchedulerProxy>());
     }
 
 
