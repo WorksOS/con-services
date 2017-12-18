@@ -18,6 +18,7 @@ using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApi.Models.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
@@ -114,7 +115,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/notification/addfile")]
     [HttpGet]
-    public async Task<ContractExecutionResult> GetAddFile(
+    public async Task<Models.Notification.Models.AddFileResult> GetAddFile(
       [FromQuery] Guid projectUid,
       [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
@@ -138,7 +139,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
-      var result = await executor.ProcessAsync(request);
+      var result = await executor.ProcessAsync(request) as Models.Notification.Models.AddFileResult;
       //Do we need to validate fileUid ?
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
       cacheBuilder.ClearMemoryCache(projectUid);
@@ -229,6 +230,29 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Update files notification successful");
     }
 
+    /// <summary>
+    /// Notifies Raptor that a file has been CRUD to a project via CGen
+    ///      This is called by the SurveyedSurface sync during Lift&Shift/Beta period.
+    ///      When a file is added via CGen flexGateway, it will tell raptor.
+    ///        However the 3dp UI needs to know about the change, so needs to refresh its caches.
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="fileUid">File UID</param>
+    /// <returns>A code and message to indicate the result</returns>
+    [ProjectUidVerifier]
+    [Route("api/v2/notification/importedfilechange")]
+    [HttpGet]
+    public async Task<ContractExecutionResult> GetNotifyImportedFileChange(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid fileUid)
+    {
+      log.LogDebug("GetNotifyImportedFileChange: " + Request.QueryString);
+      var customHeaders = Request.Headers.GetCustomHeaders();
+      await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
+      cacheBuilder.ClearMemoryCache(projectUid);
+      log.LogInformation("GetNotifyImportedFileChange returned");
+      return new ContractExecutionResult();
+    }
 
     /// <summary>
     /// Notifies Raptor that a filterUid has been updated/deleted so clear it from the queue
@@ -247,6 +271,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       log.LogInformation("GetNotifyFilterChange returned");
       return new ContractExecutionResult();
     }
+
     /// <summary>
     /// Clears the imported files cache in the proxy so that linework tile requests are refreshed appropriately
     /// </summary>

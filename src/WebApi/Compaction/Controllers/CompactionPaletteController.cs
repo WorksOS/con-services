@@ -12,9 +12,9 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
-using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using ColorValue = VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes.ColorValue;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting color palettes for displaying Raptor production data
   /// </summary>
 
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
 
   public class CompactionPaletteController : BaseController
   {

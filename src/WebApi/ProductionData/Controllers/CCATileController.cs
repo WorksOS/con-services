@@ -1,9 +1,7 @@
-﻿using ASNodeDecls;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -22,9 +20,8 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
-using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using Filter = VSS.Productivity3D.Common.Models.Filter;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
@@ -161,18 +158,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
     private FileResult GetCCADataTile(TileRequest request)
     {
-      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient).Process(request) as TileResult;
-
-      if (tileResult == null)
-      {
-        //Return en empty tile
-        using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
-        {
-          tileResult = TileResult.CreateTileResult(bitmap.BitmapToByteArray(), TASNodeErrorStatus.asneOK);
-        }
-      }
+      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(this.logger, this.raptorClient).Process(request) as TileResult
+        ?? TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
 
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
     private TileRequest CreateAndValidateRequest(
@@ -188,9 +178,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       int? liftId,
       Guid? geofenceUid)
     {
-      if (liftId.HasValue)
-        if (liftId.Value == 0)
-          liftId = null;
+      if (liftId == 0)
+      {
+        liftId = null;
+      }
 
       var points = bbox.Split(',');
 
@@ -205,7 +196,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       if (geofenceUid.HasValue)
       {
         //Todo this ahould be async
-        var geometryWKT = geofenceProxy.GetGeofenceBoundary(geofenceUid.ToString(), this.Request.Headers.GetCustomHeaders().ToString()).Result;
+        var geometryWKT = geofenceProxy.GetGeofenceBoundary((User as RaptorPrincipal).CustomerUid,  geofenceUid.ToString(), RequestUtils.GetCustomHeaders(Request.Headers)).Result;
 
         if (string.IsNullOrEmpty(geometryWKT))
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,

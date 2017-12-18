@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents color palettes result for a palettes request

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Net;
-using ASNode.Volumes.RPC;
+﻿using ASNode.Volumes.RPC;
 using ASNodeDecls;
 using BoundingExtents;
 using SVOICOptionsDecls;
 using SVOICVolumeCalculationsDecls;
+using System;
+using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
@@ -12,7 +12,6 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
@@ -54,12 +53,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       var baseFilter = RaptorConverters.ConvertFilter(request.BaseFilterId, request.BaseFilter, request.projectId);
       var topFilter = RaptorConverters.ConvertFilter(request.TopFilterId, request.TopFilter, request.projectId);
+      var baseDesignDescriptor = RaptorConverters.DesignDescriptor(request.BaseDesignDescriptor);
+      var topDesignDescriptor = RaptorConverters.DesignDescriptor(request.TopDesignDescriptor);
 
       TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.VolumeCalcType);
 
       if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
       {
-           RaptorConverters.AdjustFilterToFilter(baseFilter, topFilter);
+        RaptorConverters.AdjustFilterToFilter(baseFilter, topFilter);
       }
 
       RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref baseFilter, ref topFilter, request.VolumeCalcType);
@@ -73,9 +74,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             TASNodeCancellationDescriptorType.cdtVolumeSummary),
           volType,
           baseFilter,
-          RaptorConverters.DesignDescriptor(request.BaseDesignDescriptor),
+          baseDesignDescriptor,
           topFilter,
-          RaptorConverters.DesignDescriptor(request.TopDesignDescriptor),
+          topDesignDescriptor,
           RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
             request.AdditionalSpatialFilter, request.projectId), (double)request.CutTolerance,
           (double)request.FillTolerance,

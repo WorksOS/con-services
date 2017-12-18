@@ -13,7 +13,7 @@ And restrictOutput "<RestrictOutput>"
 And rawDataOutput "<RawDataOutput>"
 And fileName is "<FileName>"	
 When I request an Export Report Machine Passes
-Then the report result should match the "<ResultName>" from the repository
+Then the report result csv should match the "<ResultName>" from the repository
 Examples: 
 | RequestName                   | ProjectUID                           | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ResultName                    |
 | NELastPassUnrestrictedNotRaw  | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | 0         | 0          | false          | false         | Test     | NELastPassUnrestrictedNotRaw  |
@@ -45,7 +45,8 @@ And restrictOutput "<RestrictOutput>"
 And rawDataOutput "<RawDataOutput>"
 And fileName is "<FileName>"	
 When I request an Export Report Machine Passes
-Then the report result should match the "<ResultName>" from the repository
+#Then the report result should match the "<ResultName>" from the repository
+Then the report result csv should match the "<ResultName>" from the repository
 Examples:
 | RequestName | ProjectUID                           | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ResultName  |
 |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 0         | 0          | false          | false         | Test     | NoDateRange |
@@ -73,7 +74,8 @@ And restrictOutput "<RestrictOutput>"
 And rawDataOutput "<RawDataOutput>"
 And fileName is "<FileName>"
 When I request an Export Report Machine Passes
-Then the report result should match the "<ResultName>" from the repository
+#Then the report result should match the "<ResultName>" from the repository
+Then the report result csv should match the "<ResultName>" from the repository
 Examples:
 | RequestName | ProjectUID                           | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ResultName          |
 |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | 1         | 1          | false          | false         | Test     | NELastPassFilterRaw |

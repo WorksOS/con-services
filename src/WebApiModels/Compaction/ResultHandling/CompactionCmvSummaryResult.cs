@@ -1,9 +1,10 @@
 ﻿using Newtonsoft.Json;
+using System;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by CMV Summary request for compaction
@@ -22,7 +23,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     private CompactionCmvSummaryResult()
     { }
 
-
     /// <summary>
     /// CmvSummaryResult create instance
     /// </summary>
@@ -31,7 +31,14 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// <returns>An instance of CompactionCmvSummaryResult</returns>
     public static CompactionCmvSummaryResult CreateCmvSummaryResult(CMVSummaryResult result, CMVSettings settings)
     {
-      var cmvResult = new CompactionCmvSummaryResult
+      const int noCmvData = 0;
+
+      if (Math.Abs(result.totalAreaCoveredSqMeters - noCmvData) < 0.001)
+      {
+        return new CompactionCmvSummaryResult { SummaryData = new CmvSummaryData { CmvTarget = new CmvTargetData() } };
+      }
+
+      return new CompactionCmvSummaryResult
       {
         SummaryData = new CmvSummaryData
         {
@@ -48,7 +55,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
           MaxCMVPercent = settings.maxCMVPercent
         }
       };
-      return cmvResult;
     }
 
     /// <summary>

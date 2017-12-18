@@ -72,7 +72,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
-      var volumeDesignDescriptor = RaptorConverters.DesignDescriptor(request.volumeDesignDescriptor);
       TWGS84Point startPt, endPt;
       bool positionsAreGrid;
       ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt,
@@ -378,7 +377,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       MemoryStream memoryStream;
 
       var filter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
-      var designDescriptor = RaptorConverters.DesignDescriptor(request.cutFillDesignDescriptor);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
@@ -408,7 +406,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
                   baseFilter,
                   topFilter,
                   liftBuildSettings,
-                  designDescriptor);
+                  volumeDesignDescriptor);
 
           memoryStream = raptorClient.GetSummaryVolumesAlignmentProfile(args);
         }
@@ -425,7 +423,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
               baseFilter,
               topFilter,
               liftBuildSettings,
-              designDescriptor);
+              volumeDesignDescriptor);
           memoryStream = raptorClient.GetSummaryVolumesProfile(args);
         }
         if (memoryStream != null)

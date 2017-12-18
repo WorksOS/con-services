@@ -122,66 +122,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <returns>Cache key</returns>
     private string ElevationCacheKey(long projectId, Filter filter)
     {
-      return
-        filter == null
-          ? ElevationCacheKey(projectId, null, null, null, null, null, null, null, null, null, null, null)
-          : ElevationCacheKey(projectId, filter.StartUtc, filter.EndUtc, filter.VibeStateOn,
-            filter.ElevationType, filter.LayerNumber, filter.OnMachineDesignId,
-            filter.ContributingMachines == null || filter.ContributingMachines.Count == 0
-              ? (long?)null
-              : filter.ContributingMachines[0].assetID,
-            //Can only filter by one machine at present
-            filter.ContributingMachines == null || filter.ContributingMachines.Count == 0
-              ? null
-              : filter.ContributingMachines[0].machineName,
-            filter.ContributingMachines == null || filter.ContributingMachines.Count == 0
-              ? (bool?)null
-              : filter.ContributingMachines[0].isJohnDoe,
-            filter.SurveyedSurfaceExclusionList,
-            filter.ForwardDirection);
-    }
-
-    /// <summary>
-    /// Gets the key for the elevation extents cache
-    /// </summary>
-    /// <returns>Cache key</returns>
-    /// <param name="projectId">Legacy project ID</param>
-    /// <param name="startUtc">Start UTC.</param>
-    /// <param name="endUtc">End UTC. </param>
-    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
-    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
-    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
-    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
-    /// <param name="layerNumber">The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
-    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
-    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
-    /// All three parameters must be specified to specify a machine. 
-    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
-    /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetID</param>
-    /// <param name="excludedSurveyedSurfaceIds">The legacy imported file IDs of surveyed surfaces to exclude</param>
-    /// <param name="machineDirectionForward">Indicates the direction in which the cell pass occurred.</param>
-    private string ElevationCacheKey(long projectId, DateTime? startUtc, DateTime? endUtc,
-      bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetId,
-      string machineName, bool? isJohnDoe, List<long> excludedSurveyedSurfaceIds, bool? machineDirectionForward)
-    {
-      var key =
-        $"{projectId},{startUtc},{endUtc},{vibeStateOn},{elevationType},{layerNumber},{onMachineDesignId},{assetId},{machineName},{isJohnDoe},{machineDirectionForward}";
-      if (excludedSurveyedSurfaceIds == null || excludedSurveyedSurfaceIds.Count == 0)
-      {
-        key += ",null";
-      }
-      else
-      {
-        foreach (long id in excludedSurveyedSurfaceIds)
-        {
-          key = $"{key},{id}";
-        }
-      }
-      return key;
+      var filterHash = filter == null ? 0 : filter.GetHashCode();
+      return $"{projectId},{filterHash}";
     }
   }
 }

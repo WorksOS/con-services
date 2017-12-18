@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.WebApiTests.Caching
         Method = "GET",
         Path = "/MYPATH"
       };
-      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
+      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), null,new FakeResponseCacheOptions());
       var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
 
       Assert.IsFalse(key.ToLowerInvariant().Contains("projectuid"));
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       var projectGuid = Guid.NewGuid();
       defaultRequest.Path = $"/MYPATH";
       defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}");
-      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
+      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), null,  new FakeResponseCacheOptions());
       var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
 
       Assert.IsTrue(key.ToLowerInvariant().Contains(projectGuid.ToString()));
@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       var projectGuid = Guid.NewGuid();
       defaultRequest.Path = $"/MYPATH";
       defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}");
-      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
+      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), null, new FakeResponseCacheOptions());
       var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
       var parsedGuid = this.ServiceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractProjectGuidFromKey(key);
       Assert.AreEqual(projectGuid, parsedGuid);
@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       var projectGuid = Guid.NewGuid();
       defaultRequest.Path = $"/MYPATH";
       defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}&filteruid={projectGuid}");
-      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
+      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), null, new FakeResponseCacheOptions());
       var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
       var parsedHash = this.ServiceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractFilterHashFromKey(key);
       Assert.IsTrue(parsedHash!=-1);
@@ -120,10 +120,10 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       defaultRequest.Path = $"/MYPATH";
       defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}&filteruid={projectGuid}");
 
-      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
+      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), null, new FakeResponseCacheOptions());
       var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
 
-      var keyProvider1 = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), new FakeResponseCacheOptions());
+      var keyProvider1 = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), null,  new FakeResponseCacheOptions());
       var key1 = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
 
       var parsedHash = this.ServiceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractFilterHashFromKey(key);

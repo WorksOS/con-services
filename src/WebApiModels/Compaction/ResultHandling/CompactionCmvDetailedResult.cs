@@ -2,7 +2,7 @@
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by CMV Details request for compaction.
@@ -20,9 +20,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// Private constructor
     /// </summary>
     private CompactionCmvDetailedResult()
-    {
-      // ...
-    }
+    { }
 
     /// <summary>
     /// Creates an instance of the CompactionCmvDetailedResult class.
@@ -31,11 +29,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// <returns>An instance of the CompactionCmvDetailedResult class.</returns>
     public static CompactionCmvDetailedResult CreateCmvDetailedResult(CMVDetailedResult result)
     {
+      //'No CMV details data' result is all 0 percents so no special handling required
       return new CompactionCmvDetailedResult
       {
         Percents = result.percents
       };
     }
-
   }
 }

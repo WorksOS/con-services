@@ -1,7 +1,7 @@
 ﻿using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   /// <summary>
   /// The represenation of the results of a summary pass count request
@@ -80,7 +80,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     public override string ToString()
     {
       return
-        $"constantTargetPassCountRange:({constantTargetPassCountRange.min}, {constantTargetPassCountRange.max}), isTargetPassCountConstant:{isTargetPassCountConstant}, percentEqualsTarget:{percentEqualsTarget}, percentGreaterThanTarget:{percentGreaterThanTarget}, percentLessThanTarget:{percentLessThanTarget}, totalAreaCoveredSqMeters:{totalAreaCoveredSqMeters}, returnCode:{returnCode}";
+        $"constantTargetPassCountRange:({this.constantTargetPassCountRange.min}, {this.constantTargetPassCountRange.max}), isTargetPassCountConstant:{this.isTargetPassCountConstant}, percentEqualsTarget:{this.percentEqualsTarget}, percentGreaterThanTarget:{this.percentGreaterThanTarget}, percentLessThanTarget:{this.percentLessThanTarget}, totalAreaCoveredSqMeters:{this.totalAreaCoveredSqMeters}, returnCode:{this.returnCode}";
     }
   }
 }

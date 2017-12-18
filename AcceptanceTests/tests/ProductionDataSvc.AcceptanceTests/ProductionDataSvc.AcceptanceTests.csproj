@@ -65,8 +65,8 @@
     <Reference Include="VSS.Velociraptor.PDSInterface">
       <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\VSS.Velociraptor.PDSInterface.dll</HintPath>
     </Reference>
-    <Reference Include="XnaFan.ImageComparison">
-      <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\XnaFan.ImageComparison.dll</HintPath>
+    <Reference Include="XnaFan.ImageComparison, Version=2.0.3.0, Culture=neutral, PublicKeyToken=ce5ccd6a9e11ca21, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ImageComparison.2.0.3\lib\net45\XnaFan.ImageComparison.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -273,6 +273,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Helpers\BeforeAndAfter.cs" />
+    <Compile Include="Models\AddFileResult.cs" />
     <Compile Include="Models\CCA.cs" />
     <Compile Include="Models\CCAColorPaletteResult.cs" />
     <Compile Include="Models\CellDatumRequest.cs" />
@@ -290,7 +291,7 @@
     <Compile Include="Models\CompactionPassCountDetailedResult.cs" />
     <Compile Include="Models\CompactionPassCountSummaryResult.cs" />
     <Compile Include="Models\CompactionProfileResult.cs" />
-    <Compile Include="Models\CompactionReportGridResult.cs" />
+    <Compile Include="Models\CompactionReportResult.cs" />
     <Compile Include="Models\CompactionSpeedSummaryResult.cs" />
     <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Models\CompactionTemperatureSummaryResult.cs" />
@@ -373,6 +374,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Profile.feature</DependentUpon>
     </Compile>
+    <Compile Include="ReportTile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportTile.feature</DependentUpon>
+    </Compile>
     <Compile Include="Report.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -416,6 +422,7 @@
     <Compile Include="StepDefinitions\ProjectSettingsSteps.cs" />
     <Compile Include="StepDefinitions\ProjectStatisticsSteps.cs" />
     <Compile Include="StepDefinitions\RaptorConfigSteps.cs" />
+    <Compile Include="StepDefinitions\ReportTileSteps.cs" />
     <Compile Include="StepDefinitions\ReportSteps.cs" />
     <Compile Include="StepDefinitions\SummarySpeedSteps.cs" />
     <Compile Include="StepDefinitions\SummaryThicknessSteps.cs" />
@@ -593,10 +600,6 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ExportReportToVETA.feature.cs</LastGenOutput>
     </None>
-    <None Include="FilterServices.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>FilterServices.feature.cs</LastGenOutput>
-    </None>
     <None Include="GetDesignBoundaries.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetDesignBoundaries.feature.cs</LastGenOutput>
@@ -657,6 +660,10 @@
     <None Include="ProjectStatistics.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ProjectStatistics.feature.cs</LastGenOutput>
+    </None>
+    <None Include="ReportTile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ReportTile.feature.cs</LastGenOutput>
     </None>
     <None Include="Report.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -742,6 +749,9 @@
     <None Include="TestData\CompactionGetTemperatureDataResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\CompactionReportTileResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\CompactionTagFileRequest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -810,6 +820,9 @@
     </None>
     <None Include="TestData\Profiles\DesignProfileSummaryResponse.json" />
     <None Include="TestData\ReportGridResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\ReportStationOffsetResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\SummarySpeedRequest.json">

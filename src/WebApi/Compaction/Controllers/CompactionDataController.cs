@@ -3,13 +3,11 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Net;
-using System.Runtime.Remoting;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -17,14 +15,13 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
-using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
@@ -34,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionDataController : BaseController
   {
     /// <summary>
@@ -347,7 +344,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return await a.Invoke();
       }
       catch
-      {}
+      { }
+
       return default(T);
     }
 
@@ -382,51 +380,33 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DesignDescriptor topDesign = null;
       Filter baseFilter = null;
       Filter topFilter = null;
-      MasterData.Models.Models.Filter baseFilterDescriptor = null;
-      MasterData.Models.Models.Filter topFilterDescriptor = null;
 
-
-      baseFilterDescriptor = await WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, baseUid));
+      var baseFilterDescriptor = await WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, baseUid));
 
       if (baseFilterDescriptor == null)
-        {
-          baseDesign = await WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, baseUid));
-        }
-        else
-        {
-          baseFilter = await WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
-          // TODO Validate is not null.
-        }
+      {
+        baseDesign = await WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, baseUid));
+      }
+      else
+      {
+        baseFilter = await WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
+      }
 
-        topFilterDescriptor = await WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, topUid));
-        if (topFilterDescriptor == null)
-        {
-          topDesign = await WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, topUid));
-        }
-        else
-        {
-          topFilter = await WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
-          // TODO Validate is not null.
-        }
+      var topFilterDescriptor = await WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, topUid));
+      if (topFilterDescriptor == null)
+      {
+        topDesign = await WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, topUid));
+      }
+      else
+      {
+        topFilter = await WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
+      }
 
-      if ((baseFilter == null && baseDesign == null) || (topFilter == null && topDesign == null))
+      if (baseFilter == null && baseDesign == null || topFilter == null && topDesign == null)
+      {
         throw new ServiceException(
           HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Can not resolve either baseUsrface or topSurface"));
-
-      // Ground to Ground
-      if (baseFilterDescriptor != null && topFilterDescriptor != null)
-      {
-        if (baseFilterDescriptor.DateRangeType != DateRangeType.ProjectExtents &&
-            baseFilterDescriptor.DateRangeType == topFilterDescriptor.DateRangeType &&
-            baseFilterDescriptor.elevationType == null && topFilterDescriptor.elevationType == null)
-        {
-          // TODO (Aaron) We need to review and understand v1 workflow around setting 'earliest'. This will be delivered in a second patch.
-        }
-        else
-        {
-          // Fall through and use the previously setup filters.
-        }
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Can not resolve either baseSurface or topSurface"));
       }
 
       var volumeCalcType = volumeSummaryHelper.GetVolumesType(baseFilter, topFilter);
@@ -437,7 +417,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-          .Build<SummaryVolumesExecutor>(logger, raptorClient)
+          .Build<SummaryVolumesExecutorV2>(logger, raptorClient)
           .Process(request) as SummaryVolumesResult;
 
         returnResult = CompactionSummaryVolumesResult.CreateInstance(result, await GetProjectSettings(projectUid));
@@ -475,14 +455,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
-      /**************************************************************************************************
-       * NOTE: This end point for CMV details is currently not called from the Compaction UI.
-       * It still uses the old Raptor CMV settings with CMV min, max and target to calculate the percents
-       * data to return. However, the palette now uses 16 colors and values (the last being 'above' color
-       * and value) and this code needs to be updated to be consistent. This requires a change to Raptor
-       * to accept a list of CMV values like for pass count details.
-       **************************************************************************************************/
-
       log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
       CMVRequest request = await GetCmvRequest(projectUid, filterUid);

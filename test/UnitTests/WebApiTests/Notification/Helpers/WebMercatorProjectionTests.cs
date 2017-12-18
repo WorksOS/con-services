@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
 {
@@ -12,6 +12,7 @@ namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
     [DataRow((double)42, 0.733038285837618)]
     public void Point_DegreesToRadians(double deg, double expectedResult)
     {
+      //TODO:  WebMercatorProjection.DegreesToRadians has been replaced by extension method larDegreesToRadians and lonDegreesToRadians
       Assert.AreEqual(expectedResult, WebMercatorProjection.DegreesToRadians(deg), 0.00000001);
     }
 
@@ -21,6 +22,7 @@ namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
     [DataRow((double)100, 5729.57795130823)]
     public void Point_RadianToDegreesPoint(double rad, double expectedResult)
     {
+      //TODO:  WebMercatorProjection.DegreesToRadians has been replaced by extension method larDegreesToRadians and lonDegreesToRadians
       Assert.AreEqual(expectedResult, WebMercatorProjection.RadiansToDegrees(rad), 0.00000001);
     }
 
@@ -40,7 +42,7 @@ namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
     [DataRow(0, 0, 0, 0, 0)]
     [DataRow(4, 6, 1, 132.266666666667, 125.153242156653)]
     [DataRow(4, 6, 2, 264.533333333333, 250.306484313305)]
-    public void Point_LatLngToPixel(int x, int y, int numTiles, double expectedX, double expectedY)
+    public void Point_LatLngToPixel(int x, int y, long numTiles, double expectedX, double expectedY)
     {
       var result = WebMercatorProjection.LatLngToPixel(new Point(x, y), numTiles);
 

@@ -53,11 +53,16 @@ namespace VSS.Productivity3D.Common.Proxies
       if (baseFilter.HasTimeComponent() && baseFilter.ReturnEarliestFilteredCellPass &&
           topFilter.HasTimeComponent() && !topFilter.ReturnEarliestFilteredCellPass)
       {
-        baseFilter.OverrideTimeBoundary = true;
-        baseFilter.EndTime = baseFilter.StartTime;
-        baseFilter.StartTime = PDS_MIN_DATE;
-        baseFilter.ReturnEarliestFilteredCellPass = false;
+        AdjustBaseFilter(baseFilter);
       }
+    }
+
+    public static void AdjustBaseFilter(TICFilterSettings baseFilter)
+    {
+      baseFilter.OverrideTimeBoundary = true;
+      baseFilter.EndTime = baseFilter.StartTime;
+      baseFilter.StartTime = PDS_MIN_DATE;
+      baseFilter.ReturnEarliestFilteredCellPass = false;
     }
 
     public static TColourPalettes convertColorPalettes(List<ColorPalette> palettes, DisplayMode mode)
@@ -534,12 +539,12 @@ namespace VSS.Productivity3D.Common.Proxies
         }
 
         //Note: the SiteID is only used for the UI. The points of the site or user-defined polygon are in Polygon.
-        if (pdf.PolygonLl != null && pdf.PolygonLl.Count > 0)
+        if (pdf.PolygonLL != null && pdf.PolygonLL.Count > 0)
         {
           //NOTE: There is an inconsistency inherited from VL where the filter is passed to Raptor with decimal degrees.
           //All other lat/lngs in Shim calls are passed to Raptor as radians. Since we now have consistency in the Raptor
           //services where everything is radians we need to convert to decimal degrees here for the filter to match VL.
-          foreach (WGSPoint p in pdf.PolygonLl)
+          foreach (WGSPoint p in pdf.PolygonLL)
           {
             filter.Fence.Add(new TFencePoint(p.Lon * RADIANS_TO_DEGREES, p.Lat * RADIANS_TO_DEGREES, 0));
           }

@@ -1,9 +1,11 @@
 ﻿using ASNode.CMVChange.RPC;
 using ASNode.ElevationStatistics.RPC;
 using ASNode.ExportProductionDataCSV.RPC;
+using ASNode.GridReport.RPC;
 using ASNode.RequestSummaryVolumesAlignmentProfile.RPC;
 using ASNode.RequestSummaryVolumesProfile.RPC;
 using ASNode.SpeedSummary.RPC;
+using ASNode.StationOffsetReport.RPC;
 using ASNode.ThicknessSummary.RPC;
 using ASNode.UserPreferences;
 using ASNode.Volumes.RPC;
@@ -22,6 +24,7 @@ using SVOICStatistics;
 using SVOICVolumeCalculationsDecls;
 using System;
 using System.IO;
+using DesignProfiler.ComputeDesignFilterBoundary.RPC;
 using ASNode.GridReport.RPC;
 using VLPDDecls;
 
@@ -267,6 +270,11 @@ namespace VSS.Productivity3D.Common.Interfaces
       TCutFillSettings cutFillSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TCutFillDetails cutFillDetails);
 
+    bool GetStationExtents(long projectID, TVLPDDesignDescriptor designDescriptor, out double startStation,
+      out double endStation);
+
+    bool GetDesignFilterBoundaryAsPolygon(TDesignProfilerServiceRPCVerb_ComputeDesignFilterBoundary_Args args,
+      out TWGS84Point[] fence);
     /// <summary>
     /// Gets a grid report of the production data from Raptor.
     /// </summary>
@@ -275,5 +283,10 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// <returns>The Raptor's request result code.</returns>
     /// 
     int GetReportGrid(TASNodeServiceRPCVerb_GridReport_Args args, out MemoryStream dataReport);
+
+    /// <summary>
+    /// Gets a station offset report from Raptor.
+    /// </summary>
+    int GetReportStationOffset(TASNodeServiceRPCVerb_StationOffsetReport_Args args, out MemoryStream dataReport);
   }
 }

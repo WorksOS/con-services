@@ -114,6 +114,37 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
+    /// Asynch form of WithServiceExceptionTryExecute
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
+    {
+      TResult result = default(TResult);
+      try
+      {
+        result = await action.Invoke();
+        log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
+
+      }
+      catch (ServiceException)
+      {
+        throw;
+      }
+      catch (Exception ex)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+          ContractExecutionStatesEnum.InternalProcessingError - 2000, ex.Message);
+      }
+      finally
+      {
+        log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
+      }
+      return result;
+    }
+
+    /// <summary>
     /// Gets the project identifier.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
@@ -320,7 +351,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Custom date range is unaltered. Project extents is always null.
     /// Other types are calculated in the project time zone.
     /// </summary>
-    /// <param name="projectUid">The project uid.</param>
+    /// <param name="projectUid">The project UID</param>
     /// <param name="filter">The filter containg the date range type</param>
     /// <returns>The filter with the date range set</returns>
     private MasterData.Models.Models.Filter ApplyDateRange(Guid projectUid, MasterData.Models.Models.Filter filter)
@@ -376,20 +407,22 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         switch (volumeCalcType.Value)
         {
           case VolumeCalcType.GroundToGround:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
             break;
           case VolumeCalcType.GroundToDesign:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, true);
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid);
             break;
           case VolumeCalcType.DesignToGround:
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, true);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
             break;
         }
       }
       return new Tuple<Filter, Filter, DesignDescriptor>(baseFilter, topFilter, volumeDesign);
     }
+
+  
   }
 }

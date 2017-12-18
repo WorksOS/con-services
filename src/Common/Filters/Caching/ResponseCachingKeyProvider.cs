@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies;
@@ -30,8 +31,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
     private readonly ObjectPool<StringBuilder> builderPool;
     private readonly ResponseCachingOptions options;
     private readonly IFilterServiceProxy filterServiceProxy;
+    private ILogger<CustomResponseCachingKeyProvider> logger;
 
-    public CustomResponseCachingKeyProvider(ObjectPoolProvider poolProvider, IFilterServiceProxy filterProxy, IOptions<ResponseCachingOptions> options)
+    public CustomResponseCachingKeyProvider(ObjectPoolProvider poolProvider, IFilterServiceProxy filterProxy, ILogger<CustomResponseCachingKeyProvider> logger, IOptions<ResponseCachingOptions> options)
     {
       if (poolProvider == null)
       {
@@ -45,6 +47,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
       this.builderPool = poolProvider.CreateStringBuilderPool();
       this.options = options.Value;
       this.filterServiceProxy = filterProxy;
+      this.logger = logger;
     }
 
     public IEnumerable<string> CreateLookupVaryByKeys(ResponseCachingContext context)
@@ -68,6 +71,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
     public string GenerateBaseKeyFromRequest(HttpRequest request)
     {
       var builder = this.builderPool.Get();
+      builder.Clear();
 
       try
       {
@@ -89,8 +93,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
               request.Query["filterUid"], request.Headers.GetCustomHeaders()));
           }
         }
-
-        return builder.ToString();
+        var baseKey = builder.ToString();
+        logger?.LogDebug($"Base cache key: {baseKey}");
+        return baseKey;
       }
       finally
       {
@@ -118,6 +123,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
       }
 
       var builder = this.builderPool.Get();
+      builder.Clear();
 
       try
       {
@@ -154,7 +160,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
             foreach (var query in context.HttpContext.Request.Query.OrderBy(q => q.Key,
               StringComparer.OrdinalIgnoreCase))
             {
-              if (query.Key.ToUpperInvariant() != "FILTERUID")
+              if (query.Key.ToUpperInvariant() != "FILTERUID" && query.Key.ToUpperInvariant() != "TIMESTAMP")
                 builder.Append(KEY_DELIMITER)
                   .Append(query.Key.ToUpperInvariant())
                   .Append("=")
@@ -165,7 +171,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
           {
             foreach (var queryKey in varyByRules.QueryKeys)
             {
-              if (queryKey.ToUpperInvariant() != "FILTERUID")
+              if (queryKey.ToUpperInvariant() != "FILTERUID" && queryKey.ToUpperInvariant()!="TIMESTAMP")
                 builder.Append(KEY_DELIMITER)
                 .Append(queryKey)
                 .Append("=")
@@ -174,8 +180,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
             }
           }
         }
-
-        return builder.ToString();
+        var key = builder.ToString();
+        logger?.LogDebug($"Cache key: {key}");
+        return key;
       }
       finally
       {

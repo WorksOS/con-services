@@ -1,0 +1,56 @@
+﻿using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
+{
+  /// <summary>
+  /// The request representation for getting production data from Raptor for a grid report.
+  /// </summary>
+  /// 
+  public class CompactionReportStationOffsetRequestHelper : DataRequestBase, ICompactionReportStationOffsetRequestHelper
+  {
+    /// <summary>
+    /// Parameterless constructor is required to support factory create function in <see cref="VSS.Productivity3D.WebApi"/> project.
+    /// </summary>
+    public CompactionReportStationOffsetRequestHelper()
+    { }
+
+    public CompactionReportStationOffsetRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
+      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
+    {
+      Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
+      ConfigurationStore = configurationStore;
+      FileListProxy = fileListProxy;
+      SettingsManager = settingsManager;
+    }
+
+    public CompactionReportStationOffsetRequest CreateRequest(bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill, DesignDescriptor alignmentDescriptor, double crossSectionInterval, double startStation, double endStation, double[] offsets, UserPreferenceData userPreferences)
+    {
+      var liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
+
+      return CompactionReportStationOffsetRequest.CreateRequest(
+        ProjectId,
+        Filter,
+        Filter != null ? Filter.Id ?? -1 : -1,
+        liftBuildSettings,
+        reportElevation,
+        reportCmv,
+        reportMdp,
+        reportPassCount,
+        reportTemperature,
+        reportCutFill,
+        alignmentDescriptor,
+        crossSectionInterval,
+        startStation,
+        endStation,
+        offsets,
+        userPreferences);
+    }
+  }
+}

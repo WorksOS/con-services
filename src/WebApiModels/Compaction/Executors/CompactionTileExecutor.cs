@@ -18,12 +18,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   /// <summary>
   /// V2 Tile executor. Same as V1 but without the reconcileTopFilterAndVolumeComputationMode as this is done externally.
   /// </summary>
-  public class CompactionTilesExecutor : RequestExecutorContainer
+  public class CompactionTileExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionTilesExecutor()
+    public CompactionTileExecutor()
     {
       ProcessErrorCodes();
     }
@@ -43,17 +43,29 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         RaptorConverters.convertGridOrLLBoundingBox(request.boundBoxGrid, request.boundBoxLL, out TWGS84Point bl, out TWGS84Point tr,
           out bool coordsAreGrid);
-        TICFilterSettings filter1 =
-          RaptorConverters.ConvertFilter(request.filterId1, request.filter1, request.projectId);
-        TICFilterSettings filter2 =
-          RaptorConverters.ConvertFilter(request.filterId2, request.filter2, request.projectId);
+
+        TICFilterSettings baseFilter = RaptorConverters.ConvertFilter(request.filterId1, request.filter1, request.projectId);
+        TICFilterSettings topFilter = RaptorConverters.ConvertFilter(request.filterId2, request.filter2, request.projectId);
+        var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
+
         TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.computeVolType);
-        if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
-          RaptorConverters.AdjustFilterToFilter(filter1, filter2);
+
+        if (volType == TComputeICVolumesType.ic_cvtBetween2Filters && request.IsSummaryVolumeCutFillRequest)
+        {
+          RaptorConverters.AdjustBaseFilter(baseFilter);
+        }
+
+        if ((baseFilter == null || topFilter == null) && designDescriptor.IsNull() ||
+          baseFilter == null && topFilter == null)
+        {
+          throw new ServiceException(
+            HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Invalid surface configuration."));
+        }
 
         TASNodeErrorStatus raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor
         (request.projectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtWMSTile),
           RaptorConverters.convertDisplayMode(request.mode),
           RaptorConverters.convertColorPalettes(request.palettes, request.mode),
@@ -61,11 +73,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           coordsAreGrid,
           request.width,
           request.height,
-          filter1,
-          filter2,
+          baseFilter,
+          topFilter,
           RaptorConverters.convertOptions(null, request.liftBuildSettings, request.computeVolNoChangeTolerance,
             request.filterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
-          RaptorConverters.DesignDescriptor(request.designDescriptor),
+          designDescriptor,
           volType,
           request.representationalDisplayColor,
           out MemoryStream tile);

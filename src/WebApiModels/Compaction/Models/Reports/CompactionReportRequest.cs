@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Newtonsoft.Json;
 using System.Net;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 {
+
   /// <summary>
   /// The request representation for getting production data from Raptor for a grid report.
   /// </summary>
   /// 
   public abstract class CompactionReportRequest : RaptorHelper
   {
+    // TOOO (Aaron) these are not nullable so Required proeprty isn't necessary.
+
     /// <summary>
     /// The filter instance to use in the request
     /// Value may be null.
@@ -101,11 +96,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
       base.Validate();
 
       // Compaction settings
-      if (LiftBuildSettings != null)
-      {
-        LiftBuildSettings.Validate();
-      }
-      
+      LiftBuildSettings?.Validate();
+
       if (ReportCutFill)
       {
         ValidateDesign(DesignFile, DisplayMode.CutFill, RaptorConverters.VolumesType.None);

@@ -2,9 +2,9 @@
 using System;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Speed Summary request for compaction
@@ -23,15 +23,22 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     private CompactionSpeedSummaryResult()
     { }
 
-
     /// <summary>
     /// SpeedSummaryResult create instance
     /// </summary>
     /// <param name="result">The speed results from Raptor</param>
+    /// <param name="speedTarget">The speed target from Raptor</param>
     /// <returns>An instance of CompactionSpeedSummaryResult</returns>
     public static CompactionSpeedSummaryResult CreateSpeedSummaryResult(SummarySpeedResult result, MachineSpeedTarget speedTarget)
     {
-      var speedResult = new CompactionSpeedSummaryResult
+      const int noSpeedData = 0;
+
+      if (Math.Abs(result.CoverageArea - noSpeedData) < 0.001)
+      {
+        return new CompactionSpeedSummaryResult { SummaryData = new SpeedSummaryData() };
+      }
+
+      return new CompactionSpeedSummaryResult
       {
         SummaryData = new SpeedSummaryData
         {
@@ -39,11 +46,14 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
           PercentGreaterThanTarget = result.AboveTarget,
           PercentLessThanTarget = result.BelowTarget,
           TotalAreaCoveredSqMeters = result.CoverageArea,
-          MinTargetMachineSpeed = Math.Round(speedTarget.MinTargetMachineSpeed * 0.036, 1, MidpointRounding.AwayFromZero), // cm per second converted to km per hour...
-          MaxTargetMachineSpeed = Math.Round(speedTarget.MaxTargetMachineSpeed * 0.036, 1, MidpointRounding.AwayFromZero)  // cm per second converted to km per hour...
+          MinTargetMachineSpeed =
+            Math.Round(speedTarget.MinTargetMachineSpeed * 0.036, 1,
+              MidpointRounding.AwayFromZero), // cm per second converted to km per hour...
+          MaxTargetMachineSpeed =
+            Math.Round(speedTarget.MaxTargetMachineSpeed * 0.036, 1,
+              MidpointRounding.AwayFromZero) // cm per second converted to km per hour...
         }
       };
-      return speedResult;
     }
 
     /// <summary>
@@ -88,6 +98,5 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
       [JsonProperty(PropertyName = "maxTarget")]
       public double MaxTargetMachineSpeed { get; set; }
     }
-
   }
 }

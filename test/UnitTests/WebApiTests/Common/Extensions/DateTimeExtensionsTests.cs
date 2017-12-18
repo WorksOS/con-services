@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       var start = now.DateTimeForDateRangeType(DateRangeType.Today, true);
       var end = now.DateTimeForDateRangeType(DateRangeType.Today, false);
       Assert.AreEqual(now.Date, start, "Wrong start for today");
-      Assert.AreEqual(now, end, "Wrong end for today");
+      Assert.AreEqual(endToday, end, "Wrong end for today");
     }
 
     [TestMethod]
@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       var start = now.DateTimeForDateRangeType(DateRangeType.CurrentWeek, true);
       var end = now.DateTimeForDateRangeType(DateRangeType.CurrentWeek, false);
       Assert.AreEqual(now.AddDays(-2).Date, start, "Wrong start for current week");
-      Assert.AreEqual(now, end, "Wrong end for current week");
+      Assert.AreEqual(endToday, end, "Wrong end for current week");
     }
 
     [TestMethod]
@@ -78,7 +78,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       var start = now.DateTimeForDateRangeType(DateRangeType.CurrentMonth, true);
       var end = now.DateTimeForDateRangeType(DateRangeType.CurrentMonth, false);
       Assert.AreEqual(new DateTime(now.Year, now.Month, 1), start, "Wrong start for current month");
-      Assert.AreEqual(now, end, "Wrong end for current month");
+      Assert.AreEqual(endToday, end, "Wrong end for current month");
     }
 
     [TestMethod]
@@ -116,7 +116,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       var startUtc = utcNow.UtcForDateRangeType(DateRangeType.Today, ianaTimeZone, true);
       var endUtc = utcNow.UtcForDateRangeType(DateRangeType.Today, ianaTimeZone, false);
       Assert.AreEqual(now.Date.AddHours(-offset), startUtc, "Wrong startUtc for today");
-      Assert.AreEqual(now.AddHours(-offset), endUtc, "Wrong endUtc for today");
+      Assert.AreEqual(endToday.AddHours(-offset), endUtc, "Wrong endUtc for today");
     }
 
     [TestMethod]
@@ -134,7 +134,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       var startUtc = utcNow.UtcForDateRangeType(DateRangeType.CurrentWeek, ianaTimeZone, true);
       var endUtc = utcNow.UtcForDateRangeType(DateRangeType.CurrentWeek, ianaTimeZone, false);
       Assert.AreEqual(now.AddDays(-2).Date.AddHours(-offset), startUtc, "Wrong startUtc for current week");
-      Assert.AreEqual(now.AddHours(-offset), endUtc, "Wrong endUtc for current week");
+      Assert.AreEqual(endToday.AddHours(-offset), endUtc, "Wrong endUtc for current week");
     }
 
     [TestMethod]
@@ -152,7 +152,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       var startUtc = utcNow.UtcForDateRangeType(DateRangeType.CurrentMonth, ianaTimeZone, true);
       var endUtc = utcNow.UtcForDateRangeType(DateRangeType.CurrentMonth, ianaTimeZone, false);
       Assert.AreEqual(new DateTime(now.Year, now.Month, 1).AddHours(-offset), startUtc, "Wrong startUtc for current month");
-      Assert.AreEqual(now.AddHours(-offset), endUtc, "Wrong endUtc for current month");
+      Assert.AreEqual(endToday.AddHours(-offset), endUtc, "Wrong endUtc for current month");
     }
 
     [TestMethod]
@@ -190,6 +190,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
     }
 
     private DateTime now = new DateTime(2017, 1, 18, 10, 25, 12);//Wednesday
+    private DateTime endToday = new DateTime(2017, 1, 18, 10, 25, 12).Date.AddDays(1).AddSeconds(-1);
     private DateTime utcNow = new DateTime(2017, 1, 18, 10, 25, 12).AddHours(-13);// -13 = offset for NZ time zone for 'now' datetime
     private string ianaTimeZone = "Pacific/Auckland";
     private int offset = 13; //time zone offset for NZ for the 'now' datetime

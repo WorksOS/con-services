@@ -11,8 +11,9 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
-using VSS.Productivity3D.WebApi.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
@@ -53,6 +54,14 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IErrorCodesProvider, RaptorResult>();
       services.AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
+      services.AddScoped<IMapTileGenerator, MapTileGenerator>();
+      services.AddScoped<IMapTileService, MapTileService>();
+      services.AddScoped<IProjectTileService, ProjectTileService>();
+      services.AddScoped<IGeofenceTileService, GeofenceTileService>();
+      services.AddScoped<IAlignmentTileService, AlignmentTileService>();
+      services.AddScoped<IDxfTileService, DxfTileService>();
+      services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
+      services.AddScoped<IBoundingBoxService, BoundingBoxService>();
 
       // Action services
       services.AddSingleton<IVolumeSummaryHelper, VolumeSummaryHelper>();

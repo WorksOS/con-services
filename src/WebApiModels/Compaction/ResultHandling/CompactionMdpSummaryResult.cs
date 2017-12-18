@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by MDP Summary request for compaction
@@ -22,7 +23,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     private CompactionMdpSummaryResult()
     { }
 
-
     /// <summary>
     /// MdpSummaryResult create instance
     /// </summary>
@@ -31,7 +31,14 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// <returns>An instance of CompactionMdpSummaryResult</returns>
     public static CompactionMdpSummaryResult CreateMdpSummaryResult(MDPSummaryResult result, MDPSettings settings)
     {
-      var mdpResult = new CompactionMdpSummaryResult
+      const int noMdpData = 0;
+
+      if (Math.Abs(result.totalAreaCoveredSqMeters - noMdpData) < 0.001)
+      {
+        return new CompactionMdpSummaryResult { SummaryData = new MdpSummaryData { MdpTarget = new MdpTargetData() } };
+      }
+
+      return new CompactionMdpSummaryResult
       {
         SummaryData = new MdpSummaryData
         {
@@ -48,7 +55,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
           MaxMDPPercent = settings.maxMDPPercent
         }
       };
-      return mdpResult;
     }
 
     /// <summary>

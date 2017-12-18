@@ -1,4 +1,8 @@
 ﻿
+using System;
+using System.Drawing;
+using System.IO;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
@@ -10,7 +14,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public class CompactionTileSteps
   {
     private Getter<TileResult> tileRequester;
-
     private string url;
 
     [Given(@"the Compaction service URI ""(.*)""")]
@@ -46,10 +49,23 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     }
 
 
-    [Then(@"the result should match the ""(.*)"" from the repository")]
-    public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
+    [Then(@"the result tile should match the ""(.*)"" from the repository within ""(.*)"" percent")]
+    public void ThenTheResultTileShouldMatchTheFromTheRepositoryWithin(string resultName, string difference)
     {
-      Assert.AreEqual(tileRequester.ResponseRepo[resultName], tileRequester.CurrentResponse);
+      double imageDifference = 0;
+      if (!string.IsNullOrEmpty(difference))
+      {
+        imageDifference = Convert.ToDouble(difference) / 100;
+      }    
+      var expectedTileData = tileRequester.ResponseRepo[resultName].TileData;
+      var actualTileData = tileRequester.CurrentResponse.TileData;
+      var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
+      var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
+      var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
+      Console.WriteLine("Actual Difference % = " + diff*100); 
+      Console.WriteLine("Actual filename = " + actFileName);
+      Console.WriteLine(tileRequester.CurrentResponse);
+      Assert.IsTrue(Math.Abs(diff) < imageDifference, "Actual Difference:" + diff*100 + "% Expected tiles (" + expFileName +  ") doesn't match actual tiles (" + actFileName + ")");
     }
 
     [When(@"I request result")]

@@ -1,7 +1,7 @@
 ﻿using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   /// <summary>
   /// The represenation of the results of a detailed pass count request
@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     public override string ToString()
     {
       return
-        $"constantTargetPassCountRange:({constantTargetPassCountRange.min}, {constantTargetPassCountRange.max}), isTargetPassCountConstant:{isTargetPassCountConstant}, percents:{string.Join("%, ", percents) + "%"}";
+        $"constantTargetPassCountRange:({this.constantTargetPassCountRange.min}, {this.constantTargetPassCountRange.max}), isTargetPassCountConstant:{this.isTargetPassCountConstant}, percents:{string.Join("%, ", this.percents) + "%"}";
     }
 
   }

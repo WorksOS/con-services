@@ -41,13 +41,8 @@
   },
   "DesignOutside_PercentChangeSummary": {
     "cmvChangeData": {
-      "percents": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "totalAreaCoveredSqMeters": 0
+      "percents": [],
+      "totalAreaCoveredSqMeters": 0.0
     },
     "Code": 0,
     "Message": "success"
@@ -118,16 +113,16 @@
   },
   "DesignOutside_Summary": {
     "cmvSummaryData": {
-      "percentEqualsTarget": 0,
-      "percentGreaterThanTarget": 0,
-      "percentLessThanTarget": 0,
-      "totalAreaCoveredSqMeters": 0,
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 0.0,
+      "totalAreaCoveredSqMeters": 0.0,
       "cmvTarget": {
-        "cmvMachineTarget": 3276,
+        "cmvMachineTarget": 0.0,
         "targetVaries": false
       },
-      "minCMVPercent": 80,
-      "maxCMVPercent": 130
+      "minCMVPercent": 0.0,
+      "maxCMVPercent": 0.0
     },
     "Code": 0,
     "Message": "success"
