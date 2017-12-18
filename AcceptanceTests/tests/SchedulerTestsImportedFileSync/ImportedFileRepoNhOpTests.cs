@@ -1,13 +1,13 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Scheduler.Common.Models;
+using VSS.Productivity3D.Scheduler.Common.Repository;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using System.Linq;
-using VSS.Productivity3D.Scheduler.Common.Repository;
 
-namespace SchedulerTests
+namespace SchedulerTestsImportedFileSync
 {
   [TestClass]
   public class ImportedFileRepoNhOpTests : TestControllerBase

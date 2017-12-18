@@ -1,9 +1,7 @@
-USE [NH_OP];
-
 SET ANSI_NULLS, QUOTED_IDENTIFIER, ANSI_PADDING ON
 GO
 
-CREATE TABLE dbo.Project(
+CREATE TABLE NH_OP..Project(
 	[ID] [bigint] IDENTITY(1,1) NOT FOR REPLICATION NOT NULL,
 	[Name] [nvarchar](100) NOT NULL,
 	[fk_CustomerID] [bigint] NOT NULL,

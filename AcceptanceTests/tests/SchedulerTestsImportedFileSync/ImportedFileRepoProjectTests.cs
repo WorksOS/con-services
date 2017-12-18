@@ -8,7 +8,7 @@ using VSS.Productivity3D.Scheduler.Common.Repository;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace SchedulerTests
+namespace SchedulerTestsImportedFileSync
 {
   [TestClass]
   public class ImportedFileRepoProjectTests : TestControllerBase
@@ -36,7 +36,7 @@ namespace SchedulerTests
 
       var importedFile = new ImportedFileProject()
       {
-        LegacyProjectId = new Random().Next(1000000, 9999999),
+        LegacyProjectId = new Random().Next(1, 900000),
         LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),
@@ -85,7 +85,7 @@ namespace SchedulerTests
 
       var importedFile = new ImportedFileProject()
       {
-        LegacyProjectId = new Random().Next(1000000, 9999999),
+        LegacyProjectId = new Random().Next(1, 900000),
         LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),
@@ -128,7 +128,7 @@ namespace SchedulerTests
 
       var importedFile = new ImportedFileProject()
       {
-        LegacyProjectId = new Random().Next(1000000, 9999999),
+        LegacyProjectId = new Random().Next(1, 900000),
         LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),
@@ -172,7 +172,7 @@ namespace SchedulerTests
 
       var importedFile = new ImportedFileProject()
       {
-        LegacyProjectId = new Random().Next(1000000, 9999999),
+        LegacyProjectId = new Random().Next(1, 900000),
         LegacyCustomerId = new Random().Next(1, 9999999),
         ProjectUid = Guid.NewGuid().ToString(),
         ImportedFileUid = Guid.NewGuid().ToString(),

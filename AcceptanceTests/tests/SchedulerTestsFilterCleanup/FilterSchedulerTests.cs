@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.Logging;
 using Dapper;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 
-namespace SchedulerTests
+namespace SchedulerTestsFilterCleanup
 {
   [TestClass]
   public class FilterSchedulerTests : TestControllerBase

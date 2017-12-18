@@ -9,8 +9,6 @@ services:
       - filterschema
       - projectschema
       - db
-      - dbmssql
-      - schemamssql
   mockprojectwebapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
     env_file:
@@ -46,25 +44,6 @@ services:
   db:
     image: mysql/mysql-server:5.7.15 
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
-    env_file:
-     - docker-compose.env
-  schemamssql:
-    build: ./databaseMsSql
-    env_file:
-     - docker-compose.env
-    environment:
-     - MSSQL_SERVER_NAME=dbmssql
-     - MSSQL_DATABASE_NAME=NH_OP
-     - MSSQL_PORT=1433
-     - MSSQL_USERNAME=sa
-     - MSSQL_ROOT_PASSWORD=d3vRDS1234_
-    depends_on:
-     - dbmssql
-  dbmssql:
-    image: microsoft/mssql-server-linux:latest
-    environment:
-     - ACCEPT_EULA=Y
-     - SA_PASSWORD=d3vRDS1234_
     env_file:
      - docker-compose.env
   accepttest:

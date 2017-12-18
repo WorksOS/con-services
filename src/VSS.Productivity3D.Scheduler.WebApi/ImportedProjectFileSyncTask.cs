@@ -22,7 +22,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private readonly ILoggerFactory _logger;
     private readonly ILogger _log;
     private readonly IRaptorProxy _raptorProxy;
-    private static int DefaultTaskIntervalDefaultMinutes { get; } = 5;
+    private readonly ITPaasProxy _tPaasProxy;
+    private static int DefaultTaskIntervalDefaultMinutes { get; } = 4;
 
     /// <summary>
     /// Initializes the ImportedProjectFileSyncTask 
@@ -30,12 +31,14 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="configStore"></param>
     /// <param name="logger"></param>
     /// <param name="raptorProxy"></param>
-    public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy)
+    /// <param name="tPaasProxy"></param>
+    public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy)
     {
       _configStore = configStore;
       _logger = logger;
       _log = logger.CreateLogger<ImportedProjectFileSyncTask>();
       _raptorProxy = raptorProxy;
+      _tPaasProxy = tPaasProxy;
     }
 
     /// <summary>
@@ -44,29 +47,30 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     public void AddTask()
     {
       var startUtc = DateTime.UtcNow;
-      _log.LogDebug($"ImportedProjectFileSyncTask.AddTask. configStore: {_configStore}");
-     
+
       // lowest interval is minutes 
       int taskIntervalMinutes;
-      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_TASK_INTERVAL_MINUTES"), out taskIntervalMinutes))
+      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_TASK_INTERVAL_MINUTES"),
+        out taskIntervalMinutes))
       {
         taskIntervalMinutes = DefaultTaskIntervalDefaultMinutes;
       }
 
       var ImportedProjectFileSyncTask = "ImportedProjectFileSyncTask";
-      _log.LogInformation($"ImportedProjectFileSyncTask: taskIntervalSeconds: {taskIntervalMinutes}.");
-      Console.WriteLine($"ImportedProjectFileSyncTask: taskIntervalSeconds: {taskIntervalMinutes}.");
+      _log.LogInformation($"ImportedProjectFileSyncTask: taskIntervalMinutes: {taskIntervalMinutes}.");
 
       try
       {
-        RecurringJob.AddOrUpdate(ImportedProjectFileSyncTask,() => DatabaseSyncTask(), Cron.MinuteInterval(taskIntervalMinutes));
+        RecurringJob.AddOrUpdate(ImportedProjectFileSyncTask, () => ImportedFilesSyncTask(),
+          Cron.MinuteInterval(taskIntervalMinutes));
       }
       catch (Exception ex)
       {
-        var newRelicAttributes = new Dictionary<string, object> {
-          { "message", string.Format($"Unable to schedule recurring job: exception {ex.Message}") }
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message", string.Format($"Unable to schedule recurring job: exception {ex.Message}")}
         };
-        NewRelicUtils.NotifyNewRelic("DatabaseSyncTask", "Fatal", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Fatal", startUtc, _log, newRelicAttributes);
         throw;
       }
     }
@@ -74,14 +78,20 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <summary>
     /// bi-sync between 2 databases, 1 table in each
     /// </summary>
-    public async Task DatabaseSyncTask()
+    [AutomaticRetry(Attempts = 1, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
+    [DisableConcurrentExecution(5)]
+    public async Task ImportedFilesSyncTask()
     {
       var startUtc = DateTime.UtcNow;
-   
-      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy);
+      _log.LogDebug($"ImportedFilesSyncTask()  beginning. startUtc: {startUtc}");
+
+      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy, _tPaasProxy);
       await sync.SyncTables().ConfigureAwait(false);
 
-      NewRelicUtils.NotifyNewRelic("DatabaseCleanupTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds);
+      var newRelicAttributes = new Dictionary<string, object> {
+        { "message", string.Format($"Task completed.") }
+      };
+      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, _log, newRelicAttributes);
     }
   }
 }

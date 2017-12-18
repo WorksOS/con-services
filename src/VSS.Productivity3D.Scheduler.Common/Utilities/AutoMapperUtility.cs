@@ -46,13 +46,19 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
         cfg =>
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
-          cfg.CreateMap<ImportedFileProject, ImportedFileNhOp>();
+          cfg.CreateMap<ImportedFileProject, ImportedFileNhOp>()
+            .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => src.ProjectUid.ToUpper()))
+            .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => src.CustomerUid.ToUpper()));
           cfg.CreateMap<ImportedFileNhOp, ImportedFileProject>()
             .ForMember(dest => dest.ImportedFileUid, opt => opt.Ignore())
             .ForMember(dest => dest.ImportedFileId, opt => opt.Ignore())
             .ForMember(dest => dest.FileDescriptor, opt => opt.Ignore())
+            .ForMember(dest => dest.MinZoomLevel, opt => opt.Ignore())
+            .ForMember(dest => dest.MaxZoomLevel, opt => opt.Ignore())
             .ForMember(dest => dest.IsDeleted, opt => opt.UseValue(false))
-            .ForMember(dest => dest.IsActivated, opt => opt.UseValue(true));
+            .ForMember(dest => dest.IsActivated, opt => opt.UseValue(true))
+            .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => src.ProjectUid.ToLower()))
+            .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => src.CustomerUid.ToLower()));
         }
       );
 

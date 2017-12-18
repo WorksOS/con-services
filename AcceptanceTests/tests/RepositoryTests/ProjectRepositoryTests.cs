@@ -30,6 +30,8 @@ namespace RepositoryTests
         "FileUpdatedUTC",
         "ImportedBy",
         "SurveyedUTC",
+        "MinZoomLevel",
+        "MaxZoomLevel",
         "fk_DXFUnitsTypeID",
         "IsDeleted",
         "IsActivated",

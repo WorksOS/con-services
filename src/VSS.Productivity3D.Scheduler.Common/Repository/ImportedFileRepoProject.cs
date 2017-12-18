@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Dapper;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Scheduler.Common.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Models;
@@ -13,10 +14,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
 {
   public class ImportedFileRepoProject<T> : IImportedFileRepo<T> where T : ImportedFileProject
   {
-    private IConfigurationStore _configStore;
-    private ILogger _log;
-    private string _dbConnectionString;
-    private MySqlConnection _dbConnection;
+    private readonly IConfigurationStore _configStore;
+    private readonly ILogger _log;
+    private readonly string _dbConnectionString;
+    private readonly MySqlConnection _dbConnection;
+    private readonly List<CustomerProject> _customerProjectList;
 
     public ImportedFileRepoProject(IConfigurationStore configStore, ILoggerFactory logger)
     {
@@ -24,10 +26,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       _log = logger.CreateLogger<ImportedFileRepoProject<T>>();
       _dbConnectionString = ConnectionUtils.GetConnectionStringMySql(_configStore, _log, "_Project");
       _dbConnection = new MySqlConnection(_dbConnectionString);
+      _customerProjectList = new List<CustomerProject>();
     }
 
     public List<T> Read()
     {
+      var startUtc = DateTime.UtcNow;
       var members = new List<ImportedFileProject>();
       try
       {
@@ -35,12 +39,16 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoProject.Read: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoProject.Read: open DB exeception {ex.Message}");
+        var message = $"ImportedFileRepoProject.Read: open DB exeception {ex.Message}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
-      string selectCommand =
+      string selectImportedFilesCommand =
         @"SELECT 
               p.LegacyProjectID, cp.LegacyCustomerID, 
               iff.fk_ProjectUID as ProjectUID, iff.ImportedFileUID, iff.ImportedFileID, 
@@ -55,38 +63,65 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
               INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
             WHERE fk_ImportedFileTypeID = 2";
 
-      List<ImportedFileProject> response;
+      string selectCustomerProjectCommand =
+        @"SELECT 
+              LegacyCustomerID, fk_CustomerUID as CustomerUID,
+              LegacyProjectID, ProjectUID              
+            FROM Project 
+              INNER JOIN CustomerProject ON fk_ProjectUID = ProjectUID";
+
       try
       {
-        response = _dbConnection.Query<ImportedFileProject>(selectCommand).ToList();
-        _log.LogTrace($"ImportedFileRepoProject.Read: responseCount {response.Count}");
-        Console.WriteLine($"ImportedFileRepoProject.Read: responseCount {response.Count}");
+        var responseImportedFiles = _dbConnection.Query<ImportedFileProject>(selectImportedFilesCommand).ToList();
+        members.AddRange(responseImportedFiles);
+        _log.LogTrace($"ImportedFileRepoProject.Read: responseImportedFiles {responseImportedFiles.Count}");
+
+        var responseCustomerProject = _dbConnection.Query<CustomerProject>(selectCustomerProjectCommand).ToList();
+        _customerProjectList.AddRange(responseCustomerProject);
+        _log.LogTrace($"ImportedFileRepoProject.Read: responseCustomerProject {responseCustomerProject.Count}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoProject.Read:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoProject.Read:  execute exeception {ex.Message}");
+        var message = $"ImportedFileRepoProject.Read: execute DB exeception {ex.Message}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+
+        // throw on system issues, not business rule failure
         throw;
       }
       finally
       {
         _dbConnection.Close();
       }
-      members.AddRange(response);
 
       return members as List<T>;
     }
 
+    public bool ProjectAndCustomerExist(string customerUid, string projectUid)
+    {
+      return _customerProjectList
+        .Any(x => (String.Compare(x.CustomerUid, customerUid, StringComparison.OrdinalIgnoreCase) == 0) 
+            && (String.Compare(x.ProjectUid, projectUid, StringComparison.OrdinalIgnoreCase) == 0));
+    }
+
     public long Create(T member)
     {
+      var startUtc = DateTime.UtcNow;
       try
       {
         _dbConnection.Open();
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoProject.Create: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoProject.Create: open DB exeception {ex.Message}");
+        var message = $"ImportedFileRepoProject.Create: open DB exeception {ex.Message}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
@@ -100,13 +135,15 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       {
         countInserted += _dbConnection.Execute(insertCommand, member);
         _log.LogTrace($"ImportedFileRepoProject.Create: countInserted {countInserted}");
-        Console.WriteLine($"ImportedFileRepoProject.Create: countInserted {countInserted}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoProject.Create:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoProject.Create:  execute exeception {ex.Message}");
-        throw;
+        var message = $"ImportedFileRepoProject.Create: execute DB exeception {ex.Message}. VSSProjectToCreate: {JsonConvert.SerializeObject(member)}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
       }
       finally
       {
@@ -118,14 +155,19 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
 
     public int Update(T member)
     {
+      var startUtc = DateTime.UtcNow;
       try
       {
         _dbConnection.Open();
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoProject.Update: open DB exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoProject.Update: open DB exeception {ex.Message}");
+        var message = $"ImportedFileRepoProject.Update: open DB exeception {ex.Message}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
@@ -143,13 +185,15 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       {
         countUpdated += _dbConnection.Execute(updateCommand, member);
         _log.LogTrace($"ImportedFileRepoProject.Update: countUpdated {countUpdated}");
-        Console.WriteLine($"ImportedFileRepoProject.Update: countUpdated {countUpdated}");
       }
       catch (Exception ex)
       {
-        _log.LogError($"ImportedFileRepoProject.Update:  execute exeception {ex.Message}");
-        Console.WriteLine($"ImportedFileRepoProject.Update:  execute exeception {ex.Message}");
-        throw;
+        var message = $"ImportedFileRepoProject.Update: execute DB exeception {ex.Message}. VSSProjectToUpdate: {JsonConvert.SerializeObject(member)}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
       }
       finally
       {
@@ -162,7 +206,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
     public int Delete(T member)
     {
       _log.LogTrace($"ImportedFileRepoProject.Delete: ");
-      Console.WriteLine($"ImportedFileRepoProject.Delete: ");
 
       member.IsDeleted = true;
       return Update(member);

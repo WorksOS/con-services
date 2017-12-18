@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using Dapper;
 using Hangfire.MySql;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,14 +11,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using Hangfire.Storage;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Models;
 
-namespace SchedulerTests
+namespace SchedulerTestsImportedFileSync
 {
   public class TestControllerBase
   {
@@ -27,6 +26,7 @@ namespace SchedulerTests
     protected ILogger Log;
     protected string FileSpaceId;
     protected IRaptorProxy RaptorProxy;
+    protected ITPaasProxy TPaasProxy;
 
     protected void SetupDi()
     {
@@ -43,12 +43,7 @@ namespace SchedulerTests
       serviceCollection.AddLogging();
       serviceCollection
         .AddSingleton(loggerFactory)
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddSingleton<IOptions<MemoryCacheOptions>>(new MemoryCacheOptions())
-        .AddTransient<IMemoryCache, MemoryCache>()
-        .AddTransient<IRaptorProxy, RaptorProxy>()
-        .AddTransient<ISchedulerProxy, SchedulerProxy>();
-
+        .AddSingleton<IConfigurationStore, GenericConfiguration>();
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -63,11 +58,10 @@ namespace SchedulerTests
       }
 
       RaptorProxy = new RaptorProxy(ConfigStore, LoggerFactory);
+      TPaasProxy = new TPaasProxy(ConfigStore, LoggerFactory);
 
       Assert.IsNotNull(ServiceProvider.GetService<IConfigurationStore>());
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
-      Assert.IsNotNull(ServiceProvider.GetService<IRaptorProxy>());
-      Assert.IsNotNull(ServiceProvider.GetService<ISchedulerProxy>());
     }
 
 
@@ -140,6 +134,26 @@ namespace SchedulerTests
       dbConnection.Close();
       return insertedCount;
     }
+
+
+    protected bool HaveRetrievedProjectImportedFile(string projectDbConnectionString, long legacyImportedFileId)
+    {
+      // importedFile table depends on a project (for legacyProjectID) and CustomerProject (for legacyCustomerId) rows existing
+      var dbConnection = new MySqlConnection(projectDbConnectionString);
+      dbConnection.Open();
+
+      var empty = "\"";
+      string selectCommand = string.Format($"SELECT LegacyImportedFileId FROM ImportedFile WHERE LegacyImportedFileId = {empty}{legacyImportedFileId}{empty}");
+
+      IEnumerable<object> response = null;
+      response = dbConnection.Query(selectCommand);
+      
+      dbConnection.Close();
+
+      var enumerable = response as IList<object> ?? response.ToList();
+      return enumerable.Any();
+    }
+
     protected int WriteNhOpDbImportedFileAndHistory(string projectDbConnectionString, ImportedFileNhOp importedFile)
     {
       var dbConnection = new SqlConnection(projectDbConnectionString);

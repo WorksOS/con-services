@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <AssemblyName>SchedulerTests</AssemblyName>
-    <PackageId>SchedulerTests</PackageId>
+    <AssemblyName>SchedulerTestsFilterCleanup</AssemblyName>
+    <PackageId>SchedulerTestsFilterCleanup</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion>1.1.2</RuntimeFrameworkVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <RootNamespace>SchedulerTests</RootNamespace>
+    <RootNamespace>SchedulerTestsFilterCleanup</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Scheduler.Common.Controller;
 using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -49,10 +55,10 @@ namespace VSS.Productivity3D.Scheduler.Tests
         "LegacyImportedFileId has not been mapped correctly");
       Assert.AreEqual(source.LegacyProjectId, destination.LegacyProjectId,
         "LegacyProjectId has not been mapped correctly");
-      Assert.AreEqual(source.ProjectUid, destination.ProjectUid, "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(0, string.Compare(source.ProjectUid, destination.ProjectUid, StringComparison.OrdinalIgnoreCase), "ProjectUid has not been mapped correctly");
       Assert.AreEqual(source.LegacyCustomerId, destination.LegacyCustomerId,
         "LegacyCustomerId has not been mapped correctly");
-      Assert.AreEqual(source.CustomerUid, destination.CustomerUid, "CustomerUid has not been mapped correctly");
+      Assert.AreEqual(0, string.Compare(source.CustomerUid, destination.CustomerUid, StringComparison.OrdinalIgnoreCase), "CustomerUid has not been mapped correctly");
       Assert.AreEqual(source.ImportedFileType, destination.ImportedFileType,
         "ImportedFileType has not been mapped correctly");
       Assert.AreEqual(source.DxfUnitsType, destination.DxfUnitsType, "DxfUnitsType has not been mapped correctly");
@@ -129,9 +135,9 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void MapNhOpImportedFile_RemoveSurveyedUtcFromName()
     {
-      // JB topo southern motorway_2010-11 - 29T153300Z.TTM   SS=2010-11-29 15:33:00.0000000
+      // JB topo southern motorway_2010-11-29T153300Z.TTM   SS=2010-11-29 15:33:00.0000000
 
-      var nhOpName = "JB topo southern motorway_2010-11 - 29T153300Z.TTM";
+      var nhOpName = "JB topo southern motorway_2010-11-29T153300Z.TTM";
       var expectedProjectName = "JB topo southern motorway.TTM";
       var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
 
@@ -141,10 +147,10 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void MapNhOpImportedFile_RemoveSurveyedUtcFromName_DoubleUtc()
     {
-      // Aerial Survey 120819_2012 - 08 - 19T035400Z_2016 - 08 - 16T003724Z.TTM ssUtc=2016-08-16 00:37:24.0000000
+      // Aerial Survey 120819_2012-08-19T035400Z_2016-08-16T003724Z.TTM ssUtc=2016-08-16 00:37:24.0000000
 
-      var nhOpName = "Aerial Survey 120819_2012 - 08 - 19T035400Z_2016 - 08 - 16T003724Z.TTM";
-      var expectedProjectName = "Aerial Survey 120819.TTM";
+      var nhOpName = "Aerial Survey 120819_2012-08-19T035400Z_2016-08-16T003724Z.TTM";
+      var expectedProjectName = "Aerial Survey 120819_2012-08-19T035400Z.TTM";
       var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
 
       Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
@@ -153,7 +159,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void MapNhOpImportedFile_IncludeSurveyedUtcInName()
     {
-      // JB topo southern motorway_2010-11 - 29T153300Z.TTM   SS=2010-11-29 15:33:00.0000000
+      // JB topo southern motorway_2010-11-29T153300Z.TTM   SS=2010-11-29 15:33:00.0000000
 
       var projectName = "JB topo southern motorway.TTM";
       var surveyUtc = new DateTime(2010, 11, 29, 15, 33, 00);
@@ -166,7 +172,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void MapNhOpImportedFile_IncludeSurveyedUtcInName_Double()
     {
-      // Aerial Survey 120819_2012 - 08 - 19T035400Z_2016 - 08 - 16T003724Z.TTM ssUtc=2016-08-16 00:37:24.0000000
+      // Aerial Survey 120819_2012-08-19T035400Z_2016-08-16T003724Z.TTM ssUtc=2016-08-16 00:37:24.0000000
 
       var projectName = "Aerial Survey 120819_2012-08-19T035400Z.TTM";
       var surveyUtc = new DateTime(2016, 8, 16, 0, 37, 24);
@@ -175,5 +181,50 @@ namespace VSS.Productivity3D.Scheduler.Tests
 
       Assert.AreEqual(expectedNhOpName, nhOpName, "File name has not been converted correctly");
     }
+
+    [TestMethod]
+    public void MapNhOpImportedFile_RemoveSurveyedUtcFromNameWithUnderscores()
+    {
+      var nhOpName = "Surveyed_Surface_2010-11-29T153300Z.TTM";
+      var expectedProjectName = "Surveyed_Surface.TTM";
+      var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
+
+      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
+    }
+
+    [TestMethod]
+    public void MapNhOpImportedFile_RemoveSurveyedUtcFromNameWithNoSurveyedUtc()
+    {
+      var nhOpName = "Design_Surface.TTM";
+      var expectedProjectName = nhOpName;
+      var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
+
+      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
+    }
+    public async Task CanGet3DpmBearerTokenMoq()
+    {
+      var raptorProxy = new Mock<IRaptorProxy>();
+      var tPaasProxy = new Mock<ITPaasProxy>();
+      var accessToken = "blah";
+      raptorProxy.Setup(ps => ps.NotifyImportedFileChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      tPaasProxy.Setup(ps => ps.Get3DPmSchedulerBearerToken(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(new TPaasOauthResult() { tPaasOauthRawResult = new TPaasOauthRawResult() { access_token = accessToken } });
+      var importFileSync = new ImportedFileSynchronizerBase(_configStore, _logger, raptorProxy.Object, tPaasProxy.Object);
+      var bearer = await importFileSync.Get3DPmSchedulerBearerToken().ConfigureAwait(false);
+
+      Assert.AreEqual(accessToken, bearer, "should have returned a bearer token");
+    }
+
+    //[TestMethod]
+    //public async Task CanGet3DpmBearerToken()
+    //{
+    // done as part of acceptance tests  
+    //  var raptorProxy = serviceProvider.GetRequiredService<IRaptorProxy>();
+    //  var tPaasProxy = serviceProvider.GetRequiredService<ITPaasProxy>();
+    //  var importFileSync = new ImportedFileSynchronizerBase(_configStore, _logger, raptorProxy, tPaasProxy);
+    //  var bearer = await importFileSync.Get3DPmSchedulerBearerToken().ConfigureAwait(false);
+
+    //  Assert.AreNotEqual(string.Empty, bearer, "should have returned a bearer token");
+    //}
+
   }
 }
