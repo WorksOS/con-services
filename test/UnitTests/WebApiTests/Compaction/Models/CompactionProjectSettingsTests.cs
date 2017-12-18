@@ -262,7 +262,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 
       //shrinkage out of range
       CompactionProjectSettings settings = CompactionProjectSettings.CreateProjectSettings(
-        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 0, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25 });
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 101, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25 });
       Assert.IsFalse(validator.TryValidate(settings, out results));
 
       //Shrinkage missing value
@@ -279,7 +279,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 
       //bulking out of range
       CompactionProjectSettings settings = CompactionProjectSettings.CreateProjectSettings(
-        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 0, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25 });
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 101, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25 });
       Assert.IsFalse(validator.TryValidate(settings, out results));
 
       //Bulking missing value
