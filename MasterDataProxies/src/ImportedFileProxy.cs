@@ -28,7 +28,7 @@ namespace VSS.MasterData.Proxies
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
     {
-      FileDataSingleResult response = await SendImportedFileToWebApi(file.path + file.flowFilename, projectUid,
+      FileDataSingleResult response = await SendImportedFileToWebApi($"{file.path}/{file.flowFilename}", projectUid,
         importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, "POST");
       log.LogDebug("ImportedFileProxy.CreateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
@@ -40,7 +40,7 @@ namespace VSS.MasterData.Proxies
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
     {
-      FileDataSingleResult response = await SendImportedFileToWebApi(file.path + file.flowFilename, projectUid,
+      FileDataSingleResult response = await SendImportedFileToWebApi($"{file.path}/{file.flowFilename}", projectUid,
         importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, "PUT");
       log.LogDebug("ImportedFileProxy.UpdateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
@@ -60,7 +60,7 @@ namespace VSS.MasterData.Proxies
     private const string BOUNDARY = "------WebKitFormBoundarym45GFZc25WVhjtVB";
     private const string BOUNDARY_START = "----WebKitFormBoundarym45GFZc25WVhjtVB";
 
-    public async Task<FileDataSingleResult> SendImportedFileToWebApi(string importedFileName, Guid projectUid, ImportedFileType importedFileType,
+    private async Task<FileDataSingleResult> SendImportedFileToWebApi(string importedFileName, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null, string method = "POST")
     {
@@ -73,7 +73,7 @@ namespace VSS.MasterData.Proxies
       {
         queryParameters += $"&DxfUnitsType={dxfUnitsType}";
       }
-      return await UploadFileToWebApi(importedFileName, queryParameters, method);
+      return await UploadFileToWebApi(importedFileName, queryParameters, method, customHeaders);
     }
 
     private string FormattedDate(DateTime? utcDate)
