@@ -294,7 +294,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <param name="returnEarliest">Determines if earliest or latest cell pass is used. Used by summary volumes filters only.</param>
     /// <returns>An instance of the Filter class.</returns>
-    protected async Task<Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid, bool? returnEarliest = null)
+    protected async Task<Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid)
     {
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
@@ -322,6 +322,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               var layerMethod = filterData.layerNumber.HasValue
                 ? FilterLayerMethod.TagfileLayerNumber
                 : FilterLayerMethod.None;
+
+              bool? returnEarliest = null;
+              if (filterData.elevationType.HasValue)
+              {
+                if (filterData.elevationType == ElevationType.First) returnEarliest = true;
+              }
 
               return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
                 filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
