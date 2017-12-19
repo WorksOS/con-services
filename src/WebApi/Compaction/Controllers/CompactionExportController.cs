@@ -58,6 +58,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IProductionDataRequestFactory requestFactory;
 
+    private readonly string _awsAccessKey;
+    private readonly string _awsSecretKey;
+    private readonly string _awsBucketName;
+
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -71,7 +76,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="exceptionHandler">The exception handler.</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
     /// <param name="prefProxy">User preferences proxy</param>
-    /// <param name="prefProxy">The user preferences proxy</param>
     public CompactionExportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IPreferenceProxy prefProxy) :
@@ -82,6 +86,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.logger = logger;
       this.prefProxy = prefProxy;
       this.requestFactory = requestFactory;
+
+      _awsAccessKey = configStore.GetValueString("AWS_ACCESS_KEY");
+      _awsSecretKey = configStore.GetValueString("AWS_SECRET_KEY");
+      _awsBucketName = configStore.GetValueString("AWS_BUCKET_NAME");
+
+      if (string.IsNullOrEmpty(_awsAccessKey) || string.IsNullOrEmpty(_awsSecretKey) ||
+          string.IsNullOrEmpty(_awsBucketName))
+      {
+        throw new Exception("Missing environment variable AWS_ACCESS_KEY, AWS_SECRET_KEY or AWS_BUCKET_NAME");
+      }
     }
 
     /// <summary>
@@ -143,30 +157,30 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
 
     /// <summary>
-    /// Tries the get export status.
+    /// Tries to get export status.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <param name="jobId">The job identifier.</param>
     /// <param name="scheduler">The scheduler.</param>
     /// <returns></returns>
     /// <exception cref="ServiceException">new ContractExecutionResult(-1,"Job failed for some reason")</exception>
-    /// <exception cref="ContractExecutionResult">-1 - Job failed for some reason</exception>
+    /// <exception cref="ContractExecutionResult">-4 - Job failed for some reason</exception>
     [ProjectUidVerifier]
     [Route("api/v2/export/veta/status")]
     [HttpGet]
     public async Task<ContractExecutionResult> TryGetExportStatus([FromQuery] Guid projectUid, [FromQuery] string jobId,
       [FromServices] ISchedulerProxy scheduler)
     {
-      var jobStatus = await scheduler.GetVetaExportJobStatus(projectUid, jobId);
-      if (jobStatus.Item2 == "COMPLETE")
+      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId);
+      if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
       {
         return  new ContractExecutionResult();
       }
-      else if (jobStatus.Item2 != "FAILED")
+      if (!jobResult.status.Equals("FAILED", StringComparison.OrdinalIgnoreCase))
       {
-        return new ContractExecutionResult(ContractExecutionStatesEnum.PartialData,"Job is running");
+        return new ContractExecutionResult(ContractExecutionStatesEnum.PartialData, "Job is running");
       }
-      throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(-1,"Job failed for some reason"));
+      throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Job failed for some reason"));
     }
 
     /// <summary>
@@ -177,26 +191,26 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="scheduler">The scheduler.</param>
     /// <returns></returns>
     /// <exception cref="ServiceException">new ContractExecutionResult(-1, "File is not likely ready to be downloaded")</exception>
-    /// <exception cref="ContractExecutionResult">-1 - File is not likely ready to be downloaded</exception>
+    /// <exception cref="ContractExecutionResult">-4 - File is not likely ready to be downloaded</exception>
     [ProjectUidVerifier]
     [Route("api/v2/export/veta/download")]
     [HttpGet]
     public async Task<FileResult> TryDownload([FromQuery] Guid projectUid, [FromQuery] string jobId,
       [FromServices] ISchedulerProxy scheduler)
     {
-      var jobStatus = await scheduler.GetVetaExportJobStatus(projectUid, jobId);
+      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId);
 
-      if (jobStatus.Item2 == "COMPLETE")
+      if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
       {
         using (var transferUtil =
-          new TransferUtility(ConfigStore.GetValueString("AWS_ACCESS_KEY"),
-            ConfigStore.GetValueString("AWS_SECRET_KEY")))
+          new TransferUtility(_awsAccessKey, _awsSecretKey))
         {
-          var stream = await transferUtil.OpenStreamAsync(ConfigStore.GetValueString("AWS_BUCKET_NAME"), jobStatus.Item1);
+          var stream = await transferUtil.OpenStreamAsync(_awsBucketName, jobResult.key);
           return new FileStreamResult(stream,"application/octet-stream");
         }
       }
-      throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(-1, "File is not likely ready to be downloaded"));
+      throw new ServiceException(HttpStatusCode.InternalServerError, 
+        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "File is likely not ready to be downloaded"));
     }
 
 
@@ -361,8 +375,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectId"></param>
     /// <param name="filter"></param>
-    /// <param name="startUtc"></param>
-    /// <param name="endUtc"></param>
     private Tuple<DateTime, DateTime> GetDateRange(long projectId, Common.Models.Filter filter)
     {
       if (filter?.StartUtc == null || !filter.EndUtc.HasValue)
