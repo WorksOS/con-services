@@ -977,7 +977,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       Assert.AreEqual(packager.CellList[0].Station, result[0].x, WrongStation1);
       Assert.AreEqual(yExpected, result[0].y, WrongY_1);
       Assert.AreEqual(y2Expected, result[0].y2, WrongY2_1);
-      Assert.AreEqual(valueExpected, result[0].value, WrongValue1);
+      Assert.AreEqual(-valueExpected, result[0].value, WrongValue1);
 
       Assert.AreEqual(ProfileCellType.MidPoint, result[1].cellType, WrongCellType2);
       Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result[1].x, WrongStation2);
@@ -985,7 +985,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result[1].x, WrongStation2);
       Assert.AreEqual(yExpected, result[1].y, WrongY_2);
       Assert.AreEqual(y2Expected, result[1].y2, WrongY2_2);
-      Assert.AreEqual(valueExpected, result[1].value, WrongValue2);
+      Assert.AreEqual(-valueExpected, result[1].value, WrongValue2);
     }
 
     [TestMethod]
@@ -1020,14 +1020,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       GetRawExpectedValues(calcType, packager.CellList[0], out yExpected, out y2Expected, out valueExpected);
       Assert.AreEqual(yExpected, result[0].y, WrongY_1);
       Assert.AreEqual(y2Expected, result[0].y2, WrongY2_1);
-      Assert.AreEqual(valueExpected, result[0].value, WrongValue1);
+      Assert.AreEqual(-valueExpected, result[0].value, WrongValue1);
 
       Assert.AreEqual(ProfileCellType.Edge, result[1].cellType, WrongCellType2);
       Assert.AreEqual(packager.CellList[1].Station, result[1].x, WrongStation2);
       GetInterpolatedExpectedValues(calcType, packager.CellList[1], out yExpected, out y2Expected, out valueExpected, 300F, 400F);
       Assert.AreEqual(yExpected, result[1].y, WrongY_2);
       Assert.AreEqual(y2Expected, result[1].y2, WrongY2_2);
-      Assert.AreEqual(valueExpected, result[1].value, WrongValue2);
+      Assert.AreEqual(-valueExpected, result[1].value, WrongValue2);
 
       Assert.AreEqual(ProfileCellType.MidPoint, result[2].cellType, WrongCellType3);
       var expectedStation = packager.CellList[1].Station +
@@ -1036,14 +1036,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       GetRawExpectedValues(calcType, packager.CellList[1], out yExpected, out y2Expected, out valueExpected);
       Assert.AreEqual(yExpected, result[2].y, WrongY_3);
       Assert.AreEqual(y2Expected, result[2].y2, WrongY2_3);
-      Assert.AreEqual(valueExpected, result[2].value, WrongValue3);
+      Assert.AreEqual(-valueExpected, result[2].value, WrongValue3);
 
       Assert.AreEqual(ProfileCellType.Edge, result[3].cellType, WrongCellType4);
       Assert.AreEqual(packager.CellList[2].Station, result[3].x, WrongStation4);
       GetInterpolatedExpectedValues(calcType, packager.CellList[2], out yExpected, out y2Expected, out valueExpected, 320F, 420F);
       Assert.AreEqual(yExpected, result[3].y, WrongY_4);
       Assert.AreEqual(y2Expected, result[3].y2, WrongY2_4);
-      Assert.AreEqual(valueExpected, result[3].value, WrongValue4);
+      Assert.AreEqual(-valueExpected, result[3].value, WrongValue4);
 
       Assert.AreEqual(ProfileCellType.MidPoint, result[4].cellType, WrongCellType5);
       expectedStation = packager.CellList[2].Station +
@@ -1052,21 +1052,21 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       GetRawExpectedValues(calcType, packager.CellList[2], out yExpected, out y2Expected, out valueExpected);
       Assert.AreEqual(yExpected, result[4].y, WrongY_5);
       Assert.AreEqual(y2Expected, result[4].y2, WrongY2_5);
-      Assert.AreEqual(valueExpected, result[4].value, WrongValue5);
+      Assert.AreEqual(-valueExpected, result[4].value, WrongValue5);
 
       Assert.AreEqual(ProfileCellType.Edge, result[5].cellType, WrongCellType6);
       Assert.AreEqual(packager.CellList[3].Station, result[5].x, WrongStation6);
       GetInterpolatedExpectedValues(calcType, packager.CellList[3], out yExpected, out y2Expected, out valueExpected, 305F, 405F);
       Assert.AreEqual(yExpected, result[5].y, WrongY_6);
       Assert.AreEqual(y2Expected, result[5].y2, WrongY2_6);
-      Assert.AreEqual(valueExpected, result[5].value, WrongValue6);
+      Assert.AreEqual(-valueExpected, result[5].value, WrongValue6);
 
       Assert.AreEqual(ProfileCellType.MidPoint, result[6].cellType, WrongCellType7);
       Assert.AreEqual(packager.CellList[3].Station + packager.CellList[3].InterceptLength, result[6].x, WrongStation7);
       GetRawExpectedValues(calcType, packager.CellList[3], out yExpected, out y2Expected, out valueExpected);
       Assert.AreEqual(yExpected, result[6].y, WrongY_7);
       Assert.AreEqual(y2Expected, result[6].y2, WrongY2_7);
-      Assert.AreEqual(valueExpected, result[6].value, WrongValue7);
+      Assert.AreEqual(-valueExpected, result[6].value, WrongValue7);
     }
 
     [TestMethod]
@@ -1101,7 +1101,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       GetRawExpectedValues(calcType, packager.CellList[0], out yExpected, out y2Expected, out valueExpected);
       Assert.AreEqual(yExpected, result[0].y, WrongY_1);
       Assert.AreEqual(y2Expected, result[0].y2, WrongY2_1);
-      Assert.AreEqual(valueExpected, result[0].value, WrongValue1);
+      Assert.AreEqual(-valueExpected, result[0].value, WrongValue1);
 
       Assert.AreEqual(ProfileCellType.Gap, result[1].cellType, WrongCellType2);
       Assert.AreEqual(packager.CellList[0].Station + packager.CellList[0].InterceptLength, result[1].x, WrongStation2);
@@ -1115,7 +1115,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       GetInterpolatedExpectedValues(calcType, packager.CellList[1], out yExpected, out y2Expected, out valueExpected, 272F, 372F);
       Assert.AreEqual(yExpected, result[2].y, WrongY_3);
       Assert.AreEqual(y2Expected, result[2].y2, WrongY2_3);
-      Assert.AreEqual(valueExpected, result[2].value, WrongValue3);
+      Assert.AreEqual(-valueExpected, result[2].value, WrongValue3);
 
       Assert.AreEqual(ProfileCellType.MidPoint, result[3].cellType, WrongCellType4);
       var expectedStation = packager.CellList[1].Station +
@@ -1124,21 +1124,21 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       GetRawExpectedValues(calcType, packager.CellList[1], out yExpected, out y2Expected, out valueExpected);
       Assert.AreEqual(yExpected, result[3].y, WrongY_4);
       Assert.AreEqual(y2Expected, result[3].y2, WrongY2_4);
-      Assert.AreEqual(valueExpected, result[3].value, WrongValue4);
+      Assert.AreEqual(-valueExpected, result[3].value, WrongValue4);
 
       Assert.AreEqual(ProfileCellType.Edge, result[4].cellType, WrongCellType5);
       Assert.AreEqual(packager.CellList[2].Station, result[4].x, WrongStation5);
       GetInterpolatedExpectedValues(calcType, packager.CellList[2], out yExpected, out y2Expected, out valueExpected, 305F, 405F);
       Assert.AreEqual(yExpected, result[4].y, WrongY_5);
       Assert.AreEqual(y2Expected, result[4].y2, WrongY2_5);
-      Assert.AreEqual(valueExpected, result[4].value, WrongValue5);
+      Assert.AreEqual(-valueExpected, result[4].value, WrongValue5);
 
       Assert.AreEqual(ProfileCellType.MidPoint, result[5].cellType, WrongCellType6);
       Assert.AreEqual(packager.CellList[2].Station + packager.CellList[2].InterceptLength, result[5].x, WrongStation6);
       GetRawExpectedValues(calcType, packager.CellList[2], out yExpected, out y2Expected, out valueExpected);
       Assert.AreEqual(yExpected, result[5].y, WrongY_6);
       Assert.AreEqual(y2Expected, result[5].y2, WrongY2_6);
-      Assert.AreEqual(valueExpected, result[5].value, WrongValue6);
+      Assert.AreEqual(-valueExpected, result[5].value, WrongValue6);
     }
 
     private void GetRawExpectedValues(VolumeCalcType calcType, TICSummaryVolumesProfileCell cell, out float yExpected, out float y2Expected, out float valueExpected)
@@ -1329,14 +1329,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       GetRawExpectedValues(calcType, svPackager.CellList[0], out yExpected, out y2Expected, out valueExpected);
       Assert.AreEqual(yExpected, sumVolData[0].y, WrongY_1);
       Assert.AreEqual(y2Expected, sumVolData[0].y2, WrongY2_1);
-      Assert.AreEqual(valueExpected, sumVolData[0].value, WrongValue1);
+      Assert.AreEqual(-valueExpected, sumVolData[0].value, WrongValue1);
 
       Assert.AreEqual(ProfileCellType.Edge, sumVolData[1].cellType, WrongCellType2);
       Assert.AreEqual(svPackager.CellList[1].Station, sumVolData[1].x, WrongStation2);
       GetInterpolatedExpectedValues(calcType, svPackager.CellList[1], out yExpected, out y2Expected, out valueExpected, 300F, 400F);
       Assert.AreEqual(yExpected, sumVolData[1].y, WrongY_2);
       Assert.AreEqual(y2Expected, sumVolData[1].y2, WrongY2_2);
-      Assert.AreEqual(valueExpected, sumVolData[1].value, WrongValue2);
+      Assert.AreEqual(-valueExpected, sumVolData[1].value, WrongValue2);
 
       Assert.AreEqual(ProfileCellType.MidPoint, sumVolData[2].cellType, WrongCellType3);
       expectedStation = svPackager.CellList[1].Station +
@@ -1345,14 +1345,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       GetRawExpectedValues(calcType,svPackager.CellList[1], out yExpected, out y2Expected, out valueExpected);
       Assert.AreEqual(yExpected, sumVolData[2].y, WrongY_3);
       Assert.AreEqual(y2Expected, sumVolData[2].y2, WrongY2_3);
-      Assert.AreEqual(valueExpected, sumVolData[2].value, WrongValue3);
+      Assert.AreEqual(-valueExpected, sumVolData[2].value, WrongValue3);
 
       Assert.AreEqual(ProfileCellType.Edge, sumVolData[3].cellType, WrongCellType4);
       Assert.AreEqual(svPackager.CellList[2].Station, sumVolData[3].x, WrongStation4);
       GetInterpolatedExpectedValues(calcType, svPackager.CellList[2], out yExpected, out y2Expected, out valueExpected, 320F, 420F);
       Assert.AreEqual(yExpected, sumVolData[3].y, WrongY_4);
       Assert.AreEqual(y2Expected, sumVolData[3].y2, WrongY2_4);
-      Assert.AreEqual(valueExpected, sumVolData[3].value, WrongValue4);
+      Assert.AreEqual(-valueExpected, sumVolData[3].value, WrongValue4);
 
       Assert.AreEqual(ProfileCellType.MidPoint, sumVolData[4].cellType, WrongCellType5);
       expectedStation = svPackager.CellList[2].Station +
@@ -1361,21 +1361,21 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       GetRawExpectedValues(calcType, svPackager.CellList[2], out yExpected, out y2Expected, out valueExpected);
       Assert.AreEqual(yExpected, sumVolData[4].y, WrongY_5);
       Assert.AreEqual(y2Expected, sumVolData[4].y2, WrongY2_5);
-      Assert.AreEqual(valueExpected, sumVolData[4].value, WrongValue5);
+      Assert.AreEqual(-valueExpected, sumVolData[4].value, WrongValue5);
 
       Assert.AreEqual(ProfileCellType.Edge, sumVolData[5].cellType, WrongCellType6);
       Assert.AreEqual(svPackager.CellList[3].Station, sumVolData[5].x, WrongStation6);
       GetInterpolatedExpectedValues(calcType, svPackager.CellList[3], out yExpected, out y2Expected, out valueExpected, 305F, 405F);
       Assert.AreEqual(yExpected, sumVolData[5].y, WrongY_6);
       Assert.AreEqual(y2Expected, sumVolData[5].y2, WrongY2_6);
-      Assert.AreEqual(valueExpected, sumVolData[5].value, WrongValue6);
+      Assert.AreEqual(-valueExpected, sumVolData[5].value, WrongValue6);
 
       Assert.AreEqual(ProfileCellType.MidPoint, sumVolData[6].cellType, WrongCellType7);
       Assert.AreEqual(svPackager.CellList[3].Station + svPackager.CellList[3].InterceptLength, sumVolData[6].x, WrongStation7);
       GetRawExpectedValues(calcType, svPackager.CellList[3], out yExpected, out y2Expected, out valueExpected);
       Assert.AreEqual(yExpected, sumVolData[6].y, WrongY_7);
       Assert.AreEqual(y2Expected, sumVolData[6].y2, WrongY2_7);
-      Assert.AreEqual(valueExpected, sumVolData[6].value, WrongValue7);
+      Assert.AreEqual(-valueExpected, sumVolData[6].value, WrongValue7);
     }
 
     private CompactionProfileResult<CompactionProfileDataResult> MockGetCombinedProfile(TICProfileCellListPackager pdPackager, TICSummaryVolumesProfileCellListPackager svPackager, VolumeCalcType calcType)
