@@ -32,7 +32,7 @@ namespace MockProjectWebApi
             {
               options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
                       .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization", "X-VisionLink-CustomerUid", "X-VisionLink-UserUid")
-                      .WithMethods("OPTIONS", "TRACE", "GET", "HEAD"));
+                      .WithMethods("OPTIONS", "TRACE", "GET", "POST", "DELETE", "PUT", "HEAD"));
             });
 
             services.AddMvc();

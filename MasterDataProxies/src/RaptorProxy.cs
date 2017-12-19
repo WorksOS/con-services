@@ -157,7 +157,7 @@ namespace VSS.MasterData.Proxies
         $"?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}&filterUid={filterUid}");
       if (result.ResultCode==0)
       {
-        log.LogDebug("RaptorProxy.GetVetaExportData: Successfull Export" );
+        log.LogDebug("RaptorProxy.GetVetaExportData: Successful Export" );
         return new ExportData {Data = result.ExportData, Code = result.ResultCode, Message = result.Message};
       }
       else

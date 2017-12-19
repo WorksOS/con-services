@@ -50,7 +50,7 @@ namespace VSS.MasterData.Proxies
 
     public async Task<BaseDataResult> DeleteImportedFile(Guid projectUid, Guid importedFileUid, IDictionary<string, string> customHeaders = null)
     {
-      BaseDataResult response = await SendRequest<BaseDataResult>("IMPORTED_FILE_API_URL", null, customHeaders, null, "DELETE");
+      BaseDataResult response = await SendRequest<BaseDataResult>("IMPORTED_FILE_API_URL2", null, customHeaders, null, "DELETE");
       log.LogDebug("ImportedFileProxy.DeleteImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -104,8 +104,8 @@ namespace VSS.MasterData.Proxies
         {
           customHeaders = new Dictionary<string, string>();
         }
-        customHeaders.Add("ContentType", "multipart/form-data; boundary=" + BOUNDARY_START);
-        return await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL", content, customHeaders, queryParameters, method);
+        customHeaders.Add("Content-Type", "multipart/form-data; boundary=" + BOUNDARY_START);
+        return await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL2", content, customHeaders, queryParameters, method);
       }
     }
 
