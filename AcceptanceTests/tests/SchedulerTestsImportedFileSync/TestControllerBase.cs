@@ -209,11 +209,11 @@ namespace SchedulerTestsImportedFileSync
       var dbConnection = new SqlConnection(nhOpDbConnectionString);
       dbConnection.Open();
 
-      var customerId = dbConnection.QuerySingle<long>(
+      var customerId = dbConnection.QuerySingleOrDefault<long>(
         @"SELECT ID FROM Customer WHERE ID = @legacyCustomerId",
         new { legacyCustomerId });
 
-      var projectId = dbConnection.QuerySingle<long>(
+      var projectId = dbConnection.QuerySingleOrDefault<long>(
         @"SELECT ID FROM Project WHERE ID = @legacyProjectId",
         new { legacyProjectId });
 

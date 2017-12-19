@@ -20,7 +20,7 @@ namespace SchedulerTestsImportedFileSync
     private string _projectDbConnectionString;
     private string _nhOpDbConnectionString;
 
-    private long _fixedLegacyCustomerId = 99999996;
+    private long _fixedLegacyCustomerId = 9999999;
     private long _fixedLegacyProjectId = 1001158;
     private string _fixedCustomerUid = Guid.NewGuid().ToString();
     private string _fixedProjectUid = "ff91dd40-1569-4765-a2bc-014321f76ace";

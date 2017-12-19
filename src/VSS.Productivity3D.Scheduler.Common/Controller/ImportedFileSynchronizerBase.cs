@@ -286,7 +286,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
       if (await FileRepo.FileExists(fileDescriptor.filespaceId, fullFileName))
       {
-        using (Stream inStream = await FileRepo.GetFile(FileSpaceId, fullFileName))
+        using (Stream inStream = await FileRepo.GetFile(fileDescriptor.filespaceId, fullFileName))
         {
           if (inStream.Length > 0)
           {

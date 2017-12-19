@@ -201,7 +201,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               Guid.Parse(projectEvent.ImportedFileUid))
             .ConfigureAwait(false);
       }
-      else
+      else if (projectEvent.ImportedFileType == ImportedFileType.Linework || 
+               projectEvent.ImportedFileType == ImportedFileType.DesignSurface || 
+               projectEvent.ImportedFileType == ImportedFileType.Alignment)
       {
         await DownloadFileAndCallProjectWebApi(projectEvent, true).ConfigureAwait(false);
       }
@@ -266,7 +268,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               Guid.Parse(gotMatchingProject.ImportedFileUid))
             .ConfigureAwait(false);
       }
-      else
+      else if (gotMatchingProject.ImportedFileType == ImportedFileType.Linework ||
+               gotMatchingProject.ImportedFileType == ImportedFileType.DesignSurface ||
+               gotMatchingProject.ImportedFileType == ImportedFileType.Alignment)
       {
         await DownloadFileAndCallProjectWebApi(gotMatchingProject, false).ConfigureAwait(false);
       }
