@@ -77,11 +77,24 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
         if (fileType == ImportedFileType.SurveyedSurface)
         {
           log.LogDebug("Discarding ground surface file in Raptor");
-          if (!raptorClient.DiscardGroundSurfaceFileDetails(request.projectId.Value, request.FileId))
+          bool importedFileDiscardByNextGenFileIdResult =
+            raptorClient.DiscardGroundSurfaceFileDetails(request.projectId.Value, request.FileId);
+          bool importedFileDiscardByLegacyFileIdResult = true;
+
+          if (request.LegacyFileId.HasValue)
           {
+            importedFileDiscardByLegacyFileIdResult =
+              raptorClient.DiscardGroundSurfaceFileDetails(request.projectId.Value, request.LegacyFileId.Value);
+          }
+
+          // one or the other should be deleted
+          if (!importedFileDiscardByNextGenFileIdResult && !importedFileDiscardByLegacyFileIdResult)
+          {
+            var whichOneFailed = importedFileDiscardByNextGenFileIdResult
+              ? $"LegacyFileId {request.LegacyFileId}"  :  $"nextGenId {request.FileId}";
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                "Failed to discard ground surface file"));
+                $"Failed to discard ground surface file by {whichOneFailed}"));
           }
         }
 
