@@ -35,7 +35,7 @@ namespace BookMark
         public XDocument UpdateSelectedBookMarksXmlDataWithNewDate(DateTime newDateTime, string fileName, List<XmlBookMark> selectedBookMarks)
         {
             XDocument xDoc = XDocument.Load(fileName);
-            var elementsToUpdate = xDoc.Descendants().Where(o => o.Name == "BookmarkUTC" || o.Name == "Key");
+            var elementsToUpdate = xDoc.Descendants().Where(o => o.Name == "BookmarkUTC" || o.Name == "Key" || o.Name == "OrgIsDisabled");
             bool containsItem = false;
             foreach (XElement element in elementsToUpdate)
             {
@@ -47,7 +47,7 @@ namespace BookMark
                 {
                     element.Value = newDateTime.ToString("yyyy-MM-dd") + "T00:00:00";
                 }
-            }
+      }
 
             var cutDownDocument = RemoveAllElementsThatDidNotGetUpdated(selectedBookMarks, xDoc);
             return cutDownDocument;
@@ -96,7 +96,8 @@ namespace BookMark
                                                                     o.Name == "LastUpdateDateTime" || 
                                                                     o.Name == "LastFilesProcessed" || 
                                                                     o.Name == "LastFilesErrorneous" || 
-                                                                    o.Name == "TotalFilesProcessed") && !o.HasElements);
+                                                                    o.Name == "TotalFilesProcessed") ||
+                                                                    o.Name == "OrgIsDisabled" && !o.HasElements);
             List<XmlBookMark> xmlBookMarkList = LoadXmlBookMarksIntoAList(elementsToUpdate);
             return xmlBookMarkList;
         }
@@ -110,39 +111,42 @@ namespace BookMark
         {
             List<XmlBookMark> xmlBookMarkList = new List<XmlBookMark>();
             XmlBookMark xmlBookMark = new XmlBookMark();
-            foreach (XElement element in elementsToUpdate)
+          foreach (XElement element in elementsToUpdate)
+          {
+            switch (element.Name.ToString())
             {
-                switch (element.Name.ToString())
-                {
-                    case "BookmarkUTC":
-                    {
-                        xmlBookMark.BookmarkUtc = DateTime.Parse(element.Value);
-                        break;
-                    }
-                    case "Key":
-                    {
-                        xmlBookMark.Customer = element.Value;
-                        break;
-                    }
-                    case "LastUpdateDateTime":
-                    {
-                        xmlBookMark.LastUpdateDateTime = DateTime.Parse(element.Value);
-                        break;
-                    }
-                    case "LastFilesProcessed":
-                        xmlBookMark.LastFilesProcessed = element.Value;
-                        break;
-                    case "LastFilesErrorneous":
-                        xmlBookMark.LastFilesErrorneous = element.Value;
-                        break;
-                    case "TotalFilesProcessed":
-                        xmlBookMark.TotalFilesProcessed = element.Value;
-                        xmlBookMarkList.Add(xmlBookMark);
-                        xmlBookMark = new XmlBookMark();
-                        break;
-                }
+              case "BookmarkUTC":
+              {
+                xmlBookMark.BookmarkUtc = DateTime.Parse(element.Value);
+                break;
+              }
+              case "Key":
+              {
+                xmlBookMark.Customer = element.Value;
+                break;
+              }
+              case "LastUpdateDateTime":
+              {
+                xmlBookMark.LastUpdateDateTime = DateTime.Parse(element.Value);
+                break;
+              }
+              case "LastFilesProcessed":
+                xmlBookMark.LastFilesProcessed = element.Value;
+                break;
+              case "LastFilesErrorneous":
+                xmlBookMark.LastFilesErrorneous = element.Value;
+                break;
+              case "TotalFilesProcessed":
+                xmlBookMark.TotalFilesProcessed = element.Value;
+                xmlBookMarkList.Add(xmlBookMark);
+                xmlBookMark = new XmlBookMark();
+                break;
+              case "OrgIsDisabled":
+                xmlBookMark.Enabled = bool.Parse(element.Value);
+                break;
             }
-            return xmlBookMarkList;
+          }
+          return xmlBookMarkList;
         }
     }
 }

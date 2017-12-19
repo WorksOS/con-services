@@ -10,5 +10,7 @@ namespace BookMark
         public string LastFilesProcessed { get; set; }
         public string LastFilesErrorneous { get; set; }
         public string TotalFilesProcessed { get; set; }
+      public bool Enabled { get; set; }
     }
+    
 }

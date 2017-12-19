@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.ServiceProcess;
 using System.Text;
@@ -122,6 +123,8 @@ namespace TagFileHarvester
       OrgsHandler.BookmarkPath = TagFileHarvesterServiceSettings.Default.BookmarkPath;
 
       Directory.CreateDirectory(OrgsHandler.BookmarkPath);
+
+      ServicePointManager.DefaultConnectionLimit = 256;
 
       Log.Debug("TagFileHarvester.Start: Entered Start()");
       //register dependencies here

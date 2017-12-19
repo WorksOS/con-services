@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace BookMark
 {
@@ -10,13 +12,14 @@ namespace BookMark
         private string saveFileName = string.Empty;
         private List<XmlBookMark> xmlBookMarkList = new List<XmlBookMark>();
         private DateTime calendarSelected;
+      private string openFileName;
 
         public BookmarkFrm()
         {
             InitializeComponent();
-            monthCalendar.Hide();                     
+/*            monthCalendar.Hide();                     
             btnUpdate.Hide();
-            grpSave.Hide();
+            grpSave.Hide();*/
             lbSuccess.Text = string.Empty;
         }
 
@@ -31,7 +34,8 @@ namespace BookMark
             DialogResult result = ofd.ShowDialog();
             if (result == DialogResult.OK)
             {
-                return ofd.FileName;
+              openFileName = ofd.FileName;
+              return ofd.FileName;
             }
             return string.Empty;
         }
@@ -68,6 +72,7 @@ namespace BookMark
             foreach (var xmlitem in inListofBookMarks)
             {
                 dgvBookmarks.Rows.Add(false, 
+                                        xmlitem.Enabled,
                                         xmlitem.Customer, 
                                         xmlitem.BookmarkUtc, 
                                         xmlitem.LastUpdateDateTime,
@@ -122,6 +127,26 @@ namespace BookMark
             xmlDocument.Save(saveFileName);
             return selectedBookmarks.Count;
         }
+
+      private bool SaveSelectedDisabledOrgs(List<XmlBookMark> selectedBookmarks, bool disable)
+      {
+      XDocument xDoc = XDocument.Load(openFileName);
+        foreach (var selectedBookmark in selectedBookmarks)
+        {
+          var elementsToUpdate = xDoc.Descendants().Where(o => o.Name == "KeysAndValues" && o.Descendants().First(k => k.Name == "Key").Value==selectedBookmark.Customer);
+          elementsToUpdate.Descendants().First(k => k.Name == "Value").Descendants()
+            .First(k => k.Name == "OrgIsDisabled").Value = disable.ToString();
+
+        }
+
+        saveFileName = GetTheFileNameForTheOutputXmlFile();
+        if (string.IsNullOrEmpty(saveFileName))
+        {
+          return false;
+        }
+        xDoc.Save(saveFileName);
+        return true;
+    }
 
         /// <summary>
         /// Update and save XML file
@@ -198,7 +223,6 @@ namespace BookMark
         {
             calendarSelected = monthCalendar.SelectionStart;
             lbSuccess.Text = @"Date selected: " + calendarSelected.ToShortDateString();
-            btnUpdate.Show();
             grpSave.Show();
         }
  
@@ -222,6 +246,12 @@ namespace BookMark
                 }
             }
         }
-        #endregion
+    #endregion
+
+    private void execute_Click(object sender, EventArgs e)
+    {
+      List<XmlBookMark> selectedBookmarks = BuildSelectedBookmarksList();
+      SaveSelectedDisabledOrgs(selectedBookmarks, DisEn.Checked);
     }
+  }
 }

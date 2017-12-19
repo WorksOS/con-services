@@ -111,12 +111,12 @@ namespace TagFileHarvester
           var cancellationToken = new CancellationTokenSource();
           OrgProcessingTasks.Add(Container.Resolve<IHarvesterTasks>().StartNewLimitedConcurrency2(() =>
           {
-            new OrgProcessorTask(Container, o, cancellationToken, OrgProcessingTasks).ProcessOrg(false,
+              new OrgProcessorTask(Container, o, cancellationToken, OrgProcessingTasks).ProcessOrg(false,
               t => log
                 .InfoFormat("Tasks status is {0} in Queue1 and {1} in Queue2 on {2} Threads",
                   Container.Resolve<IHarvesterTasks>().Status().Item1,
                   Container.Resolve<IHarvesterTasks>().Status().Item2, GetUsedThreads()));
-          }, cancellationToken.Token), new Tuple<Organization, CancellationTokenSource>(o, cancellationToken));
+          }, cancellationToken.Token,false), new Tuple<Organization, CancellationTokenSource>(o, cancellationToken));
         });
         //Reversed situation - org has been removed from filespaces but there is a task - cancel it
         if (OrgProcessingTasks.Any(o => !orgs.Contains(o.Value.Item1)))
