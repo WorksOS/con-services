@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
 
       // Assert
       Assert.IsNotNull(result);
-      Assert.IsTrue(result.Message == "success", result.Message);
+      Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage, result.Message);
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
 
       // Assert
       Assert.IsNotNull(result);
-      Assert.IsTrue(result.Message == "success", result.Message);
+      Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage, result.Message);
     }
 
     /// <summary>
@@ -182,7 +182,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
 
       // Assert
       Assert.IsNotNull(result);
-      Assert.IsTrue(result.Message == "success", result.Message);
+      Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage, result.Message);
     }
 
     /// <summary>
@@ -248,7 +248,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
 
       // Assert
       Assert.IsNotNull(result);
-      Assert.IsTrue(result.Message == "success", result.Message);
+      Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage, result.Message);
     }
 
     /// <summary>

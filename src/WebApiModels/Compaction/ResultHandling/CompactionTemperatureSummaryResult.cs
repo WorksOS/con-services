@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
+using System;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by temperature Summary request for compaction
@@ -22,16 +22,21 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     private CompactionTemperatureSummaryResult()
     { }
 
-
     /// <summary>
     ///TemperatureSummaryResult create instance
     /// </summary>
     /// <param name="result">The temperature results from Raptor</param>
-    /// <param name="settings">The temperature settings used by Raptor</param>
     /// <returns>An instance of CompactionTemperatureSummaryResult</returns>
     public static CompactionTemperatureSummaryResult CreateTemperatureSummaryResult(TemperatureSummaryResult result)
     {
-      var temperatureResult = new CompactionTemperatureSummaryResult
+      const int noTemperatureData = 0;
+
+      if (Math.Abs(result.totalAreaCoveredSqMeters - noTemperatureData) < 0.001)
+      {
+        return new CompactionTemperatureSummaryResult { SummaryData = new TemperatureSummaryData { TemperatureTarget = new TemperatureTargetData() } };
+      }
+
+      return new CompactionTemperatureSummaryResult
       {
         SummaryData = new TemperatureSummaryData
         {
@@ -47,7 +52,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
           }
         }
       };
-      return temperatureResult;
     }
 
     /// <summary>

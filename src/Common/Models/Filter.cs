@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.Common.Models
   /// Defines all the filter parameters that may be supplied as a part of a request. Filters control spatial, temporal and attribute aspects of the info
   /// Filter will override filter ID, if both are selected.
   /// </summary>
-  public class Filter : IValidatable
+  public class Filter : IValidatable, IEquatable<Filter>
   {
     /// <summary>
     /// The ID for a filter if stored in the Filters service. Not required or used in the proper functioning of a filter.
@@ -470,5 +470,116 @@ namespace VSS.Productivity3D.Common.Models
                      "Only one type of filter boundary can be defined at one time"));
       }
     }
+
+    #region IEquatable
+    public bool Equals(Filter other)
+    {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return Id.Equals(other.Id) && 
+        string.Equals(Name, other.Name) &&
+             string.Equals(Description, other.Description) &&
+             StartUtc.Equals(other.StartUtc) && 
+             EndUtc.Equals(other.EndUtc)  &&
+             OnMachineDesignId == other.OnMachineDesignId && 
+             AssetIDs.ScrambledEquals(other.AssetIDs) &&
+             VibeStateOn == other.VibeStateOn && 
+             CompactorDataOnly.Equals(other.CompactorDataOnly) &&
+             ElevationType == other.ElevationType && 
+             PolygonLL.ScrambledEquals(other.PolygonLL) &&
+             PolygonGrid.ScrambledEquals(other.PolygonGrid) && 
+             ForwardDirection == other.ForwardDirection &&
+             (AlignmentFile == null ? other.AlignmentFile == null : AlignmentFile.Equals(other.AlignmentFile)) &&
+             StartStation.Equals(other.StartStation) && 
+             EndStation.Equals(other.EndStation) &&
+             LeftOffset.Equals(other.LeftOffset) && 
+             RightOffset.Equals(other.RightOffset) &&
+             string.Equals(MachineDesignName, other.MachineDesignName) && 
+             LayerType.Equals(other.LayerType) &&
+             (DesignOrAlignmentFile == null ? other.DesignOrAlignmentFile == null : DesignOrAlignmentFile.Equals(other.DesignOrAlignmentFile)) &&
+             BenchElevation.Equals(other.BenchElevation) && 
+             LayerNumber == other.LayerNumber &&
+             LayerThickness.Equals(other.LayerThickness) && 
+             ContributingMachines.ScrambledEquals(other.ContributingMachines) &&
+             SurveyedSurfaceExclusionList.ScrambledEquals(other.SurveyedSurfaceExclusionList) &&
+             ReturnEarliest.Equals(other.ReturnEarliest) && 
+             GpsAccuracy.Equals(other.GpsAccuracy) &&
+             GpsAccuracyIsInclusive.Equals(other.GpsAccuracyIsInclusive) && 
+             BladeOnGround.Equals(other.BladeOnGround) && 
+             TrackMapping.Equals(other.TrackMapping) && 
+             WheelTracking.Equals(other.WheelTracking);
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((Filter)obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = GetNullableHashCode(Id);
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(Name));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(Description));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(StartUtc));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(EndUtc));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(OnMachineDesignId));
+        hashCode = GetHashCode(hashCode, GetListHashCode(AssetIDs));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(VibeStateOn));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(CompactorDataOnly));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(ElevationType));
+        hashCode = GetHashCode(hashCode, GetListHashCode(PolygonLL));
+        hashCode = GetHashCode(hashCode, GetListHashCode(PolygonGrid));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(ForwardDirection));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(AlignmentFile));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(StartStation));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(EndStation));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(LeftOffset));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(RightOffset));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(MachineDesignName));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(LayerType));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(DesignOrAlignmentFile));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(BenchElevation));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(LayerNumber));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(LayerThickness));
+        hashCode = GetHashCode(hashCode, GetListHashCode(ContributingMachines));
+        hashCode = GetHashCode(hashCode, GetListHashCode(SurveyedSurfaceExclusionList));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(ReturnEarliest));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(GpsAccuracy));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(GpsAccuracyIsInclusive));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(BladeOnGround));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(TrackMapping));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(WheelTracking));
+
+        return hashCode;
+      }
+    }
+
+    private int GetHashCode(int totalHashCode, int singleHashCode)
+    {
+      return (totalHashCode * 397) ^ singleHashCode;
+    }
+
+    private int GetListHashCode<T>(List<T> list) => list != null ? list.GetListHashCode() : 0;
+
+    private int GetNullableHashCode<T>(T nullable)
+    {
+      return nullable == null ? 0 : nullable.GetHashCode();
+    }
+
+    public static bool operator ==(Filter left, Filter right)
+    {
+      return Equals(left, right);
+    }
+
+    public static bool operator !=(Filter left, Filter right)
+    {
+      return !Equals(left, right);
+    }
+    #endregion
   }
 }

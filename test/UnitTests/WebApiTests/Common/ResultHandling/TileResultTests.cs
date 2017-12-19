@@ -1,5 +1,6 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Common.ResultHandling
@@ -23,7 +24,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.ResultHandling
         var result = TileResult.EmptyTile(45, 67);
 
         Assert.IsInstanceOfType(result, typeof(TileResult));
-        Assert.AreEqual("success", result.Message);
+        Assert.AreEqual(ContractExecutionResult.DefaultMessage, result.Message);
         Assert.IsNotNull(result.TileData);
       }
     }

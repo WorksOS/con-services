@@ -46,11 +46,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// </summary>
     /// <param name="project">The project for the report</param>
     /// <param name="filter">The filter for production data tiles</param>
-    /// <param name="haveProdDataOverlay">True if doing production data tiles</param>
+    /// <param name="overlays">The overlay or layer types</param>
     /// <param name="baseFilter">The base filter for summary volumes</param>
     /// <param name="topFilter">The top filter for summary volumes</param>
     /// <returns>A bounding box in latitude/longitude (radians)</returns>
-    public MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, bool haveProdDataOverlay, Filter baseFilter, Filter topFilter)
+    public MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, TileOverlayType[] overlays, Filter baseFilter, Filter topFilter)
     {
       log.LogInformation($"GetBoundingBox: project {project.projectUid}");
 
@@ -82,9 +82,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       else
       {
         log.LogDebug("GetBoundingBox: No area filter");
-        //No area filter so use production data extents as the bounding box
-        //Only applies if doing production data tiles
-        if (haveProdDataOverlay)
+        //No area filter so use production data extents as the bounding box.
+        //Only applies if doing production data tiles.
+        //Also if doing the project boundary tile we assume the user wants to see that so production data extents not applicable.
+        if (overlays.Contains(TileOverlayType.ProductionData) && !overlays.Contains(TileOverlayType.ProjectBoundary))
         {
           var productionDataExtents = GetProductionDataExtents(project.projectId, filter);
           if (productionDataExtents != null)
@@ -105,7 +106,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         //invalid and and give problems. So need to check for this and use project extents in this case.
 
         //Also use project boundary extents if fail to get production data extents or not doing production data tiles
-        //e.g. project thumbnails
+        //e.g. project thumbnails or user has requested project boundary overlay
         var projectPoints = RaptorConverters.geometryToPoints(project.projectGeofenceWKT);
         var projectMinLat = projectPoints.Min(p => p.Lat);
         var projectMinLng = projectPoints.Min(p => p.Lon);
@@ -150,10 +151,14 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       bool adjust = false;
 
+      const double MARGIN_FACTOR = 1.1; //10% margin
+      var adjustedRequiredWidth = parameters.addMargin ? (int)Math.Round(requiredWidth * MARGIN_FACTOR) : requiredWidth;
+      var adjustedRequiredHeight = parameters.addMargin ? (int)Math.Round(requiredHeight * MARGIN_FACTOR) : requiredHeight;
+
       //Is it bigger or smaller than the requested size?
-      if (requiredWidth > parameters.mapWidth || requiredHeight > parameters.mapHeight)
+      if (adjustedRequiredWidth > parameters.mapWidth || adjustedRequiredHeight > parameters.mapHeight)
       {
-        log.LogDebug($"AdjustBoundingBoxToFit: scaling down");
+        log.LogDebug("AdjustBoundingBoxToFit: scaling down");
 
         //We'll make the bounding box bigger in the same shape as the requested tile and scale down once the tile has been drawn. 
         adjust = true;
@@ -164,13 +169,12 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         double ratio = ratioX > ratioY ? ratioX : ratioY;
 
         // now we can get the new height and width
-        int newHeight = Convert.ToInt32(parameters.mapHeight * ratio);
-        int newWidth = Convert.ToInt32(parameters.mapWidth * ratio);
+        var factor = parameters.addMargin ? MARGIN_FACTOR : 1.0; 
+        int newHeight = Convert.ToInt32(parameters.mapHeight * ratio * factor);
+        int newWidth = Convert.ToInt32(parameters.mapWidth * ratio * factor);
 
-        //Allow a little around the boundary
-        const int BORDER_PIXELS = 5;
-        var xDiff = Math.Abs(newWidth - requiredWidth) / 2 + BORDER_PIXELS;
-        var yDiff = Math.Abs(newHeight - requiredHeight) / 2 + BORDER_PIXELS;
+        var xDiff = Math.Abs(newWidth - requiredWidth) / 2;
+        var yDiff = Math.Abs(newHeight - requiredHeight) / 2;
 
         //Pixel origin is top left
         pixelMin.x -= xDiff;
@@ -184,31 +188,30 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
       else
       {
-        log.LogDebug($"AdjustBoundingBoxToFit: expanding to fill tile ");
-
+        log.LogDebug("AdjustBoundingBoxToFit: expanding to fill tile ");
+  
         //Expand the bounding box to fill the requested tile size
-        if (requiredWidth < parameters.mapWidth)
+        if (adjustedRequiredWidth < parameters.mapWidth)
         {
-          double scaleWidth = (double)parameters.mapWidth / requiredWidth;
-          requiredWidth = (int)(scaleWidth * requiredWidth);
+          double scaleWidth = (double)parameters.mapWidth / adjustedRequiredWidth;
+          adjustedRequiredWidth = (int)(scaleWidth * adjustedRequiredWidth);
           double pixelCenterX = pixelMin.x + (pixelMax.x - pixelMin.x) / 2.0;
           //Pixel origin is top left
-          pixelMin.x = pixelCenterX - requiredWidth / 2.0;
-          pixelMax.x = pixelCenterX + requiredWidth / 2.0;
+          pixelMin.x = pixelCenterX - adjustedRequiredWidth / 2.0;
+          pixelMax.x = pixelCenterX + adjustedRequiredWidth / 2.0;
           adjust = true;
         }
 
-        if (requiredHeight < parameters.mapHeight)
+        if (adjustedRequiredHeight < parameters.mapHeight)
         {
-          double scaleHeight = (double)parameters.mapHeight / requiredHeight;
-          requiredHeight = (int)(scaleHeight * requiredHeight);
+          double scaleHeight = (double)parameters.mapHeight / adjustedRequiredHeight;
+          adjustedRequiredHeight = (int)(scaleHeight * adjustedRequiredHeight);
           double pixelCenterY = pixelMin.y + (pixelMax.y - pixelMin.y) / 2.0;
           //Pixel origin is top left
-          pixelMin.y = pixelCenterY + requiredHeight / 2.0;
-          pixelMax.y = pixelCenterY - requiredHeight / 2.0;
+          pixelMin.y = pixelCenterY + adjustedRequiredHeight / 2.0;
+          pixelMax.y = pixelCenterY - adjustedRequiredHeight / 2.0;
           adjust = true;
         }
-
       }
 
       if (adjust)
@@ -410,7 +413,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
   public interface IBoundingBoxService
   {
-    MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, bool haveProdDataOverlay, Filter baseFilter, Filter topFilter);
+    MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, TileOverlayType[] overlays, Filter baseFilter, Filter topFilter);
 
     void AdjustBoundingBoxToFit(MapParameters parameters);
   }

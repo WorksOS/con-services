@@ -1,6 +1,6 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RaptorSvcAcceptTestsCommon.Models;
+using System;
 using VSS.Productivity3D.Common.ResultHandling;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
@@ -37,7 +37,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public static bool operator ==(CompactionPassCountSummaryResult a, CompactionPassCountSummaryResult b)
     {
       if ((object)a == null || (object)b == null)
-        return Object.Equals(a, b);
+        return object.Equals(a, b);
 
       return a.Equals(b);
     }
@@ -95,17 +95,25 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       public bool Equals(PassCountSummaryData other)
       {
         if (other == null)
+        {
           return false;
+        }
+
+        if (other.PassCountTarget != null)
+        {
+          return Math.Round(this.percentEqualsTarget, 2) == Math.Round(other.percentEqualsTarget, 2) &&
+                 Math.Round(this.percentGreaterThanTarget, 2) == Math.Round(other.percentGreaterThanTarget, 2) &&
+                 Math.Round(this.percentLessThanTarget, 2) == Math.Round(other.percentLessThanTarget, 2) &&
+                 Math.Round(this.totalAreaCoveredSqMeters, 2) == Math.Round(other.totalAreaCoveredSqMeters, 2) &&
+                 this.PassCountTarget.MinPassCountMachineTarget == other.PassCountTarget.MinPassCountMachineTarget &&
+                 this.PassCountTarget.MaxPassCountMachineTarget == other.PassCountTarget.MaxPassCountMachineTarget;
+        }
 
         return Math.Round(this.percentEqualsTarget, 2) == Math.Round(other.percentEqualsTarget, 2) &&
                Math.Round(this.percentGreaterThanTarget, 2) == Math.Round(other.percentGreaterThanTarget, 2) &&
                Math.Round(this.percentLessThanTarget, 2) == Math.Round(other.percentLessThanTarget, 2) &&
-               Math.Round(this.totalAreaCoveredSqMeters, 2) == Math.Round(other.totalAreaCoveredSqMeters, 2) &&
-               this.PassCountTarget.MinPassCountMachineTarget == other.PassCountTarget.MinPassCountMachineTarget &&
-               this.PassCountTarget.MaxPassCountMachineTarget == other.PassCountTarget.MaxPassCountMachineTarget;
+               Math.Round(this.totalAreaCoveredSqMeters, 2) == Math.Round(other.totalAreaCoveredSqMeters, 2);
       }
-
     }
-
   }
 }

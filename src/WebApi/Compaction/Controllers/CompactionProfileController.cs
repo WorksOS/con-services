@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionProfileController : BaseController
   {
     /// <summary>
@@ -119,16 +119,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         switch (volumeCalcType.Value)
         {
           case VolumeCalcType.GroundToGround:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
             break;
           case VolumeCalcType.GroundToDesign:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
             volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, true);
             break;
           case VolumeCalcType.DesignToGround:
             volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, true);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
             break;
         }
       }

@@ -39,10 +39,13 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
 
     [TestMethod]
-    [DataRow(4096, 4096, 4096, 4096, 0.63136, -2.00751, 0.63144, -2.00741)]//tile larger than bbox
-    [DataRow(2048, 2048, 2656, 2656, 0.63137, -2.00749, 0.63142, -2.00742)]//square tile smaller than bbox 
-    [DataRow(2048, 1024, 5302, 2656, 0.63137, -2.00752, 0.63142, -2.00739)]//rectangular tile smaller than bbox
-    public void ShouldExpandBoundingBoxToFit(int tileWidth, int tileHeight, int expectedWidth, int expectedHeight,
+    [DataRow(4096, 4096, false, 4096, 4096, 0.63136, -2.00751, 0.63144, -2.00741)]//tile larger than bbox
+    [DataRow(2048, 2048, false, 2646, 2646, 0.63137, -2.00749, 0.63142, -2.00743)]//square tile smaller than bbox 
+    [DataRow(2048, 1024, false, 5292, 2646, 0.63137, -2.00752, 0.63142, -2.00740)]//rectangular tile smaller than bbox
+    [DataRow(4096, 4096, true, 4096, 4096, 0.63136, -2.00751, 0.63144, -2.00741)]//tile larger than bbox
+    [DataRow(2048, 2048, true, 2910, 2910, 0.63137, -2.00749, 0.63142, -2.00743)]//square tile smaller than bbox 
+    [DataRow(2048, 1024, true, 5820, 2910, 0.63137, -2.00752, 0.63142, -2.00740)]//rectangular tile smaller than bbox
+    public void ShouldAdjustBoundingBoxToFit(int tileWidth, int tileHeight, bool addMargin, int expectedWidth, int expectedHeight,
       double expectedMinLat, double expectedMinLng, double expectedMaxLat, double expectedMaxLng)
     {
       var minLat = 0.63137;//36.175°
@@ -67,7 +70,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         numTiles = 1048576,
         zoomLevel = 10,
         mapWidth = tileWidth,
-        mapHeight = tileHeight
+        mapHeight = tileHeight,
+        addMargin = addMargin
       };
       service.AdjustBoundingBoxToFit(parameters);
       Assert.AreEqual(expectedWidth, parameters.mapWidth);
@@ -97,7 +101,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       var raptorClient = new Mock<IASNodeClient>();
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
-      var bbox = service.GetBoundingBox(project, filter, false, null, null);
+      var bbox = service.GetBoundingBox(project, filter, new []{TileOverlayType.BaseMap}, null, null);
       Assert.AreEqual(polygonPoints.Min(p => p.Lat), bbox.minLat);
       Assert.AreEqual(polygonPoints.Min(p => p.Lon), bbox.minLng);
       Assert.AreEqual(polygonPoints.Max(p => p.Lat), bbox.maxLat);
@@ -134,7 +138,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           .Returns(true);
 
         var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
-        var bbox = service.GetBoundingBox(project, filter, false, null, null);
+        var bbox = service.GetBoundingBox(project, filter, new[] { TileOverlayType.BaseMap }, null, null);
         //bbox is a mixture of polgon and design boundary (see GeoJson)
         Assert.AreEqual(-115.74.LonDegreesToRadians(), bbox.minLng);
         Assert.AreEqual(35.98.LatDegreesToRadians(), bbox.minLat);
@@ -166,7 +170,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           .Returns(true);
 
         var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
-        var bbox = service.GetBoundingBox(project, filter, false, null, null);
+        var bbox = service.GetBoundingBox(project, filter, new[] { TileOverlayType.BaseMap }, null, null);
         //Values are from GeoJson below
         Assert.AreEqual(-115.123.LonDegreesToRadians(), bbox.minLng);
         Assert.AreEqual(36.175.LatDegreesToRadians(), bbox.minLat);
@@ -208,7 +212,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       var raptorClient = new Mock<IASNodeClient>();
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
-      var bbox = service.GetBoundingBox(project, null, false, baseFilter, topFilter);
+      var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.BaseMap }, baseFilter, topFilter);
 
       var expectedMinLat = Math.Min(polygonPoints1.Min(p => p.Lat), polygonPoints2.Min(p => p.Lat));
       var expectedMinLng = Math.Min(polygonPoints1.Min(p => p.Lon), polygonPoints2.Min(p => p.Lon));
@@ -254,7 +258,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         .Returns(TCoordReturnCode.nercNoError);
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
-      var bbox = service.GetBoundingBox(project, null, true, null, null);
+      var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.ProductionData }, null, null);
       Assert.AreEqual(prodDataMinLat, bbox.minLat);
       Assert.AreEqual(prodDataMaxLat, bbox.maxLat);
       Assert.AreEqual(prodDataMinLng, bbox.minLng);
@@ -295,7 +299,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         .Returns(TCoordReturnCode.nercNoError);
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
-      var bbox = service.GetBoundingBox(project, null, true, null, null);
+      var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.ProductionData }, null, null);
       Assert.AreEqual(projMinLatRadians, bbox.minLat);
       Assert.AreEqual(projMaxLatRadians, bbox.maxLat);
       Assert.AreEqual(projMinLngRadians, bbox.minLng);
@@ -313,7 +317,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         .Returns(false);
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
-      var bbox = service.GetBoundingBox(project, null, false, null, null);
+      var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.ProjectBoundary }, null, null);
       Assert.AreEqual(projMinLatRadians, bbox.minLat);
       Assert.AreEqual(projMaxLatRadians, bbox.maxLat);
       Assert.AreEqual(projMinLngRadians, bbox.minLng);
@@ -331,7 +335,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         .Returns(false);
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
-      var bbox = service.GetBoundingBox(project, null, true, null, null);
+      var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.ProductionData, TileOverlayType.ProjectBoundary }, null, null);
       Assert.AreEqual(projMinLatRadians, bbox.minLat);
       Assert.AreEqual(projMaxLatRadians, bbox.maxLat);
       Assert.AreEqual(projMinLngRadians, bbox.minLng);

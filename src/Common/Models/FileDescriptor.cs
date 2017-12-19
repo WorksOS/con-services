@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.Common.Models
   /// <summary>
   /// Description to identify a file by its location in TCC.
   /// </summary>
-  public class FileDescriptor : IValidatable
+  public class FileDescriptor : IValidatable, IEquatable<FileDescriptor>
   {
     /// <summary>
     /// The id of the filespace in TCC where the file is located.
@@ -152,5 +152,43 @@ namespace VSS.Productivity3D.Common.Models
 
     private const int MAX_FILE_NAME = 1024;
     private const int MAX_PATH = 2048;
+
+    #region IEquatable
+    public bool Equals(FileDescriptor other)
+    {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return string.Equals(filespaceId, other.filespaceId) && string.Equals(path, other.path) && string.Equals(fileName, other.fileName);
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((FileDescriptor)obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = filespaceId != null ? filespaceId.GetHashCode() : 0;
+        hashCode = (hashCode * 397) ^ (path != null ? path.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (fileName != null ? fileName.GetHashCode() : 0);
+        return hashCode;
+      }
+    }
+
+    public static bool operator ==(FileDescriptor left, FileDescriptor right)
+    {
+      return Equals(left, right);
+    }
+
+    public static bool operator !=(FileDescriptor left, FileDescriptor right)
+    {
+      return !Equals(left, right);
+    }
+    #endregion
   }
 }

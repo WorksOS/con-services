@@ -16,6 +16,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using System.IO;
+using Microsoft.AspNetCore.Mvc.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
@@ -27,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for reporting requests
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionReportTileController : BaseController
   {
     /// <summary>
@@ -198,10 +199,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var designDescriptor = (!volumeCalcType.HasValue || volumeCalcType.Value == VolumeCalcType.None)
         ? cutFillDesign
         : sumVolParameters.Item3;
-      var dxfFiles = await GetFilesOfType(projectUid, ImportedFileType.Linework);
-      var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
+      var dxfFiles = overlays.Contains(TileOverlayType.DxfLinework) 
+        ? await GetFilesOfType(projectUid, ImportedFileType.Linework) 
+        : new List<FileData>();
+      var alignmentDescriptors = overlays.Contains(TileOverlayType.Alignments)
+        ? await GetAlignmentDescriptors(projectUid)
+        : new List<DesignDescriptor>();
       var userPreferences = await GetUserPreferences();
-      var geofences = await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders);
+      var geofences = overlays.Contains(TileOverlayType.Geofences) 
+        ? await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders) 
+        : new List<GeofenceData>();
 
       var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
           .ProjectId(project.projectId)

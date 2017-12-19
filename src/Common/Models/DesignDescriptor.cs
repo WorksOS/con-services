@@ -1,14 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Description to identify a design file either by id or by its location in TCC.
   /// </summary>
-  public class DesignDescriptor
+  public class DesignDescriptor : IEquatable<DesignDescriptor>
   {
     /// <summary>
     /// The id of the design file
@@ -62,5 +64,43 @@ namespace VSS.Productivity3D.Common.Models
 
       file?.Validate();
     }
+
+  #region IEquatable
+  public bool Equals(DesignDescriptor other)
+  {
+    if (ReferenceEquals(null, other)) return false;
+    if (ReferenceEquals(this, other)) return true;
+    return id.Equals(other.id) && (file == null ? other.file == null : file.Equals(other.file)) && offset.Equals(other.offset);
   }
+
+  public override bool Equals(object obj)
+  {
+    if (ReferenceEquals(null, obj)) return false;
+    if (ReferenceEquals(this, obj)) return true;
+    if (obj.GetType() != this.GetType()) return false;
+    return Equals((DesignDescriptor)obj);
+  }
+
+  public override int GetHashCode()
+  {
+    unchecked
+    {
+      var hashCode = id.GetHashCode();
+      hashCode = (hashCode * 397) ^ offset.GetHashCode();
+      hashCode = (hashCode * 397) ^ (file != null ? file.GetHashCode() : 0);
+      return hashCode;
+    }
+  }
+
+  public static bool operator ==(DesignDescriptor left, DesignDescriptor right)
+  {
+    return Equals(left, right);
+  }
+
+  public static bool operator !=(DesignDescriptor left, DesignDescriptor right)
+  {
+    return !Equals(left, right);
+  }
+  #endregion
+}
 }

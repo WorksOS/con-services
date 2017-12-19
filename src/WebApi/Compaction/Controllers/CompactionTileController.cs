@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for displaying production data and linework.
   /// </summary>
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionTileController : BaseController
   {
     /// <summary>
@@ -123,8 +123,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] string LAYERS,
       [FromQuery] string CRS,
       [FromQuery] string STYLES,
-      [FromQuery] int WIDTH,
-      [FromQuery] int HEIGHT,
+      [FromQuery] ushort WIDTH,
+      [FromQuery] ushort HEIGHT,
       [FromQuery] string BBOX,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
@@ -143,7 +143,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid ,volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() => 
-        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT, 
+        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, WIDTH, HEIGHT, 
           GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, 
           volumeCalcType, CustomHeaders));
 
@@ -191,8 +191,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] string LAYERS,
       [FromQuery] string CRS,
       [FromQuery] string STYLES,
-      [FromQuery] int WIDTH,
-      [FromQuery] int HEIGHT,
+      [FromQuery] ushort WIDTH,
+      [FromQuery] ushort HEIGHT,
       [FromQuery] string BBOX,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
@@ -215,7 +215,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
-        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, (ushort) WIDTH, (ushort) HEIGHT,
+        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, WIDTH, HEIGHT,
           GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, 
           volumeCalcType, CustomHeaders));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
