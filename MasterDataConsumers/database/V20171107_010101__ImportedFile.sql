@@ -3,10 +3,10 @@ SET @s = (SELECT IF(
        FROM INFORMATION_SCHEMA.COLUMNS
         WHERE table_name = 'ImportedFile'
         AND table_schema = DATABASE()
-        AND column_name = 'LegacyImportedFileId'
+        AND column_name = 'LegacyImportedFileID'
     ) > 0,
     "SELECT 1",
-    "ALTER TABLE `ImportedFile` ADD COLUMN `LegacyImportedFileId` BIGINT(20) NULL AFTER ImportedFileID"
+    "ALTER TABLE `ImportedFile` ADD COLUMN `LegacyImportedFileID` BIGINT(20) NULL AFTER ImportedFileID"
 ));  
 
 PREPARE stmt FROM @s;

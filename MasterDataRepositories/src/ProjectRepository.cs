@@ -1203,7 +1203,7 @@ namespace VSS.MasterData.Repositories
     {
       var importedFileList = await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
-            fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
+            fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
             MinZoomLevel, MaxZoomLevel, IsDeleted, IsActivated, LastActionedUTC
           FROM ImportedFile
@@ -1219,7 +1219,7 @@ namespace VSS.MasterData.Repositories
     {
       var importedFile = (await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
-            fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
+            fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType, 
             MinZoomLevel, MaxZoomLevel, IsDeleted, IsActivated, LastActionedUTC
           FROM ImportedFile
