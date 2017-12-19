@@ -63,6 +63,7 @@ And a cutFillDesignUid "<cutFillDesignUid>"
 And a volumeCalcType "<volumeCalcType>" 
 And a volumeTopUid "<volumeTopUid>" 
 And a volumeBaseUid "<volumeBaseUid>"
+And a width "1024" and a height "1024"
 When I request a Report Tile and the result file "CompactionReportTileResponse.json"	
 Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
 Examples: 
