@@ -47,7 +47,7 @@ namespace ExecutorTests
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "blah";
-      string filterJson = "theJsonString";
+      string filterJson = "{\"dateRangeType\":0,\"elevationType\":null}";
 
       WriteEventToDb(new CreateFilterEvent
       {
@@ -77,7 +77,7 @@ namespace ExecutorTests
       Assert.AreEqual(1, result.FilterDescriptors.Count, "should be 1 filter");
       Assert.AreEqual(filterToTest.FilterDescriptors[0].FilterUid, result.FilterDescriptors[0].FilterUid, Responses.IncorrectFilterDescriptorFilterUid);
       Assert.AreEqual(filterToTest.FilterDescriptors[0].Name, result.FilterDescriptors[0].Name, Responses.IncorrectFilterDescriptorName);
-      Assert.AreEqual(filterToTest.FilterDescriptors[0].FilterJson, result.FilterDescriptors[0].FilterJson, Responses.IncorrectFilterDescriptorFilterJson);
+      Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", result.FilterDescriptors[0].FilterJson, Responses.IncorrectFilterDescriptorFilterJson);
     }
 
     [TestMethod]
@@ -90,8 +90,8 @@ namespace ExecutorTests
       string filterUid2 = Guid.NewGuid().ToString();
       string name1 = "blah1";
       string name2 = "blah2";
-      string filterJson1 = "theJsonString1";
-      string filterJson2 = "theJsonString2";
+      string filterJson1 = "{\"dateRangeType\":0,\"elevationType\":null}";
+      string filterJson2 = "{\"dateRangeType\":1,\"elevationType\":null}";
 
       WriteEventToDb(new CreateFilterEvent
       {
@@ -136,13 +136,13 @@ namespace ExecutorTests
         Responses.IncorrectFilterDescriptorFilterUid);
       Assert.AreEqual(filterToTest.FilterDescriptors[0].Name, result.FilterDescriptors[0].Name,
         Responses.IncorrectFilterDescriptorName);
-      Assert.AreEqual(filterToTest.FilterDescriptors[0].FilterJson, result.FilterDescriptors[0].FilterJson,
+      Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", result.FilterDescriptors[0].FilterJson,
         Responses.IncorrectFilterDescriptorFilterJson);
       Assert.AreEqual(filterToTest.FilterDescriptors[1].FilterUid, result.FilterDescriptors[1].FilterUid,
         Responses.IncorrectFilterDescriptorFilterUid);
       Assert.AreEqual(filterToTest.FilterDescriptors[1].Name, result.FilterDescriptors[1].Name,
         Responses.IncorrectFilterDescriptorName);
-      Assert.AreEqual(filterToTest.FilterDescriptors[1].FilterJson, result.FilterDescriptors[1].FilterJson,
+      Assert.AreEqual("{\"dateRangeType\":1,\"dateRangeName\":\"Yesterday\"}", result.FilterDescriptors[1].FilterJson,
         Responses.IncorrectFilterDescriptorFilterJson);
     }
 
@@ -183,8 +183,8 @@ namespace ExecutorTests
       Assert.AreEqual(filterCreateEvent.FilterUID, Guid.Parse(result.FilterDescriptors[0].FilterUid), Responses.IncorrectFilterDescriptorFilterUid);
 
       dynamic filterObj = JsonConvert.DeserializeObject(result.FilterDescriptors[0].FilterJson);
-      Assert.IsFalse(DateTime.TryParse(filterObj.startUTC.ToString(), out DateTime _));
-      Assert.IsFalse(DateTime.TryParse(filterObj.endUTC.ToString(), out DateTime _));
+      Assert.IsNull(filterObj.startUTC);
+      Assert.IsNull(filterObj.endUTC);
     }
 
     [TestMethod]

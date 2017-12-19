@@ -117,7 +117,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     {
       Log.LogInformation($"{ToString()}.UpsertFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} FilterRequest: {JsonConvert.SerializeObject(request)}");
 
-      if (request == null)
+      if (string.IsNullOrEmpty(request?.FilterJson))
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 8, "Missing filter");
       }

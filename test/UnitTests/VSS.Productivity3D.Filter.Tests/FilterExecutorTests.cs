@@ -37,7 +37,6 @@ namespace VSS.Productivity3D.Filter.Tests
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "blah";
-      string filterJson = "theJsonString";
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -50,7 +49,7 @@ namespace VSS.Productivity3D.Filter.Tests
         ProjectUid = projectUid,
         FilterUid = filterUid,
         Name = name,
-        FilterJson = filterJson,
+        FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}",
         LastActionedUtc = DateTime.UtcNow
       };
       filterRepo.As<IFilterRepository>().Setup(ps => ps.GetFilter(It.IsAny<string>())).ReturnsAsync(filter);
@@ -77,7 +76,7 @@ namespace VSS.Productivity3D.Filter.Tests
         "executor returned incorrect FilterDescriptor FilterUid");
       Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name,
         "executor returned incorrect FilterDescriptor Name");
-      Assert.AreEqual(filterToTest.FilterDescriptor.FilterJson, result.FilterDescriptor.FilterJson,
+      Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", result.FilterDescriptor.FilterJson,
         "executor returned incorrect FilterDescriptor FilterJson");
     }
 
@@ -90,7 +89,7 @@ namespace VSS.Productivity3D.Filter.Tests
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "blah";
-      string filterJson = "theJsonString";
+      string filterJson = "{{\"dateRangeType\":\"0\",\"elevationType\":null}}";
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -135,7 +134,6 @@ namespace VSS.Productivity3D.Filter.Tests
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "blah";
-      string filterJson = "theJsonString";
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -150,7 +148,7 @@ namespace VSS.Productivity3D.Filter.Tests
           ProjectUid = projectUid,
           FilterUid = filterUid,
           Name = name,
-          FilterJson = filterJson,
+          FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}",
           LastActionedUtc = DateTime.UtcNow
         }
       };
@@ -176,13 +174,11 @@ namespace VSS.Productivity3D.Filter.Tests
       var filterListResult = await executor.ProcessAsync(request) as FilterDescriptorListResult;
 
       Assert.IsNotNull(filterListResult, "executor failed");
-      Assert.AreEqual(filterListToTest.FilterDescriptors[0], filterListResult.FilterDescriptors[0],
-        "executor returned incorrect FilterDescriptor");
       Assert.AreEqual(filterListToTest.FilterDescriptors[0].FilterUid, filterListResult.FilterDescriptors[0].FilterUid,
         "executor returned incorrect filterDescriptor FilterUid");
       Assert.AreEqual(filterListToTest.FilterDescriptors[0].Name, filterListResult.FilterDescriptors[0].Name,
         "executor returned incorrect filterDescriptor Name");
-      Assert.AreEqual(filterListToTest.FilterDescriptors[0].FilterJson,
+      Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}",
         filterListResult.FilterDescriptors[0].FilterJson, "executor returned incorrect filterDescriptor FilterJson");
     }
 
@@ -333,7 +329,7 @@ namespace VSS.Productivity3D.Filter.Tests
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "not entry";
-      string filterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true}";
+      string filterJson = "{\"designUID\":\"id\",\"vibeStateOn\":true}";
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();

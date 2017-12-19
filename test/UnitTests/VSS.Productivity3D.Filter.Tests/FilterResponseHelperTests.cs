@@ -16,7 +16,11 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        FilterResponseHelper.SetStartEndDates(null, new MasterData.Repositories.DBModels.Filter());
+        var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}" };
+        FilterJsonHelper.ParseFilterJson(null, filter);
+
+        MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
+        Assert.AreEqual(DateRangeType.Today, filterObj.DateRangeType);
       }
       catch (Exception exception)
       {
@@ -29,7 +33,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        FilterResponseHelper.SetStartEndDates(new ProjectData(), filter: (MasterData.Repositories.DBModels.Filter)null);
+        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (MasterData.Repositories.DBModels.Filter)null);
       }
       catch (Exception exception)
       {
@@ -42,7 +46,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        FilterResponseHelper.SetStartEndDates(new ProjectData(), filter: (FilterDescriptor)null);
+        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (FilterDescriptor)null);
       }
       catch (Exception exception)
       {
@@ -55,7 +59,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        FilterResponseHelper.SetStartEndDates(new ProjectData(), filters: null);
+        FilterJsonHelper.ParseFilterJson(new ProjectData(), filters: null);
       }
       catch (Exception exception)
       {
@@ -66,10 +70,13 @@ namespace VSS.Productivity3D.Filter.Tests
     [TestMethod]
     public void Should_return_When_project_ianaTimezone_is_null()
     {
-
       try
       {
-        FilterResponseHelper.SetStartEndDates(new ProjectData(), new MasterData.Repositories.DBModels.Filter());
+        var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = "{\"dateRangeType\":\"4\",\"elevationType\":null}" };
+        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter);
+
+        MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
+        Assert.AreEqual(DateRangeType.CurrentMonth, filterObj.DateRangeType);
       }
       catch (Exception exception)
       {
@@ -84,9 +91,10 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" };
 
-      FilterResponseHelper.SetStartEndDates(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter);
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
+      Assert.AreEqual(dateRangeType, filterObj.DateRangeType);
       Assert.IsNull(filterObj.startUTC);
       Assert.IsNull(filterObj.endUTC);
     }
@@ -98,7 +106,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" };
 
-      FilterResponseHelper.SetStartEndDates(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor);
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
       Assert.IsNull(filterObj.startUTC);
@@ -120,7 +128,7 @@ namespace VSS.Productivity3D.Filter.Tests
       {
         filters.Add(new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" });
       }
-      FilterResponseHelper.SetStartEndDates(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filters);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filters);
 
       foreach (var filter in filters)
       {
@@ -139,7 +147,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" };
 
-      FilterResponseHelper.SetStartEndDates(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter);
 
       ValidateDates(filter.FilterJson);
     }
@@ -155,7 +163,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" };
 
-      FilterResponseHelper.SetStartEndDates(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor);
 
       ValidateDates(filterDescriptor.FilterJson);
     }

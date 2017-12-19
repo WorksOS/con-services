@@ -78,7 +78,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 36);
       }
 
-      FilterResponseHelper.SetStartEndDates(await GetProjectForRequest(filterRequest), filter);
+      FilterJsonHelper.ParseFilterJson(await GetProjectForRequest(filterRequest), filter);
 
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
     }

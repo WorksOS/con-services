@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       else
         result = await ProcessPersistent(filterRequest).ConfigureAwait(false);
 
-      FilterResponseHelper.SetStartEndDates(await GetProjectForRequest(filterRequest), result.FilterDescriptor);
+      FilterJsonHelper.ParseFilterJson(await GetProjectForRequest(filterRequest), result.FilterDescriptor);
 
       return result;
     }

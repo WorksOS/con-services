@@ -45,9 +45,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     }
 
     /// <summary>
-    /// Processes the GetFilters Request for a project
+    /// Gets all filters for the project.
     /// </summary>
-    /// <returns>a FiltersResult if successful</returns>
+    /// <returns>If successful returns a <see cref="FilterDescriptorListResult"/> containing a collection of filters for the project.</returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var filterRequest = item as FilterRequestFull;
@@ -75,12 +75,12 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 10, e.Message);
       }
 
-      FilterResponseHelper.SetStartEndDates(await GetProjectForRequest(filterRequest), filters);
+      FilterJsonHelper.ParseFilterJson(await GetProjectForRequest(filterRequest), filters);
 
       // may be none, return success and empty list
       return new FilterDescriptorListResult
       {
-        FilterDescriptors = filters.Select(filter => AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter))
+        FilterDescriptors = filters?.Select(filter => AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter))
           .ToImmutableList()
       };
     }
