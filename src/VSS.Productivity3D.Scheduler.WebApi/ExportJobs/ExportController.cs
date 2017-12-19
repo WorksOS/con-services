@@ -1,46 +1,71 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Net;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using VSS.ConfigurationStore;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 {
+  /// <summary>
+  /// Handles requests for scheduling a long running veta export and getting its progress.
+  /// </summary>
   public class ExportController : Controller
   {
-    private IRaptorProxy raptorProxy;
-    private IConfigurationStore configStore;
+    private IVetaExportJob vetaExportJob;
 
-    public ExportController(IRaptorProxy raptor, IConfigurationStore config)
+    /// <summary>
+    /// Constrictor with dependency injection
+    /// </summary>
+    public ExportController(IVetaExportJob vetaExport)
     {
-      raptorProxy = raptor;
-      configStore = config;
+      vetaExportJob = vetaExport;
     }
     
-
+    /// <summary>
+    /// Schedule a veta export
+    /// </summary>
+    /// <param name="projectUid">Project for the veta export</param>
+    /// <param name="fileName">Name of the file</param>
+    /// <param name="machineNames">Machine names for the veta export</param>
+    /// <param name="filterUid">Filter to apply</param>
+    /// <returns></returns>
     [Route("api/v1/export/veta")]
     [HttpGet]
     public string StartVetaExport(
+      [FromServices]
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
       [FromQuery] Guid? filterUid)
     {
-      return BackgroundJob.Enqueue(() => new VetaExportJob().ExportDataToVeta(raptorProxy, configStore,
-        projectUid, fileName, machineNames, filterUid, Request.Headers.GetCustomHeaders(), null));
+
+      return BackgroundJob.Enqueue(() => vetaExportJob.ExportDataToVeta(
+        projectUid, fileName, machineNames, filterUid, Request.Headers.GetCustomHeadersInternalContext(), null));
+      //Hangfire will substitute a PerformContext automatically
     }
-    
+
+    /// <summary>
+    /// Get the status of a veta export
+    /// </summary>
+    /// <param name="projectUid">The project Uid</param>
+    /// <param name="jobId">The job id</param>
+    /// <returns>The AWS S3 key where the file has been saved and the current state of the job</returns>
     [Route("api/v1/export/veta/{projectUid}/{jobId}")]
     [HttpGet]
-    public Tuple<string,string> GetVetaExportStatus(Guid projectUid, string jobId)
+    public JobStatusResult GetVetaExportJobStatus(Guid projectUid, string jobId)
     {
-      return new Tuple<string, string>(VetaExportJob.GetS3Key(projectUid, jobId),
-        JobStorage.Current.GetMonitoringApi().JobDetails(jobId).History.LastOrDefault()?.StateName);
+      var status = JobStorage.Current.GetMonitoringApi().JobDetails(jobId)?.History.LastOrDefault()?.StateName;
+      if (string.IsNullOrEmpty(status))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"Missing job details for {jobId}"));
+      }
+      return new JobStatusResult{key = VetaExportJob.GetS3Key(projectUid, jobId), status = status};
     }
 
   }

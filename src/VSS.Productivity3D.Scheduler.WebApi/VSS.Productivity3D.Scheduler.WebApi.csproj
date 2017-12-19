@@ -36,7 +36,7 @@
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
     <PackageReference Include="Dapper" Version="1.50.2" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.10.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.12.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.13.*" />
   </ItemGroup>
   
   <ItemGroup>
