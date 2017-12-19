@@ -64,22 +64,21 @@ namespace MockProjectWebApi.Controllers
       return new NoContentResult();
     }
 
-    [Route("api/v4/importedfile")]
+    [Route("api/v4/mock/importedfile")]
     [HttpPost]
     [ActionName("Upload")]
     [FlowUpload(Extensions = new[]
     {
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
-
-    public async Task<FileDataSingleResult> CreateMockImportedFile(
+    public FileDataSingleResult CreateMockImportedFile(
       FlowFile file,
-      [FromUri] Guid projectUid,
-      [FromUri] ImportedFileType importedFileType,
-      [FromUri] DxfUnitsType dxfUnitsType,
-      [FromUri] DateTime fileCreatedUtc,
-      [FromUri] DateTime fileUpdatedUtc,
-      [FromUri] DateTime? surveyedUtc = null)
+      [FromQuery] Guid projectUid,
+      [FromQuery] ImportedFileType importedFileType,
+      [FromQuery] DxfUnitsType dxfUnitsType,
+      [FromQuery] DateTime fileCreatedUtc,
+      [FromQuery] DateTime fileUpdatedUtc,
+      [FromQuery] DateTime? surveyedUtc = null)
     {
       Console.WriteLine(
         $"CreateMockImportedFile. file: {file.flowFilename} path {file.path} projectUid {projectUid} ImportedFileType: {importedFileType} " +
@@ -88,13 +87,14 @@ namespace MockProjectWebApi.Controllers
       var projectUidStr = projectUid.ToString();
       if (projectUidStr == ConstantsUtil.DIMENSIONS_PROJECT_UID)
       {
-        return new FileDataSingleResult { ImportedFileDescriptor = dimensionsFileList.SingleOrDefault(f => f.Name == file.flowFilename)};
+        return new FileDataSingleResult { ImportedFileDescriptor = dimensionsFileList.SingleOrDefault(f => f.Name.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase))};
       }
 
       return new FileDataSingleResult {Code = VSS.Common.ResultsHandling.ContractExecutionStatesEnum.InternalProcessingError, Message = "Failed to create imported file"};
     }
 
-    [Route("api/v4/importedfile")]
+    
+    [Route("api/v4/mock/importedfile")]
     [HttpPut]
     [ActionName("Upload")]
     [FlowUpload(Extensions = new[]
@@ -102,14 +102,14 @@ namespace MockProjectWebApi.Controllers
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
 
-    public async Task<FileDataSingleResult> UpdateMockImportedFile(
+    public FileDataSingleResult UpdateMockImportedFile(
       FlowFile file,
-      [FromUri] Guid projectUid,
-      [FromUri] ImportedFileType importedFileType,
-      [FromUri] DxfUnitsType dxfUnitsType,
-      [FromUri] DateTime fileCreatedUtc,
-      [FromUri] DateTime fileUpdatedUtc,
-      [FromUri] DateTime? surveyedUtc = null)
+      [FromQuery] Guid projectUid,
+      [FromQuery] ImportedFileType importedFileType,
+      [FromQuery] DxfUnitsType dxfUnitsType,
+      [FromQuery] DateTime fileCreatedUtc,
+      [FromQuery] DateTime fileUpdatedUtc,
+      [FromQuery] DateTime? surveyedUtc = null)
     {
       Console.WriteLine(
         $"UpdateMockImportedFile. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} " +
@@ -123,11 +123,12 @@ namespace MockProjectWebApi.Controllers
 
       return new FileDataSingleResult { Code = VSS.Common.ResultsHandling.ContractExecutionStatesEnum.InternalProcessingError, Message = "Failed to update imported file" };
     }
+    
 
-    [Route("api/v4/importedfile")]
+    [Route("api/v4/mock/importedfile")]
     [HttpDelete]
-    public async Task<BaseDataResult> DeleteMockImportedFile([FromUri] Guid projectUid,
-      [FromUri] Guid importedFileUid)
+    public BaseDataResult DeleteMockImportedFile([FromQuery] Guid projectUid,
+      [FromQuery] Guid importedFileUid)
     {
       Console.WriteLine($"DeleteMockImportedFile. projectUid {projectUid} importedFileUid: {importedFileUid}");
       return new BaseDataResult();

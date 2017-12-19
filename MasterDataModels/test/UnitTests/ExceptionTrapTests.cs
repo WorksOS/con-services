@@ -1,18 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Net;
+using System.Security.Authentication;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Net;
-using System.Security.Authentication;
-using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.FIlters;
-using VSS.MasterData.Models.UnitTests;
 
-namespace VSS.MasterData.Models.Tests
+namespace VSS.MasterData.Models.UnitTests
 {
   [TestClass]
   public class ExceptionTrapTests : BaseTest
@@ -52,7 +51,7 @@ namespace VSS.MasterData.Models.Tests
       var defaultResponse = new DefaultHttpResponse(new DefaultHttpContext());
       mockHttpContext.SetupGet(mc => mc.Response).Returns(defaultResponse);
       RequestDelegate mockRequestDelegate = context => throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult());
-      var trap = new ExceptionsTrap(mockRequestDelegate, ServiceProvider.GetRequiredService<ILogger<ExceptionsTrap>>());
+      var trap = new ExceptionsTrap(mockRequestDelegate, this.ServiceProvider.GetRequiredService<ILogger<ExceptionsTrap>>());
       await trap.Invoke(mockHttpContext.Object);
       Assert.AreEqual((int)HttpStatusCode.BadRequest, defaultResponse.StatusCode);
     }

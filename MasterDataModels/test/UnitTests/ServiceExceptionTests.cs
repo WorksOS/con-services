@@ -1,10 +1,9 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 
-namespace VSS.MasterData.Models.Tests
+namespace VSS.MasterData.Models.UnitTests
 {
   [TestClass]
   public class ServiceExceptionTests

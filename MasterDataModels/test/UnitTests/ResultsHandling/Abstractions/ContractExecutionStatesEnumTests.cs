@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.ResultsHandling;
 
-namespace VSS.MasterData.Models.UnitTests.Local.ResultsHandling.Abstractions
+namespace VSS.MasterData.Models.UnitTests.ResultsHandling.Abstractions
 {
   [TestClass]
   public class ContractExecutionStatesEnumTests

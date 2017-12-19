@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -35,8 +34,13 @@ namespace VSS.MasterData.Models.Models
     /// Gets the date range type for this filter, e.g. day, week, project extents.
     /// </summary>
     [JsonProperty(PropertyName = "dateRangeType", Required = Required.Default)]
-    [JsonConverter(typeof(StringEnumConverter))]
     public DateRangeType? DateRangeType { get; private set; }
+
+    /// <summary>
+    /// Gets the date range name for this filter, e.g. Today, Yesterday, ProjectExtents.
+    /// </summary>
+    [JsonProperty(PropertyName = "dateRangeName")]
+    public string DateRangeName => this.DateRangeType != null ? Enum.GetName(typeof(DateRangeType), this.DateRangeType) : string.Empty;
 
     /// <summary>
     /// A design file unique identifier. Used as a spatial filter.
@@ -112,6 +116,10 @@ namespace VSS.MasterData.Models.Models
       return endUTC != null;
     }
     public bool ShouldSerializeDateRangeType()
+    {
+      return DateRangeType != null;
+    }
+    public bool ShouldSerializeDateRangeName()
     {
       return DateRangeType != null;
     }
@@ -219,8 +227,7 @@ namespace VSS.MasterData.Models.Models
       return JsonConvert.SerializeObject(filter);
     }
 
-    public void 
-      Validate([FromServices] IServiceExceptionHandler serviceExceptionHandler)
+    public void Validate([FromServices] IServiceExceptionHandler serviceExceptionHandler)
     {
       //Check date range properties
       if (startUTC.HasValue || endUTC.HasValue)
