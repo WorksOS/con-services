@@ -449,13 +449,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///  if it doesn't know about it then it do nothing and return success
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorDeleteFile(Guid projectUid, ImportedFileType importedFileType, string fileDescriptor, long importedFileId, Guid importedFileUid)
+    protected async Task NotifyRaptorDeleteFile(Guid projectUid, ImportedFileType importedFileType, Guid importedFileUid, string fileDescriptor, long importedFileId, long? legacyImportedFileId)
     {
       BaseDataResult notificationResult = null;
       try
       {
         notificationResult = await raptorProxy
-          .DeleteFile(projectUid, importedFileType, importedFileUid, fileDescriptor, importedFileId, Request.Headers.GetCustomHeaders())
+          .DeleteFile(projectUid, importedFileType, importedFileUid, fileDescriptor, importedFileId, legacyImportedFileId, Request.Headers.GetCustomHeaders())
           .ConfigureAwait(false);
       }
       catch (Exception e)

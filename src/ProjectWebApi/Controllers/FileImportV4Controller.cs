@@ -438,7 +438,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
       var deleteImportedFileEvent = await DeleteImportedFile(projectUid, importedFileUid, false).ConfigureAwait(false);
       
-      await NotifyRaptorDeleteFile(projectUid, importedFile.ImportedFileType, importedFile.FileDescriptor, importedFile.ImportedFileId, Guid.Parse(importedFile.ImportedFileUid))
+      await NotifyRaptorDeleteFile(projectUid, importedFile.ImportedFileType, Guid.Parse(importedFile.ImportedFileUid), importedFile.FileDescriptor, importedFile.ImportedFileId, importedFile.LegacyImportedFileId)
         .ConfigureAwait(false);
 
       await DeleteFileFromTCCRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor), projectUid, importedFileUid)
