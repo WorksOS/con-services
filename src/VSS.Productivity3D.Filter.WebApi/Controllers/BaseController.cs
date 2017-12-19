@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         this.Producer.InitProducer(configStore);
       }
 
-      this.KafkaTopicName = $"VSS.Interfaces.Events.MasterData.{eventType}{configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")}";
+      this.KafkaTopicName = $"VSS.Interfaces.Events.MasterData.{eventType}{configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")}".Trim();
     }
   }
 }
