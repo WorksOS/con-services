@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Proxies.netcore</Product>
     <Description>Shared library providing access to MasterData services through WebApis</Description>
-    <VersionPrefix>2.12.11</VersionPrefix>
+    <VersionPrefix>2.13.2</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>VSS.MasterData.Proxies</AssemblyName>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
@@ -37,6 +37,7 @@
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.4.*" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.10.*" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.*" />
+    <PackageReference Include="AWSSDK.S3" Version="3.3.14" />
 
   </ItemGroup>
 

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 
 namespace VSS.MasterData.Proxies
@@ -49,9 +47,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="projectUid">The project for which the veta export is being done.</param>
     /// <param name="jobId">The job identifier.</param>
     /// <returns></returns>
-    public async Task<Tuple<string, string>> GetVetaExportJobStatus(Guid projectUid, string jobId)
+    public async Task<JobStatusResult> GetVetaExportJobStatus(Guid projectUid, string jobId)
     {
-      var result = await GetMasterDataItem<Tuple<string, string>>("SCHEDULER_EXPORT_URL",
+      var result = await GetMasterDataItem<JobStatusResult>("SCHEDULER_EXPORT_URL",
         null, null, $"/{projectUid}/{jobId}");
       if (result!=null)
       {
