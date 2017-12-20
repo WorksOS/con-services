@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Amazon.S3.Transfer;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -58,10 +57,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IProductionDataRequestFactory requestFactory;
 
-    private readonly string _awsAccessKey;
-    private readonly string _awsSecretKey;
-    private readonly string _awsBucketName;
-
+    private readonly ITransferProxy transferProxy;
 
     /// <summary>
     /// Default constructor.
@@ -78,7 +74,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="prefProxy">User preferences proxy</param>
     public CompactionExportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IPreferenceProxy prefProxy) :
+      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, 
+      IPreferenceProxy prefProxy) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       log = logger.CreateLogger<CompactionExportController>();
@@ -86,16 +83,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.logger = logger;
       this.prefProxy = prefProxy;
       this.requestFactory = requestFactory;
-
-      _awsAccessKey = configStore.GetValueString("AWS_ACCESS_KEY");
-      _awsSecretKey = configStore.GetValueString("AWS_SECRET_KEY");
-      _awsBucketName = configStore.GetValueString("AWS_BUCKET_NAME");
-
-      if (string.IsNullOrEmpty(_awsAccessKey) || string.IsNullOrEmpty(_awsSecretKey) ||
-          string.IsNullOrEmpty(_awsBucketName))
-      {
-        throw new Exception("Missing environment variable AWS_ACCESS_KEY, AWS_SECRET_KEY or AWS_BUCKET_NAME");
-      }
     }
 
     /// <summary>
@@ -202,17 +189,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
       {
-        using (var transferUtil =
-          new TransferUtility(_awsAccessKey, _awsSecretKey))
-        {
-          var stream = await transferUtil.OpenStreamAsync(_awsBucketName, jobResult.key);
-          return new FileStreamResult(stream,"application/octet-stream");
-        }
+        await transferProxy.Download(jobResult.key);
       }
       throw new ServiceException(HttpStatusCode.InternalServerError, 
         new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "File is likely not ready to be downloaded"));
     }
-
 
     /// <summary>
     /// Schedules the veta export job and returns JobId.
@@ -237,7 +218,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         {
           JobId =
             scheduler.ScheduleVetaExportJob(projectUid, fileName, machineNames, filterUid,
-              Request.Headers.GetCustomHeadersInternalContext()).Result
+              Request.Headers.GetCustomHeaders(true)).Result
         });
     }
 
