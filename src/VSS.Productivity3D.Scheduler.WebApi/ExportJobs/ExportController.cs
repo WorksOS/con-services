@@ -65,7 +65,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             $"Missing job details for {jobId}"));
       }
-      return new JobStatusResult{key = VetaExportJob.GetS3Key(projectUid, jobId), status = status};
+      var customHeaders = Request.Headers.GetCustomHeaders(true);
+      return new JobStatusResult{key = VetaExportJob.GetS3Key(customHeaders["X-VisionLink-CustomerUid"], projectUid, jobId), status = status};
     }
 
   }

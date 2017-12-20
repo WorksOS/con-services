@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Hangfire.Server;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.VisionLink.Interfaces.Events.OrgHierarchy.Operations;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 {
@@ -38,18 +39,19 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       PerformContext context)
     {
       var data = _raptor.GetVetaExportData(projectUid, fileName, machineNames, filterUid, customHeaders).Result;
-      _transferProxy.Upload(new MemoryStream(data.Data), GetS3Key(projectUid, context.BackgroundJob.Id));
+      _transferProxy.Upload(new MemoryStream(data.Data), GetS3Key(customHeaders["X-VisionLink-CustomerUid"], projectUid, context.BackgroundJob.Id));
     }
 
     /// <summary>
     /// Gets the S3 key for a job
     /// </summary>
+    /// <param name="customerUid">The customer Uid</param>
     /// <param name="projectUid">The project Uid</param>
     /// <param name="jobId">The job id</param>
     /// <returns>Tee S3 key where the file is stored</returns>
-    public static string GetS3Key(Guid projectUid, string jobId)
+    public static string GetS3Key(string customerUid, Guid projectUid, string jobId)
     {
-      return $"{projectUid}/{jobId}";
+      return $"3dpm/{customerUid}/{projectUid}/{jobId}";
     }
   }
 }
