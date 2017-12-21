@@ -155,6 +155,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param> 
     /// <param name="fileType">Type of the file</param>
     /// <param name="fileId">A unique file identifier</param>
+    /// <param name="legacyFileId">A unique file identifier from Legacy</param>
     /// <returns>A code and message to indicate the result</returns>
     /// <executor>DeleteFileExecutor</executor> 
     [ProjectUidVerifier]
@@ -165,7 +166,9 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
-      [FromQuery] long fileId)
+      [FromQuery] long fileId,
+      [FromQuery] long legacyFileId
+      )
     {
       log.LogDebug("GetDeleteFile: " + Request.QueryString);
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
@@ -187,7 +190,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         }
       }
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType, legacyFileId);
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
