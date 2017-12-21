@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Mime;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -198,13 +199,14 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       var actualImage = ConvertToImage(actualTileData);
       expectedImage.Save(expFileName);
       actualImage.Save(actFileName);
+      var len = actFileName.Length - 4;
       var diff = expectedImage.PercentageDifference(actualImage, threshold);
       if (diff > 0.0)
       {
         var diffImage = expectedImage.GetDifferenceImage(actualImage);
-        diffImage.Save(actFileName + "Diff.jpg");
+        var diffFileName = actFileName.Substring(0, len) + "Differences.jpg";
+        diffImage.Save(diffFileName);
       }
-
       return diff;
     }
   }

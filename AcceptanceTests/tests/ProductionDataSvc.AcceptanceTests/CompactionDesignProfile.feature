@@ -62,7 +62,7 @@ Scenario: Compaction Get Slicer Empty Design Profile
 }
 """
 #Until solved problem with variance in values returned from Raptor. Tests may have to compensate for inaccuraces at high decimal precion.
-@Ignore
+#@Ignore
 
 Scenario: Compaction Get Slicer Design Profile With Added Endpoints
 	Given the Compaction Profile service URI "/api/v2/profiles/design/slicer"
