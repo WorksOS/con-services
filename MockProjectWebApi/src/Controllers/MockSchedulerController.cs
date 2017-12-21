@@ -38,7 +38,7 @@ namespace MockProjectWebApi.Controllers
       return new JobStatusResult {key = key, status = status};
     }
 
-    private readonly string SUCCESS_JOB_ID = "Test_Job_1";
+    public static readonly string SUCCESS_JOB_ID = "Test_Job_1";
     private readonly string FAILURE_JOB_ID = "Test_Job_2";
     private readonly string IN_PROGRESS_JOB_ID = "Test_Job_3";
 

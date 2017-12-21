@@ -6,7 +6,8 @@
   public class JobStatusResult
   {
     /// <summary>
-    /// THe S3 key where the file is stored
+    /// The S3 key where the file is stored. 
+    /// This is the full path and filename of the zipped file.
     /// </summary>
     public string key { get; set; }
 
