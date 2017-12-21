@@ -9,6 +9,7 @@ using Hangfire.Storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 
@@ -48,7 +49,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var context = new PerformContext(connection.Object, backJob, token.Object);
 
       Mock<IRaptorProxy> raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(r => r.GetVetaExportData(projectUId, fileName, string.Empty, null, customHeaders)).ReturnsAsync(new ExportData{Data = new byte[0]});
+      raptorProxy.Setup(r => r.GetVetaExportData(projectUId, fileName, string.Empty, null, customHeaders)).ReturnsAsync(new ExportResult{ExportData = new byte[0]});
 
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
       transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>())).Verifiable();
