@@ -28,14 +28,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       this.operation = operation;
       switch (operation)
       {
-        case "schedulejob": scheduleRequester = new Getter<ScheduleResult>(url, resultFileName);
+        case "schedulejob": scheduleRequester = new Getter<ScheduleResult>(this.url, resultFileName);
           break;
         case "status":
-          statusRequester = new Getter<RequestResult>(url, resultFileName);
+          statusRequester = new Getter<RequestResult>(this.url, resultFileName);
           break;
         case "download":
-          url += "test"; //alternative end point for testing. Returns ExportResult rather than FileStreamResult
-          downloadRequester = new Getter<ExportReportResult>(url, resultFileName);
+          this.url += "test"; //alternative end point for testing. Returns ExportResult rather than FileStreamResult
+          downloadRequester = new Getter<ExportReportResult>(this.url, resultFileName);
           break;
       }    
     }

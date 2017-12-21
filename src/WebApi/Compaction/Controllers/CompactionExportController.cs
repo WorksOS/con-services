@@ -73,10 +73,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="exceptionHandler">The exception handler.</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
     /// <param name="prefProxy">User preferences proxy</param>
+    /// <param name="transferProxy">Export file download proxy</param>
     public CompactionExportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, 
-      IPreferenceProxy prefProxy) :
+      IPreferenceProxy prefProxy, ITransferProxy transferProxy) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       log = logger.CreateLogger<CompactionExportController>();
@@ -84,6 +85,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.logger = logger;
       this.prefProxy = prefProxy;
       this.requestFactory = requestFactory;
+      this.transferProxy = transferProxy;
     }
 
     /// <summary>
@@ -190,7 +192,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
       {
-        await transferProxy.Download(jobResult.key);
+        return await transferProxy.Download(jobResult.key);
       }
       throw new ServiceException(HttpStatusCode.InternalServerError, 
         new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "File is likely not ready to be downloaded"));
@@ -208,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/export/veta/downloadtest")]
     [HttpGet]
-    public async Task<ExportResult> TryDownloadRaw([FromQuery] Guid projectUid, [FromQuery] string jobId,
+    public async Task<ExportResult> TryDownloadTest([FromQuery] Guid projectUid, [FromQuery] string jobId,
       [FromServices] ISchedulerProxy scheduler)
     {
       var result = await TryDownload(projectUid, jobId, scheduler) as FileStreamResult;
