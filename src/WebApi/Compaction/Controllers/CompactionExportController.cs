@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -150,7 +151,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="jobId">The job identifier.</param>
     /// <param name="scheduler">The scheduler.</param>
     /// <returns></returns>
-    /// <exception cref="ServiceException">new ContractExecutionResult(-1,"Job failed for some reason")</exception>
+    /// <exception cref="ServiceException">new ContractExecutionResult(-4,"Job failed for some reason")</exception>
     /// <exception cref="ContractExecutionResult">-4 - Job failed for some reason</exception>
     [ProjectUidVerifier]
     [Route("api/v2/export/veta/status")]
@@ -158,7 +159,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<ContractExecutionResult> TryGetExportStatus([FromQuery] Guid projectUid, [FromQuery] string jobId,
       [FromServices] ISchedulerProxy scheduler)
     {
-      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId);
+      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId, Request.Headers.GetCustomHeaders(true));
       if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
       {
         return  new ContractExecutionResult();
@@ -177,7 +178,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="jobId">The job identifier.</param>
     /// <param name="scheduler">The scheduler.</param>
     /// <returns></returns>
-    /// <exception cref="ServiceException">new ContractExecutionResult(-1, "File is not likely ready to be downloaded")</exception>
+    /// <exception cref="ServiceException">new ContractExecutionResult(-4, "File is not likely ready to be downloaded")</exception>
     /// <exception cref="ContractExecutionResult">-4 - File is not likely ready to be downloaded</exception>
     [ProjectUidVerifier]
     [Route("api/v2/export/veta/download")]
@@ -185,7 +186,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<FileResult> TryDownload([FromQuery] Guid projectUid, [FromQuery] string jobId,
       [FromServices] ISchedulerProxy scheduler)
     {
-      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId);
+      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId, Request.Headers.GetCustomHeaders(true));
 
       if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
       {
@@ -193,6 +194,29 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       throw new ServiceException(HttpStatusCode.InternalServerError, 
         new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "File is likely not ready to be downloaded"));
+    }
+
+    /// <summary>
+    /// Tries the download of the exported file. Used for acceptance tests.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="jobId">The job identifier.</param>
+    /// <param name="scheduler">The scheduler.</param>
+    /// <returns></returns>
+    /// <exception cref="ServiceException">new ContractExecutionResult(-4, "File is not likely ready to be downloaded")</exception>
+    /// <exception cref="ContractExecutionResult">-4 - File is not likely ready to be downloaded</exception>
+    [ProjectUidVerifier]
+    [Route("api/v2/export/veta/downloadtest")]
+    [HttpGet]
+    public async Task<ExportResult> TryDownloadRaw([FromQuery] Guid projectUid, [FromQuery] string jobId,
+      [FromServices] ISchedulerProxy scheduler)
+    {
+      var result = await TryDownload(projectUid, jobId, scheduler) as FileStreamResult;
+
+      using (var reader = new BinaryReader(result.FileStream))
+      {
+        return ExportResult.CreateExportDataResult(reader.ReadBytes((int) result.FileStream.Length), 0);
+      }    
     }
 
     /// <summary>
@@ -212,13 +236,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] string machineNames,
       [FromQuery] Guid? filterUid,
       [FromServices] ISchedulerProxy scheduler)
-    {
+    {   
       return
         WithServiceExceptionTryExecute(() => new ScheduleResult
         {
           JobId =
             scheduler.ScheduleVetaExportJob(projectUid, fileName, machineNames, filterUid,
-              Request.Headers.GetCustomHeaders(true)).Result
+              Request.Headers.GetCustomHeaders(true)).Result?.jobId
         });
     }
 

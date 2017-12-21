@@ -320,6 +320,7 @@
     <Compile Include="Models\ProjectExtentRequest.cs" />
     <Compile Include="Models\GetMachinesResult.cs" />
     <Compile Include="Models\ProjectStatistics.cs" />
+    <Compile Include="Models\ScheduleResult.cs" />
     <Compile Include="Models\SummaryParametersBase.cs" />
     <Compile Include="Models\SummarySpeed.cs" />
     <Compile Include="Models\SummaryThicknessResult.cs" />
@@ -384,6 +385,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Report.feature</DependentUpon>
     </Compile>
+    <Compile Include="ScheduleExportToVETA.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ScheduleExportToVETA.feature</DependentUpon>
+    </Compile>
     <Compile Include="StepDefinitions\BaseCompactionSteps.cs" />
     <Compile Include="StepDefinitions\CcaColorPaletteSteps.cs" />
     <Compile Include="StepDefinitions\CCASummarySteps.cs" />
@@ -424,6 +430,7 @@
     <Compile Include="StepDefinitions\RaptorConfigSteps.cs" />
     <Compile Include="StepDefinitions\ReportTileSteps.cs" />
     <Compile Include="StepDefinitions\ReportSteps.cs" />
+    <Compile Include="StepDefinitions\ScheduleExportToVETASteps.cs" />
     <Compile Include="StepDefinitions\SummarySpeedSteps.cs" />
     <Compile Include="StepDefinitions\SummaryThicknessSteps.cs" />
     <Compile Include="StepDefinitions\SummaryVolumesSteps.cs" />
@@ -669,6 +676,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Report.feature.cs</LastGenOutput>
     </None>
+    <None Include="ScheduleExportToVETA.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ScheduleExportToVETA.feature.cs</LastGenOutput>
+    </None>
     <None Include="SummarySpeed.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>SummarySpeed.feature.cs</LastGenOutput>
@@ -823,6 +834,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\ReportStationOffsetResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\ScheduleExportToVETAResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\SummarySpeedRequest.json">

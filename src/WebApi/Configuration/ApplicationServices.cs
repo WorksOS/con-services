@@ -62,6 +62,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IDxfTileService, DxfTileService>();
       services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
+      services.AddScoped<ISchedulerProxy, SchedulerProxy>();
 
       // Action services
       services.AddSingleton<IVolumeSummaryHelper, VolumeSummaryHelper>();
