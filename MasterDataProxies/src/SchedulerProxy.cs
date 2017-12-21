@@ -24,13 +24,13 @@ namespace VSS.MasterData.Proxies
     /// <param name="filterUid">The filter uid.</param>
     /// <param name="customHeaders">The custom headers.</param>
     /// <returns></returns>
-    public async Task<string> ScheduleVetaExportJob(Guid projectUid,
-      string fileName, string machineNames, Guid? filterUid, IDictionary<string, string> customHeaders = null)
+    public async Task<ScheduleJobResult> ScheduleVetaExportJob(Guid projectUid,
+      string fileName, string machineNames, Guid? filterUid, IDictionary<string, string> customHeaders)
     {
-      var result = await GetMasterDataItem<string>("SCHEDULER_EXPORT_URL",
+      var result = await GetMasterDataItem<ScheduleJobResult>("SCHEDULER_EXPORT_URL",
         customHeaders,
         $"?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}&filterUid={filterUid}");
-      if (!string.IsNullOrEmpty(result))
+      if (result!=null)
       {
         return result;
       }
@@ -42,15 +42,16 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
-    /// Retrieves the status of the requested job and a filename in S3 bucket used.
+    /// Retrieves the status of the requested job and the filename in S3 bucket where file is stored.
     /// </summary>
     /// <param name="projectUid">The project for which the veta export is being done.</param>
     /// <param name="jobId">The job identifier.</param>
+    /// <param name="customHeaders">Custom request headers</param>
     /// <returns></returns>
-    public async Task<JobStatusResult> GetVetaExportJobStatus(Guid projectUid, string jobId)
+    public async Task<JobStatusResult> GetVetaExportJobStatus(Guid projectUid, string jobId, IDictionary<string, string> customHeaders)
     {
       var result = await GetMasterDataItem<JobStatusResult>("SCHEDULER_EXPORT_URL",
-        null, null, $"/{projectUid}/{jobId}");
+        customHeaders, null, $"/{projectUid}/{jobId}");
       if (result!=null)
       {
         return result;
