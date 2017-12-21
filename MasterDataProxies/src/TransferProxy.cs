@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Amazon;
 using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Mvc;
 using VSS.ConfigurationStore;
@@ -29,7 +30,7 @@ namespace VSS.MasterData.Proxies
     public async Task<FileStreamResult> Download(string s3Key)
     {
       using (var transferUtil =
-        new TransferUtility(_awsAccessKey, _awsSecretKey))
+        new TransferUtility(_awsAccessKey, _awsSecretKey, RegionEndpoint.USWest2))
       {
         var stream = await transferUtil.OpenStreamAsync(_awsBucketName, s3Key);
         return new FileStreamResult(stream, "application/octet-stream");
@@ -39,7 +40,7 @@ namespace VSS.MasterData.Proxies
     public void Upload(Stream stream, string s3Key)
     {
       using (var transferUtil =
-        new TransferUtility(_awsAccessKey, _awsSecretKey))
+        new TransferUtility(_awsAccessKey, _awsSecretKey, RegionEndpoint.USWest2))
 
       {
         transferUtil.Upload(stream, _awsBucketName, s3Key);
