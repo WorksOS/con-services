@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <returns></returns>
     [Route("api/v1/export/veta")]
     [HttpGet]
-    public string StartVetaExport(
+    public ScheduleJobResult StartVetaExport(
       [FromServices]
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
@@ -43,9 +43,10 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       [FromQuery] Guid? filterUid)
     {
 
-      return BackgroundJob.Enqueue(() => vetaExportJob.ExportDataToVeta(
+      var jobId = BackgroundJob.Enqueue(() => vetaExportJob.ExportDataToVeta(
         projectUid, fileName, machineNames, filterUid, Request.Headers.GetCustomHeaders(true), null));
       //Hangfire will substitute a PerformContext automatically
+      return new ScheduleJobResult {jobId = jobId };
     }
 
     /// <summary>
