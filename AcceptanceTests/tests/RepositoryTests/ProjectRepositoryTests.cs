@@ -21,7 +21,7 @@ namespace RepositoryTests
         "fk_ProjectUID",
         "ImportedFileUID",
         "ImportedFileID",
-        "LegacyImportedFileId",
+        "LegacyImportedFileID",
         "fk_CustomerUID",
         "fk_ImportedFileTypeID",
         "Name",
