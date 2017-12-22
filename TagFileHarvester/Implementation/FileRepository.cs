@@ -29,10 +29,6 @@ namespace TagFileHarvester.Implementation
     }
 
   }
- 
-
-
-
 
   public class FileRepository : IFileRepository
   {
@@ -116,9 +112,7 @@ namespace TagFileHarvester.Implementation
             {
               //Only return orgs with Trimble Synchronizer Data folders
               var synchOrgFilespaces = (from f in filespacesResult.filespaces
-                                        where
-                                            String.Compare(f.shortname, OrgsHandler.tccSynchFilespaceShortName, true) ==
-                                            0
+                                        where String.Compare(f.shortname, OrgsHandler.tccSynchFilespaceShortName, true) == 0
                                         select f).ToList();
               if (synchOrgFilespaces.Count > 0)
               {
@@ -152,9 +146,9 @@ namespace TagFileHarvester.Implementation
       return orgs;
     }
 
-    public List<string> ListFolders(Organization org, DateTime lastModifiedUTC, out bool fromCache)
+    public List<string> ListFolders(Organization org, out bool fromCache)
     {
-      Log.DebugFormat("ListFolders: org={0} {1}, lastModfiedUTC={2}", org.shortName, org.filespaceId, lastModifiedUTC);
+      Log.DebugFormat("ListFolders: org={0} {1}", org.shortName, org.filespaceId);
       //Get top level list of folders from root
       if (IsAnythingInCahe(org))
       {
@@ -164,7 +158,7 @@ namespace TagFileHarvester.Implementation
         return keys.Select(key => key.Substring(key.LastIndexOf('$') + 1)).ToList();
       }
       fromCache = false;
-      return GetFolders(org, lastModifiedUTC, "/");
+      return GetFolders(org, "/");
     }
 
 
@@ -186,10 +180,9 @@ namespace TagFileHarvester.Implementation
     }
 
 
-    public List<TagFile> ListFiles(Organization org, string path, DateTime createdAfterUTC)
+    public List<TagFile> ListFiles(Organization org, string path)
     {
-      Log.DebugFormat("ListFiles: org={0} {1}, path={2}, createdAfterUTC={3}",
-        org.shortName, org.filespaceId, path, createdAfterUTC);
+      Log.DebugFormat("ListFiles: org={0} {1}, path={2}", org.shortName, org.filespaceId, path);
 
       //The tag files are located in a directory structure of the form: /<machine name>/Machine Control Data/.Production-Data/<subfolder>/*.tag
       //If a machine is in a workgroup then folder structure is: /<workgroup name>/<machine name>/Machine Control Data/.Production-Data/<subfolder>/*.tag
@@ -219,16 +212,16 @@ namespace TagFileHarvester.Implementation
         string syncFolder = string.Format("{0}/{1}", path, tccSynchFolder);
         if (FolderExists(org.filespaceId, syncFolder))
         {
-          files = GetFiles(org.filespaceId, syncFolder, createdAfterUTC);
+          files = GetFiles(org.filespaceId, syncFolder);
         }
         else
         {
           Log.DebugFormat("Folders {0} does not exists for org {1}, executing recursive search", syncFolder, org.shortName);
           //Get next level of folders and repeat to see if it's a work group
-          List<string> folders = GetFolders(org, createdAfterUTC, path);
+          List<string> folders = GetFolders(org, path);
           if (folders == null)
           {
-            Log.DebugFormat("No folders returned for org {0} path {1} modified after {2}", org.shortName, path, createdAfterUTC);
+            Log.DebugFormat("No folders returned for org {0} path {1}", org.shortName, path);
             return new List<TagFile>(); 
           }
           foreach (var folder in folders)
@@ -237,9 +230,9 @@ namespace TagFileHarvester.Implementation
             if (FolderExists(org.filespaceId, syncFolder))
             {
               if (files == null)
-                files = GetFiles(org.filespaceId, syncFolder, createdAfterUTC);
+                files = GetFiles(org.filespaceId, syncFolder);
               else
-                files.AddRange(GetFiles(org.filespaceId, syncFolder, createdAfterUTC));
+                files.AddRange(GetFiles(org.filespaceId, syncFolder));
               Log.InfoFormat("Got files in folder {0} for org {1}. Total file number: {2}", syncFolder, org.shortName,files.Count);
             }
           }
@@ -366,10 +359,9 @@ namespace TagFileHarvester.Implementation
       return false;
     }
 
-    private List<string> GetFolders(Organization org, DateTime lastModifiedUTC, string path)
+    private List<string> GetFolders(Organization org, string path)
     {
-      Log.DebugFormat("GetFolders: org={0} {1}, lastModfiedUTC={2}, path={3}", org.shortName, org.filespaceId,
-          lastModifiedUTC, path);
+      Log.DebugFormat("GetFolders: org={0} {1}, path={2}", org.shortName, org.filespaceId, path);
       List<string> folders = null;
       try
       {
@@ -411,20 +403,29 @@ namespace TagFileHarvester.Implementation
                   Log.DebugFormat("Dumping Dir {0} : {1} : {3}", org.filespaceId, lPath, lastChanged);
                 }
 
-                if (lastModifiedUTC == DateTime.MinValue)
+                var folderPath = $"/{folderEntry.entryName}";
+
+                // Check whether it has been certain number of days or longer since 
+                // the folder was created/updated and delete it if so and the folder is empty. 
+                if ((DateTime.UtcNow - lastChanged).Days >= OrgsHandler.TagFilesFolderLifeSpanInDays)
                 {
-                  folders.Add(string.Format("/{0}", folderEntry.entryName));
-                } else
-                if (lastChanged > lastModifiedUTC.Subtract(OrgsHandler.FolderSearchTimeSpan))
-                {
-                  folders.Add(string.Format("/{0}", folderEntry.entryName));
+                  if (ListFiles(org, folderPath).ToList().Count == 0)
+                  {
+                    if (!DeleteFolder(org, folderPath))
+                    {
+                      CheckForInvalidTicket(dirResult, "DeleteFolder");
+                    }
+                  }
                 }
-                
+                else
+                {
+                  folders.Add(folderPath);
+                }
               }
 
               if (!folders.Any())
               {
-                Log.WarnFormat("No folders modified after {0} found for org {1}", lastModifiedUTC, org.shortName);
+                Log.WarnFormat("No folders found for org {0}", org.shortName);
               }
             }
             else
@@ -448,6 +449,20 @@ namespace TagFileHarvester.Implementation
         Log.ErrorFormat("Failed to get list of TCC folders: {0}", ex.Message);
       }
       return folders;      
+    }
+
+    private bool DeleteFolder(Organization org, string folderPath)
+    {
+      DelParams delParams = new DelParams()
+      {
+        filespaceid = org.filespaceId,
+        path = folderPath,
+        recursive = "no"
+      };
+
+      ApiResult result = ExecuteRequest(Ticket, Method.DELETE, "/tcc/Del", delParams, typeof(ApiResult));
+
+      return result.success;
     }
 
     private DateTime GetLastChangedTime(string filespaceId, string path)
@@ -484,7 +499,7 @@ namespace TagFileHarvester.Implementation
       return DateTime.MinValue;      
     }
 
-    private List<TagFile> GetFiles(string filespaceId, string syncFolder, DateTime createdAfterUTC)
+    private List<TagFile> GetFiles(string filespaceId, string syncFolder)
     {
       Log.DebugFormat("Found synch folder for {0}", syncFolder);
       DirParams dirParams = new DirParams
@@ -502,7 +517,7 @@ namespace TagFileHarvester.Implementation
         if (dirResult.success)
         {
           List<TagFile> files = new List<TagFile>();
-          GetTagFiles(dirResult, files, createdAfterUTC, syncFolder);          
+          GetTagFiles(dirResult, files, syncFolder);          
           return files;
         }
           CheckForInvalidTicket(dirResult, "GetFiles");
@@ -544,7 +559,7 @@ namespace TagFileHarvester.Implementation
       return false;
     }
 
-    private void GetTagFiles(DirResult entry, List<TagFile> files, DateTime createdAfterUTC, string path)
+    private void GetTagFiles(DirResult entry, List<TagFile> files, string path)
     {
       if (entry.isFolder)
       {
@@ -552,7 +567,7 @@ namespace TagFileHarvester.Implementation
         {
           foreach (var e in entry.entries)
           {
-            GetTagFiles(e, files, createdAfterUTC, path);
+            GetTagFiles(e, files, path);
           }
         }
       }
@@ -560,30 +575,16 @@ namespace TagFileHarvester.Implementation
       {
         if (OrgsHandler.FilenameDumpEnabled)
         {
-          Log.DebugFormat("Dumping {0} : {1} : {3}", entry.entryName, entry.createTime, entry.modifyTime);
+          Log.DebugFormat("Dumping {0} : {1}", entry.entryName, entry.createTime);
         }
 
-        if (OrgsHandler.UseModifyTimeInsteadOfCreateTime)
+        if (entry.leaf)
         {
-          if (entry.leaf && entry.modifyTime > createdAfterUTC)
+          files.Add(new TagFile
           {
-            files.Add(new TagFile
-            {
-              fullName = string.Format("{0}/{1}", path, entry.entryName),
-              createdUTC = entry.createTime
-            });
-          }
-        }
-        else
-        {
-          if (entry.leaf && entry.createTime > createdAfterUTC)
-          {
-            files.Add(new TagFile
-            {
-              fullName = string.Format("{0}/{1}", path, entry.entryName),
-              createdUTC = entry.createTime
-            });
-          }
+            fullName = $"{path}/{entry.entryName}",
+            createdUTC = entry.createTime
+          });
         }
       }
     }

@@ -21,9 +21,11 @@ namespace TagFileHarvester
     public static int MaxThreadsToProcessTagFiles = 256;
     public static string tccSynchFilespaceShortName;
     public static string tccSynchMachineFolder;
-    public static bool TCCArchiveFiles=false;
     public static string TCCSynchProductionDataFolder;
     public static string TCCSynchProductionDataArchivedFolder;
+    public static string TCCSynchProjectBoundaryIssueFolder;
+    public static string TCCSynchSubscriptionIssueFolder;
+    public static string TCCSynchOtherIssueFolder;
     public static TimeSpan TagFileSubmitterTasksTimeout;
     public static TimeSpan TCCRequestTimeout;
     public static int NumberOfFilesInPackage;
@@ -31,6 +33,7 @@ namespace TagFileHarvester
     public static TimeSpan FolderSearchTimeSpan;
     public static bool UseModifyTimeInsteadOfCreateTime;
     public static string BookmarkPath;
+    public static byte TagFilesFolderLifeSpanInDays;
 
 
 

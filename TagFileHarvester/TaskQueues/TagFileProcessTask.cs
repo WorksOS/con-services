@@ -39,15 +39,54 @@ namespace TagFileHarvester.TaskQueues
             unityContainer.Resolve<ITAGProcessorClient>().SubmitTAGFileToTAGFileProcessor(org.orgId, Path.GetFileName(tagFilename), file);
         if (token.IsCancellationRequested)
           return null;
-        if (OrgsHandler.TCCArchiveFiles && result==TTAGProcServerProcessResult.tpsprOK)
+
+        var fileRepository = unityContainer.Resolve<IFileRepository>();
+
+        if (fileRepository == null)
+          return null;
+
+        switch (result)
         {
-          log.DebugFormat("Archiving file {0} for org {1}", tagFilename, org.shortName);
-          if (!unityContainer.Resolve<IFileRepository>()
-              .MoveFile(org, tagFilename,
-                  tagFilename.Remove(tagFilename.IndexOf(OrgsHandler.tccSynchMachineFolder), OrgsHandler.tccSynchMachineFolder.Length+1).Replace(OrgsHandler.TCCSynchProductionDataFolder,
-                      OrgsHandler.TCCSynchProductionDataArchivedFolder)))
-            return null;
+          case TTAGProcServerProcessResult.tpsprOK:
+          {
+            log.DebugFormat("Archiving file {0} for org {1} to {2} folder", tagFilename, org.shortName, OrgsHandler.TCCSynchProductionDataArchivedFolder);
+
+            if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchProductionDataArchivedFolder))
+              return null;
+
+            break;
+          }
+          case TTAGProcServerProcessResult.tpsprOnChooseDataModelCouldNotConvertDataModelBoundaryToGrid:
+          case TTAGProcServerProcessResult.tpsprOnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary:
+          case TTAGProcServerProcessResult.tpsprOnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices:
+          {
+            log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName, OrgsHandler.TCCSynchProjectBoundaryIssueFolder);
+
+            if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchProjectBoundaryIssueFolder))
+              return null;
+
+            break;
+          }
+          case TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidSubscriptions:
+          {
+            log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName, OrgsHandler.TCCSynchSubscriptionIssueFolder);
+
+            if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchSubscriptionIssueFolder))
+              return null;
+
+            break;
+          }
+          default:
+          {
+            log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName, OrgsHandler.TCCSynchOtherIssueFolder);
+
+            if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchOtherIssueFolder))
+              return null;
+
+            break;
+          }
         }
+
         return result;
       }
       catch (Exception ex)
@@ -55,6 +94,14 @@ namespace TagFileHarvester.TaskQueues
         log.ErrorFormat("Exception while processing file {0} occured {1}", tagFilename, ex.Message);
       }
       return null;
+    }
+
+    private bool MoveFileTo(string tagFilename, Organization org, IFileRepository fileRepository, string destFolder)
+    {
+      return fileRepository.MoveFile(org, tagFilename,
+        tagFilename.Remove(tagFilename.IndexOf(OrgsHandler.tccSynchMachineFolder, StringComparison.Ordinal),
+          OrgsHandler.tccSynchMachineFolder.Length + 1).Replace(OrgsHandler.TCCSynchProductionDataFolder,
+          destFolder));
     }
   }
 }

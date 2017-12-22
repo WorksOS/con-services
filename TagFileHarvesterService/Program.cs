@@ -105,9 +105,12 @@ namespace TagFileHarvester
       OrgsHandler.MaxThreadsToProcessTagFiles = TagFileHarvesterServiceSettings.Default.MaxThreadsToProcessTagFiles;
       OrgsHandler.tccSynchFilespaceShortName = TagFileHarvesterServiceSettings.Default.TCCSynchFilespaceShortName;
       OrgsHandler.tccSynchMachineFolder = TagFileHarvesterServiceSettings.Default.TCCSynchMachineControlFolder;
-      OrgsHandler.TCCArchiveFiles = TagFileHarvesterServiceSettings.Default.TCCArchiveFiles;
       OrgsHandler.TCCSynchProductionDataFolder = TagFileHarvesterServiceSettings.Default.TCCSynchProductionDataFolder;
       OrgsHandler.TCCSynchProductionDataArchivedFolder = TagFileHarvesterServiceSettings.Default.TCCSynchProductionDataArchivedFolder;
+      OrgsHandler.TCCSynchProjectBoundaryIssueFolder = TagFileHarvesterServiceSettings.Default.TCCSynchProjectBoundaryIssueFolder;
+      OrgsHandler.TCCSynchSubscriptionIssueFolder = TagFileHarvesterServiceSettings.Default.TCCSynchSubscriptionIssueFolder;
+      OrgsHandler.TCCSynchOtherIssueFolder = TagFileHarvesterServiceSettings.Default.TCCSynchOtherIssueFolder;
+      OrgsHandler.TagFilesFolderLifeSpanInDays = TagFileHarvesterServiceSettings.Default.TagFilesFolderLifeSpanInDays;
       OrgsHandler.TagFileSubmitterTasksTimeout = TagFileHarvesterServiceSettings.Default.TagFileSubmitterTasksTimeout;
       OrgsHandler.TCCRequestTimeout = TagFileHarvesterServiceSettings.Default.TCCRequestTimeout;
       OrgsHandler.NumberOfFilesInPackage = TagFileHarvesterServiceSettings.Default.NumberOfFilesInPackage;

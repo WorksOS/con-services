@@ -14,23 +14,8 @@
     <Setting Name="TCCSynchFilespaceShortName" Type="System.String" Scope="Application">
       <Value Profile="(Default)">TrimbleSynchronizerData</Value>
     </Setting>
-    <Setting Name="TCCArchiveFiles" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="TCCRequestTimeout" Type="System.TimeSpan" Scope="Application">
-      <Value Profile="(Default)">00:03:00</Value>
-    </Setting>
-    <Setting Name="MaxThreadsToProcessTagFiles" Type="System.Int32" Scope="Application">
-      <Value Profile="(Default)">16</Value>
-    </Setting>
     <Setting Name="TagFileSubmitterRunTimeout" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">00:05:00</Value>
-    </Setting>
-    <Setting Name="TagFileSubmitterTasksTimeout" Type="System.TimeSpan" Scope="Application">
-      <Value Profile="(Default)">00:15:00</Value>
-    </Setting>
-    <Setting Name="NumberOfFilesInPackage" Type="System.Int32" Scope="Application">
-      <Value Profile="(Default)">150</Value>
     </Setting>
     <Setting Name="OrgProcessingDelay" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">00:00:01</Value>
@@ -66,7 +51,37 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="BookmarkPath" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">D:\Bookmarks</Value>
+      <Value Profile="(Default)">C:\Bookmarks</Value>
+    </Setting>
+    <Setting Name="SecondaryTagProcSvcIpAddr" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">127.0.0.1</Value>
+    </Setting>
+    <Setting Name="ShortOrgName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">testorg</Value>
+    </Setting>
+    <Setting Name="TCCRequestTimeout" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:05:00</Value>
+    </Setting>
+    <Setting Name="MaxThreadsToProcessTagFiles" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">20</Value>
+    </Setting>
+    <Setting Name="TagFileSubmitterTasksTimeout" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:30:00</Value>
+    </Setting>
+    <Setting Name="NumberOfFilesInPackage" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1500</Value>
+    </Setting>
+    <Setting Name="TCCSynchProjectBoundaryIssueFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Project Boundary (Issue)</Value>
+    </Setting>
+    <Setting Name="TCCSynchSubscriptionIssueFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Subscription (Issue)</Value>
+    </Setting>
+    <Setting Name="TCCSynchOtherIssueFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Other... (Issue)</Value>
+    </Setting>
+    <Setting Name="TagFilesFolderLifeSpanInDays" Type="System.Byte" Scope="Application">
+      <Value Profile="(Default)">7</Value>
     </Setting>
   </Settings>
 </SettingsFile>

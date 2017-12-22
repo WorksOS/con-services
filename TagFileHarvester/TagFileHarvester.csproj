@@ -146,6 +146,7 @@
     <Compile Include="Interfaces\ITAGProcessorClient.cs" />
     <Compile Include="Models\ApiResult.cs" />
     <Compile Include="Models\Bookmark.cs" />
+    <Compile Include="Models\DelParams.cs" />
     <Compile Include="Models\DirParams.cs" />
     <Compile Include="Models\DirResult.cs" />
     <Compile Include="Models\GetFileAttributesParams.cs" />
