@@ -167,7 +167,7 @@ namespace VSS.Productivity3D.MasterDataConsumer
               IAbstractKafkaConsumer;
           consumer.SetTopic(kafkaTopic);
           consumers.Add(consumer);
-          tasks.Add(Task.Factory.StartNew(consumer.SubscribeObserverConsumer));
+          tasks.Add(consumer.StartProcessingAsync(token));
         }
         else
         {
@@ -176,8 +176,6 @@ namespace VSS.Productivity3D.MasterDataConsumer
         }
         _log.LogDebug("MasterDataConsumer: Kafka topic consumer to be started: {0}", kafkaTopic);
       }
-
-      Console.ReadLine();
 
 #if !NET_4_7
       if (tasks.Count > 0)
