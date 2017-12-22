@@ -28,7 +28,6 @@ using System;
 using System.IO;
 using System.Linq;
 using DesignProfiler.ComputeDesignFilterBoundary.RPC;
-using ASNode.GridReport.RPC;
 using VLPDDecls;
 using VSS.Productivity3D.Common.Interfaces;
 

@@ -235,7 +235,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 
     /// <summary>
     /// Notifies Raptor that a file has been CRUD to a project via CGen
-    ///      This is called by the SurveyedSurface sync during Lift&Shift/Beta period.
+    ///      This is called by the SurveyedSurface sync during Lift and Shift/Beta period.
     ///      When a file is added via CGen flexGateway, it will tell raptor.
     ///        However the 3dp UI needs to know about the change, so needs to refresh its caches.
     /// </summary>

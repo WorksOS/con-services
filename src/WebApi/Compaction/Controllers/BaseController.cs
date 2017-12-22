@@ -292,7 +292,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project Uid</param>
     /// <param name="filterUid">Filter UID</param>
-    /// <param name="returnEarliest">Determines if earliest or latest cell pass is used. Used by summary volumes filters only.</param>
     /// <returns>An instance of the Filter class.</returns>
     protected async Task<Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid)
     {
