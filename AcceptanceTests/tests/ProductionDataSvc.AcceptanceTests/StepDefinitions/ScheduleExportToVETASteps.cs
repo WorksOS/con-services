@@ -143,8 +143,21 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Then(@"the report result should contain error code (.*) and error message ""(.*)""")]
     public void ThenTheReportResultShouldContainErrorCodeAndErrorMessage(int errorCode, string errorMessage)
     {
-      Assert.IsTrue(statusRequester.CurrentResponse.Code == errorCode && (statusRequester.CurrentResponse.Message == errorMessage || statusRequester.CurrentResponse.Message.Contains(errorMessage)),
-        $"Expected to see code {errorCode} and message {errorMessage}, but got {statusRequester.CurrentResponse.Code} and {statusRequester.CurrentResponse.Message} instead.");
+      int code = -1;
+      string message = null;
+      switch (operation)
+      {
+          case "status":
+            code = statusRequester.CurrentResponse.Code;
+            message = statusRequester.CurrentResponse.Message;
+            break;
+        case "download":
+          code = downloadRequester.CurrentResponse.Code;
+          message = downloadRequester.CurrentResponse.Message;
+          break;
+      }
+      Assert.IsTrue(code == errorCode && (message == errorMessage || message.Contains(errorMessage)),
+        $"Expected to see code {errorCode} and message {errorMessage}, but got {code} and {message} instead.");
     }
   }
 }
