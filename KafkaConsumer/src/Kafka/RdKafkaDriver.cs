@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,6 +34,10 @@ namespace VSS.KafkaConsumer.Kafka
     public bool IsInitializedProducer { get; private set; }
     public bool IsInitializedConsumer { get; private set; }
 
+    private Func<Message, int> onMessagesArrivedAction;
+    private Action onCompletedAction;
+    private Message messageQueue = new Message();
+
     public async Task<CommittedOffsets> Commit()
     {
      // Console.WriteLine($"Comitting offsets");
@@ -45,6 +50,33 @@ namespace VSS.KafkaConsumer.Kafka
       return comittedOffsets;
     }
 
+    public void SubscribeConsumer(Func<Message,int> onMessagesArrived, Action onCompleted)
+    {
+      onMessagesArrivedAction = onMessagesArrived;
+      onCompletedAction = onCompleted;
+      rdConsumer.OnMessage += RdConsumer_OnMessage;
+    }
+
+    private void RdConsumer_OnMessage(object sender, Confluent.Kafka.Message e)
+    {
+      if (e != null)
+      {
+        log?.LogTrace($"Polled with the result {e.Error.Code}");
+
+        if (!e.Error.HasError)
+        {
+          messageQueue.AddPayload(e.Value);
+        }
+        //Ignore batching here for some time
+       // if (messageQueue.payload.Count() > batchSize)
+        {
+          onMessagesArrivedAction(messageQueue);
+          messageQueue.ClearPayloads();
+          onCompletedAction?.Invoke();
+        }
+      }
+    }
+
     public Message Consume(TimeSpan timeout)
     {
       var payloads = new List<byte[]>();
@@ -52,11 +84,11 @@ namespace VSS.KafkaConsumer.Kafka
       Confluent.Kafka.Message lastValidResult = null;
 
       int protectionCounter = 0;
-      
+
       while (payloads.Count < batchSize && protectionCounter < 10) //arbitary number here for the perfomance testing
       {
         log?.LogTrace($"Polling with retries {protectionCounter}");
-        log?.LogTrace($"Consumer is subscribed to {rdConsumer.Subscription.Aggregate((i,j)=>i+j)}");
+        log?.LogTrace($"Consumer is subscribed to {rdConsumer.Subscription.Aggregate((i, j) => i + j)}");
         rdConsumer.Consume(out var result, timeout);
         if (result == null)
         {
@@ -70,11 +102,12 @@ namespace VSS.KafkaConsumer.Kafka
           lastValidResult = result;
         }
         else
-	  protectionCounter++;
+          protectionCounter++;
       }
 
-      log?.LogTrace($"Returning {payloads.Count} records with offset {lastValidResult?.Offset ?? -1} and partition {lastValidResult?.Partition ?? -1}");
-      return payloads.Count>0
+      log?.LogTrace(
+        $"Returning {payloads.Count} records with offset {lastValidResult?.Offset ?? -1} and partition {lastValidResult?.Partition ?? -1}");
+      return payloads.Count > 0
         ? new Message(payloads, Error.NO_ERROR, lastValidResult?.Offset ?? -1, lastValidResult?.Partition ?? -1)
         : new Message(payloads, Error.NO_DATA);
     }

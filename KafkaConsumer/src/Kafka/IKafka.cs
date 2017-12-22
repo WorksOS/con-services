@@ -24,6 +24,7 @@ namespace VSS.KafkaConsumer.Kafka
     bool IsInitializedProducer { get; }
     bool IsInitializedConsumer { get; }
     Task Send(string topic, KeyValuePair<string, string> messageToSendWithKey);
+    void SubscribeConsumer(Func<Message, int> onMessagesArrived, Action onCompleted);
   }
 
   public class Message
@@ -40,6 +41,22 @@ namespace VSS.KafkaConsumer.Kafka
       this.offset = offset;
       this.partition = partition;
     }
+
+    public Message()
+    {
+      this.payload = new List<byte[]>();
+    }
+
+    public void AddPayload(byte[] newPayload)
+    {
+      (payload as List<byte[]>)?.Add(newPayload);
+    }
+
+    public void ClearPayloads()
+    {
+      (payload as List<byte[]>)?.Clear();
+    }
+
   }
 
   public enum Error

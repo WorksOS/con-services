@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Nito.AsyncEx.Synchronous;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Interfaces;
 using VSS.KafkaConsumer.Kafka;
@@ -99,45 +100,71 @@ namespace VSS.KafkaConsumer
     {
       log.LogTrace($"Polling with {requestTime} timeout");
       var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(requestTime));
-      bool success = true;
+
       if (messages.message == Error.NO_ERROR)
       {
-	try
-	{
-        foreach (var message in messages.payload)
-        {
-            string bytesAsString = Encoding.UTF8.GetString(message, 0, message.Length);
-            //Debugging only
-            log.LogDebug("KafkaConsumer: " + typeof(T) + " : " + bytesAsString);
-	    var r_messageResolver = messageResolver.GetConverter<T>();
-            if (r_messageResolver == null)
-            {
-              log.LogWarning("KafkaConsumer: unrecognized message type.");
-	    }
-	    else
-	    {
-              var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString,r_messageResolver);
-              log.LogDebug($"KafkaConsumer: Saving type {deserializedObject.GetType()}");
-              await dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
-            }
-            log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
-	   }
-         }
-          catch (Exception ex)
-          {
-            log.LogError("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}",
-              ex.Message, ex.StackTrace);
-	    success=false;
-            if (ex.InnerException != null)
-            {
-              log.LogError("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message,
-                ex.InnerException.StackTrace);
-            }
-         }
-        if (success)
-            await kafkaDriver.Commit();
+        await ProcessAllMessages(messages);
       }
       return 0;
+    }
+
+    public void SubscribeObserverConsumer()
+    {
+      log.LogDebug("KafkaConsumer: Subscribing to consumer for message processing");
+      kafkaDriver.SubscribeConsumer(OnMessagesArrived,null);
+    }
+
+    private int OnMessagesArrived(Message messages)
+    {
+      ProcessAllMessages(messages).WaitAndUnwrapException();
+      return 0;
+    }
+
+    private async Task ProcessAllMessages(Message messages)
+    {
+      bool success = true;
+      try
+      {
+        foreach (var message in messages.payload)
+        {
+          await ProcessSingleMessage(message);
+        }
+      }
+      catch (Exception ex)
+      {
+        log.LogError("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}",
+          ex.Message, ex.StackTrace);
+        success = false;
+        if (ex.InnerException != null)
+        {
+          log.LogError("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message,
+            ex.InnerException.StackTrace);
+        }
+      }
+      if (success)
+      {
+        log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
+        await kafkaDriver.Commit();
+      }
+    }
+
+    private async Task ProcessSingleMessage(byte[] message)
+    {
+      string bytesAsString = Encoding.UTF8.GetString(message, 0, message.Length);
+      //Debugging only
+      log.LogDebug("KafkaConsumer: " + typeof(T) + " : " + bytesAsString);
+      var r_messageResolver = messageResolver.GetConverter<T>();
+      if (r_messageResolver == null)
+      {
+        log.LogWarning("KafkaConsumer: unrecognized message type.");
+      }
+      else
+      {
+        var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString, r_messageResolver);
+        log.LogDebug($"KafkaConsumer: Saving type {deserializedObject.GetType()}");
+        await dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
+      }
+
     }
 
     public void StopProcessing()
