@@ -441,7 +441,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             x = p.station,
             //y or y2 will be set later using the summary volumes design
             y = calcType == VolumeCalcType.DesignToGround ? float.NaN : p.lastPassHeight1,
-            value = p.cutFill,
+            value = -p.cutFill,
             y2 = calcType == VolumeCalcType.GroundToDesign ? float.NaN : p.lastPassHeight2 
           }).ToList()
       };

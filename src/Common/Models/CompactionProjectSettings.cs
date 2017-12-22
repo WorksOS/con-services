@@ -607,10 +607,10 @@ namespace VSS.Productivity3D.Common.Models
     private const double MIN_SPEED = 1.0;   //km/h
     private const double MAX_SPEED = 100.0;
 
-    private const double MIN_SHRINKAGE = 1.0;   //%
+    private const double MIN_SHRINKAGE = 0.0;   //%
     private const double MAX_SHRINKAGE = 100.0;
 
-    private const double MIN_BULKING = 1.0;   //%
+    private const double MIN_BULKING = 0.0;   //%
     private const double MAX_BULKING = 100.0;
 
     private const double MIN_CUT_FILL = -400.0; //m

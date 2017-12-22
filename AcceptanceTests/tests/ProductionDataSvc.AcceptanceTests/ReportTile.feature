@@ -63,6 +63,7 @@ And a cutFillDesignUid "<cutFillDesignUid>"
 And a volumeCalcType "<volumeCalcType>" 
 And a volumeTopUid "<volumeTopUid>" 
 And a volumeBaseUid "<volumeBaseUid>"
+And a width "1024" and a height "1024"
 When I request a Report Tile and the result file "CompactionReportTileResponse.json"	
 Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
 Examples: 
@@ -73,9 +74,9 @@ Examples:
 | CutFillOverlayAll | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff |                |                                      |                                      | ProductionData,BaseMap,ProjectBoundary,Geofences,Alignments,DxfLinework | HYBRID  | 8    | 5          |
 | GroundToGround    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToGround | A40814AA-9CDB-4981-9A21-96EA30FFECDD | F07ED071-F8A1-42C3-804A-1BDE7A78BE5B | ProductionData                                                          |         | 8    | 1          |
 | DesignToGround    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | DesignToGround | a54e5945-1aaa-4921-9cc1-c9d8c0a343d3 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | ProductionData                                                          |         | 8    | 5          |
-| GroundToDesign    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToDesign | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | ProductionData                                                          |         | 8    | 5          |
+| GroundToDesign    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToDesign | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 9c27697f-ea6d-478a-a168-ed20d6cd9a22 | ProductionData                                                          |         | 8    | 5          |
 | D2GOverlayAll     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | DesignToGround | a54e5945-1aaa-4921-9cc1-c9d8c0a343d3 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | ProductionData,BaseMap,ProjectBoundary,Geofences,Alignments,DxfLinework | HYBRID  | 8    | 5          |
-| G2DOverlayAll     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToDesign | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | ProductionData,BaseMap,ProjectBoundary,Geofences,Alignments,DxfLinework | HYBRID  | 8    | 5          |
+| G2DOverlayAll     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToDesign | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 9c27697f-ea6d-478a-a168-ed20d6cd9a22 | ProductionData,BaseMap,ProjectBoundary,Geofences,Alignments,DxfLinework | HYBRID  | 8    | 5          |
 
 Scenario: Report Tile - Missing Mode 
 	Given the Report Tile service URI "/api/v2/compaction/reporttiles" 

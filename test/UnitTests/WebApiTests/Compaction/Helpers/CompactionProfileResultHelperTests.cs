@@ -716,7 +716,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(expectedCell.cellType, actualResult.cellType, $"{j}: {expectedType} Wrong cellType");
       Assert.AreEqual(expectedCell.station, actualResult.x, $"{j}: {expectedType} Wrong x");
       Assert.AreEqual(expectedY, actualResult.y, $"{j}: {expectedType} Wrong y");
-      Assert.AreEqual(expectedValue, actualResult.value, $"{j}: {expectedType} Wrong value");
+      Assert.AreEqual(-expectedValue, actualResult.value, $"{j}: {expectedType} Wrong value");
       Assert.AreEqual(null, actualResult.valueType, $"{j}: {expectedType} Wrong valueType");
       Assert.AreEqual(expectedY2, actualResult.y2, $"{j}: {expectedType} Wrong y2");
       Assert.AreEqual(null, actualResult.value2, $"{j}: {expectedType} Wrong value2");

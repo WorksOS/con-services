@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for reporting requests
   /// </summary>
-  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Duration = 60, VaryByQueryKeys = new[] { "*" })]
   public class CompactionReportTileController : BaseController
   {
     /// <summary>
