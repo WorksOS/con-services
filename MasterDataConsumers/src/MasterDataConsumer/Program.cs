@@ -167,7 +167,7 @@ namespace VSS.Productivity3D.MasterDataConsumer
               IAbstractKafkaConsumer;
           consumer.SetTopic(kafkaTopic);
           consumers.Add(consumer);
-          tasks.Add(consumer.StartProcessingAsync(token));
+          tasks.Add(Task.Factory.StartNew(consumer.SubscribeObserverConsumer));
         }
         else
         {

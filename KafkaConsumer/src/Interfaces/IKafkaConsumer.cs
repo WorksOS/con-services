@@ -12,6 +12,7 @@ namespace VSS.KafkaConsumer.Interfaces
         void StopProcessing();
         void StartProcessingSync();
         void OverrideLogger(ILogger logger);
+        void SubscribeObserverConsumer();
     }
 
     public interface IKafkaConsumer<T> : IAbstractKafkaConsumer, IDisposable
