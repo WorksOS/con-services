@@ -217,9 +217,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             repoProject.Delete(ifp);
 
             // Notify 3dpm of SS file deleted via Legacy
+            // 3dpm will attempt to delete both by the LegacyImportedFileId and nextGens ImportedFileId
             if (ifp.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
-              await NotifyRaptorImportedFileChange(ifp.CustomerUid, Guid.Parse(ifp.ProjectUid),
-                  Guid.Parse(ifp.ImportedFileUid))
+                await NotifyRaptorFileDeletedInCGenAsync(ifp.CustomerUid, Guid.Parse(ifp.ProjectUid), Guid.Parse(ifp.ImportedFileUid), ifp.FileDescriptor, ifp.ImportedFileId, ifp.LegacyImportedFileId.Value)
                 .ConfigureAwait(false);
 
             var newRelicAttributes = new Dictionary<string, object>

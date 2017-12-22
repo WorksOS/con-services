@@ -10,6 +10,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Scheduler.Common.Controller
 {
@@ -22,10 +23,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     protected IRaptorProxy RaptorProxy;
     protected ITPaasProxy TPaasProxy;
 
-    private DateTime _lastTPaasTokenObtainedUtc = DateTime.MinValue;
+    public static DateTime _lastTPaasTokenObtainedUtc;
+    public static string _3DPmSchedulerBearerToken;
+
     private readonly int _refreshPeriodMinutes = 480;
     private readonly string _3DPmSchedulerConsumerKeys = null;
-    private string _3DPmSchedulerBearerToken = null;
 
     /// <summary>
     /// </summary>
@@ -60,9 +62,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         throw new InvalidOperationException(
           "ImportedFileSynchroniser missing from environment variables:3DPMSCHEDULER_CONSUMER_KEYS");
       }
+      Log.LogInformation($"ImportedFileSynchronizerBase: FileSpaceId: {FileSpaceId} _refreshPeriodMinutes: {_refreshPeriodMinutes}  _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _3DPmSchedulerBearerToken: {_3DPmSchedulerBearerToken} _3DPmSchedulerConsumerKeys: {_3DPmSchedulerConsumerKeys}");
+      //Console.WriteLine($"ImportedFileSynchronizerBase: (console temp)  FileSpaceId: {FileSpaceId} _refreshPeriodMinutes: {_refreshPeriodMinutes}  _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _3DPmSchedulerBearerToken: {_3DPmSchedulerBearerToken} _3DPmSchedulerConsumerKeys: {_3DPmSchedulerConsumerKeys}");
     }
 
-    
+
     /// <summary>
     /// Notify raptor of new file
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
@@ -115,6 +119,61 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       return isNotified;
     }
 
+    /// <summary>
+    /// Notify raptor of new file
+    ///     if it already knows about it, it will just update and re-notify raptor and return success.
+    /// </summary>
+    /// <returns></returns>
+    protected async Task<bool> NotifyRaptorFileDeletedInCGenAsync(string customerUid, Guid projectUid,
+      Guid importedFileUid, string fileDescriptor, long importedFileId, long legacyImportedFileId)
+    {
+      var startUtc = DateTime.UtcNow;
+      var isNotified = false;
+
+      BaseDataResult notificationResult = null;
+      var customHeaders = GetCustomHeaders(customerUid);
+      try
+      {
+        notificationResult = await RaptorProxy
+          .DeleteFile(projectUid, ImportedFileType.SurveyedSurface, importedFileUid, fileDescriptor, importedFileId, legacyImportedFileId, customHeaders.Result)
+          .ConfigureAwait(false);
+      }
+      catch (Exception e)
+      {
+        // proceed with sync, but send alert to NewRelic
+        var newRelicAttributes = new Dictionary<string, object> {
+          { "message", string.Format($"DeleteFile in 3dPmService failed with exception {e.Message}") },
+          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
+          { "projectUid", projectUid},
+          { "importedFileUid", importedFileUid},
+          { "fileDescriptor", fileDescriptor},
+          { "legacyImportedFileId", legacyImportedFileId}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
+      }
+      Log.LogDebug(
+        $"NotifyRaptorFileDeletedInCGen: projectUid:{projectUid} importedFileUid: {importedFileUid} FileDescriptor:{fileDescriptor} legacyImportedFileId {legacyImportedFileId}. 3dPmSerivce returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+
+      if (notificationResult == null || notificationResult.Code != 0)
+      {
+        // proceed with sync, but send alert to NewRelic
+        var newRelicAttributes = new Dictionary<string, object> {
+          { "message", string.Format($"DeleteFile in 3dPmSerivce failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}") },
+          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
+          { "projectUid", projectUid},
+          { "importedFileUid", importedFileUid},
+          { "fileDescriptor", fileDescriptor},
+          { "legacyImportedFileId", legacyImportedFileId}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
+      }
+      else
+      {
+        isNotified = true;
+      }
+
+      return isNotified;
+    }
 
     private async Task<IDictionary<string, string>> GetCustomHeaders(string customerUid)
     {
@@ -154,7 +213,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             .Get3DPmSchedulerBearerToken(grantType, customHeaders)
             .ConfigureAwait(false);
 
-          Log.LogInformation($"ImportedFileSynchroniser: Get3DPmSchedulerBearerToken() Going to get bearer token: TPAAS_OAUTH_URL: {tPaasUrl} grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)} _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _refreshPeriodMinutes: {_refreshPeriodMinutes} DateTime.UtcNow: {DateTime.UtcNow}");
+          Log.LogInformation($"ImportedFileSynchroniser: Get3DPmSchedulerBearerToken() Got new bearer token: TPAAS_OAUTH_URL: {tPaasUrl} grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
+          //Console.WriteLine($"ImportedFileSynchroniser: Get3DPmSchedulerBearerToken() (console temp) Got new bearer token: TPAAS_OAUTH_URL: {tPaasUrl} grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
         }
         catch (Exception e)
         {
@@ -188,7 +248,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         _lastTPaasTokenObtainedUtc = DateTime.UtcNow;
       }
 
-      Log.LogInformation($"ImportedFileSynchroniser: Get3dPmSchedulerBearerToken()  Got bearer token: {_3DPmSchedulerBearerToken}");
+      Log.LogInformation($"ImportedFileSynchroniser: Get3dPmSchedulerBearerToken()  Using bearer token: {_3DPmSchedulerBearerToken}");
+      //Console.WriteLine($"ImportedFileSynchroniser: Get3dPmSchedulerBearerToken() (console temp)  Using bearer token: {_3DPmSchedulerBearerToken}");
       return _3DPmSchedulerBearerToken;
     }
   }
