@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var projectUid = Guid.NewGuid();
       var jobId = "Some id";
       var key = VetaExportJob.GetS3Key(customerUid, projectUid, jobId);
-      var expectedKey = $"3dpm/{customerUid}/{projectUid}/{jobId}";
+      var expectedKey = $"3dpm/{customerUid}/{projectUid}/{jobId}.zip";
       Assert.AreEqual(expectedKey, key, "Wrong S3 key");
     }
 
