@@ -177,12 +177,14 @@ namespace VSS.Productivity3D.MasterDataConsumer
         _log.LogDebug("MasterDataConsumer: Kafka topic consumer to be started: {0}", kafkaTopic);
       }
 
-//#if !NET_4_7
+      Console.ReadLine();
+
+#if !NET_4_7
       if (tasks.Count > 0)
         Task.WaitAll(tasks.ToArray());
       else
         _log.LogCritical("MasterDataConsumer: No consumers started.");
-//#endif
+#endif
     }
   }
 }
