@@ -123,24 +123,26 @@ namespace VSS.KafkaConsumer
     private async Task ProcessAllMessages(Message messages)
     {
       bool success = true;
-      try
+      foreach (var message in messages.payload)
       {
-        foreach (var message in messages.payload)
+
+        try
         {
           await ProcessSingleMessage(message);
         }
-      }
-      catch (Exception ex)
-      {
-        log.LogError("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}",
-          ex.Message, ex.StackTrace);
-        success = false;
-        if (ex.InnerException != null)
+        catch (Exception ex)
         {
-          log.LogError("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message,
-            ex.InnerException.StackTrace);
+          log.LogError("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}",
+            ex.Message, ex.StackTrace);
+          success = false;
+          if (ex.InnerException != null)
+          {
+            log.LogError("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message,
+              ex.InnerException.StackTrace);
+          }
         }
       }
+
       if (success)
       {
         log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
