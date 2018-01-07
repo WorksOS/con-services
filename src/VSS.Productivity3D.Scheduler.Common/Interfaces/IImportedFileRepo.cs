@@ -5,6 +5,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Interfaces
   public interface IImportedFileRepo<T>
   {
     List<T> Read();
+    bool ProjectAndCustomerExist(string customerUid, string projectUid);
     long Create(T member);
     int Update(T member);
     int Delete(T member);

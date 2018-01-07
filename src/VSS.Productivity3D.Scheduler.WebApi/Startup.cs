@@ -17,6 +17,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.TCCFileAccess;
+using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 
 
 namespace VSS.Productivity3D.Scheduler.WebApi
@@ -114,6 +115,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddTransient<IImportedFileProxy, ImportedFileProxy>();
+      services.AddTransient<IVetaExportJob, VetaExportJob>();
       _serviceCollection = services;
     }
 

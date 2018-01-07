@@ -12,7 +12,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
     private static string newRelicServiceName = "3dPmScheduler";
 
     public static void NotifyNewRelic(string scheduledTask, string messageLevel, DateTime startTimeUtc,
-      double elapsedMs, ILogger log, Dictionary<string, object> eventAttributes = null)
+      ILogger log, Dictionary<string, object> eventAttributes = null)
     {
       var fullEventAttributes = new Dictionary<string, object>
       {
@@ -40,12 +40,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
 
     public static void AddRange<T>(this ICollection<T> target, IEnumerable<T> source)
     {
-      if (target == null)
-        throw new ArgumentNullException(nameof(target));
-      if (source == null)
-        throw new ArgumentNullException(nameof(source));
-      foreach (var element in source)
-        target.Add(element);
+      if (target != null && source != null)
+      {
+        foreach (var element in source)
+          target.Add(element);
+      }
     }
   }
 }

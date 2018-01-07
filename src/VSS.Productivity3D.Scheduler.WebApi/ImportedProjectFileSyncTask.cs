@@ -78,8 +78,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         {
           {"message", string.Format($"Unable to schedule recurring job: exception {ex.Message}")}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Fatal", startUtc,
-          (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Fatal", startUtc, _log, newRelicAttributes);
         throw;
       }
     }
@@ -100,7 +99,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var newRelicAttributes = new Dictionary<string, object> {
         { "message", string.Format($"Task completed.") }
       };
-      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, (DateTime.UtcNow - startUtc).TotalMilliseconds, _log, newRelicAttributes);
+      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, _log, newRelicAttributes);
     }
   }
 }

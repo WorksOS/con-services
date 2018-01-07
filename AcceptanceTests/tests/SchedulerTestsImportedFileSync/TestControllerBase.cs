@@ -139,7 +139,27 @@ namespace SchedulerTestsImportedFileSync
       dbConnection.Close();
       return insertedCount;
     }
-    protected int WriteNhOpDbImportedFileAndHistory(string nhOpDbConnectionString, ImportedFileNhOp importedFile)
+
+
+    protected bool HaveRetrievedProjectImportedFile(string projectDbConnectionString, long legacyImportedFileId)
+    {
+      // importedFile table depends on a project (for legacyProjectID) and CustomerProject (for legacyCustomerId) rows existing
+      var dbConnection = new MySqlConnection(projectDbConnectionString);
+      dbConnection.Open();
+
+      var empty = "\"";
+      string selectCommand = string.Format($"SELECT LegacyImportedFileId FROM ImportedFile WHERE LegacyImportedFileId = {empty}{legacyImportedFileId}{empty}");
+
+      IEnumerable<object> response = null;
+      response = dbConnection.Query(selectCommand);
+      
+      dbConnection.Close();
+
+      var enumerable = response as IList<object> ?? response.ToList();
+      return enumerable.Any();
+    }
+
+    protected int WriteNhOpDbImportedFileAndHistory(string projectDbConnectionString, ImportedFileNhOp importedFile)
     {
       var dbConnection = new SqlConnection(nhOpDbConnectionString);
       dbConnection.Open();

@@ -9,7 +9,7 @@ docker rmi vssproductivity3dscheduler_webapi
 docker rmi vssproductivity3dscheduler_accepttest
 
 $Cmd = 'aws'
-$Args = 'ecr', 'get-login'
+$Args = 'ecr', 'get-login', '--profile', 'vss-grant'
 
 $LoginID = &$Cmd $Args
 
