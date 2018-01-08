@@ -275,63 +275,88 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     /// to import it into Project.
     /// </summary>
     /// <param name="projectEvent"></param>
+    /// <param name="action"></param>
     /// <returns></returns>
-    protected async Task DownloadFileAndCallProjectWebApi(ImportedFileProject projectEvent, bool creating)
+    protected async Task DownloadFileAndCallProjectWebApi(ImportedFileProject projectEvent, WebApiAction action)
     {
       //TODO: If performance is a problem then may need to add 'Copy' command to TCCFileAccess 
       //and use it here to directly copy file from old to new structure in TCC.
-
-      var startUtc = DateTime.UtcNow;
 
       Log.LogInformation($"ImportedFileSynchroniser: DownloadFileAndCallProjectWebApi");
 
       var fileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(projectEvent.FileDescriptor);
       if (await DownloadFileAndSaveToTemp(fileDescriptor))
       {
-        var customHeaders = await GetCustomHeaders(projectEvent.CustomerUid);
-        try
-        {     
-          Log.LogInformation($"ImportedFileSynchroniser: Calling project web api {FullTemporaryFileName(fileDescriptor)}");
-
-          if (creating)
-          {
-            await ImpFileProxy.CreateImportedFile(
-              new FlowFile {flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path)},
-              new Guid(projectEvent.ProjectUid), projectEvent.ImportedFileType,
-              projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType,
-              projectEvent.SurveyedUtc,
-              customHeaders).ConfigureAwait(false);
-          }
-          else
-          {
-            await ImpFileProxy.UpdateImportedFile(new FlowFile { flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path) },
-              new Guid(projectEvent.ProjectUid), projectEvent.ImportedFileType,
-              projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
-              customHeaders).ConfigureAwait(false);
-          }
-        }
-        catch (Exception e)
-        {
-          var message = string.Format($"DownloadFileAndCallProjectWebApi call failed with exception {e.Message}");
-          var newRelicAttributes = new Dictionary<string, object> {
-            { "message", message},
-            { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
-            { "fullTemporaryFileName", FullTemporaryFileName(fileDescriptor)}
-          };
-          NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
-        }
-
+        await CallProjectWebApi(projectEvent, action, fileDescriptor).ConfigureAwait(false);
+ 
         try
         {
           //Clean up - delete downloaded file
           Log.LogInformation($"ImportedFileSynchroniser: Deleting temporaty file {FullTemporaryFileName(fileDescriptor)}");
           File.Delete(FullTemporaryFileName(fileDescriptor));
         }
-        catch (Exception e)
+        catch (Exception)
         {
           //We don't care really
         }
    
+      }
+    }
+
+    /// <summary>
+    /// Call the project web api to import the file.
+    /// </summary>
+    /// <param name="projectEvent"></param>
+    /// <param name="action"></param>
+    /// <param name="fileDescriptor"></param>
+    /// <returns></returns>
+    protected async Task CallProjectWebApi(ImportedFileProject projectEvent, WebApiAction action, FileDescriptor fileDescriptor)
+    {
+      var startUtc = DateTime.UtcNow;
+      string fullName = FullTemporaryFileName(fileDescriptor);
+      if (action == WebApiAction.Deleting)
+      {
+        //Remove temporary download folder part of the path
+        fullName = fullName.Substring(TemporaryDownloadFolder.Length);
+      }
+      var projectUid = Guid.Parse(projectEvent.ProjectUid);
+      var customHeaders = await GetCustomHeaders(projectEvent.CustomerUid);
+      try
+      {
+        Log.LogInformation($"ImportedFileSynchroniser: Calling project web api {fullName}");
+
+        switch (action)
+        {
+          case WebApiAction.Creating:
+            await ImpFileProxy.CreateImportedFile(
+              new FlowFile { flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path) },
+              projectUid, projectEvent.ImportedFileType,
+              projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType,
+              projectEvent.SurveyedUtc,
+              customHeaders).ConfigureAwait(false);
+            break;
+          case WebApiAction.Updating:
+            await ImpFileProxy.UpdateImportedFile(new FlowFile { flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path) },
+              projectUid, projectEvent.ImportedFileType,
+              projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
+              customHeaders).ConfigureAwait(false);
+            break;
+          case WebApiAction.Deleting:
+            await ImpFileProxy.DeleteImportedFile(projectUid, Guid.Parse(projectEvent.ImportedFileUid),
+              customHeaders).ConfigureAwait(false);
+            break;
+        }
+      }
+      catch (Exception e)
+      {
+        var message = string.Format($"CallProjectWebApi call failed with exception {e.Message}");
+        var newRelicAttributes = new Dictionary<string, object> {
+          { "message", message},
+          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
+          { "action", action},
+          { "fullFileName", fullName}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
       }
     }
 
@@ -406,6 +431,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     private string FullTemporaryFileName(FileDescriptor fileDescriptor)
     {
       return $"{FullTemporaryPath(fileDescriptor.path)}/{fileDescriptor.fileName}";
+    }
+
+    protected enum WebApiAction
+    {
+      Creating,
+      Updating,
+      Deleting
     }
 
   }

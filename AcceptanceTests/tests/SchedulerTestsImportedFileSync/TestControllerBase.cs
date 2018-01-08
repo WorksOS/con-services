@@ -159,7 +159,7 @@ namespace SchedulerTestsImportedFileSync
       return enumerable.Any();
     }
 
-    protected int WriteNhOpDbImportedFileAndHistory(string projectDbConnectionString, ImportedFileNhOp importedFile)
+    protected int WriteNhOpDbImportedFileAndHistory(string nhOpDbConnectionString, ImportedFileNhOp importedFile)
     {
       var dbConnection = new SqlConnection(nhOpDbConnectionString);
       dbConnection.Open();

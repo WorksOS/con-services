@@ -39,9 +39,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       var fileListNhOp = repoNhOp.Read();
 
       await SyncOldTableToNewTable(fileListNhOp, fileListProject, repoNhOp, repoProject);
-      //Only Files need to be sync'd in reverse.
-      var ssListProject = fileListProject.Where(x => x.ImportedFileType == ImportedFileType.SurveyedSurface).ToList();
-      await SyncNewTableToOldTable(ssListProject, repoNhOp, repoProject);
+      await SyncNewTableToOldTable(fileListProject, repoNhOp, repoProject);
     }
 
     /// <summary>
@@ -86,7 +84,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           if (gotMatchingProject.IsDeleted)
           {
             // (b)
-            DeleteFileInOldTable(repoNhOp, gotMatchingProject, ifo, startUtc);
+            if (gotMatchingProject.ImportedFileType == ImportedFileType.SurveyedSurface)
+            {
+              DeleteFileInOldTable(repoNhOp, gotMatchingProject, ifo, startUtc);
+            }
           }
           else
           {
@@ -103,7 +104,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                   || projectUpdatedUtcRounded > nhOpUpdatedUtcRounded)
               {
                 // project is more recent, update nh_op
-                UpdateFileInOldTable(repoNhOp, gotMatchingProject, ifo, startUtc);
+                if (gotMatchingProject.ImportedFileType == ImportedFileType.SurveyedSurface)
+                {
+                  UpdateFileInOldTable(repoNhOp, gotMatchingProject, ifo, startUtc);
+                }
               }
               else
               {
@@ -169,7 +173,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               if (repoNhOp.ProjectAndCustomerExist(ifp.CustomerUid, ifp.ProjectUid))
               {
                 // (n)
-                CreateFileInOldTable(repoProject, repoNhOp, startUtc, ifp);
+                if (ifp.ImportedFileType == ImportedFileType.SurveyedSurface)
+                {
+                  CreateFileInOldTable(repoProject, repoNhOp, startUtc, ifp);
+                }
               }
               else
               {
@@ -228,7 +235,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                projectEvent.ImportedFileType == ImportedFileType.DesignSurface || 
                projectEvent.ImportedFileType == ImportedFileType.Alignment)
       {
-        await DownloadFileAndCallProjectWebApi(projectEvent, true).ConfigureAwait(false);
+        await DownloadFileAndCallProjectWebApi(projectEvent, WebApiAction.Creating).ConfigureAwait(false);
       }
 
       NotifyNewRelic(projectEvent, startUtc, $"{ifo.ImportedFileType} file created in NhOp, now created in Project.");
@@ -253,13 +260,22 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     private async Task DeleteFileInNewTable(ImportedFileRepoProject<ImportedFileProject> repoProject, DateTime startUtc,
       ImportedFileProject ifp)
     {
-      repoProject.Delete(ifp);
+      if (ifp.ImportedFileType == ImportedFileType.SurveyedSurface)
+      {
+        repoProject.Delete(ifp);
 
-      // Notify 3dpm of file deleted via Legacy
-      // 3dpm will attempt to delete both by the LegacyImportedFileId and nextGens ImportedFileId
-      if (ifp.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
-        await NotifyRaptorFileDeletedInCGenAsync(ifp.CustomerUid, Guid.Parse(ifp.ProjectUid), Guid.Parse(ifp.ImportedFileUid), ifp.FileDescriptor, ifp.ImportedFileId, ifp.LegacyImportedFileId.Value)
-          .ConfigureAwait(false);
+        // Notify 3dpm of file deleted via Legacy
+        // 3dpm will attempt to delete both by the LegacyImportedFileId and nextGens ImportedFileId
+        if (ifp.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
+          await NotifyRaptorFileDeletedInCGenAsync(ifp.CustomerUid, Guid.Parse(ifp.ProjectUid),
+              Guid.Parse(ifp.ImportedFileUid), ifp.FileDescriptor, ifp.ImportedFileId, ifp.LegacyImportedFileId.Value)
+            .ConfigureAwait(false);
+      }
+      else
+      {
+        var fileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(ifp.FileDescriptor);
+        await CallProjectWebApi(ifp, WebApiAction.Deleting, fileDescriptor).ConfigureAwait(false);
+      }
 
       NotifyNewRelic(ifp, startUtc, $"{ifp.ImportedFileType} file deleted in NhOp, now deleted from Project.");
     }
@@ -303,7 +319,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                gotMatchingProject.ImportedFileType == ImportedFileType.DesignSurface ||
                gotMatchingProject.ImportedFileType == ImportedFileType.Alignment)
       {
-        await DownloadFileAndCallProjectWebApi(gotMatchingProject, false).ConfigureAwait(false);
+        await DownloadFileAndCallProjectWebApi(gotMatchingProject, WebApiAction.Updating).ConfigureAwait(false);
       }
 
       NotifyNewRelic(gotMatchingProject, startUtc, $"{gotMatchingProject.ImportedFileType} file updated in NhOp, now updated in Project.");

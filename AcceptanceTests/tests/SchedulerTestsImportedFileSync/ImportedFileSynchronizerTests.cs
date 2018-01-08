@@ -572,7 +572,7 @@ namespace SchedulerTestsImportedFileSync
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
       await sync.SyncTables();
 
       // now lets see if it synced to Project - it shouldn't have
