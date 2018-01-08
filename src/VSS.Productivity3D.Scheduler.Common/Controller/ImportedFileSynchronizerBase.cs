@@ -312,6 +312,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     /// <returns></returns>
     protected async Task CallProjectWebApi(ImportedFileProject projectEvent, WebApiAction action, FileDescriptor fileDescriptor)
     {
+      string errorMessage = null;
+
       var startUtc = DateTime.UtcNow;
       string fullName = FullTemporaryFileName(fileDescriptor);
       if (action == WebApiAction.Deleting)
@@ -324,11 +326,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       try
       {
         Log.LogInformation($"ImportedFileSynchroniser: Calling project web api {fullName}");
-
+        BaseDataResult result = null;
         switch (action)
         {
           case WebApiAction.Creating:
-            await ImpFileProxy.CreateImportedFile(
+           result = await ImpFileProxy.CreateImportedFile(
               new FlowFile { flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path) },
               projectUid, projectEvent.ImportedFileType,
               projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType,
@@ -336,22 +338,29 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               customHeaders).ConfigureAwait(false);
             break;
           case WebApiAction.Updating:
-            await ImpFileProxy.UpdateImportedFile(new FlowFile { flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path) },
+            result = await ImpFileProxy.UpdateImportedFile(new FlowFile { flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path) },
               projectUid, projectEvent.ImportedFileType,
               projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
               customHeaders).ConfigureAwait(false);
             break;
           case WebApiAction.Deleting:
-            await ImpFileProxy.DeleteImportedFile(projectUid, Guid.Parse(projectEvent.ImportedFileUid),
+            result = await ImpFileProxy.DeleteImportedFile(projectUid, Guid.Parse(projectEvent.ImportedFileUid),
               customHeaders).ConfigureAwait(false);
             break;
+        }
+        if (result.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        {
+          errorMessage = $"CallProjectWebApi call failed with result code {result.Code} and message {result.Message}";
         }
       }
       catch (Exception e)
       {
-        var message = string.Format($"CallProjectWebApi call failed with exception {e.Message}");
+        errorMessage = $"CallProjectWebApi call failed with exception {e.Message}"; 
+      }
+      if (!string.IsNullOrEmpty(errorMessage))
+      {
         var newRelicAttributes = new Dictionary<string, object> {
-          { "message", message},
+          { "message", errorMessage},
           { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
           { "action", action},
           { "fullFileName", fullName}
