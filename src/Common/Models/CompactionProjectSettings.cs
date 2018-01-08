@@ -327,11 +327,11 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// Get the minimum CMV % target as a value for Raptor
     /// </summary>
-    public double CustomTargetCmvPercentMinimum => customTargetCmvPercentMinimum ?? (double)DefaultSettings.customTargetCmvPercentMinimum;
+    public double CustomTargetCmvPercentMinimum => OverrideDefaultTargetRangeCmvPercent || customTargetCmvPercentMinimum == null ? customTargetCmvPercentMinimum.Value : (double)DefaultSettings.customTargetCmvPercentMinimum;
     /// <summary>
     /// Get the maximum CMV % target as a value for Raptor
     /// </summary>
-    public double CustomTargetCmvPercentMaximum => customTargetCmvPercentMaximum ?? (double)DefaultSettings.customTargetCmvPercentMaximum;
+    public double CustomTargetCmvPercentMaximum => OverrideDefaultTargetRangeCmvPercent || customTargetCmvPercentMaximum == null ? customTargetCmvPercentMaximum.Value : (double)DefaultSettings.customTargetCmvPercentMaximum;
     /// <summary>
     /// Get MDP target as a value for Raptor (10ths)
     /// </summary>
@@ -343,13 +343,13 @@ namespace VSS.Productivity3D.Common.Models
       ? (short) (customTargetMdp.Value * 10)
       : (short?) null;
     /// <summary>
-    /// Get the minimum CMV % target as a value for Raptor
+    /// Get the minimum MDP % target as a value for Raptor
     /// </summary>
-    public double CustomTargetMdpPercentMinimum => customTargetMdpPercentMinimum ?? (double)DefaultSettings.customTargetMdpPercentMinimum;
+    public double CustomTargetMdpPercentMinimum => OverrideDefaultTargetRangeMdpPercent || customTargetMdpPercentMinimum == null ? customTargetMdpPercentMinimum.Value : (double)DefaultSettings.customTargetMdpPercentMinimum;
     /// <summary>
-    /// Get the maximum CMV % target as a value for Raptor
+    /// Get the maximum MDP % target as a value for Raptor
     /// </summary>
-    public double CustomTargetMdpPercentMaximum => customTargetMdpPercentMaximum ?? (double)DefaultSettings.customTargetMdpPercentMaximum;
+    public double CustomTargetMdpPercentMaximum => OverrideDefaultTargetRangeMdpPercent || customTargetMdpPercentMaximum == null ? customTargetMdpPercentMaximum.Value : (double)DefaultSettings.customTargetMdpPercentMaximum;
     /// <summary>
     /// Get the minimum temperature target as a value for Raptor in °C
     /// </summary>
