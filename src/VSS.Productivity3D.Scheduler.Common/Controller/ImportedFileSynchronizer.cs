@@ -271,7 +271,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               Guid.Parse(ifp.ImportedFileUid), ifp.FileDescriptor, ifp.ImportedFileId, ifp.LegacyImportedFileId.Value)
             .ConfigureAwait(false);
       }
-      else
+      else if (ifp.ImportedFileType == ImportedFileType.Linework ||
+               ifp.ImportedFileType == ImportedFileType.DesignSurface ||
+               ifp.ImportedFileType == ImportedFileType.Alignment)
       {
         var fileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(ifp.FileDescriptor);
         await CallProjectWebApi(ifp, WebApiAction.Deleting, fileDescriptor).ConfigureAwait(false);
