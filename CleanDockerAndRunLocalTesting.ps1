@@ -33,16 +33,8 @@ if ($args -notcontains "--no-rmi") {
     docker rmi 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
 }
 
-WriteMsg "Building login credentials"
-$Cmd = 'aws'
-$Args = 'ecr', 'get-login'
-$LoginID = &$Cmd $Args
-$LoginID = $LoginID -replace "-e none", " "
-
-Write-Host $LoginID;
-
 WriteMsg "Logging in to image host"
-Invoke-Expression $LoginID
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
 WriteMsg "Building solution"
 & .\RunLocalTesting.bat
