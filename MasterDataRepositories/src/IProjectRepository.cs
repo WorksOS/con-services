@@ -21,7 +21,8 @@ namespace VSS.MasterData.Repositories
       DateTime timeOfPosition, int projectType, int serviceType);
 
     Task<Project> GetProjectOnly(string projectUid);
-    Task<ProjectSettings> GetProjectSettings(string projectUid);
+    Task<ProjectSettings> GetProjectSettings(string projectUid, int projectSettingsType);
+    Task<IEnumerable<ProjectSettings>> GetProjectSettings(string projectUid);
     Task<IEnumerable<Project>> GetProjectsForCustomer(string customerUid);
     Task<IEnumerable<Project>> GetProjectsForCustomerUser(string customerUid, string userUid);
     Task<IEnumerable<Project>> GetProjectsForUser(string userUid);

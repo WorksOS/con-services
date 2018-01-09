@@ -21,7 +21,6 @@ namespace VSS.MasterData.Repositories.DBModels
     public int MinZoomLevel { get; set; }
     public int MaxZoomLevel { get; set; }
     public bool IsDeleted { get; set; }
-    public bool IsActivated { get; set; }
     public DateTime LastActionedUtc { get; set; }
 
 
@@ -41,7 +40,6 @@ namespace VSS.MasterData.Repositories.DBModels
              && otherImportedFile.FileUpdatedUtc == FileUpdatedUtc
              && otherImportedFile.ImportedBy == ImportedBy
              && otherImportedFile.IsDeleted == IsDeleted
-             && otherImportedFile.IsActivated == IsActivated
              && otherImportedFile.SurveyedUtc == SurveyedUtc
              && otherImportedFile.DxfUnitsType == DxfUnitsType
              && otherImportedFile.LastActionedUtc == LastActionedUtc

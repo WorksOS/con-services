@@ -33,7 +33,7 @@
 	<PackageReference Include="Confluent.Kafka" Version="0.11.0" />
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.4.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.5.*" />
   </ItemGroup>
 
 <ItemGroup>

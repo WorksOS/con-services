@@ -159,8 +159,7 @@ namespace VSS.MasterData.Repositories
           DxfUnitsType = projectEvent.DxfUnitsType,
           MinZoomLevel = projectEvent.MinZoomLevel,
           MaxZoomLevel = projectEvent.MaxZoomLevel,
-          LastActionedUtc = projectEvent.ActionUTC,
-          IsActivated = true
+          LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "CreateImportedFileEvent");
       }
@@ -178,8 +177,7 @@ namespace VSS.MasterData.Repositories
           SurveyedUtc = projectEvent.SurveyedUtc,
           MinZoomLevel = projectEvent.MinZoomLevel,
           MaxZoomLevel = projectEvent.MaxZoomLevel,
-          LastActionedUtc = projectEvent.ActionUTC,
-          IsActivated = projectEvent.IsActivated
+          LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "UpdateImportedFileEvent");
       }
@@ -212,7 +210,9 @@ namespace VSS.MasterData.Repositories
         var projectSettings = new ProjectSettings
         {
           ProjectUid = projectEvent.ProjectUID.ToString(),
+          ProjectSettingsType = projectEvent.ProjectSettingsType,
           Settings = projectEvent.Settings,
+          UserID = projectEvent.UserID,
           LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertProjectSettings(projectSettings);
@@ -638,7 +638,7 @@ namespace VSS.MasterData.Repositories
               fk_ImportedFileTypeID as ImportedFileType, Name, 
               FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, 
               fk_DXFUnitsTypeID as DxfUnitsType, MinZoomLevel, MaxZoomLevel,
-              IsDeleted, IsActivated, LastActionedUTC
+              IsDeleted, LastActionedUTC
             FROM ImportedFile
             WHERE ImportedFileUID = @importedFileUid", new {importedFileUid = importedFile.ImportedFileUid}
       )).FirstOrDefault();
@@ -669,9 +669,9 @@ namespace VSS.MasterData.Repositories
 
         var insert = string.Format(
           "INSERT ImportedFile " +
-          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsDeleted, IsActivated, LastActionedUTC) " +
+          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC) " +
           "  VALUES " +
-          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, 1, @LastActionedUtc)");
+          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc)");
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
         log.LogDebug(
@@ -739,8 +739,7 @@ namespace VSS.MasterData.Repositories
                   SurveyedUTC = @surveyedUTC,
                   MinZoomLevel = @MinZoomLevel,
                   MaxZoomLevel = @MaxZoomLevel,
-                  LastActionedUTC = @LastActionedUTC,
-                  IsActivated = @IsActivated
+                  LastActionedUTC = @LastActionedUTC
                 WHERE ImportedFileUID = @ImportedFileUid";
 
           upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
@@ -844,6 +843,7 @@ namespace VSS.MasterData.Repositories
     ///     Only an upsert is implemented.
     /// 1) because as that is the only endpoint in ProjectMDM
     /// 2) because create and Update have to cover both scenarios anyway
+    /// can't update the type or UserID, only the Settings
     /// </summary>
     /// <param name="projectSettings"></param>
     /// <returns></returns>
@@ -854,9 +854,9 @@ namespace VSS.MasterData.Repositories
       
       const string upsert =
         @"INSERT ProjectSettings
-                 (fk_ProjectUID, Settings, LastActionedUTC)
+                 (fk_ProjectUID, fk_ProjectSettingsTypeID, Settings, UserID, LastActionedUTC)
             VALUES
-              (@ProjectUID, @Settings, @LastActionedUTC)
+              (@ProjectUID, @ProjectSettingsType, @Settings, @UserID, @LastActionedUTC)
             ON DUPLICATE KEY UPDATE
               LastActionedUTC =
                 IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
@@ -1180,18 +1180,36 @@ namespace VSS.MasterData.Repositories
 
 
     /// <summary>
-    /// At this stage there is only 1 setting/project
+    /// At this stage 2 types
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns></returns>
-    public async Task<ProjectSettings> GetProjectSettings(string projectUid)
+    public async Task<ProjectSettings> GetProjectSettings(string projectUid, int projectSettingsType)
     {
       var projectSettings = (await QueryWithAsyncPolicy<ProjectSettings>(@"SELECT 
-                fk_ProjectUID AS ProjectUid, Settings, LastActionedUTC
+                fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
+              FROM ProjectSettings
+              WHERE fk_ProjectUID = @projectUid
+                AND fk_ProjectSettingsTypeID = @projectSettingsType",
+        new { projectUid, projectSettingsType })).FirstOrDefault();
+      return projectSettings;
+    }
+
+    /// <summary>
+    /// At this stage 2 types, user must eval result
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<ProjectSettings>> GetProjectSettings(string projectUid)
+    {
+      var projectSettingsList = await QueryWithAsyncPolicy<ProjectSettings>
+        (@"SELECT 
+                fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
               FROM ProjectSettings
               WHERE fk_ProjectUID = @projectUid",
-        new { projectUid })).FirstOrDefault();
-      return projectSettings;
+        new { projectUid }
+        );
+      return projectSettingsList;
     }
 
     #endregion getters
@@ -1205,7 +1223,7 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
-            MinZoomLevel, MaxZoomLevel, IsDeleted, IsActivated, LastActionedUTC
+            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC
           FROM ImportedFile
             WHERE fk_ProjectUID = @projectUid
               AND IsDeleted = 0",
@@ -1221,7 +1239,7 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType, 
-            MinZoomLevel, MaxZoomLevel, IsDeleted, IsActivated, LastActionedUTC
+            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC
           FROM ImportedFile
             WHERE importedFileUID = @importedFileUid",
         new {importedFileUid}
@@ -1382,11 +1400,16 @@ namespace VSS.MasterData.Repositories
       var source = (Point) obj;
       return (source.X == X) && (source.Y == Y);
     }
+
+    public override int GetHashCode()
+    {
+      return 0;
+    }
   }
 
   internal static class ExtensionString
   {
-    private static Dictionary<string, string> _replacements = new Dictionary<string, string>();
+    private static readonly Dictionary<string, string> _replacements = new Dictionary<string, string>();
 
     static ExtensionString()
     {

@@ -355,7 +355,9 @@ namespace KafkaTests
       var updateProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
         ProjectUID = projectUid,
+        ProjectSettingsType = ProjectSettingsType.Targets,
         Settings = settings,
+        UserID = Guid.NewGuid().ToString(),
         ActionUTC = actionUtc
       };
 
@@ -390,7 +392,7 @@ namespace KafkaTests
        //Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"ProjectSettingsKafkaTest iteration {i} of 10");
 
-        dbReturn = projectContext.GetProjectSettings(updateProjectSettingsEvent.ProjectUID.ToString());
+        dbReturn = projectContext.GetProjectSettings(updateProjectSettingsEvent.ProjectUID.ToString(), (int) ProjectSettingsType.Targets);
         dbReturn.Wait();
         if (dbReturn.Result != null)
           break;
@@ -404,7 +406,6 @@ namespace KafkaTests
     }
 
     [TestMethod]
-   // [Ignore]
     public void ProjectConsumerWritesToDb_CreateImportedFile()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
