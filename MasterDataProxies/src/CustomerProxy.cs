@@ -41,7 +41,8 @@ namespace VSS.MasterData.Proxies
     /// Clears an item from the cache
     /// </summary>
     /// <param name="userUid">The userUid of the item to remove from the cache</param>
-    public void ClearCacheItem(string userUid)
+    /// <param name="customHeaders">Request headers</param>
+    public void ClearCacheItem(string userUid, IDictionary<string, string> customHeaders = null)
     {
       ClearCacheItem<CustomerDataResult>(userUid);
     }

@@ -310,5 +310,21 @@ namespace VSS.MasterData.Proxies
       log.LogDebug($"Clearing item from cache: {cacheKey}");
       cache.Remove(cacheKey);
     }
+
+    /// <summary>
+    /// Gets the key to use for caching when values are by project and user.
+    /// </summary>
+    /// <param name="projectUid">The project UID</param>
+    /// <param name="customHeaders">HTTP request custom headers containing the user UID</param>
+    /// <returns></returns>
+    protected string CacheKeyByUser(string projectUid, IDictionary<string, string> customHeaders)
+    {
+      const string USER_UID_HEADER = "X-VisionLink-UserUid";
+      if (!customHeaders.ContainsKey(USER_UID_HEADER))
+      {
+        throw new Exception($"Missing custom header {USER_UID_HEADER}");
+      }
+      return $"{projectUid} {customHeaders[USER_UID_HEADER]}";
+    }
   }
 }
