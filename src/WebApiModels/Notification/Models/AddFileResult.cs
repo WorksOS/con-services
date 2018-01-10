@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using VSS.Common.ResultsHandling;
+﻿using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Notification.Models
 {
@@ -12,13 +11,11 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Models
     /// <summary>
     /// The minimum zoom level that DXF tiles have been generated for.
     /// </summary>
-    [JsonProperty(PropertyName = "minZoomLevel")]
     public int MinZoomLevel;
 
     /// <summary>
     /// The maximum zoom level that DXF tiles have been generated for.
     /// </summary>
-    [JsonProperty(PropertyName = "maxZoomLevel")]
     public int MaxZoomLevel;
   }
 }
