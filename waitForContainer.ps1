@@ -3,6 +3,6 @@ param (
 )
 
 do {
-  Write-Host "Test if Raptor is available..."
+  Write-Host "Test if Raptor is available on $IP ...."
   sleep 10      
 } until(Test-NetConnection $IP -Port 80 | ? { $_.TcpTestSucceeded } )
