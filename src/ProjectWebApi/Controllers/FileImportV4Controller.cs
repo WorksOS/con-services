@@ -14,13 +14,13 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
@@ -45,15 +45,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="fileRepo"></param>
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler"></param>
+    /// <param name="requestFactory"></param>
     public FileImportV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
-      IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, store, raptorProxy, fileRepo, logger, serviceExceptionHandler)
+      IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger, 
+      IServiceExceptionHandler serviceExceptionHandler, IRequestFactory requestFactory)
+      : base(producer, projectRepo, store, raptorProxy, fileRepo, logger, serviceExceptionHandler, 
+          requestFactory, logger.CreateLogger<FileImportV4Controller>())
     {
       Logger = logger;
       fileSpaceId = store.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(fileSpaceId))
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
       }
     }
 
@@ -88,7 +91,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await ValidateProjectId(projectUid).ConfigureAwait(false);
 
       if (request == null)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
 
       var fileIds = string.Join(",", request.ImportedFileDescriptors.Select(x => x.ImportedFileUid));
       if (string.IsNullOrEmpty(fileIds))
@@ -98,7 +101,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       log.LogInformation($"{functionId}. projectUid: {projectUid}, fileUids: {fileIds}");
 
-      var importedFiles = await GetImportedFiles(projectUid).ConfigureAwait(false);
+      var importedFiles = await GetImportedFileList(projectUid).ConfigureAwait(false);
       if (!importedFiles.Any())
       {
         log.LogInformation($"{functionId}. Attempt to set file activation state when project contains no files");
@@ -139,10 +142,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       try
       {
-        var projectUidGuid = new Guid(projectUid);
-
-        var dbUpdateResult = await SetFileActivatedState(projectUidGuid, filesToUpdate);
-        await NotifyRaptorUpdateFile(projectUidGuid, dbUpdateResult.Select(x => x.ImportedFileUID)).ConfigureAwait(false);
+        var dbUpdateResult = await SetFileActivatedState(projectUid, filesToUpdate);
+        await NotifyRaptorUpdateFile(new Guid(projectUid), dbUpdateResult).ConfigureAwait(false);
 
         return Ok(new { Code = HttpStatusCode.OK, Message = "Success" });
       }
@@ -197,9 +198,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      var userEmailAddress = (User as TIDCustomPrincipal).EmailAddress;
-
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
@@ -208,7 +206,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       if (!System.IO.File.Exists(file.path))
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
       }
 
       var project = await GetProject(projectUid.ToString());
@@ -225,7 +223,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         var message = $"CreateImportedFileV4. File: {file.flowFilename} has already been imported.";
         log.LogError(message);
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 58);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 58);
       }
 
       /*** now making changes, potentially needing rollback ***/
@@ -243,7 +241,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true).ConfigureAwait(false);
       createImportedFileEvent.MinZoomLevel = result.MinZoomLevel;
       createImportedFileEvent.MaxZoomLevel = result.MaxZoomLevel;
-      var existing = await projectService.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
+      var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
         .ConfigureAwait(false);
       //Need to update zoom levels in Db 
       var updateImportedFileEvent = await UpdateImportedFileInDb(existing, JsonConvert.SerializeObject(fileDescriptor),
@@ -304,8 +302,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      var userEmailAddress = (User as TIDCustomPrincipal).EmailAddress;
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
@@ -313,7 +309,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       if (!System.IO.File.Exists(file.path))
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 55);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 55);
       }
 
       var project = await GetProject(projectUid.ToString());
@@ -366,7 +362,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         createImportedFileEvent.MinZoomLevel = result.MinZoomLevel;
         createImportedFileEvent.MaxZoomLevel = result.MaxZoomLevel;
-        existing = await projectService.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
+        existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
           .ConfigureAwait(false);
       }
 
@@ -432,12 +428,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         importedFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == importedFileUid.ToString());
       if (importedFile == null)
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 56);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 56);
       }
 
       // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
-      var deleteImportedFileEvent = await DeleteImportedFile(projectUid, importedFileUid, false).ConfigureAwait(false);
-      
+      var deleteImportedFileEvent = await DeleteImportedFileInDb(projectUid, importedFileUid, false).ConfigureAwait(false);
+
       await NotifyRaptorDeleteFile(projectUid, importedFile.ImportedFileType, Guid.Parse(importedFile.ImportedFileUid), importedFile.FileDescriptor, importedFile.ImportedFileId, importedFile.LegacyImportedFileId)
         .ConfigureAwait(false);
 

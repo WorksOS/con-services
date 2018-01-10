@@ -40,7 +40,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public ProjectV3Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger, serviceExceptionHandler)
+      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, 
+          logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>())
     { }
 
     /// <summary>
@@ -139,7 +140,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectRepo);
 
       await DeleteProject(project);
     }
@@ -157,7 +158,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       if (customerProject.LegacyCustomerID <= 0)
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 38);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 38);
       }
       await AssociateProjectCustomer(customerProject);
     }
@@ -201,17 +202,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary, string databaseProjectBoundary)
     {
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectRepo);
       if (project.ProjectID <= 0)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 44);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 44);
 
       project.ReceivedUTC = DateTime.UtcNow;
 
       //Save boundary as WKT
       project.ProjectBoundary = databaseProjectBoundary;
-      var isCreated = await projectService.StoreEvent(project).ConfigureAwait(false);
+      var isCreated = await projectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isCreated == 0)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61);
 
       //Send boundary as old format on kafka queue
       project.ProjectBoundary = kafkaProjectBoundary;
@@ -227,12 +228,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task UpdateProject(UpdateProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectRepo);
       project.ReceivedUTC = DateTime.UtcNow;
 
-      var isUpdated = await projectService.StoreEvent(project).ConfigureAwait(false);
+      var isUpdated = await projectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isUpdated == 0)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62);
 
       var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = project });
       producer.Send(kafkaTopicName,
@@ -249,12 +250,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task AssociateProjectCustomer(AssociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService);
+      ProjectDataValidator.Validate(customerProject, projectRepo);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
-      var isUpdated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+      var isUpdated = await projectRepo.StoreEvent(customerProject).ConfigureAwait(false);
       if (isUpdated == 0)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
 
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectCustomer = customerProject });
       producer.Send(kafkaTopicName,
@@ -271,12 +272,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task DissociateProjectCustomer(DissociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService);
+      ProjectDataValidator.Validate(customerProject, projectRepo);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
-      var isUpdated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+      var isUpdated = await projectRepo.StoreEvent(customerProject).ConfigureAwait(false);
       if (isUpdated == 0)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 64);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 64);
 
       var messagePayload = JsonConvert.SerializeObject(new { DissociateProjectCustomer = customerProject });
       producer.Send(kafkaTopicName,
@@ -293,12 +294,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
     {
-      ProjectDataValidator.Validate(geofenceProject, projectService);
+      ProjectDataValidator.Validate(geofenceProject, projectRepo);
       geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
-      var isUpdated = await projectService.StoreEvent(geofenceProject).ConfigureAwait(false);
+      var isUpdated = await projectRepo.StoreEvent(geofenceProject).ConfigureAwait(false);
       if (isUpdated == 0)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
 
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
       producer.Send(kafkaTopicName,
@@ -315,12 +316,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task DeleteProject(DeleteProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectRepo);
       project.ReceivedUTC = DateTime.UtcNow;
 
-      var isDeleted = await projectService.StoreEvent(project).ConfigureAwait(false);
+      var isDeleted = await projectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
       producer.Send(kafkaTopicName,

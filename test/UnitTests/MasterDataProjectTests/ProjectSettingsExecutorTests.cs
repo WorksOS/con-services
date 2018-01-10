@@ -36,13 +36,13 @@ namespace VSS.MasterData.ProjectTests
       var project = new Repositories.DBModels.Project() { CustomerUID = customerUid, ProjectUID = projectUid };
       var projectList = new List<Repositories.DBModels.Project>(); projectList.Add(project);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
-      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>())).ReturnsAsync(new ProjectSettings());
+      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>())).ReturnsAsync(new List<ProjectSettings>());
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, "");
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, string.Empty);
 
       var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
@@ -62,15 +62,17 @@ namespace VSS.MasterData.ProjectTests
     {
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
-      string settings = "";
+      string settings = string.Empty;
+      ProjectSettingsType settingsType = ProjectSettingsType.Targets;
+      string userId = "my app";
 
       var projectRepo = new Mock<IProjectRepository>();
       var project = new Repositories.DBModels.Project() { CustomerUID = customerUid, ProjectUID = projectUid };
       var projectList = new List<Repositories.DBModels.Project>(); projectList.Add(project);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
-      var projectSettings = new ProjectSettings() { ProjectUid = projectUid, Settings = settings };
-      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>())).ReturnsAsync(projectSettings);
+      var projectSettings = new ProjectSettings { ProjectUid = projectUid, Settings = settings, ProjectSettingsType = settingsType, UserID = userId };
+      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), userId, settingsType)).ReturnsAsync(projectSettings);
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -80,7 +82,7 @@ namespace VSS.MasterData.ProjectTests
 
       var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
       (logger, configStore, serviceExceptionHandler,
-        customerUid, null, null, null,
+        customerUid, userId, null, null,
         null, null,
         null, null, null,
          projectRepo.Object );
@@ -96,21 +98,22 @@ namespace VSS.MasterData.ProjectTests
     {
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
+      string userId = "my app";
 
       var projectRepo = new Mock<IProjectRepository>();
       var projectList = new List<Repositories.DBModels.Project>(); 
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
-      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>())).ReturnsAsync(new ProjectSettings());
+      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProjectSettingsType>())).ReturnsAsync(new ProjectSettings());
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, "");
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, string.Empty);
 
       var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
-          customerUid, null, null, null,
+          customerUid, userId, null, null,
           null, null,
           null, null, null,
           projectRepo.Object);
@@ -126,10 +129,12 @@ namespace VSS.MasterData.ProjectTests
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string settings = "blah";
+      ProjectSettingsType settingsType = ProjectSettingsType.Targets;
+      string userId = "my app";
 
       var projectRepo = new Mock<IProjectRepository>();
-      var projectSettings = new ProjectSettings() { ProjectUid = projectUid, Settings = settings };
-      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>())).ReturnsAsync(projectSettings);
+      var projectSettings = new ProjectSettings { ProjectUid = projectUid, Settings = settings, ProjectSettingsType = settingsType, UserID = userId};
+      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), userId, settingsType)).ReturnsAsync(projectSettings);
       var projectList = new List<Repositories.DBModels.Project>();
       projectList.Add(new Repositories.DBModels.Project(){ ProjectUID = projectUid});
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
@@ -144,10 +149,9 @@ namespace VSS.MasterData.ProjectTests
       raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<Guid>(), It.IsAny<string>(),
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseDataResult());
 
-
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
-        customerUid, null, null, null,
+        customerUid, userId, null, null,
         producer.Object, kafkaTopicName,
         null, raptorProxy.Object, null,
         projectRepo.Object);

@@ -48,7 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler)
       : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger,
-        serviceExceptionHandler)
+        serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>())
     { }
 
     #region projects
@@ -134,16 +134,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpPost]
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
-
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       if (projectRequest == null)
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
 
       //Landfill projects are not supported till l&s goes live
       if (projectRequest?.ProjectType == ProjectType.LandFill)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 73);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 73);
 
 
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
@@ -153,10 +151,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var project = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectRepo);
       if (project.CustomerUID.ToString() != customerUid)
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
       }
 
       await ValidateCoordSystemInRaptor(project).ConfigureAwait(false);
@@ -173,7 +171,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ActionUTC = project.ActionUTC,
         ReceivedUTC = project.ReceivedUTC
       };
-      ProjectDataValidator.Validate(customerProject, projectService);
+      ProjectDataValidator.Validate(customerProject, projectRepo);
 
 
       /*** now making changes, potentially needing rollback ***/
@@ -205,33 +203,33 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       if (projectRequest == null)
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
       }
 
       //Landfill projects are not supported till l&s goes live
       if (projectRequest?.ProjectType == ProjectType.LandFill)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 73);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 73);
 
       log.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectRepo);
       await ValidateCoordSystemInRaptor(project).ConfigureAwait(false);
 
 
       /*** now making changes, potentially needing rollback ***/
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
-        var projectWithLegacyProjectId = projectService.GetProjectOnly(project.ProjectUID.ToString()).Result;
+        var projectWithLegacyProjectId = projectRepo.GetProjectOnly(project.ProjectUID.ToString()).Result;
         await CreateCoordSystemInRaptor(project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID,
           project.CoordinateSystemFileName, project.CoordinateSystemFileContent, false).ConfigureAwait(false);
       }
 
-      var isUpdated = await projectService.StoreEvent(project).ConfigureAwait(false);
+      var isUpdated = await projectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isUpdated == 0)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62);
 
       var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = project });
       producer.Send(kafkaTopicName,
@@ -267,12 +265,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectRepo);
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
-      var isDeleted = await projectService.StoreEvent(project).ConfigureAwait(false);
+      var isDeleted = await projectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
 
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
@@ -326,10 +324,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private async Task<bool> DoesProjectOverlap(CreateProjectEvent project, string databaseProjectBoundary)
     {
       var overlaps =
-        await projectService.DoesPolygonOverlap(project.CustomerUID.ToString(), databaseProjectBoundary,
+        await projectRepo.DoesPolygonOverlap(project.CustomerUID.ToString(), databaseProjectBoundary,
           project.ProjectStartDate, project.ProjectEndDate).ConfigureAwait(false);
       if (overlaps)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
 
       log.LogDebug($"No overlapping projects for {project.ProjectName}");
       return overlaps;
@@ -349,7 +347,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             && (string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName)
                 || projectEvent.CoordinateSystemFileContent == null)
         )
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
       }
 
       if (project is CreateProjectEvent)
@@ -373,14 +371,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         }
         catch (Exception e)
         {
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemValidate", e.Message);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemValidate", e.Message);
         }
         if (coordinateSystemSettingsResult == null)
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 46);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 46);
 
         if (coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 47, coordinateSystemSettingsResult.Code.ToString(),
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 47, coordinateSystemSettingsResult.Code.ToString(),
             coordinateSystemSettingsResult.Message);
         }
       }
@@ -402,29 +400,29 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       log.LogDebug($"Creating the project in the DB {JsonConvert.SerializeObject(project)} and customerProject {JsonConvert.SerializeObject(customerProject)}");
 
-      var isCreated = await projectService.StoreEvent(project).ConfigureAwait(false);
+      var isCreated = await projectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isCreated == 0)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61);
 
       log.LogDebug($"Created the project in DB. IsCreated: {isCreated}. projectUid: {project.ProjectUID} legacyprojectID: {project.ProjectID}");
 
       if (project.ProjectID <= 0)
       {
-        var existing = await projectService.GetProjectOnly(project.ProjectUID.ToString()).ConfigureAwait(false);
+        var existing = await projectRepo.GetProjectOnly(project.ProjectUID.ToString()).ConfigureAwait(false);
         if (existing != null && existing.LegacyProjectID > 0)
           project.ProjectID = existing.LegacyProjectID;
         else
         {
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 42);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 42);
         }
       }
       log.LogDebug($"Using Legacy projectId {project.ProjectID} for project {project.ProjectName}");
 
       // this is needed so that when ASNode (raptor client), which is called from CoordinateSystemPost, can retrieve the just written project+cp
-      isCreated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+      isCreated = await projectRepo.StoreEvent(customerProject).ConfigureAwait(false);
 
       if (isCreated == 0)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
 
       log.LogDebug($"Created CustomerProject in DB {JsonConvert.SerializeObject(customerProject)}");
       return project; // legacyID may have been added
@@ -452,17 +450,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
           {
             if (isCreate)
-              await DeleteProjectPermanentlyInDb(Guid.Parse((User as TIDCustomPrincipal).CustomerUid), projectUid).ConfigureAwait(false);
+              await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
 
-            ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41, (coordinateSystemSettingsResult?.Code ?? -1).ToString(), coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41, (coordinateSystemSettingsResult?.Code ?? -1).ToString(), coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
           }
         }
         catch (Exception e)
         {
           if (isCreate)
-            await DeleteProjectPermanentlyInDb(Guid.Parse((User as TIDCustomPrincipal).CustomerUid), projectUid).ConfigureAwait(false);
+            await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
 
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemPost", e.Message);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemPost", e.Message);
         }
       }
     }
@@ -485,9 +483,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         DeletePermanently = true,
         ActionUTC = DateTime.UtcNow
       };
-      await projectService.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
+      await projectRepo.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
 
-      await projectService.StoreEvent(new DissociateProjectCustomer
+      await projectRepo.StoreEvent(new DissociateProjectCustomer
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
@@ -551,7 +549,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (!availableFreSub.Any())
       {
         await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
       }
       return availableFreSub;
     }
@@ -593,7 +591,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           // this is only called from a Create, so no need to consider Update
           await DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID).ConfigureAwait(false);
 
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "ubscriptionProxy.AssociateProjectSubscriptionInSubscriptionService", e.Message);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "ubscriptionProxy.AssociateProjectSubscriptionInSubscriptionService", e.Message);
         }
       }
     }
@@ -621,7 +619,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private async Task CreateGeofenceInGeofenceService(CreateProjectEvent project)
     {
       log.LogDebug($"Creating a geofence for project: {project.ProjectName}");
-      var userUid = ((User as TIDCustomPrincipal).Identity as GenericIdentity).Name;
 
       try
       {
@@ -629,21 +626,21 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
         geofenceUidCreated = await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",
           project.ProjectBoundary,
-          0, true, Guid.Parse(userUid), area, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+          0, true, Guid.Parse(userId), area, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       }
       catch (Exception e)
       {
         await DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID).ConfigureAwait(false);
         await DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned).ConfigureAwait(false);
 
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "geofenceProxy.CreateGeofenceInGeofenceService", e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "geofenceProxy.CreateGeofenceInGeofenceService", e.Message);
       }
       if (geofenceUidCreated == Guid.Empty)
       {
         await DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID).ConfigureAwait(false);
         await DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned).ConfigureAwait(false);
 
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 59);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 59);
       }
     }
 

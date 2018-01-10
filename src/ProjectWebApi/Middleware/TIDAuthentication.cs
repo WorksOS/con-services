@@ -124,18 +124,19 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
         {
           try
           {
+            var customHeaders = context.Request.Headers.GetCustomHeaders();
             CustomerDataResult customerResult =
-              await this.customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
+              await this.customerProxy.GetCustomersForMe(userUid, customHeaders);
 
             if (customerResult.status != 200 || customerResult.customer == null ||
                 customerResult.customer.Count < 1 ||
                 !customerResult.customer.Exists(x => x.uid == customerUid))
             {
               //Retry here to invalidate cache as association may have just been created
-              this.customerProxy.ClearCacheItem(userUid);
+              this.customerProxy.ClearCacheItem(userUid, customHeaders);
               //And try again
               customerResult =
-                await this.customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
+                await this.customerProxy.GetCustomersForMe(userUid, customHeaders);
             }
 
             //now validate second time

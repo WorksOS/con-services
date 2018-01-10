@@ -4,13 +4,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
-using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -41,6 +37,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var upsertProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
         ProjectUID = Guid.Parse(request.projectUid),
+        UserID = userId,
+        ProjectSettingsType = ProjectSettingsType.Targets,
         Settings = request.settings,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
@@ -65,7 +63,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       try
       {
-        var projectSettings = await projectRepo.GetProjectSettings(request.projectUid).ConfigureAwait(false);
+        var projectSettings = await projectRepo.GetProjectSettings(request.projectUid, userId, ProjectSettingsType.Targets).ConfigureAwait(false);
         result = ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, projectSettings.Settings);
       }
       catch (Exception e)
@@ -77,7 +75,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new System.NotImplementedException();
+      throw new NotImplementedException();
     }
 
     protected override void ProcessErrorCodes()
@@ -112,7 +110,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, result.Code.ToString(),
           result.Message);
       }
-      return;
     }
   }
 }

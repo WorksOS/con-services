@@ -34,7 +34,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets or sets the local log provider.
     /// </summary>
-    private readonly ILogger log;
+    protected readonly ILogger log;
 
     /// <summary>
     /// Gets or sets the Service exception handler.
@@ -57,39 +57,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected readonly string kafkaTopicName;
 
     /// <summary>
-    /// Gets or sets the Geofence proxy. 
-    /// </summary>
-    protected readonly IGeofenceProxy geofenceProxy;
-
-    /// <summary>
     /// Gets or sets the Raptor proxy.
     /// </summary>
     protected readonly IRaptorProxy raptorProxy;
 
     /// <summary>
-    /// Gets or sets the subscription proxy.
-    /// </summary>
-    protected readonly ISubscriptionProxy subscriptionProxy;
-
-    /// <summary>
     /// Gets or sets the Project Repository. 
     /// </summary>
     protected readonly ProjectRepository projectRepo;
-
-    /// <summary>
-    /// Gets or sets the Subscription Repository.
-    /// </summary>
-    protected readonly SubscriptionRepository subscriptionRepo;
-
-    /// <summary>
-    /// Save for potential rollback
-    /// </summary>
-    protected Guid subscriptionUidAssigned = Guid.Empty;
-
-    /// <summary>
-    ///
-    /// </summary>
-    protected Guid geofenceUidCreated = Guid.Empty;
 
     /// <summary>
     /// Gets the custom headers for the request.
@@ -124,21 +99,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected string userEmailAddress => GetUserEmailAddress();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BaseController"/> class.
+    /// Initializes a new instance of the <see cref="VSS.MasterData.Project.WebAPI.Controllers.BaseController"/> class.
     /// </summary>
     /// <param name="log"></param>
     /// <param name="configStore">The configStore.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     /// <param name="producer">The producer.</param>
-    /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
-    /// <param name="subscriptionProxy">The subs proxy.</param>
     /// <param name="projectRepo">The project repo.</param>
-    /// <param name="subscriptionsRepo">The subscriptions repo.</param>
     protected BaseController(ILogger log, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
-      IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo)
+      IRaptorProxy raptorProxy, IRepository<IProjectEvent> projectRepo)
     {
       this.log = log;
       this.configStore = configStore;
@@ -154,10 +125,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                         configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
 
       this.projectRepo = projectRepo as ProjectRepository;
-      subscriptionRepo = subscriptionsRepo as SubscriptionRepository;
-
-      this.subscriptionProxy = subscriptionProxy;
-      this.geofenceProxy = geofenceProxy;
       this.raptorProxy = raptorProxy;
     }
 
@@ -269,9 +236,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected string LogCustomerDetails(string functionName, string projectUid = "")
     {
       log.LogInformation(
-        $"{functionName}: UserUID={GetUserId()}, CustomerUID={GetCustomerUid()}  and projectUid={projectUid}");
+        $"{functionName}: UserUID={userId}, CustomerUID={customerUid}  and projectUid={projectUid}");
 
-      return GetCustomerUid();
+      return customerUid;
     }
   }
 }

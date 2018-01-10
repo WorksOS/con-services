@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -29,7 +30,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       try
       {
-        var projectSettings = await projectRepo.GetProjectSettings(projectSettingsRequest?.projectUid).ConfigureAwait(false);
+        var projectSettings = await projectRepo.GetProjectSettings(projectSettingsRequest?.projectUid, userId, ProjectSettingsType.Targets).ConfigureAwait(false);
         result = ProjectSettingsResult.CreateProjectSettingsResult(projectSettingsRequest?.projectUid, projectSettings?.Settings);
       }
       catch (Exception e)
