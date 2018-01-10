@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -76,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="transferProxy">Export file download proxy</param>
     public CompactionExportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, 
+      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy,
       IPreferenceProxy prefProxy, ITransferProxy transferProxy) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
@@ -113,7 +112,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
-      
+
       tolerance = tolerance ?? surfaceExportTollerance;
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
@@ -145,14 +144,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       );
     }
 
-
     /// <summary>
     /// Tries to get export status.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <param name="jobId">The job identifier.</param>
     /// <param name="scheduler">The scheduler.</param>
-    /// <returns></returns>
     /// <exception cref="ServiceException">new ContractExecutionResult(-4,"Job failed for some reason")</exception>
     /// <exception cref="ContractExecutionResult">-4 - Job failed for some reason</exception>
     [ProjectUidVerifier]
@@ -164,7 +161,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId, Request.Headers.GetCustomHeaders(true));
       if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
       {
-        return  new ContractExecutionResult();
+        return new ContractExecutionResult();
       }
       if (!jobResult.status.Equals("FAILED", StringComparison.OrdinalIgnoreCase))
       {
@@ -179,7 +176,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">The project uid.</param>
     /// <param name="jobId">The job identifier.</param>
     /// <param name="scheduler">The scheduler.</param>
-    /// <returns></returns>
     /// <exception cref="ServiceException">new ContractExecutionResult(-4, "File is not likely ready to be downloaded")</exception>
     /// <exception cref="ContractExecutionResult">-4 - File is not likely ready to be downloaded</exception>
     [ProjectUidVerifier]
@@ -194,7 +190,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         return await transferProxy.Download(jobResult.key);
       }
-      throw new ServiceException(HttpStatusCode.InternalServerError, 
+      throw new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "File is likely not ready to be downloaded"));
     }
 
@@ -204,7 +200,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">The project uid.</param>
     /// <param name="jobId">The job identifier.</param>
     /// <param name="scheduler">The scheduler.</param>
-    /// <returns></returns>
     /// <exception cref="ServiceException">new ContractExecutionResult(-4, "File is not likely ready to be downloaded")</exception>
     /// <exception cref="ContractExecutionResult">-4 - File is not likely ready to be downloaded</exception>
     [ProjectUidVerifier]
@@ -217,8 +212,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       using (var reader = new BinaryReader(result.FileStream))
       {
-        return ExportResult.CreateExportDataResult(reader.ReadBytes((int) result.FileStream.Length), 0);
-      }    
+        return ExportResult.CreateExportDataResult(reader.ReadBytes((int)result.FileStream.Length), 0);
+      }
     }
 
     /// <summary>
@@ -229,7 +224,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="machineNames">The machine names.</param>
     /// <param name="filterUid">The filter uid.</param>
     /// <param name="scheduler">The scheduler.</param>
-    /// <returns></returns>
     [ProjectUidVerifier]
     [Route("api/v2/export/veta/schedulejob")]
     [HttpGet]
@@ -238,7 +232,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] string machineNames,
       [FromQuery] Guid? filterUid,
       [FromServices] ISchedulerProxy scheduler)
-    {   
+    {
       return
         WithServiceExceptionTryExecute(() => new ScheduleResult
         {
@@ -247,7 +241,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               Request.Headers.GetCustomHeaders(true)).Result?.jobId
         });
     }
-
 
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
@@ -364,7 +357,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get user preferences
     /// </summary>
-    /// <returns></returns>
     private async Task<UserPreferenceData> GetUserPreferences()
     {
       var userPreferences = await prefProxy.GetUserPreferences(this.CustomHeaders);

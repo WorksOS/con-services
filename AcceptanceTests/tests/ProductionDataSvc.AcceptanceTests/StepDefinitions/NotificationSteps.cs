@@ -1,11 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
+using System.IO;
+using System.Net;
 using TechTalk.SpecFlow;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -115,8 +114,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
     private void MakeUrl()
     {
-      this.url = string.Format("{0}?projectUid={1}&filedescriptor={2}&fileId={3}&fileUid={4}&fileType={5}&dxfUnitsType={6}", url, projectUid, fileDescriptor, fileId, fileUid, fileTypeId, dxfUnitsType);
+      this.url = $"{this.url}?projectUid={this.projectUid}&filedescriptor={this.fileDescriptor}&fileId={this.fileId}&fileUid={this.fileUid}&fileType={this.fileTypeId}&dxfUnitsType={this.dxfUnitsType}";
     }
-
   }
 }

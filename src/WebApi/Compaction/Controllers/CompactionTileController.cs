@@ -26,7 +26,6 @@ using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
   /// <summary>
@@ -37,7 +36,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   {
     /// <summary>
     /// Raptor client for use by executor
-    /// 
     /// </summary>
     private readonly IASNodeClient raptorClient;
 
@@ -60,7 +58,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IFileRepository fileRepo;
 
- 
     /// <summary>
     /// Constructor with injected raptor client, logger and authenticated projects
     /// </summary>
@@ -74,10 +71,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
     /// <param name="tileService">Map tile generator</param>
-    public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
-      IFileRepository fileRepo, IFileListProxy fileListProxy, 
+    public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
+      IFileRepository fileRepo, IFileListProxy fileListProxy,
       IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService) : 
+      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
@@ -112,6 +109,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
+    [Route("api/v2/productiondatatiles")]
     [Route("api/v2/compaction/productiondatatiles")]
     [HttpGet]
     public async Task<TileResult> GetProductionDataTile(
@@ -141,10 +139,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
-      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid ,volumeTopUid);
-      var tileResult = WithServiceExceptionTryExecute(() => 
-        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, WIDTH, HEIGHT, 
-          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, 
+      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
+      var tileResult = WithServiceExceptionTryExecute(() =>
+        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, WIDTH, HEIGHT,
+          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
 
       return tileResult;
@@ -180,6 +178,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
+    [Route("api/v2/productiondatatiles/png")]
     [Route("api/v2/compaction/productiondatatiles/png")]
     [HttpGet]
     public async Task<FileResult> GetProductionDataTileRaw(
@@ -216,7 +215,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, WIDTH, HEIGHT,
-          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3, 
+          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
@@ -243,6 +242,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
     [ProjectUidVerifier]
+    [Route("api/v2/lineworktiles")]
     [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
     public async Task<TileResult> GetLineworkTile(
@@ -294,6 +294,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
     [ProjectUidVerifier]
+    [Route("api/v2/lineworktiles/png")]
     [Route("api/v2/compaction/lineworktiles/png")]
     [HttpGet]
     public async Task<FileResult> GetLineworkTileRaw(
@@ -366,8 +367,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Validates the tile width and height
     /// </summary>
-    /// <param name="WIDTH"></param>
-    /// <param name="HEIGHT"></param>
     private void ValidateTileDimensions(int WIDTH, int HEIGHT)
     {
       if (WIDTH != WebMercatorProjection.TILE_SIZE || HEIGHT != WebMercatorProjection.TILE_SIZE)
@@ -490,8 +489,5 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("BBOX in radians: blLong=" + blLong + ",blLat=" + blLat + ",trLong=" + trLong + ",trLat=" + trLat);
       return BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat);
     }
-
- 
-  
   }
 }

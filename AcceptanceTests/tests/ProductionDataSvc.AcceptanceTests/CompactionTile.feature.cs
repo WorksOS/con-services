@@ -74,7 +74,7 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 5
 this.ScenarioSetup(scenarioInfo);
 #line 6
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
 testRunner.And("the result file \"CompactionGetProductionDataTilesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
@@ -144,7 +144,7 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
 #line 18
 this.ScenarioSetup(scenarioInfo);
 #line 19
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 20
 testRunner.And("the result file \"CompactionGetProductionDataTilesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 21
@@ -293,7 +293,7 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
 #line 37
 this.ScenarioSetup(scenarioInfo);
 #line 38
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 39
 testRunner.And("the result file \"CompactionGetProductionDataTilesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 40

@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Logger for logging
     /// </summary>
     private readonly ILogger log;
-    
+
     /// <summary>
     /// For getting project settings for a project
     /// </summary>
@@ -52,6 +52,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectSettings">Project settings to validate as a JSON object</param>
     /// <returns>ContractExecutionResult</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/validatesettings")]
     [Route("api/v2/compaction/validatesettings")]
     [HttpGet]
     public async Task<ContractExecutionResult> ValidateProjectSettings(
@@ -83,6 +84,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private CompactionProjectSettings GetProjectSettings(string projectSettings)
     {
       CompactionProjectSettings ps = null;
+
       if (!string.IsNullOrEmpty(projectSettings))
       {
         try

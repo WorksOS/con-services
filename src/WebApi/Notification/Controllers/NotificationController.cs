@@ -167,7 +167,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long fileId,
-      [FromQuery] long legacyFileId
+      [FromQuery] long? legacyFileId
       )
     {
       log.LogDebug("GetDeleteFile: " + Request.QueryString);
