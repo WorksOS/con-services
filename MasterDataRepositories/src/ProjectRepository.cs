@@ -1183,15 +1183,18 @@ namespace VSS.MasterData.Repositories
     /// At this stage 2 types
     /// </summary>
     /// <param name="projectUid"></param>
+    /// <param name="userId"></param>
+    /// <param name="projectSettingsType"></param>
     /// <returns></returns>
-    public async Task<ProjectSettings> GetProjectSettings(string projectUid, int projectSettingsType)
+    public async Task<ProjectSettings> GetProjectSettings(string projectUid, string userId, ProjectSettingsType projectSettingsType)
     {
       var projectSettings = (await QueryWithAsyncPolicy<ProjectSettings>(@"SELECT 
                 fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
               FROM ProjectSettings
               WHERE fk_ProjectUID = @projectUid
+                AND UserID = @userId
                 AND fk_ProjectSettingsTypeID = @projectSettingsType",
-        new { projectUid, projectSettingsType })).FirstOrDefault();
+        new { projectUid, userId, projectSettingsType })).FirstOrDefault();
       return projectSettings;
     }
 
@@ -1199,15 +1202,17 @@ namespace VSS.MasterData.Repositories
     /// At this stage 2 types, user must eval result
     /// </summary>
     /// <param name="projectUid"></param>
+    /// <param name="userId"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<ProjectSettings>> GetProjectSettings(string projectUid)
+    public async Task<IEnumerable<ProjectSettings>> GetProjectSettings(string projectUid, string userId)
     {
       var projectSettingsList = await QueryWithAsyncPolicy<ProjectSettings>
         (@"SELECT 
                 fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
               FROM ProjectSettings
-              WHERE fk_ProjectUID = @projectUid",
-        new { projectUid }
+              WHERE fk_ProjectUID = @projectUid
+                AND UserID = @userId",
+        new { projectUid, userId }
         );
       return projectSettingsList;
     }
