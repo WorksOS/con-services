@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories.DBModels
@@ -23,6 +24,7 @@ namespace VSS.MasterData.Repositories.DBModels
     public bool IsDeleted { get; set; }
     public bool IsActivated { get; set; }
     public DateTime LastActionedUtc { get; set; }
+    public ImportedFileHistory ImportedFileHistory { get; set; }
 
 
     public override bool Equals(object obj)
@@ -46,7 +48,8 @@ namespace VSS.MasterData.Repositories.DBModels
              && otherImportedFile.DxfUnitsType == DxfUnitsType
              && otherImportedFile.LastActionedUtc == LastActionedUtc
              && otherImportedFile.MinZoomLevel == MinZoomLevel
-             && otherImportedFile.MaxZoomLevel == MaxZoomLevel;
+             && otherImportedFile.MaxZoomLevel == MaxZoomLevel
+             && otherImportedFile.ImportedFileHistory == ImportedFileHistory;
     }
 
     public override int GetHashCode()

@@ -66,12 +66,16 @@ namespace RepositoryTests
       var g = _projectContext.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve ImportedFile from ProjectRepo");
+      Assert.AreEqual(1, g.Result.ImportedFileHistory.ImportedFileUpsertList.Count, "Should be 1 history record for this create.");
 
       var gList = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
       gList.Wait();
       Assert.IsNotNull(gList.Result, "Unable to retrieve ImportedFiles from ProjectRepo");
-      Assert.AreEqual(1, gList.Result.Count(), "ImportedFile count is incorrect from ProjectRepo");
-      Assert.AreEqual(DxfUnitsType.Meters, g.Result.DxfUnitsType, "ImportedFile DXF units is incorrect from ProjectRepo");
+
+      var ifList = gList.Result.ToList();
+      Assert.AreEqual(1, ifList.Count, "ImportedFile count is incorrect from ProjectRepo");
+      Assert.AreEqual(DxfUnitsType.Meters, ifList[0].DxfUnitsType, "ImportedFile DXF units is incorrect from ProjectRepo");
+      Assert.AreEqual(1, ifList[0].ImportedFileHistory.ImportedFileUpsertList.Count, "Should be 1 history record for this create.");
     }
 
     /// <summary>
@@ -111,8 +115,10 @@ namespace RepositoryTests
       var gList = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
       gList.Wait();
       Assert.IsNotNull(gList.Result, "Unable to retrieve ImportedFiles from ProjectRepo");
-      Assert.AreEqual(1, gList.Result.Count(), "ImportedFile count is incorrect from ProjectRepo");
-      Assert.AreEqual(DxfUnitsType.UsSurveyFeet, g.Result.DxfUnitsType, "ImportedFile DXF units is incorrect from ProjectRepo");
+
+      var ifList = gList.Result.ToList();
+      Assert.AreEqual(1, ifList.Count, "ImportedFile count is incorrect from ProjectRepo");
+      Assert.AreEqual(DxfUnitsType.UsSurveyFeet, ifList[0].DxfUnitsType, "ImportedFile DXF units is incorrect from ProjectRepo");
     }
 
     /// <summary>
@@ -191,21 +197,27 @@ namespace RepositoryTests
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve ImportedFile from ProjectRepo");
       Assert.IsNotNull(g.Result.FileDescriptor, "Unable to retrieve fileDescriptor from ImportedFile");
+      Assert.AreEqual(1, g.Result.ImportedFileHistory.ImportedFileUpsertList.Count, "Should be 1 history record for this create.");
 
       var gList = _projectContext.GetImportedFiles(project1.ToString());
       gList.Wait();
       Assert.IsNotNull(gList.Result, "Unable to retrieve ImportedFiles for Project1 from ProjectRepo");
-      Assert.AreEqual(2, gList.Result.Count(), "ImportedFile count is incorrect for Project1 from ProjectRepo");
+
+      var ifList = gList.Result.ToList();
+      Assert.AreEqual(2, ifList.Count, "ImportedFile count is incorrect for Project1 from ProjectRepo");
 
       gList = _projectContext.GetImportedFiles(project2.ToString());
       gList.Wait();
       Assert.IsNotNull(gList.Result, "Unable to retrieve ImportedFiles for Project2 from ProjectRepo");
-      Assert.AreEqual(1, gList.Result.Count(), "ImportedFile count is incorrect for Project2 from ProjectRepo");
+      ifList = gList.Result.ToList();
+      Assert.AreEqual(1, ifList.Count(), "ImportedFile count is incorrect for Project2 from ProjectRepo");
 
       gList = _projectContext.GetImportedFiles(project3.ToString());
       gList.Wait();
       Assert.IsNotNull(gList.Result, "Unable to retrieve ImportedFiles for Project3 from ProjectRepo");
-      Assert.AreEqual(0, gList.Result.Count(), "ImportedFile count is incorrect for Project3 from ProjectRepo");
+
+      ifList = gList.Result.ToList();
+      Assert.AreEqual(0, ifList.Count, "ImportedFile count is incorrect for Project3 from ProjectRepo");
     }
 
     /// <summary>
@@ -261,6 +273,7 @@ namespace RepositoryTests
         "ImportedFile FileDescriptor was not updated");
       Assert.AreEqual(updateImportedFileEvent.MinZoomLevel, g.Result.MinZoomLevel, "ImportedFile MinZoomLevel was not updated");
       Assert.AreEqual(updateImportedFileEvent.MaxZoomLevel, g.Result.MaxZoomLevel, "ImportedFile MaxZoomLevel was not updated");
+      Assert.AreEqual(2, g.Result.ImportedFileHistory.ImportedFileUpsertList.Count, "Should be 2 history records for this create+update.");
     }
 
 
@@ -395,23 +408,24 @@ namespace RepositoryTests
 
       _projectContext.StoreEvent(createImportedFileEvent).Wait();
 
-      var g = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
-      g.Wait();
-      Assert.AreEqual(1, g.Result.Count(), "Should be able to retrieve ImportedFile from ProjectRepo");
+      var gList = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
+      gList.Wait();
+      Assert.AreEqual(1, gList.Result.Count(), "Should be able to retrieve ImportedFile from ProjectRepo");
 
       _projectContext.StoreEvent(deleteImportedFileEvent).Wait();
-      g = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
-      g.Wait();
-      Assert.AreEqual(0, g.Result.Count(), "Should not be able to retrieve ImportedFile from ProjectRepo");
+      gList = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
+      gList.Wait();
+      Assert.AreEqual(0, gList.Result.Count(), "Should not be able to retrieve ImportedFile from ProjectRepo");
 
       var s = _projectContext.StoreEvent(undeleteImportedFileEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Undelete imported file failed");
 
-      g = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
-      g.Wait();
-      Assert.AreEqual(1, g.Result.Count(), "Should be able to retrieve ImportedFile from ProjectRepo");
-      Assert.IsFalse(g.Result.ToList()[0].IsDeleted, "imported file deleted flag should be false");
+      gList = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
+      gList.Wait();
+      var ifList = gList.Result.ToList();
+      Assert.AreEqual(1, ifList.Count, "Should be able to retrieve ImportedFile from ProjectRepo");
+      Assert.IsFalse(ifList[0].IsDeleted, "imported file deleted flag should be false");
     }
 
     #endregion ImportedFiles

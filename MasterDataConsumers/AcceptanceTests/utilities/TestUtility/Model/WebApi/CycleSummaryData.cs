@@ -7,7 +7,7 @@ namespace TestUtility.Model.WebApi
   /// </summary>
   public class CycleSummaryData
   {
-     /// <summary>
+    /// <summary>
     /// Total cycle count.
     /// </summary>
     public int? totalCycleCount { get; set; }
@@ -25,27 +25,33 @@ namespace TestUtility.Model.WebApi
 
     public override bool Equals(object obj)
     {
-        var actual = obj as CycleSummaryData;
+      var actual = obj as CycleSummaryData;
 
-        if (totalCycleCount != null)
-        {
-            if (totalCycleCount != actual.totalCycleCount)
-                return false;
-        }
+      if (totalCycleCount != null)
+      {
+        if (totalCycleCount != actual.totalCycleCount)
+          return false;
+      }
 
 
-        if (targetCycleCount != null)
-        {
-            if (targetCycleCount != actual.targetCycleCount)
-                return false;
-        }
+      if (targetCycleCount != null)
+      {
+        if (targetCycleCount != actual.targetCycleCount)
+          return false;
+      }
 
-        if (averageCycleCount != null)
-        {
-            if (Math.Abs(Math.Round((double) averageCycleCount, 2) - Math.Round((double) actual.averageCycleCount, 2)) > 0.0001)
-                return false;
-        }
-        return true;
+      if (averageCycleCount != null)
+      {
+        if (Math.Abs(Math.Round((double) averageCycleCount, 2) - Math.Round((double) actual.averageCycleCount, 2)) >
+            0.0001)
+          return false;
+      }
+      return true;
+    }
+
+    public override int GetHashCode()
+    {
+      return 0;
     }
   }
 
