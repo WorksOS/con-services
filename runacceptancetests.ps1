@@ -13,8 +13,8 @@ $IP_ADDRESS = docker inspect --format "{{ .NetworkSettings.Networks.nat.IPAddres
 
 PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP $IP_ADDRESS
 
-# $? is true if last command was in error, false otherwise
-if ($?) {
+# $? is true if last command was a success, false otherwise
+if (!$?) {
     "NO IP ADRESS SET"
     docker ps -a
     ping 0.0.0.0 -n 10
