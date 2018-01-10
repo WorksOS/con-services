@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
       {
         ZoomRangeResult zoomResult = new ZoomRangeResult();
         ProjectFileDescriptor request = item as ProjectFileDescriptor;
-        ImportedFileType fileType = request.FileType;//FileUtils.GetFileType(request.File.fileName);
+        ImportedFileType fileType = request.FileType;
         log.LogDebug($"FileType is: {fileType}");
 
         //Tell Raptor to update its cache. 
@@ -86,9 +86,8 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             ? (TVLPDDistanceUnits)request.DXFUnitsType
             : TVLPDDistanceUnits.vduMeters; //always metric for design surface and alignment as we generate the DXF file.
 
-          string prjFile;
           var result2 = raptorClient.GetCoordinateSystemProjectionFile(request.projectId.Value,
-            dxfUnitsType, out prjFile);
+            dxfUnitsType, out string prjFile);
           if (result2 != TASNodeErrorStatus.asneOK)
           {
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
@@ -101,9 +100,9 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
 
           //Get GM_XFORM file contents from Raptor
           log.LogDebug("Getting horizontal adjustment file from Raptor");
-          string haFile;
+
           var result3 = raptorClient.GetCoordinateSystemHorizontalAdjustmentFile(request.CoordSystemFileName,
-            request.projectId.Value, dxfUnitsType, out haFile);
+            request.projectId.Value, dxfUnitsType, out string haFile);
           if (result3 != TASNodeErrorStatus.asneOK)
           {
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
@@ -131,7 +130,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
         else if (fileType == ImportedFileType.SurveyedSurface)
         {
           log.LogDebug("Storing ground surface file in Raptor");
-          DesignDescriptor dd = Productivity3D.Common.Models.DesignDescriptor.CreateDesignDescriptor(request.FileId, request.File, 0.0);
+          DesignDescriptor dd = DesignDescriptor.CreateDesignDescriptor(request.FileId, request.File, 0.0);
           ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args = ASNode.GroundSurface.RPC.__Global
             .Construct_GroundSurface_Args(
               request.projectId.Value,
@@ -149,7 +148,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
         }
 
         return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification successful")
-        { minZoomLevel = zoomResult.minZoom, maxZoomLevel = zoomResult.maxZoom };
+        { MinZoomLevel = zoomResult.minZoom, MaxZoomLevel = zoomResult.maxZoom };
       }
       finally
       {
@@ -200,23 +199,21 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
       switch (userUnits)
       {
         case DxfUnitsType.ImperialFeet:
-          raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduImperialFeet;
+          raptorUnits = TVLPDDistanceUnits.vduImperialFeet;
           interval = 300 * ImperialFeetToMetres;
           break;
 
         case DxfUnitsType.Meters:
-          raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduMeters;
+          raptorUnits = TVLPDDistanceUnits.vduMeters;
           interval = 100;
           break;
         case DxfUnitsType.UsSurveyFeet:
         default:
-          raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduUSSurveyFeet;
+          raptorUnits = TVLPDDistanceUnits.vduUSSurveyFeet;
           interval = 300 * USFeetToMetres;
           break;
       }
 
-      MemoryStream memoryStream;
-      TDesignProfilerRequestResult designProfilerResult = TDesignProfilerRequestResult.dppiUnknownError;
       log.LogDebug("Getting DXF design boundary from Raptor");
 
       raptorClient.GetDesignBoundary(
@@ -224,7 +221,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
         (projectId,
           fileDescr.DesignDescriptor(configStore, log, 0, 0),
           DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtDXF,
-          interval, raptorUnits,0), out memoryStream, out designProfilerResult);
+          interval, raptorUnits,0), out var memoryStream, out var designProfilerResult);
 
       if (memoryStream != null)
       {

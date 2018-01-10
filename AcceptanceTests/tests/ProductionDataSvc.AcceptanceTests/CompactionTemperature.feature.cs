@@ -74,8 +74,8 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 5
 this.ScenarioSetup(scenarioInfo);
 #line 6
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/temperature/summary\" for operation" +
-                    " \"TemperatureSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/temperature/summary\" for operation \"Temperatu" +
+                    "reSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
 testRunner.And("the result file \"CompactionGetTemperatureDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
@@ -117,8 +117,8 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
 #line 16
 this.ScenarioSetup(scenarioInfo);
 #line 17
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/temperature/summary\" for operation" +
-                    " \"TemperatureSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/temperature/summary\" for operation \"Temperatu" +
+                    "reSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 18
 testRunner.And("the result file \"CompactionGetTemperatureDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 19

@@ -2,7 +2,7 @@
 	I should be able to request DXF tiles
 
 Scenario: Dxf Tile - Good Request 
-	Given the Dxf Tile service URI "/api/v2/compaction/lineworktiles" 
+	Given the Dxf Tile service URI "/api/v2/lineworktiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And a bbox "-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625" and a width "256" and a height "256"
   And a fileType "linework"
@@ -18,7 +18,7 @@ Scenario: Dxf Tile - Good Request
 	"""
 
 Scenario: Dxf Tile - Scaled Tile 
-	Given the Dxf Tile service URI "/api/v2/compaction/lineworktiles" 
+	Given the Dxf Tile service URI "/api/v2/lineworktiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And a bbox "-43.545561990655841, 172.58285522460938, -43.545064289564273, 172.58354187011719" and a width "256" and a height "256"
   And a fileType "linework"
@@ -34,7 +34,7 @@ Scenario: Dxf Tile - Scaled Tile
 	"""
 
 Scenario: Dxf Tile - No Imported Files 
-	Given the Dxf Tile service URI "/api/v2/compaction/lineworktiles"
+	Given the Dxf Tile service URI "/api/v2/lineworktiles"
 	And a projectUid "0fa94210-0d7a-4015-9eee-4d9956f4b250"
   And a bbox "-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625" and a width "256" and a height "256"
   And a fileType "linework"
@@ -50,7 +50,7 @@ Scenario: Dxf Tile - No Imported Files
 	"""
 
 Scenario: Dxf Tile - No FileType 
-	Given the Dxf Tile service URI "/api/v2/compaction/lineworktiles"
+	Given the Dxf Tile service URI "/api/v2/lineworktiles"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And a bbox "-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625" and a width "256" and a height "256"
   And a fileType ""
@@ -58,7 +58,7 @@ Scenario: Dxf Tile - No FileType
 	Then I should get error code -1 and message "Missing file type"
 
 Scenario: Dxf Tile - Bad FileType 
-	Given the Dxf Tile service URI "/api/v2/compaction/lineworktiles"
+	Given the Dxf Tile service URI "/api/v2/lineworktiles"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And a bbox "-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625" and a width "256" and a height "256"
   And a fileType "SurveyedSurface"

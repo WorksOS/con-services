@@ -3,7 +3,7 @@ I should be able to request compaction CMV data
 
 ######################################################## CMV Summary ############################################################
 Scenario Outline: Compaction Get CMV Summary - No Design Filter
-Given the Compaction service URI "/api/v2/compaction/cmv/summary" for operation "CMVSummary"
+Given the Compaction service URI "/api/v2/cmv/summary" for operation "CMVSummary"
 And the result file "CompactionGetCMVDataResponse.json"
 And projectUid "<ProjectUID>"
 When I request result
@@ -14,7 +14,7 @@ Examples:
 | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_Summary_PS |
 
 Scenario Outline: Compaction Get CMV Summary
-Given the Compaction service URI "/api/v2/compaction/cmv/summary" for operation "CMVSummary"
+Given the Compaction service URI "/api/v2/cmv/summary" for operation "CMVSummary"
 And the result file "CompactionGetCMVDataResponse.json"
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
@@ -29,7 +29,7 @@ Examples:
 
 ######################################################## CMV Details ############################################################
 Scenario Outline: Compaction Get CMV Details - No Design Filter
-Given the Compaction service URI "/api/v2/compaction/cmv/details" for operation "CMVDetails"
+Given the Compaction service URI "/api/v2/cmv/details" for operation "CMVDetails"
 And the result file "CompactionGetCMVDataResponse.json"
 And projectUid "<ProjectUID>"
 When I request result
@@ -40,7 +40,7 @@ Examples:
 | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_Details_PS |
 
 Scenario Outline: Compaction Get CMV Details
-Given the Compaction service URI "/api/v2/compaction/cmv/details" for operation "CMVDetails"
+Given the Compaction service URI "/api/v2/cmv/details" for operation "CMVDetails"
 And the result file "CompactionGetCMVDataResponse.json"
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
@@ -54,7 +54,7 @@ Examples:
 
 ######################################################## CMV % Change Summary ###################################################
 Scenario Outline: Compaction Get CMV % Change Summary - No Design Filter
-Given the Compaction service URI "/api/v2/compaction/cmv/percentchange" for operation "CMVPercentChangeSummary"
+Given the Compaction service URI "/api/v2/cmv/percentchange" for operation "CMVPercentChangeSummary"
 And the result file "CompactionGetCMVDataResponse.json"
 And projectUid "<ProjectUID>"
 When I request result
@@ -65,7 +65,7 @@ Examples:
 | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_PercentChange_PS |
 
 Scenario Outline: Compaction Get CMV % Change Summary
-Given the Compaction service URI "/api/v2/compaction/cmv/percentchange" for operation "CMVPercentChangeSummary"
+Given the Compaction service URI "/api/v2/cmv/percentchange" for operation "CMVPercentChangeSummary"
 And the result file "CompactionGetCMVDataResponse.json"
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"

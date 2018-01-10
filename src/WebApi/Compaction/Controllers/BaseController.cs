@@ -323,9 +323,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                 : FilterLayerMethod.None;
 
               bool? returnEarliest = null;
-              if (filterData.elevationType.HasValue)
+              if (filterData.elevationType == ElevationType.First)
               {
-                if (filterData.elevationType == ElevationType.First) returnEarliest = true;
+                returnEarliest = true;
               }
 
               return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,

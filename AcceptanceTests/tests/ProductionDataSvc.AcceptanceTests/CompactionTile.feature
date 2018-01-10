@@ -3,7 +3,7 @@ I should be able to request compaction tiles
 
 ###################################################### Production Data Tiles ####################################################
 Scenario Outline: Get Tiles No Design Filter
-Given the Compaction service URI "/api/v2/compaction/productiondatatiles"
+Given the Compaction service URI "/api/v2/productiondatatiles"
 And the result file "CompactionGetProductionDataTilesResponse.json"	
 And projectUid "<ProjectUID>"
 And displayMode "0" and bbox "<BBox>" and width "<Width>" and height "<Height>"
@@ -16,7 +16,7 @@ Examples:
 | SS Excluded | 86a42bbf-9d0e-4079-850f-835496d715c5 | 36.207437, -115.019999, 36.207473, -115.019959                                              | 256   | 256    | SSExcluded  | 1          |
 
 Scenario Outline: Get Tiles
-Given the Compaction service URI "/api/v2/compaction/productiondatatiles"
+Given the Compaction service URI "/api/v2/productiondatatiles"
 And the result file "CompactionGetProductionDataTilesResponse.json"
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
@@ -35,7 +35,7 @@ Examples:
 
 
 Scenario Outline: Get CutFill Tiles
-Given the Compaction service URI "/api/v2/compaction/productiondatatiles"
+Given the Compaction service URI "/api/v2/productiondatatiles"
 And the result file "CompactionGetProductionDataTilesResponse.json"
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"

@@ -74,8 +74,8 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 5
 this.ScenarioSetup(scenarioInfo);
 #line 6
- testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationpalette\" for operation \"E" +
-                    "levationPalette\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Compaction service URI \"/api/v2/elevationpalette\" for operation \"ElevationPal" +
+                    "ette\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
   testRunner.And("the result file \"CompactionGetCompactionPalettesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
@@ -105,8 +105,8 @@ this.ScenarioSetup(scenarioInfo);
 #line 15
 this.ScenarioSetup(scenarioInfo);
 #line 16
- testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationpalette\" for operation \"E" +
-                    "levationPalette\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Compaction service URI \"/api/v2/elevationpalette\" for operation \"ElevationPal" +
+                    "ette\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 17
   testRunner.And("the result file \"CompactionGetCompactionPalettesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 18
@@ -139,8 +139,8 @@ this.ScenarioSetup(scenarioInfo);
 #line 27
 this.ScenarioSetup(scenarioInfo);
 #line 28
- testRunner.Given("the Compaction service URI \"/api/v2/compaction/colorpalettes\" for operation \"Comp" +
-                    "actionPalettes\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Compaction service URI \"/api/v2/colorpalettes\" for operation \"CompactionPalet" +
+                    "tes\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 29
   testRunner.And("the result file \"CompactionGetCompactionPalettesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 30

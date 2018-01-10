@@ -8,7 +8,6 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -61,9 +60,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="settingsManager">Compaction settings manager</param>
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
-    public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
-      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, 
-      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
+    public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
+      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy,
+      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
@@ -82,6 +81,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>Elevation statistics</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/elevationrange")]
     [Route("api/v2/compaction/elevationrange")]
     [HttpGet]
     public async Task<ElevationStatisticsResult> GetElevationRange(
@@ -118,6 +118,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     #endregion
+
     #region Project Extents
 
     /// <summary>
@@ -127,6 +128,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>Project statistics</returns>
     /// <executor>ProjectStatisticsExecutor</executor>
     [ProjectUidVerifier]
+    [Route("api/v2/projectstatistics")]
     [Route("api/v2/compaction/projectstatistics")]
     [HttpGet]
     public async Task<ProjectStatisticsResult> GetProjectStatistics(

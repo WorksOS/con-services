@@ -74,7 +74,7 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 4
 this.ScenarioSetup(scenarioInfo);
 #line 5
-testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
 testRunner.And(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
@@ -515,7 +515,7 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
 #line 42
 this.ScenarioSetup(scenarioInfo);
 #line 43
-testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 44
 testRunner.And("a width \"1024\" and a height \"1024\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 45
@@ -558,7 +558,7 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
 #line 56
 this.ScenarioSetup(scenarioInfo);
 #line 57
-testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 58
 testRunner.And(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 59
@@ -765,7 +765,7 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
 #line 81
 this.ScenarioSetup(scenarioInfo);
 #line 82
- testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 83
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 84
@@ -788,7 +788,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 88
 this.ScenarioSetup(scenarioInfo);
 #line 89
- testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 90
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 91
@@ -811,7 +811,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 95
 this.ScenarioSetup(scenarioInfo);
 #line 96
- testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 97
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 98
@@ -832,7 +832,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 101
 this.ScenarioSetup(scenarioInfo);
 #line 102
- testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 103
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 104
@@ -857,7 +857,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 109
 this.ScenarioSetup(scenarioInfo);
 #line 110
- testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 111
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 112
@@ -882,7 +882,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 117
 this.ScenarioSetup(scenarioInfo);
 #line 118
- testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 119
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 120
@@ -909,7 +909,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 126
 this.ScenarioSetup(scenarioInfo);
 #line 127
- testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 128
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 129
@@ -938,7 +938,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 136
 this.ScenarioSetup(scenarioInfo);
 #line 137
- testRunner.Given("the Report Tile service URI \"/api/v2/compaction/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 138
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 139
