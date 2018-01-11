@@ -32,13 +32,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
       await ValidateProjectWithCustomer(customerUid, request?.projectUid);
 
-      await RaptorValidateProjectSettings(request);
+      if (request.projectSettingsType == ProjectSettingsType.Targets)
+      {
+        await RaptorValidateProjectSettings(request);
+      }
 
       var upsertProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
         ProjectUID = Guid.Parse(request.projectUid),
         UserID = userId,
-        ProjectSettingsType = ProjectSettingsType.Targets,
+        ProjectSettingsType = request.projectSettingsType,
         Settings = request.settings,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
@@ -63,8 +66,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       try
       {
-        var projectSettings = await projectRepo.GetProjectSettings(request.projectUid, userId, ProjectSettingsType.Targets).ConfigureAwait(false);
-        result = ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, projectSettings.Settings);
+        var projectSettings = await projectRepo.GetProjectSettings(request.projectUid, userId, request.projectSettingsType).ConfigureAwait(false);
+        result = ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, projectSettings.Settings, projectSettings.ProjectSettingsType);
       }
       catch (Exception e)
       {

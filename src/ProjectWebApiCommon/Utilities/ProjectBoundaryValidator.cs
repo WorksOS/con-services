@@ -98,7 +98,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     private static string GetWicketFromPoints(List<Point> points)
     {
       if (points.Count == 0)
-        return "";
+        return string.Empty;
 
       var polygonWkt = new StringBuilder("POLYGON((");
       foreach (var point in points)

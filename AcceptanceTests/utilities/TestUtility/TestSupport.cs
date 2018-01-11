@@ -335,7 +335,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(CreateProjectEvt, "", statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
+      CallProjectWebApi(CreateProjectEvt, string.Empty, statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -359,7 +359,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(UpdateProjectEvt, "", statusCode, "Update", HttpMethod.Put.ToString(), CustomerUid.ToString());
+      CallProjectWebApi(UpdateProjectEvt, string.Empty, statusCode, "Update", HttpMethod.Put.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -443,7 +443,7 @@ namespace TestUtility
     /// <param name="expectedResultsArray"></param>
     public void GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
     {
-      var response = CallProjectWebApi(null, "", statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
+      var response = CallProjectWebApi(null, string.Empty, statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         if (expectedResultsArray.Length == 0)

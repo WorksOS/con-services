@@ -213,7 +213,7 @@ namespace TestUtility
         flowChunkSize = 1048576,
         flowCurrentChunkSize = filestream.Length,
         flowTotalSize = filestream.Length,
-        flowIdentifier = filestream.Length + "-" + name.Replace(".", ""),
+        flowIdentifier = filestream.Length + "-" + name.Replace(".", string.Empty),
         flowFilename = name,
         flowRelativePath = name,
         flowTotalChunks = 1

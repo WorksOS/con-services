@@ -14,6 +14,7 @@ using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -61,7 +62,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
 
     /// <summary>
-    /// Gets the project settings for a project.
+    /// Gets the target project settings for a project and user.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
@@ -75,7 +76,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
           .CustomerUid(customerUid))
-        .CreateProjectSettingsRequest(projectUid, string.Empty);
+        .CreateProjectSettingsRequest(projectUid, string.Empty, ProjectSettingsType.Targets);
       projectSettingsRequest.Validate();
      
       var result = (await WithServiceExceptionTryExecuteAsync(() => 
@@ -94,7 +95,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
 
     /// <summary>
-    /// Upserts the project settings for a project.
+    /// Upserts the target project settings for a project and user.
     /// </summary>
     /// <returns></returns>
     [Route("api/v4/projectsettings")]
@@ -108,7 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
             .CustomerUid(customerUid))
-          .CreateProjectSettingsRequest(request?.projectUid, request?.settings);
+          .CreateProjectSettingsRequest(request?.projectUid, request?.settings, ProjectSettingsType.Targets);
       projectSettingsRequest.Validate();
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
 {
@@ -17,6 +18,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     public string settings { get; set; }
 
     /// <summary>
+    /// The type of project settings
+    /// </summary>
+    [JsonIgnore]//So existing contract is not broken
+    public ProjectSettingsType projectSettingsType { get; set; }
+
+    /// <summary>
     /// Private constructor
     /// </summary>
     private ProjectSettingsResult()
@@ -28,14 +35,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="settings"></param>
+    /// <param name="projectSettingsType"></param>
     /// <returns></returns>
-    public static ProjectSettingsResult CreateProjectSettingsResult(string projectUid,
-      string settings)
+    public static ProjectSettingsResult CreateProjectSettingsResult(
+      string projectUid, string settings, ProjectSettingsType projectSettingsType)
     {
       return new ProjectSettingsResult
       {
         projectUid = projectUid,
-        settings = settings
+        settings = settings,
+        projectSettingsType = projectSettingsType
       };
     }
     

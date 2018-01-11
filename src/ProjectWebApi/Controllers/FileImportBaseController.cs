@@ -505,7 +505,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
             .CustomerUid(customerUid))
-          .CreateProjectSettingsRequest(projectUid, JsonConvert.SerializeObject(deactivatedFileList));
+          .CreateProjectSettingsRequest(projectUid, JsonConvert.SerializeObject(deactivatedFileList), ProjectSettingsType.ImportedFiles);
         projectSettingsRequest.Validate();
 
         var result = await WithServiceExceptionTryExecuteAsync(() =>

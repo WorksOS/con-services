@@ -171,6 +171,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(request.ImportedBy, importedFileDescriptor.ImportedBy, "ImportedBy has not been mapped correctly");
       Assert.AreEqual(request.SurveyedUtc, importedFileDescriptor.SurveyedUtc, "SurveyedUtc has not been mapped correctly");
       Assert.AreEqual(request.LastActionedUtc, importedFileDescriptor.ImportedUtc, "ImportedUtc has not been mapped correctly");
+      Assert.AreEqual(true, importedFileDescriptor.IsActivated, "IsActivated has not been mapped correctly");
 
       // just make a copy file descriptor is only in the source file, not the destination
       var copyOfRequest = AutoMapperUtility.Automapper.Map<ImportedFile>(request);
