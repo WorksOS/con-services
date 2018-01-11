@@ -132,13 +132,11 @@ namespace TagFileHarvester
       Log.Debug("TagFileHarvester.Start: Entered Start()");
       //register dependencies here
       OrgsHandler.Initialize(new UnityContainer().RegisterType<IFileRepository, FileRepository>()
-          .RegisterInstance<IBookmarkManager>(XMLBookMarkManager.Instance)
           .RegisterInstance<IHarvesterTasks>(new LimitedConcurrencyHarvesterTasks())
           .RegisterType<ITAGProcessorClient, TagFileProcessingRaptor>()
           .RegisterInstance<ILog>(Log));
       FileRepository.Log = Log;
       TagFileProcessingRaptor.Log = Log;
-      XMLBookMarkManager.Log = Log;
       //here we need to sync filespaces and tasks
       SyncTimer = new System.Threading.Timer(OrgsHandler.CheckAvailableOrgs);
       SyncTimer.Change(TimeSpan.FromSeconds(5), TagFileHarvesterServiceSettings.Default.RefreshOrgsDelay);
@@ -149,7 +147,6 @@ namespace TagFileHarvester
     {
       Log.Info("TagFileHarvester.Stopping.");
       SyncTimer.Change(Timeout.Infinite, Timeout.Infinite);
-      OrgsHandler.Container.Resolve<IBookmarkManager>().StopDataExport();
       OrgsHandler.OrgProcessingTasks.ForEach(t=>t.Value.Item2.Cancel());
       Log.InfoFormat("TagFileHarvester.Waiting for {0} tasks....",(OrgsHandler.OrgProcessingTasks.Count));
       Task.WaitAll(OrgsHandler.OrgProcessingTasks.Select(t => t.Key).ToArray(),TimeSpan.FromMinutes(1));

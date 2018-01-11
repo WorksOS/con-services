@@ -75,9 +75,6 @@ namespace TagFileHarvester
       try
       {
         //Make sure that data export is running
-        Container.Resolve<IBookmarkManager>().StopDataExport();
-        Container.Resolve<IBookmarkManager>().StartDataExport();
-        log.InfoFormat("Got {0} updated bookmarks after merging", Container.Resolve<IBookmarkManager>().MergeWithUpdatedBookmarks());
         var orgs = GetOrgs();
         log.InfoFormat("Got {0} orgs from repository", orgs.Count);
         MergeAndProcessOrgs(orgs);

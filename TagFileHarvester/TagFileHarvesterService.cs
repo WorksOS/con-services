@@ -34,7 +34,6 @@ namespace VSS.Nighthawk.ThreeDCommon.ThreeDAPIs.ProjectDataServer
       log.Debug("TagFileHarvester.Start: Entered Start()");
       //register dependencies here
       OrgsHandler.Initialize(new UnityContainer().RegisterType<IFileRepository, FileRepository>()
-          .RegisterInstance<IBookmarkManager>(XMLBookMarkManager.Instance)
           .RegisterInstance<IHarvesterTasks>(new LimitedConcurrencyHarvesterTasks())
           .RegisterType<ITAGProcessorClient, TagFileProcessingRaptor>()
           .RegisterInstance<ILog>(log));
