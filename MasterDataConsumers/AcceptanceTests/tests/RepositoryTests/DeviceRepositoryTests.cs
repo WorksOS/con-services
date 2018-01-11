@@ -334,29 +334,123 @@ namespace RepositoryTests
     public void DissociateDeviceAssetEvent_HappyPath()
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createAssetEvent = new CreateAssetEvent()
+      {
+        AssetUID = Guid.NewGuid(),
+        AssetName = "The asset Name",
+        AssetType = "unknown",
+        SerialNumber = "3453gg",
+        LegacyAssetId = 4357869785,
+        OwningCustomerUID = Guid.NewGuid(),
+        ActionUTC = actionUTC
+      };
+
+      var deviceUID = Guid.NewGuid();
+      var deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      var createDeviceEvent = new CreateDeviceEvent()
+      {
+        DeviceUID = deviceUID,
+        DeviceSerialNumber = deviceSerialNumber,
+        DeviceType = "SNM940",
+        DeviceState = "active",
+        ActionUTC = actionUTC
+      };
+
 
       var associateDeviceAssetEvent = new AssociateDeviceAssetEvent()
       {
-        AssetUID = Guid.NewGuid(),
-        DeviceUID = Guid.NewGuid(),
+        AssetUID = createAssetEvent.AssetUID,
+        DeviceUID = createDeviceEvent.DeviceUID,
         ActionUTC = actionUTC
       };
 
       var dissociateDeviceAssetEvent = new DissociateDeviceAssetEvent()
       {
-        AssetUID = associateDeviceAssetEvent.AssetUID,
-        DeviceUID = associateDeviceAssetEvent.DeviceUID,
+        AssetUID = createAssetEvent.AssetUID,
+        DeviceUID = createDeviceEvent.DeviceUID,
         ActionUTC = actionUTC.AddDays(1)
       };
 
+      assetContext.StoreEvent(createAssetEvent).Wait();
+      deviceContext.StoreEvent(createDeviceEvent).Wait();
       deviceContext.StoreEvent(associateDeviceAssetEvent).Wait();
-      var g = deviceContext.GetAssociatedAsset("RadioSerial", "unknown");
-      Assert.IsNull(g.Result, "There should be no DeviceAsset association from DeviceRepo");
+      var g = deviceContext.GetAssociatedAsset(deviceSerialNumber, "SNM940");
+      g.Wait();
+      Assert.IsNotNull(g.Result, "There should be no DeviceAsset association from DeviceRepo");
 
       deviceContext.StoreEvent(dissociateDeviceAssetEvent).Wait();
-      g = deviceContext.GetAssociatedAsset("RadioSerial", "SNM940");
+      g = deviceContext.GetAssociatedAsset(deviceSerialNumber, "SNM940");
+      g.Wait();
       Assert.IsNull(g.Result, "There should be no DeviceAsset association from DeviceRepo");
     }
+
+    /// <summary>
+    ///  DissociateDeviceAsset - 
+    ///    assoc exists, dissociation is for an earlier date and should be ignored.
+    ///  Note: As of this writing, no DeviceAsset association history is kept, only the most recent association.
+    ///        To this end, consumers (ours and others) delete the DeviceAsset assoc from Db when a Dissociate is received.
+    ///        This could create a dilema if Assoc/Dissasoc are received out of order. 
+    ///             We are assured by Gowthaman (VS but#63526) that this will NEVER occur in the kafka que, 
+    ///                as related assoc will occur in LastActiveUtc order.
+    /// </summary>
+    [TestMethod]
+    public void DissociateDeviceAssetEvent_LateArrivingDissociate()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createAssetEvent = new CreateAssetEvent()
+      {
+        AssetUID = Guid.NewGuid(),
+        AssetName = "The asset Name",
+        AssetType = "unknown",
+        SerialNumber = "3453gg",
+        LegacyAssetId = 4357869785,
+        OwningCustomerUID = Guid.NewGuid(),
+        ActionUTC = actionUTC
+      };
+
+      var deviceUID = Guid.NewGuid();
+      var deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      var createDeviceEvent = new CreateDeviceEvent()
+      {
+        DeviceUID = deviceUID,
+        DeviceSerialNumber = deviceSerialNumber,
+        DeviceType = "SNM940",
+        DeviceState = "active",
+        ActionUTC = actionUTC
+      };
+
+      var associateDeviceAssetEvent = new AssociateDeviceAssetEvent()
+      {
+        AssetUID = createAssetEvent.AssetUID,
+        DeviceUID = createDeviceEvent.DeviceUID,
+        ActionUTC = actionUTC.AddDays(2)
+      };
+
+      var dissociateDeviceAssetEvent = new DissociateDeviceAssetEvent()
+      {
+        AssetUID = createAssetEvent.AssetUID,
+        DeviceUID = createDeviceEvent.DeviceUID,
+        ActionUTC = actionUTC.AddDays(1)
+      };
+
+      assetContext.StoreEvent(createAssetEvent).Wait();
+      deviceContext.StoreEvent(createDeviceEvent).Wait();
+      deviceContext.StoreEvent(associateDeviceAssetEvent).Wait();
+      var g = deviceContext.GetAssociatedAsset(deviceSerialNumber, "SNM940");
+      g.Wait();
+      Assert.IsNotNull(g.Result, "There should be no DeviceAsset association from DeviceRepo");
+
+      deviceContext.StoreEvent(dissociateDeviceAssetEvent).Wait();
+      g = deviceContext.GetAssociatedAsset(deviceSerialNumber, "SNM940");
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve AssetDevicePlus from CustomerRepo");
+      Assert.AreEqual(associateDeviceAssetEvent.DeviceUID.ToString(), g.Result.DeviceUID, "DeviceUID is incorrect from DeviceRepo");
+      Assert.AreEqual(associateDeviceAssetEvent.AssetUID.ToString(), g.Result.AssetUID, "AssetUID is incorrect from DeviceRepo");
+      Assert.AreEqual(createAssetEvent.LegacyAssetId, g.Result.LegacyAssetID, "LegacyAssetID is incorrect from DeviceRepo");
+      Assert.AreEqual(createAssetEvent.OwningCustomerUID.ToString(), g.Result.OwningCustomerUID, "OwningCustomerUID is incorrect from DeviceRepo");
+    }
+
 
     #endregion
 
