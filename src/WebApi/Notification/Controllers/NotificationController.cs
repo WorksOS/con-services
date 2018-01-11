@@ -269,7 +269,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] Guid filterUid, [FromQuery] Guid projectUid)
     {
       log.LogDebug("GetNotifyFilterChange: " + Request.QueryString);
-      filterServiceProxy.ClearCacheItem(filterUid.ToString());
+      filterServiceProxy.ClearCacheItem(filterUid.ToString(), Request.Headers.GetCustomHeaders());
       filterServiceProxy.ClearCacheListItem(projectUid.ToString());
       log.LogInformation("GetNotifyFilterChange returned");
       return new ContractExecutionResult();

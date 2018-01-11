@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Caching;
@@ -68,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //It is assumed that the settings are about to be saved.
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
         log.LogDebug($"About to clear settings for project {projectUid}");
-        projectSettingsProxy.ClearCacheItem(projectUid.ToString());
+        projectSettingsProxy.ClearCacheItem(projectUid.ToString(), Request.Headers.GetCustomHeaders());
         cacheBuilder.ClearMemoryCache(projectUid);
       }
 

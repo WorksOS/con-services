@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.WebApiTests.Caching
 
   public class FakeFilterProxy : IFilterServiceProxy
   {
-    public void ClearCacheItem(string uid)
+    public void ClearCacheItem(string uid, IDictionary<string, string> customHeaders)
     { }
 
     public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid, IDictionary<string, string> customHeaders = null)
