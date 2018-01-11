@@ -31,7 +31,7 @@
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="Confluent.Kafka" Version="0.11.3" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.2.*" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.3.*" />
   </ItemGroup>
 
 </Project>
