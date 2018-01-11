@@ -1,15 +1,14 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
@@ -21,17 +20,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     private readonly ILogger log;
 
     /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory logger;
-
-    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="logger"></param>
     public CompactionProfileResultHelper(ILoggerFactory logger)
     {
-      this.logger = logger;
       log = logger.CreateLogger<CompactionProfileResultHelper>();
     }
 
@@ -55,8 +48,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       var vertices = slicerDesignResult.results;
       var cells = (from r in slicerProfileResult.results
-        where r.type == type
-        select r).Single().data;
+                   where r.type == type
+                   select r).Single().data;
       if (cells != null && cells.Count > 0 && vertices != null && vertices.Count > 0)
       {
         int startIndx = -1;
@@ -86,7 +79,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
               //Calculate elevation by interpolation
               var proportion = (cell.x - vertices[startIndx].station) /
                                (vertices[startIndx + 1].station - vertices[startIndx].station);
-              newy = (float) (vertices[startIndx].elevation +
+              newy = (float)(vertices[startIndx].elevation +
                                 proportion * (vertices[startIndx + 1].elevation - vertices[startIndx].elevation));
             }
             if (calcType == VolumeCalcType.DesignToGround)
@@ -152,19 +145,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       //all gridDistanceBetweenProfilePoints are the same if the profile slices the design surface
       var profileWithDistance = slicerProfileResults.Values.Where(v => v.gridDistanceBetweenProfilePoints > 0)
         .FirstOrDefault();
-      var distance = profileWithDistance != null ? profileWithDistance.gridDistanceBetweenProfilePoints : 0;
+      var distance = profileWithDistance?.gridDistanceBetweenProfilePoints ?? 0;
 
       var profile = new CompactionProfileResult<CompactionDesignProfileResult>
       {
         gridDistanceBetweenProfilePoints = distance,
         results = (from spr in slicerProfileResults
-          select new CompactionDesignProfileResult
-          {
-            designFileUid = spr.Key,
-            data = spr.Value.results
-          }).ToList()
+                   select new CompactionDesignProfileResult
+                   {
+                     designFileUid = spr.Key,
+                     data = spr.Value.results
+                   }).ToList()
       };
-  
+
       return profile;
     }
 
@@ -210,7 +203,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       log.LogDebug("ConvertProfileResult: Production data profile");
 
       //shouldn't ever happen but for safety check arg
-      if (slicerProfileResult == null || slicerProfileResult.results == null)
+      if (slicerProfileResult?.results == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
@@ -434,16 +427,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       {
         type = CompactionDataPoint.SUMMARY_VOLUMES,
         data = (from p in slicerProfileResult.results
-          select new CompactionDataPoint
-          {
-            type = CompactionDataPoint.SUMMARY_VOLUMES,
-            cellType = p.cellType,
-            x = p.station,
-            //y or y2 will be set later using the summary volumes design
-            y = calcType == VolumeCalcType.DesignToGround ? float.NaN : p.lastPassHeight1,
-            value = -p.cutFill,
-            y2 = calcType == VolumeCalcType.GroundToDesign ? float.NaN : p.lastPassHeight2 
-          }).ToList()
+                select new CompactionDataPoint
+                {
+                  type = CompactionDataPoint.SUMMARY_VOLUMES,
+                  cellType = p.cellType,
+                  x = p.station,
+                  //y or y2 will be set later using the summary volumes design
+                  y = calcType == VolumeCalcType.DesignToGround ? float.NaN : p.lastPassHeight1,
+                  value = -p.cutFill,
+                  y2 = calcType == VolumeCalcType.GroundToDesign ? float.NaN : p.lastPassHeight2
+                }).ToList()
       };
     }
 
@@ -480,7 +473,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           //Always keep first and last points as they are the slicer end points
           CompactionDataPoint prevData = profileResult.data[0];
           bool haveGap = prevData.cellType == ProfileCellType.Gap;
-          List<CompactionDataPoint> newList = new List<CompactionDataPoint> {prevData};
+          List<CompactionDataPoint> newList = new List<CompactionDataPoint> { prevData };
           for (int i = 1; i < profileResult.data.Count - 1; i++)
           {
             if (profileResult.data[i].cellType == ProfileCellType.Gap)
@@ -530,18 +523,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         {
           //No mid point for first and last segments since only partial across the cell.
           //We have already added them as mid points.
-          var points = new List<CompactionDataPoint>();
+          var points = new List<CompactionDataPoint> { result.data[0] };
 
-          points.Add(result.data[0]);
           for (int i = 1; i < result.data.Count - 2; i++)
           {
             points.Add(result.data[i]);
             if (result.data[i].cellType != ProfileCellType.Gap)
             {
-              var midPoint = new CompactionDataPoint(result.data[i]);
-              midPoint.cellType = ProfileCellType.MidPoint;
-              midPoint.x = result.data[i].x +
-                           (result.data[i + 1].x - result.data[i].x) / 2;
+              var midPoint = new CompactionDataPoint(result.data[i])
+              {
+                cellType = ProfileCellType.MidPoint,
+                x = result.data[i].x +
+                    (result.data[i + 1].x - result.data[i].x) / 2
+              };
               points.Add(midPoint);
             }
           }
@@ -588,8 +582,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
             //y2 to interpolate for only summary volumes ground-ground and design-ground
             if (result.type == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign)
-            {   
-              InterpolatePoint(i, result.data, result.type, true);             
+            {
+              InterpolatePoint(i, result.data, result.type, true);
             }
 
           }
@@ -607,8 +601,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="useY2">True if interpolating the second elevation</param>
     private void InterpolatePoint(int i, List<CompactionDataPoint> data, string type, bool useY2)
     {
-      int startIndx, endIndx;
-      FindMidPoints(i, data, out startIndx, out endIndx, useY2);
+      FindMidPoints(i, data, out int startIndx, out int endIndx, useY2);
       log.LogDebug($"Edge {i}: Midpoints: {startIndx}, {endIndx} for type {type}");
       if (startIndx >= 0 && endIndx <= data.Count - 1)
       {
@@ -619,8 +612,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       else if (endIndx < data.Count - 1)
       {
         startIndx = endIndx;
-        int startIndx2, endIndx2;
-        FindMidPoints(endIndx + 1, data, out startIndx2, out endIndx2, useY2);
+        FindMidPoints(endIndx + 1, data, out _, out int endIndx2, useY2);
         log.LogDebug($"Special Case Start Gap {i}: Midpoints: {startIndx}, {endIndx2} for type {type}");
         if (endIndx2 <= data.Count - 1)
         {
@@ -632,8 +624,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       else if (startIndx > 0)
       {
         endIndx = startIndx;
-        int startIndx2, endIndx2;
-        FindMidPoints(startIndx - 1, data, out startIndx2, out endIndx2, useY2);
+        FindMidPoints(startIndx - 1, data, out int startIndx2, out int endIndx2, useY2);
         log.LogDebug($"Special Case End Gap {i}: Midpoints: {startIndx}, {endIndx2} for type {type}");
         if (startIndx2 >= 0)
         {

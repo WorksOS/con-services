@@ -3,7 +3,7 @@
 
 ######################################################## Elevation Palette ######################################################
 Scenario Outline: Compaction Get Elevation Palette - No Design Filter
-	Given the Compaction service URI "/api/v2/compaction/elevationpalette" for operation "ElevationPalette"
+	Given the Compaction service URI "/api/v2/elevationpalette" for operation "ElevationPalette"
   And the result file "CompactionGetCompactionPalettesResponse.json"
 	And projectUid "<ProjectUID>"
 	When I request result
@@ -13,7 +13,7 @@ Scenario Outline: Compaction Get Elevation Palette - No Design Filter
 	|             | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_EP |
 
 Scenario Outline: Compaction Get Elevation Palette - No Data
-	Given the Compaction service URI "/api/v2/compaction/elevationpalette" for operation "ElevationPalette"
+	Given the Compaction service URI "/api/v2/elevationpalette" for operation "ElevationPalette"
   And the result file "CompactionGetCompactionPalettesResponse.json"
 	And projectUid "<ProjectUID>"
   And filterUid "<FilterUid>"
@@ -25,7 +25,7 @@ Scenario Outline: Compaction Get Elevation Palette - No Data
 
 ####################################################### Compaction Palettes #####################################################
 Scenario Outline: Compaction Get Palettes
-	Given the Compaction service URI "/api/v2/compaction/colorpalettes" for operation "CompactionPalettes"
+	Given the Compaction service URI "/api/v2/colorpalettes" for operation "CompactionPalettes"
   And the result file "CompactionGetCompactionPalettesResponse.json"
 	And projectUid "<ProjectUID>"
 	When I request result

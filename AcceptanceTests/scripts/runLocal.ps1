@@ -42,17 +42,8 @@ docker stop $(docker ps -a -q)
 docker rm $(docker ps -a -q)
 docker rmi $(docker images -q --filter "dangling=true")
 
-WriteMsg "Building login credentials"
-$Cmd = 'aws'
-$Args = 'ecr', 'get-login'
-
-$LoginID = &$Cmd $Args
-$LoginID = $LoginID -replace "-e none", " "
-
-Write-Output $LoginID
-
 WriteMsg "Logging in to image host"
-Invoke-Expression $LoginID
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
 WriteMsg "Pulling service images"
 docker-compose pull

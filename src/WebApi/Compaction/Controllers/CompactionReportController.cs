@@ -210,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(reportRequest) as CompactionReportResult
       );
     }
-    
+
     private async Task<UserPreferenceData> GetUserPreferences()
     {
       var userPreferences = await prefProxy.GetUserPreferences(this.CustomHeaders);

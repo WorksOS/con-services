@@ -88,6 +88,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>CMV summary</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/cmv/summary")]
     [Route("api/v2/compaction/cmv/summary")]
     [HttpGet]
     public async Task<CompactionCmvSummaryResult> GetCmvSummary(
@@ -127,6 +128,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// when the filter layer method is OffsetFromDesign or OffsetFromProfile.
     /// <returns>MDP summary</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/mdp/summary")]
     [Route("api/v2/compaction/mdp/summary")]
     [HttpGet]
     public async Task<CompactionMdpSummaryResult> GetMdpSummary(
@@ -172,6 +174,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>Pass count summary</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/passcounts/summary")]
     [Route("api/v2/compaction/passcounts/summary")]
     [HttpGet]
     public async Task<CompactionPassCountSummaryResult> GetPassCountSummary(
@@ -210,6 +213,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>Temperature summary</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/temperature/summary")]
     [Route("api/v2/compaction/temperature/summary")]
     [HttpGet]
     public async Task<CompactionTemperatureSummaryResult> GetTemperatureSummary(
@@ -255,6 +259,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>Speed summary</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/speed/summary")]
     [Route("api/v2/compaction/speed/summary")]
     [HttpGet]
     public async Task<CompactionSpeedSummaryResult> GetSpeedSummary(
@@ -300,6 +305,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>CMV % change</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/cmv/percentchange")]
     [Route("api/v2/compaction/cmv/percentchange")]
     [HttpGet]
     public async Task<CompactionCmvPercentChangeResult> GetCmvPercentChange(
@@ -357,6 +363,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="baseUid">The Uid for the base surface, either a filter or design.</param>
     /// <param name="topUid">The Uid for the top surface, either a filter or design.</param>
     [ProjectUidVerifier]
+    [Route("api/v2/volumes/summary")]
     [Route("api/v2/compaction/volumes/summary")]
     [HttpGet]
     public async Task<CompactionSummaryVolumesResult> GetSummaryVolumes(
@@ -449,6 +456,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>CMV details</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/cmv/details")]
     [Route("api/v2/compaction/cmv/details")]
     [HttpGet]
     public async Task<CompactionCmvDetailedResult> GetCmvDetails(
@@ -489,6 +497,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>Pass count details</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/passcounts/details")]
     [Route("api/v2/compaction/passcounts/details")]
     [HttpGet]
     public async Task<CompactionPassCountDetailedResult> GetPassCountDetails(
@@ -528,6 +537,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="cutfillDesignUid">Design UID</param>
     /// <returns>Cut-fill details</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/cutfill/details")]
     [Route("api/v2/compaction/cutfill/details")]
     [HttpGet]
     public async Task<CompactionCutFillDetailedResult> GetCutFillDetails(

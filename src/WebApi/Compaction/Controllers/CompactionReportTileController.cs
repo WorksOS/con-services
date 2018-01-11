@@ -1,23 +1,22 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using System.IO;
-using Microsoft.AspNetCore.Mvc.Internal;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.MapHandling;
@@ -35,11 +34,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Logger for logging
     /// </summary>
     private readonly ILogger log;
-
-    /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory logger;
 
     /// <summary>
     /// For retrieving user preferences
@@ -77,11 +71,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="requestFactory">The request factory.</param>
     public CompactionReportTileController(ILoggerFactory logger, IConfigurationStore configStore, IGeofenceProxy geofenceProxy,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator, 
-      IPreferenceProxy prefProxy, IProductionDataRequestFactory requestFactory) 
+      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator,
+      IPreferenceProxy prefProxy, IProductionDataRequestFactory requestFactory)
       : base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
-      this.logger = logger;
       this.log = logger.CreateLogger<CompactionDataController>();
       this.tileGenerator = tileGenerator;
       this.prefProxy = prefProxy;
@@ -107,6 +100,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
+    [Route("api/v2/reporttiles")]
     [Route("api/v2/compaction/reporttiles")]
     [HttpGet]
     public async Task<TileResult> GetReportTile(
@@ -149,6 +143,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
+    [Route("api/v2/reporttiles/png")]
     [Route("api/v2/compaction/reporttiles/png")]
     [HttpGet]
     public async Task<FileResult> GetReportTileRaw(
@@ -176,18 +171,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get the generated tile for the request
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="filterUid"></param>
-    /// <param name="cutFillDesignUid"></param>
-    /// <param name="volumeBaseUid"></param>
-    /// <param name="volumeTopUid"></param>
-    /// <param name="volumeCalcType"></param>
-    /// <param name="overlays"></param>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    /// <param name="mapType"></param>
-    /// <param name="mode"></param>
-    /// <returns></returns>
     private async Task<TileResult> GetGeneratedTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, Guid? volumeBaseUid, Guid? volumeTopUid, VolumeCalcType? volumeCalcType,
       TileOverlayType[] overlays, int width, int height, MapType? mapType, DisplayMode? mode)
     {
@@ -199,15 +182,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var designDescriptor = (!volumeCalcType.HasValue || volumeCalcType.Value == VolumeCalcType.None)
         ? cutFillDesign
         : sumVolParameters.Item3;
-      var dxfFiles = overlays.Contains(TileOverlayType.DxfLinework) 
-        ? await GetFilesOfType(projectUid, ImportedFileType.Linework) 
+      var dxfFiles = overlays.Contains(TileOverlayType.DxfLinework)
+        ? await GetFilesOfType(projectUid, ImportedFileType.Linework)
         : new List<FileData>();
       var alignmentDescriptors = overlays.Contains(TileOverlayType.Alignments)
         ? await GetAlignmentDescriptors(projectUid)
         : new List<DesignDescriptor>();
       var userPreferences = await GetUserPreferences();
-      var geofences = overlays.Contains(TileOverlayType.Geofences) 
-        ? await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders) 
+      var geofences = overlays.Contains(TileOverlayType.Geofences)
+        ? await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders)
         : new List<GeofenceData>();
 
       var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
@@ -271,7 +254,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get user preferences
     /// </summary>
-    /// <returns></returns>
     private async Task<UserPreferenceData> GetUserPreferences()
     {
       var userPreferences = await prefProxy.GetUserPreferences(CustomHeaders);
@@ -281,9 +263,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Failed to retrieve preferences for current user"));
       }
+
       return userPreferences;
     }
-
-
   }
 }

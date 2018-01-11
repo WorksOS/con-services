@@ -1,7 +1,6 @@
 ﻿Feature: Notification
  I should be able to request file notifications
 
-#@ignore
   Scenario: Notification Add DXF File - Good Request 
 	Given the Add File Notification service URI "/api/v2/notification/addfile"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
@@ -59,4 +58,3 @@
   And a fileUid "220e12e5-ce92-4645-8f01-1942a2d5a57f"
 	When I request Delete File Notification Expecting BadRequest
 	Then I should get error code -1 and message "Cannot delete a design surface used in a filter"
-	

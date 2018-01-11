@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -28,19 +27,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   public class CompactionPaletteController : BaseController
   {
     /// <summary>
-    /// Raptor client for use by executor
-    /// 
-    /// </summary>
-    private readonly IASNodeClient raptorClient;
-    /// <summary>
     /// Logger for logging
     /// </summary>
     private readonly ILogger log;
-
-    /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory logger;
 
     /// <summary>
     /// Proxy for getting elevation statistics from Raptor
@@ -50,7 +39,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
@@ -59,13 +47,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="settingsManager">Compaction settings manager</param>
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
-    public CompactionPaletteController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
-      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, 
-      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
+    public CompactionPaletteController(ILoggerFactory logger, IConfigurationStore configStore,
+      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy,
+      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
-      this.raptorClient = raptorClient;
-      this.logger = logger;
       log = logger.CreateLogger<CompactionPaletteController>();
       this.elevProxy = elevProxy;
     }
@@ -76,6 +62,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <returns>Color palettes for all display types</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/colorpalettes")]
     [Route("api/v2/compaction/colorpalettes")]
     [HttpGet]
     public async Task<CompactionColorPalettesResult> GetColorPalettes(
@@ -136,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             for (int i = 0; i < compactionPalette.Count; i++)
             {
               colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-                compactionPalette[i].value/10));//Raptor CMV is 10ths but return actual CMV to UI
+                compactionPalette[i].value / 10));//Raptor CMV is 10ths but return actual CMV to UI
             }
             cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
             break;
@@ -204,6 +191,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>Elevation color palette</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/elevationpalette")]
     [Route("api/v2/compaction/elevationpalette")]
     [HttpGet]
     public async Task<CompactionDetailPaletteResult> GetElevationPalette(
@@ -234,6 +222,5 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return CompactionDetailPaletteResult.CreateCompactionDetailPaletteResult(elevationPalette);
     }
-
   }
 }

@@ -74,8 +74,8 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 4
 this.ScenarioSetup(scenarioInfo);
 #line 5
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/cutfill/details\" for operation \"Cu" +
-                    "tFillDetails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/cutfill/details\" for operation \"CutFillDetail" +
+                    "s\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
 testRunner.And("the result file \"CompactionGetCutFillDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
@@ -121,8 +121,8 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
 #line 17
 this.ScenarioSetup(scenarioInfo);
 #line 18
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/cutfill/details\" for operation \"Cu" +
-                    "tFillDetails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/cutfill/details\" for operation \"CutFillDetail" +
+                    "s\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 19
 testRunner.And("the result file \"CompactionGetCutFillDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 20
