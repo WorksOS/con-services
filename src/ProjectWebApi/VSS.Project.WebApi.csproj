@@ -48,11 +48,11 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.2.*" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.3.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.12.*" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.5.*" />
-    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.3.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.16.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.6.*" />
+    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.4.*" />
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
