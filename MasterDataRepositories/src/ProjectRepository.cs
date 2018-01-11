@@ -750,9 +750,9 @@ namespace VSS.MasterData.Repositories
           log.LogDebug(
             $"ProjectRepository/UpdateImportedFile: updated {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
+          await UpsertImportedFileHistory(importedFile);
           return upsertedCount;
         }
-        await UpsertImportedFileHistory(importedFile);
 
         log.LogDebug(
           $"ProjectRepository/UpdateImportedFile: old update event ignored importedFile {importedFile.ImportedFileUid}");
@@ -769,15 +769,14 @@ namespace VSS.MasterData.Repositories
 
     private async Task UpsertImportedFileHistory(ImportedFile importedFile)
     {
-      var importedFileUpsert = await QueryWithAsyncPolicy<ImportedFileUpsert>
+      var importedFileUpsert = (await QueryWithAsyncPolicy<ImportedFileUpsert>
       (@"SELECT 
-            fk_ImportedFileUID AS ImportedFileUid, FileCreatedUTC, FileUpdatedUTC, 
-            ImportedBy, UserID
+            fk_ImportedFileUID AS ImportedFileUid, FileCreatedUTC, FileUpdatedUTC, ImportedBy
           FROM ImportedFileHistory
             WHERE fk_ImportedFileUID = @importedFileUid
               AND FileUpdatedUTC = @fileUpdatedUtc",
         new { importedFileUid = importedFile.ImportedFileUid, fileUpdatedUtc = importedFile.FileCreatedUtc }
-      );
+      )).FirstOrDefault();
 
       if (importedFileUpsert == null)
       {
@@ -1243,7 +1242,6 @@ namespace VSS.MasterData.Repositories
         new {projectUid}
       )).ToList();
 
-      // todo do this (above and below) with ONE read i.e. included in above
       foreach (var importedFile in importedFileList)
       {
         importedFile.ImportedFileHistory = await GetImportedFileHistory(importedFile);
@@ -1254,30 +1252,14 @@ namespace VSS.MasterData.Repositories
 
     private async Task<ImportedFileHistory> GetImportedFileHistory(ImportedFile importedFile)
     {
-      var importedFileHistoryList = (await QueryWithAsyncPolicy<ImportedFileUpsert>
-      (@"SELECT 
-            fk_ImportedFileUID AS ImportedFileUid, FileCreatedUTC, FileUpdatedUTC, 
-            ImportedBy, UserID
-          FROM ImportedFileHistory
-            WHERE fk_ImportedFileUID = @importedFileUid",
-        new {importedFileUid = importedFile.ImportedFileUid}
-      )).ToList();
-      var importedFileUpsertList = new List<ImportedFileUpsert>() { };
-
-      // todo automapper
-      foreach (var importedFileUpsert in importedFileHistoryList)
-      {
-        importedFileUpsertList.Add(new ImportedFileUpsert()
-          {
-            ImportedFileUid = importedFile.ImportedFileUid,
-            FileCreatedUtc = importedFileUpsert.FileCreatedUtc,
-            FileUpdatedUtc = importedFileUpsert.FileUpdatedUtc,
-            ImportedBy = importedFileUpsert.ImportedBy,
-            UserID = importedFileUpsert.UserID
-          }
-        );
-      }
-      return new ImportedFileHistory(importedFileUpsertList);
+       return new ImportedFileHistory((await QueryWithAsyncPolicy<ImportedFileUpsert>
+        (@"SELECT 
+              fk_ImportedFileUID AS ImportedFileUid, FileCreatedUTC, FileUpdatedUTC, ImportedBy
+            FROM ImportedFileHistory
+              WHERE fk_ImportedFileUID = @importedFileUid
+              ORDER BY FileUpdatedUTC",
+          new {importedFileUid = importedFile.ImportedFileUid}
+        )).ToList());
     }
 
     public async Task<ImportedFile> GetImportedFile(string importedFileUid)

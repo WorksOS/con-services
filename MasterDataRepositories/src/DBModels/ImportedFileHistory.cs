@@ -25,12 +25,7 @@ namespace VSS.MasterData.Repositories.DBModels
 
       for (int i = 0; i < otherImportedFileHistory.ImportedFileUpsertList.Count; i++)
       {
-        // todo do this with the ImportedFileUpsert
-        bool isOk = true;
-        isOk = otherImportedFileHistory.ImportedFileUpsertList[i].ImportedFileUid == ImportedFileUpsertList[i].ImportedFileUid
-               && otherImportedFileHistory.ImportedFileUpsertList[i].FileCreatedUtc == ImportedFileUpsertList[i].FileCreatedUtc
-               && otherImportedFileHistory.ImportedFileUpsertList[i].FileUpdatedUtc == ImportedFileUpsertList[i].FileUpdatedUtc
-               && otherImportedFileHistory.ImportedFileUpsertList[i].ImportedBy == ImportedFileUpsertList[i].ImportedBy;
+        bool isOk = ImportedFileUpsertList[i].Equals(otherImportedFileHistory.ImportedFileUpsertList[i]);
         if (isOk == false)
           return false;
       }
@@ -52,9 +47,6 @@ namespace VSS.MasterData.Repositories.DBModels
     // if UserID is an an ApplicationContext name we don't be able to obtain email from UserUID
     public string ImportedBy { get; set; }
 
-    // may contain an ApplicationContext name or UserGuid
-    public string UserID { get; set; }
-
     public override bool Equals(object obj)
     {
       var otherImportedFileImport = obj as ImportedFileUpsert;
@@ -62,8 +54,7 @@ namespace VSS.MasterData.Repositories.DBModels
       return otherImportedFileImport.ImportedFileUid == ImportedFileUid
              && otherImportedFileImport.FileCreatedUtc == FileCreatedUtc
              && otherImportedFileImport.FileUpdatedUtc == FileUpdatedUtc
-             && otherImportedFileImport.ImportedBy == ImportedBy
-             && otherImportedFileImport.UserID == UserID; 
+             && otherImportedFileImport.ImportedBy == ImportedBy; 
     }
 
     public override int GetHashCode()
