@@ -2,10 +2,23 @@
 #   [Parameter(Mandatory=$true)][string]$CONTAINER_NAME
 # )
 
+#Sleep for a second make sure previous script is completed writing files
+Start-Sleep -Seconds 1
 foreach($line in Get-Content .\container.txt) {
     if($line -match "\w*_webapi_\w*"){
         $CONTAINER_NAME = $line
         break
+    }
+}
+
+if ($CONTAINER_NAME.length -lt 1) {
+    Write-Host "Did not read container name successfully, retrying in 5 seconds..."
+    Start-Sleep 5
+    foreach($line in Get-Content .\container.txt) {
+        if($line -match "\w*_webapi_\w*"){
+            $CONTAINER_NAME = $line
+            break
+        }
     }
 }
 
@@ -15,9 +28,9 @@ PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP $IP_A
 
 # $? is true if last command was a success, false otherwise
 if (!$?) {
-    "NO IP ADRESS SET"
+    "NO IP ADRESS SET, attempting again in 10 seconds..."
     docker ps -a
-    ping 0.0.0.0 -n 10
+    Start-Sleep -Seconds 10
     $IP_ADDRESS = docker inspect --format "{{ .NetworkSettings.Networks.nat.IPAddress }}" $CONTAINER_NAME
     PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP $IP_ADDRESS   
 }
