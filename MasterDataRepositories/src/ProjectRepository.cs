@@ -1242,24 +1242,17 @@ namespace VSS.MasterData.Repositories
         new {projectUid}
       )).ToList();
 
+      var historyAllFiles = await GetImportedFileHistory(projectUid);
       foreach (var importedFile in importedFileList)
       {
-        importedFile.ImportedFileHistory = await GetImportedFileHistory(importedFile);
+        var historyOne = historyAllFiles.FindAll(x => x.ImportedFileUid == importedFile.ImportedFileUid);
+        if (historyOne.Any())
+        {
+          importedFile.ImportedFileHistory = new ImportedFileHistory(historyOne);
+        }
       }
 
       return importedFileList;
-    }
-
-    private async Task<ImportedFileHistory> GetImportedFileHistory(ImportedFile importedFile)
-    {
-       return new ImportedFileHistory((await QueryWithAsyncPolicy<ImportedFileUpsert>
-        (@"SELECT 
-              fk_ImportedFileUID AS ImportedFileUid, FileCreatedUTC, FileUpdatedUTC, ImportedBy
-            FROM ImportedFileHistory
-              WHERE fk_ImportedFileUID = @importedFileUid
-              ORDER BY FileUpdatedUTC",
-          new {importedFileUid = importedFile.ImportedFileUid}
-        )).ToList());
     }
 
     public async Task<ImportedFile> GetImportedFile(string importedFileUid)
@@ -1276,9 +1269,28 @@ namespace VSS.MasterData.Repositories
 
       if (importedFile != null)
       {
-        importedFile.ImportedFileHistory = await GetImportedFileHistory(importedFile);
+        var historyAllFiles = await GetImportedFileHistory(importedFile.ProjectUid, importedFileUid);
+        if (historyAllFiles.Any())
+        {
+          importedFile.ImportedFileHistory = new ImportedFileHistory(historyAllFiles);
+        }
       }
       return importedFile;
+    }
+
+    private async Task<List<ImportedFileUpsert>> GetImportedFileHistory(string projectUid, string importedFileUid = null)
+    {
+      return (await QueryWithAsyncPolicy<ImportedFileUpsert>
+      (@"SELECT 
+              ImportedFileUID, ifh.FileCreatedUTC, ifh.FileUpdatedUTC, ifh.ImportedBy
+            FROM ImportedFile iff
+              INNER JOIN ImportedFileHistory ifh ON ifh.fk_ImportedFileUID = iff.ImportedFileUID
+            WHERE fk_ProjectUID = @projectUid
+              AND IsDeleted = 0
+              AND (@importedFileUid IS NULL OR ImportedFileUID = @importedFileUid)
+            ORDER BY ImportedFileUID, ifh.FileUpdatedUTC",
+        new { projectUid, importedFileUid }
+      )).ToList();
     }
 
     #endregion gettersImportedFiles
