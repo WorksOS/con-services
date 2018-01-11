@@ -8,13 +8,11 @@ docker rmi vssproductivity3dscheduler_schema
 docker rmi vssproductivity3dscheduler_webapi
 docker rmi vssproductivity3dscheduler_accepttest
 
-$Cmd = 'aws'
-$Args = 'ecr', 'get-login', '--profile', 'vss-grant'
+Write-Host "Logging in to image host" -ForegroundColor "darkgray"
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
-$LoginID = &$Cmd $Args
-
-$LoginID = $LoginID -replace "-e none", " "
-Write $LoginID
-Invoke-Expression $LoginID
-
+Write-Host "Executing local testing script..." -ForegroundColor "darkgray"
 & .\RunLocalTesting.bat
+
+Write-Host "Finished." -ForegroundColor "darkgray"
+[Console]::ResetColor()
