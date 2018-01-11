@@ -60,8 +60,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
               iff.LastActionedUTC			        
             FROM ImportedFile iff
 				      INNER JOIN Project p ON p.ProjectUID = iff.fk_ProjectUID
-              INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-            WHERE fk_ImportedFileTypeID = 2";
+              INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID";
 
       string selectCustomerProjectCommand =
         @"SELECT 

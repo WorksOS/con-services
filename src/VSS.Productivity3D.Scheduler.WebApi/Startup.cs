@@ -16,6 +16,8 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
+using VSS.TCCFileAccess;
+using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 
 
 namespace VSS.Productivity3D.Scheduler.WebApi
@@ -111,6 +113,9 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
+      services.AddTransient<IFileRepository, FileRepository>();
+      services.AddTransient<IImportedFileProxy, ImportedFileProxy>();
+      services.AddTransient<IVetaExportJob, VetaExportJob>();
       _serviceCollection = services;
     }
 
@@ -135,6 +140,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var log = logger.CreateLogger<Startup>();
       var raptorProxy = _serviceProvider.GetRequiredService<IRaptorProxy>();
       var tPaasProxy = _serviceProvider.GetRequiredService<ITPaasProxy>();
+      var impFileProxy = _serviceProvider.GetRequiredService<IImportedFileProxy>();
+      var fileRepo = _serviceProvider.GetRequiredService<IFileRepository>();
 
       try
       {
@@ -211,7 +218,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         if (filterCleanupTaskToRun)
           Thread.Sleep(2000);
 
-        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(configStore, loggerFactory, raptorProxy, tPaasProxy);
+        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(configStore, loggerFactory, raptorProxy, tPaasProxy, impFileProxy, fileRepo);
         importedProjectFileSyncTask.AddTask();
         expectedJobCount += 1;
       }

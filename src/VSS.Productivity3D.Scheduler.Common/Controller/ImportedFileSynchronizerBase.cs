@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -7,9 +8,12 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
+using VSS.FlowJSHandler;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
+using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Scheduler.Common.Controller
@@ -22,26 +26,28 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     protected string FileSpaceId;
     protected IRaptorProxy RaptorProxy;
     protected ITPaasProxy TPaasProxy;
+    protected IImportedFileProxy ImpFileProxy;
+    protected IFileRepository FileRepo;
 
     public static DateTime _lastTPaasTokenObtainedUtc;
     public static string _3DPmSchedulerBearerToken;
 
     private readonly int _refreshPeriodMinutes = 480;
     private readonly string _3DPmSchedulerConsumerKeys = null;
+    private string TemporaryDownloadFolder = null;
 
     /// <summary>
     /// </summary>
-    /// <param name="configStore"></param>
-    /// <param name="logger"></param>
-    /// <param name="raptorProxy"></param>
     public ImportedFileSynchronizerBase(IConfigurationStore configStore, ILoggerFactory logger,
-      IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy)
+      IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy, IImportedFileProxy impFileProxy, IFileRepository fileRepo)
     {
       ConfigStore = configStore;
       Logger = logger;
       Log = logger.CreateLogger<ImportedFileSynchronizerBase>();
       RaptorProxy = raptorProxy;
       TPaasProxy = tPaasProxy;
+      ImpFileProxy = impFileProxy;
+      FileRepo = fileRepo;
 
       FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(FileSpaceId))
@@ -62,6 +68,17 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         throw new InvalidOperationException(
           "ImportedFileSynchroniser missing from environment variables:3DPMSCHEDULER_CONSUMER_KEYS");
       }
+
+      TemporaryDownloadFolder = ConfigStore.GetValueString("DOWNLOAD_FOLDER");
+      if (string.IsNullOrEmpty(TemporaryDownloadFolder))
+      {
+        var errorString = "Your application is missing an environment variable DOWNLOAD_FOLDER";
+        Log.LogError(errorString);
+        throw new InvalidOperationException(errorString);
+      }
+      if (!TemporaryDownloadFolder.EndsWith("/"))
+        TemporaryDownloadFolder += "/";
+
       Log.LogInformation($"ImportedFileSynchronizerBase: FileSpaceId: {FileSpaceId} _refreshPeriodMinutes: {_refreshPeriodMinutes}  _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _3DPmSchedulerBearerToken: {_3DPmSchedulerBearerToken} _3DPmSchedulerConsumerKeys: {_3DPmSchedulerConsumerKeys}");
       //Console.WriteLine($"ImportedFileSynchronizerBase: (console temp)  FileSpaceId: {FileSpaceId} _refreshPeriodMinutes: {_refreshPeriodMinutes}  _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _3DPmSchedulerBearerToken: {_3DPmSchedulerBearerToken} _3DPmSchedulerConsumerKeys: {_3DPmSchedulerConsumerKeys}");
     }
@@ -252,5 +269,185 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       //Console.WriteLine($"ImportedFileSynchroniser: Get3dPmSchedulerBearerToken() (console temp)  Using bearer token: {_3DPmSchedulerBearerToken}");
       return _3DPmSchedulerBearerToken;
     }
+
+    /// <summary>
+    /// Downloads a file from TCC, saves it to a temporary folder then calls the project web api
+    /// to import it into Project.
+    /// </summary>
+    /// <param name="projectEvent"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    protected async Task DownloadFileAndCallProjectWebApi(ImportedFileProject projectEvent, WebApiAction action)
+    {
+      //TODO: If performance is a problem then may need to add 'Copy' command to TCCFileAccess 
+      //and use it here to directly copy file from old to new structure in TCC.
+
+      Log.LogInformation($"ImportedFileSynchroniser: DownloadFileAndCallProjectWebApi");
+
+      var fileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(projectEvent.FileDescriptor);
+      if (await DownloadFileAndSaveToTemp(fileDescriptor))
+      {
+        await CallProjectWebApi(projectEvent, action, fileDescriptor).ConfigureAwait(false);
+ 
+        try
+        {
+          //Clean up - delete downloaded file
+          Log.LogInformation($"ImportedFileSynchroniser: Deleting temporaty file {FullTemporaryFileName(fileDescriptor)}");
+          File.Delete(FullTemporaryFileName(fileDescriptor));
+        }
+        catch (Exception)
+        {
+          //We don't care really
+        }
+   
+      }
+    }
+
+    /// <summary>
+    /// Call the project web api to import the file.
+    /// </summary>
+    /// <param name="projectEvent"></param>
+    /// <param name="action"></param>
+    /// <param name="fileDescriptor"></param>
+    /// <returns></returns>
+    protected async Task CallProjectWebApi(ImportedFileProject projectEvent, WebApiAction action, FileDescriptor fileDescriptor)
+    {
+      string errorMessage = null;
+
+      var startUtc = DateTime.UtcNow;
+      string fullName = FullTemporaryFileName(fileDescriptor);
+      if (action == WebApiAction.Deleting)
+      {
+        //Remove temporary download folder part of the path
+        fullName = fullName.Substring(TemporaryDownloadFolder.Length);
+      }
+      var projectUid = Guid.Parse(projectEvent.ProjectUid);
+      var customHeaders = await GetCustomHeaders(projectEvent.CustomerUid);
+      try
+      {
+        Log.LogInformation($"ImportedFileSynchroniser: Calling project web api {fullName}");
+        BaseDataResult result = null;
+        switch (action)
+        {
+          case WebApiAction.Creating:
+           result = await ImpFileProxy.CreateImportedFile(
+              new FlowFile { flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path) },
+              projectUid, projectEvent.ImportedFileType,
+              projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType,
+              projectEvent.SurveyedUtc,
+              customHeaders).ConfigureAwait(false);
+            break;
+          case WebApiAction.Updating:
+            result = await ImpFileProxy.UpdateImportedFile(new FlowFile { flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path) },
+              projectUid, projectEvent.ImportedFileType,
+              projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
+              customHeaders).ConfigureAwait(false);
+            break;
+          case WebApiAction.Deleting:
+            result = await ImpFileProxy.DeleteImportedFile(projectUid, Guid.Parse(projectEvent.ImportedFileUid),
+              customHeaders).ConfigureAwait(false);
+            break;
+        }
+        if (result.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        {
+          errorMessage = $"CallProjectWebApi call failed with result code {result.Code} and message {result.Message}";
+        }
+      }
+      catch (Exception e)
+      {
+        errorMessage = $"CallProjectWebApi call failed with exception {e.Message}"; 
+      }
+      if (!string.IsNullOrEmpty(errorMessage))
+      {
+        var newRelicAttributes = new Dictionary<string, object> {
+          { "message", errorMessage},
+          { "customHeaders", JsonConvert.SerializeObject(customHeaders)},
+          { "action", action},
+          { "fullFileName", fullName}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
+      }
+    }
+
+    /// <summary>
+    /// Tries to download a file from TCC and saves it to a temporary location
+    /// </summary>
+    private async Task<bool> DownloadFileAndSaveToTemp(FileDescriptor fileDescriptor)
+    {
+      var startUtc = DateTime.UtcNow;
+      var result = false;
+      var fullFileName = $"{fileDescriptor.path}/{fileDescriptor.fileName}";
+      Log.LogInformation($"ImportedFileSynchroniser: DownloadFileAndSaveToTemp {fullFileName}");
+
+      if (await FileRepo.FileExists(fileDescriptor.filespaceId, fullFileName))
+      {
+        using (Stream inStream = await FileRepo.GetFile(fileDescriptor.filespaceId, fullFileName))
+        {
+          if (inStream.Length > 0)
+          {
+            inStream.Position = 0;
+
+            try
+            {
+              Log.LogInformation($"ImportedFileSynchroniser: Saving to temporary file {fullFileName}");
+
+              var path = FullTemporaryPath(fileDescriptor.path);
+              DirectoryInfo dirInfo = new DirectoryInfo(path);
+              if (!dirInfo.Exists)
+              {
+                try
+                {
+                  dirInfo.Create();
+                }
+                catch (Exception e)
+                {
+                  Log.LogWarning($"Failed to create temporary download folder {path}: {e.Message}");
+                  throw;
+                }
+              }
+
+              using (Stream outStream = File.Create($"{FullTemporaryFileName(fileDescriptor)}"))
+              {
+                inStream.CopyTo(outStream);
+                result = true;
+              }
+            }
+            catch (Exception e)
+            {
+              var message = string.Format($"DownloadFileAndSaveToTemp call failed with exception {e.Message}");
+              var newRelicAttributes = new Dictionary<string, object> {
+                { "message", message},
+                { "fullTemporaryFileName", FullTemporaryFileName(fileDescriptor)}
+              };
+              NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
+            }
+          }
+        }
+      }
+      else
+      {
+        Log.LogWarning($"ImportedFileSynchroniser: DownloadFileAndSaveToTemp {fullFileName} not found!");
+      }
+      Log.LogInformation($"ImportedFileSynchroniser: DownloadFileAndSaveToTemp returning {result} for {fullFileName} ");
+
+      return result;
+    }
+
+    private string FullTemporaryPath(string filePath)
+    {
+      return $"{TemporaryDownloadFolder}{filePath}";
+    }
+    private string FullTemporaryFileName(FileDescriptor fileDescriptor)
+    {
+      return $"{FullTemporaryPath(fileDescriptor.path)}/{fileDescriptor.fileName}";
+    }
+
+    protected enum WebApiAction
+    {
+      Creating,
+      Updating,
+      Deleting
+    }
+
   }
 }

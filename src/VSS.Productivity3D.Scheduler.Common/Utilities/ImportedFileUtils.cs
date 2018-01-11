@@ -18,12 +18,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
     }
 
     public static string RemoveSurveyedUtcFromName(string name)
-    {
+    {     
       var shortFileName = Path.GetFileNameWithoutExtension(name);
       var format = "yyyy-MM-ddTHHmmssZ";
       if (shortFileName.Length <= format.Length)
         return name;
-      return shortFileName.Substring(0, shortFileName.Length - format.Length - 1) + Path.GetExtension(name);
+      return shortFileName.Substring(0, shortFileName.Length - format.Length-1) + Path.GetExtension(name);     
     }
 
     /// <summary>

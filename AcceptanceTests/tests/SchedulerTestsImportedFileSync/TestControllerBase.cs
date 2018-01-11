@@ -15,6 +15,7 @@ using MySql.Data.MySqlClient;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Models;
+using VSS.TCCFileAccess;
 
 namespace SchedulerTestsImportedFileSync
 {
@@ -27,6 +28,8 @@ namespace SchedulerTestsImportedFileSync
     protected string FileSpaceId;
     protected IRaptorProxy RaptorProxy;
     protected ITPaasProxy TPaasProxy;
+    protected IImportedFileProxy ImpFileProxy;
+    protected IFileRepository FileRepo;
 
     protected void SetupDi()
     {
@@ -59,6 +62,8 @@ namespace SchedulerTestsImportedFileSync
 
       RaptorProxy = new RaptorProxy(ConfigStore, LoggerFactory);
       TPaasProxy = new TPaasProxy(ConfigStore, LoggerFactory);
+      ImpFileProxy = new ImportedFileProxy(ConfigStore, LoggerFactory);
+      FileRepo = new FileRepository(ConfigStore, LoggerFactory);
 
       Assert.IsNotNull(ServiceProvider.GetService<IConfigurationStore>());
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
@@ -154,9 +159,9 @@ namespace SchedulerTestsImportedFileSync
       return enumerable.Any();
     }
 
-    protected int WriteNhOpDbImportedFileAndHistory(string projectDbConnectionString, ImportedFileNhOp importedFile)
+    protected int WriteNhOpDbImportedFileAndHistory(string nhOpDbConnectionString, ImportedFileNhOp importedFile)
     {
-      var dbConnection = new SqlConnection(projectDbConnectionString);
+      var dbConnection = new SqlConnection(nhOpDbConnectionString);
       dbConnection.Open();
 
       int insertedCount = 0;
@@ -186,9 +191,9 @@ namespace SchedulerTestsImportedFileSync
       return insertedCount;
     }
 
-    protected int WriteNhOpDbCustomerAndProject(string projectDbConnectionString, ImportedFileNhOp importedFile)
+    protected int WriteNhOpDbCustomerAndProject(string nhOpDbConnectionString, ImportedFileNhOp importedFile)
     {
-      var dbConnection = new SqlConnection(projectDbConnectionString);
+      var dbConnection = new SqlConnection(nhOpDbConnectionString);
       dbConnection.Open();
 
       int insertedCount = 0;
@@ -217,6 +222,23 @@ namespace SchedulerTestsImportedFileSync
 
       dbConnection.Close();
       return insertedCount;
+    }
+
+    protected bool NhOpDbCustomerAndProjectExists(string nhOpDbConnectionString, long legacyCustomerId, long legacyProjectId)
+    {
+      var dbConnection = new SqlConnection(nhOpDbConnectionString);
+      dbConnection.Open();
+
+      var customerId = dbConnection.QuerySingleOrDefault<long>(
+        @"SELECT ID FROM Customer WHERE ID = @legacyCustomerId",
+        new { legacyCustomerId });
+
+      var projectId = dbConnection.QuerySingleOrDefault<long>(
+        @"SELECT ID FROM Project WHERE ID = @legacyProjectId",
+        new { legacyProjectId });
+
+      dbConnection.Close();
+      return customerId > 0 && projectId > 0;
     }
   }
 }

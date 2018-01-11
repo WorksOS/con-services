@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.WebApi.Local", "src\VSS.Productivity3D.Scheduler.WebApi\VSS.Productivity3D.Scheduler.WebApi.Local.csproj", "{83DB814B-A818-4E94-9C8F-9CE14608273A}"
 EndProject
@@ -22,6 +22,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies.Local", "..\MerinoSandbox\MasterDataProxies\src\VSS.MasterData.Proxies.Local.csproj", "{5FACA21D-9630-49FF-BD14-B3D50231FF0A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.Local", "..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj", "{3FA3D9C5-74A8-41FE-A9D7-F29B8E2A8724}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.FlowJSHandler", "..\MerinoSandbox\FlowJSMVC\src\VSS.FlowJSHandler.csproj", "{20B69B5C-57C1-402E-8D53-1BA60E8F24B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess.Local", "..\MerinoSandbox\TCCFileAccess\src\VSS.TCCFileAccess.Local.csproj", "{14FFD7D2-8E78-4F5D-9461-2762A36831DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,8 +69,24 @@ Global
 		{3FA3D9C5-74A8-41FE-A9D7-F29B8E2A8724}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FA3D9C5-74A8-41FE-A9D7-F29B8E2A8724}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FA3D9C5-74A8-41FE-A9D7-F29B8E2A8724}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B13D10C-7210-456B-B5D3-1D48ED7576D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B13D10C-7210-456B-B5D3-1D48ED7576D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B13D10C-7210-456B-B5D3-1D48ED7576D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B13D10C-7210-456B-B5D3-1D48ED7576D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14FFD7D2-8E78-4F5D-9461-2762A36831DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14FFD7D2-8E78-4F5D-9461-2762A36831DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14FFD7D2-8E78-4F5D-9461-2762A36831DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14FFD7D2-8E78-4F5D-9461-2762A36831DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20B69B5C-57C1-402E-8D53-1BA60E8F24B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20B69B5C-57C1-402E-8D53-1BA60E8F24B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20B69B5C-57C1-402E-8D53-1BA60E8F24B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20B69B5C-57C1-402E-8D53-1BA60E8F24B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CAAAF383-A48E-43CA-91BF-9FC493381E47}
+		SolutionGuid = {BC05ED29-4BBD-42CF-A35E-C9B136961ADB}
 	EndGlobalSection
 EndGlobal
