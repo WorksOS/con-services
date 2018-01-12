@@ -110,12 +110,8 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
 
-          if (!requireCustomerUid)
-            await this._next.Invoke(context);
-          else if (context.Request.Method == HttpMethod.Get.Method)
-            await this._next.Invoke(context);
-          else
-            this.ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 60);
+          await this._next.Invoke(context);
+ 
           return;
         }
 
