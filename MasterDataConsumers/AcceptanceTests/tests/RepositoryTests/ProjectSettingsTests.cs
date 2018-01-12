@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RepositoryTests.Internal;
 using System;
+using System.Linq;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -27,45 +28,18 @@ namespace RepositoryTests
     ///   setting doesn't exist already.
     /// </summary>
     [TestMethod]
-    public void UpsertProjectSettings_NotExisting()
+    public void CreateProjectSettings_DoesntExist()
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectUid = Guid.NewGuid();
-      string settings = @"<ProjectSettings>  
-        < CompactionSettings >
-        < OverrideTargetCMV > false </ OverrideTargetCMV >
-        < OverrideTargetCMVValue > 50 </ OverrideTargetCMVValue >
-        < MinTargetCMVPercent > 80 </ MinTargetCMVPercent >
-        < MaxTargetCMVPercent > 130 </ MaxTargetCMVPercent >
-        < OverrideTargetPassCount > false </ OverrideTargetPassCount >
-        < OverrideTargetPassCountValue > 5 </ OverrideTargetPassCountValue >
-        < OverrideTargetLiftThickness > false </ OverrideTargetLiftThickness >
-        < OverrideTargetLiftThicknessMeters > 0.5 </ OverrideTargetLiftThicknessMeters >
-        < CompactedLiftThickness > true </ CompactedLiftThickness >
-        < ShowCCVSummaryTopLayerOnly > true </ ShowCCVSummaryTopLayerOnly >
-        < FirstPassThickness > 0 </ FirstPassThickness >
-        < OverrideTemperatureRange > false </ OverrideTemperatureRange >
-        < MinTemperatureRange > 65 </ MinTemperatureRange >
-        < MaxTemperatureRange > 175 </ MaxTemperatureRange >
-        < OverrideTargetMDP > false </ OverrideTargetMDP >
-        < OverrideTargetMDPValue > 50 </ OverrideTargetMDPValue >
-        < MinTargetMDPPercent > 80 </ MinTargetMDPPercent >
-        < MaxTargetMDPPercent > 130 </ MaxTargetMDPPercent >
-        < ShowMDPSummaryTopLayerOnly > true </ ShowMDPSummaryTopLayerOnly >
-        </ CompactionSettings >
-        < VolumeSettings >
-        < ApplyShrinkageAndBulking > false </ ApplyShrinkageAndBulking >
-        < PercentShrinkage > 0 </ PercentShrinkage >
-        < PercentBulking > 0 </ PercentBulking >
-        < NoChangeTolerance > 0.02 </ NoChangeTolerance >
-        </ VolumeSettings >
-        < ExpiryPromptDismissed > false </ ExpiryPromptDismissed >
-        </ ProjectSettings > ";
+      string settings = TargetJsonString;
 
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
         ProjectUID = projectUid,
+        ProjectSettingsType = ProjectSettingsType.Targets,
         Settings = settings,
+        UserID = Guid.NewGuid().ToString(),
         ActionUTC = actionUTC
       };
       
@@ -73,11 +47,33 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "ProjectSettings event not written");
 
-      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString());
+      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve settings from projectRepo");
-      Assert.AreEqual(projectUid.ToString(), g.Result.ProjectUid, "projectUid is incorrect from projectRepo");
-      Assert.AreEqual(settings, g.Result.Settings, "settings is incorrect from projectRepo");
+
+      var projectSettingsList = g.Result.ToList();
+      Assert.AreEqual(1, projectSettingsList.Count(), "Should be 1 and only 1 projectSetting");
+      Assert.AreEqual(projectUid.ToString(), projectSettingsList[0].ProjectUid, "projectUid is incorrect from projectRepo");
+      Assert.AreEqual(createProjectSettingsEvent.ProjectSettingsType, projectSettingsList[0].ProjectSettingsType, "type is incorrect from projectRepo");
+      Assert.AreEqual(settings, projectSettingsList[0].Settings, "settings is incorrect from projectRepo");
+      Assert.AreEqual(createProjectSettingsEvent.UserID, projectSettingsList[0].UserID, "UserID is incorrect from projectRepo");
+
+      var single = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Targets);
+      single.Wait();
+      Assert.IsNotNull(single.Result, "Unable to retrieve individual settings from projectRepo");
+      
+      Assert.AreEqual(projectUid.ToString(), single.Result.ProjectUid, "projectUid is incorrect from projectRepo");
+      Assert.AreEqual(createProjectSettingsEvent.ProjectSettingsType, single.Result.ProjectSettingsType, "type is incorrect from projectRepo");
+      Assert.AreEqual(settings, single.Result.Settings, "settings is incorrect from projectRepo");
+      Assert.AreEqual(createProjectSettingsEvent.UserID, single.Result.UserID, "UserID is incorrect from projectRepo");
+
+      single = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Unknown);
+      single.Wait();
+      Assert.IsNull(single.Result, "Should be no unknown settings from projectRepo");
+
+      single = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.ImportedFiles);
+      single.Wait();
+      Assert.IsNull(single.Result, "Should be no ImportedFiles settings from projectRepo");
     }
 
     /// <summary>
@@ -85,54 +81,29 @@ namespace RepositoryTests
     ///   settings exist already for the project
     /// </summary>
     [TestMethod]
-    public void UpsertProjectSettings_UpdateExisting()
+    public void UpsertProjectSettings_Exists()
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectUid = Guid.NewGuid();
       string settings = @"<ProjectSettings>  
         </ ProjectSettings > ";
-      string settingsupdated = @"<ProjectSettings>  
-        < CompactionSettings >
-        < OverrideTargetCMV > false </ OverrideTargetCMV >
-        < OverrideTargetCMVValue > 50 </ OverrideTargetCMVValue >
-        < MinTargetCMVPercent > 80 </ MinTargetCMVPercent >
-        < MaxTargetCMVPercent > 130 </ MaxTargetCMVPercent >
-        < OverrideTargetPassCount > false </ OverrideTargetPassCount >
-        < OverrideTargetPassCountValue > 5 </ OverrideTargetPassCountValue >
-        < OverrideTargetLiftThickness > false </ OverrideTargetLiftThickness >
-        < OverrideTargetLiftThicknessMeters > 0.5 </ OverrideTargetLiftThicknessMeters >
-        < CompactedLiftThickness > true </ CompactedLiftThickness >
-        < ShowCCVSummaryTopLayerOnly > true </ ShowCCVSummaryTopLayerOnly >
-        < FirstPassThickness > 0 </ FirstPassThickness >
-        < OverrideTemperatureRange > false </ OverrideTemperatureRange >
-        < MinTemperatureRange > 65 </ MinTemperatureRange >
-        < MaxTemperatureRange > 175 </ MaxTemperatureRange >
-        < OverrideTargetMDP > false </ OverrideTargetMDP >
-        < OverrideTargetMDPValue > 50 </ OverrideTargetMDPValue >
-        < MinTargetMDPPercent > 80 </ MinTargetMDPPercent >
-        < MaxTargetMDPPercent > 130 </ MaxTargetMDPPercent >
-        < ShowMDPSummaryTopLayerOnly > true </ ShowMDPSummaryTopLayerOnly >
-        </ CompactionSettings >
-        < VolumeSettings >
-        < ApplyShrinkageAndBulking > false </ ApplyShrinkageAndBulking >
-        < PercentShrinkage > 0 </ PercentShrinkage >
-        < PercentBulking > 0 </ PercentBulking >
-        < NoChangeTolerance > 0.02 </ NoChangeTolerance >
-        </ VolumeSettings >
-        < ExpiryPromptDismissed > false </ ExpiryPromptDismissed >
-        </ ProjectSettings > ";
+      string settingsupdated = TargetJsonString;
 
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
         ProjectUID = projectUid,
+        ProjectSettingsType = ProjectSettingsType.Targets,
         Settings = settings,
+        UserID = Guid.NewGuid().ToString(),
         ActionUTC = actionUTC
       };
 
       var updatedProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
         ProjectUID = projectUid,
+        ProjectSettingsType = createProjectSettingsEvent.ProjectSettingsType, 
         Settings = settingsupdated,
+        UserID = createProjectSettingsEvent.UserID,
         ActionUTC = actionUTC.AddMilliseconds(2)
       };
 
@@ -144,11 +115,116 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "ProjectSettings event not updated");
 
-      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString());
+      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve settings from projectRepo");
-      Assert.AreEqual(projectUid.ToString(), g.Result.ProjectUid, "projectUid is incorrect from projectRepo");
-      Assert.AreEqual(settingsupdated, g.Result.Settings, "settings is incorrect from projectRepo");
+
+      var projectSettingsList = g.Result.ToList();
+      Assert.AreEqual(1, projectSettingsList.Count(), "Should be 1 and only 1 projectSetting");
+      Assert.AreEqual(projectUid.ToString(), projectSettingsList[0].ProjectUid, "projectUid is incorrect from projectRepo");
+      Assert.AreEqual(createProjectSettingsEvent.ProjectSettingsType, projectSettingsList[0].ProjectSettingsType, "type is incorrect from projectRepo");
+      Assert.AreEqual(settingsupdated, projectSettingsList[0].Settings, "settings is incorrect from projectRepo");
+      Assert.AreEqual(createProjectSettingsEvent.UserID, projectSettingsList[0].UserID, "UserID is incorrect from projectRepo");
+    }
+
+    /// <summary>
+    /// Update ProjectSettings 
+    ///   should not allow change of type or UserID
+    /// </summary>
+    [TestMethod]
+    public void UpsertProjectSettings_CantChangeType()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectUid = Guid.NewGuid();
+      string settings = @"<ProjectSettings>  
+        </ ProjectSettings > ";
+      string settingsupdated = TargetJsonString;
+
+      var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
+      {
+        ProjectUID = projectUid,
+        ProjectSettingsType = ProjectSettingsType.Targets,
+        Settings = settings,
+        UserID = Guid.NewGuid().ToString(),
+        ActionUTC = actionUTC
+      };
+
+      var updatedProjectSettingsEvent = new UpdateProjectSettingsEvent()
+      {
+        ProjectUID = projectUid,
+        ProjectSettingsType = ProjectSettingsType.ImportedFiles,
+        Settings = settingsupdated,
+        UserID = Guid.NewGuid().ToString(),
+        ActionUTC = actionUTC.AddMilliseconds(2)
+      };
+
+      var s = projectContext.StoreEvent(createProjectSettingsEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "ProjectSettings event not written");
+
+      s = projectContext.StoreEvent(updatedProjectSettingsEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "ProjectSettings event not updated");
+
+      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve settings from projectRepo");
+
+      var projectSettingsList = g.Result.ToList();
+      Assert.AreEqual(1, projectSettingsList.Count(), "Should be 1 and only 1 projectSetting");
+      Assert.AreEqual(projectUid.ToString(), projectSettingsList[0].ProjectUid, "projectUid is incorrect from projectRepo");
+      Assert.AreEqual(createProjectSettingsEvent.ProjectSettingsType, projectSettingsList[0].ProjectSettingsType, "type is incorrect from projectRepo");
+      Assert.AreEqual(settingsupdated, projectSettingsList[0].Settings, "settings is incorrect from projectRepo");
+      Assert.AreEqual(createProjectSettingsEvent.UserID, projectSettingsList[0].UserID, "UserID is incorrect from projectRepo");
+    }
+
+    /// <summary>
+    /// Get ProjectSettings 
+    ///   need to request for the correct user
+    /// </summary>
+    [TestMethod]
+    public void CreateProjectSettings_WrongUser()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectUid = Guid.NewGuid();
+      string settings = TargetJsonString;
+
+      var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
+      {
+        ProjectUID = projectUid,
+        ProjectSettingsType = ProjectSettingsType.Targets,
+        Settings = settings,
+        UserID = Guid.NewGuid().ToString(),
+        ActionUTC = actionUTC
+      };
+
+      var s = projectContext.StoreEvent(createProjectSettingsEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "ProjectSettings event not written");
+
+      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve settings from projectRepo");
+
+      var projectSettingsList = g.Result.ToList();
+      Assert.AreEqual(1, projectSettingsList.Count(), "Should be 1 and only 1 projectSetting");
+
+      g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), Guid.NewGuid().ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve settings from projectRepo");
+
+      projectSettingsList = g.Result.ToList();
+      Assert.AreEqual(0, projectSettingsList.Count(), "Should not be able to return another users ProjectSettings");
+
+
+      var single = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Targets);
+      single.Wait();
+      Assert.IsNotNull(single.Result, "Unable to retrieve individual settings from projectRepo");
+
+      single = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), Guid.NewGuid().ToString(), ProjectSettingsType.Targets);
+      single.Wait();
+      Assert.IsNull(single.Result, "Should not be able to return another users individual ProjectSettings");
+      
     }
 
   }

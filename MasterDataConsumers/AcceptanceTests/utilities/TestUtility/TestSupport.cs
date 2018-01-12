@@ -524,6 +524,8 @@ namespace TestUtility
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
             Settings = eventObject.Settings,
+            ProjectSettingsType = eventObject.ProjectSettingsType,
+            UserID = eventObject.UserID,
             ProjectUID = new Guid(eventObject.ProjectUID)
           };
           jsonString = JsonConvert.SerializeObject(new { UpdateProjectSettingsEvent = updateProjectSettingsEvent }, jsonSettings);

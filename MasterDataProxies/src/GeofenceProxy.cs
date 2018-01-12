@@ -83,7 +83,8 @@ namespace VSS.MasterData.Proxies
     /// Clears an item from the cache
     /// </summary>
     /// <param name="geofenceUid">The geofenceUid of the item to remove from the cache</param>
-    public void ClearCacheItem(string geofenceUid)
+    /// <param name="customHeaders">Request headers</param>
+    public void ClearCacheItem(string geofenceUid, IDictionary<string, string> customHeaders)
       {
         ClearCacheItem<GeofenceData>(geofenceUid);
       }

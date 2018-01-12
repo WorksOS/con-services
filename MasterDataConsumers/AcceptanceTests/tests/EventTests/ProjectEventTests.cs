@@ -332,6 +332,7 @@ namespace EventTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectGuid = Guid.NewGuid();
+      var userId = Guid.NewGuid().ToString();
       string settings = @"<ProjectSettings>  
         < CompactionSettings >
         < OverrideTargetCMV > false </ OverrideTargetCMV >
@@ -342,14 +343,14 @@ namespace EventTests
 
       msg.Title("Create Project Settings test 1", "Create one projectSettings");
       var eventArray = new[] {
-        "| EventType                  | EventDate    | ProjectUID    | Settings   |" ,
-        $"| UpdateProjectSettingsEvent | 0d+09:00:00 | {projectGuid} | {settings}  |"};
+        "| EventType                  | EventDate    | ProjectUID    | ProjectSettingsType | Settings   | UserID   |" ,
+        $"| UpdateProjectSettingsEvent | 0d+09:00:00 | {projectGuid} | 1                   | {settings} | {userId} |"};
 
       testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectSettings", "fk_ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectSettings", "fk_ProjectUID",
-        "Settings", //Fields
-        $"{settings}", //Expected
+        "Settings, fk_ProjectSettingsID, UserID", //Fields
+        $"{settings}, 1, {userId}", //Expected
         projectGuid);
     }
 

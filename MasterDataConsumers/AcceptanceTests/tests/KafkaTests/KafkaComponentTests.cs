@@ -324,38 +324,17 @@ namespace KafkaTests
       string settings = @"<ProjectSettings>  
         < CompactionSettings >
         < OverrideTargetCMV > false </ OverrideTargetCMV >
-        < OverrideTargetCMVValue > 50 </ OverrideTargetCMVValue >
-        < MinTargetCMVPercent > 80 </ MinTargetCMVPercent >
-        < MaxTargetCMVPercent > 130 </ MaxTargetCMVPercent >
-        < OverrideTargetPassCount > false </ OverrideTargetPassCount >
-        < OverrideTargetPassCountValue > 5 </ OverrideTargetPassCountValue >
-        < OverrideTargetLiftThickness > false </ OverrideTargetLiftThickness >
-        < OverrideTargetLiftThicknessMeters > 0.5 </ OverrideTargetLiftThicknessMeters >
-        < CompactedLiftThickness > true </ CompactedLiftThickness >
-        < ShowCCVSummaryTopLayerOnly > true </ ShowCCVSummaryTopLayerOnly >
-        < FirstPassThickness > 0 </ FirstPassThickness >
-        < OverrideTemperatureRange > false </ OverrideTemperatureRange >
-        < MinTemperatureRange > 65 </ MinTemperatureRange >
-        < MaxTemperatureRange > 175 </ MaxTemperatureRange >
-        < OverrideTargetMDP > false </ OverrideTargetMDP >
-        < OverrideTargetMDPValue > 50 </ OverrideTargetMDPValue >
-        < MinTargetMDPPercent > 80 </ MinTargetMDPPercent >
-        < MaxTargetMDPPercent > 130 </ MaxTargetMDPPercent >
-        < ShowMDPSummaryTopLayerOnly > true </ ShowMDPSummaryTopLayerOnly >
         </ CompactionSettings >
-        < VolumeSettings >
-        < ApplyShrinkageAndBulking > false </ ApplyShrinkageAndBulking >
-        < PercentShrinkage > 0 </ PercentShrinkage >
-        < PercentBulking > 0 </ PercentBulking >
-        < NoChangeTolerance > 0.02 </ NoChangeTolerance >
-        </ VolumeSettings >
+        < VolumeSettings >       
         < ExpiryPromptDismissed > false </ ExpiryPromptDismissed >
         </ ProjectSettings > ";
 
       var updateProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
         ProjectUID = projectUid,
+        ProjectSettingsType = ProjectSettingsType.Targets,
         Settings = settings,
+        UserID = Guid.NewGuid().ToString(),
         ActionUTC = actionUtc
       };
 
@@ -390,7 +369,7 @@ namespace KafkaTests
        //Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"ProjectSettingsKafkaTest iteration {i} of 10");
 
-        dbReturn = projectContext.GetProjectSettings(updateProjectSettingsEvent.ProjectUID.ToString());
+        dbReturn = projectContext.GetProjectSettings(updateProjectSettingsEvent.ProjectUID.ToString(), updateProjectSettingsEvent.UserID, ProjectSettingsType.Targets);
         dbReturn.Wait();
         if (dbReturn.Result != null)
           break;
@@ -404,7 +383,6 @@ namespace KafkaTests
     }
 
     [TestMethod]
-   // [Ignore]
     public void ProjectConsumerWritesToDb_CreateImportedFile()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
