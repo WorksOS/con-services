@@ -79,7 +79,7 @@ namespace ExecutorTests
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");
       Assert.IsNull(result.settings, "executor should have returned null Settings");
-      Assert.AreEqual(ProjectSettingsType.Unknown, result.projectSettingsType, "executor should have returned unknown settings type");
+      Assert.AreEqual(settingsType, result.projectSettingsType, $"executor should have returned {settingsType} SettingsType");
     }
 
     [TestMethod]
@@ -96,7 +96,7 @@ namespace ExecutorTests
       var isCreatedOk = CreateCustomerProject(customerUid, projectUid);
       Assert.IsTrue(isCreatedOk, "unable to create project for Customer");
 
-      isCreatedOk = CreateProjectSettings(projectUid, userId, settings);
+      isCreatedOk = CreateProjectSettings(projectUid, userId, settings, settingsType);
       Assert.IsTrue(isCreatedOk, "created projectSettings");
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
 
@@ -143,7 +143,7 @@ namespace ExecutorTests
       var isCreatedOk = CreateCustomerProject(customerUidOfProject, projectUid.ToString());
       Assert.IsTrue(isCreatedOk, "unable to create project for Customer");
 
-      isCreatedOk = CreateProjectSettings(projectUid.ToString(), userId, settings);
+      isCreatedOk = CreateProjectSettings(projectUid.ToString(), userId, settings, settingsType);
       Assert.IsTrue(isCreatedOk, "created projectSettings");
 
       var projectSettingsRequest =
@@ -203,7 +203,7 @@ namespace ExecutorTests
       var isCreatedOk = CreateCustomerProject(customerUid, projectUid.ToString());
       Assert.IsTrue(isCreatedOk, "unable to create project for Customer");
 
-      isCreatedOk = CreateProjectSettings(projectUid.ToString(), userId, settings);
+      isCreatedOk = CreateProjectSettings(projectUid.ToString(), userId, settings, settingsType);
       Assert.IsTrue(isCreatedOk, "created projectSettings");
 
       var projectSettingsRequest =

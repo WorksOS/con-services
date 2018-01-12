@@ -114,9 +114,8 @@ namespace ExecutorTests
       return (g.Result != null ? true : false);
     }
 
-    protected bool CreateProjectSettings(string projectUid, string userId, string settings)
+    protected bool CreateProjectSettings(string projectUid, string userId, string settings, ProjectSettingsType settingsType)
     {
-      var settingsType = ProjectSettingsType.Targets;
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()

@@ -39,7 +39,7 @@ namespace VSS.MasterData.ProjectTests
       var project = new Repositories.DBModels.Project() { CustomerUID = customerUid, ProjectUID = projectUid };
       var projectList = new List<Repositories.DBModels.Project>(); projectList.Add(project);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
-      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), settingsType)).ReturnsAsync(new ProjectSettings());
+      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), settingsType)).ReturnsAsync((ProjectSettings)null);
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -58,7 +58,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect projectUid");
       Assert.IsNull(result.settings, "executor should have returned empty settings");
-      Assert.AreEqual(ProjectSettingsType.Unknown, result.projectSettingsType, "executor should have returned unknown settings type");
+      Assert.AreEqual(settingsType, result.projectSettingsType, $"executor should have returned {settingsType} projectSettingsType");
     }
 
     [TestMethod]
@@ -100,6 +100,47 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [TestMethod]
+    public async Task GetProjectSettingsExecutor_MultipleSettings()
+    {
+      string customerUid = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string settings1 = string.Empty;
+      string settings2 = "more blah";
+      string userId = "my app";
+      ProjectSettingsType settingsType1 = ProjectSettingsType.Targets;
+      ProjectSettingsType settingsType2 = ProjectSettingsType.ImportedFiles;
+
+      var projectRepo = new Mock<IProjectRepository>();
+      var project = new Repositories.DBModels.Project() { CustomerUID = customerUid, ProjectUID = projectUid };
+      var projectList = new List<Repositories.DBModels.Project>(); projectList.Add(project);
+      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+
+      var projectSettings1 = new ProjectSettings { ProjectUid = projectUid, Settings = settings1, ProjectSettingsType = settingsType1, UserID = userId };
+      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), userId, settingsType1)).ReturnsAsync(projectSettings1);
+      var projectSettings2 = new ProjectSettings { ProjectUid = projectUid, Settings = settings2, ProjectSettingsType = settingsType2, UserID = userId };
+      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), userId, settingsType2)).ReturnsAsync(projectSettings2);
+
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings1, settingsType1);
+
+      var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
+      (logger, configStore, serviceExceptionHandler,
+        customerUid, userId, null, null,
+        null, null,
+        null, null, null,
+        projectRepo.Object);
+      var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
+
+      Assert.IsNotNull(result, "executor failed");
+      Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect projectUid");
+      Assert.AreEqual(settings1, result.settings, "executor should have returned settings");
+      Assert.AreEqual(settingsType1, result.projectSettingsType, "executor returned incorrect projectSettingsType");
+    }
+
+    [TestMethod]
     public async Task GetProjectSettingsExecutor_ProjectCustomerValidationFails()
     {
       string customerUid = Guid.NewGuid().ToString();
@@ -109,7 +150,7 @@ namespace VSS.MasterData.ProjectTests
       var projectRepo = new Mock<IProjectRepository>();
       var projectList = new List<Repositories.DBModels.Project>(); 
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
-      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProjectSettingsType>())).ReturnsAsync(new ProjectSettings());
+      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProjectSettingsType>())).ReturnsAsync((ProjectSettings)null);
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -132,7 +173,7 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     [DataRow(ProjectSettingsType.Targets)]
     [DataRow(ProjectSettingsType.ImportedFiles)]
-    public async Task UpsertProjectSettingsExecutor_Targets(ProjectSettingsType settingsType)
+    public async Task UpsertProjectSettingsExecutor(ProjectSettingsType settingsType)
     {
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
@@ -169,6 +210,52 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect projectUid");
       Assert.AreEqual(settings, result.settings, "executor returned incorrect settings");
       Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
+    }
+
+    [TestMethod]
+    public async Task UpsertProjectSettingsExecutor_MultipleSettings()
+    {
+      string customerUid = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string settings1 = "blah";
+      string settings2 = "more blah";
+      string userId = "my app";
+      ProjectSettingsType settingsType1 = ProjectSettingsType.Targets;
+      ProjectSettingsType settingsType2 = ProjectSettingsType.ImportedFiles;
+
+      var projectRepo = new Mock<IProjectRepository>();
+      var projectSettings1 = new ProjectSettings { ProjectUid = projectUid, Settings = settings1, ProjectSettingsType = settingsType1, UserID = userId };
+      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), userId, settingsType1)).ReturnsAsync(projectSettings1);
+      var projectSettings2 = new ProjectSettings { ProjectUid = projectUid, Settings = settings2, ProjectSettingsType = settingsType2, UserID = userId };
+      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), userId, settingsType2)).ReturnsAsync(projectSettings2);
+
+      var projectList = new List<Repositories.DBModels.Project>();
+      projectList.Add(new Repositories.DBModels.Project() { ProjectUID = projectUid });
+      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+      projectRepo.Setup(ps => ps.StoreEvent(It.IsAny<UpdateProjectSettingsEvent>())).ReturnsAsync(1);
+
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var producer = new Mock<IKafka>();
+
+      var raptorProxy = new Mock<IRaptorProxy>();
+      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<Guid>(), It.IsAny<string>(),
+        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseDataResult());
+
+      var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
+      (logger, configStore, serviceExceptionHandler,
+        customerUid, userId, null, null,
+        producer.Object, kafkaTopicName,
+        null, raptorProxy.Object, null,
+        projectRepo.Object);
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings1, settingsType1);
+      var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
+
+      Assert.IsNotNull(result, "executor failed");
+      Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect projectUid");
+      Assert.AreEqual(settings1, result.settings, "executor returned incorrect settings");
+      Assert.AreEqual(settingsType1, result.projectSettingsType, "executor returned incorrect projectSettingsType");
     }
 
     [TestMethod]

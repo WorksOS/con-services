@@ -1739,12 +1739,13 @@ namespace TestUtility
     /// <param name="method"></param>
     /// <param name="configJson"></param>
     /// <param name="customerUid"></param>
+    /// <param name="jwt"></param>
     /// <returns></returns>
-    public string CallProjectWebApiV4(string routeSuffix, string method, string configJson, string customerUid = null)
+    public string CallProjectWebApiV4(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null)
     {
       var uri = GetBaseUri() + routeSuffix;  // "http://localhost:20979/"
       var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid);
+      var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
       return response;
     }
     #endregion
