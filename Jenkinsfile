@@ -128,7 +128,7 @@ node ('Jenkins-Win2016-Raptor')
            checkout scm
 
            stage 'Build'
-           bat "build47.bat"
+           bat "build20.bat"
           
            archiveArtifacts artifacts: 'FilterWebApiNet47.zip', fingerprint: true 
 		   
