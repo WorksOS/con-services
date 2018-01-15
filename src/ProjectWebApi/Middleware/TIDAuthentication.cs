@@ -129,7 +129,7 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
                 !customerResult.customer.Exists(x => x.uid == customerUid))
             {
               //Retry here to invalidate cache as association may have just been created
-              this.customerProxy.ClearCacheItem(userUid, customHeaders);
+              this.customerProxy.ClearCacheItem(userUid);
               //And try again
               customerResult =
                 await this.customerProxy.GetCustomersForMe(userUid, customHeaders);
