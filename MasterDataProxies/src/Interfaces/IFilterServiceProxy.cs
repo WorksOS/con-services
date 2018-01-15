@@ -11,6 +11,6 @@ namespace VSS.MasterData.Proxies.Interfaces
 
     Task<List<FilterDescriptor>> GetFilters(string projectUid, IDictionary<string, string> customHeaders = null);
 
-    void ClearCacheListItem(string projectUid);
+    void ClearCacheListItem(string projectUid, string userId=null);
   }
 }

@@ -156,19 +156,20 @@ namespace VSS.MasterData.Proxies
     /// Gets a master data item. If the item is not in the cache then requests the item from the relevant service and adds it to the cache.
     /// </summary>
     /// <param name="uid">The UID of the item to retrieve. Also the cache key</param>
+    /// <param name="userId">The user ID, only required if caching per user</param>
     /// <param name="cacheLifeKey">The configuration store key for how long to cache items</param>
     /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>Master data item</returns>
-    protected async Task<T> GetMasterDataItem<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) 
+    protected async Task<T> GetMasterDataItem<T>(string uid, string userId, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) 
     {
       if (cache == null)
       {
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
       }
-      ClearCacheIfRequired<T>(uid, customHeaders);
-      var cacheKey = GetCacheKey<T>(uid);
+      ClearCacheIfRequired<T>(uid, userId, customHeaders);
+      var cacheKey = GetCacheKey<T>(uid, userId);
       T cacheData;
       if (!cache.TryGetValue(cacheKey, out cacheData))
       {
@@ -191,20 +192,21 @@ namespace VSS.MasterData.Proxies
     /// If the list is not in the cache then requests items from the relevant service and adds the list to the cache.
     /// </summary>
     /// <param name="customerUid">The customer UID for the list to retrieve. Also the cache key.</param>
+    /// <param name="userId">The user ID, only required if caching per user</param>
     /// <param name="cacheLifeKey">The configuration store key for how long to cache the list</param>
     /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of Master data items</returns>
-    protected async Task<List<T>> GetMasterDataList<T>(string customerUid, string cacheLifeKey, string urlKey,
+    protected async Task<List<T>> GetMasterDataList<T>(string customerUid, string userId, string cacheLifeKey, string urlKey,
                 IDictionary<string, string> customHeaders, string route = null) 
     {
       if (cache == null)
       {
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
       }
-      ClearCacheIfRequired<T>(customerUid, customHeaders);
-      var cacheKey = GetCacheKey<T>(customerUid);
+      ClearCacheIfRequired<T>(customerUid, userId, customHeaders);
+      var cacheKey = GetCacheKey<T>(customerUid, userId);
       List<T> cacheData;
       if (!cache.TryGetValue(cacheKey, out cacheData))
       {
@@ -221,21 +223,22 @@ namespace VSS.MasterData.Proxies
     /// If the list is not in the cache then requests items from the relevant service and adds the list to the cache.
     /// </summary>
     /// <param name="uid">The UID for the list to retrieve (customerUid or projectUid). Also used for the cache key</param>
+    /// <param name="userId">The user ID, only required if caching per user</param>
     /// <param name="cacheLifeKey">The configuration store key for how long to cache the list</param>
     /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="queryParams">Query parameters for the request (optional)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of Master data items</returns>
-    protected async Task<T> GetContainedMasterDataList<T>(string uid, string cacheLifeKey, string urlKey,
+    protected async Task<T> GetContainedMasterDataList<T>(string uid, string userId, string cacheLifeKey, string urlKey,
                   IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
       {
         if (cache == null)
         {
           throw new InvalidOperationException("This method requires a cache; use the correct constructor");
         }
-        ClearCacheIfRequired<T>(uid, customHeaders);
-        var cacheKey = GetCacheKey<T>(uid);
+        ClearCacheIfRequired<T>(uid, userId, customHeaders);
+        var cacheKey = GetCacheKey<T>(uid, userId);
         T cacheData;
         if (!cache.TryGetValue(cacheKey, out cacheData))
         {
@@ -275,11 +278,12 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <typeparam name="T">The type of item being cached</typeparam>
     /// <param name="uid">The uid of the item being cached</param>
+    /// <param name="userId">The user ID, only required if caching per user</param>
     /// <returns>The cache key to use.</returns>
-    private string GetCacheKey<T>(string uid)
+    private string GetCacheKey<T>(string uid, string userId)
     {
       var keyPrefix = typeof(T).Name;
-      return $"{keyPrefix} {uid}";
+      return string.IsNullOrEmpty(userId) ? $"{keyPrefix} {uid}" : $"{keyPrefix} {uid} {userId}";
     }
 
     /// <summary>
@@ -287,13 +291,16 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <typeparam name="T">The type of item being cached</typeparam>
     /// <param name="uid">The item to remove from the cache</param>
+    /// <param name="userId">The user ID</param>
     /// <param name="customHeaders">The request headers</param>
-    private void ClearCacheIfRequired<T>(string uid, IDictionary<string, string> customHeaders)
+    private void ClearCacheIfRequired<T>(string uid, string userId, IDictionary<string, string> customHeaders)
     {
       string caching = null;
       customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
       if (!string.IsNullOrEmpty(caching) && caching == "true")
-        ClearCacheItem<T>(uid);
+      {
+        ClearCacheItem<T>(uid, userId);
+      }
     }
 
     /// <summary>
@@ -301,39 +308,16 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <typeparam name="T">The type of item being cached</typeparam>
     /// <param name="uid">The uid of the item to remove from the cache</param>
-    protected void ClearCacheItem<T>(string uid)
+    /// <param name="userId">The user ID, only required if caching per user</param>
+    protected void ClearCacheItem<T>(string uid, string userId)
     {
       if (cache == null)
       {
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
       }
-      var cacheKey = GetCacheKey<T>(uid);
+      var cacheKey = GetCacheKey<T>(uid, userId);
       log.LogDebug($"Clearing item from cache: {cacheKey}");
       cache.Remove(cacheKey);
-    }
-
-    /// <summary>
-    /// Gets the key to use for caching when values are by project and user.
-    /// </summary>
-    /// <param name="projectUid">The project UID</param>
-    /// <param name="customHeaders">HTTP request custom headers containing the user UID</param>
-    /// <returns></returns>
-    protected string CacheKeyByUser(string projectUid, IDictionary<string, string> customHeaders)
-    {
-      try
-      {
-        string authorization = customHeaders["X-Jwt-Assertion"];
-        var jwtToken = new TPaaSJWT(authorization);
-        var userUid = jwtToken.IsApplicationToken
-          ? jwtToken.ApplicationId
-          : jwtToken.UserUid.ToString();
-        return $"{projectUid} {userUid}";
-      }
-      catch (Exception e)
-      {
-        log.LogWarning("Invalid JWT token with exception {0}", e.Message);
-        throw;
-      }
     }
   }
 }

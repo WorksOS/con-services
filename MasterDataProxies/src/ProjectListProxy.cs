@@ -18,7 +18,7 @@ namespace VSS.MasterData.Proxies
 
     public async Task<List<ProjectData>> GetProjectsV4(string customerUid, IDictionary<string, string> customHeaders = null)
     {
-      var result = await GetContainedMasterDataList<ProjectDataResult>(customerUid, "PROJECT_CACHE_LIFE", "PROJECT_API_URL", customHeaders);
+      var result = await GetContainedMasterDataList<ProjectDataResult>(customerUid, null, "PROJECT_CACHE_LIFE", "PROJECT_API_URL", customHeaders);
       if (result.Code == 0)
       {
         return result.ProjectDescriptors;
@@ -34,10 +34,10 @@ namespace VSS.MasterData.Proxies
     /// Clears an item from the cache
     /// </summary>
     /// <param name="customerUid">The customerUid of the item to remove from the cache</param>
-    /// <param name="customHeaders">Request headers</param>
-    public void ClearCacheItem(string customerUid, IDictionary<string, string> customHeaders)
+    /// <param name="userId">The user ID</param>
+    public void ClearCacheItem(string customerUid, string userId=null)
     {
-      ClearCacheItem<ProjectDataResult>(customerUid);
+      ClearCacheItem<ProjectDataResult>(customerUid, userId);
     }
 
   }

@@ -31,7 +31,7 @@ namespace VSS.MasterData.Proxies
       string url = configurationStore.GetValueString(urlKey);
       log.LogDebug($"CustomerProxy.GetCustomersForMe: userUid:{userUid} urlKey: {urlKey}  url: {url} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
 
-      var response = await GetContainedMasterDataList<CustomerDataResult>(userUid, "CUSTOMER_CACHE_LIFE", urlKey, customHeaders);
+      var response = await GetContainedMasterDataList<CustomerDataResult>(userUid, null, "CUSTOMER_CACHE_LIFE", urlKey, customHeaders);
       var message = string.Format("CustomerProxy.GetCustomersForMe: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       log.LogDebug(message);
       return response;
@@ -41,10 +41,10 @@ namespace VSS.MasterData.Proxies
     /// Clears an item from the cache
     /// </summary>
     /// <param name="userUid">The userUid of the item to remove from the cache</param>
-    /// <param name="customHeaders">Request headers</param>
-    public void ClearCacheItem(string userUid, IDictionary<string, string> customHeaders = null)
+    /// <param name="userId">The user ID</param>
+    public void ClearCacheItem(string userUid, string userId=null)
     {
-      ClearCacheItem<CustomerDataResult>(userUid);
+      ClearCacheItem<CustomerDataResult>(userUid, userId);
     }
   }
 }
