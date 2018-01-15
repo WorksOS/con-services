@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VSS.Authentication.JWT;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
@@ -319,12 +320,20 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     protected string CacheKeyByUser(string projectUid, IDictionary<string, string> customHeaders)
     {
-      const string USER_UID_HEADER = "X-VisionLink-UserUid";
-      if (!customHeaders.ContainsKey(USER_UID_HEADER))
+      try
       {
-        throw new Exception($"Missing custom header {USER_UID_HEADER}");
+        string authorization = customHeaders["X-Jwt-Assertion"];
+        var jwtToken = new TPaaSJWT(authorization);
+        var userUid = jwtToken.IsApplicationToken
+          ? jwtToken.ApplicationId
+          : jwtToken.UserUid.ToString();
+        return $"{projectUid} {userUid}";
       }
-      return $"{projectUid} {customHeaders[USER_UID_HEADER]}";
+      catch (Exception e)
+      {
+        log.LogWarning("Invalid JWT token with exception {0}", e.Message);
+        throw;
+      }
     }
   }
 }
