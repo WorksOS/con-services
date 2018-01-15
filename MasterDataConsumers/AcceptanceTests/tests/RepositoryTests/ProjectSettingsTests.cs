@@ -154,7 +154,7 @@ namespace RepositoryTests
         ProjectUID = projectUid,
         ProjectSettingsType = ProjectSettingsType.ImportedFiles,
         Settings = settingsupdated,
-        UserID = Guid.NewGuid().ToString(),
+        UserID = createProjectSettingsEvent.UserID,
         ActionUTC = actionUTC.AddMilliseconds(2)
       };
 
@@ -166,16 +166,22 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "ProjectSettings event not updated");
 
-      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
+      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Targets);
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve settings from projectRepo");
 
-      var projectSettingsList = g.Result.ToList();
-      Assert.AreEqual(1, projectSettingsList.Count(), "Should be 1 and only 1 projectSetting");
-      Assert.AreEqual(projectUid.ToString(), projectSettingsList[0].ProjectUid, "projectUid is incorrect from projectRepo");
-      Assert.AreEqual(createProjectSettingsEvent.ProjectSettingsType, projectSettingsList[0].ProjectSettingsType, "type is incorrect from projectRepo");
-      Assert.AreEqual(settingsupdated, projectSettingsList[0].Settings, "settings is incorrect from projectRepo");
-      Assert.AreEqual(createProjectSettingsEvent.UserID, projectSettingsList[0].UserID, "UserID is incorrect from projectRepo");
+      var projectSettings = g.Result;
+      Assert.AreEqual(projectUid.ToString(), projectSettings.ProjectUid, "projectUid is incorrect from projectRepo");
+      Assert.AreEqual(createProjectSettingsEvent.ProjectSettingsType, projectSettings.ProjectSettingsType, "type is incorrect from projectRepo");
+      Assert.AreEqual(createProjectSettingsEvent.Settings, projectSettings.Settings, "settings is incorrect from projectRepo");
+      Assert.AreEqual(createProjectSettingsEvent.UserID, projectSettings.UserID, "UserID is incorrect from projectRepo");
+
+      var settingsList = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
+      settingsList.Wait();
+      Assert.IsNotNull(settingsList.Result, "Unable to retrieve settings from projectRepo");
+
+      var projectSettingsList = settingsList.Result.ToList();
+      Assert.AreEqual(2, projectSettingsList.Count(), "Should be 2 projectSettings");
     }
 
     /// <summary>

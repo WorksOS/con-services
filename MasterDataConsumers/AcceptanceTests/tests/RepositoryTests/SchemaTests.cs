@@ -139,7 +139,7 @@ namespace RepositoryTests
       const string tableName = "ImportedFileHistory";
       List<string> columnNames = new List<string>
       {
-        "ID", "fk_ImportedFileUID", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "UserID", "InsertUTC", "UpdateUTC"
+        "ID", "fk_ImportedFileUID", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "InsertUTC", "UpdateUTC"
       };
       CheckSchema(tableName, columnNames);
     }

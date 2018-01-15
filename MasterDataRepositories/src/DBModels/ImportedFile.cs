@@ -14,9 +14,13 @@ namespace VSS.MasterData.Repositories.DBModels
     public ImportedFileType ImportedFileType { get; set; }
     public string Name { get; set; }
     public string FileDescriptor { get; set; }
+
+    // These 3 refer to the most recent udpates of the importedFile.
+    // History is contained in ImportedFileHistory, and includes this most recent update.
     public DateTime FileCreatedUtc { get; set; }
     public DateTime FileUpdatedUtc { get; set; }
     public string ImportedBy { get; set; }
+
     public DateTime? SurveyedUtc { get; set; }
     public DxfUnitsType DxfUnitsType { get; set; }
     public int MinZoomLevel { get; set; }

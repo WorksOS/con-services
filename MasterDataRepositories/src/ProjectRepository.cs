@@ -1223,7 +1223,8 @@ namespace VSS.MasterData.Repositories
               FROM ProjectSettings
               WHERE fk_ProjectUID = @projectUid
                 AND UserID = @userId
-                AND fk_ProjectSettingsTypeID = @projectSettingsType",
+                AND fk_ProjectSettingsTypeID = @projectSettingsType
+              ORDER BY fk_ProjectUID, UserID, fk_ProjectSettingsTypeID",
         new { projectUid, userId, projectSettingsType })).FirstOrDefault();
       return projectSettings;
     }
