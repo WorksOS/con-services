@@ -36,6 +36,7 @@ namespace VSS.TCCFileAccess
 
     private readonly ILogger<FileRepository> Log;
     private readonly ILoggerFactory logFactory;
+    private readonly IConfigurationStore configStore;
 
     private string ticket = String.Empty;
 
@@ -78,6 +79,7 @@ namespace VSS.TCCFileAccess
       tccOrganization = configuration.GetValueString("TCCORG");
       logFactory = logger;
       Log = logger.CreateLogger<FileRepository>();
+      configStore = configuration;
     }
 
     public async Task<List<Organization>> ListOrganizations()
@@ -168,7 +170,7 @@ namespace VSS.TCCFileAccess
       if (String.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
 
-      var gracefulClient = new GracefulWebRequest(logFactory);
+      var gracefulClient = new GracefulWebRequest(logFactory, configStore);
       var (requestString, headers) = FormRequest(sendFileParams, "PutFile");
 
       headers.Add("X-File-Name", filename);
@@ -245,7 +247,7 @@ namespace VSS.TCCFileAccess
         throw new Exception("Configuration Error - no TCC url specified");
       }
 
-      var gracefulClient = new GracefulWebRequest(logFactory);
+      var gracefulClient = new GracefulWebRequest(logFactory, configStore);
       var (requestString, headers) = FormRequest(getFileParams, "GetFile");
 
       try
@@ -339,6 +341,55 @@ namespace VSS.TCCFileAccess
       return false;
     }
 
+    public async Task<bool> CopyFile(string filespaceId, string srcFullName, string dstFullName)
+    {
+      Log.LogDebug("CopyFile: filespaceId={0}, srcFullName={1}, dstFullName={2}", filespaceId,
+        srcFullName, dstFullName);
+      try
+      {
+        var dstPath = dstFullName.Substring(0, dstFullName.LastIndexOf("/")) + "/";
+        if (!await FolderExists(filespaceId, dstPath))
+        {
+          var resultCreate = await MakeFolder(filespaceId, dstPath);
+          if (!resultCreate)
+          {
+            Log.LogError("Can not create folder for filespaceId {0} folder {1}", filespaceId,
+              dstPath);
+            return false;
+          }
+        }
+
+        CopyParams copyParams = new CopyParams
+        {
+          filespaceid = filespaceId,
+          path = WebUtility.UrlEncode(srcFullName),
+          newfilespaceid = filespaceId,
+          newPath = WebUtility.UrlEncode(dstFullName),
+          merge = false,
+          replace = true//Not sure if we want true or false here
+        };
+        var copyResult = await ExecuteRequest<ApiResult>(Ticket, "Copy", copyParams);
+        if (copyResult != null)
+        {
+          if (copyResult.success || copyResult.errorid.Contains("INVALID_OPERATION_FILE_IS_LOCKED"))
+          {
+            return true;
+          }
+          CheckForInvalidTicket(copyResult, "CopyFile");
+        }
+        else
+        {
+          Log.LogError("Null result from CopyFile for filespaceId {0} file {1}", filespaceId, srcFullName);
+        }
+      }
+      catch (Exception ex)
+      {
+        Log.LogError("Failed to copy TCC file for filespaceId {0} file {1}: {2}", filespaceId, srcFullName,
+          ex.Message);
+      }
+      return false;
+    }
+
     public async Task<DirResult> GetFolders(Organization org, DateTime lastModifiedUTC, string path)
     {
       Log.LogDebug("GetFolders: org={0} {1}, lastModfiedUTC={2}, path={3}", org.shortName, org.filespaceId,
@@ -352,7 +403,6 @@ namespace VSS.TCCFileAccess
           path = WebUtility.UrlEncode(path),
           recursive = false,
           filterfolders = true,
-          //   filemasklist = "*.*"
         };
         var dirResult = await ExecuteRequest<DirResult>(Ticket, "Dir", dirParams);
         if (dirResult != null)
@@ -365,6 +415,36 @@ namespace VSS.TCCFileAccess
       catch (Exception ex)
       {
         Log.LogError("Failed to get list of TCC folders: {0}", ex.Message);
+      }
+      return null;
+    }
+
+    public async Task<DirResult> GetFileList(string filespaceId, string path, string fileMasks=null)
+    {
+      Log.LogDebug("GetFileList: filespaceId={0}, path={1}, fileMask={2}", filespaceId, path, fileMasks);
+      try
+      {
+        //Get list of files one level down from path
+        DirParams dirParams = new DirParams
+        {
+          filespaceid = filespaceId,
+          path = WebUtility.UrlEncode(path),
+          recursive = false,
+          filterfolders = false,
+        };
+        if (!string.IsNullOrEmpty(fileMasks))
+          dirParams.filemasks = fileMasks;
+        var dirResult = await ExecuteRequest<DirResult>(Ticket, "Dir", dirParams);
+        if (dirResult != null)
+        {
+          return dirResult;
+        }
+        CheckForInvalidTicket(dirResult, "GetFileList");
+        Log.LogError("Null result from GetFileList for filespaceId {0}", filespaceId);
+      }
+      catch (Exception ex)
+      {
+        Log.LogError("Failed to get list of TCC files: {0}", ex.Message);
       }
       return null;
     }
@@ -587,7 +667,7 @@ namespace VSS.TCCFileAccess
       if (String.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
 
-      var gracefulClient = new GracefulWebRequest(logFactory);
+      var gracefulClient = new GracefulWebRequest(logFactory, configStore);
       var (requestString, headers) = FormRequest(requestData, contractPath, token);
 
       headers.Add("Content-Type", "application/json");
@@ -620,7 +700,7 @@ namespace VSS.TCCFileAccess
       if (String.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
 
-      var gracefulClient = new GracefulWebRequest(logFactory);
+      var gracefulClient = new GracefulWebRequest(logFactory, configStore);
       var (requestString, headers) = FormRequest(requestData, contractPath, token);
 
       headers.Add("Content-Type", "application/json");

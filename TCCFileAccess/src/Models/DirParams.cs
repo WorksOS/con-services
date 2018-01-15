@@ -12,7 +12,7 @@ namespace VSS.TCCFileAccess.Models
     public bool recursive;
     [JsonProperty(PropertyName = "filterfolders", Required = Required.Default)]
     public bool filterfolders;
-    [JsonProperty(PropertyName = "filemasklist", Required = Required.Default)]
-    public string filemasklist;
+    [JsonProperty(PropertyName = "filemasks", Required = Required.Default)]
+    public string filemasks;
   }
 }

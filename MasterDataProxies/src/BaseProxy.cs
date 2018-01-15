@@ -55,7 +55,7 @@ namespace VSS.MasterData.Proxies
       T result = default(T);
       try
       {
-        GracefulWebRequest request = new GracefulWebRequest(logger);
+        GracefulWebRequest request = new GracefulWebRequest(logger, configurationStore);
         result = await request.ExecuteRequest<T>(url, method, customHeaders, payload);
         log.LogDebug("Result of send to master data request: {0}", result);
       }
@@ -90,7 +90,7 @@ namespace VSS.MasterData.Proxies
       List<T> result = null;
       try
       {
-        GracefulWebRequest request = new GracefulWebRequest(logger);
+        GracefulWebRequest request = new GracefulWebRequest(logger, configurationStore);
         result = await request.ExecuteRequest<List<T>>(url, "GET", customHeaders);
         log.LogDebug($"Result of get list request: {JsonConvert.SerializeObject(result)}");
       }
@@ -130,7 +130,7 @@ namespace VSS.MasterData.Proxies
       T result = default(T);
       try
       {
-        GracefulWebRequest request = new GracefulWebRequest(logger);
+        GracefulWebRequest request = new GracefulWebRequest(logger, configurationStore);
         result = await request.ExecuteRequest<T>(url, "GET", customHeaders);
         log.LogDebug($"Result of get item request: {JsonConvert.SerializeObject(result)}");
       }

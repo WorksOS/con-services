@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
+using VSS.ConfigurationStore;
 
 namespace VSS.MasterData.Proxies
 {
@@ -15,11 +16,17 @@ namespace VSS.MasterData.Proxies
   public class GracefulWebRequest
   {
     private readonly ILogger log;
+    private readonly int logMaxChar;
 
-    public GracefulWebRequest(ILoggerFactory logger)
+    public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore)
     {
-
       log = logger.CreateLogger<GracefulWebRequest>();
+      logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR");
+
+      if (logMaxChar == 0)
+      {
+        log.LogWarning("Missing environment variable LOG_MAX_CHAR, long web api responses will not be truncated");
+      }
     }
 
 
@@ -31,6 +38,7 @@ namespace VSS.MasterData.Proxies
       private readonly string payloadData;
       private readonly ILogger log;
       private const int BUFFER_MAX_SIZE = 1024;
+      private readonly int logMaxChar;
 
       private async Task<string> GetStringFromResponseStream(WebResponse response)
       {
@@ -153,13 +161,14 @@ namespace VSS.MasterData.Proxies
       }
 
       public RequestExecutor(string endpoint, string method, IDictionary<string, string> customHeaders,
-        string payloadData, ILogger log)
+        string payloadData, ILogger log, int logMaxChar)
       {
         this.endpoint = endpoint;
         this.method = method;
         this.customHeaders = customHeaders;
         this.payloadData = payloadData;
         this.log = log;
+        this.logMaxChar = logMaxChar;
       }
 
 
@@ -214,7 +223,7 @@ namespace VSS.MasterData.Proxies
           {
             log.LogDebug($"ExecuteRequest() T executed the request");
             responseString = await GetStringFromResponseStream(response);
-            log.LogDebug($"ExecuteRequest() T success: responseString {responseString}");
+            log.LogDebug($"ExecuteRequest() T success: responseString {responseString.Truncate(logMaxChar)}");
           }
         }
         catch (WebException ex)
@@ -227,7 +236,7 @@ namespace VSS.MasterData.Proxies
             responseString = await GetStringFromResponseStream(exResponse);
             HttpWebResponse httpResponse = (HttpWebResponse) exResponse;
             log.LogDebug(
-              $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString}");
+              $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString.Truncate(logMaxChar)}");
             throw new Exception($"{httpResponse.StatusCode} {responseString}");
           }
         }
@@ -246,7 +255,7 @@ namespace VSS.MasterData.Proxies
         if (!string.IsNullOrEmpty(responseString))
         {     
           var toReturn = JsonConvert.DeserializeObject<T>(responseString);
-          log.LogDebug($"ExecuteRequest() T. toReturn:{JsonConvert.SerializeObject(toReturn)}");
+          log.LogDebug($"ExecuteRequest() T. toReturn:{JsonConvert.SerializeObject(toReturn).Truncate(logMaxChar)}");
           return toReturn;
           
         }
@@ -281,7 +290,7 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(() =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log);
+          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log, logMaxChar);
           return executor.ExecuteActualRequest<T>();
         });
 
@@ -325,7 +334,7 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(async () =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log);
+          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log, logMaxChar);
           return await executor.ExecuteActualStreamRequest();
         });
 
@@ -369,7 +378,7 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(async () =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, method, customHeaders, "", log);
+          var executor = new RequestExecutor(endpoint, method, customHeaders, "", log, logMaxChar);
           return await executor.ExecuteActualRequest<T>(payload);
         });
 
