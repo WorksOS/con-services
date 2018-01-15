@@ -3,12 +3,14 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Models;
 
@@ -69,7 +71,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //It is assumed that the settings are about to be saved.
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
         log.LogDebug($"About to clear settings for project {projectUid}");
-        projectSettingsProxy.ClearCacheItem(projectUid.ToString(), Request.Headers.GetCustomHeaders());
+        projectSettingsProxy.ClearCacheItem(projectUid.ToString(), GetUserId());
         cacheBuilder.ClearMemoryCache(projectUid);
       }
 
@@ -101,5 +103,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       return ps;
     }
+
+    /// <summary>
+    /// Gets the User uid/applicationID from the context.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
+    private string GetUserId()
+    {
+      if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))
+      {
+        return identity.Name;
+      }
+
+      throw new ArgumentException("Incorrect UserId in request context principal.");
+    }
+
   }
 }

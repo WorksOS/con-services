@@ -413,7 +413,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       //Get all the imported files for the project
-      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), userId, Request.Headers.GetCustomHeaders());
       if (fileList == null)
       {
         fileList = new List<FileData>();

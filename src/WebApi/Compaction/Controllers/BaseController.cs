@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -27,6 +28,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
   public abstract class BaseController : Controller
   {
+    /// <summary>
+    /// Gets the user id from the current context
+    /// </summary>
+    /// <value>
+    /// The user uid or applicationID as a string.
+    /// </value>
+    protected string userId => GetUserId();
+
     /// <summary>
     /// Logger for logging
     /// </summary>
@@ -81,6 +90,22 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.FilterServiceProxy = filterServiceProxy;
       this.SettingsManager = settingsManager;
     }
+
+    /// <summary>
+    /// Gets the User uid/applicationID from the context.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
+    private string GetUserId()
+    {
+      if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))
+      {
+        return identity.Name;
+      }
+
+      throw new ArgumentException("Incorrect UserId in request context principal.");
+    }
+
 
     /// <summary>
     /// With the service exception try execute.
@@ -168,7 +193,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
     protected async Task<List<long>> GetExcludedSurveyedSurfaceIds(Guid projectUid)
     {
-      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), this.CustomHeaders);
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), userId, CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         return null;
@@ -191,7 +216,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return null;
       }
 
-      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), this.CustomHeaders);
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), userId, CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -241,7 +266,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<CompactionProjectSettings> GetProjectSettings(Guid projectUid)
     {
       CompactionProjectSettings ps;
-      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), this.CustomHeaders);
+      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), userId, CustomHeaders);
       if (!string.IsNullOrEmpty(jsonSettings))
       {
         try

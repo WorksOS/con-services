@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -269,7 +270,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] Guid filterUid, [FromQuery] Guid projectUid)
     {
       log.LogDebug("GetNotifyFilterChange: " + Request.QueryString);
-      filterServiceProxy.ClearCacheItem(filterUid.ToString(), Request.Headers.GetCustomHeaders());
+      filterServiceProxy.ClearCacheItem(filterUid.ToString());
       filterServiceProxy.ClearCacheListItem(projectUid.ToString());
       log.LogInformation("GetNotifyFilterChange returned");
       return new ContractExecutionResult();
@@ -289,7 +290,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
         customHeaders.Add("X-VisionLink-ClearCache", "true");
 
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), GetUserId(), customHeaders);
       log.LogInformation("After clearing cache {0} total imported files, {1} activated, for project {2}", fileList.Count, fileList.Count(f => f.IsActivated), projectUid);
 
       return fileList;
@@ -331,6 +332,21 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       }
 
       return filterDescriptors.Select(f => JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(f.FilterJson)).ToList();
+    }
+
+    /// <summary>
+    /// Gets the User uid/applicationID from the context.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
+    private string GetUserId()
+    {
+      if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))
+      {
+        return identity.Name;
+      }
+
+      throw new ArgumentException("Incorrect UserId in request context principal.");
     }
   }
 }
