@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -10,6 +11,7 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
@@ -60,9 +62,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository)
         .Process(request) as TagFileProcessingErrorResult;
       
-      log.LogDebug("PostTagFileProcessingErrorV2: result:{0}", JsonConvert.SerializeObject(result));
+      log.LogDebug("PostTagFileProcessingErrorV1: result:{0}", JsonConvert.SerializeObject(result));
       return result;
     }
+
 
     /// <summary>
     /// Writes a Kafka event for the given tag file processing error. 
@@ -70,21 +73,56 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <param name="request">Details of the error including the customerUid, the tag file and the type of error</param>
     /// <returns>
     /// True for success and false for failure.
+    ///   20180116 Raptor has inadvertantly been ported to use v2 which isn't supported.
+    ///   v2 has been changes to implement v1 for the time being as it is the path of least resistance.
     /// </returns>
     /// <executor>TagFileProcessingErrorV2Executor</executor>
     [Route("api/v2/notification/tagFileProcessingError")]
     [HttpPost]
-    public async Task<TagFileProcessingErrorResult> PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
+    public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
     {
       log.LogDebug("PostTagFileProcessingErrorV2: request:{0}", JsonConvert.SerializeObject(request));
-      request.Validate();
 
-      var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as TagFileProcessingErrorResult;
+      if (!request.assetId.HasValue || request.assetId <= 0)
+      {
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.ValidationError, 9));
+      }
 
-      log.LogDebug("PostTagFileProcessingErrorV2: result:{0}", JsonConvert.SerializeObject(result));
+      var v1Request = TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(request.assetId.Value, request.tagFileName,
+          (int)request.error);
+      log.LogDebug("PostTagFileProcessingErrorV2: v1Request:{0}", JsonConvert.SerializeObject(v1Request));
+      v1Request.Validate();
+
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository)
+        .Process(v1Request) as TagFileProcessingErrorResult;
+
+      log.LogDebug("PostTagFileProcessingErrorV2: v1result:{0}", JsonConvert.SerializeObject(result));
       return result;
     }
+
+    ///// <summary>
+    ///// Writes a Kafka event for the given tag file processing error. 
+    ///// </summary>
+    ///// <param name="request">Details of the error including the customerUid, the tag file and the type of error</param>
+    ///// <returns>
+    ///// True for success and false for failure.
+    ///// </returns>
+    ///// <executor>TagFileProcessingErrorV2Executor</executor>
+    //[Route("api/v2/notification/tagFileProcessingError")]
+    //[HttpPost]
+    //public async Task<TagFileProcessingErrorResult> PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
+    //{
+    //  log.LogDebug("PostTagFileProcessingErrorV2: request:{0}", JsonConvert.SerializeObject(request));
+    //  request.Validate();
+
+    //  var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository, producer, kafkaTopicName);
+    //  var result = await executor.ProcessAsync(request) as TagFileProcessingErrorResult;
+
+    //  log.LogDebug("PostTagFileProcessingErrorV2: result:{0}", JsonConvert.SerializeObject(result));
+    //  return result;
+    //}
 
     /// <summary>
     /// Posts the application alarm.
