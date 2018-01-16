@@ -28,7 +28,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
         || other.FileUpdatedUtc == FileUpdatedUtc
         || other.ImportedBy == ImportedBy
         || other.IsDeleted == IsDeleted
-        || other.IsActivated == IsActivated
         || other.LastActionedUtc == LastActionedUtc
       )
         return false;
