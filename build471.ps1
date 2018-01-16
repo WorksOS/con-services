@@ -1,7 +1,7 @@
 $artifactsDir = "artifacts"
 $artfifactZip = "FilterWebApiNet47.zip"
 
-# Restore, build/publish for configuration net471.
+# Tidy up old artifacts.
 Write-Host "Removing existing build artifacts..." -ForegroundColor "darkgray"
 
 if (Test-Path -path $artifactsDir) 
@@ -14,6 +14,7 @@ If (Test-path $artfifactZip)
     Remove-item $artfifactZip
 }
 
+# Restore, build/publish for configuration net471.
 Write-Host "Restoring .NET packages..." -ForegroundColor "darkgray"
 Invoke-Expression "dotnet restore ./src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj --no-cache"
 
@@ -39,4 +40,4 @@ Add-Type -assembly "system.io.compression.filesystem"
 
 # Upload build artifacts to S3.
 Write-Host "Uploading build artifacts to S3..." -ForegroundColor "darkgray"
-Invoke-Expression "aws s3 cp $artfifactZip s3://vss-merino/3dpm/$artfifactZip --acl public-read --profile vss-grant"
+Invoke-Expression "aws s3 cp $artfifactZip s3://vss-merino/Productivity3D/Releases/$artfifactZip --acl public-read --profile vss-grant"
