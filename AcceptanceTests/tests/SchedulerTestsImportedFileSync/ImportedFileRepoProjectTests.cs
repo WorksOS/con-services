@@ -49,7 +49,6 @@ namespace SchedulerTestsImportedFileSync
         FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
         ImportedBy = "someoneElse@gmail.com",
         IsDeleted = false,
-        IsActivated = true,
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
         // DxfUnitsType N/A for SurveyedSurface
         LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
@@ -98,7 +97,6 @@ namespace SchedulerTestsImportedFileSync
         FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
         ImportedBy = "someoneElse@gmail.com",
         IsDeleted = false,
-        IsActivated = true,
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
         LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
       };
@@ -142,7 +140,6 @@ namespace SchedulerTestsImportedFileSync
         FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
         ImportedBy = "someoneElse@gmail.com",
         IsDeleted = false,
-        IsActivated = true,
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
         LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
       };

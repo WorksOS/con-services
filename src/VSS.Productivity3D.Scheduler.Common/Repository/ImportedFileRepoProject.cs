@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
               iff.LegacyImportedFileId, iff.fk_CustomerUID as CustomerUID,
               iff.fk_ImportedFileTypeID as ImportedFileType, iff.Name, 
               iff.FileDescriptor, iff.FileCreatedUTC, iff.FileUpdatedUTC, iff.ImportedBy, 
-              iff.IsDeleted, iff.IsActivated, 
+              iff.IsDeleted, 
               iff.SurveyedUTC, iff.fk_DXFUnitsTypeID AS DxfUnitsType, 
               iff.LastActionedUTC			        
             FROM ImportedFile iff
@@ -126,9 +126,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
 
       var insertCommand = string.Format(
         "INSERT ImportedFile " +
-        "    (fk_ProjectUID, ImportedFileUID, LegacyImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, IsDeleted, IsActivated, LastActionedUTC) " +
+        "    (fk_ProjectUID, ImportedFileUID, LegacyImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, IsDeleted, LastActionedUTC) " +
         "  VALUES " +
-        "    (@ProjectUid, @ImportedFileUid, @LegacyImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc,@DxfUnitsType, 0, 1, @LastActionedUtc)");
+        "    (@ProjectUid, @ImportedFileUid, @LegacyImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc,@DxfUnitsType, 0, @LastActionedUtc)");
       int countInserted = 0;
       try
       {

@@ -55,6 +55,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Utilities
             .ForMember(dest => dest.FileDescriptor, opt => opt.Ignore())
             .ForMember(dest => dest.MinZoomLevel, opt => opt.Ignore())
             .ForMember(dest => dest.MaxZoomLevel, opt => opt.Ignore())
+            .ForMember(dest => dest.MaxZoomLevel, opt => opt.Ignore())
             .ForMember(dest => dest.IsDeleted, opt => opt.UseValue(false))
             .ForMember(dest => dest.IsActivated, opt => opt.UseValue(true))
             .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => src.ProjectUid.ToLower()))

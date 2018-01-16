@@ -103,9 +103,9 @@ namespace SchedulerTestsImportedFileSync
 
       var insertCommand = string.Format(
         "INSERT ImportedFile " +
-        "    (fk_ProjectUID, ImportedFileUID, LegacyImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID,  IsDeleted, IsActivated, LastActionedUTC)" +
+        "    (fk_ProjectUID, ImportedFileUID, LegacyImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID,  IsDeleted, LastActionedUTC)" +
         "  VALUES " +
-        "    (@ProjectUid, @ImportedFileUid, @LegacyImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, @DxfUnitsType, 0, 1, @LastActionedUtc)");
+        "    (@ProjectUid, @ImportedFileUid, @LegacyImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, @DxfUnitsType, 0, @LastActionedUtc)");
 
       int insertedCount = dbConnection.Execute(insertCommand, importedFile);
       dbConnection.Close();

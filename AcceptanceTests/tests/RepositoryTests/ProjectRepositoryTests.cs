@@ -34,7 +34,6 @@ namespace RepositoryTests
         "MaxZoomLevel",
         "fk_DXFUnitsTypeID",
         "IsDeleted",
-        "IsActivated",
         "LastActionedUTC",
         "InsertUTC",
         "UpdateUTC"
