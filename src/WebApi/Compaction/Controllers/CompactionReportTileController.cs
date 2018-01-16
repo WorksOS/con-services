@@ -222,7 +222,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>List of active imported files of specified type</returns>
     private async Task<List<FileData>> GetFilesOfType(Guid projectUid, ImportedFileType fileType)
     {
-      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), CustomHeaders);
+      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), userId, CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         return null;

@@ -111,8 +111,12 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
                 "Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + " file with error: {0}.",
                 ContractExecutionStates.FirstNameWithOffset((int)result2))));
           }
-          await CreateTransformFile(request.projectId.Value, request.File, haFile, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
-     
+          //An empty string means there is no horizontal adjustment in coordinate system so no file to create
+          if (haFile != string.Empty)
+          {
+            await CreateTransformFile(request.projectId.Value, request.File, haFile, suffix,
+              FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
+          }
 
           if (fileType != ImportedFileType.Linework)
           {
