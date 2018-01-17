@@ -30,6 +30,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 60, VaryByQueryKeys = new[] { "*" })]
   public class CompactionReportTileController : BaseController
   {
+    private readonly TileOverlayType[] PROJECT_THUMBNAIL_OVERLAYS = {
+      TileOverlayType.BaseMap, TileOverlayType.ProjectBoundary};
+
+    private const int PROJECT_THUMBNAIL_WIDTH = 220;
+    private const int PROJECT_THUMBNAIL_HEIGHT = 182;
+
     /// <summary>
     /// Logger for logging
     /// </summary>
@@ -139,8 +145,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
     /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
-    /// <param name="volumeCalcType">Summary volumes calculation type</param>    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. 
-    /// </returns>
+    /// <param name="volumeCalcType">Summary volumes calculation type</param>    
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/reporttiles/png")]
@@ -163,6 +169,42 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
         volumeCalcType, overlays, width, height, mapType, mode);
+
+      Response.Headers.Add("X-Warning", "false");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+    }
+
+    /// <summary>
+    /// Gets a project thumbnail
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
+    [ProjectUidVerifier]
+    [Route("api/v2/projectthumbnail")]
+    [Route("api/v2/compaction/projectthumbnail")]
+    [HttpGet]
+    public async Task<TileResult> GetProjectThumbnail(
+      [FromQuery] Guid projectUid)
+    {
+      log.LogDebug("GetProjectThumbnail: " + Request.QueryString);
+
+      var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
+        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, null);
+
+      return tileResult;
+    }
+
+    [ProjectUidVerifier]
+    [Route("api/v2/projectthumbnail/png")]
+    [Route("api/v2/compaction/projectthumbnail/png")]
+    [HttpGet]
+    public async Task<FileResult> GetProjectThumbnailRaw(
+      [FromQuery] Guid projectUid)
+    {
+      log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
+
+      var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
+        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, null);
 
       Response.Headers.Add("X-Warning", "false");
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
