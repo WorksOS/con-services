@@ -1,11 +1,8 @@
 node('Jenkins-Win2016-Raptor') {
-      // This limits build concurrency to 1 per branch
+    // This limits build concurrency to 1 per branch
     properties([disableConcurrentBuilds()])
-    //Apply version number
-    //We will later use it to tag images
 
     def branch = env.BRANCH_NAME
-    def buildNumber = env.BUILD_NUMBER
     def versionPrefix = ""
     def suffix = ""
     def branchName = ""
@@ -24,10 +21,10 @@ node('Jenkins-Win2016-Raptor') {
        suffix = "-" + branchName
        versionPrefix = "0.98."
     }
-    
-    def versionNumber = versionPrefix + buildNumber
+
+    // Apply version number and use it later to tag images
+    def versionNumber = versionPrefix + env.BUILD_NUMBER
     def fullVersion = versionNumber + suffix
-    def workspacePath =""
     currentBuild.displayName = versionNumber + suffix
 
     stage ('Checkout') {
@@ -42,6 +39,7 @@ node('Jenkins-Win2016-Raptor') {
     stage ('Run unit tests') {
         bat "./unittests.bat"
     }
+
     stage ('Prepare Acceptance tests') {
         bat "./acceptancetests.bat"
         try {
@@ -64,62 +62,64 @@ node('Jenkins-Win2016-Raptor') {
             }
         }
     }
-	
+    
     echo "Build result is ${currentBuild.result}"
     if (currentBuild.result=='SUCCESS') {
         stage ('Coverage') {
             bat "./coverage.bat"
-	        step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
-	        publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
-		}
+            step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
+            publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
+        }
 
-	    if (branch.contains("release")) {
-                stage ('Build Release Images') {
-                    bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest-release-${fullVersion} ./Artifacts/WebApi"
-
-         	    stage ('Tag repository') {
-                      bat 'git rev-parse HEAD > GIT_COMMIT'
-                      def gitCommit=readFile('GIT_COMMIT').trim()
-                      def tagParameters = [
+        if (branch.contains("release")) {
+            stage ('Build Release Images') {
+                bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest-release-${fullVersion} ./Artifacts/WebApi"
+                
+                stage ('Tag repository') {
+                    bat 'git rev-parse HEAD > GIT_COMMIT'
+                    def gitCommit=readFile('GIT_COMMIT').trim()
+                    def tagParameters = [
                         new StringParameterValue("REPO_NAME", "VSS.Productivity3D.Service"),
                         new StringParameterValue("COMMIT_ISH", gitCommit),
-                        new StringParameterValue("TAG", fullVersion)
-                      ]
-                      build job: "tag-vso-commit", parameters: tagParameters
-	             }
-                } 
-                //Publish to AWS Repo
-                stage ('Get ecr login, push image to Repo') {
-                    bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion latest-release-${fullVersion}"
-				}
+                        new StringParameterValue("TAG", fullVersion)]
+                        
+                    build job: "tag-vso-commit", parameters: tagParameters
+                }
+            }
+            
+            //Publish to AWS Repo
+            stage ('Get ecr login, push image to Repo') {
+                bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion latest-release-${fullVersion}"
+            }
         } else if (branch.contains("master")) {
-                def buildArtifact = '3DPMWebApiNet47.zip'
-                archiveArtifacts artifacts: buildArtifact, fingerprint: true
+            def buildArtifact = '3DPMWebApiNet47.zip'
+            archiveArtifacts artifacts: buildArtifact, fingerprint: true
 
-                stage ('Upload artifact to S3 deployment repository') {
-                    bat "powershell.exe -ExecutionPolicy Bypass -Command aws s3 cp ${buildArtifact} s3://vss-merino/Productivity3D/Releases/${buildArtifact} --acl public-read --profile vss-grant"
-                }
+            // This stage is only necessarly so long as the Prod deployments are not containerised.
+            stage ('Upload artifact to S3 deployment repository') {
+                bat "powershell.exe -ExecutionPolicy Bypass -Command aws s3 cp ${buildArtifact} s3://vss-merino/Productivity3D/Releases/${buildArtifact} --acl public-read --profile vss-grant"
+            }
 
-         	    stage ('Tag repository') {
-                      bat 'git rev-parse HEAD > GIT_COMMIT'
-                      def gitCommit=readFile('GIT_COMMIT').trim()
-                      def tagParameters = [
-                        new StringParameterValue("REPO_NAME", "VSS.Productivity3D.Service"),
-                        new StringParameterValue("COMMIT_ISH", gitCommit),
-                        new StringParameterValue("TAG", fullVersion+"-master")
-                      ]
-                      build job: "tag-vso-commit", parameters: tagParameters
-	             }
-	    } else if (branch.contains("Dev")) {
-                //Rebuild Image, tag & push to AWS Docker Repo
-                stage ('Build Development Images') {
-                    bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}-${branchName} ./Artifacts/WebApi"
-                    bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest ./Artifacts/WebApi"
-                }
-				//Publish to AWS Repo
-					stage ('Get ecr login, push image to Repo') {
-					bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion ${fullVersion}-${branchName}"
-				}
-			}
+            stage ('Tag repository') {
+                bat 'git rev-parse HEAD > GIT_COMMIT'
+                def gitCommit=readFile('GIT_COMMIT').trim()
+                def tagParameters = [
+                    new StringParameterValue("REPO_NAME", "VSS.Productivity3D.Service"),
+                    new StringParameterValue("COMMIT_ISH", gitCommit),
+                    new StringParameterValue("TAG", fullVersion+"-master")
+                
+                build job: "tag-vso-commit", parameters: tagParameters
+            }
+        } else if (branch.contains("Dev")) {
+            //Rebuild Image, tag & push to AWS Docker Repo
+            stage ('Build Development Images') {
+                bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}-${branchName} ./Artifacts/WebApi"
+                bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest ./Artifacts/WebApi"
+            }
+            //Publish to AWS Repo
+            stage ('Get ecr login, push image to Repo') {
+                bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion ${fullVersion}-${branchName}"
+            }
+        }
     }
 }
