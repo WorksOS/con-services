@@ -22,7 +22,6 @@ using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
@@ -89,6 +88,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>CMV summary</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/cmv/summary")]
     [Route("api/v2/compaction/cmv/summary")]
     [HttpGet]
     public async Task<CompactionCmvSummaryResult> GetCmvSummary(
@@ -128,6 +128,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// when the filter layer method is OffsetFromDesign or OffsetFromProfile.
     /// <returns>MDP summary</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/mdp/summary")]
     [Route("api/v2/compaction/mdp/summary")]
     [HttpGet]
     public async Task<CompactionMdpSummaryResult> GetMdpSummary(
@@ -173,6 +174,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>Pass count summary</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/passcounts/summary")]
     [Route("api/v2/compaction/passcounts/summary")]
     [HttpGet]
     public async Task<CompactionPassCountSummaryResult> GetPassCountSummary(
@@ -211,6 +213,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>Temperature summary</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/temperature/summary")]
     [Route("api/v2/compaction/temperature/summary")]
     [HttpGet]
     public async Task<CompactionTemperatureSummaryResult> GetTemperatureSummary(
@@ -256,6 +259,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>Speed summary</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/speed/summary")]
     [Route("api/v2/compaction/speed/summary")]
     [HttpGet]
     public async Task<CompactionSpeedSummaryResult> GetSpeedSummary(
@@ -301,6 +305,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>CMV % change</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/cmv/percentchange")]
     [Route("api/v2/compaction/cmv/percentchange")]
     [HttpGet]
     public async Task<CompactionCmvPercentChangeResult> GetCmvPercentChange(
@@ -358,6 +363,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="baseUid">The Uid for the base surface, either a filter or design.</param>
     /// <param name="topUid">The Uid for the top surface, either a filter or design.</param>
     [ProjectUidVerifier]
+    [Route("api/v2/volumes/summary")]
     [Route("api/v2/compaction/volumes/summary")]
     [HttpGet]
     public async Task<CompactionSummaryVolumesResult> GetSummaryVolumes(
@@ -450,20 +456,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>CMV details</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/cmv/details")]
     [Route("api/v2/compaction/cmv/details")]
     [HttpGet]
     public async Task<CompactionCmvDetailedResult> GetCmvDetails(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
-      /**************************************************************************************************
-       * NOTE: This end point for CMV details is currently not called from the Compaction UI.
-       * It still uses the old Raptor CMV settings with CMV min, max and target to calculate the percents
-       * data to return. However, the palette now uses 16 colors and values (the last being 'above' color
-       * and value) and this code needs to be updated to be consistent. This requires a change to Raptor
-       * to accept a list of CMV values like for pass count details.
-       **************************************************************************************************/
-
       log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
       CMVRequest request = await GetCmvRequest(projectUid, filterUid);
@@ -498,6 +497,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">Filter UID</param>
     /// <returns>Pass count details</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/passcounts/details")]
     [Route("api/v2/compaction/passcounts/details")]
     [HttpGet]
     public async Task<CompactionPassCountDetailedResult> GetPassCountDetails(
@@ -537,6 +537,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="cutfillDesignUid">Design UID</param>
     /// <returns>Cut-fill details</returns>
     [ProjectUidVerifier]
+    [Route("api/v2/cutfill/details")]
     [Route("api/v2/compaction/cutfill/details")]
     [HttpGet]
     public async Task<CompactionCutFillDetailedResult> GetCutFillDetails(

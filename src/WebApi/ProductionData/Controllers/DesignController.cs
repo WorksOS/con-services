@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -79,7 +80,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpGet]
     public async Task<ContractExecutionResult> GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] double? tolerance)
     {
-      log.LogInformation("GetExportReportSurface: " + Request.QueryString);
+      log.LogInformation("GetDesignBoundaries: " + Request.QueryString);
 
       long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       tolerance = tolerance ?? DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL;
@@ -88,11 +89,27 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       request.Validate();
 
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
+      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders());
 
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface && f.IsActivated).ToList();
 
       return RequestExecutorContainerFactory.Build<DesignExecutor>(logger, raptorClient, null, configStore, null, null, fileList).Process(request);
     }
+
+    /// <summary>
+    /// Gets the User uid/applicationID from the context.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
+    private string GetUserId()
+    {
+      if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))
+      {
+        return identity.Name;
+      }
+
+      throw new ArgumentException("Incorrect UserId in request context principal.");
+    }
+
   }
 }

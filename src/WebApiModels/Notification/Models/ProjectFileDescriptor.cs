@@ -49,6 +49,12 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
     public ImportedFileType FileType { get; private set; }
 
     /// <summary>
+    /// A unique file identifier from Legacy
+    /// </summary>
+    [JsonProperty(PropertyName = "legacyFileId", Required = Required.Default)]
+    public long? LegacyFileId { get; private set; }
+
+    /// <summary>
     /// Private constructor
     /// </summary>
     private ProjectFileDescriptor()
@@ -65,7 +71,8 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
       string coordSystemFileName,
       DxfUnitsType dxfUnitsType,
       long fileId,
-      ImportedFileType fileType = ImportedFileType.DesignSurface
+      ImportedFileType fileType = ImportedFileType.DesignSurface,
+      long? legacyFileId = null
     )
     {
       return new ProjectFileDescriptor
@@ -76,7 +83,8 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
         CoordSystemFileName = coordSystemFileName,
         DXFUnitsType = dxfUnitsType,
         FileId = fileId,
-        FileType = fileType
+        FileType = fileType,
+        LegacyFileId = legacyFileId
       };
     }
 

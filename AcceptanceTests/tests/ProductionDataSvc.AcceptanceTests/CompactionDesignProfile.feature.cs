@@ -154,11 +154,9 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Slicer Design Profile With Added Endpoints")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionDesignProfile")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void CompactionGetSlicerDesignProfileWithAddedEndpoints()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Design Profile With Added Endpoints", new string[] {
-                        "Ignore"});
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Slicer Design Profile With Added Endpoints", ((string[])(null)));
 #line 67
 this.ScenarioSetup(scenarioInfo);
 #line 68
@@ -175,8 +173,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
 #line 73
  testRunner.Then("the Compaction Design Profile should be", @"{
-
-  ""gridDistanceBetweenProfilePoints"": 8.0405782488513378,
+  ""gridDistanceBetweenProfilePoints"": 8.0405782499336258,
   ""results"": [
     {
       ""designFileUid"": ""dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"",
@@ -186,48 +183,44 @@ this.ScenarioSetup(scenarioInfo);
           ""y"": ""NaN""
         },
         {
-          ""x"": 1.4989359768016426,
+          ""x"": 1.4989359778937124,
           ""y"": 597.107849
         },
         {
-          ""x"": 2.4363884583427549,
+          ""x"": 2.4363884597116843,
           ""y"": 597.317444
         },
         {
-          ""x"": 3.0398711084175734,
+          ""x"": 3.0398711095204827,
           ""y"": 597.4535
         },
         {
-          ""x"": 3.8040219479024642,
+          ""x"": 3.8040219492274239,
           ""y"": 597.46875
         },
         {
-          ""x"": 4.3387533308993378,
+          ""x"": 4.3387533320107821,
           ""y"": 597.4797
         },
         {
-          ""x"": 5.2303524427833983,
+          ""x"": 5.2303524440560505,
           ""y"": 597.466736
         },
         {
-          ""x"": 5.5624914376821266,
+          ""x"": 5.5624914389921845,
           ""y"": 597.4633
         },
         {
-          ""x"": 6.7969372754612811,
+          ""x"": 6.7969372766692437,
           ""y"": 597.4468
         },
         {
-          ""x"": 7.7815432982108987,
+          ""x"": 7.7815432993860476,
           ""y"": 597.437439
         },
         {
-          ""x"": 8.040578248851336,
+          ""x"": 8.0405782499336258,
           ""y"": 597.434265
-        },
-        {
-          ""x"": 8.0405782488513378,
-          ""y"": ""NaN""
         }
       ]
     }

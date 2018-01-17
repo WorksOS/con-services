@@ -3,7 +3,7 @@ I should be able to request compaction temperature data
 
 ######################################################## Temperature Summary ####################################################
 Scenario Outline: Compaction Get Temperature Summary - No Design Filter
-Given the Compaction service URI "/api/v2/compaction/temperature/summary" for operation "TemperatureSummary"
+Given the Compaction service URI "/api/v2/temperature/summary" for operation "TemperatureSummary"
 And the result file "CompactionGetTemperatureDataResponse.json"
 And projectUid "<ProjectUID>"
 When I request result
@@ -14,7 +14,7 @@ Examples:
 | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_Summary_PS |
 
 Scenario Outline: Compaction Get Temperature Summary
-Given the Compaction service URI "/api/v2/compaction/temperature/summary" for operation "TemperatureSummary"
+Given the Compaction service URI "/api/v2/temperature/summary" for operation "TemperatureSummary"
 And the result file "CompactionGetTemperatureDataResponse.json"
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"

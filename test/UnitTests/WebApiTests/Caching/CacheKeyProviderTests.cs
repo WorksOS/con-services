@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.WebApiTests.Caching
 
   public class FakeFilterProxy : IFilterServiceProxy
   {
-    public void ClearCacheItem(string uid)
+    public void ClearCacheItem(string uid, string userId=null)
     { }
 
     public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid, IDictionary<string, string> customHeaders = null)
@@ -148,7 +148,7 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       return new List<FilterDescriptor>() {new FilterDescriptor() {FilterJson = "{\"designUID\":\"testDesign\"}", FilterUid = Guid.NewGuid().ToString()}};
     }
 
-    public void ClearCacheListItem(string projectUid)
+    public void ClearCacheListItem(string projectUid, string userId=null)
     { }
   }
 }

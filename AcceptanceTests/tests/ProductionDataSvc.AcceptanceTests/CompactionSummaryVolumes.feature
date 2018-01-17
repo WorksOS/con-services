@@ -3,7 +3,7 @@ I should be able to request Summary Volumes.
 
 # Until we can mock execution dates the responses will not contain any volume data and are largely symbolic.
 Scenario Outline: Compaction Get Summary volumes
-Given the Compaction service URI "/api/v2/compaction/volumes/summary"
+Given the Compaction service URI "/api/v2/volumes/summary"
 And the result file "CompactionSummaryVolumeResponse.json"
 And project "<ProjectUid>"
 And filter "<FilterUid>"

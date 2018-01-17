@@ -3,7 +3,7 @@
 
 ######################################################## MDP Summary ############################################################
 Scenario Outline: Compaction Get MDP Summary - No Design Filter
-Given the Compaction service URI "/api/v2/compaction/mdp/summary"
+Given the Compaction service URI "/api/v2/mdp/summary"
 And the result file "CompactionGetMDPDataResponse.json"
 And projectUid "<ProjectUID>"
 When I request result
@@ -15,7 +15,7 @@ Examples:
 
 
 Scenario Outline: Compaction Get MDP Summary
-Given the Compaction service URI "/api/v2/compaction/mdp/summary"
+Given the Compaction service URI "/api/v2/mdp/summary"
 And the result file "CompactionGetMDPDataResponse.json"
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"

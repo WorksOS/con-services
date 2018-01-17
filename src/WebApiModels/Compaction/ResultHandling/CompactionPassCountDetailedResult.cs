@@ -1,11 +1,11 @@
-﻿using System.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
+using System.Linq;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Pass Count Details request for compaction.
@@ -19,9 +19,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// Private constructor
     /// </summary>
     private CompactionPassCountDetailedResult()
-    {
-      // ...
-    }
+    { }
 
     /// <summary>
     /// Creates an instance of the CompactionPassCountDetailedResult class.
@@ -30,11 +28,18 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// <returns>An instance of the CompactionPassCountDetailedResult class.</returns>
     public static CompactionPassCountDetailedResult CreatePassCountDetailedResult(PassCountDetailedResult result)
     {
-      var passCountResult = new CompactionPassCountDetailedResult
+      const int noPassCountData = 0;
+
+      if (Math.Abs(result.TotalCoverageArea - noPassCountData) < 0.001)
+      {
+        return new CompactionPassCountDetailedResult { DetailedData = new PassCountDetailsData { PassCountTarget = new PassCountTargetData() } };
+      }
+
+      return new CompactionPassCountDetailedResult
       {
         DetailedData = new PassCountDetailsData
         {
-          Percents = result.percents.Skip(1).ToArray(),//don't return the pass count 0 value (see PassCountSettings)
+          Percents = result.percents.Skip(1).ToArray(), //don't return the pass count 0 value (see PassCountSettings)
           PassCountTarget = new PassCountTargetData
           {
             MinPassCountMachineTarget = result.constantTargetPassCountRange.min,
@@ -44,8 +49,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
           TotalCoverageArea = result.TotalCoverageArea
         }
       };
-
-      return passCountResult;
     }
 
     /// <summary>
@@ -73,6 +76,5 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
       [JsonProperty(PropertyName = "passCountTarget")]
       public PassCountTargetData PassCountTarget { get; set; }
     }
-
   }
 }

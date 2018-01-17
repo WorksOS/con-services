@@ -2,7 +2,7 @@
 I should be able to request Cut-Fill compaction data
 
 Scenario Outline: Compaction Get Cut-Fill Details - No Design Filter
-Given the Compaction service URI "/api/v2/compaction/cutfill/details" for operation "CutFillDetails"
+Given the Compaction service URI "/api/v2/cutfill/details" for operation "CutFillDetails"
 And the result file "CompactionGetCutFillDataResponse.json"
 And projectUid "<ProjectUID>"
 And a cutfillDesignUid "<CutFillDesignUID>"
@@ -15,7 +15,7 @@ Examples:
 
 
 Scenario Outline: Compaction Get Cut-Fill Details
-Given the Compaction service URI "/api/v2/compaction/cutfill/details" for operation "CutFillDetails"
+Given the Compaction service URI "/api/v2/cutfill/details" for operation "CutFillDetails"
 And the result file "CompactionGetCutFillDataResponse.json"
 And projectUid "<ProjectUID>"
 And a cutfillDesignUid "<CutFillDesignUID>"

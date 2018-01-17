@@ -61,8 +61,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterServiceProxy">Filter service proxy</param>
     public CompactionProfileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) : 
-      base (logger.CreateLogger<BaseController>(),exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) :
+      base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -119,16 +119,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         switch (volumeCalcType.Value)
         {
           case VolumeCalcType.GroundToGround:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
             break;
           case VolumeCalcType.GroundToDesign:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid, true);
+            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
             volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, true);
             break;
           case VolumeCalcType.DesignToGround:
             volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, true);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid, false);
+            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
             break;
         }
       }
@@ -167,6 +167,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       return slicerProductionDataResult;
     }
+
     /// <summary>
     /// Calculate the elevations for cut-fill or summary volumes cells from the design surface.
     /// </summary>
@@ -182,12 +183,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="type">The type of profile, either cut-fill or summary volumes</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
     private void FindCutFillElevations(
-      long projectId, 
-      CompactionProjectSettings settings, 
-      double startLatDegrees, double startLonDegrees, 
-      double endLatDegrees, double endLonDegrees, 
-      DesignDescriptor design, 
-      ICompactionProfileResultHelper profileResultHelper, 
+      long projectId,
+      CompactionProjectSettings settings,
+      double startLatDegrees, double startLonDegrees,
+      double endLatDegrees, double endLonDegrees,
+      DesignDescriptor design,
+      ICompactionProfileResultHelper profileResultHelper,
       CompactionProfileResult<CompactionProfileDataResult> slicerProductionDataResult,
       string type,
       VolumeCalcType volumeCalcType)
@@ -209,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       );
 
       //Find the cut-fill elevations for the cell stations from the design vertex elevations
-      profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult, type, volumeCalcType);      
+      profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult, type, volumeCalcType);
     }
 
     [ProjectUidVerifier]

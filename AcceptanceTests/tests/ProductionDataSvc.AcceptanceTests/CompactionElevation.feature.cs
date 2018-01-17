@@ -74,8 +74,8 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 5
 this.ScenarioSetup(scenarioInfo);
 #line 6
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationrange\" for operation \"Ele" +
-                    "vationRange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/elevationrange\" for operation \"ElevationRange" +
+                    "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
 testRunner.And("the result file \"CompactionGetElevationAndProjectStatisticsDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
@@ -105,8 +105,8 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
 #line 15
 this.ScenarioSetup(scenarioInfo);
 #line 16
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationrange\" for operation \"Ele" +
-                    "vationRange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/elevationrange\" for operation \"ElevationRange" +
+                    "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 17
 testRunner.And("the result file \"CompactionGetElevationAndProjectStatisticsDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 18
@@ -139,8 +139,8 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
 #line 39
 this.ScenarioSetup(scenarioInfo);
 #line 40
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/projectstatistics\" for operation \"" +
-                    "ProjectStatistics\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/projectstatistics\" for operation \"ProjectStat" +
+                    "istics\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 41
 testRunner.And("the result file \"CompactionGetElevationAndProjectStatisticsDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 42

@@ -31,15 +31,11 @@
   },
   "DesignOutside_Summary": {
     "temperatureSummaryData": {
-      "percentEqualsTarget": 0,
-      "percentGreaterThanTarget": 0,
-      "percentLessThanTarget": 0,
-      "totalAreaCoveredSqMeters": 0,
-      "temperatureTarget": {
-        "minTemperatureMachineTarget": 409.6,
-        "maxTemperatureMachineTarget": 409.6,
-        "targetVaries": false
-      }
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 0.0,
+      "totalAreaCoveredSqMeters": 0.0,
+      "temperatureTarget": null
     },
     "Code": 0,
     "Message": "success"

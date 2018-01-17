@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
@@ -8,12 +9,14 @@ using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
@@ -54,6 +57,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IProductionDataRequestFactory requestFactory;
 
+    private readonly ITransferProxy transferProxy;
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -67,10 +72,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="exceptionHandler">The exception handler.</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
     /// <param name="prefProxy">User preferences proxy</param>
-    /// <param name="prefProxy">The user preferences proxy</param>
+    /// <param name="transferProxy">Export file download proxy</param>
     public CompactionExportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IPreferenceProxy prefProxy) :
+      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy,
+      IPreferenceProxy prefProxy, ITransferProxy transferProxy) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       log = logger.CreateLogger<CompactionExportController>();
@@ -78,6 +84,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.logger = logger;
       this.prefProxy = prefProxy;
       this.requestFactory = requestFactory;
+      this.transferProxy = transferProxy;
     }
 
     /// <summary>
@@ -105,7 +112,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
-      
+
       tolerance = tolerance ?? surfaceExportTollerance;
 
       var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
@@ -135,6 +142,104 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Build<ExportReportExecutor>(logger, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
+    }
+
+    /// <summary>
+    /// Tries to get export status.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="jobId">The job identifier.</param>
+    /// <param name="scheduler">The scheduler.</param>
+    /// <exception cref="ServiceException">new ContractExecutionResult(-4,"Job failed for some reason")</exception>
+    /// <exception cref="ContractExecutionResult">-4 - Job failed for some reason</exception>
+    [ProjectUidVerifier]
+    [Route("api/v2/export/veta/status")]
+    [HttpGet]
+    public async Task<ContractExecutionResult> TryGetExportStatus([FromQuery] Guid projectUid, [FromQuery] string jobId,
+      [FromServices] ISchedulerProxy scheduler)
+    {
+      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId, Request.Headers.GetCustomHeaders(true));
+      if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
+      {
+        return new ContractExecutionResult();
+      }
+      if (!jobResult.status.Equals("FAILED", StringComparison.OrdinalIgnoreCase))
+      {
+        return new ContractExecutionResult(ContractExecutionStatesEnum.PartialData, "Job is running");
+      }
+      throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Job failed for some reason"));
+    }
+
+    /// <summary>
+    /// Tries the download of the exported file.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="jobId">The job identifier.</param>
+    /// <param name="scheduler">The scheduler.</param>
+    /// <exception cref="ServiceException">new ContractExecutionResult(-4, "File is not likely ready to be downloaded")</exception>
+    /// <exception cref="ContractExecutionResult">-4 - File is not likely ready to be downloaded</exception>
+    [ProjectUidVerifier]
+    [Route("api/v2/export/veta/download")]
+    [HttpGet]
+    public async Task<FileResult> TryDownload([FromQuery] Guid projectUid, [FromQuery] string jobId,
+      [FromServices] ISchedulerProxy scheduler)
+    {
+      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId, Request.Headers.GetCustomHeaders(true));
+
+      if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
+      {
+        return await transferProxy.Download(jobResult.key);
+      }
+      throw new ServiceException(HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "File is likely not ready to be downloaded"));
+    }
+
+    /// <summary>
+    /// Tries the download of the exported file. Used for acceptance tests.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="jobId">The job identifier.</param>
+    /// <param name="scheduler">The scheduler.</param>
+    /// <exception cref="ServiceException">new ContractExecutionResult(-4, "File is not likely ready to be downloaded")</exception>
+    /// <exception cref="ContractExecutionResult">-4 - File is not likely ready to be downloaded</exception>
+    [ProjectUidVerifier]
+    [Route("api/v2/export/veta/downloadtest")]
+    [HttpGet]
+    public async Task<ExportResult> TryDownloadTest([FromQuery] Guid projectUid, [FromQuery] string jobId,
+      [FromServices] ISchedulerProxy scheduler)
+    {
+      var result = await TryDownload(projectUid, jobId, scheduler) as FileStreamResult;
+
+      using (var reader = new BinaryReader(result.FileStream))
+      {
+        return ExportResult.CreateExportDataResult(reader.ReadBytes((int)result.FileStream.Length), 0);
+      }
+    }
+
+    /// <summary>
+    /// Schedules the veta export job and returns JobId.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="fileName">Name of the file.</param>
+    /// <param name="machineNames">The machine names.</param>
+    /// <param name="filterUid">The filter uid.</param>
+    /// <param name="scheduler">The scheduler.</param>
+    [ProjectUidVerifier]
+    [Route("api/v2/export/veta/schedulejob")]
+    [HttpGet]
+    public ScheduleResult ScheduleVetaJob([FromQuery] Guid projectUid,
+      [FromQuery] string fileName,
+      [FromQuery] string machineNames,
+      [FromQuery] Guid? filterUid,
+      [FromServices] ISchedulerProxy scheduler)
+    {
+      return
+        WithServiceExceptionTryExecute(() => new ScheduleResult
+        {
+          JobId =
+            scheduler.ScheduleVetaExportJob(projectUid, fileName, machineNames, filterUid,
+              Request.Headers.GetCustomHeaders(true)).Result?.jobId
+        });
     }
 
     /// <summary>
@@ -252,7 +357,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get user preferences
     /// </summary>
-    /// <returns></returns>
     private async Task<UserPreferenceData> GetUserPreferences()
     {
       var userPreferences = await prefProxy.GetUserPreferences(this.CustomHeaders);
@@ -270,8 +374,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectId"></param>
     /// <param name="filter"></param>
-    /// <param name="startUtc"></param>
-    /// <param name="endUtc"></param>
     private Tuple<DateTime, DateTime> GetDateRange(long projectId, Common.Models.Filter filter)
     {
       if (filter?.StartUtc == null || !filter.EndUtc.HasValue)

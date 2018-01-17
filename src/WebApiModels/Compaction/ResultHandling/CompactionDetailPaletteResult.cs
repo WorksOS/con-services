@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
 using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents color palette result for a elevation palette request
@@ -21,9 +20,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// </summary>
     /// 
     private CompactionDetailPaletteResult()
-    {
-      // ...
-    }
+    { }
 
     /// <summary>
     /// Creates an instance of the CompactionDetailPaletteResult class.

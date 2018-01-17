@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -155,6 +156,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param> 
     /// <param name="fileType">Type of the file</param>
     /// <param name="fileId">A unique file identifier</param>
+    /// <param name="legacyFileId">A unique file identifier from Legacy</param>
     /// <returns>A code and message to indicate the result</returns>
     /// <executor>DeleteFileExecutor</executor> 
     [ProjectUidVerifier]
@@ -165,7 +167,9 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
-      [FromQuery] long fileId)
+      [FromQuery] long fileId,
+      [FromQuery] long? legacyFileId
+      )
     {
       log.LogDebug("GetDeleteFile: " + Request.QueryString);
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
@@ -187,7 +191,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         }
       }
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType, legacyFileId);
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
@@ -232,7 +236,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 
     /// <summary>
     /// Notifies Raptor that a file has been CRUD to a project via CGen
-    ///      This is called by the SurveyedSurface sync during Lift&Shift/Beta period.
+    ///      This is called by the SurveyedSurface sync during Lift and Shift/Beta period.
     ///      When a file is added via CGen flexGateway, it will tell raptor.
     ///        However the 3dp UI needs to know about the change, so needs to refresh its caches.
     /// </summary>
@@ -286,7 +290,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
         customHeaders.Add("X-VisionLink-ClearCache", "true");
 
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), GetUserId(), customHeaders);
       log.LogInformation("After clearing cache {0} total imported files, {1} activated, for project {2}", fileList.Count, fileList.Count(f => f.IsActivated), projectUid);
 
       return fileList;
@@ -328,6 +332,21 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       }
 
       return filterDescriptors.Select(f => JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(f.FilterJson)).ToList();
+    }
+
+    /// <summary>
+    /// Gets the User uid/applicationID from the context.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
+    private string GetUserId()
+    {
+      if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))
+      {
+        return identity.Name;
+      }
+
+      throw new ArgumentException("Incorrect UserId in request context principal.");
     }
   }
 }

@@ -3,7 +3,7 @@ I should be able to request Pass Count compaction data
 
 ######################################################## Pass Count Summary #####################################################
 Scenario Outline: Compaction Get Passcount Summary - No Design Filter
-Given the Compaction service URI "/api/v2/compaction/passcounts/summary" for operation "PassCountSummary"
+Given the Compaction service URI "/api/v2/passcounts/summary" for operation "PassCountSummary"
 And the result file "CompactionGetPassCountDataResponse.json"
 And projectUid "<ProjectUID>"
 When I request result
@@ -14,7 +14,7 @@ Examples:
 | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_Summary_PS |
 
 Scenario Outline: Compaction Get Passcount Summary
-Given the Compaction service URI "/api/v2/compaction/passcounts/summary" for operation "PassCountSummary"
+Given the Compaction service URI "/api/v2/passcounts/summary" for operation "PassCountSummary"
 And the result file "CompactionGetPassCountDataResponse.json"
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
@@ -29,7 +29,7 @@ Examples:
 
 ######################################################## Pass Count Details #####################################################
 Scenario Outline: Compaction Get Passcount Details - No Design Filter
-Given the Compaction service URI "/api/v2/compaction/passcounts/details" for operation "PassCountDetails"
+Given the Compaction service URI "/api/v2/passcounts/details" for operation "PassCountDetails"
 And the result file "CompactionGetPassCountDataResponse.json"
 And projectUid "<ProjectUID>"
 When I request result
@@ -40,7 +40,7 @@ Examples:
 | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_Details_PS |
 
 Scenario Outline: Compaction Get Passcount Details
-Given the Compaction service URI "/api/v2/compaction/passcounts/details" for operation "PassCountDetails"
+Given the Compaction service URI "/api/v2/passcounts/details" for operation "PassCountDetails"
 And the result file "CompactionGetPassCountDataResponse.json"
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"

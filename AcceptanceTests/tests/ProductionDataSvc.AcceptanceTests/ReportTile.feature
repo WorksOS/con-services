@@ -2,7 +2,7 @@
 	I should be able to request report tiles
 
 Scenario Outline: Report Tiles
-Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+Given the Report Tile service URI "/api/v2/reporttiles" 
 And a projectUid "<ProjectUID>"
 And a filterUid "<filterUID>"
 And an overlayType "<overlayType>"
@@ -40,7 +40,7 @@ Examples:
 | CMVOverlayAll         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary,Geofences,Alignments,DxfLinework | HYBRID    | 1    | 3          |
 
 Scenario Outline: Large Report Tiles
-Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+Given the Report Tile service URI "/api/v2/reporttiles" 
 And a width "1024" and a height "1024"
 And a projectUid "<ProjectUID>"
 And a filterUid "<filterUID>"
@@ -54,7 +54,7 @@ Examples:
 | CMVLarge              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary                                  | SATELLITE | 1    | 3          |
 
 Scenario Outline: Report cutfill and volume tiles
-Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+Given the Report Tile service URI "/api/v2/reporttiles" 
 And a projectUid "<ProjectUID>"
 And an overlayType "<overlayType>"
 And a mapType "<mapType>"
@@ -63,6 +63,7 @@ And a cutFillDesignUid "<cutFillDesignUid>"
 And a volumeCalcType "<volumeCalcType>" 
 And a volumeTopUid "<volumeTopUid>" 
 And a volumeBaseUid "<volumeBaseUid>"
+And a width "1024" and a height "1024"
 When I request a Report Tile and the result file "CompactionReportTileResponse.json"	
 Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
 Examples: 
@@ -73,32 +74,32 @@ Examples:
 | CutFillOverlayAll | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff |                |                                      |                                      | ProductionData,BaseMap,ProjectBoundary,Geofences,Alignments,DxfLinework | HYBRID  | 8    | 5          |
 | GroundToGround    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToGround | A40814AA-9CDB-4981-9A21-96EA30FFECDD | F07ED071-F8A1-42C3-804A-1BDE7A78BE5B | ProductionData                                                          |         | 8    | 1          |
 | DesignToGround    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | DesignToGround | a54e5945-1aaa-4921-9cc1-c9d8c0a343d3 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | ProductionData                                                          |         | 8    | 5          |
-| GroundToDesign    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToDesign | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | ProductionData                                                          |         | 8    | 5          |
+| GroundToDesign    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToDesign | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 9c27697f-ea6d-478a-a168-ed20d6cd9a22 | ProductionData                                                          |         | 8    | 5          |
 | D2GOverlayAll     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | DesignToGround | a54e5945-1aaa-4921-9cc1-c9d8c0a343d3 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | ProductionData,BaseMap,ProjectBoundary,Geofences,Alignments,DxfLinework | HYBRID  | 8    | 5          |
-| G2DOverlayAll     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToDesign | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | ProductionData,BaseMap,ProjectBoundary,Geofences,Alignments,DxfLinework | HYBRID  | 8    | 5          |
+| G2DOverlayAll     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToDesign | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 9c27697f-ea6d-478a-a168-ed20d6cd9a22 | ProductionData,BaseMap,ProjectBoundary,Geofences,Alignments,DxfLinework | HYBRID  | 8    | 5          |
 
 Scenario: Report Tile - Missing Mode 
-	Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+	Given the Report Tile service URI "/api/v2/reporttiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And an overlayType "ProductionData"
 	When I request a Report Tile Expecting BadRequest
 	Then I should get error code -1 and message "Missing display mode parameter for production data overlay"
 
 Scenario: Report Tile - Missing Map Type 
-	Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+	Given the Report Tile service URI "/api/v2/reporttiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And an overlayType "BaseMap"
 	When I request a Report Tile Expecting BadRequest
 	Then I should get error code -1 and message "Missing map type parameter for base map overlay"
 
 Scenario: Report Tile - Missing Overlays 
-	Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+	Given the Report Tile service URI "/api/v2/reporttiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
 	When I request a Report Tile Expecting BadRequest
 	Then I should get error code -1 and message "At least one type of map tile overlay must be specified"
 
 Scenario: Report Tile - Invalid Size 
-	Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+	Given the Report Tile service URI "/api/v2/reporttiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And an overlayType "BaseMap"
   And a width "16" and a height "16"
@@ -106,7 +107,7 @@ Scenario: Report Tile - Invalid Size
 	Then I should get error code -1 and message "Tile size must be between 64 and 2048 with a base map or 64 and 4096 otherwise"
 
 Scenario: Report Tile - Missing CutFill Design 
-	Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+	Given the Report Tile service URI "/api/v2/reporttiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And an overlayType "ProductionData"
   And a mode "8"
@@ -114,7 +115,7 @@ Scenario: Report Tile - Missing CutFill Design
 	Then I should get error code -1 and message "Missing design for cut-fill production data overlay"
 
 Scenario: Report Tile - Missing Volume Design 
-	Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+	Given the Report Tile service URI "/api/v2/reporttiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And an overlayType "ProductionData"
   And a mode "8"
@@ -123,7 +124,7 @@ Scenario: Report Tile - Missing Volume Design
 	Then I should get error code -1 and message "Missing design for summary volumes production data overlay"
 
 Scenario: Report Tile - Missing Base Filter 
-	Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+	Given the Report Tile service URI "/api/v2/reporttiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And an overlayType "ProductionData"
   And a mode "8"
@@ -133,7 +134,7 @@ Scenario: Report Tile - Missing Base Filter
 	Then I should get error code -1 and message "Missing base filter for summary volumes production data overlay"
 
 Scenario: Report Tile - Missing Top Filter 
-	Given the Report Tile service URI "/api/v2/compaction/reporttiles" 
+	Given the Report Tile service URI "/api/v2/reporttiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And an overlayType "ProductionData"
   And a mode "8"

@@ -74,8 +74,7 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 5
 this.ScenarioSetup(scenarioInfo);
 #line 6
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/cmv/summary\" for operation \"CMVSum" +
-                    "mary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/cmv/summary\" for operation \"CMVSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
 testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
@@ -117,8 +116,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
 #line 16
 this.ScenarioSetup(scenarioInfo);
 #line 17
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/cmv/summary\" for operation \"CMVSum" +
-                    "mary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/cmv/summary\" for operation \"CMVSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 18
 testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 19
@@ -178,8 +176,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
 #line 31
 this.ScenarioSetup(scenarioInfo);
 #line 32
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/cmv/details\" for operation \"CMVDet" +
-                    "ails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/cmv/details\" for operation \"CMVDetails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 33
 testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 34
@@ -221,8 +218,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
 #line 42
 this.ScenarioSetup(scenarioInfo);
 #line 43
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/cmv/details\" for operation \"CMVDet" +
-                    "ails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/cmv/details\" for operation \"CMVDetails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 44
 testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 45
@@ -269,8 +265,8 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
 #line 56
 this.ScenarioSetup(scenarioInfo);
 #line 57
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/cmv/percentchange\" for operation \"" +
-                    "CMVPercentChangeSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/cmv/percentchange\" for operation \"CMVPercentC" +
+                    "hangeSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 58
 testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 59
@@ -312,8 +308,8 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
 #line 67
 this.ScenarioSetup(scenarioInfo);
 #line 68
-testRunner.Given("the Compaction service URI \"/api/v2/compaction/cmv/percentchange\" for operation \"" +
-                    "CMVPercentChangeSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/cmv/percentchange\" for operation \"CMVPercentC" +
+                    "hangeSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 69
 testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 70

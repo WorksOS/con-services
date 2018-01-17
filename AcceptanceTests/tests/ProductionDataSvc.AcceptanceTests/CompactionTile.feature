@@ -3,7 +3,7 @@ I should be able to request compaction tiles
 
 ###################################################### Production Data Tiles ####################################################
 Scenario Outline: Get Tiles No Design Filter
-Given the Compaction service URI "/api/v2/compaction/productiondatatiles"
+Given the Compaction service URI "/api/v2/productiondatatiles"
 And the result file "CompactionGetProductionDataTilesResponse.json"	
 And projectUid "<ProjectUID>"
 And displayMode "0" and bbox "<BBox>" and width "<Width>" and height "<Height>"
@@ -16,7 +16,7 @@ Examples:
 | SS Excluded | 86a42bbf-9d0e-4079-850f-835496d715c5 | 36.207437, -115.019999, 36.207473, -115.019959                                              | 256   | 256    | SSExcluded  | 1          |
 
 Scenario Outline: Get Tiles
-Given the Compaction service URI "/api/v2/compaction/productiondatatiles"
+Given the Compaction service URI "/api/v2/productiondatatiles"
 And the result file "CompactionGetProductionDataTilesResponse.json"
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
@@ -35,7 +35,7 @@ Examples:
 
 
 Scenario Outline: Get CutFill Tiles
-Given the Compaction service URI "/api/v2/compaction/productiondatatiles"
+Given the Compaction service URI "/api/v2/productiondatatiles"
 And the result file "CompactionGetProductionDataTilesResponse.json"
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
@@ -45,10 +45,10 @@ And a summary volume file with volumeCalcType "<VolCalc>" and a topUid "<TopUid>
 When I request result
 Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
 Examples: 
-| RequestName       | ProjectUID                           | FilterUID                            | cutfillDesignUid                     | BBox                                                                          | Width | Height | Mode | VolCalc        | TopUid                               | BaseUid                              | ResultName                 | Difference |
-| FilterAreaMachine | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624 | 256   | 256    | 8    |                |                                      |                                      | BoundaryMachineFilterTiles | 1          |
-| NoDesign          | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624 | 256   | 256    | 8    |                |                                      |                                      | NoDesignTiles              | 1          |
-| SVGroundToGround1 | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 81422acc-9b0c-401c-9987-0aedbf153f1d |                                      | 36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624 | 256   | 256    | 8    | GroundToGround | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | 81422acc-9b0c-401c-9987-0aedbf153f1d | SummaryVolGroundGround1    | 1          |
-| SVGroundToDesign  | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624 | 256   | 256    | 8    | GroundToDesign | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | SummaryVolDesignGround     | 1          |
-| SVDesignToGround  | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624 | 256   | 256    | 8    | DesignToGround | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | SummaryVolGroundDesign     | 1          |
-| SVGroundToGround2 | ff91dd40-1569-4765-a2bc-014321f76ace |                                      |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624 | 256   | 256    | 8    | GroundToGround | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | SummaryVolGroundGround2    | 1          |
+| RequestName                      | ProjectUID                           | FilterUID                            | cutfillDesignUid                     | BBox                                                                          | Width | Height | Mode | VolCalc           | TopUid                               | BaseUid                              | ResultName                 | Difference | 
+| FilterAreaMachine                | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624 | 256   | 256    | 8    |                   |                                      |                                      | BoundaryMachineFilterTiles | 5          |  
+| NoDesign                         | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624 | 256   | 256    | 8    |                   |                                      |                                      | NoDesignTiles              | 5          |  
+| SVGroundToGroundEarliestToLatest | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 81422acc-9b0c-401c-9987-0aedbf153f1d |                                      | 36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624 | 256   | 256    | 8    | GroundToGround    | 9c27697f-ea6d-478a-a168-ed20d6cd9a21 | 9c27697f-ea6d-478a-a168-ed20d6cd9a22 | SummaryVolGroundGround1    | 5          |  
+| SVGroundToDesignEarliest         | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624 | 256   | 256    | 8    | GroundToDesign    | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 9c27697f-ea6d-478a-a168-ed20d6cd9a22 | SummaryVolDesignGround     | 5          |  
+| SVDesignToGroundLatest           | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624 | 256   | 256    | 8    | DesignToGround    | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | SummaryVolGroundDesign     | 5          |  
+| SVGroundToGround2                | ff91dd40-1569-4765-a2bc-014321f76ace |                                      |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624 | 256   | 256    | 8    | GroundToGround    | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | SummaryVolGroundGround2    | 5          |  
