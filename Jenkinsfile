@@ -93,7 +93,13 @@ node('Jenkins-Win2016-Raptor') {
                     bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion latest-release-${fullVersion}"
 				}
         } else if (branch.contains("master")) {
-                archiveArtifacts artifacts: '3DPMWebApiNet47.zip', fingerprint: true
+                def buildArtifact = '3DPMWebApiNet47.zip'
+                archiveArtifacts artifacts: buildArtifact, fingerprint: true
+
+                stage ('Upload artifact to S3 deployment repository') {
+                    bat "powershell.exe -ExecutionPolicy Bypass -Command aws s3 cp ${buildArtifact} s3://vss-merino/Productivity3D/Releases/${buildArtifact} --acl public-read --profile vss-grant"
+                }
+
          	    stage ('Tag repository') {
                       bat 'git rev-parse HEAD > GIT_COMMIT'
                       def gitCommit=readFile('GIT_COMMIT').trim()
