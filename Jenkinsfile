@@ -62,7 +62,7 @@ node('Jenkins-Win2016-Raptor') {
             }
         }
     }
-    
+
     echo "Build result is ${currentBuild.result}"
     if (currentBuild.result=='SUCCESS') {
         stage ('Coverage') {
@@ -86,7 +86,7 @@ node('Jenkins-Win2016-Raptor') {
                     build job: "tag-vso-commit", parameters: tagParameters
                 }
             }
-            
+
             //Publish to AWS Repo
             stage ('Get ecr login, push image to Repo') {
                 bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion latest-release-${fullVersion}"
@@ -106,8 +106,8 @@ node('Jenkins-Win2016-Raptor') {
                 def tagParameters = [
                     new StringParameterValue("REPO_NAME", "VSS.Productivity3D.Service"),
                     new StringParameterValue("COMMIT_ISH", gitCommit),
-                    new StringParameterValue("TAG", fullVersion+"-master")
-                
+                    new StringParameterValue("TAG", fullVersion+"-master")]
+
                 build job: "tag-vso-commit", parameters: tagParameters
             }
         } else if (branch.contains("Dev")) {
