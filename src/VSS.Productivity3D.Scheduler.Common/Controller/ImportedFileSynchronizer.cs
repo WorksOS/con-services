@@ -236,6 +236,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                projectEvent.ImportedFileType == ImportedFileType.Alignment)
       {
         await DownloadFileAndCallProjectWebApi(projectEvent, WebApiAction.Creating).ConfigureAwait(false);
+        //Now update LegacyImportedFileId in project so we won't try to sync it again
+        projectEvent.LegacyImportedFileId = ifo.LegacyImportedFileId;
+        repoProject.Update(projectEvent);
       }
 
       NotifyNewRelic(projectEvent, startUtc, $"{ifo.ImportedFileType} file created in NhOp, now created in Project.");
