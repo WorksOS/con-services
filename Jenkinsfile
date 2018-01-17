@@ -128,7 +128,7 @@ node ('Jenkins-Win2016-Raptor')
            checkout scm
 
            stage 'Build'
-           bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build471.ps1"
+           bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build471.ps1 -uploadArtifact"
            
            archiveArtifacts artifacts: 'FilterWebApiNet47.zip', fingerprint: true 
            
@@ -157,7 +157,7 @@ node ('Jenkins-Win2016-Raptor')
        if (result=='SUCCESS')
        {
             stage 'Build Windows images'
-            bat "build47.bat"
+            bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build471.ps1"
             bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:${fullVersion}-${branchName}-win ./Artifacts/FilterWebApiNet47"
             bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-win ./Artifacts/FilterWebApiNet47"
      
