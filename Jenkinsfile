@@ -68,23 +68,23 @@ node('Ubuntu_Slave') {
        stage 'Get ecr login, push image to Repo'
        sh "bash ./awslogin.sh"
 
-	if (branch.contains("release"))
-	{
-	       stage 'Build Release Images'
+    if (branch.contains("release"))
+    {
+           stage 'Build Release Images'
 
-	       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion} ./artifacts/VSS.Productivity3D.Filter.WebApi"
+           sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion} ./artifacts/VSS.Productivity3D.Filter.WebApi"
  
-	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion}"
+           sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion}"
 
-	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion}"
-		   
+           sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion}"
+           
                sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion} ./database"
 
-	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion}"
+           sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion}"
 
-	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion}"
-		   
-		   	    stage ('Tag repository') {
+           sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion}"
+           
+                   stage ('Tag repository') {
                 sh 'git rev-parse HEAD > GIT_COMMIT'
                 def gitCommit=readFile('GIT_COMMIT').trim()
                 def tagParameters = [
@@ -93,24 +93,24 @@ node('Ubuntu_Slave') {
                   new StringParameterValue("TAG", fullVersion)
                 ]
                 build job: "tag-vso-commit", parameters: tagParameters
-	    }
+        }
 
-	}
-	else
-	{
-	if (branch.contains("Dev"))
-	{
-	stage 'Build Development Images'
+    }
+    else
+    {
+    if (branch.contains("Dev"))
+    {
+    stage 'Build Development Images'
 
-	   
+       
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest ./artifacts/VSS.Productivity3D.Filter.WebApi"
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest"
-	   
+       
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest ./database"
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest"
-	}
+    }
        }
 
     }
@@ -118,8 +118,8 @@ node('Ubuntu_Slave') {
 
 node ('Jenkins-Win2016-Raptor')
 {
-	if (branch.contains("master"))
-	{
+    if (branch.contains("master"))
+    {
          if (result=='SUCCESS')
           {
            currentBuild.displayName = versionNumber + suffix
@@ -128,11 +128,11 @@ node ('Jenkins-Win2016-Raptor')
            checkout scm
 
            stage 'Build'
-           bat "build47.bat"
-          
+           bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build471.ps1 -uploadArtifact"
+           
            archiveArtifacts artifacts: 'FilterWebApiNet47.zip', fingerprint: true 
-		   
-		  stage ('Tag repository') {
+           
+          stage ('Tag repository') {
                 bat 'git rev-parse HEAD > GIT_COMMIT'
                 def gitCommit=readFile('GIT_COMMIT').trim()
                 def tagParameters = [
@@ -141,30 +141,29 @@ node ('Jenkins-Win2016-Raptor')
                   new StringParameterValue("TAG", fullVersion+"-master")
                 ]
                 build job: "tag-vso-commit", parameters: tagParameters
-	    }
+        }
 
          }
         }
-	else 
-	{
+    else 
+    {
            currentBuild.displayName = versionNumber + suffix
            stage 'Checkout'
            checkout scm
            stage 'Coverage'
            bat "coverage.bat"
-	   step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
-	   publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
-	   if (result=='SUCCESS')
-	   {
-    	    stage 'Build Windows images'
-            bat "build47.bat"
+       step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
+       publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
+       if (result=='SUCCESS')
+       {
+            stage 'Build Windows images'
+            bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build471.ps1"
             bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:${fullVersion}-${branchName}-win ./Artifacts/FilterWebApiNet47"
             bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-win ./Artifacts/FilterWebApiNet47"
      
             //Publish to AWS Repo
             stage 'Get ecr login, push image to Repo'
             bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion ${fullVersion}-${branchName}"
-	   }
-	}
-
+       }
+    }
 }
