@@ -88,7 +88,7 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
           var jwtToken = new TPaaSJWT(authorization);
           isApplicationContext = jwtToken.IsApplicationToken;
           applicationName = jwtToken.ApplicationName;
-          userEmail = jwtToken.EmailAddress;
+          userEmail = isApplicationContext ? applicationName : jwtToken.EmailAddress;
           userUid = isApplicationContext
             ? jwtToken.ApplicationId
             : jwtToken.UserUid.ToString();
