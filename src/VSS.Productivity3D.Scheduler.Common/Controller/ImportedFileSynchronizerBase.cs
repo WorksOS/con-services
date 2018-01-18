@@ -277,17 +277,18 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     /// <param name="projectEvent"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    protected async Task DownloadFileAndCallProjectWebApi(ImportedFileProject projectEvent, WebApiAction action)
+    protected async Task<BaseDataResult> DownloadFileAndCallProjectWebApi(ImportedFileProject projectEvent, WebApiAction action)
     {
       //TODO: If performance is a problem then may need to add 'Copy' command to TCCFileAccess 
       //and use it here to directly copy file from old to new structure in TCC.
 
       Log.LogInformation($"ImportedFileSynchroniser: DownloadFileAndCallProjectWebApi");
+      BaseDataResult result = null;
 
       var fileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(projectEvent.FileDescriptor);
       if (await DownloadFileAndSaveToTemp(fileDescriptor))
       {
-        await CallProjectWebApi(projectEvent, action, fileDescriptor).ConfigureAwait(false);
+        result = await CallProjectWebApi(projectEvent, action, fileDescriptor).ConfigureAwait(false);
  
         try
         {
@@ -301,6 +302,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         }
    
       }
+      return result;
     }
 
     /// <summary>
@@ -310,9 +312,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     /// <param name="action"></param>
     /// <param name="fileDescriptor"></param>
     /// <returns></returns>
-    protected async Task CallProjectWebApi(ImportedFileProject projectEvent, WebApiAction action, FileDescriptor fileDescriptor)
+    protected async Task<BaseDataResult> CallProjectWebApi(ImportedFileProject projectEvent, WebApiAction action, FileDescriptor fileDescriptor)
     {
       string errorMessage = null;
+      BaseDataResult result = null;
 
       var startUtc = DateTime.UtcNow;
       string fullName = FullTemporaryFileName(fileDescriptor);
@@ -326,7 +329,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       try
       {
         Log.LogInformation($"ImportedFileSynchroniser: Calling project web api {fullName}");
-        BaseDataResult result = null;
         switch (action)
         {
           case WebApiAction.Creating:
@@ -367,6 +369,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         };
         NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
       }
+      return result;
     }
 
     /// <summary>
