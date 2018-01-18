@@ -212,7 +212,7 @@ namespace TagFileHarvester.Implementation
         string syncFolder = string.Format("{0}/{1}", path, tccSynchFolder);
         if (FolderExists(org.filespaceId, syncFolder))
         {
-          files = GetFiles(org.filespaceId, syncFolder);
+          files = GetFiles(org, syncFolder);
         }
         else
         {
@@ -230,9 +230,9 @@ namespace TagFileHarvester.Implementation
             if (FolderExists(org.filespaceId, syncFolder))
             {
               if (files == null)
-                files = GetFiles(org.filespaceId, syncFolder);
+                files = GetFiles(org, syncFolder);
               else
-                files.AddRange(GetFiles(org.filespaceId, syncFolder));
+                files.AddRange(GetFiles(org, syncFolder));
               Log.InfoFormat("Got files in folder {0} for org {1}. Total file number: {2}", syncFolder, org.shortName,files.Count);
             }
           }
@@ -400,27 +400,10 @@ namespace TagFileHarvester.Implementation
 
                 if (OrgsHandler.FilenameDumpEnabled)
                 {
-                  Log.DebugFormat("Dumping Dir {0} : {1} : {3}", org.filespaceId, lPath, lastChanged);
+                  Log.DebugFormat("Dumping Dir {0} : {1} : {2}", org.filespaceId, lPath, lastChanged);
                 }
 
-                var folderPath = $"/{folderEntry.entryName}";
-
-                // Check whether it has been certain number of days or longer since 
-                // the folder was created/updated and delete it if so and the folder is empty. 
-                if ((DateTime.UtcNow - lastChanged).Days >= OrgsHandler.TagFilesFolderLifeSpanInDays)
-                {
-                  if (ListFiles(org, folderPath).ToList().Count == 0)
-                  {
-                    if (!DeleteFolder(org, folderPath))
-                    {
-                      CheckForInvalidTicket(dirResult, "DeleteFolder");
-                    }
-                  }
-                }
-                else
-                {
-                  folders.Add(folderPath);
-                }
+                folders.Add($"/{folderEntry.entryName}");
               }
 
               if (!folders.Any())
@@ -451,7 +434,7 @@ namespace TagFileHarvester.Implementation
       return folders;      
     }
 
-    private bool DeleteFolder(Organization org, string folderPath)
+    private ApiResult DeleteFolder(Organization org, string folderPath)
     {
       DelParams delParams = new DelParams()
       {
@@ -460,9 +443,7 @@ namespace TagFileHarvester.Implementation
         recursive = "no"
       };
 
-      ApiResult result = ExecuteRequest(Ticket, Method.DELETE, "/tcc/Del", delParams, typeof(ApiResult));
-
-      return result.success;
+      return ExecuteRequest(Ticket, Method.DELETE, "/tcc/Del", delParams, typeof(ApiResult));
     }
 
     private DateTime GetLastChangedTime(string filespaceId, string path)
@@ -499,12 +480,17 @@ namespace TagFileHarvester.Implementation
       return DateTime.MinValue;      
     }
 
-    private List<TagFile> GetFiles(string filespaceId, string syncFolder)
+    private List<TagFile> GetFiles(Organization org, string syncFolder)
     {
       Log.DebugFormat("Found synch folder for {0}", syncFolder);
+
+      // Check whether the sync folder has any empty tag files folders and delete them 
+      // if their life length exceeds the life span set in the configuration file.
+      CheckForEmptyTagFileFolders(org, syncFolder);
+
       DirParams dirParams = new DirParams
       {
-        filespaceid = filespaceId,
+        filespaceid = org.filespaceId,
         path = syncFolder,
         recursive = true,
         filterfolders = true,
@@ -527,6 +513,96 @@ namespace TagFileHarvester.Implementation
         Log.ErrorFormat("Null result from GetFiles for {0}", syncFolder);
       }
       return null;
+    }
+
+    private void CheckForEmptyTagFileFolders(Organization org, string path)
+    {
+      Log.DebugFormat("CheckForEmptyTagFileFolders: org={0} {1}, rootFolder={2}", org.shortName, org.filespaceId, path);
+
+      List<string> folders = null;
+
+      try
+      {
+        //Get list of folders one level down from path
+        DirParams dirParams = new DirParams
+        {
+          filespaceid = org.filespaceId,
+          path = path,
+          recursive = false,
+          filterfolders = false
+        };
+
+        var result = ExecuteRequest(Ticket, Method.GET, "/tcc/Dir", dirParams, typeof(DirResult));
+        DirResult dirResult = result as DirResult;
+
+        if (dirResult != null)
+        {
+          if (dirResult.success)
+          {
+            if (dirResult.entries != null)
+            {
+              var folderEntries = (from d in dirResult.entries
+                where d.isFolder && d.leaf
+                select d).ToList();
+
+              folders = new List<string>();
+
+              foreach (var folderEntry in folderEntries)
+              {
+                folders.Add($"/{folderEntry.entryName}");
+              }
+
+              if (!folders.Any())
+              {
+                Log.WarnFormat("No tag file folders found for org {0}, root folder={1}", org.shortName, path);
+              }
+            }
+            else
+            {
+              Log.WarnFormat("No tag file folders returned from CheckForEmptyTagFileFolders for org {0}, root folder={1}", org.shortName, path);
+              folders = new List<string>();
+            }
+          }
+          else
+          {
+            CheckForInvalidTicket(dirResult, "CheckForEmptyTagFileFolders");
+          }
+        }
+        else
+        {
+          Log.ErrorFormat("Null result from CheckForEmptyTagFileFolders on getting tag file folders for org {0}, root folder={1}", org.shortName, path);
+        }
+      }
+      catch (Exception ex)
+      {
+        Log.ErrorFormat("Failed to get list of TCC tag files folders: {0}, root folder={1}", ex.Message, path);
+      }
+
+      if (folders == null)
+        return;
+
+      foreach (var folder in folders)
+      {
+        string lPath = $"{path}{folder}";
+
+        DateTime lastChanged = GetLastChangedTime(org.filespaceId, lPath);
+        
+        Log.InfoFormat("Checking folder {0} for deletion. Last changed date={1}, today={2}, folder's age={3} days", lPath, lastChanged, DateTime.UtcNow, (DateTime.UtcNow - lastChanged).Days);
+
+        if ((DateTime.UtcNow - lastChanged).Days >= OrgsHandler.TagFilesFolderLifeSpanInDays)
+        {
+          if (ListFiles(org, lPath).ToList().Count == 0)
+          {
+            Log.InfoFormat("Deleting folder {0}", lPath);
+
+            ApiResult delResult = DeleteFolder(org, lPath);
+            if (!delResult.success)
+            {
+              CheckForInvalidTicket(delResult, "DeleteFolder");
+            }
+          }
+        }
+      }
     }
 
     private bool FolderExists(string filespaceId, string folder)
