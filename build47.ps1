@@ -28,6 +28,7 @@ Write-Host "Compressing build artifacts..." -ForegroundColor "darkgray"
 
 Add-Type -assembly "system.io.compression.filesystem"
 [io.compression.zipfile]::CreateFromDirectory($artifactsDir, "$PSScriptRoot/$artfifactZip") 
+[io.compression.zipfile]::CreateFromDirectory("$PSScriptRoot/database", "$PSScriptRoot/ProjectWebApiDb.zip")
 
 # Upload build artifacts to S3.
 if ($uploadArtifact) {
