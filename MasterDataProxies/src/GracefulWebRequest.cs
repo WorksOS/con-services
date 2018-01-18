@@ -282,7 +282,7 @@ namespace VSS.MasterData.Proxies
       string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
-        $"ExecuteRequest() T : endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData}");
+        $"ExecuteRequest() T : endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData.Truncate(logMaxChar)}");
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -326,7 +326,7 @@ namespace VSS.MasterData.Proxies
       string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
-        $"ExecuteRequest() Stream: endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData}");
+        $"ExecuteRequest() Stream: endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData.Truncate(logMaxChar)}");
 
       var policyResult = await Policy
         .Handle<Exception>()
