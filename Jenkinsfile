@@ -1,36 +1,31 @@
 properties([disableConcurrentBuilds(), pipelineTriggers([])])
 
-    def result = ''
+def result = ''
+def branch = env.BRANCH_NAME
+def buildNumber = env.BUILD_NUMBER
+def versionPrefix = ""
+def suffix = ""
+def branchName = ""
 
-    def branch = env.BRANCH_NAME
-    def buildNumber = env.BUILD_NUMBER
-    def versionPrefix = ""
-    def suffix = ""
-    def branchName = ""
+if (branch.contains("release")) {
+    versionPrefix = "1.0."
+    branchName = "Release"
+} else if (branch.contains("Dev")) {
+    versionPrefix = "0.99."
+    branchName = "Dev"
+} else if (branch.contains("master")) {
+    versionPrefix = "1.0."
+    branchName = "master"
+} else {
+    branchName = branch.substring(branch.lastIndexOf("/") + 1)
+    suffix = "-" + branchName
+    versionPrefix = "0.98."
+}
 
-    if (branch.contains("release")) {
-       versionPrefix = "1.0."
-       branchName = "Release"
-    } else if (branch.contains("Dev")) {
-       versionPrefix = "0.99."
-       branchName = "Dev"
-    } else if (branch.contains("master")) {
-       versionPrefix = "1.0."
-       branchName = "master"
-    } else {
-       branchName = branch.substring(branch.lastIndexOf("/") + 1)
-       suffix = "-" + branchName
-       versionPrefix = "0.98."
-    }
-    
-    def versionNumber = versionPrefix + buildNumber
-    def fullVersion = versionNumber + suffix
-
+def versionNumber = versionPrefix + buildNumber
+def fullVersion = versionNumber + suffix
 
 node('Ubuntu_Slave') {
-    //Apply version number
-    //We will later use it to tag images
-
     def workspacePath =""
     currentBuild.displayName = versionNumber + suffix
 
@@ -72,8 +67,7 @@ node('Ubuntu_Slave') {
     if (currentBuild.result=='SUCCESS' && !branch.contains("master")) {
         //Rebuild Image, tag & push to AWS Docker Repo
         stage ('Get ecr login, push image to Repo') {
-	        sh "bash ./awslogin.sh"
-            //  sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
+            sh "bash ./awslogin.sh"
         }
 
         if (branch.contains("release")) {
@@ -85,19 +79,19 @@ node('Ubuntu_Slave') {
                 sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion}"
                 sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion}"
             }
-	    stage ('Tag repository') {
+            stage ('Tag repository') {
                 sh 'git rev-parse HEAD > GIT_COMMIT'
                 def gitCommit=readFile('GIT_COMMIT').trim()
                 def tagParameters = [
-                  new StringParameterValue("REPO_NAME", "VSS.VisionLink.Project"),
-                  new StringParameterValue("COMMIT_ISH", gitCommit),
-                  new StringParameterValue("TAG", fullVersion)
-                ]
+                    new StringParameterValue("REPO_NAME", "VSS.VisionLink.Project"),
+                    new StringParameterValue("COMMIT_ISH", gitCommit),
+                    new StringParameterValue("TAG", fullVersion)]
+
                 build job: "tag-vso-commit", parameters: tagParameters
-	    }
+            }
         }
-	    else {
-	        if (branch.contains("Dev")) {
+        else {
+            if (branch.contains("Dev")) {
                 stage ('Build Development Images') {
                     sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest ./artifacts/ProjectWebApi"
                     sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi"
@@ -108,12 +102,11 @@ node('Ubuntu_Slave') {
                 }
             }
         }
-	}
+    }
 }
 
-node ('Jenkins-Win2016-Raptor')
-{
-	if (branch.contains("master")) {
+node ('Jenkins-Win2016-Raptor') {
+    if (branch.contains("master")) {
         if (result=='SUCCESS') {
             currentBuild.displayName = versionNumber + suffix  
             stage ('Checkout') {
@@ -121,23 +114,23 @@ node ('Jenkins-Win2016-Raptor')
             }
 
             stage ('Build') {
-                bat "build47.bat"
+                bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build47.ps1 -uploadArtifact"
             }
           
             archiveArtifacts artifacts: 'ProjectWebApiNet47.zip', fingerprint: true
-	        bat "aws s3 cp ProjectWebApiNet47.zip s3://vss-ci-builds/project.service/${versionNumber}/ --profile vss-merino"
+            bat "aws s3 cp ProjectWebApiNet47.zip s3://vss-ci-builds/project.service/${versionNumber}/ --profile vss-merino"
             bat "aws s3 cp ProjectWebApiDb.zip s3://vss-ci-builds/project.service/${versionNumber}/ --profile vss-merino"
 
-	    stage ('Tag repository') {
+            stage ('Tag repository') {
                 bat 'git rev-parse HEAD > GIT_COMMIT'
                 def gitCommit=readFile('GIT_COMMIT').trim()
                 def tagParameters = [
-                  new StringParameterValue("REPO_NAME", "VSS.VisionLink.Project"),
-                  new StringParameterValue("COMMIT_ISH", gitCommit),
-                  new StringParameterValue("TAG", fullVersion+"-master")
-                ]
+                    new StringParameterValue("REPO_NAME", "VSS.VisionLink.Project"),
+                    new StringParameterValue("COMMIT_ISH", gitCommit),
+                    new StringParameterValue("TAG", fullVersion+"-master")]
+
                 build job: "tag-vso-commit", parameters: tagParameters
-	    }
+            }
         }
     } else {
         currentBuild.displayName = versionNumber + suffix
@@ -148,7 +141,7 @@ node ('Jenkins-Win2016-Raptor')
             bat "coverage.bat"
         }
 
-	    step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
-	    publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
-	}
+        step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
+        publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
+    }
 }
