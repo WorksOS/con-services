@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Repository;
@@ -235,9 +236,15 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                projectEvent.ImportedFileType == ImportedFileType.DesignSurface || 
                projectEvent.ImportedFileType == ImportedFileType.Alignment)
       {
-        await DownloadFileAndCallProjectWebApi(projectEvent, WebApiAction.Creating).ConfigureAwait(false);
-        //Now update LegacyImportedFileId in project so we won't try to sync it again
+        var result = await DownloadFileAndCallProjectWebApi(projectEvent, WebApiAction.Creating).ConfigureAwait(false);
+        //Now update LegacyImportedFileId in project so we won't try to sync it again. 
+        //Project Web Api will have given the file a new imported file UID
         projectEvent.LegacyImportedFileId = ifo.LegacyImportedFileId;
+        var createdFile = (result as FileDataSingleResult).ImportedFileDescriptor;
+        projectEvent.ImportedFileUid = createdFile.ImportedFileUid;
+        projectEvent.FileCreatedUtc = createdFile.FileCreatedUtc;
+        projectEvent.FileUpdatedUtc = createdFile.FileUpdatedUtc;
+        projectEvent.LastActionedUtc = DateTime.UtcNow;
         repoProject.Update(projectEvent);
       }
 
