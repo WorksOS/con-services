@@ -14,6 +14,7 @@ using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -22,11 +23,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class ProjectSettingsV4Controller : BaseController
   {
-    /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
     /// <summary>
     /// Logger factory for use by executor
     /// </summary>
@@ -37,17 +33,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     private readonly IRequestFactory requestFactory;
 
+
     /// <summary>
-    /// Default constructor.
+    /// Default constructor
     /// </summary>
-    /// <param name="subscriptionProxy"></param>
-    /// <param name="projectRepo">The MasterData ProjectRepository persistent storage interface</param>
+    /// <param name="logger"></param>
+    /// <param name="configStore"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="producer"></param>
     /// <param name="geofenceProxy"></param>
-    /// <param name="raptorProxy">The Raptor Proxy refernce</param>
-    /// <param name="configStore">configStore for module meta data</param>
-    /// <param name="logger">The ILoggerFactory logging implementation</param>
-    /// <param name="serviceExceptionHandler">The service exception handler</param>
-    /// <param name="producer">The Kafka consumer</param>
+    /// <param name="raptorProxy"></param>
+    /// <param name="subscriptionProxy"></param>
+    /// <param name="projectRepo"></param>
     /// <param name="subscriptionsRepo"></param>
     /// <param name="requestFactory"></param>
     public ProjectSettingsV4Controller(ILoggerFactory logger, IConfigurationStore configStore, 
@@ -56,18 +53,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo,
       IRequestFactory requestFactory
       )
-      : base(logger.CreateLogger<BaseController>(), configStore, serviceExceptionHandler, producer, 
-          geofenceProxy, raptorProxy, subscriptionProxy,
-          projectRepo, subscriptionsRepo)
+      : base(logger.CreateLogger<ProjectSettingsV4Controller>(), configStore, serviceExceptionHandler, 
+          producer, raptorProxy, projectRepo)
     {
       this.logger = logger;
-      log = logger.CreateLogger<ProjectSettingsV4Controller>();
       this.requestFactory = requestFactory;
     }
 
 
     /// <summary>
-    /// Gets the project settings for a project.
+    /// Gets the target project settings for a project and user.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
@@ -81,13 +76,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
           .CustomerUid(customerUid))
-        .CreateProjectSettingsRequest(projectUid, "");
+        .CreateProjectSettingsRequest(projectUid, string.Empty, ProjectSettingsType.Targets);
       projectSettingsRequest.Validate();
      
       var result = (await WithServiceExceptionTryExecuteAsync(() => 
         RequestExecutorContainerFactory
         .Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, 
-                customerUid, null, null, null,
+                customerUid, userId, null, null,
                 null, null,
                 null, null, null,
                 projectRepo)
@@ -100,7 +95,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
 
     /// <summary>
-    /// Upserts the project settings for a project.
+    /// Upserts the target project settings for a project and user.
     /// </summary>
     /// <returns></returns>
     [Route("api/v4/projectsettings")]
@@ -114,7 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
             .CustomerUid(customerUid))
-          .CreateProjectSettingsRequest(request?.projectUid, request?.settings);
+          .CreateProjectSettingsRequest(request?.projectUid, request?.settings, ProjectSettingsType.Targets);
       projectSettingsRequest.Validate();
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
@@ -128,7 +123,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       )) as ProjectSettingsResult;
 
       log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
-      return result as ProjectSettingsResult;
+      return result;
     }
   }
 }

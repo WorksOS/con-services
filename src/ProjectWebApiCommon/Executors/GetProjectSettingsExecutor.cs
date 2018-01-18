@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -20,17 +21,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       ContractExecutionResult result = null;
-      ProjectSettingsRequest projectSettingsRequest = null;
-      
-      projectSettingsRequest = item as ProjectSettingsRequest;
+      ProjectSettingsRequest projectSettingsRequest = item as ProjectSettingsRequest;
       if ( projectSettingsRequest == null )
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-      await ValidateProjectWithCustomer(customerUid, projectSettingsRequest?.projectUid);
+      await ValidateProjectWithCustomer(customerUid, projectSettingsRequest.projectUid);
 
       try
       {
-        var projectSettings = await projectRepo.GetProjectSettings(projectSettingsRequest?.projectUid).ConfigureAwait(false);
-        result = ProjectSettingsResult.CreateProjectSettingsResult(projectSettingsRequest?.projectUid, projectSettings?.Settings);
+        var projectSettings = await projectRepo.GetProjectSettings(projectSettingsRequest.projectUid, userId, projectSettingsRequest.projectSettingsType).ConfigureAwait(false);
+
+        result = projectSettings == null ? 
+          ProjectSettingsResult.CreateProjectSettingsResult(projectSettingsRequest.projectUid, null, projectSettingsRequest.projectSettingsType) : 
+          ProjectSettingsResult.CreateProjectSettingsResult(projectSettings.ProjectUid, projectSettings.Settings, projectSettings.ProjectSettingsType);
       }
       catch (Exception e)
       {

@@ -10,18 +10,15 @@ namespace VSS.MasterData.Project.WebAPI.Factories
   /// </summary>
   public class RequestFactory : IRequestFactory
   {
-    private readonly ILogger log;
     private readonly IConfigurationStore configStore;
     private string customerUid;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="logger">ILoggerFactory service implementation</param>
     /// <param name="configStore">IConfigurationStore service implementation</param>
-    public RequestFactory(ILoggerFactory logger, IConfigurationStore configStore) 
+    public RequestFactory(IConfigurationStore configStore) 
     {
-      log = logger.CreateLogger<ProjectSettingsRequestHelper>();
       this.configStore = configStore;
     }
     
@@ -31,7 +28,7 @@ namespace VSS.MasterData.Project.WebAPI.Factories
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, customerUid);
+      obj.Initialize(configStore, customerUid);
 
       return obj;
     }

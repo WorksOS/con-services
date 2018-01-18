@@ -171,6 +171,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(request.ImportedBy, importedFileDescriptor.ImportedBy, "ImportedBy has not been mapped correctly");
       Assert.AreEqual(request.SurveyedUtc, importedFileDescriptor.SurveyedUtc, "SurveyedUtc has not been mapped correctly");
       Assert.AreEqual(request.LastActionedUtc, importedFileDescriptor.ImportedUtc, "ImportedUtc has not been mapped correctly");
+      Assert.AreEqual(true, importedFileDescriptor.IsActivated, "IsActivated has not been mapped correctly");
 
       // just make a copy file descriptor is only in the source file, not the destination
       var copyOfRequest = AutoMapperUtility.Automapper.Map<ImportedFile>(request);
@@ -212,6 +213,14 @@ namespace VSS.MasterData.ProjectTests
       var copyOfRequest = AutoMapperUtility.Automapper.Map<ImportedFile>(request);
       Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(request.FileDescriptor, copyOfRequest.FileDescriptor, "FileDescriptor has not been mapped correctly");
+    }
+
+    [TestMethod]
+    public void CanCalculateProjectBoundaryArea()
+    {
+      var geometryWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362, -115.025723657623 36.2101347890754))";
+      var area = ProjectBoundaryValidator.CalculateAreaSqMeters(geometryWKT);
+      Assert.AreEqual(375300.594251673, area, 0.000000001);
     }
   }
 }

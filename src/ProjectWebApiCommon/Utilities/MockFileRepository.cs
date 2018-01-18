@@ -29,7 +29,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       throw new NotImplementedException();
     }
 
+    public Task<bool> CopyFile(string filespaceId, string srcFullName, string dstFullName)
+    {
+      throw new NotImplementedException();
+    }
+
     public Task<DirResult> GetFolders(Organization org, DateTime lastModifiedUTC, string path)
+    {
+      throw new NotImplementedException();
+    }
+
+    public Task<DirResult> GetFileList(string filespaceId, string path, string fileMasks = null)
     {
       throw new NotImplementedException();
     }

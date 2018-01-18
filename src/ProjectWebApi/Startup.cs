@@ -163,7 +163,7 @@ namespace VSS.MasterData.Project.WebAPI
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
       //Enable TID here
-      TIDAuthenticationExtensions.UseTIDAuthentication(app);
+      app.UseTIDAuthentication();
 
 #if NET_4_7
       if (Configuration["newrelic"] == "true")

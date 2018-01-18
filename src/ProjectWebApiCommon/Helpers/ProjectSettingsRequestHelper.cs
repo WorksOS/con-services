@@ -7,6 +7,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -29,10 +30,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="settings"></param>
+    /// <param name="projectSettingsType"></param>
     /// <returns>An instance of the ProjectSettingsRequest class.</returns>
-    public ProjectSettingsRequest CreateProjectSettingsRequest(string projectUid, string settings)
+    public ProjectSettingsRequest CreateProjectSettingsRequest(string projectUid, string settings, ProjectSettingsType projectSettingsType)
     {
-      return ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings);
+      return ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, projectSettingsType);
     }
 
     public async Task RaptorValidateProjectSettings(
@@ -66,7 +68,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, result.Code.ToString(),
           result.Message);
       }
-      return;
     }
   }
 }

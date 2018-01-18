@@ -10,6 +10,7 @@ using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.VisionLink.Interfaces.Events.Identity.User;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -113,19 +114,21 @@ namespace ExecutorTests
       return (g.Result != null ? true : false);
     }
 
-    protected bool CreateProjectSettings(string projectUid, string settings)
+    protected bool CreateProjectSettings(string projectUid, string userId, string settings, ProjectSettingsType settingsType)
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
         ProjectUID = Guid.Parse(projectUid),
+        UserID = userId,
         Settings = settings,
+        ProjectSettingsType = settingsType,
         ActionUTC = actionUtc
       };
 
       projectRepo.StoreEvent(createProjectSettingsEvent).Wait();
-      var g = projectRepo.GetProjectSettings(projectUid); g.Wait();
+      var g = projectRepo.GetProjectSettings(projectUid, userId, settingsType); g.Wait();
       return (g.Result != null ? true : false);
     }
   }

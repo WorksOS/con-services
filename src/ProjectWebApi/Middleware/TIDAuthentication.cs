@@ -88,7 +88,7 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
           var jwtToken = new TPaaSJWT(authorization);
           isApplicationContext = jwtToken.IsApplicationToken;
           applicationName = jwtToken.ApplicationName;
-          userEmail = jwtToken.EmailAddress;
+          userEmail = isApplicationContext ? applicationName : jwtToken.EmailAddress;
           userUid = isApplicationContext
             ? jwtToken.ApplicationId
             : jwtToken.UserUid.ToString();
@@ -110,12 +110,8 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
 
-          if (!requireCustomerUid)
-            await this._next.Invoke(context);
-          else if (context.Request.Method == HttpMethod.Get.Method)
-            await this._next.Invoke(context);
-          else
-            this.ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 60);
+          await this._next.Invoke(context);
+ 
           return;
         }
 
@@ -124,12 +120,28 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
         {
           try
           {
+            var customHeaders = context.Request.Headers.GetCustomHeaders();
             CustomerDataResult customerResult =
-              await this.customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
+              await this.customerProxy.GetCustomersForMe(userUid, customHeaders);
+
             if (customerResult.status != 200 || customerResult.customer == null ||
                 customerResult.customer.Count < 1 ||
                 !customerResult.customer.Exists(x => x.uid == customerUid))
             {
+              //Retry here to invalidate cache as association may have just been created
+              this.customerProxy.ClearCacheItem(userUid);
+              //And try again
+              customerResult =
+                await this.customerProxy.GetCustomersForMe(userUid, customHeaders);
+            }
+
+            //now validate second time
+
+            if (customerResult.status != 200 || customerResult.customer == null ||
+                customerResult.customer.Count < 1 ||
+                !customerResult.customer.Exists(x => x.uid == customerUid))
+            {
+
               var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
               this.log.LogWarning(error);
               await SetResult(error, context);

@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -19,19 +14,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// <summary>
   /// Project Base for all Project controllers
   /// </summary>
-  public class ProjectBaseController : Controller
+  public class ProjectBaseController : BaseController
   {
-    /// <summary>
-    /// Gets or sets the Kafak consumer.
-    /// </summary>
-    protected readonly IKafka producer;
-
-    /// <summary>
-    /// Gets or sets the local log provider.
-    /// </summary>
-    protected readonly ILogger log;
-
-    /// <summary>
+     /// <summary>
     /// Gets or sets the subscription proxy.
     /// </summary>
     protected readonly ISubscriptionProxy subsProxy;
@@ -42,34 +27,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected readonly IGeofenceProxy geofenceProxy;
 
     /// <summary>
-    /// Gets or sets the Raptor proxy.
-    /// </summary>
-    protected readonly IRaptorProxy raptorProxy;
-
-    /// <summary>
-    /// Gets or sets the Project Repository. 
-    /// </summary>
-    protected readonly ProjectRepository projectService;
-
-    /// <summary>
-    /// Gets or sets the Configuration Store. 
-    /// </summary>
-    protected readonly IConfigurationStore store;
-
-    /// <summary>
-    /// Gets or sets the Kafka topic.
-    /// </summary>
-    protected readonly string kafkaTopicName;
-
-    /// <summary>
     /// Gets or sets the Subscription Repository.
     /// </summary>
     protected readonly SubscriptionRepository subsService;
-
-    /// <summary>
-    /// Gets or sets the Service exception handler.
-    /// </summary>
-    protected IServiceExceptionHandler ServiceExceptionHandler;
 
     /// <summary>
     /// Save for potential rollback
@@ -87,31 +47,22 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="producer">The producer.</param>
     /// <param name="projectRepo">The project repo.</param>
     /// <param name="subscriptionsRepo">The subscriptions repo.</param>
-    /// <param name="store">The configStore.</param>
+    /// <param name="configStore">The configStore.</param>
     /// <param name="subsProxy">The subs proxy.</param>
     /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
-    public ProjectBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
-      IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
+    /// <param name="log"></param>
+    public ProjectBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo, 
+      IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore configStore, 
+      ISubscriptionProxy subsProxy, IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, 
+      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, ILogger log)
+      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo)
     {
-      log = logger.CreateLogger<ProjectBaseController>();
-      this.producer = producer;
-      //We probably want to make this thing singleton?
-      if (!this.producer.IsInitializedProducer)
-        this.producer.InitProducer(store);
-      projectService = projectRepo as ProjectRepository;
       subsService = subscriptionsRepo as SubscriptionRepository;
       this.subsProxy = subsProxy;
       this.geofenceProxy = geofenceProxy;
-      this.raptorProxy = raptorProxy;
-      this.store = store;
-
-      ServiceExceptionHandler = serviceExceptionHandler;
-      kafkaTopicName = (store.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
-                       store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
     }
 
     /// <summary>
@@ -121,48 +72,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected async Task<ImmutableList<Repositories.DBModels.Project>> GetProjectList()
     {
       var customerUid = LogCustomerDetails("GetProjectList");
-      var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
+      var projects = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
       log.LogInformation($"Project list contains {projects.Count} projects");
       return projects;
-    }
-
-    /// <summary>
-    /// Gets the project.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <returns></returns>
-    protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
-    {
-      var customerUid = LogCustomerDetails("GetProject", projectUid);
-      var project =
-        (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
-          p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
-
-      if (project == null)
-      {
-        log.LogWarning($"User doesn't have access to {projectUid}");
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
-      }
-
-      log.LogInformation($"Project {projectUid} retrieved");
-      return project;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="functionName"></param>
-    /// <param name="projectUid"></param>
-
-    /// <returns></returns>
-    protected string LogCustomerDetails(string functionName, string projectUid = "")
-    {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      var userUid = ((User as TIDCustomPrincipal).Identity as GenericIdentity).Name;
-      log.LogInformation($"{functionName}: UserUID={userUid}, CustomerUID={customerUid}  and projectUid={projectUid}");
-
-      return customerUid;
-    }
+    }  
   }
 }

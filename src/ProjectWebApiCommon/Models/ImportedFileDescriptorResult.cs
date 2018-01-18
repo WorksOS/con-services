@@ -175,6 +175,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// </value>
     public string Path => "/" + CustomerUid + "/" + ProjectUid;
 
+    /// <summary>
+    /// The minimum zoom level for DXF tiles
+    /// </summary>
+    public int MinZoomLevel { get; set; }
+    /// <summary>
+    /// The maximum zoom level for DXF tiles
+    /// </summary>
+    public int MaxZoomLevel { get; set; }
+
     public override int GetHashCode()
     {
       return base.GetHashCode();
@@ -197,6 +206,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
              && otherImportedFile.SurveyedUtc == this.SurveyedUtc
              && otherImportedFile.ImportedUtc == this.ImportedUtc
              && otherImportedFile.IsActivated == this.IsActivated
+             && otherImportedFile.MinZoomLevel == this.MinZoomLevel
+             && otherImportedFile.MaxZoomLevel == this.MaxZoomLevel
         ;
     }
   }

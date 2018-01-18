@@ -71,7 +71,7 @@ namespace WebApiTests
     public void Set_activation_should_fail_when_projectId_is_invalid()
     {
       const string testName = "Set ImportFile::IsActivated with invalid project id";
-      _msg.Title(testName, "");
+      _msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFile = new ImportFile();
@@ -100,7 +100,7 @@ namespace WebApiTests
     public void Set_activation_should_handle_project_with_no_files()
     {
       const string testName = "Set ImportFile::IsActivated with no loaded project files";
-      _msg.Title(testName, "");
+      _msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFile = new ImportFile();
@@ -152,7 +152,7 @@ namespace WebApiTests
     public void Set_activation_should_handle_empty_file_list()
     {
       const string testName = "Set ImportFile::IsActivated with empty file list";
-      _msg.Title(testName, "");
+      _msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFile = new ImportFile();
@@ -203,7 +203,7 @@ namespace WebApiTests
     public void Set_activation_should_handle_no_eligible_files()
     {
       const string testName = "Set ImportFile::IsActivated with no valid files";
-      _msg.Title(testName, "");
+      _msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFile = new ImportFile();
@@ -257,7 +257,7 @@ namespace WebApiTests
     public void Set_activation_should_set_state_on_eligible_files()
     {
       const string testName = "Set ImportFile::IsActivated";
-      _msg.Title(testName, "");
+      _msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFile = new ImportFile();
@@ -306,6 +306,16 @@ namespace WebApiTests
 
       Assert.AreEqual((int)HttpStatusCode.OK, response.code.Value);
       Assert.AreEqual("Success", response.message.Value);
+
+      //Confirm it's deactivated for this user
+      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      Assert.AreEqual(1, importFileList.ImportedFileDescriptors.Count, "Wrong number of imported files 1");
+      Assert.IsFalse(importFileList.ImportedFileDescriptors[0].IsActivated, "Should be deactivated for user 1");
+
+      //and activated for another user
+      importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid, RestClientUtil.ANOTHER_JWT);
+      Assert.AreEqual(1, importFileList.ImportedFileDescriptors.Count, "Wrong number of imported files 2");
+      Assert.IsTrue(importFileList.ImportedFileDescriptors[0].IsActivated, "Should be activated for user 2");
     }
 
     private static ImportedFileDescriptorSingleResult ImportFiles(ImportFile importFile, TestSupport testSupport, Guid projectUid, Guid customerUid, DateTime startDateTime, string testFile)
