@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private readonly IImportedFileProxy _impFileProxy;
     private readonly IFileRepository _fileRepo;
     private static int DefaultTaskIntervalDefaultMinutes { get; } = 4;
-    public bool ProcessSurveyedSurfaceType = false;
+    public static bool ProcessSurveyedSurfaceType { get; set; } 
 
     /// <summary>
     /// Initializes the ImportedProjectFileSyncTask 
