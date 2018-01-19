@@ -28,6 +28,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     protected ITPaasProxy TPaasProxy;
     protected IImportedFileProxy ImpFileProxy;
     protected IFileRepository FileRepo;
+    protected bool ProcessSurveyedSurfaceType;
 
     public static DateTime _lastTPaasTokenObtainedUtc;
     public static string _3DPmSchedulerBearerToken;
@@ -39,7 +40,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     /// <summary>
     /// </summary>
     public ImportedFileSynchronizerBase(IConfigurationStore configStore, ILoggerFactory logger,
-      IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy, IImportedFileProxy impFileProxy, IFileRepository fileRepo)
+      IRaptorProxy raptorProxy, ITPaasProxy tPaasProxy, IImportedFileProxy impFileProxy, IFileRepository fileRepo, bool processSurveyedSurfaceType)
     {
       ConfigStore = configStore;
       Logger = logger;
@@ -48,6 +49,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       TPaasProxy = tPaasProxy;
       ImpFileProxy = impFileProxy;
       FileRepo = fileRepo;
+      ProcessSurveyedSurfaceType = processSurveyedSurfaceType;
 
       FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(FileSpaceId))
@@ -79,7 +81,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       if (!TemporaryDownloadFolder.EndsWith("/"))
         TemporaryDownloadFolder += "/";
 
-      Log.LogInformation($"ImportedFileSynchronizerBase: FileSpaceId: {FileSpaceId} _refreshPeriodMinutes: {_refreshPeriodMinutes}  _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _3DPmSchedulerBearerToken: {_3DPmSchedulerBearerToken} _3DPmSchedulerConsumerKeys: {_3DPmSchedulerConsumerKeys}");
+      Log.LogInformation($"ImportedFileSynchronizerBase: {(ProcessSurveyedSurfaceType ? "processSurveyedSurfaceType" : "processNonSurveyedSurfaceTypes")} FileSpaceId: {FileSpaceId} _refreshPeriodMinutes: {_refreshPeriodMinutes}  _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _3DPmSchedulerBearerToken: {_3DPmSchedulerBearerToken} _3DPmSchedulerConsumerKeys: {_3DPmSchedulerConsumerKeys}");
       //Console.WriteLine($"ImportedFileSynchronizerBase: (console temp)  FileSpaceId: {FileSpaceId} _refreshPeriodMinutes: {_refreshPeriodMinutes}  _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _3DPmSchedulerBearerToken: {_3DPmSchedulerBearerToken} _3DPmSchedulerConsumerKeys: {_3DPmSchedulerConsumerKeys}");
     }
 
