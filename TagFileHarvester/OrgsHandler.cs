@@ -34,6 +34,7 @@ namespace TagFileHarvester
     public static bool UseModifyTimeInsteadOfCreateTime;
     public static string BookmarkPath;
     public static byte TagFilesFolderLifeSpanInDays;
+    public static string ShortOrgName;
 
 
 
@@ -105,7 +106,7 @@ namespace TagFileHarvester
           Container.Resolve<IHarvesterTasks>().Status().Item1,
           Container.Resolve<IHarvesterTasks>().Status().Item2, GetUsedThreads());
         //do merge here - if there is no org in the list of tasks - build it. If there is no org but there in the list but there is a task - kill the task
-        orgs.Where(o => !OrgProcessingTasks.Select(t => t.Value.Item1).Contains(o)).ForEach(o =>
+        orgs.Where(o => !OrgProcessingTasks.Select(t => t.Value.Item1).Contains(o)).Where(o => String.IsNullOrEmpty(OrgsHandler.ShortOrgName) || o.shortName == OrgsHandler.ShortOrgName).ForEach(o =>
         {
           log.InfoFormat("Adding {0} org for processing", o.shortName);
           var cancellationToken = new CancellationTokenSource();
