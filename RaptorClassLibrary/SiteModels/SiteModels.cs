@@ -17,21 +17,21 @@ namespace VSS.VisionLink.Raptor.SiteModels
     public class SiteModels : Dictionary<long, SiteModel>
     {
         private static IStorageProxy StorageProxy = null;
-        private static SiteModels instance = null;
+        private static SiteModels[] instance = new SiteModels[2] {null, null};
 
         private SiteModels(IStorageProxy storageProxy)
         {
             StorageProxy = storageProxy;
         }
 
-        public static SiteModels Instance()
+        public static SiteModels Instance(StorageMutability mutability = StorageMutability.Immutable)
         {
-            if (instance == null)
+            if (instance[(int)mutability] == null)
             {
-                instance = new SiteModels(StorageProxyFactory.Storage(RaptorGrids.RaptorGridName()));
+                instance[(int)mutability] = new SiteModels(StorageProxyFactory.Storage(mutability));
             }
 
-            return instance;
+            return instance[(int)mutability];
         }
 
         public SiteModel GetSiteModel(long ID) => GetSiteModel(ID, false);
@@ -44,9 +44,9 @@ namespace VSS.VisionLink.Raptor.SiteModels
             {
                 if (!TryGetValue(ID, out result))
                 {
-                    result = new SiteModel(ID);
+                    result = new SiteModel(ID, StorageProxy);
 
-                    if (result.LoadFromPersistentStore(StorageProxy) == FileSystemErrorStatus.OK)
+                    if (result.LoadFromPersistentStore() == FileSystemErrorStatus.OK)
                     {
                         Add(ID, result);
                     }
@@ -75,7 +75,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// <param name="SiteModelID"></param>
         public void SiteModelAttributesHaveChanged(long SiteModelID)
         {
-            GetSiteModel(SiteModelID, false)?.LoadFromPersistentStore(StorageProxy);
+            GetSiteModel(SiteModelID, false)?.LoadFromPersistentStore();
         }
     }
 }

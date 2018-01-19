@@ -66,6 +66,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     }
                 default:
                     {
+                        // EG: Subgrid existence map etc
                         immutableStream = mutableStream;
                         return true;
                     }

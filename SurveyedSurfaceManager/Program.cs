@@ -19,7 +19,7 @@ namespace SurveyedSurfaceManager
             log4net.GlobalContext.Properties["LogName"] = logFileName;
             log4net.Config.XmlConfigurator.Configure();
         
-            RaptorClientServer server = new RaptorClientServer("SurveyedSurfaceManager");
+            RaptorMutableClientServer server = new RaptorMutableClientServer("SurveyedSurfaceManager");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

@@ -10,6 +10,7 @@ using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
 
@@ -34,21 +35,18 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// </summary>
         private string _svcName;
 
-        private string GridName;
         private string CacheName;
 
         /// <summary>
         /// Default no-arg constructor supplied default Raptor grid and MutableNonSpatial cache name for surveyed surface information
         /// </summary>
-        public SurveyedSurfaceService() : base()
+        public SurveyedSurfaceService(StorageMutability mutability) : base(RaptorGrids.RaptorGridName(mutability), "SurveyedSurfaceService")
         {
-            GridName = RaptorGrids.RaptorGridName();
-            CacheName = RaptorCaches.MutableNonSpatialCacheName();
+            CacheName = RaptorCaches.ImmutableNonSpatialCacheName();
         }
 
-        public SurveyedSurfaceService(string gridName, string cacheName) : this()
+        public SurveyedSurfaceService(StorageMutability mutability, string cacheName) : this(mutability)
         {
-            GridName = gridName;
             CacheName = cacheName;
         }
 

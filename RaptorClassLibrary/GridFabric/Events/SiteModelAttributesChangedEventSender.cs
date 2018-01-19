@@ -18,15 +18,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
         /// Notify all nodes in the grid a site model has changed attributes
         /// </summary>
         /// <param name="siteModelID"></param>
-        public static void ModelAttributesChanged(long siteModelID)
+        public static void ModelAttributesChanged(IIgnite ignite, long siteModelID)
         {
-            // This full blown 'get the Ignite reference and messaging projection may not be very fast...
-            // TODO: Add finer granularity to the event details (eg: project extents changed, surveyed surface list changed, design changed etc)
-            Ignition.TryGetIgnite(RaptorGrids.RaptorGridName())?.GetMessaging().Send
-                (new SiteModelAttributesChangedEvent()
-                {
-                    SiteModelID = siteModelID
-                });
+            ignite?.GetMessaging().Send(new SiteModelAttributesChangedEvent()
+            {
+                SiteModelID = siteModelID
+            });
         }
     }
 }

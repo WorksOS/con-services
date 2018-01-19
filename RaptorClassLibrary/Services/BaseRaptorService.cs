@@ -17,7 +17,7 @@ namespace VSS.VisionLink.Raptor.Services
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public BaseRaptorService() : base()
+        public BaseRaptorService(string gridName, string role) : base(gridName, role)
         {
 
         }

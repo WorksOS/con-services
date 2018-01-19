@@ -9,7 +9,7 @@ using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Rendering
+namespace VSS.VisionLink.Raptor.Rendering.Displayers
 {
     /// <summary>
     /// Plan View Map displayer renderer for machine speed information presented as rendered tiles

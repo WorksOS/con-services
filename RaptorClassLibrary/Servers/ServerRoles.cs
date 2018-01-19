@@ -29,7 +29,12 @@ namespace VSS.VisionLink.Raptor.Servers
         /// <summary>
         /// A server responsible for processing TAG files into the production data models
         /// </summary>
-        public static string TAG_PROCESING_NODE = "TagProc";
+        public static string TAG_PROCESSING_NODE = "TagProc";
+
+        /// <summary>
+        /// A server responsible for processing TAG files into the production data models
+        /// </summary>
+        public static string TAG_PROCESSING_NODE_CLIENT = "TagProcClient";
 
         /// <summary>
         /// A server responsible for rendering tiles from production data

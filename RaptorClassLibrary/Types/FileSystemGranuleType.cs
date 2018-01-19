@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace VSS.VisionLink.Raptor.Types
 {
     /// <summary>
+    /// LEGACY STRUCTURE
     /// Types of file system granules supported in a Raptor FS file
     /// </summary>
     public enum FileSystemGranuleType

@@ -16,7 +16,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <summary>
         /// The SiteModel that this subgrid tree is holding information for
         /// </summary>
-//        private SiteModel SiteModelReference { get; set; } = null;
+        private SiteModel SiteModelReference { get; set; } = null;
 
         public ServerSubGridTree(SiteModel siteModel) :
             base(SubGridTree.SubGridTreeLevels, SubGridTree.DefaultCellSize,
@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // FIsNewlyCreated := False;
 
             ID = siteModel.ID; // Ensure the ID of the subgrid tree matches the datamodel ID
-//            SiteModelReference = siteModel;
+            SiteModelReference = siteModel;
 
             // FIsValid:= True;
         }
@@ -95,10 +95,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Locate the segment file and load the data from it
             FullFileName = GetLeafSubGridSegmentFullFileName(cellAddress, Segment.SegmentInfo);
 
-            //            Debug.Assert(false, "SubGrid.LoadFromFile not implemented (should usee direct serialisation from Ignite, or serialisation of dumb dinary data from same");
+            // Debug.Assert(false, "SubGrid.LoadFromFile not implemented (should usee direct serialisation from Ignite, or serialisation of dumb dinary data from same");
             // Load the cells into it from its file
-            FileLoaded = SubGrid.LoadSegmentFromStorage(StorageProxy.SpatialInstance(cellAddress.ToSpatialDivisionDescriptor(RaptorConfig.numSpatialProcessingDivisions)),
-                                                        FullFileName, Segment, needToLoadLatestData, needToLoadAllPasses /*, SiteModelReference*/);
+            FileLoaded = SubGrid.LoadSegmentFromStorage(SiteModelReference.StorageProxy, FullFileName, Segment, needToLoadLatestData, needToLoadAllPasses /*, SiteModelReference*/);
 
             if (!FileLoaded)
             {
@@ -157,7 +156,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 }
 
                 FullFileName = GetLeafSubGridFullFileName(CellAddress);
-                Result = SubGrid.LoadDirectoryFromFile(FullFileName);
+                Result = SubGrid.LoadDirectoryFromFile(SiteModelReference.StorageProxy, FullFileName);
             }
             finally
             {

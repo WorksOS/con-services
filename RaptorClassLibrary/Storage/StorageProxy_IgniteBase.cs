@@ -1,13 +1,16 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Storage.Utilities;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.Types;
@@ -16,47 +19,34 @@ namespace VSS.VisionLink.Raptor.Storage
 {
     public class StorageProxy_IgniteBase
     {
-        protected static IIgnite ignite = null;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        protected static ICache<SubGridSpatialAffinityKey, byte[]> mutableSpatialCache = null;
-        protected static ICache<SubGridSpatialAffinityKey, byte[]> immutableSpatialCache = null;
-        protected static ICache<string, byte[]> mutableNonSpatialCache = null;
-        protected static ICache<string, byte[]> immutableNonSpatialCache = null;
+        protected IIgnite ignite = null;
 
-        protected static Object LockObj = new Object();
+        protected ICache<SubGridSpatialAffinityKey, byte[]> spatialCache = null;
+        protected ICache<string, byte[]> nonSpatialCache = null;
+
+        public ICache<string, byte[]> NonSpatialCache => nonSpatialCache;
+        public ICache<SubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache;
 
         /// <summary>
-        /// Controls whether the immutable cache can be used as the primary source of data to support reads.
-        /// Of true, a cache item is read from the immutable cache. If not present there it will be read from the
-        /// mutable cache and promoted into the immutable cache
+        /// Controls which grid (Mutable or Immutable) this storage proxy performs reads and writes against.
         /// </summary>
-        protected bool ReadFromImmutableDataCaches = RaptorServerConfig.Instance().ReadFromImmutableDataCaches;
+        public StorageMutability Mutability { get; set; } = StorageMutability.Immutable;
 
-        public StorageProxy_IgniteBase(string gridName)
+        public StorageProxy_IgniteBase(StorageMutability mutability)
         {
-            if (ignite == null)
-            {
-                ignite = Ignition.TryGetIgnite(gridName);
-            }
+            Mutability = mutability;
+
+            ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorGridName(Mutability));
         }
 
-        protected void EstablishMutableCaches()
+        protected void EstablishCaches()
         {
-            if (ignite != null)
-            {
-                mutableSpatialCache = ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.MutableSpatialCacheName());
-                mutableNonSpatialCache = ignite.GetCache<String, Byte[]>(RaptorCaches.MutableNonSpatialCacheName());
-            }
+           spatialCache = ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.SpatialCacheName(Mutability));
+           nonSpatialCache = ignite.GetCache<String, Byte[]>(RaptorCaches.NonSpatialCacheName(Mutability));
         }
 
-        protected void EstablishImmutableCaches()
-        {
-            if (ignite != null)
-            {
-                immutableSpatialCache = ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName());
-                immutableNonSpatialCache = ignite.GetCache<String, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName());
-            }
-        }
         /// <summary>
         /// Computes the cache key name for a given data model and a given named stream within that datamodel
         /// </summary>
@@ -94,37 +84,68 @@ namespace VSS.VisionLink.Raptor.Storage
                                                                        string cacheKey,
                                                                        FileSystemStreamType streamType)
         {
+            if (mutableCache == null || immutableCache == null)
+            {
+                return null;
+            }
+
             MemoryStream immutableStream = null;
             using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)))
             {
-                //using (MemoryStream mutableStream = MemoryStreamCompression.Decompress(MS))
                 MemoryStream mutableStream = MemoryStreamCompression.Decompress(MS);
                 {
-                    // If successfully read, convert from the mutable to the immutable form and store it into the immutable cache
-                    if (mutableStream != null)
-                    {
-                        if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out immutableStream) && (immutableStream != null))
-                        {
-                            using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
-                            {
-                                // Place the converted immutable item into the immutable cache
-                                immutableCache.Put(cacheKey, compressedStream.ToArray());
-                            }
-                        }
-                        else
-                        {
-                            // There was no immutable version of the requested information. Allow this to bubble up the stack...
-                            // TODO Log the failure
-
-                            immutableStream = null;
-                        }
-                    }
+                    immutableStream = PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType);                
 
                     if (mutableStream != immutableStream)
                     {
                         mutableStream.Dispose();
                     }
                 }
+            }
+
+            return immutableStream;
+        }
+
+        /// <summary>
+        /// Supports taking a mutable version of a piece of data and transforming it into the immutable form if not present in the immutable cache
+        /// </summary>
+        /// <param name="mutableStream"></param>
+        /// <param name="immutableCache"></param>
+        /// <param name="cacheKey"></param>
+        /// <param name="streamType"></param>
+        /// <returns></returns>
+        protected MemoryStream PerformNonSpatialImmutabilityConversion(MemoryStream mutableStream,
+                                                                       ICache<String, byte[]> immutableCache,
+                                                                       string cacheKey,
+                                                                       FileSystemStreamType streamType)
+        {
+            if (mutableStream == null || immutableCache == null)
+            {
+                return null;
+            }
+
+            // Convert from the mutable to the immutable form and store it into the immutable cache
+            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && (immutableStream != null))
+            {
+                using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
+                {
+                    Log.Info(String.Format($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}"));
+                    
+                    // Place the converted immutable item into the immutable cache
+                    immutableCache.Put(cacheKey, compressedStream.ToArray());
+                }
+            }
+            else
+            {
+                // There was no immutable version of the requested information. Allow this to bubble up the stack...
+                // TODO Log the failure
+
+                immutableStream = null;
+            }
+
+            if (mutableStream != immutableStream)
+            {
+                mutableStream.Dispose();
             }
 
             return immutableStream;
@@ -143,31 +164,55 @@ namespace VSS.VisionLink.Raptor.Storage
                                                                     SubGridSpatialAffinityKey cacheKey,
                                                                     FileSystemStreamType streamType)
         {
-            MemoryStream immutableStream = null;
-            using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)))
+            if (mutableCache == null || immutableCache == null)
             {
-                using (MemoryStream mutableStream = MemoryStreamCompression.Decompress(MS))
-                {
-                    // If successfully read, convert from the mutable to the immutable form and store it into the immutable cache
-                    if (mutableStream != null)
-                    {
-                        if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out immutableStream) && (immutableStream != null))
-                        {
-                            using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
-                            {
-                                // Place the converted immutable item into the immutable cache
-                                immutableCache.Put(cacheKey, compressedStream.ToArray());
-                            }
-                        }
-                        else
-                        {
-                            // There was no immutable version of the requested information. Allow this to bubble up the stack...
-                            // TODO Log the failure
+                return null;
+            }
 
-                            immutableStream = null;
-                        }
-                    }
+            MemoryStream immutableStream = null;
+            using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)), mutableStream = MemoryStreamCompression.Decompress(MS))
+            {
+                immutableStream = PerformSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType);
+            }
+
+            return immutableStream;
+        }
+
+        /// <summary>
+        /// Supports taking a mutable version of a piece of data and transforming it into the immutable form if not present in the immutable cache
+        /// </summary>
+        /// <param name="mutableStream"></param>
+        /// <param name="immutableCache"></param>
+        /// <param name="cacheKey"></param>
+        /// <param name="streamType"></param>
+        /// <returns></returns>
+        protected MemoryStream PerformSpatialImmutabilityConversion(MemoryStream mutableStream,
+                                                                    ICache<SubGridSpatialAffinityKey, byte[]> immutableCache,
+                                                                    SubGridSpatialAffinityKey cacheKey,
+                                                                    FileSystemStreamType streamType)
+        {
+            if (mutableStream == null || immutableCache == null)
+            {
+                return null;
+            }
+
+            // Convert from the mutable to the immutable form and store it into the immutable cache
+            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && (immutableStream != null))
+            {
+                using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
+                {
+                    Log.Info(String.Format($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}"));
+
+                    // Place the converted immutable item into the immutable cache
+                    immutableCache.Put(cacheKey, compressedStream.ToArray());
                 }
+            }
+            else
+            {
+                // There was no immutable version of the requested information. Allow this to bubble up the stack...
+                // TODO Log the failure
+
+                immutableStream = null;
             }
 
             return immutableStream;

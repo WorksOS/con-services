@@ -29,7 +29,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         //const Persistor : TSVOICDeferredPersistor;
         Action<uint, uint> SubGridChangeNotifier = null;
 
-        IStorageProxy[] SpatialStorageProxy = null;
+        IStorageProxy StorageProxy = null;  //IStorageProxy[] SpatialStorageProxy = null;
 
         public SubGridIntegrator()
         {
@@ -38,12 +38,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         public SubGridIntegrator(ServerSubGridTree source,
         SiteModel siteModel,
         ServerSubGridTree target,
-        IStorageProxy[] spatialStorageProxy) : this()
+        IStorageProxy storageProxy /*IStorageProxy[] spatialStorageProxy*/) : this()
         {
             Source = source;
             SiteModel = siteModel;
             Target = target;
-            SpatialStorageProxy = spatialStorageProxy;
+            StorageProxy = storageProxy;  //SpatialStorageProxy = spatialStorageProxy;
         }
 
         private void IntegrateIntoIntermediaryGrid(SubGridSegmentIterator SegmentIterator)
@@ -129,7 +129,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             // within the cluster. No cleaving is performed yet... First ensure the latest pass information is calculated
 
             SubGridCellAddress SubGridOriginAddress = new SubGridCellAddress(TargetSubGrid.OriginX, TargetSubGrid.OriginY);
-            IStorageProxy storageProxy = SpatialStorageProxy[SubGridOriginAddress.ToSpatialDivisionDescriptor(RaptorConfig.numSpatialProcessingDivisions)];
+
+            // Replaced by argument in method signature
+            //IStorageProxy storageProxy = SpatialStorageProxy[SubGridOriginAddress.ToSpatialDivisionDescriptor(RaptorConfig.numSpatialProcessingDivisions)];
 
             (TargetSubGrid as ServerSubGridTreeLeaf).ComputeLatestPassInformation(true);
 
@@ -139,13 +141,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                 {
                     FileSystemErrorStatus FSError = FileSystemErrorStatus.OK;
 
-                    s.Segment.SaveToFile(storageProxy, ServerSubGridTree.GetLeafSubGridSegmentFullFileName(SubGridOriginAddress, s), ref FSError);
+                    s.Segment.SaveToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridSegmentFullFileName(SubGridOriginAddress, s), ref FSError);
                 }
             }
 
             // Save the changed subgrid directory to allow Ignite to store & socialise the update
             // within the cluster
-            if ((TargetSubGrid as ServerSubGridTreeLeaf).SaveDirectoryToFile(storageProxy, ServerSubGridTree.GetLeafSubGridFullFileName(SubGridOriginAddress)))
+            if ((TargetSubGrid as ServerSubGridTreeLeaf).SaveDirectoryToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridFullFileName(SubGridOriginAddress)))
             {
                 // Successfully saving the subgrid directory information is the point at which this subgrid may be recognised to exist
                 // in the sitemodel. Note this by including it within the SiteModel existance map
@@ -239,7 +241,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             // Iterate over the subgrids in source and merge the cell passes from source
             // into the subgrids in this sub grid tree;
 
-            Iterator = new SubGridTreeIterator(SpatialStorageProxy, false);
+            Iterator = new SubGridTreeIterator(StorageProxy, false);
 
             SegmentIterator = new SubGridSegmentIterator(null)
             {

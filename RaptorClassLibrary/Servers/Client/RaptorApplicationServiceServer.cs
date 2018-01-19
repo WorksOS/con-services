@@ -11,7 +11,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     /// Represents a server instance that client servers implmenting application service type capabilities such as
     /// tile rendering should descend from
     /// </summary>
-    public class RaptorApplicationServiceServer : RaptorClientServer
+    public class RaptorApplicationServiceServer : RaptorImmutableClientServer
     {
         public static string DEFAULT_ROLE = ServerRoles.ASNODE;
 

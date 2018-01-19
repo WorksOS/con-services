@@ -8,6 +8,7 @@ using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.Designs;
+using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.VisionLink.Raptor.Services.Designs
 {
@@ -19,6 +20,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+
         [NonSerialized]
         private static DesignsService _instance = null;
 
@@ -26,7 +28,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         {
             if (_instance == null)
             {
-                _instance = new DesignsService();
+                _instance = new DesignsService(StorageMutability.Immutable);
                 _instance.Init();
             }
 
@@ -43,21 +45,18 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// </summary>
         //private string _svcName;
 
-        private string GridName;
         private string CacheName;
 
         /// <summary>
         /// Default no-arg constructor that sets the grid and cache name to default values
         /// </summary>
-        public DesignsService() : base()
+        public DesignsService(StorageMutability Mutability) : base(RaptorGrids.RaptorGridName(Mutability), "DesignsService")
         {
-            GridName = RaptorGrids.RaptorGridName();
-            CacheName = RaptorCaches.MutableNonSpatialCacheName();
+            CacheName = RaptorCaches.ImmutableNonSpatialCacheName();
         }
 
-        public DesignsService(string gridName, string cacheName) : this()
+        public DesignsService(string cacheName) : this(StorageMutability.Immutable)
         {
-            GridName = gridName;
             CacheName = cacheName;
         }
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 {
     [TestClass()]
-    public class Test_SubGridCellLatestPassDataWrapper_Creation
+    public class Test_SubGridCellLatestPassDataWrapper
     {
         [TestMethod()]
         public void Test_SubGridCellLatestPassDataWrapper_NonStatic_Creation()
@@ -18,10 +18,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
             Assert.IsTrue(wrapper.PassDataExistanceMap != null && wrapper.PassDataExistanceMap.IsEmpty(), "Instance not created as expected");
         }
-    }
 
-    public class test_SubGridCellLatestPassDataWrapper_Clear
-    {
         [TestMethod()]
         public void Test_SubGridCellLatestPassDataWrapper_NonStatic_Clear()
         {

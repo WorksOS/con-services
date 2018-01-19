@@ -435,11 +435,23 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
                     Log.Info(String.Format("Num subgrids present in request = {0} [All divisions]", NumSubgridsToBeExamined));
 
-                    IClusterGroup group = _Ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
+                    AcquireIgniteGridReference();
+
+                    IClusterGroup group = _Ignite?.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
+
+                    if (group == null)
+                    {
+                        return new TSubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.NoIgniteGroupProjection }; 
+                    }
 
                     Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
 
                     rmtMsg = group.GetMessaging();
+
+                    if (group == null)
+                    {
+                        return new TSubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.NoIgniteMessagingProjection };
+                    }
 
                     result = PerformSubgridRequests();
                     result.NumSubgridsExamined = (ProdDataMask != null ? ProdDataMask.CountBits() : 0) +
@@ -457,7 +469,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             {
                 Log.Error($"Exception occurred:\n{E}");
 
-                result = new TSubGridRequestsResponse
+                return new TSubGridRequestsResponse
                 {
                     ResponseCode = SubGridRequestsResponseResult.Unknown
                 };

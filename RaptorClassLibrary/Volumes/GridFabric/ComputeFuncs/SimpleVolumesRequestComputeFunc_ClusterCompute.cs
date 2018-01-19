@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Volumes.Executors;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
@@ -21,6 +23,13 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.ComputeFuncs
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>
+        /// Default no-arg constructor that orients the request to the available PSNODE servers on the immutable grid projection
+        /// </summary>
+        public SimpleVolumesRequestComputeFunc_ClusterCompute() : base(RaptorGrids.RaptorImmutableGridName(), ServerRoles.PSNODE)
+        {
+        }
 
         /// <summary>
         /// Invoke the simple volumes request locally on this node

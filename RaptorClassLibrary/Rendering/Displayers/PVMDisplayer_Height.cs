@@ -4,25 +4,24 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Rendering
+namespace VSS.VisionLink.Raptor.Rendering.Displayers
 {
     /// <summary>
-    /// Plan View Map displayer renderer for machine speed information presented as rendered tiles
+    /// Plan View Map displayer renderer for height/elevation information presented as rendered tiles
     /// </summary>
-    public class PVMDisplayer_Temperature : PVMDisplayerBase
+    public class PVMDisplayer_Height : PVMDisplayerBase
     {
-        private ClientTemperatureLeafSubGrid SubGrid = null;
+        private ClientHeightLeafSubGrid SubGrid = null;
 
         protected override bool DoRenderSubGrid(ISubGrid subGrid)
         {
-            if (subGrid is ClientTemperatureLeafSubGrid)
+            if (subGrid is ClientHeightLeafSubGrid)
             {
-                SubGrid = (ClientTemperatureLeafSubGrid)subGrid;
+                SubGrid = (ClientHeightLeafSubGrid)subGrid;
                 return base.DoRenderSubGrid(SubGrid);
             }
 
@@ -33,9 +32,9 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         protected override Color DoGetDisplayColour()
         {
-            ushort value = SubGrid.Cells[east_col, north_row];
+            float Height = SubGrid.Cells[east_col, north_row];
 
-            return value == CellPass.NullMaterialTemp ? Color.Empty : Palette.ChooseColour(value);
+            return Height == Consts.NullHeight ? Color.Empty : Palette.ChooseColour(Height);
         }
     }
 }

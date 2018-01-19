@@ -15,7 +15,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.NodeFilters
         /// <summary>
         /// Default no-arg constructor that instantiate the appropriate role
         /// </summary>
-        public TAGProcessorRoleBasedNodeFilter() : base(ServerRoles.TAG_PROCESING_NODE)
+        public TAGProcessorRoleBasedNodeFilter() : base(ServerRoles.TAG_PROCESSING_NODE)
         {
         }
     }

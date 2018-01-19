@@ -158,7 +158,7 @@ namespace SurveyedSurfaceManager
         /// <param name="e"></param>
         private void button1_Click_1(object sender, EventArgs e)
         {
-            SurveyedSurfaceService = new SurveyedSurfaceService();
+            SurveyedSurfaceService = new SurveyedSurfaceService(VSS.VisionLink.Raptor.Storage.StorageMutability.Immutable);
             SurveyedSurfaceService.Init(null);
         }
 

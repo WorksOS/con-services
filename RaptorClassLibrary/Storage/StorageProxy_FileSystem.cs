@@ -14,6 +14,8 @@ namespace VSS.VisionLink.Raptor.Storage
     /// </summary>
     public class StorageProxy_FileSystem : IStorageProxy
     {
+        public StorageMutability Mutability { get; set; } = StorageMutability.Immutable;
+
         public StorageProxy_FileSystem()
         {
         }
@@ -48,12 +50,17 @@ namespace VSS.VisionLink.Raptor.Storage
             throw new NotImplementedException();
         }
 
-        FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStore(long DataModelID, string StreamName, FileSystemGranuleType StreamType, out uint StoreGranuleIndex, out uint StoreGranuleCount, MemoryStream Stream)
+        FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, out uint StoreGranuleIndex, out uint StoreGranuleCount, MemoryStream Stream)
         {
             throw new NotImplementedException();
         }
 
-        FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStoreDirect(long DataModelID, string StreamName, FileSystemGranuleType StreamType, MemoryStream Stream)
+        FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStoreDirect(long DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetImmutableStorageProxy(IStorageProxy immutableProxy)
         {
             throw new NotImplementedException();
         }

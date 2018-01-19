@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Grids
 {
@@ -14,6 +15,18 @@ namespace VSS.VisionLink.Raptor.GridFabric.Grids
         /// <summary>
         /// The name of the core grid within Raptor
         /// </summary>
-        public static string RaptorGridName() => "Raptor";
+//        public static string RaptorGridName() => "Raptor";
+
+        /// <summary>
+        /// The name of the grid containing mutable data
+        /// </summary>
+        public static string RaptorMutableGridName() => "Raptor-Mutable";
+
+        /// <summary>
+        /// The name of the grid containing immutable CQRS projected data from the Mutable data grid
+        /// </summary>
+        public static string RaptorImmutableGridName() => "Raptor-Immutable";
+
+        public static string RaptorGridName(StorageMutability Mutability) => Mutability == StorageMutability.Mutable ? RaptorMutableGridName() : RaptorImmutableGridName();
     }
 }

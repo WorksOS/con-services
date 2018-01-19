@@ -26,9 +26,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Queues
             QueueCache.Put(date.ToBinary(), new SegmentRetirementQueueItem(date.ToBinary(), value));
         }
 
-        public SegmentRetirementQueue()
+        public SegmentRetirementQueue(string gridName)
         {
-            IIgnite Ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
+            IIgnite Ignite = Ignition.GetIgnite(gridName);
+
             QueueCache = Ignite.GetOrCreateCache<long, SegmentRetirementQueueItem>(
                 new CacheConfiguration
                 {

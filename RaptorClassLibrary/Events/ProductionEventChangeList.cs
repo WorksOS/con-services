@@ -393,7 +393,7 @@ namespace VSS.VisionLink.Raptor.Events
             {
                 SaveToStream(MS);
 
-                storageProxy.WriteStreamToPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), Types.FileSystemGranuleType.EventList, MS);
+                storageProxy.WriteStreamToPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), Types.FileSystemStreamType.Events, MS);
             }
         }
 

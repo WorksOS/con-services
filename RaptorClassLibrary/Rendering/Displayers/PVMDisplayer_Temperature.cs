@@ -9,20 +9,20 @@ using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Rendering
+namespace VSS.VisionLink.Raptor.Rendering.Displayers
 {
     /// <summary>
     /// Plan View Map displayer renderer for machine speed information presented as rendered tiles
     /// </summary>
-    public class PVMDisplayer_MachineSpeed : PVMDisplayerBase
+    public class PVMDisplayer_Temperature : PVMDisplayerBase
     {
-        private ClientMachineSpeedLeafSubGrid SubGrid = null;
+        private ClientTemperatureLeafSubGrid SubGrid = null;
 
         protected override bool DoRenderSubGrid(ISubGrid subGrid)
         {
-            if (subGrid is ClientMachineSpeedLeafSubGrid)
+            if (subGrid is ClientTemperatureLeafSubGrid)
             {
-                SubGrid = subGrid as ClientMachineSpeedLeafSubGrid;
+                SubGrid = (ClientTemperatureLeafSubGrid)subGrid;
                 return base.DoRenderSubGrid(SubGrid);
             }
 
@@ -35,7 +35,7 @@ namespace VSS.VisionLink.Raptor.Rendering
         {
             ushort value = SubGrid.Cells[east_col, north_row];
 
-            return value == CellPass.NullMachineSpeed ? Color.Empty : Palette.ChooseColour(value);
+            return value == CellPass.NullMaterialTemp ? Color.Empty : Palette.ChooseColour(value);
         }
     }
 }

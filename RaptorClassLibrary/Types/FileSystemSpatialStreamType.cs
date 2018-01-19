@@ -14,6 +14,7 @@ namespace VSS.VisionLink.Raptor.Types
         SubGridSegment,
         SubGridDirectory,
         Events,
-        ProductionDataXML
+        ProductionDataXML,
+        SubgridExistenceMap
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Caches
 {
@@ -88,6 +89,10 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
 
             return kNonSpatialImmutable;
         }
+
+        public static string SpatialCacheName(StorageMutability Mutability) => Mutability == StorageMutability.Mutable ? MutableSpatialCacheName() : ImmutableSpatialCacheName();
+
+        public static string NonSpatialCacheName(StorageMutability Mutability) => Mutability == StorageMutability.Mutable ? MutableNonSpatialCacheName() : ImmutableNonSpatialCacheName();
 
         /// <summary>
         /// Returns the name of of the design topology existence maps

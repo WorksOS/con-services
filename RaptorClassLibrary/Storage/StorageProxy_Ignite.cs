@@ -1,8 +1,4 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache;
-using Apache.Ignite.Core.Cache.Configuration;
-using Apache.Ignite.Core.Cache.Eviction;
-using log4net;
+﻿using log4net;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,11 +7,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Storage.Utilities;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Storage
@@ -29,13 +22,17 @@ namespace VSS.VisionLink.Raptor.Storage
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
+        /// The reference to a storage proxy representing the immutable data store derived from a mutable data store
+        /// </summary>
+        public IStorageProxy ImmutableProxy = null;
+
+        /// <summary>
         /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
         /// </summary>
         /// <param name="gridName"></param>
-        public StorageProxy_Ignite(string gridName) : base(gridName)
+        public StorageProxy_Ignite(StorageMutability mutability) : base(mutability)
         {
-            EstablishMutableCaches();
-            EstablishImmutableCaches();
+            EstablishCaches();
         }
 
         /// <summary>
@@ -52,16 +49,18 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StoreGranuleIndex"></param>
         /// <param name="StoreGranuleCount"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(long DataModelID, 
-                                                                          string StreamName, 
+        public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(long DataModelID,
+                                                                          string StreamName,
                                                                           uint SubgridX, uint SubgridY,
                                                                           string SegmentIdentifier,
-                                                                          FileSystemStreamType StreamType, 
-                                                                          uint GranuleIndex, 
-                                                                          out MemoryStream Stream, 
-                                                                          out uint StoreGranuleIndex, 
+                                                                          FileSystemStreamType StreamType,
+                                                                          uint GranuleIndex,
+                                                                          out MemoryStream Stream,
+                                                                          out uint StoreGranuleIndex,
                                                                           out uint StoreGranuleCount)
-        {            
+        {
+            Stream = null;
+
             StoreGranuleIndex = 0;
             StoreGranuleCount = 0;
 
@@ -71,30 +70,22 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 // Log.Info(String.Format("Getting key:{0}", StreamName));
 
-                if (ReadFromImmutableDataCaches)
+                try
                 {
-                    try
-                    {
-                        // First look to see if the immutable item is in the cache
-                        using (MemoryStream MS = new MemoryStream(immutableSpatialCache.Get(cacheKey)))
-                        {
-                            Stream = MemoryStreamCompression.Decompress(MS);
-                        }
-                    }
-                    catch // (KeyNotFoundException e)
-                    {
-                        Stream = PerformSpatialImmutabilityConversion(mutableSpatialCache, immutableSpatialCache, cacheKey, StreamType);
-                    }
-                }
-                else
-                {
-                    using (MemoryStream MS = new MemoryStream(mutableSpatialCache.Get(cacheKey)))
+                    using (MemoryStream MS = new MemoryStream(spatialCache.Get(cacheKey)))
                     {
                         Stream = MemoryStreamCompression.Decompress(MS);
+                        Stream.Position = 0;
                     }
                 }
-
-                Stream.Position = 0;
+                catch (KeyNotFoundException)
+                {
+                    return FileSystemErrorStatus.GranuleDoesNotExist;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
 
                 return FileSystemErrorStatus.OK;
             }
@@ -117,39 +108,37 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <returns></returns>
         public FileSystemErrorStatus ReadStreamFromPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
         {
+            Stream = null;
+
             try
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 // Log.Info(String.Format("Getting key:{0}", cacheKey));
 
-                if (ReadFromImmutableDataCaches)
+                try
                 {
-                    try
-                    {
-                        using (MemoryStream MS = new MemoryStream(immutableNonSpatialCache.Get(cacheKey)))
-                        {
-                            Stream = MemoryStreamCompression.Decompress(MS);
-                        }
-                    }
-                    catch // (KeyNotFoundException e)
-                    {
-                        Stream = PerformNonSpatialImmutabilityConversion(mutableNonSpatialCache, immutableNonSpatialCache, cacheKey, StreamType);
-                    }
-                }
-                else
-                {
-                    using (MemoryStream MS = new MemoryStream(mutableNonSpatialCache.Get(cacheKey)))
+                    using (MemoryStream MS = new MemoryStream(nonSpatialCache.Get(cacheKey)))
                     {
                         Stream = MemoryStreamCompression.Decompress(MS);
+                        Stream.Position = 0;
                     }
                 }
+                catch (KeyNotFoundException)
+                {
+                    return FileSystemErrorStatus.GranuleDoesNotExist;
+                }
+                catch (Exception e)
+                {
+                    throw;
+                }
 
-                Stream.Position = 0;
                 return FileSystemErrorStatus.OK;
             }
-            catch // (Exception E)
+            catch (Exception e)
             {
+                Log.Info(String.Format("Exception occurred: {0}", e));
+
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
             }
@@ -201,20 +190,16 @@ namespace VSS.VisionLink.Raptor.Storage
                 // Remove item from both immutable and mutable caches
                 try
                 {
-                    mutableNonSpatialCache.GetAndRemove(cacheKey);
+                    nonSpatialCache.GetAndRemove(cacheKey);
                 }
                 catch
                 {
                     // TODO Log the error
                 }
 
-                try
+                if (ImmutableProxy != null)
                 {
-                    immutableNonSpatialCache.GetAndRemove(cacheKey);
-                }
-                catch
-                {
-                    // TODO Log the error
+                    ImmutableProxy.RemoveStreamFromPersistentStore(DataModelID, StreamName);
                 }
 
                 return FileSystemErrorStatus.OK;
@@ -253,19 +238,22 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info(String.Format("Putting key:{0}, size:{1} -> {2}", cacheKey, Stream.Length, compressedStream.Length));
+                    Log.Info(String.Format($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
 
-                    mutableSpatialCache.Put(cacheKey, compressedStream.ToArray());
+                    spatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
+
+                // Convert the stream to the immutable form and write it to the immutable storage proxy
                 try
                 {
-                    // Invalidate the immutable version
-                    immutableSpatialCache.GetAndRemove(cacheKey);
+                    if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
+                    {
+                        PerformSpatialImmutabilityConversion(Stream, (ImmutableProxy as StorageProxy_Ignite).SpatialCache, cacheKey, StreamType);
+                    }
                 }
                 catch // (Exception e)
                 {
-                    // Ignore any excpetion here which is typically thrown if the element in the
-                    // cache does not exist, which is entirely possible
+                    // Ignore any exception here which is typically thrown if the element in the cache does not exist, which is entirely possible
                 }
 
                 return FileSystemErrorStatus.OK;
@@ -286,7 +274,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StoreGranuleCount"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus WriteStreamToPersistentStore(long DataModelID, string StreamName, FileSystemGranuleType StreamType, out uint StoreGranuleIndex, out uint StoreGranuleCount, MemoryStream Stream)
+        public FileSystemErrorStatus WriteStreamToPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, out uint StoreGranuleIndex, out uint StoreGranuleCount, MemoryStream Stream)
         {
             StoreGranuleCount = 0;
             StoreGranuleIndex = 0;
@@ -297,24 +285,19 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info(String.Format("Putting key:{0}, size:{1} -> {2}", cacheKey, Stream.Length, compressedStream.Length));
+                    Log.Info(String.Format($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
 
-//                    IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
-//                    ICache<string, byte[]> cache = ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
-//                    cache.Put(cacheKey, compressedStream.ToArray());
+                    // IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
+                    // ICache<string, byte[]> cache = ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
+                    // cache.Put(cacheKey, compressedStream.ToArray());
 
-                    mutableNonSpatialCache.Put(cacheKey, compressedStream.ToArray());
+                    nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
 
-                try
+                // Convert the stream to the immutable form and write it to the immutable storage proxy
+                if (Mutability == StorageMutability.Mutable && (ImmutableProxy != null))
                 {
-                    // Invalidate the immutable version
-                    immutableNonSpatialCache.GetAndRemove(cacheKey);
-                }
-                catch // (Exception e)
-                {
-                    // Ignore any excpetion here which is typically thrown if the element in the
-                    // cache does not exist, which is entirely possible
+                    PerformNonSpatialImmutabilityConversion(Stream, (ImmutableProxy as StorageProxy_Ignite).NonSpatialCache, cacheKey, StreamType);
                 }
 
                 return FileSystemErrorStatus.OK;
@@ -333,7 +316,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus WriteStreamToPersistentStoreDirect(long DataModelID, string StreamName, FileSystemGranuleType StreamType, MemoryStream Stream)
+        public FileSystemErrorStatus WriteStreamToPersistentStoreDirect(long DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
         {
             try
             {
@@ -341,20 +324,15 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info(String.Format("Putting key:{0}, size:{1} -> {2}", cacheKey, Stream.Length, compressedStream.Length));
+                    Log.Info(String.Format($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
 
-                    mutableNonSpatialCache.Put(cacheKey, compressedStream.ToArray());
+                    nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
 
-                try
+                // Convert the stream to the immutable form and write it to the immutable storage proxy
+                if (Mutability == StorageMutability.Mutable && (ImmutableProxy != null))
                 {
-                    // Invalidate the immutable version if there is a cache reference
-                    immutableNonSpatialCache.GetAndRemove(cacheKey);
-                }
-                catch // (Exception e)
-                {
-                    // Ignore any exception here which is typically thrown if the element in the
-                    // cache does not exist, which is entirely possible
+                    PerformNonSpatialImmutabilityConversion(Stream, (ImmutableProxy as StorageProxy_Ignite).NonSpatialCache, cacheKey, StreamType);
                 }
 
                 return FileSystemErrorStatus.OK;
@@ -363,6 +341,30 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 return FileSystemErrorStatus.UnknownErrorWritingToFS;
             }
+        }
+
+        /// <summary>
+        /// Sets a reference to a storage proxy that proxies the immutable data store for this mutable data store
+        /// </summary>
+        /// <param name="immutableProxy"></param>
+        public void SetImmutableStorageProxy(IStorageProxy immutableProxy)
+        {
+            if (Mutability != StorageMutability.Mutable)
+            {
+                throw new ArgumentException("Non-mutable storage proxy may not accept an immutable storage proxy reference");
+            }
+
+            if (immutableProxy == null)
+            {
+                throw new ArgumentException("Null immutable storage proxy reference supplied to SetImmutableStorageProxy()");
+            }
+
+            if (immutableProxy.Mutability != StorageMutability.Immutable)
+            {
+                throw new ArgumentException("Immutable storage proxy reference is not marked with Immutable mutability");
+            }
+
+            ImmutableProxy = immutableProxy;
         }
     }
 }

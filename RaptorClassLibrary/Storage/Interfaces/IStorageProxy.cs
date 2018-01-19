@@ -4,22 +4,25 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Interfaces
 {
     public interface IStorageProxy
     {
+        StorageMutability Mutability { get; set; }
+
         FileSystemErrorStatus WriteStreamToPersistentStore(long DataModelID,
                                               string StreamName,
-                                              FileSystemGranuleType StreamType,
+                                              FileSystemStreamType StreamType,
                                               out uint StoreGranuleIndex,
                                               out uint StoreGranuleCount,
                                               MemoryStream Stream);
 
         FileSystemErrorStatus WriteStreamToPersistentStoreDirect(long DataModelID,
                                               string StreamName,
-                                              FileSystemGranuleType StreamType,
+                                              FileSystemStreamType StreamType,
                                               MemoryStream Stream);
 
         FileSystemErrorStatus WriteSpatialStreamToPersistentStore(long DataModelID,
@@ -61,6 +64,9 @@ namespace VSS.VisionLink.Raptor.Interfaces
 
         FileSystemErrorStatus RemoveStreamFromPersistentStore(long DataModelID,
                                                               string StreamName);
+
+        void SetImmutableStorageProxy(IStorageProxy immutableProxy);
+
         /*
             function CopyDataModel(const DataModelID : Int64; const DestinationFileName: String): TICFSErrorStatus;
             function SwapDataModel(const DataModelID : Int64; const SourceFileName: String): TICFSErrorStatus;

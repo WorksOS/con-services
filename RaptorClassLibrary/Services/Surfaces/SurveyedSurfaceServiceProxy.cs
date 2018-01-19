@@ -10,6 +10,7 @@ using VSS.VisionLink.Raptor.GridFabric.NodeFilters;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.Surfaces;
+using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.VisionLink.Raptor.Services.Surfaces
 {
@@ -38,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// </summary>
         public SurveyedSurfaceServiceProxy()
         {
-            IIgnite _ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
+            IIgnite _ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorImmutableGridName());
 
             // Get an instance of IServices for the cluster group.
             services = _ignite.GetCluster().GetServices();
@@ -52,7 +53,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
             services.Deploy(new ServiceConfiguration()
             {
                 Name = ServiceName,
-                Service = new SurveyedSurfaceService(),
+                Service = new SurveyedSurfaceService(StorageMutability.Immutable),
                 TotalCount = 1,
                 MaxPerNodeCount = 1,
                 NodeFilter = new PSNodeRoleBasedNodeFilter()

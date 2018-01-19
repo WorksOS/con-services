@@ -98,7 +98,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         // the subgrid tree which marks the progress of the iteration
         SubGridTreeIteratorStateIndex[] iterationState = new SubGridTreeIteratorStateIndex[SubGridTree.SubGridTreeLevels];
 
-        IStorageProxy[] SpatialStorageProxy = null;
+        IStorageProxy StorageProxy = null; //IStorageProxy[] SpatialStorageProxy = null;
 
         // FStorageClasses controls the storage classes that will be retrieved from the database
         // for each subgrid in the iteration
@@ -174,7 +174,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
         protected virtual ISubGrid GetCurrentSubGrid() => CurrentSubGrid;
 
-        public SubGridTreeIterator(IStorageProxy[] spatialStorageProxy,
+        public SubGridTreeIterator(IStorageProxy storageProxy, //IStorageProxy[] spatialStorageProxy,
                                    bool subGridsInServerDiskStore)
         {
             //            FDataStoreCache = ADataStoreCache;
@@ -182,7 +182,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             //          FLockToken = -1;
 
             SubGridsInServerDiskStore = subGridsInServerDiskStore;
-            SpatialStorageProxy = spatialStorageProxy;
+            StorageProxy = storageProxy; // SpatialStorageProxy = spatialStorageProxy;
         }
 
         public void CurrentSubgridDestroyed() => CurrentSubGrid = null;

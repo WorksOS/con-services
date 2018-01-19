@@ -54,7 +54,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.MockedClasses.GridFabri
         {
             _attributes = new Dictionary<string, object>()
             {
-                { $"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{role}", "Yes" }
+                { $"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{role}", "True" }
             };
         }
     }

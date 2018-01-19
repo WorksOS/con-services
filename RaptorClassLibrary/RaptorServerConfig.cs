@@ -1,6 +1,8 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,16 +15,28 @@ namespace VSS.VisionLink.Raptor
     /// </summary>
     public class RaptorServerConfig
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private static RaptorServerConfig instance = null;
 
         public static RaptorServerConfig Instance()
         {
             if (instance == null)
             {
+                Log.Info("Creating RaptorServerConfig");
+
                 string[] args = Environment.CommandLine.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
-                instance = new RaptorServerConfig();
-                instance.SpatialSubdivisionDescriptor = args.Where(x => x.Contains("SpatialDivision=")).Select(x => x.Split(new String[] { "=" }, StringSplitOptions.RemoveEmptyEntries)[1]).Select(x => Convert.ToUInt16(x)).FirstOrDefault();
+                Log.Info($"Number of process args provided: {args.Length}");
+                if (args.Length > 0)
+                {
+                    Log.Info($"Process args: {args.Aggregate((s1, s2) => s1 + " " + s2 + "\n")}");
+                }
+
+                instance = new RaptorServerConfig
+                {
+                    SpatialSubdivisionDescriptor = args.Where(x => x.Contains("SpatialDivision=")).Select(x => x.Split(new String[] { "=" }, StringSplitOptions.RemoveEmptyEntries)[1]).Select(x => Convert.ToUInt16(x)).FirstOrDefault()
+                };
             }
 
             return instance;
@@ -62,12 +76,5 @@ namespace VSS.VisionLink.Raptor
         /// Defines whether non spatial data should be compressed in it's immutable form
         /// </summary>
         public bool CompressImmutableNonSpatialData { get; set; } = true;
-
-        /// <summary>
-        /// Controls whether the immutable cache can be used as the primary source of data to support reads.
-        /// Of true, a cache item is read from the immutable cache. If not present there it will be read from the
-        /// mutable cache and promoted into the immutable cache
-        /// </summary>
-        public bool ReadFromImmutableDataCaches { get; set; } = true;
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Rendering.Palettes.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 
-namespace VSS.VisionLink.Raptor.Rendering
+namespace VSS.VisionLink.Raptor.Rendering.Displayers
 {
     public class PVMDisplayerBase : ProductionPVMDisplayerBase
     {

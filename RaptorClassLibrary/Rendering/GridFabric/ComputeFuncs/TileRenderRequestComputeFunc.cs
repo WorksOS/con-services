@@ -1,12 +1,15 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using Apache.Ignite.Core;
+using Apache.Ignite.Core.Compute;
 using log4net;
 using System;
 using System.Drawing;
 using System.Reflection;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Rendering.Executors;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.Servers;
 
 namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
 {
@@ -20,6 +23,13 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        /// <summary>
+        /// Default no-arg constructor that orients the request to the available ASNODE servers on the immutable grid projection
+        /// </summary>
+        public TileRenderRequestComputeFunc() : base(RaptorGrids.RaptorImmutableGridName(), ServerRoles.ASNODE)
+        {
+        }
+
         public Bitmap Invoke(TileRenderRequestArgument arg)
         {
             Log.Info("In TileRenderRequestComputeFunc.Invoke()");
@@ -28,7 +38,7 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
             {
                 // Supply the Raptor ID of the Ignite node currently running this code to permit processing contexts to send
                 // subgrid results to it.
-                arg.RaptorNodeID = _Ignite.GetCluster().GetLocalNode().GetAttribute<string>("RaptorNodeID");
+                arg.RaptorNodeID = RaptorNodeID.ThisNodeID(Storage.StorageMutability.Immutable);
 
                 Log.InfoFormat("Assigned RaptorNodeID from local node is {0}", arg.RaptorNodeID);
 

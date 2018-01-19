@@ -3,8 +3,10 @@ using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Eviction;
+using Apache.Ignite.Core.Communication.Tcp;
 using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Discovery.Tcp;
+using Apache.Ignite.Core.Discovery.Tcp.Static;
 using Apache.Ignite.Log4Net;
 using log4net;
 using System;
@@ -14,6 +16,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Queues;
 using VSS.VisionLink.Raptor.Storage;
@@ -24,7 +27,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     /// Defines a representation of a client able to request Raptor related compute operations using
     /// the Ignite In Memory Data Grid. All client type server classes should descend from this class.
     /// </summary>
-    public class RaptorClientServer : RaptorIgniteServer
+    public class RaptorImmutableClientServer : RaptorIgniteServer
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -32,7 +35,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// Constructor that creates a new server instance with a single role
         /// </summary>
         /// <param name="role"></param>
-        public RaptorClientServer(string role) : this(new string[] { role })
+        public RaptorImmutableClientServer(string role) : this(new string[] { role })
         {
         }
 
@@ -40,15 +43,15 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// Constructor that creates a new server instance with a set of roles
         /// </summary>
         /// <param name="roles"></param>
-        public RaptorClientServer(string [] roles) : base()
+        public RaptorImmutableClientServer(string [] roles) : base()
         {
-            if (raptorGrid == null)
+            if (immutableRaptorGrid == null)
             {
                 // Attempt to attach to an already existing Ignite instance
-                raptorGrid = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
+                immutableRaptorGrid = RaptorGridFactory.Grid(RaptorGrids.RaptorImmutableGridName());
 
                 // If there was no connection obtained, attempt to create a new instance
-                if (raptorGrid == null)
+                if (immutableRaptorGrid == null)
                 {
                     string roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
 
@@ -58,9 +61,9 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
-                        //                        SpringConfigUrl = @".\RaptorIgniteConfig.xml",
+                        // SpringConfigUrl = @".\RaptorIgniteConfig.xml",
 
-                        IgniteInstanceName = RaptorGrids.RaptorGridName(),
+                        IgniteInstanceName = RaptorGrids.RaptorImmutableGridName(),
                         ClientMode = true,
 
                         JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
@@ -74,8 +77,19 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                         // Enforce using only the LocalHost interface
                         DiscoverySpi = new TcpDiscoverySpi()
                         {
-                            LocalAddress = "127.0.0.1"//,
-                            //LocalPort = 47500
+                            LocalAddress = "127.0.0.1",
+                            LocalPort = 47500, // + (int)RaptorServerConfig.Instance().SpatialSubdivisionDescriptor
+
+                            IpFinder = new TcpDiscoveryStaticIpFinder()
+                            {
+                                Endpoints = new [] { "127.0.0.1:47500..47509" }
+                            }
+                        },
+
+                        CommunicationSpi = new TcpCommunicationSpi()
+                        {
+                            LocalAddress = "127.0.0.1",
+                            LocalPort = 47100,
                         },
 
                         Logger = new IgniteLog4NetLogger(Log),
@@ -83,11 +97,11 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                         // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
                         DataStorageConfiguration = new DataStorageConfiguration()
                         {
-                            PageSize = DataRegions.DEFAULT_DATA_REGION_PAGE_SIZE,
+                            PageSize = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_PAGE_SIZE,
 
                             DefaultDataRegionConfiguration = new DataRegionConfiguration
                             {
-                                Name = "Default",
+                                Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
                                 InitialSize = 128 * 1024 * 1024,  // 128 MB
                                 MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB    
                             },
@@ -103,16 +117,17 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                     foreach (string roleName in roles)
                     {
-                        cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{roleName}", "Yes");
+                        cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{roleName}", "True");
                     }
 
                     try
                     {
-                        raptorGrid = Ignition.Start(cfg);
+                        immutableRaptorGrid = Ignition.Start(cfg);
                     }
                     catch (Exception e)
                     {
                         Log.InfoFormat("Creation of new Ignite node with Role = {0} & RaptorNodeID = {1} failed with exception {2}", roleNames, RaptorNodeID, e);
+                        throw;
                     }
                     finally
                     {
@@ -124,12 +139,12 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
         public override ICache<String, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
         {
-            return raptorGrid.GetCache<String, byte[]>(CacheCfg.Name);
+            return immutableRaptorGrid.GetCache<String, byte[]>(CacheCfg.Name);
         }
 
-        public override ICache<String, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
         {
-            return raptorGrid.GetCache<String, byte[]>(CacheCfg.Name);
+            return immutableRaptorGrid.GetCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg.Name);
         }       
     }
 }

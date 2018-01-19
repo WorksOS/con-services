@@ -6,14 +6,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 
 namespace VSS.VisionLink.Raptor.Servers.Client
 {
     /// <summary>
     /// This class simply marks the named grid as being active when executed
     /// </summary>
-    public class ActivatePersistentGridServer : RaptorClientServer
+    public class ActivatePersistentGridServer 
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -23,7 +23,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// Default constructor with role
         /// </summary>
         /// <param name="role"></param>
-        public ActivatePersistentGridServer(string role) : base(role)
+        public ActivatePersistentGridServer(string role) //: base(role)
         {
         }
 
@@ -40,31 +40,34 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// <returns>True if the grid was successfully set to active, or was already in an active state</returns>
         public bool SetGridActive(string gridName)
         {
-            try
+            using (RaptorIgniteServer igniteNode = RaptorClientServerFactory.NewClientNode(gridName, "Activator"))
             {
-                // Get an ignite reference to the named grid
-                IIgnite ignite = Ignition.TryGetIgnite(gridName);
-
-                // If the grid exists, and it is not active, then set it to active
-                if (ignite != null && !ignite.IsActive())
+                try
                 {
-                    ignite.SetActive(true);
+                    // Get an ignite reference to the named grid
+                    IIgnite ignite = RaptorGridFactory.Grid(gridName);
 
-                    Log.InfoFormat("Set grid '{0}' to active.", gridName);
+                    // If the grid exists, and it is not active, then set it to active
+                    if (ignite != null && !ignite.IsActive())
+                    {
+                        ignite.SetActive(true);
 
-                    return true;
+                        Log.InfoFormat("Set grid '{0}' to active.", gridName);
+
+                        return true;
+                    }
+                    else
+                    {
+                        Log.InfoFormat("Grid '{0}' is not available or is already active.", gridName);
+
+                        return ignite != null && ignite.IsActive();
+                    }
                 }
-                else
+                catch (Exception E)
                 {
-                    Log.InfoFormat("Grid '{0}' is not available or is already active.", gridName);
-
-                    return ignite != null && ignite.IsActive();
+                    Log.ErrorFormat("SetGridActive: Exception: {0}", E);
+                    return false;
                 }
-            }
-            catch (Exception E)
-            {
-                Log.ErrorFormat("SetGridActive: Exception: {0}", E);
-                return false;
             }
         }
 
@@ -73,12 +76,12 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// </summary>
         /// <param name="gridName">The name of the grid to be set to inactive</param>
         /// <returns>True if the grid was successfully set to inactive, or was already in an inactive state</returns>
-        public bool SetGridInActive(string gridName)
+            public bool SetGridInActive(string gridName)
         {
             try
             {
                 // Get an ignite reference to the named grid
-                IIgnite ignite = Ignition.TryGetIgnite(gridName);
+                IIgnite ignite = RaptorGridFactory.Grid(gridName);
 
                 // If the grid exists, and it is active, then set it to inactive
                 if (ignite != null && ignite.IsActive())
@@ -108,7 +111,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// <param name="gridName">The name of the grid to wait for</param>
         public void WaitUntilGridActive(string gridName)
         {
-            IIgnite ignite = Ignition.TryGetIgnite(gridName);
+            IIgnite ignite = RaptorGridFactory.Grid(gridName);
 
             if (ignite == null)
             {

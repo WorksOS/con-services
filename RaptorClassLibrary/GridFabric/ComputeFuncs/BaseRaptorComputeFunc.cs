@@ -14,16 +14,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     public class BaseRaptorComputeFunc : BaseRaptorIgniteClass
     {
         /// <summary>
-        /// Default no-arg constructor
-        /// </summary>
-        public BaseRaptorComputeFunc() : base()
-        {
-        }
-
-        /// <summary>
         /// Constructor accepting a role for the compute func that can identity a cluster group in the grid to perform the operation
         /// </summary>
-        public BaseRaptorComputeFunc(string Role) : base(Role)
+        public BaseRaptorComputeFunc(string gridName, string role) : base(gridName, role)
         {
         }
     }

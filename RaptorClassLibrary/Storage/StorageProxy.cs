@@ -14,31 +14,18 @@ namespace VSS.VisionLink.Raptor.Storage
     /// </summary>
     public static class StorageProxy
     {
-        private static Object lockObj = new Object();
+        private static IStorageProxy raptorInstance_Mutable = null;
+        private static IStorageProxy raptorInstance_Immutable = null;
 
-        private static IStorageProxy raptorInstance = null;
-        private static IStorageProxy[] spatialInstance = new IStorageProxy[RaptorConfig.numSpatialProcessingDivisions];
-//        private static string spatialInstanceDivision = "";
-
-        public static IStorageProxy RaptorInstance()
+        public static IStorageProxy RaptorInstance(StorageMutability mutability)
         {
-            return raptorInstance == null ? StorageProxyFactory.Storage(RaptorGrids.RaptorGridName()) : raptorInstance;
-        }
-
-        public static IStorageProxy SpatialInstance(uint spatialDivision)
-        {
-            if (spatialInstance[spatialDivision] == null)
+            switch (mutability)
             {
-                lock (lockObj)
-                {
-                    if (spatialInstance[spatialDivision] == null)
-                    {
-                        spatialInstance[spatialDivision] = StorageProxyFactory.Storage(spatialDivision.ToString());
-                    }
-                }
+                case StorageMutability.Mutable: return raptorInstance_Mutable ?? (raptorInstance_Mutable = StorageProxyFactory.Storage(StorageMutability.Mutable));
+                case StorageMutability.Immutable: return raptorInstance_Immutable ?? (raptorInstance_Immutable = StorageProxyFactory.Storage(StorageMutability.Immutable));
+                default:
+                    throw new ArgumentException($"{mutability} is an unknown mutability type");
             }
-
-            return spatialInstance[spatialDivision];
         }
     }
 }

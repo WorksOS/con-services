@@ -19,11 +19,11 @@ namespace VSS.VisionLink.Raptor.GridFabric
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// Injected Ignite instance
+        /// Ignite instance.
+        /// Note: This was previous an [InstanceResource] but this does not work well with more than one Grid active in the process
         /// </summary>
         [NonSerialized]
-        [InstanceResource]
-        private readonly IIgnite _ignite;
+        private IIgnite _ignite;
 
         protected IIgnite _Ignite { get { return _ignite; } }
 
@@ -43,42 +43,51 @@ namespace VSS.VisionLink.Raptor.GridFabric
 
         protected ICompute _Compute { get { return _compute; } }
 
-        private string Role { get; set; } = "";
+        public string Role { get; set; } = "";
 
-        /// <summary>
-        /// Default no-arg constructor
-        /// </summary>
-        public BaseRaptorIgniteClass()
-        {
-            if (_ignite == null)
-            {
-                Log.InfoFormat($"Ignite grid instance not injected into {this}");
-
-                try
-                {
-                    _ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
-
-                    if (_ignite == null)
-                    {
-                        Log.InfoFormat($"Ignite grid instance still null after secondary attempt to locate grid");
-                    }
-
-                }
-                catch (Exception E)
-                {
-                    Log.InfoFormat($"Exception: {E}");
-                }
-            }
-        }
+        public string GridName { get; set; }
 
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public BaseRaptorIgniteClass(string role) : this()
+        public BaseRaptorIgniteClass(string gridName, string role) : base()
         {
+            GridName = gridName;
             Role = role;
 
+            AcquireIgniteGridReference();
             AcquireIgniteTopologyProjections();
+        }
+
+        /// <summary>
+        /// Default no-arg constructor that throws an exception as the two arg constructor should be used
+        /// </summary>
+        public BaseRaptorIgniteClass()
+        {
+            throw new ArgumentException("No-arg constructor invalid for BaseRaptorIgniteClass, use two-arg constructor");
+        }
+
+        public void AcquireIgniteGridReference()
+        {
+            if (_ignite != null)
+            {
+                return; // The reference has already been acquired.
+            }
+
+            try
+            {
+                _ignite = Ignition.TryGetIgnite(GridName);
+
+                if (_ignite == null)
+                {
+                    Log.InfoFormat($"Ignite grid instance null after attempt to locate grid");
+                }
+
+            }
+            catch (Exception E)
+            {
+                Log.InfoFormat($"Exception: {E}");
+            }
         }
 
         /// <summary>
@@ -88,7 +97,7 @@ namespace VSS.VisionLink.Raptor.GridFabric
         {
             if (!String.IsNullOrEmpty(Role))
             {
-                _group = _ignite?.GetCluster().ForRemotes().ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "Yes");
+                _group = _ignite?.GetCluster().ForRemotes().ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
                 _compute = _group?.GetCompute();
             }
         }

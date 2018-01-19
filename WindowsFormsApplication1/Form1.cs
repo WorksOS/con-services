@@ -23,9 +23,11 @@ using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Queues;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.Servers.Client;
+using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Volumes;
@@ -41,6 +43,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         //        RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
         RaptorTileRenderingServer tileRenderServer = null;
         RaptorSimpleVolumesServer simpleVolumesServer = null;
+        RaptorMutableClientServer mutableClient = null;
 
         SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged = null;
 
@@ -86,7 +89,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 {
                     CoordsAreGrid = true,
                     IsSpatial = true,
-                    Fence = new Fence(extents)                    
+                    Fence = new Fence(extents)
                 };
 
                 return tileRenderServer.RenderTile(new TileRenderRequestArgument
@@ -135,8 +138,10 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             tileRenderServer = RaptorTileRenderingServer.NewInstance();
             simpleVolumesServer = RaptorSimpleVolumesServer.NewInstance();
 
+            mutableClient = new RaptorMutableClientServer("TestApplication");
+
             // Instantiate a site model changed listener to catch changes to site model attributes
-            SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener();
+            SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(RaptorGrids.RaptorImmutableGridName());
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -158,7 +163,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             else
             {
                 extents = new BoundingWorldExtent3D(extents.CenterX - (extents.SizeX / 2),
-                                                    extents.CenterY - (extents.SizeX * Aspect)  / 2,
+                                                    extents.CenterY - (extents.SizeX * Aspect) / 2,
                                                     extents.CenterX + (extents.SizeX / 2),
                                                     extents.CenterY + (extents.SizeX * Aspect) / 2,
                                                     extents.MinZ, extents.MaxZ);
@@ -222,7 +227,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 cmbDesigns.DataSource = designs.Select(x => new { Text = x.DesignDescriptor.FullPath, Value = x }).ToArray();
             }
 
-            SurveyedSurfaceService surveyedSurfacesService = new SurveyedSurfaceService();
+            SurveyedSurfaceService surveyedSurfacesService = new SurveyedSurfaceService(VisionLink.Raptor.Storage.StorageMutability.Immutable);
             surveyedSurfacesService.Init(null);
             SurveyedSurfaces surveyedSurfaces = surveyedSurfacesService.List(ID());
 
@@ -315,7 +320,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             int height = pictureBox1.Height;
             bool selectEarliestPass = chkSelectEarliestPass.Checked;
 
-//            Bitmap[] bitmaps = new Bitmap[nImages];
+            //            Bitmap[] bitmaps = new Bitmap[nImages];
 
             fitExtentsToView(width, height);
 
@@ -327,14 +332,14 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                
+
                 // Parallel
                 Parallel.For(0, nImages, x =>
                 {
-                     using (Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
-                     {
-                     }
-                 });
+                    using (Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
+                    {
+                    }
+                });
                 // Linear
                 //for (int count = 0; count < nImages; count++)
                 //{  
@@ -342,7 +347,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 //    {
                 //    }
                 //};
-                
+
 
                 sw.Stop();
 
@@ -371,7 +376,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 return;
             }
 
-//            writeCacheMetrics(writer, cache.GetMetrics());
+            //            writeCacheMetrics(writer, cache.GetMetrics());
 
             var scanQuery = new ScanQuery<String, byte[]>();
             IQueryCursor<ICacheEntry<String, byte[]>> queryCursor = cache.Query(scanQuery);
@@ -380,7 +385,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             foreach (ICacheEntry<String, byte[]> cacheEntry in queryCursor)
             {
                 writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
-//                writeCacheMetrics(writer, cache.GetMetrics());
+                //                writeCacheMetrics(writer, cache.GetMetrics());
             }
 
             writer.WriteLine();
@@ -443,26 +448,26 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             scanQuery = null;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void dumpKeysToFile(StorageMutability mutability, string fileName)
         {
-            // Obtain all the keys and write them into the file "C:\Temp\AllRaptorIgniteCacheKeys.txt"
-
             try
             {
-                using (var outFile = new FileStream(@"C:\Temp\AllRaptorIgniteCacheKeys.txt", FileMode.Create))
+                IIgnite ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorGridName(mutability));
+
+                if (ignite == null)
+                {
+                    MessageBox.Show($"No ignite reference for {RaptorGrids.RaptorGridName(mutability)} grid");
+                    return;
+                }
+
+                using (var outFile = new FileStream(fileName, FileMode.Create))
                 {
                     using (var writer = new StreamWriter(outFile))
                     {
-//                        writer.Write($"All cache keys from {RaptorCaches.ImmutableNonSpatialCacheName()}");
-
-                        IIgnite ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
-
-//                        retriveAllItems(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
-
-                        writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
-                        writeKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
-                        writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
-                        writeKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                        if (mutability == StorageMutability.Immutable) writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
+                        if (mutability == StorageMutability.Immutable) writeKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+                        if (mutability == StorageMutability.Mutable) writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
+                        if (mutability == StorageMutability.Mutable) writeKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
                     }
                 }
             }
@@ -470,6 +475,13 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             {
                 MessageBox.Show(ee.ToString());
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Obtain all the keys and write them into files
+            dumpKeysToFile(StorageMutability.Mutable, @"C:\Temp\AllRaptorIgniteCacheKeys = mutable.txt");
+            dumpKeysToFile(StorageMutability.Immutable, @"C:\Temp\AllRaptorIgniteCacheKeys = immutable.txt");
         }
 
         private void chkSelectEarliestPass_CheckedChanged(object sender, EventArgs e)
@@ -535,18 +547,34 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             try
             {
-                IIgnite ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
+                IIgnite ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorMutableGridName());
 
-                string result = CalculateCacheStatistics(RaptorCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName())) + "\n" +
-                                CalculateCacheStatistics(RaptorCaches.ImmutableSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.ImmutableSpatialCacheName())) + "\n" +
-                                CalculateCacheStatistics(RaptorCaches.MutableNonSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.MutableNonSpatialCacheName())) + "\n" +
-                                CalculateCacheStatistics(RaptorCaches.MutableSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                if (ignite != null)
+                {
+                    string result = CalculateCacheStatistics(RaptorCaches.MutableNonSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.MutableNonSpatialCacheName())) + "\n" +
+                                    CalculateCacheStatistics(RaptorCaches.MutableSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                    MessageBox.Show(result, "Mutable Statistics");
+                }
+                else
+                {
+                    MessageBox.Show("No Ignite referece for mutable Statistics");
+                }
 
-                MessageBox.Show(result, "Statistics");
+                ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorImmutableGridName());
+                if (ignite != null)
+                {
+                    string result = CalculateCacheStatistics(RaptorCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName())) + "\n" +
+                                    CalculateCacheStatistics(RaptorCaches.ImmutableSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+                    MessageBox.Show(result, "Immutable Statistics");
+                }
+                else
+                {
+                    MessageBox.Show("No Ignite referece for immutable Statistics");
+                }
             }
             catch (Exception ee)
             {
-                MessageBox.Show(ee.ToString());
+                MessageBox.Show(ee.ToString(), "An error occurred");
             }
         }
 
@@ -658,7 +686,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         {
             // Test adding a stream for "5-ProductionDataModel.XML" to the mutable non-spatial cache 
 
-            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
+            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
 
             ICache<string, byte[]> cache = ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
 

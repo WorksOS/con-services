@@ -32,6 +32,11 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
         public long ID = -1;
 
+        /// <summary>
+        /// THe storage proxy this sitemodel instance will use to read/write information related to the SiteModel
+        /// </summary>
+        public IStorageProxy StorageProxy = null;
+
         DateTime LastModifiedDate { get; set; } = DateTime.MinValue;
 
         /// <summary>
@@ -84,7 +89,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             {
                 if (!SurveyedSurfacesLoaded)
                 {
-                    SurveyedSurfaceService proxy = new SurveyedSurfaceService(RaptorGrids.RaptorGridName(), RaptorCaches.MutableNonSpatialCacheName());
+                    SurveyedSurfaceService proxy = new SurveyedSurfaceService(StorageMutability.Immutable, RaptorCaches.ImmutableNonSpatialCacheName());
                     proxy.Init(null); // TODO: Not needed when this moves to Ignite deployed service model
                     SurveyedSurfaces ss = proxy.ListDirect(ID);
 
@@ -121,9 +126,10 @@ namespace VSS.VisionLink.Raptor.SiteModels
             // FTransient = false
         }
 
-        public SiteModel(long id) : this()
+        public SiteModel(long id, IStorageProxy storageProxy) : this()
         {
             ID = id;
+            StorageProxy = storageProxy;
 
             // FCreationDate:= Now;
             // FMarkedForRemoval:= False;
@@ -173,7 +179,8 @@ namespace VSS.VisionLink.Raptor.SiteModels
                          string name,
                          string description,
                          long id,
-                         double cellSize) : this(id)
+                         double cellSize,
+                         IStorageProxy storageProxy) : this(id, storageProxy)
         {
             //        FName := AName;
             //  FDescription := ADescription;
@@ -322,7 +329,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             return true;
         }
 
-        public bool SaveToPersistentStore(IStorageProxy storageProxy)
+        public bool SaveToPersistentStore()
         {
             bool Result = false;
 
@@ -334,7 +341,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                     {
                         Write(writer);
 
-                        Result = storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemGranuleType.SiteModelInfo, out uint StoreGranuleIndex, out uint StoreGranuleCount, MS) == FileSystemErrorStatus.OK
+                        Result = StorageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out uint StoreGranuleIndex, out uint StoreGranuleCount, MS) == FileSystemErrorStatus.OK
                                  && SaveProductionDataExistanceMapToStorage() == FileSystemErrorStatus.OK;
                     }
                 }
@@ -359,7 +366,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             return Result;
         }
 
-        public FileSystemErrorStatus LoadFromPersistentStore(IStorageProxy storageProxy)
+        public FileSystemErrorStatus LoadFromPersistentStore()
         {
             FileSystemErrorStatus Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
 
@@ -367,7 +374,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             {
                 long SavedID = ID;
 
-                Result = storageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+                Result = StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
                 if (Result == FileSystemErrorStatus.OK)
                 {
@@ -409,7 +416,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
                         /* TODO ??
                          * This type of management is not appropriate for Ignite based cache management as
-                         *  list updates will cause Ignite level cache invalidation can can then cause messaging
+                         *  list updates will cause Ignite level cache invalidation that can then cause messaging
                          *  to trigger reloading of target values/event lists
                         if (!CreateMachinesTargetValues())
                             Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -486,7 +493,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                     using (BinaryWriter writer = new BinaryWriter(MS))
                     {
                         SubGridTreePersistor.Write(localExistanceMap, "ExistanceMap", 1, writer);
-                        StorageProxy.RaptorInstance().WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemGranuleType.SubgridExistenceMap, MS);
+                        StorageProxy.WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.SubgridExistenceMap, MS);
                     }
                 }
             }
@@ -510,7 +517,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                 SubGridTreeSubGridExistenceBitMask localExistanceMap = new SubGridTreeSubGridExistenceBitMask();
 
                 // Read its content from storage 
-                StorageProxy.RaptorInstance().ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+                StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
  
                 try
                 {

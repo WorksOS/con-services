@@ -16,22 +16,50 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 {
     public class AggregatedDataIntegratorWorker
     {
+        /// <summary>
+        /// A queue of the tasks this worker will process into the Raptor data stores
+        /// </summary>
         private ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess = null;
-        private SubGridTreeSubGridExistenceBitMask WorkingModelUpdateMap = null;
-        private IStorageProxy storageProxyRaptor = null;
-        private IStorageProxy[] storageProxySpatial = null;
 
+        /// <summary>
+        /// A bitmask sub grid tree that tracks all subgrids modified by the tasks this worker has processed
+        /// </summary>
+        private SubGridTreeSubGridExistenceBitMask WorkingModelUpdateMap = null;
+
+        /// <summary>
+        /// The mutable grid storage proxy
+        /// </summary>
+        private IStorageProxy storageProxy_Mutable = null;
+
+        /// <summary>
+        /// The immutable grid storage proxy
+        /// </summary>
+        private IStorageProxy storageProxy_Immutable = null;
+
+        /// <summary>
+        /// Worker constructor that obtains the necessary storage proxies
+        /// </summary>
         public AggregatedDataIntegratorWorker()
         {
-            storageProxyRaptor = StorageProxy.RaptorInstance();
-            storageProxySpatial = Enumerable.Range(0, (int)RaptorConfig.numSpatialProcessingDivisions).Select(x => StorageProxy.SpatialInstance((uint)x)).ToArray();
+            storageProxy_Immutable = StorageProxy.RaptorInstance(StorageMutability.Immutable);
+            storageProxy_Mutable = StorageProxy.RaptorInstance(StorageMutability.Mutable);
         }
 
+        /// <summary>
+        /// Worker constructor accepting the list of tasks for it to process
+        /// </summary>
+        /// <param name="tasksToProcess"></param>
         public AggregatedDataIntegratorWorker(ConcurrentQueue<AggregatedDataIntegratorTask> tasksToProcess) : this()
         {
             TasksToProcess = tasksToProcess;
         }
 
+        /// <summary>
+        /// Event that records a particular subgrid has been modified, identified by the address of a 
+        /// cell within that subgrid
+        /// </summary>
+        /// <param name="CellX"></param>
+        /// <param name="CellY"></param>
         private void SubgridHasChanged(uint CellX, uint CellY)
         {
             WorkingModelUpdateMap.SetCell(CellX >> SubGridTree.SubGridIndexBitsPerLevel,
@@ -164,49 +192,50 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     // ====== STAGE 2: AGGREGATE ALL EVENTS AND CELL PASSES FROM ALL TAG FILES INTO THE FIRST ONE IN THE LIST
 
                     for (int I = 1; I < ProcessedTasks.Count; I++) // Zeroth item in the list is Task
-                                                                   //        with ProcessedTasks[I] do
                     {
+                        AggregatedDataIntegratorTask processedTask = ProcessedTasks[I];
+
                         // 'Include' the extents etc of each sitemodel being merged into 'task' into its extents and design change events
-                        Task.TargetSiteModel.Include(ProcessedTasks[I].TargetSiteModel);
+                        Task.TargetSiteModel.Include(processedTask.TargetSiteModel);
 
                         // Integrate the machine events
-                        if (AnyMachineEvents && (ProcessedTasks[I].AggregatedMachineEvents != null))
+                        if (AnyMachineEvents && (processedTask.AggregatedMachineEvents != null))
                         {
-                            eventIntegrator.IntegrateMachineEvents(ProcessedTasks[I].AggregatedMachineEvents, Task.AggregatedMachineEvents, true, false);
-                            ProcessedTasks[I].AggregatedMachineEvents = null; // FreeAndNil(AggregatedMachineEvents);
+                            eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, true, false);
+                            processedTask.AggregatedMachineEvents = null; // FreeAndNil(AggregatedMachineEvents);
                         }
 
                         //    SIGLogMessage.PublishNoODS(Self, Format('Aggregation Task Process --> Integrate %d cell pass trees', [ProcessedTasks.Count]), slmcDebug);
 
                         // Integrate the cell passes from all cell pass aggregators containing cell passes for this machine and sitemodel
-                        if (AnyCellPasses && ProcessedTasks[I].AggregatedCellPasses != null)
+                        if (AnyCellPasses && processedTask.AggregatedCellPasses != null)
                         {
                             // Decapsulate the cell passes so they are accessible
                             // TODO...  HandleDecapsulation(AggregatedCellPasses);
 
-                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(ProcessedTasks[I].AggregatedCellPasses, null /* ProcessedTasks[I].TargetSiteModel*/, Task.AggregatedCellPasses, null);
+                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(processedTask.AggregatedCellPasses, null /* ProcessedTasks[I].TargetSiteModel*/, Task.AggregatedCellPasses, null);
                             subGridIntegrator.IntegrateSubGridTree(//ProcessedTasks[I].AggregatedCellPasses,
                                                                    //null,
                                                                    //Task.AggregatedCellPasses,
-                                                 SubGridTreeIntegrationMode.UsingInMemoryTarget,
-                                                 SubgridHasChanged);
+                                                                   SubGridTreeIntegrationMode.UsingInMemoryTarget,
+                                                                   SubgridHasChanged);
 
                             //Update current DateTime with the lates on
-                            if (ProcessedTasks[I].TargetMachine.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp) == -1)
+                            if (processedTask.TargetMachine.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp) == -1)
                             {
-                                Task.TargetMachine.LastKnownPositionTimeStamp = ProcessedTasks[I].TargetMachine.LastKnownPositionTimeStamp;
-                                Task.TargetMachine.LastKnownX = ProcessedTasks[I].TargetMachine.LastKnownX;
-                                Task.TargetMachine.LastKnownY = ProcessedTasks[I].TargetMachine.LastKnownY;
+                                Task.TargetMachine.LastKnownPositionTimeStamp = processedTask.TargetMachine.LastKnownPositionTimeStamp;
+                                Task.TargetMachine.LastKnownX = processedTask.TargetMachine.LastKnownX;
+                                Task.TargetMachine.LastKnownY = processedTask.TargetMachine.LastKnownY;
                             }
 
-                            ProcessedTasks[I].AggregatedCellPasses = null; // FreeAndNil(AggregatedCellPasses);
+                            processedTask.AggregatedCellPasses = null; // FreeAndNil(AggregatedCellPasses);
                         }
                     }
 
                     // Integrate the items present in the 'TargetSiteModel' into the real sitemodel
                     // read from the datamodel file itself, then synchronously write it to the DataModel
                     // avoiding the use of the deferred persistor.
-                    SiteModelFromDM = SiteModels.SiteModels.Instance().GetSiteModel(Task.TargetSiteModelID);
+                    SiteModelFromDM = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(Task.TargetSiteModelID);
 
                     if (SiteModelFromDM == null)
                     {
@@ -264,7 +293,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
                             // The events for this machine have not yet been read from the persistent store
                             // TODO: There is no check to see if they have already been loaded...
-                            if (!SiteModelMachineTargetValues.LoadEventsForMachine(storageProxyRaptor))
+                            if (!SiteModelMachineTargetValues.LoadEventsForMachine(storageProxy_Mutable))
                             {
                                 return false;
                             }
@@ -332,7 +361,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     }
 
                     // Use the synchronous command to save the machine events to the persistent store into the deferred (asynchronous model)
-                    SiteModelMachineTargetValues.SaveMachineEventsToPersistentStore(storageProxyRaptor);
+                    SiteModelMachineTargetValues.SaveMachineEventsToPersistentStore(storageProxy_Mutable);
 
                     // ====== STAGE 3: INTEGRATE THE AGGREGATED CELL PASSES INTO THE PRIMARY LIVE DATABASE
                     if (AnyCellPasses)
@@ -352,14 +381,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                             };
 
                             // Integrate the cell pass data into the main sitemodel and commit each subgrid as it is updated
-                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxySpatial);
+                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
 
                             if (!subGridIntegrator.IntegrateSubGridTree(//Task.AggregatedCellPasses,
                                                                         //SiteModelFromDM,
                                                                         //SiteModelFromDM.Grid,
-                                                        SubGridTreeIntegrationMode.SaveToPersistentStore,
-                                                        // DataPersistorInstance,
-                                                        SubgridHasChanged))
+                                                                        SubGridTreeIntegrationMode.SaveToPersistentStore,
+                                                                        // DataPersistorInstance,
+                                                                        SubgridHasChanged))
                             {
                                 return false;
                             }
@@ -378,7 +407,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     }
 
                     // Use the synchonous command to save the site model information to the persistent store into the deferred (asynchronous model)
-                    SiteModelFromDM.SaveToPersistentStore(storageProxyRaptor /*DataPersistorInstance*/);
+                    SiteModelFromDM.SaveToPersistentStore();
                 }
                 finally
                 {

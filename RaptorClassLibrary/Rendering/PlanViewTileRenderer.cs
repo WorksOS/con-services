@@ -8,6 +8,7 @@ using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
 using VSS.VisionLink.Raptor.Pipelines;
+using VSS.VisionLink.Raptor.Rendering.Displayers;
 using VSS.VisionLink.Raptor.Rendering.Executors.Tasks;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.Palettes;

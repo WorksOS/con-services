@@ -30,8 +30,13 @@ namespace VSS.VisionLink.Raptor
         public static int VLPDPSNode_CellPassAggregationListSizeIncrement => 100;
 
         /// <summary>
-        /// The number of spatial processing divisions within the Raptor cluster
+        /// The number of spatial processing divisions within the Raptor cluster (immutable/read grid)
         /// </summary>
-        public static uint numSpatialProcessingDivisions = 4;
+        public static uint numSpatialProcessingDivisions = 1;
+
+        /// <summary>
+        /// The number of nodes processing and storing data from TAG files (mutable grid)
+        /// </summary>
+        public static uint numTAGFileProcessingDivisions = 1;
     }
 }

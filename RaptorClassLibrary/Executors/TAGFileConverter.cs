@@ -1,12 +1,15 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.TAGFiles.Classes;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks;
@@ -21,6 +24,8 @@ namespace VSS.VisionLink.Raptor.Executors
     /// </summary>
     public class TAGFileConverter
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// The overall result of processign the TAG information in the file
         /// </summary>
@@ -79,8 +84,8 @@ namespace VSS.VisionLink.Raptor.Executors
             ProcessedEpochCount = 0;
             ProcessedCellPassCount = 0;
 
-            SiteModel = new SiteModel(-1);
-            Events = new ProductionEventChanges(SiteModel, 0 /*Machine.ID*/);
+            SiteModel = new SiteModel(-1, StorageProxy.RaptorInstance(StorageMutability.Mutable));
+            Events = new ProductionEventChanges(SiteModel, 0 /*TODO: Machine.ID*/);
 
             Machine = new Machine()
             {

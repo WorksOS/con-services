@@ -14,9 +14,13 @@ namespace VSS.VisionLink.Raptor.Storage.Tests
         [TestMethod()]
         public void Test_StorageProxy_Ignite_Creation()
         {
-            var proxy = new StorageProxy_Ignite("Test");
+            var proxy = new StorageProxy_Ignite(StorageMutability.Immutable);
 
-            Assert.IsTrue(proxy != null, "Storage proxy not created");
+            Assert.IsTrue(proxy != null, "Immutable storage proxy not created");
+
+            proxy = new StorageProxy_Ignite(StorageMutability.Mutable);
+
+            Assert.IsTrue(proxy != null, "Mutable storage proxy not created");
         }
 
         [TestMethod()]

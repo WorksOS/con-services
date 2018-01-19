@@ -883,11 +883,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return Result;
         }
 
-
-        public bool LoadDirectoryFromFile(/*IStorageProxy storage, */ string fileName)
+        public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
         {
-            IStorageProxy storage = StorageProxy.SpatialInstance(SubGridCellAddress.ToSpatialDivisionDescriptor(OriginX, OriginY, RaptorConfig.numSpatialProcessingDivisions));
-
             FileSystemErrorStatus FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, String.Empty,
                                                                                          FileSystemStreamType.SubGridDirectory, 0, out MemoryStream SMS, out uint StoreGranuleIndex, out uint StoreGranuleCount);
 

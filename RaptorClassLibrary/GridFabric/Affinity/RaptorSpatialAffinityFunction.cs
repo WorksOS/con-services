@@ -10,17 +10,31 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Affinity
 {
     /// <summary>
-    /// The affinity function used by Raptor to spread spatial data amongst the PSNode processing servers
+    /// The affinity function used by Raptor to spread spatial data amongst processing servers
     /// </summary>
     [Serializable]
     public class RaptorSpatialAffinityFunction : IAffinityFunction
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>
+        /// The number of partitions data a partitioned caches in the grid will be spread across
+        /// </summary>
+        private int NumPartitions = -1;
+
+        /// <summary>
+        /// Constructor accepting the node role to be used for spatial affinity selection
+        /// </summary>
+        /// <param name="role"></param>
+        public RaptorSpatialAffinityFunction(string role, int numPartitions)
+        {
+            Role = role;
+            NumPartitions = numPartitions;
+        }
 
         /// <summary>
         /// Return the number of partitions to use for affinity. For this affinity function, the number of partitions
@@ -30,52 +44,81 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         {
             get
             {
-                return (int)RaptorConfig.numSpatialProcessingDivisions;
+                return NumPartitions; 
             }
         }
 
         /// <summary>
-        /// Determine how the PSNodes in the Raptor grid are to be assigned into the spatial divisions configured in the system
+        /// The role that nodes in the grid need to be tagged with to be considered a part of the pool of
+        /// nodes being used for spatial affinity
+        /// </summary>
+        public readonly string Role = "";
+
+        /// <summary>
+        /// Determine how the nodes in the grid are to be assigned into the spatial divisions configured in the system
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public IEnumerable<IEnumerable<IClusterNode>> AssignPartitions(AffinityFunctionContext context)
         {
+            if (NumPartitions < 0)
+            {
+                throw new ArgumentException($"{NumPartitions} is an invalid number of partitions for an affinity partition map");
+            }
+
             // Create the (empty) list of node mappings for the affinity partition assignment
-            List<List<IClusterNode>> result = Enumerable.Range(0, (int)RaptorConfig.numSpatialProcessingDivisions).Select(x => new List<IClusterNode>()).ToList();
+            List<List<IClusterNode>> result = Enumerable.Range(0, NumPartitions).Select(x => new List<IClusterNode>()).ToList();
 
             try
             {
                 // Given the set of nodes in the cluster, determine that there is (at least) <n> nodes marked with
-                // the PSNode role. If not, then throw an exception. If there are exactly that many nodes, then assign
+                // the configured role. If not, then throw an exception. If there are exactly that many nodes, then assign
                 // one node to to each partition (where a partition is a Raptor spatial processing subdivision), based
                 // on the order the cluster nodes occur in the provided topology. If there are more than n nodes, then
                 // assign them in turn to the partitions as backup nodes.
 
-                Log.InfoFormat("RaptorSpatialAffinityFunction: Assigning partitions from topology");
+                Log.InfoFormat($"RaptorSpatialAffinityFunction: Assigning partitions from topology for role {Role}");
 
-                List<IClusterNode> PSNodes = context.CurrentTopologySnapshot.Where(x => x.TryGetAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.PSNODE}", out string Yes) && Yes == "Yes").ToList();
-
-                if (PSNodes.Count < RaptorConfig.numSpatialProcessingDivisions)
+                /* Debug code to dumo the attributes assigned to nodes being looked at
+                foreach (var node in context.CurrentTopologySnapshot)
                 {
-                    Log.InfoFormat("RaptorSpatialAffinityFunction: Insufficient PS nodes to establish affinity. {0} nodes available with {1} configured spatial subdivisions, will return partial affinity map.", PSNodes.Count, RaptorConfig.numSpatialProcessingDivisions);                 
-//                    return result;  // Return the empty list - no partitioning possible
+                    Log.Info($"Topology Node {node.Id}:");
+                    foreach (KeyValuePair<string, object> pair in node.GetAttributes())
+                    {
+                        Log.Info($"Attributes Pair: {pair.Key} -> {pair.Value}");
+                    }
+                } */
+
+                List<IClusterNode> Nodes = context.CurrentTopologySnapshot.Where(x => x.TryGetAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", out string State) && State == "True").ToList();
+
+                if (Nodes.Count < NumPartitions)
+                {
+                    Log.InfoFormat("RaptorSpatialAffinityFunction: Insufficient nodes to establish affinity. {0} nodes available with {1} configured spatial subdivisions, will return partial affinity map.", Nodes.Count, NumPartitions);                 
                 }
 
                 // Assign all nodes to affinity partitions. Spare nodes will be mapped as backups. 
 
-                Log.Info("Assigning Raptor spatial partitions");
-                for (int divisionIndex = 0; divisionIndex < RaptorConfig.numSpatialProcessingDivisions; divisionIndex++)
+                if (Nodes.Count() > 0)
                 {
-                    List<IClusterNode> spatialDivisionNodes = PSNodes.Where(x => x.TryGetAttribute("SpatialDivision", out int division) && division == divisionIndex).ToList();
-
-                    foreach (IClusterNode node in spatialDivisionNodes)
+                    /* Debug code to dumo the attributes assigned to nodes being looked at
+                    foreach (var a in Nodes.First().GetAttributes())
                     {
-                        Log.InfoFormat("Assigned node {0} to division {1}", node.Id, divisionIndex);
-                        result[divisionIndex].Add(node);
-                    }
+                        Log.Info($"Attribute: {a.ToString()}");
+                    } */
 
-                    Log.InfoFormat("--> Assigned {0} nodes (out of {1}) to spatial division {2}", spatialDivisionNodes.Count, PSNodes.Count, divisionIndex);
+                    Log.Info("Assigning Raptor spatial partitions");
+                    for (int divisionIndex = 0; divisionIndex < NumPartitions; divisionIndex++)
+                    {
+                        List<IClusterNode> spatialDivisionNodes = Nodes.Where(x => x.TryGetAttribute("SpatialDivision", out int division) && division == divisionIndex).ToList();
+
+                        foreach (IClusterNode node in spatialDivisionNodes)
+                        {
+                            Log.Info($"Assigned node {node.Id} to division {divisionIndex}");
+                            result[divisionIndex].Add(node);
+                        }
+
+                        Log.Info($"--> Assigned {spatialDivisionNodes.Count} nodes (out of {Nodes.Count}) to spatial division {divisionIndex}");
+                    }
                 }
             }
             catch (Exception e)
@@ -97,7 +140,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
             // Pull the subgrid origin location for the subgrid or segment represented in the cache key and calculate the 
             // spatial processing division descriptor to use as the partition affinity key
 
-            if (!(key is SubGridSpatialAffinityKey ))
+            if (!(key is SubGridSpatialAffinityKey))
             {
                 Log.InfoFormat("Unknown key type to compute spatial affinity partition key for: {0}", key.ToString());
                 throw new ArgumentException(String.Format("Unknown key type to compute spatial affinity partition key for: {0}", key.ToString()));
@@ -105,7 +148,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
 
             SubGridSpatialAffinityKey value = (SubGridSpatialAffinityKey)key;
 
-            return (int)SubGridCellAddress.ToSpatialDivisionDescriptor(value.SubGridX, value.SubGridY, RaptorConfig.numSpatialProcessingDivisions);
+            return (int)SubGridCellAddress.ToSpatialDivisionDescriptor(value.SubGridX, value.SubGridY, (uint)NumPartitions);
         }
 
         /// <summary>

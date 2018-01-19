@@ -22,7 +22,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
         {
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
 
-            SiteModel siteModel = new SiteModel("TestName", "TestDesc", 1, 1.0);
+            SiteModel siteModel = new SiteModel("TestName", "TestDesc", 1, 1.0, null);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
             ISubGridFactory factory = new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>();
             ServerSubGridTree tree = new ServerSubGridTree(siteModel);

@@ -26,7 +26,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         public ITask Task { get; set; } = null;
 
         /// <summary>
-        /// Default no-arg construcor
+        /// Default no-arg constructor
         /// </summary>
         public SubGridsRequestComputeFuncAggregative() : base()
         {

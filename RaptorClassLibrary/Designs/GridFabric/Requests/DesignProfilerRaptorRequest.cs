@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 
 namespace VSS.VisionLink.DesignProfiling.GridFabric.Requests
@@ -17,7 +18,7 @@ namespace VSS.VisionLink.DesignProfiling.GridFabric.Requests
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public DesignProfilerRaptorRequest() : base("DesignProfiler")
+        public DesignProfilerRaptorRequest() : base(RaptorGrids.RaptorImmutableGridName(), "DesignProfiler")
         {
         }
     }

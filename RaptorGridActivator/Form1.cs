@@ -27,11 +27,15 @@ namespace RaptorGridActivator
         {
             try
             {
-                Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive()");
+                Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable Raptor grid");
+                bool result1 = ActivatePersistentGridServer.Instance().SetGridActive(RaptorGrids.RaptorImmutableGridName());
+                Log.Info($"Activation process completed: Immutable = {result1}");
 
-                bool result = ActivatePersistentGridServer.Instance().SetGridActive(RaptorGrids.RaptorGridName());
+                Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable Raptor grid");
+                bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(RaptorGrids.RaptorMutableGridName());
+                Log.Info($"Activation process completed: Mutable = {result2}");
 
-                MessageBox.Show($"Activation result: {result}");
+                MessageBox.Show($"Activation process completed: Mutable = {result1}, Immutable = {result2}");
             }
             catch (Exception ex)
             {

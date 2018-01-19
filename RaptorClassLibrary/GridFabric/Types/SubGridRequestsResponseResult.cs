@@ -14,6 +14,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Types
     {
         OK,
         Failure,
+        NoIgniteGroupProjection,
+        NoIgniteMessagingProjection,
         NotImplemented,
         Unknown
     }

@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
         private string MessageTopicName = "SiteModelAttributesChangedEventListener";
 
         [NonSerialized]
-        private SiteModelAttributesChangedEventListener Listener = null;
+        private string GridName = null;
 
         public bool Invoke(Guid nodeId, SiteModelAttributesChangedEvent message)
         {
@@ -47,8 +47,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public SiteModelAttributesChangedEventListener()
+        public SiteModelAttributesChangedEventListener(string gridName)
         {
+            GridName = gridName;
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
         /// attribute changed messages
         /// </summary>
         /// <param name="messageTopicName"></param>
-        public SiteModelAttributesChangedEventListener(string messageTopicName) : this()
+        public SiteModelAttributesChangedEventListener(string gridName, string messageTopicName) : this(gridName)
         {
             MessageTopicName = messageTopicName;
         }
@@ -65,12 +66,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
         {
             // Create a messaging group the cluster can use to send messages back to and establish a local listener
             // All nodes (client and server) want to know about site model attribute changes
-            MsgGroup = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName())?.GetCluster().GetMessaging();
+            MsgGroup = Ignition.TryGetIgnite(GridName)?.GetCluster().GetMessaging();
 
             if (MsgGroup != null)
             {
-                Listener = new SiteModelAttributesChangedEventListener();
-                MsgGroup.LocalListen(Listener, MessageTopicName);
+                MsgGroup.LocalListen(this, MessageTopicName);
             }
             else
             {
@@ -83,7 +83,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
             if (MsgGroup != null)
             {
                 // Unregister the listener from the message group
-                MsgGroup.StopLocalListen(Listener);
+                MsgGroup.StopLocalListen(this);
             }
 
             MsgGroup = null;

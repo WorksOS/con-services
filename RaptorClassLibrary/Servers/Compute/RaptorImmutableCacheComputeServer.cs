@@ -1,8 +1,6 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
-using Apache.Ignite.Core.Cache.Affinity;
 using Apache.Ignite.Core.Cache.Configuration;
-using Apache.Ignite.Core.Cache.Eviction;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,20 +8,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Storage;
-using Apache.Ignite.Core.Cluster;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using Apache.Ignite.Log4Net;
 using log4net;
 using System.Reflection;
-using Apache.Ignite.Core.PersistentStore;
 using VSS.VisionLink.Raptor.Servers.Client;
-using System.Threading;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Configuration;
 using VSS.VisionLink.Raptor.GridFabric.Queues;
 using Apache.Ignite.Core.Binary;
+using Apache.Ignite.Core.Discovery.Tcp.Static;
+using Apache.Ignite.Core.Communication.Tcp;
 
 namespace VSS.VisionLink.Raptor.Servers.Compute
 {
@@ -31,30 +28,32 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
     /// Defines a representation of a server responsible for performing Raptor related compute operations using
     /// the Ignite In Memory Data Grid
     /// </summary>
-    public class RaptorCacheComputeServer : RaptorIgniteServer
+    public class RaptorImmutableCacheComputeServer : RaptorIgniteServer
     {
-        private const string PersistentCacheStoreLocation = @"C:\Temp\RaptorIgniteData";
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private const string PersistentCacheStoreLocation = @"C:\Temp\RaptorIgniteData\Immutable";
 
         public override void ConfigureRaptorGrid(IgniteConfiguration cfg)
         {
             base.ConfigureRaptorGrid(cfg);
 
-            cfg.IgniteInstanceName = RaptorGrids.RaptorGridName();;
+            cfg.IgniteInstanceName = RaptorGrids.RaptorImmutableGridName();
             //cfg.ConsistentId = "SpatialDivision"+RaptorServerConfig.Instance().SpatialSubdivisionDescriptor.ToString();
 
             cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
             cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
             cfg.UserAttributes = new Dictionary<String, object>
             {
-                { "Owner", RaptorGrids.RaptorGridName() }
+                { "Owner", RaptorGrids.RaptorImmutableGridName() },
+                { "SpatialDivision", RaptorServerConfig.Instance().SpatialSubdivisionDescriptor }
             };
 
             // Configure the Ignite 2.1 persistence layer to store our data
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             cfg.DataStorageConfiguration = new DataStorageConfiguration()
             {
-                PageSize = DataRegions.DEFAULT_DATA_REGION_PAGE_SIZE,
+                PageSize = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_PAGE_SIZE,
 
                 StoragePath = Path.Combine(PersistentCacheStoreLocation, "Persistence"),
                 WalArchivePath = Path.Combine(PersistentCacheStoreLocation, "WalArchive"),
@@ -62,7 +61,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 
                 DefaultDataRegionConfiguration = new DataRegionConfiguration
                 {
-                    Name = DataRegions.DEFAULT_DATA_REGION,
+                    Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
                     InitialSize = 128 * 1024 * 1024,  // 128 MB
                     MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB                               
 
@@ -74,10 +73,19 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 
             cfg.DiscoverySpi = new TcpDiscoverySpi()
             {
-                LocalAddress = "127.0.0.1" //,
+                LocalAddress = "127.0.0.1",
+                LocalPort = 47500, // + (int)RaptorServerConfig.Instance().SpatialSubdivisionDescriptor
 
-                // Make sure each individual subdivision uses a different port number - useful when running clusters on a local system
-//                LocalPort = 47500 + (int)RaptorServerConfig.Instance().SpatialSubdivisionDescriptor
+                IpFinder = new TcpDiscoveryStaticIpFinder()
+                {
+                    Endpoints = new [] { "127.0.0.1:47500..47509" }
+                }
+            };
+
+            cfg.CommunicationSpi = new TcpCommunicationSpi()
+            {
+                LocalAddress = "127.0.0.1",
+                LocalPort = 47100,
             };
 
             cfg.Logger = new IgniteLog4NetLogger(Log);
@@ -90,27 +98,10 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
         }
 
-        public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
-        {
-            base.ConfigureNonSpatialMutableCache(cfg);
-
-            cfg.Name = RaptorCaches.MutableNonSpatialCacheName();
-//            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
-            cfg.KeepBinaryInStore = false;
-
-//            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(false, true);
-//            cfg.ReadThrough = true;
-//            cfg.WriteThrough = true;
-//            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
-//            cfg.EvictionPolicy = new LruEvictionPolicy()
-//            {
-//                MaxMemorySize = 100000000   // 100Mb
-//            };
-
-            // Non-spatial (event) data is replicated to all nodes for local access
-            cfg.CacheMode = CacheMode.Replicated;
-            cfg.Backups = 0;
-        }
+//        public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
+//        {
+//            base.ConfigureNonSpatialMutableCache(cfg);
+//        }
 
         public override void ConfigureNonSpatialImmutableCache(CacheConfiguration cfg)
         {
@@ -120,15 +111,6 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 //            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
             cfg.KeepBinaryInStore = false;
 
-//            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(false, false);
-//            cfg.ReadThrough = true;
-//            cfg.WriteThrough = true;
-//            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
-//            cfg.EvictionPolicy = new LruEvictionPolicy()
-//            {
-//                MaxMemorySize = 250000000   // 250Mb
-//            };
-
             // Non-spatial (event) data is replicated to all nodes for local access
             cfg.CacheMode = CacheMode.Replicated;
             cfg.Backups = 0;
@@ -136,33 +118,13 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 
         public override ICache<String, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
         {
-            return raptorGrid.GetOrCreateCache<String, byte[]>(CacheCfg);
+            return immutableRaptorGrid.GetOrCreateCache<String, byte[]>(CacheCfg);
         }
 
-        public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
-        {
-            base.ConfigureMutableSpatialCache(cfg);
-
-            cfg.Name = RaptorCaches.MutableSpatialCacheName();
-//            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
-            cfg.KeepBinaryInStore = false;
-
-//            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(true, true);
-//            cfg.ReadThrough = true;
-//            cfg.WriteThrough = true;
-//            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
-//            cfg.EvictionPolicy = new LruEvictionPolicy()
-//            {
-//                MaxMemorySize = 500000000 // 500Mb
-//            };
-            cfg.Backups = 0;
-
-            // Spatial data is partitioned among the server grid nodes according to spatial affinity mapping
-            cfg.CacheMode = CacheMode.Partitioned;
-
-            // Configure the function that maps subgrid data into the affinity map for the nodes in the grid
-            cfg.AffinityFunction = new RaptorSpatialAffinityFunction();
-        }
+//        public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
+//        {
+//            base.ConfigureMutableSpatialCache(cfg);
+//        }
 
         public override void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
         {
@@ -171,33 +133,24 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.Name = RaptorCaches.ImmutableSpatialCacheName();
 //            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
             cfg.KeepBinaryInStore = false;
-
-//            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(true, false);
-//            cfg.ReadThrough = true;
-//            cfg.WriteThrough = true;
-//            cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
-//            cfg.EvictionPolicy = new LruEvictionPolicy()
-//            {
-//                MaxMemorySize = 1000000000   // 1Gb
-//            };
             cfg.Backups = 0;
 
             // Spatial data is partitioned among the server grid nodes according to spatial affinity mapping
             cfg.CacheMode = CacheMode.Partitioned;
 
             // Configure the function that maps subgrid data into the affinity map for the nodes in the grid
-            cfg.AffinityFunction = new RaptorSpatialAffinityFunction();
+            cfg.AffinityFunction = new RaptorSpatialAffinityFunction(role: ServerRoles.PSNODE, numPartitions:(int)RaptorConfig.numSpatialProcessingDivisions);
         }
 
-        public override ICache<String, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
         {
-            return raptorGrid.GetOrCreateCache<String, byte[]>(CacheCfg);
-        }
+            return immutableRaptorGrid.GetOrCreateCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg);
+        } 
 
         public static bool SetGridActive(string gridName)
         {
             // Get an ignite reference to the named grid
-            IIgnite ignite = Ignition.TryGetIgnite(gridName);
+            IIgnite ignite = RaptorGridFactory.Grid(gridName);
 
             // If the grid exists, and it is not active, then set it to active
             if (ignite != null && !ignite.IsActive())
@@ -223,13 +176,15 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             IgniteConfiguration cfg = new IgniteConfiguration();
             ConfigureRaptorGrid(cfg);
 
+            Log.InfoFormat($"Creating new Ignite node for {cfg.IgniteInstanceName}");
+
             try
             {
-                raptorGrid = Ignition.Start(cfg);
+                immutableRaptorGrid = Ignition.Start(cfg);
             }
             catch (Exception e)
             {
-                Log.InfoFormat("Creation of new Ignite node", e);
+                Log.Info($"Exception during creation of new Ignite node:\n {e}");
             }
             finally
             {
@@ -237,26 +192,15 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             }
 
             // Wait until the grid is active
-            ActivatePersistentGridServer.Instance().WaitUntilGridActive(RaptorGrids.RaptorGridName());
+            ActivatePersistentGridServer.Instance().WaitUntilGridActive(RaptorGrids.RaptorImmutableGridName());
 
             CacheConfiguration CacheCfg = null;
 
-            // Add the mutable and immutable NonSpatial caches
-
-            CacheCfg = new CacheConfiguration();
-            ConfigureNonSpatialMutableCache(CacheCfg);
-            
-            NonSpatialMutableCache = InstantiateRaptorCacheReference(CacheCfg);
+            // Add the immutable Spatial & NonSpatial caches
 
             CacheCfg = new CacheConfiguration();
             ConfigureNonSpatialImmutableCache(CacheCfg);
             NonSpatialImmutableCache = InstantiateRaptorCacheReference(CacheCfg);
-
-            // Add the mutable and immutable NonSpatial caches
-
-            CacheCfg = new CacheConfiguration();
-            ConfigureMutableSpatialCache(CacheCfg);
-            SpatialMutableCache = InstantiateSpatialCacheReference(CacheCfg);
 
             CacheCfg = new CacheConfiguration();
             ConfigureImmutableSpatialCache(CacheCfg);
@@ -267,9 +211,9 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         /// Constructor for the Raptor cache compute server node. Responsible for starting all Ignite services and creating the grid
         /// and cache instance in preparation for client access by business logic running on the node.
         /// </summary>
-        public RaptorCacheComputeServer() : base()
+        public RaptorImmutableCacheComputeServer() : base()
         {
-            if (raptorGrid == null)
+            if (immutableRaptorGrid == null)
             {
                 StartRaptorGridCacheNode();
             }

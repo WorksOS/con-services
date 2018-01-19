@@ -25,8 +25,9 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
 
         /// <summary>
         /// Ignite instance to be used in the server
+        /// Note: This was previous an [InstanceResource] but this does not work well with more than one Grid active in the process
         /// </summary>
-        [InstanceResource]
+        //[InstanceResource]
         private readonly IIgnite ignite = null;
 
         /// <summary>
@@ -52,10 +53,10 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
         /// </summary>
         public ExistenceMapServer()
         {
-            if (ignite == null)
-            {
-                ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
-            }
+            //if (ignite == null)
+            //{
+                ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorImmutableGridName());
+            //}
 
             if (ignite == null)
             {

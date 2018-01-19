@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 
 namespace VSS.VisionLink.Raptor.Servers.Compute
@@ -20,7 +21,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
     /// Note: These servers typically access the immutable representations of the spatial data for performance reasons, as configured
     /// in the server constructor.
     /// </summary>
-    public class RaptorSubGridProcessingServer : RaptorCacheComputeServer
+    public class RaptorSubGridProcessingServer : RaptorImmutableCacheComputeServer
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -28,10 +29,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         {
             base.ConfigureRaptorGrid(cfg);
 
-            cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.PSNODE}", "Yes");
-            cfg.UserAttributes.Add("SpatialDivision", RaptorServerConfig.Instance().SpatialSubdivisionDescriptor);
-
-//            (cfg.DiscoverySpi as TcpDiscoverySpi).LocalPort = 47500 + (int)RaptorServerConfig.Instance().SpatialSubdivisionDescriptor;
+            cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.PSNODE}", "True");
         }
 
         public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
@@ -59,7 +57,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         /// </summary>
         /// <param name="CacheCfg"></param>
         /// <returns></returns>
-        public override ICache<String, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
         {
             return base.InstantiateSpatialCacheReference(CacheCfg);
             // return raptorGrid.GetCache<String, byte[]>(CacheCfg.Name);
