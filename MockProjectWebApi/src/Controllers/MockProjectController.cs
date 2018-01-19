@@ -2,6 +2,8 @@
 using MockProjectWebApi.Utils;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -35,10 +37,10 @@ namespace MockProjectWebApi.Controllers
     public ProjectSettingsDataResult GetMockProjectSettings(string projectUid)
     {
       Console.WriteLine("GetMockProjectSettings: projectUid={0}", projectUid);
-      string settings = null;
+      JObject settings = null;
       if (projectUid == ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID)
       {
-        settings = @"{
+        string projectSettings = @"{
             customBulkingPercent: 6,
             customCutFillTolerances: [0.22, 0.11, 0.055, 0, -0.055, -0.11, -0.22],
             customPassCountTargets: [1,2,3,4,5,10,20,30],
@@ -66,6 +68,8 @@ namespace MockProjectWebApi.Controllers
             useMachineTargetPassCount: false,
             useMachineTargetTemperature: false
           }";
+
+        settings = JsonConvert.DeserializeObject<JObject>(projectSettings);
       }
       return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
     }
