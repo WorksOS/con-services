@@ -205,20 +205,38 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         expectedJobCount += 1;
       }
 
-      var importedProjectFileSyncTaskToRun = false;
-      if (!bool.TryParse(configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_TASK_RUN"),
-        out importedProjectFileSyncTaskToRun))
+      var projectFileSyncSSTaskToRun = false;
+      if (!bool.TryParse(configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_SS_TASK_RUN"),
+        out projectFileSyncSSTaskToRun))
       {
-        importedProjectFileSyncTaskToRun = false;
+        projectFileSyncSSTaskToRun = false;
       }
-      log.LogDebug($"Scheduler.Startup: importedProjectFileTaskToRun {importedProjectFileSyncTaskToRun}");
-      if (importedProjectFileSyncTaskToRun)
+      log.LogDebug($"Scheduler.Startup: importedProjectFileTaskToRun (SurveyedSurface type only) {projectFileSyncSSTaskToRun}");
+      if (projectFileSyncSSTaskToRun)
       {
         // stagger startup of 2nd task so the initial runs don't deadlock
         if (filterCleanupTaskToRun)
           Thread.Sleep(2000);
 
-        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(configStore, loggerFactory, raptorProxy, tPaasProxy, impFileProxy, fileRepo);
+        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(configStore, loggerFactory, raptorProxy, tPaasProxy, impFileProxy, fileRepo, true);
+        importedProjectFileSyncTask.AddTask();
+        expectedJobCount += 1;
+      }
+
+      var projectFileSyncNonSSTaskToRun = false;
+      if (!bool.TryParse(configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_NonSS_TASK_RUN"),
+        out projectFileSyncNonSSTaskToRun))
+      {
+        projectFileSyncNonSSTaskToRun = false;
+      }
+      log.LogDebug($"Scheduler.Startup: importedProjectFileTaskToRun (nonSurveyedSurface types only) {projectFileSyncNonSSTaskToRun}");
+      if (projectFileSyncNonSSTaskToRun)
+      {
+        // stagger startup of 2nd task so the initial runs don't deadlock
+        if (filterCleanupTaskToRun || projectFileSyncSSTaskToRun)
+          Thread.Sleep(2000);
+
+        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(configStore, loggerFactory, raptorProxy, tPaasProxy, impFileProxy, fileRepo, false);
         importedProjectFileSyncTask.AddTask();
         expectedJobCount += 1;
       }

@@ -85,14 +85,14 @@ namespace SchedulerTestsImportedFileSync
       var createdCount = importedFileRepoProject.Create(importedFileProject);
       Assert.AreEqual(1, createdCount, "Project importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo, true);
       await sync.SyncTables();
 
       // now lets see if it synced to NhOp
 
       // need to read the project again, as it will now have the LegacyImportedFileId
       var importedFileRepoProjectReRead = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
-      var listOfProjectFilesReRead = importedFileRepoProjectReRead.Read();
+      var listOfProjectFilesReRead = importedFileRepoProjectReRead.Read(true);
       Assert.AreNotEqual(0, listOfProjectFilesReRead.Count, "project importFile not read");
       ImportedFileProject importFileProjectReReadResponse =
         listOfProjectFilesReRead.FirstOrDefault(x => x.ImportedFileUid == importedFileProject.ImportedFileUid);
@@ -101,7 +101,7 @@ namespace SchedulerTestsImportedFileSync
       // ok now lets look at copy in NhOp
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
 
-      var listOfNhOpFiles = importedFileRepoNhOp.Read();
+      var listOfNhOpFiles = importedFileRepoNhOp.Read(true);
       Assert.AreNotEqual(0, listOfNhOpFiles.Count, "NhOpDb importFile not read");
       ImportedFileNhOp importFileResponse =
         listOfNhOpFiles.FirstOrDefault(x => x.LegacyImportedFileId ==
@@ -170,14 +170,14 @@ namespace SchedulerTestsImportedFileSync
       var createdCount = importedFileRepoProject.Create(importedFileProject);
       Assert.AreEqual(1, createdCount, "Project importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo, true);
       await sync.SyncTables();
 
       // now lets see if it synced to NhOp
 
       // need to read the project again, as it will now have the LegacyImportedFileId
       var importedFileRepoProjectReRead = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
-      var listOfProjectFilesReRead = importedFileRepoProjectReRead.Read();
+      var listOfProjectFilesReRead = importedFileRepoProjectReRead.Read(true);
       Assert.AreNotEqual(0, listOfProjectFilesReRead.Count, "project importFile not read");
       ImportedFileProject importFileProjectReReadResponse =
         listOfProjectFilesReRead.FirstOrDefault(x => x.ImportedFileUid == importedFileProject.ImportedFileUid);
@@ -186,7 +186,7 @@ namespace SchedulerTestsImportedFileSync
       // ok now lets look at copy in NhOp
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
 
-      var listOfNhOpFiles = importedFileRepoNhOp.Read();
+      var listOfNhOpFiles = importedFileRepoNhOp.Read(true);
       Assert.AreNotEqual(0, listOfNhOpFiles.Count, "NhOpDb importFile not read");
       ImportedFileNhOp importFileNhOpResponse =
         listOfNhOpFiles.FirstOrDefault(x => x.LegacyImportedFileId ==
@@ -201,7 +201,7 @@ namespace SchedulerTestsImportedFileSync
 
       await sync.SyncTables();
 
-      listOfNhOpFiles = importedFileRepoNhOp.Read();
+      listOfNhOpFiles = importedFileRepoNhOp.Read(true);
       if (listOfNhOpFiles.Count > 0)
       {
         importFileNhOpResponse =
@@ -212,7 +212,7 @@ namespace SchedulerTestsImportedFileSync
           "should NOT have found the importedFile we deleted in Project, synced to NhOp");
       }
 
-      var listOfProjectFiles = importedFileRepoProject.Read();
+      var listOfProjectFiles = importedFileRepoProject.Read(true);
       Assert.AreNotEqual(0, listOfProjectFiles.Count, "project importFile not read");
       ImportedFileProject importFileProjectResponse =
         listOfProjectFiles.FirstOrDefault(x => x.LegacyImportedFileId ==
@@ -255,14 +255,14 @@ namespace SchedulerTestsImportedFileSync
 
       importedFileRepoProject.Create(importedFileProject);
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo, true);
       await sync.SyncTables();
 
       // now lets see if it synced to NhOp
 
       // need to read the project again, as it will now have the LegacyImportedFileId
       var importedFileRepoProjectReRead = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
-      var listOfProjectFilesReRead = importedFileRepoProjectReRead.Read();
+      var listOfProjectFilesReRead = importedFileRepoProjectReRead.Read(true);
       ImportedFileProject importFileProjectReReadResponse =
         listOfProjectFilesReRead.FirstOrDefault(x => x.ImportedFileUid == importedFileProject.ImportedFileUid);
       Assert.IsNotNull(importFileProjectReReadResponse, "should have found the project we updated");
@@ -280,7 +280,7 @@ namespace SchedulerTestsImportedFileSync
 
       // ok now lets look at copy in NhOp to see that it has the updated file dates
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
-      var listOfNhOpFiles = importedFileRepoNhOp.Read();
+      var listOfNhOpFiles = importedFileRepoNhOp.Read(true);
       ImportedFileNhOp importFileNhOpResponse =
         listOfNhOpFiles.FirstOrDefault(x => x.LegacyImportedFileId ==
                                             importFileProjectReReadResponse.LegacyImportedFileId);
@@ -324,7 +324,7 @@ namespace SchedulerTestsImportedFileSync
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo, true);
       await sync.SyncTables();
 
       // now lets see if it synced to Project
@@ -333,7 +333,7 @@ namespace SchedulerTestsImportedFileSync
 
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
 
-      var listOfProjectFiles = importedFileRepoProject.Read();
+      var listOfProjectFiles = importedFileRepoProject.Read(true);
       Assert.AreNotEqual(0, listOfProjectFiles.Count, "Project importFile not read");
       ImportedFileProject importFileResponse =
         listOfProjectFiles.FirstOrDefault(x => x.LegacyImportedFileId == createdLegacyImportedFileId);
@@ -409,13 +409,13 @@ namespace SchedulerTestsImportedFileSync
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo, true);
       await sync.SyncTables();
 
       // now lets see if it synced to Project
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
 
-      var listOfProjectFiles = importedFileRepoProject.Read();
+      var listOfProjectFiles = importedFileRepoProject.Read(true);
       Assert.AreNotEqual(0, listOfProjectFiles.Count, "Project importFile not read");
       ImportedFileProject importFileResponse =
         listOfProjectFiles.FirstOrDefault(x => x.LegacyImportedFileId == createdLegacyImportedFileId);
@@ -430,7 +430,7 @@ namespace SchedulerTestsImportedFileSync
       await sync.SyncTables();
 
       // now lets see if its deleted in NhOp
-      var listOfNhOpFiles = importedFileRepoNhOp.Read();
+      var listOfNhOpFiles = importedFileRepoNhOp.Read(true);
       if (listOfNhOpFiles.Count > 0)
       {
         var importFileResponseNhOp =
@@ -440,7 +440,7 @@ namespace SchedulerTestsImportedFileSync
       }
 
       // now lets see if its deleted in project
-      listOfProjectFiles = importedFileRepoProject.Read();
+      listOfProjectFiles = importedFileRepoProject.Read(true);
       Assert.AreNotEqual(0, listOfProjectFiles.Count, "project importFile not read");
       ImportedFileProject importFileProjectResponse =
         listOfProjectFiles.FirstOrDefault(x => x.LegacyImportedFileId == createdLegacyImportedFileId);
@@ -478,7 +478,7 @@ namespace SchedulerTestsImportedFileSync
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo, true);
       await sync.SyncTables();
 
       // now update in NhOp note only FileCreatedUtc and FileInsertedUtc can be updated
@@ -492,7 +492,7 @@ namespace SchedulerTestsImportedFileSync
 
       // ok now lets look at copy in project to see that it has the updated file dates
       var importedFileRepoProject = new ImportedFileRepoProject<ImportedFileProject>(ConfigStore, LoggerFactory);
-      var listOfProjectFiles = importedFileRepoProject.Read();
+      var listOfProjectFiles = importedFileRepoProject.Read(true);
       ImportedFileProject importFileProjectResponse =
         listOfProjectFiles.FirstOrDefault(x => x.LegacyImportedFileId == importedFileNhOp.LegacyImportedFileId);
 
@@ -531,7 +531,7 @@ namespace SchedulerTestsImportedFileSync
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo, false);
       await sync.SyncTables();
 
       //Since we mock the project web api and the mock does nothing, the imported file has not been saved in the Project database.
@@ -568,7 +568,7 @@ namespace SchedulerTestsImportedFileSync
       var createdLegacyImportedFileId = importedFileRepoNhOp.Create(importedFileNhOp);
       Assert.IsTrue(createdLegacyImportedFileId > 0, "nhOpDb importFile not created");
 
-      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo);
+      var sync = new ImportedFileSynchronizer(ConfigStore, LoggerFactory, RaptorProxy, TPaasProxy, ImpFileProxy, FileRepo, true);
       await sync.SyncTables();
 
       // now lets see if it synced to Project - it shouldn't have

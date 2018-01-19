@@ -27,6 +27,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private readonly IImportedFileProxy _impFileProxy;
     private readonly IFileRepository _fileRepo;
     private static int DefaultTaskIntervalDefaultMinutes { get; } = 4;
+    private bool _processSurveyedSurfaceType = false;
 
     /// <summary>
     /// Initializes the ImportedProjectFileSyncTask 
@@ -37,8 +38,9 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="tPaasProxy"></param>
     /// <param name="impFileProxy"></param>
     /// <param name="fileRepo"></param>
+    /// <param name="processSurveyedSurfaceType"></param>
     public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy, 
-      ITPaasProxy tPaasProxy, IImportedFileProxy impFileProxy, IFileRepository fileRepo)
+      ITPaasProxy tPaasProxy, IImportedFileProxy impFileProxy, IFileRepository fileRepo, bool processSurveyedSurfaceType)
     {
       _configStore = configStore;
       _logger = logger;
@@ -47,6 +49,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       _tPaasProxy = tPaasProxy;
       _impFileProxy = impFileProxy;
       _fileRepo = fileRepo;
+      _processSurveyedSurfaceType = processSurveyedSurfaceType;
     }
 
     /// <summary>
@@ -58,14 +61,14 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       // lowest interval is minutes 
       int taskIntervalMinutes;
-      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_TASK_INTERVAL_MINUTES"),
+      if (!int.TryParse(_configStore.GetValueString((_processSurveyedSurfaceType ? "SCHEDULER_IMPORTEDPROJECTFILES_SYNC_SS_TASK_INTERVAL_MINUTES" : "SCHEDULER_IMPORTEDPROJECTFILES_SYNC_NonSS_TASK_INTERVAL_MINUTES")),
         out taskIntervalMinutes))
       {
         taskIntervalMinutes = DefaultTaskIntervalDefaultMinutes;
       }
 
       var ImportedProjectFileSyncTask = "ImportedProjectFileSyncTask";
-      _log.LogInformation($"ImportedProjectFileSyncTask: taskIntervalMinutes: {taskIntervalMinutes}.");
+      _log.LogInformation($"ImportedProjectFileSyncTask: ({(_processSurveyedSurfaceType ? "processSurveyedSurfaceType" : "processNonSurveyedSurfaceType")}) taskIntervalMinutes: {taskIntervalMinutes}.");
 
       try
       {
@@ -93,7 +96,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var startUtc = DateTime.UtcNow;
       _log.LogDebug($"ImportedFilesSyncTask()  beginning. startUtc: {startUtc}");
 
-      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy, _tPaasProxy, _impFileProxy, _fileRepo);
+      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy, _tPaasProxy, _impFileProxy, _fileRepo, _processSurveyedSurfaceType);
       await sync.SyncTables().ConfigureAwait(false);
 
       var newRelicAttributes = new Dictionary<string, object> {

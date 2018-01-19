@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       _customerProjectList = new List<CustomerProject>();
     }
 
-    public List<T> Read()
+    public List<T> Read(bool processSurveyedSurfaceType)
     {
       var startUtc = DateTime.UtcNow;
       var members = new List<ImportedFileNhOp>();
@@ -67,8 +67,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
               INNER JOIN Customer c ON c.ID = fk_CustomerID
               INNER JOIN Project p ON p.ID = fk_ProjectID 
               OUTER APPLY (SELECT TOP 1 CreateUTC AS FileCreatedUtc, InsertUtc AS FileUpdatedUtc, fk_UserID FROM ImportedFileHistory WHERE fk_ImportedFileID = iff.ID ORDER BY InsertUTC desc) ifhLast
-              -- OUTER APPLY (SELECT TOP 1 CreateUTC AS FileCreatedUtc FROM ImportedFileHistory WHERE fk_ImportedFileID = iff.ID ORDER BY InsertUTC asc) ifhFirst
-              LEFT OUTER JOIN [User] u on u.id = ifhLast.fk_UserID";
+            LEFT OUTER JOIN [User] u on u.id = ifhLast.fk_UserID
+              ";
+      selectImportedFilesCommand += string.Format($"   WHERE fk_ImportedFileTypeID {(processSurveyedSurfaceType ? "= 2" : "!= 2")}");
+   
 
       string selectCustomerProjectCommand =
         @"SELECT 
