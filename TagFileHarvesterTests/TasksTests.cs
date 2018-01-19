@@ -26,14 +26,10 @@ namespace TagFileHarvesterTests
     [TestInitialize]
     public void Initialize()
     {
-      if (File.Exists(XMLBookMarkManager.filename))
-        File.Delete(XMLBookMarkManager.filename);
-
       unityContainer = new UnityContainer();
       unityContainer.RegisterInstance<IFileRepository>(respositoryInstance)
       .RegisterInstance<IHarvesterTasks>(new LimitedConcurrencyHarvesterTasks())
-      .RegisterType<ITAGProcessorClient, MockRaptor>()
-      .RegisterInstance<IBookmarkManager>(XMLBookMarkManager.Instance);
+      .RegisterType<ITAGProcessorClient, MockRaptor>();
       unityContainer.RegisterInstance<ILog>(log);
       OrgsHandler.Clean();
       OrgsHandler.TagFileSubmitterTasksTimeout = TimeSpan.FromMinutes(5);
@@ -44,9 +40,6 @@ namespace TagFileHarvesterTests
     [TestCleanup]
     public void TestCleanup()
     {
-      XMLBookMarkManager.Instance.DeleteFile();
-      XMLBookMarkManager.Instance.DeleteMergeFile();
-      XMLBookMarkManager.Instance.DeleteInstance();
       unityContainer.RemoveAllExtensions();
     }
 

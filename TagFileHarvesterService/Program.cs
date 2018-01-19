@@ -105,9 +105,12 @@ namespace TagFileHarvester
       OrgsHandler.MaxThreadsToProcessTagFiles = TagFileHarvesterServiceSettings.Default.MaxThreadsToProcessTagFiles;
       OrgsHandler.tccSynchFilespaceShortName = TagFileHarvesterServiceSettings.Default.TCCSynchFilespaceShortName;
       OrgsHandler.tccSynchMachineFolder = TagFileHarvesterServiceSettings.Default.TCCSynchMachineControlFolder;
-      OrgsHandler.TCCArchiveFiles = TagFileHarvesterServiceSettings.Default.TCCArchiveFiles;
       OrgsHandler.TCCSynchProductionDataFolder = TagFileHarvesterServiceSettings.Default.TCCSynchProductionDataFolder;
       OrgsHandler.TCCSynchProductionDataArchivedFolder = TagFileHarvesterServiceSettings.Default.TCCSynchProductionDataArchivedFolder;
+      OrgsHandler.TCCSynchProjectBoundaryIssueFolder = TagFileHarvesterServiceSettings.Default.TCCSynchProjectBoundaryIssueFolder;
+      OrgsHandler.TCCSynchSubscriptionIssueFolder = TagFileHarvesterServiceSettings.Default.TCCSynchSubscriptionIssueFolder;
+      OrgsHandler.TCCSynchOtherIssueFolder = TagFileHarvesterServiceSettings.Default.TCCSynchOtherIssueFolder;
+      OrgsHandler.TagFilesFolderLifeSpanInDays = TagFileHarvesterServiceSettings.Default.TagFilesFolderLifeSpanInDays;
       OrgsHandler.TagFileSubmitterTasksTimeout = TagFileHarvesterServiceSettings.Default.TagFileSubmitterTasksTimeout;
       OrgsHandler.TCCRequestTimeout = TagFileHarvesterServiceSettings.Default.TCCRequestTimeout;
       OrgsHandler.NumberOfFilesInPackage = TagFileHarvesterServiceSettings.Default.NumberOfFilesInPackage;
@@ -121,6 +124,7 @@ namespace TagFileHarvester
       OrgsHandler.UseModifyTimeInsteadOfCreateTime =
         TagFileHarvesterServiceSettings.Default.UseModifyTimeInsteadOfCreateTime;
       OrgsHandler.BookmarkPath = TagFileHarvesterServiceSettings.Default.BookmarkPath;
+      OrgsHandler.ShortOrgName = TagFileHarvesterServiceSettings.Default.ShortOrgName;
 
       Directory.CreateDirectory(OrgsHandler.BookmarkPath);
 
@@ -129,13 +133,11 @@ namespace TagFileHarvester
       Log.Debug("TagFileHarvester.Start: Entered Start()");
       //register dependencies here
       OrgsHandler.Initialize(new UnityContainer().RegisterType<IFileRepository, FileRepository>()
-          .RegisterInstance<IBookmarkManager>(XMLBookMarkManager.Instance)
           .RegisterInstance<IHarvesterTasks>(new LimitedConcurrencyHarvesterTasks())
           .RegisterType<ITAGProcessorClient, TagFileProcessingRaptor>()
           .RegisterInstance<ILog>(Log));
       FileRepository.Log = Log;
       TagFileProcessingRaptor.Log = Log;
-      XMLBookMarkManager.Log = Log;
       //here we need to sync filespaces and tasks
       SyncTimer = new System.Threading.Timer(OrgsHandler.CheckAvailableOrgs);
       SyncTimer.Change(TimeSpan.FromSeconds(5), TagFileHarvesterServiceSettings.Default.RefreshOrgsDelay);
@@ -146,7 +148,6 @@ namespace TagFileHarvester
     {
       Log.Info("TagFileHarvester.Stopping.");
       SyncTimer.Change(Timeout.Infinite, Timeout.Infinite);
-      OrgsHandler.Container.Resolve<IBookmarkManager>().StopDataExport();
       OrgsHandler.OrgProcessingTasks.ForEach(t=>t.Value.Item2.Cancel());
       Log.InfoFormat("TagFileHarvester.Waiting for {0} tasks....",(OrgsHandler.OrgProcessingTasks.Count));
       Task.WaitAll(OrgsHandler.OrgProcessingTasks.Select(t => t.Key).ToArray(),TimeSpan.FromMinutes(1));

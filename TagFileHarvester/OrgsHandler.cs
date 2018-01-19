@@ -21,9 +21,11 @@ namespace TagFileHarvester
     public static int MaxThreadsToProcessTagFiles = 256;
     public static string tccSynchFilespaceShortName;
     public static string tccSynchMachineFolder;
-    public static bool TCCArchiveFiles=false;
     public static string TCCSynchProductionDataFolder;
     public static string TCCSynchProductionDataArchivedFolder;
+    public static string TCCSynchProjectBoundaryIssueFolder;
+    public static string TCCSynchSubscriptionIssueFolder;
+    public static string TCCSynchOtherIssueFolder;
     public static TimeSpan TagFileSubmitterTasksTimeout;
     public static TimeSpan TCCRequestTimeout;
     public static int NumberOfFilesInPackage;
@@ -31,6 +33,8 @@ namespace TagFileHarvester
     public static TimeSpan FolderSearchTimeSpan;
     public static bool UseModifyTimeInsteadOfCreateTime;
     public static string BookmarkPath;
+    public static byte TagFilesFolderLifeSpanInDays;
+    public static string ShortOrgName;
 
 
 
@@ -72,9 +76,6 @@ namespace TagFileHarvester
       try
       {
         //Make sure that data export is running
-        Container.Resolve<IBookmarkManager>().StopDataExport();
-        Container.Resolve<IBookmarkManager>().StartDataExport();
-        log.InfoFormat("Got {0} updated bookmarks after merging", Container.Resolve<IBookmarkManager>().MergeWithUpdatedBookmarks());
         var orgs = GetOrgs();
         log.InfoFormat("Got {0} orgs from repository", orgs.Count);
         MergeAndProcessOrgs(orgs);
@@ -105,7 +106,7 @@ namespace TagFileHarvester
           Container.Resolve<IHarvesterTasks>().Status().Item1,
           Container.Resolve<IHarvesterTasks>().Status().Item2, GetUsedThreads());
         //do merge here - if there is no org in the list of tasks - build it. If there is no org but there in the list but there is a task - kill the task
-        orgs.Where(o => !OrgProcessingTasks.Select(t => t.Value.Item1).Contains(o)).ForEach(o =>
+        orgs.Where(o => !OrgProcessingTasks.Select(t => t.Value.Item1).Contains(o)).Where(o => String.IsNullOrEmpty(OrgsHandler.ShortOrgName) || o.shortName == OrgsHandler.ShortOrgName).ForEach(o =>
         {
           log.InfoFormat("Adding {0} org for processing", o.shortName);
           var cancellationToken = new CancellationTokenSource();
