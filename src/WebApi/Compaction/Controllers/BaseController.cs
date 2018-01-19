@@ -267,17 +267,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       CompactionProjectSettings ps;
       var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), userId, CustomHeaders);
-      if (!string.IsNullOrEmpty(jsonSettings))
+      if (jsonSettings != null)
       {
         try
         {
-          ps = JsonConvert.DeserializeObject<CompactionProjectSettings>(jsonSettings);
+          ps = jsonSettings.ToObject<CompactionProjectSettings>();
           ps.Validate();
         }
         catch (Exception ex)
         {
           log.LogInformation(
-            $"Project Settings deserialization or validation failure for projectUid {projectUid}. Error is {ex.Message}");
+            $"JObject conversion to Project Settings or validation failure for projectUid {projectUid}. Error is {ex.Message}");
           ps = CompactionProjectSettings.DefaultSettings;
         }
       }
