@@ -220,6 +220,18 @@ namespace MockProjectWebApi.Controllers
         IsActivated = true,
         MinZoomLevel = 15,
         MaxZoomLevel = 19
+      },
+      new FileData
+      {
+        Name = "Section 1 IFC Rev J.ttm",
+        ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+        CustomerUid = "ImportFileProxyTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = "eb798b46-c927-4fdd-b998-b11011ee7365",
+        LegacyFileId = 115,
+        IsActivated = true,
+        MinZoomLevel = 16,
+        MaxZoomLevel = 19
       }
     };
 
