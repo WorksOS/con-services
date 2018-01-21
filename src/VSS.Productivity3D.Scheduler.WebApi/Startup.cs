@@ -219,7 +219,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           Thread.Sleep(2000);
 
         var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(configStore, loggerFactory, raptorProxy, tPaasProxy, impFileProxy, fileRepo);
-        importedProjectFileSyncTask.ProcessSurveyedSurfaceType = true;
+        ImportedProjectFileSyncTask.ProcessSurveyedSurfaceType = true;
         importedProjectFileSyncTask.AddTask();
         expectedJobCount += 1;
       }
@@ -238,7 +238,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           Thread.Sleep(2000);
 
         var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(configStore, loggerFactory, raptorProxy, tPaasProxy, impFileProxy, fileRepo);
-        importedProjectFileSyncTask.ProcessSurveyedSurfaceType = false;
+        ImportedProjectFileSyncTask.ProcessSurveyedSurfaceType = false;
         importedProjectFileSyncTask.AddTask();
         expectedJobCount += 1;
       }
