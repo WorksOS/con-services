@@ -9,6 +9,14 @@ using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests;
 using VSS.VisionLink.Raptor.TAGFiles.Servers.Client;
 using VSS.VisionLink.Raptor.TAGFiles.Tests;
 
+/*
+Arguments for building project #5, Dimensions:
+5 "J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Dimensions 2012\Dimensions2012-Model 381\Model 381"
+
+Arguments for building project #6, Christchurch Southern Motorway:
+6 "J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Southern Motorway\TAYLORS COMP"
+*/
+
 namespace VSS.VisionLink.Raptor.Client
 {
     class Program
