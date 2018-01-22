@@ -147,17 +147,27 @@ namespace WebApiTests
                             "customTargetCmvPercentMinimum: 75,customTargetCmvPercentMaximum: 105,useDefaultTargetRangeMdpPercent: false,customTargetMdpPercentMinimum: 85,customTargetMdpPercentMaximum: 115," +
                             "useDefaultTargetRangeSpeed: false,customTargetSpeedMinimum: 10,customTargetSpeedMaximum: 30,useDefaultCutFillTolerances: false,customCutFillTolerances: [3, 2, 1, 0, -1, -2, -3]," +
                             "useDefaultVolumeShrinkageBulking: false, customShrinkagePercent: 5, customBulkingPercent: 7.5}";
+
+      projectSettings = projectSettings.Replace(" ", String.Empty);
+
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response);
-      Assert.AreEqual(objresp.settings, projectSettings, "Actual project settings do not match expected");
-      Assert.AreEqual(objresp.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
+
+      var tempSettings = JsonConvert.SerializeObject(objresp.settings).Replace("\"", String.Empty);
+
+      Assert.AreEqual(projectSettings, tempSettings, "Actual project settings do not match expected");
+      Assert.AreEqual(projectUid, objresp.projectUid, "Actual project Uid for project settings do not match expected");
+
       // get call
       var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
-      Assert.AreEqual(objresp1.settings, projectSettings, "Actual project settings do not match expected");
-      Assert.AreEqual(objresp1.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
+
+      tempSettings = JsonConvert.SerializeObject(objresp1.settings).Replace("\"", String.Empty);
+
+      Assert.AreEqual(projectSettings, tempSettings, "Actual project settings do not match expected");
+      Assert.AreEqual(projectUid, objresp1.projectUid, "Actual project Uid for project settings do not match expected");
     }
 
     [TestMethod]
