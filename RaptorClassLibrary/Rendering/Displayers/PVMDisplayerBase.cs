@@ -26,5 +26,11 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         {
             DisplayMode = displayMode;
         }
+
+        public PVMDisplayerBase(DisplayMode displayMode, IPlanViewPalette palette) : this()
+        {
+            DisplayMode = displayMode;
+            Palette = palette;
+        }
     }
 }

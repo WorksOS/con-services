@@ -85,9 +85,23 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
             if (TileRenderer.Mode == DisplayMode.CutFill)
             {
                 ClientHeightLeafSubGrid[] ProductionElevationsList = response as ClientHeightLeafSubGrid[];
+
+//                if (ProductionElevationsList?.Length == 0)
+                if (ProductionElevationsList == null || ProductionElevationsList.Length == 0)
+                {
+                    Log.Warn($"Response is null or does not contain a cut/fill subgrid");
+
+                    if (response != null)
+                    {
+                        Log.Info($"Type of reponse object provided to TransferResponse: {response.GetType()}");
+                    }
+
+                    return false;
+                }
+
                 ClientHeightLeafSubGrid ProductionElevations = ProductionElevationsList[0];
 
-                // This is the old Legacy pattern of extracting surface elevations and calculating the cutfill, Alan has implemented
+                // This is the old Legacy pattern of extracting surface elevations and calculating the cutfill, Alan Rose has implemented
                 // cut/fill computatation on the PSNodes now, modify this to the new approach when things are brought up to date
 
                 // 1. Request the elevations for the matching subgrid from the grid

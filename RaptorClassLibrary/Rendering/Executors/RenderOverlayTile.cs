@@ -7,15 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Rendering;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Surfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Rendering.Displayers;
+using log4net;
+using System.Reflection;
 
 namespace VSS.VisionLink.Raptor.Rendering.Executors
 {
@@ -24,6 +24,13 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
     /// </summary>
     public class RenderOverlayTile
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>
+        /// Details the error status of the bmp result returned by the renderer
+        /// </summary>
+        public RequestErrorStatus ResultStatus = RequestErrorStatus.Unknown;
+
         /// <summary>
         /// The Raptor application service node performing the request
         /// </summary>
@@ -118,8 +125,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         }
 
         SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
-
-        RequestErrorStatus ResultStatus = RequestErrorStatus.Unknown;
 
         BoundingWorldExtent3D RotatedTileBoundingExtents;
 
@@ -555,7 +560,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
                 ResultStatus = RequestErrorStatus.NoDesignProvided;
                 return null;
             }
-
 
             // Test to see if the tile can be satisfied with a representational render indicating where
             // data is but not what it is (this is useful when the zoom level is far enough away that we

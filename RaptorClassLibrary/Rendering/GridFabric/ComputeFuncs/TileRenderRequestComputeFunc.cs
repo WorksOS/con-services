@@ -56,7 +56,15 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
 
                 Log.Info("Executing render.Execute()");
 
-                return render.Execute();
+                Bitmap bmp = render.Execute();
+                Log.Info($"Render status = {render.ResultStatus}");
+
+                if (bmp == null)
+                {
+                    Log.Info("Null bitmap returned by executor");
+                }
+
+                return bmp;
             }
             finally
             {

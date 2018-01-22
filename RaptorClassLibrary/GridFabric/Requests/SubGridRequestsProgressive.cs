@@ -91,7 +91,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
 
             Log.Info($"Prepared argument has RaptorNodeID = {arg.RaptorNodeID}");
             Log.Info($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
-            Log.Info($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()}");
+            Log.Info($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
 
             Task<ICollection<TSubGridRequestsResponse>> taskResult = null;
 
