@@ -164,6 +164,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           SchedulePollingInterval = TimeSpan.FromSeconds(schedulePollingIntervalSeconds)
         };
         log.LogDebug($"Scheduler.Configure: hangfire options: {JsonConvert.SerializeObject(options)}.");
+        app.UseHangfireDashboard();
         app.UseHangfireServer(options);
 
         int expirationManagerWaitMs = 2000;
