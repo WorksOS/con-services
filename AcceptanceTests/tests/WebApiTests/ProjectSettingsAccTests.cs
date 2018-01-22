@@ -2,6 +2,7 @@
 using System;
 using System.Net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
@@ -43,29 +44,50 @@ namespace WebApiTests
       "customTargetCmvPercentMinimum: 75,customTargetCmvPercentMaximum: 105,useDefaultTargetRangeMdpPercent: false,customTargetMdpPercentMinimum: 85,customTargetMdpPercentMaximum: 115," +
       "useDefaultTargetRangeSpeed: false,customTargetSpeedMinimum: 10,customTargetSpeedMaximum: 30,useDefaultCutFillTolerances: false,customCutFillTolerances: [3, 2, 1, 0, -1, -2, -3]," + 
       "useDefaultVolumeShrinkageBulking: false, customShrinkagePercent: 5, customBulkingPercent: 7.5}";
+
+      projectSettings1 = projectSettings1.Replace(" ", String.Empty);
+
       var projSettings1 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings1, ProjectSettingsType.Targets);
       var configJson1 = JsonConvert.SerializeObject(projSettings1, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var putresponse1 = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson1, customerUid.ToString());
       var putobjresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(putresponse1);
-      Assert.AreEqual(putobjresp1.settings, projectSettings1, "Actual project settings 1 do not match expected");
-      Assert.AreEqual(putobjresp1.projectUid, projectUid, "Actual project Uid for project settings 1 do not match expected");
+
+      var tempSettings = JsonConvert.SerializeObject(putobjresp1.settings).Replace("\"", String.Empty);
+      
+      //Assert.AreEqual(projectSettings1, putobjresp1.settings, "Actual project settings 1 do not match expected");
+      Assert.AreEqual(projectSettings1, tempSettings, "Actual project settings 1 do not match expected");
+      Assert.AreEqual(projectUid, putobjresp1.projectUid, "Actual project Uid for project settings 1 do not match expected");
+
       // create settings for a second user for same project
       var projectSettings2 = "{ useMachineTargetPassCount: false,customTargetPassCountMinimum: 6,customTargetPassCountMaximum: 6,useMachineTargetTemperature: false,customTargetTemperatureMinimum: 70," +
                              "customTargetTemperatureMaximum: 140,useMachineTargetCmv: false,customTargetCmv: 71,useMachineTargetMdp: false,customTargetMdp: 81,useDefaultTargetRangeCmvPercent: false," +
                              "customTargetCmvPercentMinimum: 80,customTargetCmvPercentMaximum: 100,useDefaultTargetRangeMdpPercent: false,customTargetMdpPercentMinimum: 80,customTargetMdpPercentMaximum: 100," +
                              "useDefaultTargetRangeSpeed: false,customTargetSpeedMinimum: 12,customTargetSpeedMaximum: 27,useDefaultCutFillTolerances: false,customCutFillTolerances: [3, 2, 1, 0, -1, -2, -3]," +
                              "useDefaultVolumeShrinkageBulking: false, customShrinkagePercent: 6, customBulkingPercent: 5.2}";
+
+      projectSettings2 = projectSettings2.Replace(" ", String.Empty);
+
       var projSettings2 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings2, ProjectSettingsType.Targets);
       var configJson2 = JsonConvert.SerializeObject(projSettings2, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var putresponse2 = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString(), RestClientUtil.ANOTHER_JWT);
       var putobjresp2 = JsonConvert.DeserializeObject<ProjectSettingsResult>(putresponse2);
-      Assert.AreEqual(putobjresp2.settings, projectSettings2, "Actual project settings 2 do not match expected");
-      Assert.AreEqual(putobjresp2.projectUid, projectUid, "Actual project Uid for project settings 2 do not match expected");
+
+      tempSettings = JsonConvert.SerializeObject(putobjresp2.settings).Replace("\"", String.Empty);
+
+      //Assert.AreEqual(projectSettings2, putobjresp2.settings, "Actual project settings 2 do not match expected");
+      Assert.AreEqual(projectSettings2, tempSettings, "Actual project settings 2 do not match expected");
+      Assert.AreEqual(projectUid, putobjresp2.projectUid, "Actual project Uid for project settings 2 do not match expected");
+      
+      
       // get call
       var getresponse1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var getobjresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(getresponse1);
-      Assert.AreEqual(getobjresp1.settings, projectSettings1, "Actual project settings do not match expected");
-      Assert.AreEqual(getobjresp1.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
+
+      tempSettings = JsonConvert.SerializeObject(getobjresp1.settings).Replace("\"", String.Empty);
+
+      //Assert.AreEqual(projectSettings1, getobjresp1.settings, "Actual project settings do not match expected");
+      Assert.AreEqual(projectSettings1, tempSettings, "Actual project settings do not match expected");
+      Assert.AreEqual(projectUid, getobjresp1.projectUid, "Actual project Uid for project settings do not match expected");
     }
 
     [TestMethod]
