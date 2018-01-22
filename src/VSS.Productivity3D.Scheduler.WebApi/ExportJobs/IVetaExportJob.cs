@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Hangfire.Server;
+using System;
 using System.Collections.Generic;
-using Hangfire.Server;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 {
+  /// <summary>
+  /// Veta export job handler interface.
+  /// </summary>
   public interface IVetaExportJob
   {
     /// <summary>

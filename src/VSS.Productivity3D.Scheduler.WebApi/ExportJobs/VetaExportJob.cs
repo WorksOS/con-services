@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Hangfire.Server;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Hangfire.Server;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.VisionLink.Interfaces.Events.OrgHierarchy.Operations;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 {
@@ -12,8 +11,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
   /// </summary>
   public class VetaExportJob : IVetaExportJob
   {
-    private IRaptorProxy _raptor;
-    private ITransferProxy _transferProxy;
+    private readonly IRaptorProxy raptor;
+    private readonly ITransferProxy transferProxy;
 
     /// <summary>
     /// Constructor with dependency injection
@@ -22,8 +21,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <param name="transferProxy"></param>
     public VetaExportJob(IRaptorProxy raptor, ITransferProxy transferProxy)
     {
-      _raptor = raptor;
-      _transferProxy = transferProxy;
+      this.raptor = raptor;
+      this.transferProxy = transferProxy;
     }
 
     /// <summary>
@@ -38,8 +37,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     public void ExportDataToVeta(Guid projectUid, string fileName, string machineNames, Guid? filterUid, IDictionary<string, string> customHeaders,
       PerformContext context)
     {
-      var data = _raptor.GetVetaExportData(projectUid, fileName, machineNames, filterUid, customHeaders).Result;
-      _transferProxy.Upload(new MemoryStream(data.ExportData), GetS3Key(customHeaders["X-VisionLink-CustomerUid"], projectUid, context.BackgroundJob.Id));
+      var data = raptor.GetVetaExportData(projectUid, fileName, machineNames, filterUid, customHeaders).Result;
+      transferProxy.Upload(new MemoryStream(data.ExportData), GetS3Key(customHeaders["X-VisionLink-CustomerUid"], projectUid, context.BackgroundJob.Id));
     }
 
     /// <summary>
