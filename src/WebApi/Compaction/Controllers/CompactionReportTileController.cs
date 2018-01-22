@@ -108,7 +108,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [Route("api/v2/reporttiles")]
     [Route("api/v2/compaction/reporttiles")]
     [HttpGet]
-    [ResponseCache(Duration = 60, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetReportTile(
       [FromQuery] TileOverlayType[] overlays,
       [FromQuery] int width,
@@ -152,7 +152,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [Route("api/v2/reporttiles/png")]
     [Route("api/v2/compaction/reporttiles/png")]
     [HttpGet]
-    [ResponseCache(Duration = 60, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     public async Task<FileResult> GetReportTileRaw(
       [FromQuery] TileOverlayType[] overlays,
       [FromQuery] int width,
@@ -184,7 +184,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [Route("api/v2/projectthumbnail")]
     [Route("api/v2/compaction/projectthumbnail")]
     [HttpGet]
-    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Duration = 14400, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetProjectThumbnail(
       [FromQuery] Guid projectUid)
     {
@@ -200,7 +200,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [Route("api/v2/projectthumbnail/png")]
     [Route("api/v2/compaction/projectthumbnail/png")]
     [HttpGet]
-    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Duration = 14400, VaryByQueryKeys = new[] { "*" })]
     public async Task<FileResult> GetProjectThumbnailRaw(
       [FromQuery] Guid projectUid)
     {
