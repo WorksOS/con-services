@@ -65,7 +65,7 @@ namespace SchedulerTestsImportedFileSync
       insertedCount = WriteToProjectDBImportedFile(_projectDbConnectionString, importedFile);
       Assert.AreEqual(1, insertedCount, "should have been 1 file written to ProjectDb");
 
-      var listOfProjectFiles = importedFileRepoProject.Read();
+      var listOfProjectFiles = importedFileRepoProject.Read(true);
       Assert.AreNotEqual(0, listOfProjectFiles.Count, "should have been at least 1 file read from ProjectDb");
       Assert.AreNotEqual(0, listOfProjectFiles.Count, "should be at least 1 file in ProjectDb list");
 
@@ -112,7 +112,7 @@ namespace SchedulerTestsImportedFileSync
       var createdCount = importedFileRepoProject.Create(importedFile);
       Assert.AreEqual(1, createdCount, "nhOpDb importFile not created");
 
-      var listOfProjectFiles = importedFileRepoProject.Read();
+      var listOfProjectFiles = importedFileRepoProject.Read(true);
       Assert.AreNotEqual(0, listOfProjectFiles.Count, "ProjectDb importFile not read");
 
       ImportedFile importFileResponse =
@@ -147,7 +147,7 @@ namespace SchedulerTestsImportedFileSync
       var createCount = importedFileRepoProject.Create(importedFile);
       Assert.AreEqual(1, createCount, "nhOpDb importFile not created");
 
-      var listOfProjectFiles = importedFileRepoProject.Read();
+      var listOfProjectFiles = importedFileRepoProject.Read(true);
       Assert.AreNotEqual(0, listOfProjectFiles.Count, "ProjectDb importFile not read");
 
       ImportedFile importFileResponse =
@@ -158,7 +158,7 @@ namespace SchedulerTestsImportedFileSync
       var deletedCount = importedFileRepoProject.Delete(importedFile);
       Assert.AreEqual(1, deletedCount, "nhOpDb importFile not deleted");
 
-      listOfProjectFiles = importedFileRepoProject.Read();
+      listOfProjectFiles = importedFileRepoProject.Read(true);
       importFileResponse = listOfProjectFiles.FirstOrDefault(x => (String.Compare(x.ImportedFileUid, importedFile.ImportedFileUid,
                                                                      StringComparison.OrdinalIgnoreCase) == 0));
       Assert.IsNull(importFileResponse, "should no longer find the one we created");

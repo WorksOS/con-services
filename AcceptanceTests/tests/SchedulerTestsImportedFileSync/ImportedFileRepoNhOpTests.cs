@@ -61,7 +61,7 @@ namespace SchedulerTestsImportedFileSync
       insertedCount = WriteNhOpDbImportedFileAndHistory(_nhOpDbConnectionString, importedFile);
       Assert.AreEqual(2, insertedCount, "should have been ImportedFile written to NhOpDb");
 
-      var listOfNhOpFiles = importedFileRepoNhOp.Read();
+      var listOfNhOpFiles = importedFileRepoNhOp.Read(true);
       Assert.AreNotEqual(0, listOfNhOpFiles.Count, "should have been at least 1 file read from NhOpDb");
    
       ImportedFileNhOp importFileResponse = listOfNhOpFiles.FirstOrDefault(x => x.LegacyImportedFileId == importedFile.LegacyImportedFileId);
@@ -106,7 +106,7 @@ namespace SchedulerTestsImportedFileSync
       Assert.IsTrue(createdLegacyImportedFileId > 0, "should return the Identity field from ImportedFile written to NhOpDb");
       importedFile.LegacyImportedFileId = createdLegacyImportedFileId;
 
-      var listOfNhOpFiles = ImportedFileRepoNhOp.Read();
+      var listOfNhOpFiles = ImportedFileRepoNhOp.Read(true);
       Assert.AreNotEqual(0, listOfNhOpFiles.Count, "should have been at least 1 file read from NhOpDb");
       ImportedFileNhOp importFileResponse = listOfNhOpFiles.FirstOrDefault(x => x.LegacyImportedFileId == importedFile.LegacyImportedFileId);
       Assert.IsNotNull(importFileResponse, "should have the one we tried to inserted");
@@ -149,7 +149,7 @@ namespace SchedulerTestsImportedFileSync
       Assert.IsTrue(createdLegacyImportedFileId > 0, "should return the Identity field from ImportedFile written to NhOpDb");
       importedFile.LegacyImportedFileId = createdLegacyImportedFileId;
 
-      var listOfNhOpFiles = ImportedFileRepoNhOp.Read();
+      var listOfNhOpFiles = ImportedFileRepoNhOp.Read(true);
       Assert.AreNotEqual(0, listOfNhOpFiles.Count, "should have been at least 1 file read from NhOpDb");
 
       ImportedFileNhOp importFileResponse = listOfNhOpFiles.FirstOrDefault(x => x.LegacyImportedFileId == importedFile.LegacyImportedFileId);
@@ -162,7 +162,7 @@ namespace SchedulerTestsImportedFileSync
       var deletedCount = ImportedFileRepoNhOp.Delete(importedFile);
       Assert.IsTrue(deletedCount > 1, "nhOpDb importFile and history not deleted");
 
-      listOfNhOpFiles = ImportedFileRepoNhOp.Read();
+      listOfNhOpFiles = ImportedFileRepoNhOp.Read(true);
       importFileResponse = listOfNhOpFiles.FirstOrDefault(x => x.LegacyImportedFileId == importedFile.LegacyImportedFileId);
       Assert.IsNull(importFileResponse, "should no longer find the one we created");
 
