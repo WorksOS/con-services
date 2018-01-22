@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
@@ -67,7 +68,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       try
       {
         var projectSettings = await projectRepo.GetProjectSettings(request.projectUid, userId, request.projectSettingsType).ConfigureAwait(false);
-        result = ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, projectSettings.Settings, projectSettings.ProjectSettingsType);
+        result = ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, JObject.Parse(projectSettings.Settings), projectSettings.ProjectSettingsType);
       }
       catch (Exception e)
       {
