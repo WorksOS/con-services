@@ -21,7 +21,8 @@ Invoke-Expression "dotnet restore --no-cache VSS.Productivity3D.Scheduler.sln"
 Write-Host "Publishing WebApi project..." -ForegroundColor "darkgray"
 $artifactsWorkingDir = "$artifactsDir\VSS.Productivity3D.Scheduler.WebApiNet47"
 
-Invoke-Expression "dotnet publish ./src/VSS.Productivity3D.Scheduler.WebApi/VSS.Productivity3D.Scheduler.WebApi.csproj -o $artifactsWorkingDir -f net47"
+Invoke-Expression "dotnet publish ./src/VSS.Productivity3D.Scheduler.WebApi/VSS.Productivity3D.Scheduler.WebApi.csproj -o ../../artifacts/VSS.Productivity3D.Scheduler.WebApi -f net47 -c Release"
+Invoke-Expression "dotnet build ./test/UnitTests/VSS.Productivity3D.Scheduler.Tests/VSS.Productivity3D.Scheduler.Tests.csproj"
 
 # Compress build artifacts.
 Write-Host "Compressing build artifacts..." -ForegroundColor "darkgray"

@@ -84,6 +84,7 @@
     <PackageReference Include="Topshelf">
       <Version>4.0.3</Version>
     </PackageReference>
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.0"></PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
