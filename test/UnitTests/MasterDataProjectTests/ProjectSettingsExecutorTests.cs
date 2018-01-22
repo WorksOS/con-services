@@ -106,7 +106,7 @@ namespace VSS.MasterData.ProjectTests
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string settings1 = string.Empty;
-      string settings2 = @"{'firstValue': 10, 'lastValue': 20}";
+      string settings2 = @"{firstValue: 10, lastValue: 20}";
       string userId = "my app";
       ProjectSettingsType settingsType1 = ProjectSettingsType.Targets;
       ProjectSettingsType settingsType2 = ProjectSettingsType.ImportedFiles;
@@ -182,7 +182,7 @@ namespace VSS.MasterData.ProjectTests
     {
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
-      string settings = @"{'firstValue': 10, 'lastValue': 20}";
+      string settings = @"{firstValue: 10, lastValue: 20}";
       string userId = "my app";
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -226,8 +226,8 @@ namespace VSS.MasterData.ProjectTests
     {
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
-      string settings1 = @"{'firstValue': 10, 'lastValue': 20}";
-      string settings2 = @"{'firstValue': 30, 'lastValue': 40}";
+      string settings1 = @"{firstValue: 10, lastValue: 20}";
+      string settings2 = @"{firstValue: 30, lastValue: 40}";
 
       string userId = "my app";
       ProjectSettingsType settingsType1 = ProjectSettingsType.Targets;
@@ -287,7 +287,7 @@ namespace VSS.MasterData.ProjectTests
     public void ProjectSettingsResultShouldNotSerializeType()
     {
       string projectUid = Guid.NewGuid().ToString();
-      string settings = @"{'firstValue': 10, 'lastValue': 20}";
+      string settings = @"{firstValue: 10, lastValue: 20}";
 
       var result = ProjectSettingsResult.CreateProjectSettingsResult(projectUid, JsonConvert.DeserializeObject<JObject>(settings), ProjectSettingsType.Targets);
       var json = JsonConvert.SerializeObject(result);
