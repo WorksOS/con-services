@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -93,33 +94,28 @@ namespace VSS.MasterData.Proxies
     /// <returns>Repsonse from web api as string</returns>
     public async Task<FileDataSingleResult> UploadFileToWebApi(string fullFileName, string queryParameters, string method, IDictionary<string, string> customHeaders = null)
     {
-      FileDataSingleResult result = null;
+      if (customHeaders == null)
+      {
+        customHeaders = new Dictionary<string, string>();
+      }
 
       var name = new DirectoryInfo(fullFileName).Name;
       Byte[] bytes = File.ReadAllBytes(fullFileName);
       var fileSize = bytes.Length;
       var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
-
+      FileDataSingleResult result = null;
       for (var offset = 0; offset < chunks; offset++)
       {
         var startByte = offset * CHUNK_SIZE;
         var endByte = Math.Min(fileSize, (offset + 1) * CHUNK_SIZE);
         int currentChunkSize = (int) (endByte - startByte);
         var flowId = GenerateId();
-
-        using (var filestream = new MemoryStream(bytes, offset, currentChunkSize))
-        {
-          var flowFileUpload = SetAllAttributesForFlowFile(fileSize, name, offset + 1, chunks, currentChunkSize);
-          var content = FormatTheContentDisposition(flowFileUpload, filestream, name, $"{BOUNDARY}{flowId}");
-          if (customHeaders == null)
-          {
-            customHeaders = new Dictionary<string, string>();
-          }
-          customHeaders.Add("Content-Type", $"multipart/form-data; boundary={BOUNDARY_START}{flowId}");
-          result = await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL2", content, customHeaders,
-            queryParameters, method);
-          customHeaders.Remove("Content-Type");
-        }
+        var flowFileUpload = SetAllAttributesForFlowFile(fileSize, name, offset + 1, chunks, currentChunkSize);
+        var currentBytes = bytes.Skip(startByte).Take(currentChunkSize).ToArray();
+        var content = FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY}{flowId}"); 
+        customHeaders.Add("Content-Type", $"multipart/form-data; boundary={BOUNDARY_START}{flowId}");
+        result = await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL2", content, customHeaders, queryParameters, method);
+        customHeaders.Remove("Content-Type");        
       }
       //The last chunk should have the result
       return result;
@@ -154,11 +150,11 @@ namespace VSS.MasterData.Proxies
     /// Format the Content Disposition. This is very specific / fussy with the boundary
     /// </summary>
     /// <param name="flowFileUpload"></param>
-    /// <param name="filestream"></param>
+    /// <param name="chunkContent"></param>
     /// <param name="name"></param>
     /// <param name="boundary"></param>
     /// <returns></returns>
-    private string FormatTheContentDisposition(FlowFileUpload flowFileUpload, Stream filestream, string name, string boundary)
+    private string FormatTheContentDisposition(FlowFileUpload flowFileUpload, byte[] chunkContent, string name, string boundary)
     {
       var sb = new StringBuilder();
       var nl = "\r\n";
@@ -168,12 +164,11 @@ namespace VSS.MasterData.Proxies
                       $"{boundary}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}" +
                       $"{boundary}{nl}Content-Disposition: form-data; name=\"file\"; filename=\"{name}\"{nl}Content-Type: application/octet-stream{nl}{nl}");
 
-      StreamReader reader = new StreamReader(filestream);
-      sb.Append(reader.ReadToEnd());
+      UTF8Encoding encoding = new UTF8Encoding();
+      sb.Append(encoding.GetString(chunkContent));//UTF8 to match GracefulWebRequest
       sb.Append($"{nl}");
       sb.Append($"{boundary}{BOUNDARY_BLOCK_DELIMITER}{nl}");
-      reader.Dispose();
-      return Regex.Replace(sb.ToString(), "(?<!\r)\n", "\r\n");
+      return Regex.Replace(sb.ToString(), "(?<!\r)\n", nl);
     }
 
     /// <summary>
