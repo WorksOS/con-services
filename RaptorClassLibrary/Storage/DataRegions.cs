@@ -64,6 +64,6 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <summary>
         /// THe data region to place spatial subgrid existance maps (usually computed from TTM topological designs and surveyed surfaces)
         /// </summary>
-        public const string SPATIAL_EXISTENCEMAP_DATA_REGION = DEFAULT_DATA_REGION_NAME;
+        public const string SPATIAL_EXISTENCEMAP_DATA_REGION = DEFAULT_IMMUTABLE_DATA_REGION_NAME;
     }
 }

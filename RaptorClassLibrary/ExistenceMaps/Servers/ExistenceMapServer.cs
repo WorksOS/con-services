@@ -53,11 +53,8 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
         /// </summary>
         public ExistenceMapServer()
         {
-            //if (ignite == null)
-            //{
-                ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorImmutableGridName());
-            //}
-
+            ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorImmutableGridName());
+            
             if (ignite == null)
             {
                 Log.InfoFormat($"Failed to get Ignite reference in {this}");
