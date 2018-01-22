@@ -205,13 +205,20 @@ namespace WebApiTests
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response);
-      Assert.AreEqual(objresp.settings, projectSettings, "Actual project settings do not match expected");
-      Assert.AreEqual(objresp.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
+
+      var tempSettings = objresp.settings == null ? String.Empty : JsonConvert.SerializeObject(objresp.settings).Replace("\"", String.Empty);
+
+      Assert.AreEqual(projectSettings, tempSettings, "Actual project settings do not match expected");
+      Assert.AreEqual(projectUid, objresp.projectUid, "Actual project Uid for project settings do not match expected");
+
       // get call
       var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
-      Assert.AreEqual(objresp1.settings, projectSettings, "Actual project settings do not match expected");
-      Assert.AreEqual(objresp1.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
+
+      tempSettings = objresp1.settings == null ? String.Empty : JsonConvert.SerializeObject(objresp1.settings).Replace("\"", String.Empty);
+
+      Assert.AreEqual(projectSettings, tempSettings, "Actual project settings do not match expected");
+      Assert.AreEqual(projectUid, objresp1.projectUid, "Actual project Uid for project settings do not match expected");
     }
 
     [TestMethod]
