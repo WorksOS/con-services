@@ -60,11 +60,11 @@ namespace ExecutorTests
       subscriptionRepo = serviceProvider.GetRequiredService<IRepository<ISubscriptionEvent>>() as SubscriptionRepository;
 
 
-      producer = serviceProvider.GetRequiredService<IKafka>();
-      if (!producer.IsInitializedProducer)
-        producer.InitProducer(configStore);
-      kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
-                       configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      //producer = serviceProvider.GetRequiredService<IKafka>();
+      //if (!producer.IsInitializedProducer)
+      //  producer.InitProducer(configStore);
+      //kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
+      //                 configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
     protected bool CreateAssetDeviceAssociation(Guid assetUid, long legacyAssetId, Guid? owningCustomerUid, Guid deviceUid, string deviceSerialNumber, string deviceType)
