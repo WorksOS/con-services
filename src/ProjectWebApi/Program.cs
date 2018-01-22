@@ -9,24 +9,27 @@ using System.Diagnostics;
 
 namespace VSS.MasterData.Project.WebAPI
 {
-    public class Program
+  /// <summary>
+  /// Applicaiton entry point.
+  /// </summary>
+  public class Program
+  {
+    /// <summary>
+    /// VSS.Productivity3D.Filter main
+    /// </summary>
+    public static void Main(string[] args)
     {
-      /// <summary>
-      /// VSS.Productivity3D.Filter main
-      /// </summary>
-      public static void Main(string[] args)
-      {
 #if NET_4_7
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
 #endif
 
-        var kestrelConfig = new ConfigurationBuilder()
+      var kestrelConfig = new ConfigurationBuilder()
 #if NET_4_7
         .SetBasePath(pathToContentRoot)
 #endif
         .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
-          .Build();
+        .Build();
 
 #if NET_4_7 //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
       HostFactory.Run(x =>
@@ -58,13 +61,13 @@ namespace VSS.MasterData.Project.WebAPI
 
         host.Run();
 #endif
-      }
     }
+  }
 
 #if NET_4_7
   internal class FilterContainer
   {
-    private IWebHost _webHost;
+    private IWebHost webHost;
 
     /// <summary>
     /// 
@@ -74,7 +77,7 @@ namespace VSS.MasterData.Project.WebAPI
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
 
-      _webHost = new WebHostBuilder()
+      webHost = new WebHostBuilder()
         .UseKestrel()
         .UseConfiguration(config)
         //TODO For some reason setting configuration for a topshelf service does not work
@@ -83,7 +86,7 @@ namespace VSS.MasterData.Project.WebAPI
         .UseStartup<Startup>()
         .Build();
 
-      _webHost.Start();
+      webHost.Start();
     }
 
     /// <summary>
@@ -91,7 +94,7 @@ namespace VSS.MasterData.Project.WebAPI
     /// </summary>
     public void Stop()
     {
-      _webHost?.Dispose();
+      webHost?.Dispose();
     }
   }
 #endif

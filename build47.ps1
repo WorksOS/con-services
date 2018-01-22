@@ -23,6 +23,16 @@ $artifactsWorkingDir = "$artifactsDir\ProjectWebApiNet47"
 
 Invoke-Expression "dotnet publish ./src/ProjectWebApi/VSS.Project.WebApi.csproj -o $artifactsWorkingDir -f net47"
 
+# FIX: To avoid runtime error with Confluence Kafka, see https://github.com/confluentinc/confluent-kafka-dotnet/issues/364
+$rdKafkaPath = "$artifactsWorkingDir/runtimes/win7-x86/native/"
+
+if (-Not (Test-Path -path $rdKafkaPath)) {
+    New-Item -Path $rdKafkaPath -ItemType Directory
+}
+
+Copy-Item "$artifactsWorkingDir/librdkafka.dll" $rdKafkaPath
+# <-- END FIX
+
 # Compress build artifacts.
 Write-Host "Compressing build artifacts..." -ForegroundColor "darkgray"
 
