@@ -495,7 +495,7 @@
     <Compile Include="Volumes\GridFabric\Requests\SimpleVolumesRequest_ApplicationService.cs" />
     <Compile Include="Volumes\GridFabric\Requests\SimpleVolumesRequest_ClusterCompute.cs" />
     <Compile Include="Volumes\GridFabric\Responses\SimpleVolumesResponse.cs" />
-    <Compile Include="Volumes\Interfaces\ISubGridRequestsAggregator.cs" />
+    <Compile Include="Interfaces\ISubGridRequestsAggregator.cs" />
     <Compile Include="Volumes\ProdReportSelectionType.cs" />
     <Compile Include="Volumes\Servers\Client\RaptorSimpleVolumesServer.cs" />
     <Compile Include="Volumes\SimpleVolumesCalculationsAggregator.cs" />

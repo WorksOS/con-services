@@ -17,7 +17,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Utilities;
-using VSS.VisionLink.Raptor.Volumes.Interfaces;
+using VSS.VisionLink.Raptor.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Volumes
 {
