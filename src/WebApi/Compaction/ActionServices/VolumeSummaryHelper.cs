@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
 
       return baseFilter.DateRangeType != DateRangeType.ProjectExtents &&
              baseFilter.DateRangeType == topFilter.DateRangeType &&
-             baseFilter.elevationType == null && topFilter.elevationType == null;
+             baseFilter.ElevationType == null && topFilter.ElevationType == null;
     }
   }
 }
