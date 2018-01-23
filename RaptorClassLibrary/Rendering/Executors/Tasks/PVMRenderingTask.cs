@@ -84,9 +84,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
             // If the display mode is cut/fill, perform a side lookup to convert the height information into cut/fill...
             if (TileRenderer.Mode == DisplayMode.CutFill)
             {
-                ClientHeightLeafSubGrid[] ProductionElevationsList = response as ClientHeightLeafSubGrid[];
+                IClientLeafSubGrid[] ProductionElevationsList = response as IClientLeafSubGrid[];
 
-//                if (ProductionElevationsList?.Length == 0)
                 if (ProductionElevationsList == null || ProductionElevationsList.Length == 0)
                 {
                     Log.Warn($"Response is null or does not contain a cut/fill subgrid");
@@ -99,7 +98,13 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
                     return false;
                 }
 
-                ClientHeightLeafSubGrid ProductionElevations = ProductionElevationsList[0];
+                ClientHeightLeafSubGrid ProductionElevations = (ClientHeightLeafSubGrid)ProductionElevationsList[0];
+
+                if (ProductionElevations == null)
+                {
+                    Log.Info("Failed to get ProductionElevations from IClientLeafSubGrid");
+                    return false;
+                }
 
                 // This is the old Legacy pattern of extracting surface elevations and calculating the cutfill, Alan Rose has implemented
                 // cut/fill computatation on the PSNodes now, modify this to the new approach when things are brought up to date

@@ -35,7 +35,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs
         {
             try
             {
-                Log.InfoFormat("CalculateDesignElevationPatchComputeFunc: Arg = {0}", arg);
+                Log.Debug($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
 
                 CalculateSurfaceElevationPatch Executor = new CalculateSurfaceElevationPatch(arg);
 

@@ -23,7 +23,7 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs
         {
             try
             {
-                Log.InfoFormat("CalculateDesignElevationPatchComputeFunc: Arg = {0}", arg);
+                Log.Debug($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
 
                 CalculateDesignElevationPatch Executor = new CalculateDesignElevationPatch(arg);
 
