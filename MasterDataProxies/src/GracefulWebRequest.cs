@@ -123,9 +123,13 @@ namespace VSS.MasterData.Proxies
           {
             foreach (var key in customHeaders.Keys)
             {
-              if (key == "Content-Type")
+              if (string.Equals(key, "Content-Type", StringComparison.OrdinalIgnoreCase))
               {
                 httpRequest.ContentType = customHeaders[key];
+              }
+              else if (string.Equals(key, "Accept", StringComparison.OrdinalIgnoreCase))
+              {
+                httpRequest.Accept = customHeaders[key];
               }
               else
               {
@@ -134,6 +138,7 @@ namespace VSS.MasterData.Proxies
             }
           }
         }
+
         if (requestStream != null)
         {
           using (var writeStream = await request.GetRequestStreamAsync())
@@ -143,20 +148,23 @@ namespace VSS.MasterData.Proxies
         }
         else
           //Apply payload if any
-        if (!String.IsNullOrEmpty(payloadData))
-        {
-          // don't overwrite any existing one.
-          if (!customHeaders.ContainsKey("Content-Type"))
+          if (!String.IsNullOrEmpty(payloadData))
           {
-            request.ContentType = "application/json";
+            // don't overwrite any existing one.
+            if (customHeaders == null || !customHeaders.ContainsKey("Content-Type"))
+            {
+              request.ContentType = "application/json";
+            }
+            log.LogDebug($"PrepareWebRequest() T : requestWithPayload {JsonConvert.SerializeObject(request).Truncate(logMaxChar)}");
+
+
+            using (var writeStream = await request.GetRequestStreamAsync())
+            {
+              UTF8Encoding encoding = new UTF8Encoding();
+              byte[] bytes = encoding.GetBytes(payloadData);
+              await writeStream.WriteAsync(bytes, 0, bytes.Length);
+            }
           }
-          using (var writeStream = await request.GetRequestStreamAsync())
-          {
-            UTF8Encoding encoding = new UTF8Encoding();
-            byte[] bytes = encoding.GetBytes(payloadData);
-            await writeStream.WriteAsync(bytes, 0, bytes.Length);
-          }
-        }
         return request;
       }
 
@@ -165,7 +173,9 @@ namespace VSS.MasterData.Proxies
       {
         this.endpoint = endpoint;
         this.method = method;
-        this.customHeaders = customHeaders;
+        var comparer = StringComparer.OrdinalIgnoreCase;
+        this.customHeaders = new Dictionary<string, string>(customHeaders, comparer);
+
         this.payloadData = payloadData;
         this.log = log;
         this.logMaxChar = logMaxChar;
