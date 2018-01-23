@@ -8,7 +8,8 @@ namespace SchedulerTestsImportedFileSync
   public class ImportedFileSyncTaskTests : TestControllerBase
   {
     private ILogger _log;
-    private string ImportedProjectFileSyncTask = "ImportedProjectFileSyncTask";
+    private string ImportedProjectFileSyncSurveyedSurfaceTask = "ImportedProjectFileSyncSurveyedSurfaceTask";
+    private string ImportedProjectFileSyncNonSurveyedSurfaceTask = "ImportedProjectFileSyncNonSurveyedSurfaceTask";
 
     [TestInitialize]
     public void Init()
@@ -20,23 +21,43 @@ namespace SchedulerTestsImportedFileSync
     }
 
     [TestMethod]
-    public void ImportedFilesSyncTaskExists()
+    public void ImportedFilesSyncSurvedSurfaceTaskExists()
     {
-      var theJob = GetJob(HangfireConnection(), ImportedProjectFileSyncTask);
+      var theJob = GetJob(HangfireConnection(), ImportedProjectFileSyncSurveyedSurfaceTask);
     
-      Assert.IsNotNull(theJob,$"{ImportedProjectFileSyncTask} not found");
-      Assert.AreEqual(ImportedProjectFileSyncTask, theJob.Id, "wrong job selected");
+      Assert.IsNotNull(theJob,$"{ImportedProjectFileSyncSurveyedSurfaceTask} not found");
+      Assert.AreEqual(ImportedProjectFileSyncSurveyedSurfaceTask, theJob.Id, "wrong job selected");
     }
 
     [TestMethod]
-    public void ImportedProjectFileSyncTaskNextRuntime()
+    public void ImportedFilesSyncNonSurvedSurfaceTaskExists()
     {
-      var theJob = GetJob(HangfireConnection(), ImportedProjectFileSyncTask);
+      var theJob = GetJob(HangfireConnection(), ImportedProjectFileSyncNonSurveyedSurfaceTask);
 
-      Assert.IsNotNull(theJob, $"{ImportedProjectFileSyncTask} not found");
-      Assert.AreEqual(ImportedProjectFileSyncTask, theJob.Id, "wrong job selected");
-      Assert.IsNotNull(theJob.NextExecution, $"{ImportedProjectFileSyncTask} nextExecutionTime not found");
-      Assert.IsTrue(theJob.NextExecution < DateTime.UtcNow.AddMinutes(1).AddSeconds(1), $"{ImportedProjectFileSyncTask} nextExecutionTime not within one minute");
+      Assert.IsNotNull(theJob, $"{ImportedProjectFileSyncNonSurveyedSurfaceTask} not found");
+      Assert.AreEqual(ImportedProjectFileSyncNonSurveyedSurfaceTask, theJob.Id, "wrong job selected");
+    }
+
+    [TestMethod]
+    public void ImportedProjectFileSyncSurveyedSurfaceTaskNextRuntime()
+    {
+      var theJob = GetJob(HangfireConnection(), ImportedProjectFileSyncSurveyedSurfaceTask);
+
+      Assert.IsNotNull(theJob, $"{ImportedProjectFileSyncSurveyedSurfaceTask} not found");
+      Assert.AreEqual(ImportedProjectFileSyncSurveyedSurfaceTask, theJob.Id, "wrong job selected");
+      Assert.IsNotNull(theJob.NextExecution, $"{ImportedProjectFileSyncSurveyedSurfaceTask} nextExecutionTime not found");
+      Assert.IsTrue(theJob.NextExecution < DateTime.UtcNow.AddMinutes(1).AddSeconds(1), $"{ImportedProjectFileSyncSurveyedSurfaceTask} nextExecutionTime not within one minute");
+    }
+
+    [TestMethod]
+    public void ImportedProjectFileSyncNonSurveyedSurfaceTaskNextRuntime()
+    {
+      var theJob = GetJob(HangfireConnection(), ImportedProjectFileSyncNonSurveyedSurfaceTask);
+
+      Assert.IsNotNull(theJob, $"{ImportedProjectFileSyncNonSurveyedSurfaceTask} not found");
+      Assert.AreEqual(ImportedProjectFileSyncNonSurveyedSurfaceTask, theJob.Id, "wrong job selected");
+      Assert.IsNotNull(theJob.NextExecution, $"{ImportedProjectFileSyncNonSurveyedSurfaceTask} nextExecutionTime not found");
+      Assert.IsTrue(theJob.NextExecution < DateTime.UtcNow.AddMinutes(1).AddSeconds(1), $"{ImportedProjectFileSyncNonSurveyedSurfaceTask} nextExecutionTime not within one minute");
     }
   }
 }

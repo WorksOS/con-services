@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
-using VSS.FlowJSHandler;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Scheduler.Common.Models;
@@ -334,18 +333,16 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         switch (action)
         {
           case WebApiAction.Creating:
-           result = await ImpFileProxy.CreateImportedFile(
-              new FlowFile { flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path) },
-              projectUid, projectEvent.ImportedFileType,
-              projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType,
-              projectEvent.SurveyedUtc,
-              customHeaders).ConfigureAwait(false);
+           result = await ImpFileProxy.CreateImportedFile(fullName,
+              projectUid, projectEvent.ImportedFileType, projectEvent.FileCreatedUtc, 
+              projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType,
+              projectEvent.SurveyedUtc, customHeaders).ConfigureAwait(false);
             break;
           case WebApiAction.Updating:
-            result = await ImpFileProxy.UpdateImportedFile(new FlowFile { flowFilename = projectEvent.Name, path = FullTemporaryPath(fileDescriptor.path) },
-              projectUid, projectEvent.ImportedFileType,
-              projectEvent.FileCreatedUtc, projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, projectEvent.SurveyedUtc,
-              customHeaders).ConfigureAwait(false);
+            result = await ImpFileProxy.UpdateImportedFile(fullName,
+              projectUid, projectEvent.ImportedFileType, projectEvent.FileCreatedUtc, 
+              projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, 
+              projectEvent.SurveyedUtc, customHeaders).ConfigureAwait(false);
             break;
           case WebApiAction.Deleting:
             result = await ImpFileProxy.DeleteImportedFile(projectUid, Guid.Parse(projectEvent.ImportedFileUid),
