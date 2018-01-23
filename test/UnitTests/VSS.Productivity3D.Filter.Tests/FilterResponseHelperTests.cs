@@ -95,8 +95,8 @@ namespace VSS.Productivity3D.Filter.Tests
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
       Assert.AreEqual(dateRangeType, filterObj.DateRangeType);
-      Assert.IsNull(filterObj.startUTC);
-      Assert.IsNull(filterObj.endUTC);
+      Assert.IsNull(filterObj.StartUtc);
+      Assert.IsNull(filterObj.EndUtc);
     }
 
     [TestMethod]
@@ -109,8 +109,8 @@ namespace VSS.Productivity3D.Filter.Tests
       FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor);
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
-      Assert.IsNull(filterObj.startUTC);
-      Assert.IsNull(filterObj.endUTC);
+      Assert.IsNull(filterObj.StartUtc);
+      Assert.IsNull(filterObj.EndUtc);
     }
 
     [TestMethod]
@@ -172,8 +172,8 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
 
-      Assert.IsNotNull(filterObj.startUTC);
-      Assert.IsNotNull(filterObj.endUTC);
+      Assert.IsNotNull(filterObj.StartUtc);
+      Assert.IsNotNull(filterObj.EndUtc);
     }
   }
 }

@@ -130,7 +130,7 @@ namespace ExecutorTests
         ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         FilterUID = Guid.NewGuid(),
         Name = $"dateRangeType={dateRangeType}",
-        FilterJson = $"{{\"startUTC\": null,\"endUTC\": null,\"dateRangeType\": {dateRangeType}}}",
+        FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}}}",
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
@@ -155,8 +155,8 @@ namespace ExecutorTests
       Assert.AreEqual(filterCreateEvent.FilterUID, Guid.Parse(result.FilterDescriptor.FilterUid), Responses.IncorrectFilterDescriptorFilterUid);
 
       dynamic filterObj = JsonConvert.DeserializeObject(result.FilterDescriptor.FilterJson);
-      Assert.IsNull(filterObj.startUTC);
-      Assert.IsNull(filterObj.endUTC);
+      Assert.IsNull(filterObj.startUtc);
+      Assert.IsNull(filterObj.endUtc);
     }
 
     [TestMethod]
@@ -175,7 +175,7 @@ namespace ExecutorTests
         ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         FilterUID = Guid.NewGuid(),
         Name = $"dateRangeType={dateRangeType}",
-        FilterJson = $"{{\"startUTC\": null,\"endUTC\": null,\"dateRangeType\": {dateRangeType}}}",
+        FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}}}",
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
@@ -200,8 +200,8 @@ namespace ExecutorTests
       Assert.AreEqual(filterCreateEvent.FilterUID, Guid.Parse(result.FilterDescriptor.FilterUid), Responses.IncorrectFilterDescriptorFilterUid);
 
       dynamic filterObj = JsonConvert.DeserializeObject(result.FilterDescriptor.FilterJson);
-      Assert.IsTrue(DateTime.TryParse(filterObj.startUTC.ToString(), out DateTime _));
-      Assert.IsTrue(DateTime.TryParse(filterObj.endUTC.ToString(), out DateTime _));
+      Assert.IsTrue(DateTime.TryParse(filterObj.startUtc.ToString(), out DateTime _));
+      Assert.IsTrue(DateTime.TryParse(filterObj.endUtc.ToString(), out DateTime _));
     }
 
     [TestMethod]
@@ -219,7 +219,7 @@ namespace ExecutorTests
         ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         FilterUID = Guid.NewGuid(),
         Name = $"dateRangeType={dateRangeType}",
-        FilterJson = $"{{\"startUTC\": \"{startDate}\",\"endUTC\": \"{endDate}\",\"dateRangeType\": {dateRangeType}}}",
+        FilterJson = $"{{\"startUtc\": \"{startDate}\",\"endUtc\": \"{endDate}\",\"dateRangeType\": {dateRangeType}}}",
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
@@ -244,7 +244,7 @@ namespace ExecutorTests
       Assert.AreEqual(filterCreateEvent.FilterUID, Guid.Parse(result.FilterDescriptor.FilterUid), Responses.IncorrectFilterDescriptorFilterUid);
 
       dynamic filterObj = JsonConvert.DeserializeObject(result.FilterDescriptor.FilterJson);
-      Assert.AreEqual(DateTime.Parse(startDate).ToUniversalTime(), DateTime.Parse(filterObj.startUTC.ToString()));
+      Assert.AreEqual(DateTime.Parse(startDate).ToUniversalTime(), DateTime.Parse(filterObj.startUtc.ToString()));
     }
   }
 }
