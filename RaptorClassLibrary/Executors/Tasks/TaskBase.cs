@@ -17,7 +17,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
     /// subgrids and profile sections that require additional processing to arrive at 
     /// the final result (such as a rendered tile)
     /// </summary>
-    public abstract class TaskBase : ITask //<TSubGridsRequestor> : ITask where TSubGridsRequestor : SubGridRequestsBase, new()
+    public abstract class TaskBase : ITask
     {
         /// <summary>
         /// The request descriptor assigned to the task.
