@@ -138,7 +138,9 @@ namespace VSS.MasterData.Proxies
         {
           using (var writeStream = await request.GetRequestStreamAsync())
           {
-            await requestStream.CopyToAsync(writeStream);
+            var reqS = ((MemoryStream) requestStream).ToArray();
+            await writeStream.WriteAsync(reqS,0,reqS.Length);
+            //await requestStream.CopyToAsync(writeStream);
           }
         }
         else

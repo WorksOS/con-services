@@ -50,7 +50,7 @@ namespace VSS.MasterData.Proxies
 
     public async Task<BaseDataResult> DeleteImportedFile(Guid projectUid, Guid importedFileUid, IDictionary<string, string> customHeaders = null)
     {
-      BaseDataResult response = await SendRequest<BaseDataResult>("IMPORTED_FILE_API_URL2", null, customHeaders, null, "DELETE");
+      BaseDataResult response = await SendRequest<BaseDataResult>("IMPORTED_FILE_API_URL2", Stream.Null, customHeaders, null, "DELETE");
       log.LogDebug("ImportedFileProxy.DeleteImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -154,21 +154,31 @@ namespace VSS.MasterData.Proxies
     /// <param name="name"></param>
     /// <param name="boundary"></param>
     /// <returns></returns>
-    private string FormatTheContentDisposition(FlowFileUpload flowFileUpload, byte[] chunkContent, string name, string boundary)
+    private MemoryStream FormatTheContentDisposition(FlowFileUpload flowFileUpload, byte[] chunkContent, string name,
+      string boundary)
     {
       var sb = new StringBuilder();
       var nl = "\r\n";
-      sb.AppendFormat($"{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowChunkNumber\"{nl}{nl}{flowFileUpload.flowChunkNumber}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowChunkSize\"{nl}{nl}{flowFileUpload.flowChunkSize}{nl}" +
-                      $"{boundary}{nl}Content-Disposition: form-data; name=\"flowCurrentChunkSize\"{nl}{nl}{flowFileUpload.flowCurrentChunkSize}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowTotalSize\"{nl}{nl}{flowFileUpload.flowTotalSize}{nl}" +
-                      $"{boundary}{nl}Content-Disposition: form-data; name=\"flowIdentifier\"{nl}{nl}{flowFileUpload.flowIdentifier}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowFilename\"{nl}{nl}{flowFileUpload.flowFilename}{nl}" +
-                      $"{boundary}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}" +
-                      $"{boundary}{nl}Content-Disposition: form-data; name=\"file\"; filename=\"{name}\"{nl}Content-Type: application/octet-stream{nl}{nl}");
+      sb.AppendFormat(
+        $"{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowChunkNumber\"{nl}{nl}{flowFileUpload.flowChunkNumber}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowChunkSize\"{nl}{nl}{flowFileUpload.flowChunkSize}{nl}" +
+        $"{boundary}{nl}Content-Disposition: form-data; name=\"flowCurrentChunkSize\"{nl}{nl}{flowFileUpload.flowCurrentChunkSize}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowTotalSize\"{nl}{nl}{flowFileUpload.flowTotalSize}{nl}" +
+        $"{boundary}{nl}Content-Disposition: form-data; name=\"flowIdentifier\"{nl}{nl}{flowFileUpload.flowIdentifier}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowFilename\"{nl}{nl}{flowFileUpload.flowFilename}{nl}" +
+        $"{boundary}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}" +
+        $"{boundary}{nl}Content-Disposition: form-data; name=\"file\"; filename=\"{name}\"{nl}Content-Type: application/octet-stream{nl}{nl}");
 
-      UTF8Encoding encoding = new UTF8Encoding();
-      sb.Append(encoding.GetString(chunkContent));//UTF8 to match GracefulWebRequest
-      sb.Append($"{nl}");
-      sb.Append($"{boundary}{BOUNDARY_BLOCK_DELIMITER}{nl}");
-      return Regex.Replace(sb.ToString(), "(?<!\r)\n", nl);
+      //  UTF8Encoding encoding = new UTF8Encoding();
+      //  sb.Append(encoding.GetString(chunkContent));//UTF8 to match GracefulWebRequest
+      var resultingStream = new MemoryStream();
+
+      byte[] header = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", nl));
+      resultingStream.Write(header,0,header.Length);
+      resultingStream.Write(chunkContent,0,chunkContent.Length);
+      
+      sb = new StringBuilder();  
+      sb.Append($"{nl}{boundary}{BOUNDARY_BLOCK_DELIMITER}{nl}");
+      byte[] tail = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", nl));
+      resultingStream.Write(tail, 0, tail.Length);
+      return resultingStream;
     }
 
     /// <summary>

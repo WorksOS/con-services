@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using VSS.Authentication.JWT;
 using VSS.ConfigurationStore;
@@ -76,6 +77,43 @@ namespace VSS.MasterData.Proxies
       }
       return result;
     }
+
+    /// <summary>
+    /// Executes a request against masterdata service
+    /// </summary>
+    /// <param name="urlKey">The configuration store key for the URL</param>
+    /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="payload">The payload of the request</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <param name="method">Http method, defaults to POST</param>
+    /// <returns>The item</returns>
+    protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders, string route = null, string method = "POST")
+    {
+      var url = ExtractUrl(urlKey, route);
+      T result = default(T);
+      try
+      {
+        GracefulWebRequest request = new GracefulWebRequest(logger, configurationStore);
+        result = await request.ExecuteRequest<T>(url, payload, customHeaders,method);
+        log.LogDebug("Result of send to master data request: {0}", result);
+      }
+      catch (Exception ex)
+      {
+        string message = ex.Message;
+        string stacktrace = ex.StackTrace;
+        //Check for 400 and 500 errors which come through as an inner exception
+        if (ex.InnerException != null)
+        {
+          message = ex.InnerException.Message;
+          stacktrace = ex.InnerException.StackTrace;
+        }
+        log.LogWarning("Error sending data from master data: ", message);
+        log.LogWarning("Stacktrace: ", stacktrace);
+        throw;
+      }
+      return result;
+    }
+
 
     /// <summary>
     /// Gets a list of the specified items from the specified service. No caching.
