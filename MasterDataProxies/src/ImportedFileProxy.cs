@@ -118,10 +118,13 @@ namespace VSS.MasterData.Proxies
         var flowId = GenerateId();
         var flowFileUpload = SetAllAttributesForFlowFile(fileSize, name, offset + 1, chunks, currentChunkSize);
         var currentBytes = bytes.Skip(startByte).Take(currentChunkSize).ToArray();
-        var content = FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY}{flowId}"); 
-        customHeaders.Add("Content-Type", $"multipart/form-data; boundary={BOUNDARY_START}{flowId}");
-        result = await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL2", content, customHeaders, queryParameters, method);
-        customHeaders.Remove("Content-Type");        
+        using (var content = new MemoryStream())
+        {
+          FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY}{flowId}", content);
+          customHeaders.Add("Content-Type", $"multipart/form-data; boundary={BOUNDARY_START}{flowId}");
+          result = await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL2", content, customHeaders, queryParameters, method);
+          customHeaders.Remove("Content-Type");
+        }   
       }
       //The last chunk should have the result
       return result;
@@ -159,9 +162,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="chunkContent"></param>
     /// <param name="name"></param>
     /// <param name="boundary"></param>
+    /// <param name="resultingStream"></param>
     /// <returns></returns>
-    private MemoryStream FormatTheContentDisposition(FlowFileUpload flowFileUpload, byte[] chunkContent, string name,
-      string boundary)
+    private void FormatTheContentDisposition(FlowFileUpload flowFileUpload, byte[] chunkContent, string name,
+      string boundary, MemoryStream resultingStream)
     {
       var sb = new StringBuilder();
       var nl = "\r\n";
@@ -172,10 +176,6 @@ namespace VSS.MasterData.Proxies
         $"{boundary}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}" +
         $"{boundary}{nl}Content-Disposition: form-data; name=\"file\"; filename=\"{name}\"{nl}Content-Type: application/octet-stream{nl}{nl}");
 
-      //  UTF8Encoding encoding = new UTF8Encoding();
-      //  sb.Append(encoding.GetString(chunkContent));//UTF8 to match GracefulWebRequest
-      var resultingStream = new MemoryStream();
-
       byte[] header = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", nl));
       resultingStream.Write(header,0,header.Length);
       resultingStream.Write(chunkContent,0,chunkContent.Length);
@@ -184,7 +184,6 @@ namespace VSS.MasterData.Proxies
       sb.Append($"{nl}{boundary}{BOUNDARY_BLOCK_DELIMITER}{nl}");
       byte[] tail = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", nl));
       resultingStream.Write(tail, 0, tail.Length);
-      return resultingStream;
     }
 
     /// <summary>

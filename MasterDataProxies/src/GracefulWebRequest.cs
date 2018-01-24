@@ -143,6 +143,8 @@ namespace VSS.MasterData.Proxies
         {
           using (var writeStream = await request.GetRequestStreamAsync())
           {
+            //TODO: Fix this unsafe conversion to MemoryStream. Replace the "Stream requestStream"
+            //with a byte[] parameter. Need to find which of our applications use it and fix them.
             var reqS = ((MemoryStream) requestStream).ToArray();
             await writeStream.WriteAsync(reqS,0,reqS.Length);
             //await requestStream.CopyToAsync(writeStream);
@@ -223,6 +225,7 @@ namespace VSS.MasterData.Proxies
         return null;
       }
 
+      //TODO: unsafe conversion of requestStream in PrepareWebRequest needs fixing. 
       public async Task<T> ExecuteActualRequest<T>(Stream requestSteam = null)
       {
         var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, requestSteam);
