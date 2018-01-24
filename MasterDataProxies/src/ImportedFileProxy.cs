@@ -108,6 +108,12 @@ namespace VSS.MasterData.Proxies
       {
         var startByte = offset * CHUNK_SIZE;
         var endByte = Math.Min(fileSize, (offset + 1) * CHUNK_SIZE);
+        if (fileSize - endByte < CHUNK_SIZE)
+        {
+          // The last chunk will be bigger than the chunk size,
+          // but less than 2*chunkSize
+          endByte = fileSize;
+        }
         int currentChunkSize = (int) (endByte - startByte);
         var flowId = GenerateId();
         var flowFileUpload = SetAllAttributesForFlowFile(fileSize, name, offset + 1, chunks, currentChunkSize);
