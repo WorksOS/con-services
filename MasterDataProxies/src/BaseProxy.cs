@@ -5,10 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using VSS.Authentication.JWT;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Interfaces;
-using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
 {

@@ -251,10 +251,10 @@ namespace VSS.MasterData.Models.UnitTests
 
       filter = JsonConvert.DeserializeObject<Filter>(jsonString);
       filter.Validate(this._serviceExceptionHandler);
-      Assert.AreEqual(boundaryName, filter.polygonName, "polyName is wrong.");
-      Assert.AreEqual(boundaryUid, filter.polygonUID, "polyUid is wrong.");
-      Assert.AreEqual(4, filter.polygonLL.Count, "point count is wrong.");
-      Assert.AreEqual(newBoundaryPoints[2].Lat, filter.polygonLL[2].Lat, "3rd filter point is invalid");
+      Assert.AreEqual(boundaryName, filter.PolygonName, "polyName is wrong.");
+      Assert.AreEqual(boundaryUid, filter.PolygonUid, "polyUid is wrong.");
+      Assert.AreEqual(4, filter.PolygonLL.Count, "point count is wrong.");
+      Assert.AreEqual(newBoundaryPoints[2].Lat, filter.PolygonLL[2].Lat, "3rd filter point is invalid");
     }
 
     [TestMethod]
@@ -268,10 +268,10 @@ namespace VSS.MasterData.Models.UnitTests
 
       filter = JsonConvert.DeserializeObject<Filter>(jsonString);
       filter.Validate(this._serviceExceptionHandler);
-      Assert.AreEqual(this._boundaryName, filter.polygonName, "original polyName is wrong.");
-      Assert.AreEqual(this._boundaryUid, filter.polygonUID, "original polyUid is wrong.");
-      Assert.AreEqual(3, filter.polygonLL.Count, "original point count is wrong.");
-      Assert.AreEqual(this._polygonLL[1].Lat, filter.polygonLL[1].Lat, "updated 2nd filter point is invalid");
+      Assert.AreEqual(this._boundaryName, filter.PolygonName, "original polyName is wrong.");
+      Assert.AreEqual(this._boundaryUid, filter.PolygonUid, "original polyUid is wrong.");
+      Assert.AreEqual(3, filter.PolygonLL.Count, "original point count is wrong.");
+      Assert.AreEqual(this._polygonLL[1].Lat, filter.PolygonLL[1].Lat, "updated 2nd filter point is invalid");
 
       // now update the polygon
       var boundaryUid = Guid.NewGuid().ToString();
@@ -290,10 +290,10 @@ namespace VSS.MasterData.Models.UnitTests
 
       filter = JsonConvert.DeserializeObject<Filter>(jsonString);
       filter.Validate(this._serviceExceptionHandler);
-      Assert.AreEqual(boundaryName, filter.polygonName, "updated polyName is wrong.");
-      Assert.AreEqual(boundaryUid, filter.polygonUID, "updated polyUid is wrong.");
-      Assert.AreEqual(4, filter.polygonLL.Count, "updated point count is wrong.");
-      Assert.AreEqual(newBoundaryPoints[2].Lat, filter.polygonLL[2].Lat, "updated 3rd filter point is invalid");
+      Assert.AreEqual(boundaryName, filter.PolygonName, "updated polyName is wrong.");
+      Assert.AreEqual(boundaryUid, filter.PolygonUid, "updated polyUid is wrong.");
+      Assert.AreEqual(4, filter.PolygonLL.Count, "updated point count is wrong.");
+      Assert.AreEqual(newBoundaryPoints[2].Lat, filter.PolygonLL[2].Lat, "updated 3rd filter point is invalid");
     }
 
     private string INVALID_GUID = "39823294vf-vbfb";
