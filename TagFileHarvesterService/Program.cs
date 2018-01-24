@@ -128,7 +128,7 @@ namespace TagFileHarvester
 
       Directory.CreateDirectory(OrgsHandler.BookmarkPath);
 
-      ServicePointManager.DefaultConnectionLimit = 256;
+      ServicePointManager.DefaultConnectionLimit = 8;
 
       Log.Debug("TagFileHarvester.Start: Entered Start()");
       //register dependencies here
