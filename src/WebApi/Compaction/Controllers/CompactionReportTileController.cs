@@ -270,7 +270,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var fileList = await FileListProxy.GetFiles(projectUid.ToString(), userId, CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
-        return null;
+        return new List<FileData>();
       }
 
       return fileList.Where(f => f.ImportedFileType == fileType && f.IsActivated).ToList();
@@ -284,10 +284,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private async Task<List<DesignDescriptor>> GetAlignmentDescriptors(Guid projectUid)
     {
       var alignmentFiles = await GetFilesOfType(projectUid, ImportedFileType.Alignment);
-      List<DesignDescriptor> alignmentDescriptors = null;
+      List<DesignDescriptor> alignmentDescriptors = new List<DesignDescriptor>();
       if (alignmentFiles != null)
       {
-        alignmentDescriptors = new List<DesignDescriptor>();
         foreach (var alignmentFile in alignmentFiles)
         {
           alignmentDescriptors.Add(await GetAndValidateDesignDescriptor(projectUid, new Guid(alignmentFile.ImportedFileUid)));
