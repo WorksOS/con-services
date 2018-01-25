@@ -105,18 +105,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
             for (var j = 0; j < station.NumberOfOffsets; j++)
             {
-              var offset = station.Offsets[j];
+              var stationOffsetRow = StationOffsetRow.CreateRow(station.Offsets[j]);
 
-              var stationOffsetRow = StationOffsetRow.CreateRow(offset.Northing, offset.Easting, offset.Elevation, offset.CutFill, offset.CMV, offset.MDP, offset.PassCount, offset.Temperature, offset.Position, offset.Station);
-
-              stationOffsetRow.SetReportFlags(
-                request.ReportElevation,
-                request.ReportCutFill,
-                request.ReportCMV,
-                request.ReportMDP,
-                request.ReportPassCount,
-                request.ReportTemperature);
-
+              stationOffsetRow.SetReportFlags(request);
               stationRow.Offsets[j] = stationOffsetRow;
             }
 
