@@ -248,6 +248,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           projectEvent.FileUpdatedUtc = createdFile.FileUpdatedUtc;
           projectEvent.LastActionedUtc = DateTime.UtcNow;
           repoProject.Update(projectEvent);
+          Log.LogTrace($"Call to project web api succeeded: ImportedFileUid={createdFile.ImportedFileUid}, LegacyImportedFileId={ifo.LegacyImportedFileId}");
+        }
+        else
+        {
+          Log.LogTrace("Call to project web api failed, null result");
         }
       }
 

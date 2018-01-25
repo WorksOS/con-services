@@ -294,7 +294,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         try
         {
           //Clean up - delete downloaded file
-          Log.LogInformation($"ImportedFileSynchroniser: Deleting temporaty file {FullTemporaryFileName(fileDescriptor)}");
+          Log.LogInformation($"ImportedFileSynchroniser: Deleting temporary file {FullTemporaryFileName(fileDescriptor)}");
           File.Delete(FullTemporaryFileName(fileDescriptor));
         }
         catch (Exception)
