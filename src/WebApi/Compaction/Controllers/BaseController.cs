@@ -331,7 +331,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
           if (filterData != null)
           {
-            if (filterData.designUID != null && Guid.TryParse(filterData.designUID, out Guid designUidGuid))
+            if (filterData.DesignUid != null && Guid.TryParse(filterData.DesignUid, out Guid designUidGuid))
             {
               designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUidGuid);
             }
@@ -340,23 +340,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             {
               filterData = ApplyDateRange(projectUid, filterData);
 
-              var polygonPoints = filterData.polygonLL?.ConvertAll(p =>
+              var polygonPoints = filterData.PolygonLL?.ConvertAll(p =>
                 Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
 
-              var layerMethod = filterData.layerNumber.HasValue
+              var layerMethod = filterData.LayerNumber.HasValue
                 ? FilterLayerMethod.TagfileLayerNumber
                 : FilterLayerMethod.None;
 
               bool? returnEarliest = null;
-              if (filterData.elevationType == ElevationType.First)
+              if (filterData.ElevationType == ElevationType.First)
               {
                 returnEarliest = true;
               }
 
-              return Filter.CreateFilter(null, null, null, filterData.startUTC, filterData.endUTC,
-                filterData.onMachineDesignID, null, filterData.vibeStateOn, null, filterData.elevationType,
-                polygonPoints, null, filterData.forwardDirection, null, null, null, null, null, null,
-                layerMethod, designDescriptor, null, filterData.layerNumber, null, filterData.contributingMachines,
+              return Filter.CreateFilter(null, null, null, filterData.StartUtc, filterData.EndUtc,
+                filterData.OnMachineDesignId, null, filterData.VibeStateOn, null, filterData.ElevationType,
+                polygonPoints, null, filterData.ForwardDirection, null, null, null, null, null, null,
+                layerMethod, designDescriptor, null, filterData.LayerNumber, null, filterData.ContributingMachines,
                 excludedIds, returnEarliest, null, null, null, null, null);
             }
           }
@@ -406,8 +406,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DateTime? endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
 
       return MasterData.Models.Models.Filter.CreateFilter(
-        startUtc, endUtc, filter.designUID, filter.contributingMachines, filter.onMachineDesignID, filter.elevationType,
-        filter.vibeStateOn, filter.polygonLL, filter.forwardDirection, filter.layerNumber, filter.polygonUID, filter.polygonName);
+        startUtc, endUtc, filter.DesignUid, filter.ContributingMachines, filter.OnMachineDesignId, filter.ElevationType,
+        filter.VibeStateOn, filter.PolygonLL, filter.ForwardDirection, filter.LayerNumber, filter.PolygonUid, filter.PolygonName);
     }
 
     public async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
