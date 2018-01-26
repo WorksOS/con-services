@@ -16,6 +16,7 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
+using VSS.Productivity3D.Scheduler.WebAPI;
 using VSS.TCCFileAccess;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 
@@ -219,8 +220,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         if (filterCleanupTaskToRun)
           Thread.Sleep(2000);
 
-        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(configStore, loggerFactory, raptorProxy, tPaasProxy, impFileProxy, fileRepo);
-        ImportedProjectFileSyncTask.ProcessSurveyedSurfaceType = true;
+        var importedProjectFileSyncTask = new SurveyedSurfaceFileSyncTask(configStore, loggerFactory, raptorProxy, tPaasProxy, impFileProxy, fileRepo);
         importedProjectFileSyncTask.AddTask();
         expectedJobCount += 1;
       }
@@ -238,8 +238,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         if (filterCleanupTaskToRun || projectFileSyncSSTaskToRun)
           Thread.Sleep(2000);
 
-        var importedProjectFileSyncTask = new ImportedProjectFileSyncTask(configStore, loggerFactory, raptorProxy, tPaasProxy, impFileProxy, fileRepo);
-        ImportedProjectFileSyncTask.ProcessSurveyedSurfaceType = false;
+        var importedProjectFileSyncTask = new OtherImportedFileSyncTask(configStore, loggerFactory, raptorProxy, tPaasProxy, impFileProxy, fileRepo);
         importedProjectFileSyncTask.AddTask();
         expectedJobCount += 1;
       }

@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   ///   1) MySql Project.ImportedFiles
   ///   2) MSSql NH_OP.ImportedFiles 
   /// </summary>
-  public class ImportedProjectFileSyncTask
+  public abstract class ImportedProjectFileSyncTask
   {
     private readonly IConfigurationStore _configStore;
     private readonly ILoggerFactory _logger;
@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <summary>
     /// Gets or sets whether the file sync task is for surveyed surface.
     /// </summary>
-    public static bool ProcessSurveyedSurfaceType { get; set; }
+    protected bool ProcessSurveyedSurfaceType { get; set; }
 
     /// <summary>
     /// Initializes the ImportedProjectFileSyncTask 
@@ -58,6 +58,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     public void AddTask()
     {
+      _log.LogDebug($"AddTask: ProcessSurveyedSurfaceType={ProcessSurveyedSurfaceType}");
       var startUtc = DateTime.UtcNow;
 
       // lowest interval is minutes 
@@ -91,13 +92,15 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     [AutomaticRetry(Attempts = 1, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
     [DisableConcurrentExecution(5)]
-    public async Task ImportedFilesSyncTask()
+    public void ImportedFilesSyncTask()
     {
+      _log.LogDebug($"ImportedFilesSyncTask: ProcessSurveyedSurfaceType={ProcessSurveyedSurfaceType}");
+
       var startUtc = DateTime.UtcNow;
       _log.LogDebug($"ImportedFilesSyncTask()  beginning. startUtc: {startUtc}");
 
       var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy, _tPaasProxy, _impFileProxy, _fileRepo, ProcessSurveyedSurfaceType);
-      await sync.SyncTables().ConfigureAwait(false);
+      sync.SyncTables().Wait();
 
       var newRelicAttributes = new Dictionary<string, object> {
         { "message", "Task completed." }

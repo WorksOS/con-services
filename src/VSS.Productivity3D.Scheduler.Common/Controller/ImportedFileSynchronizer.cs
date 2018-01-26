@@ -229,14 +229,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         // Notify 3dpm of SS file created via Legacy
         if (projectEvent.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
           await NotifyRaptorImportedFileChange(projectEvent.CustomerUid, Guid.Parse(projectEvent.ProjectUid),
-              Guid.Parse(projectEvent.ImportedFileUid))
-            .ConfigureAwait(false);
+              Guid.Parse(projectEvent.ImportedFileUid));
       }
       else if (projectEvent.ImportedFileType == ImportedFileType.Linework || 
                projectEvent.ImportedFileType == ImportedFileType.DesignSurface || 
                projectEvent.ImportedFileType == ImportedFileType.Alignment)
       {
-        var result = await DownloadFileAndCallProjectWebApi(projectEvent, WebApiAction.Creating).ConfigureAwait(false);
+        var result = await DownloadFileAndCallProjectWebApi(projectEvent, WebApiAction.Creating);
         if (result != null)
         {
           //Now update LegacyImportedFileId in project so we won't try to sync it again. 
@@ -286,15 +285,14 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         // 3dpm will attempt to delete both by the LegacyImportedFileId and nextGens ImportedFileId
         if (ifp.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
           await NotifyRaptorFileDeletedInCGenAsync(ifp.CustomerUid, Guid.Parse(ifp.ProjectUid),
-              Guid.Parse(ifp.ImportedFileUid), ifp.FileDescriptor, ifp.ImportedFileId, ifp.LegacyImportedFileId.Value)
-            .ConfigureAwait(false);
+              Guid.Parse(ifp.ImportedFileUid), ifp.FileDescriptor, ifp.ImportedFileId, ifp.LegacyImportedFileId.Value);
       }
       else if (ifp.ImportedFileType == ImportedFileType.Linework ||
                ifp.ImportedFileType == ImportedFileType.DesignSurface ||
                ifp.ImportedFileType == ImportedFileType.Alignment)
       {
         var fileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(ifp.FileDescriptor);
-        await CallProjectWebApi(ifp, WebApiAction.Deleting, fileDescriptor).ConfigureAwait(false);
+        await CallProjectWebApi(ifp, WebApiAction.Deleting, fileDescriptor);
       }
 
       NotifyNewRelic(ifp, startUtc, $"{ifp.ImportedFileType} file deleted in NhOp, now deleted from Project.");
@@ -332,14 +330,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         ) // Note that LegacyImportedFileId will always be !null 
           await NotifyRaptorImportedFileChange(gotMatchingProject.CustomerUid,
               Guid.Parse(gotMatchingProject.ProjectUid),
-              Guid.Parse(gotMatchingProject.ImportedFileUid))
-            .ConfigureAwait(false);
+              Guid.Parse(gotMatchingProject.ImportedFileUid));
       }
       else if (gotMatchingProject.ImportedFileType == ImportedFileType.Linework ||
                gotMatchingProject.ImportedFileType == ImportedFileType.DesignSurface ||
                gotMatchingProject.ImportedFileType == ImportedFileType.Alignment)
       {
-        await DownloadFileAndCallProjectWebApi(gotMatchingProject, WebApiAction.Updating).ConfigureAwait(false);
+        await DownloadFileAndCallProjectWebApi(gotMatchingProject, WebApiAction.Updating);
       }
 
       NotifyNewRelic(gotMatchingProject, startUtc, $"{gotMatchingProject.ImportedFileType} file updated in NhOp, now updated in Project.");
