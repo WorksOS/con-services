@@ -100,8 +100,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       try
       {
         notificationResult = await RaptorProxy
-          .NotifyImportedFileChange(projectUid, importedFileUid, customHeaders.Result)
-          .ConfigureAwait(false);
+          .NotifyImportedFileChange(projectUid, importedFileUid, customHeaders.Result);
       }
       catch (Exception e)
       {
@@ -153,8 +152,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       try
       {
         notificationResult = await RaptorProxy
-          .DeleteFile(projectUid, ImportedFileType.SurveyedSurface, importedFileUid, fileDescriptor, importedFileId, legacyImportedFileId, customHeaders.Result)
-          .ConfigureAwait(false);
+          .DeleteFile(projectUid, ImportedFileType.SurveyedSurface, importedFileUid, fileDescriptor, importedFileId, legacyImportedFileId, customHeaders.Result);
       }
       catch (Exception e)
       {
@@ -197,7 +195,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     {
       var customHeaders = new Dictionary<string, string>();
 
-      string bearerToken = await Get3DPmSchedulerBearerToken().ConfigureAwait(false);
+      string bearerToken = await Get3DPmSchedulerBearerToken();
       customHeaders.Add("X-VisionLink-CustomerUid", customerUid);
       customHeaders.Add("Authorization", string.Format($"Bearer {bearerToken}"));
       customHeaders.Add("X-VisionLink-ClearCache", "true");
@@ -228,8 +226,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           var tPaasUrl = ConfigStore.GetValueString("TPAAS_OAUTH_URL") == null ? "null" : ConfigStore.GetValueString("TPAAS_OAUTH_URL");
  
           tPaasOauthResult = await TPaasProxy
-            .Get3DPmSchedulerBearerToken(grantType, customHeaders)
-            .ConfigureAwait(false);
+            .Get3DPmSchedulerBearerToken(grantType, customHeaders);
 
           Log.LogInformation($"ImportedFileSynchroniser: Get3DPmSchedulerBearerToken() Got new bearer token: TPAAS_OAUTH_URL: {tPaasUrl} grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
           //Console.WriteLine($"ImportedFileSynchroniser: Get3DPmSchedulerBearerToken() (console temp) Got new bearer token: TPAAS_OAUTH_URL: {tPaasUrl} grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
@@ -289,7 +286,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       var fileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(projectEvent.FileDescriptor);
       if (await DownloadFileAndSaveToTemp(fileDescriptor))
       {
-        result = await CallProjectWebApi(projectEvent, action, fileDescriptor).ConfigureAwait(false);
+        result = await CallProjectWebApi(projectEvent, action, fileDescriptor);
  
         try
         {
@@ -336,17 +333,17 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
            result = await ImpFileProxy.CreateImportedFile(fullName,
               projectUid, projectEvent.ImportedFileType, projectEvent.FileCreatedUtc, 
               projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType,
-              projectEvent.SurveyedUtc, customHeaders).ConfigureAwait(false);
+              projectEvent.SurveyedUtc, customHeaders);
             break;
           case WebApiAction.Updating:
             result = await ImpFileProxy.UpdateImportedFile(fullName,
               projectUid, projectEvent.ImportedFileType, projectEvent.FileCreatedUtc, 
               projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, 
-              projectEvent.SurveyedUtc, customHeaders).ConfigureAwait(false);
+              projectEvent.SurveyedUtc, customHeaders);
             break;
           case WebApiAction.Deleting:
-            result = await ImpFileProxy.DeleteImportedFile(projectUid, Guid.Parse(projectEvent.ImportedFileUid),
-              customHeaders).ConfigureAwait(false);
+            result = await ImpFileProxy.DeleteImportedFile(projectUid, 
+              Guid.Parse(projectEvent.ImportedFileUid), customHeaders);
             break;
         }
         if (result.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
