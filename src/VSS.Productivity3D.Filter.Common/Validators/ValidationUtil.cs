@@ -85,26 +85,26 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       MasterData.Models.Models.Filter filterTempForHydration = filterRequestFull.FilterModel(serviceExceptionHandler);
 
       //If no polygon boundary return original filter JSON
-      if (string.IsNullOrEmpty(filterTempForHydration?.polygonUID))
+      if (string.IsNullOrEmpty(filterTempForHydration?.PolygonUid))
         return filterRequestFull.FilterJson;
 
       //Get polygon boundary to add to filter
       Geofence filterBoundary = null;
       try
       {
-        filterBoundary = await geofenceRepository.GetGeofence(filterTempForHydration.polygonUID).ConfigureAwait(false);
+        filterBoundary = await geofenceRepository.GetGeofence(filterTempForHydration.PolygonUid).ConfigureAwait(false);
       }
       catch (Exception e)
       {
         log.LogError(
-          $"{functionName}: geofenceRepository.GetGeofence failed with exception. projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.polygonUID} . Exception Thrown: {e.Message}.");
+          $"{functionName}: geofenceRepository.GetGeofence failed with exception. projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid} . Exception Thrown: {e.Message}.");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 41, e.Message);
       }
 
       if (filterBoundary == null)
       {
         log.LogError(
-          $"{functionName}: boundary not found, or not valid: projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.polygonUID}. returned no boundary match");
+          $"{functionName}: boundary not found, or not valid: projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}. returned no boundary match");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 40);
       }
 
@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       catch (Exception e)
       {
         log.LogError(
-          $"{functionName}: {functionName} failed with exception. projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.polygonUID} Exception Thrown: {e.Message}.");
+          $"{functionName}: {functionName} failed with exception. projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.PolygonUid} Exception Thrown: {e.Message}.");
         // todo normally we incude e.Message. is e.GetBaseException.message specific to Json exception?
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 43, e.GetBaseException().Message);
       }
@@ -133,12 +133,12 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       if (string.IsNullOrEmpty(newFilterJson))
       {
         log.LogError(
-          $"{functionName}: {functionName} failed. projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.polygonUID}.");
+          $"{functionName}: {functionName} failed. projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.PolygonUid}.");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 44);
       }
 
       log.LogInformation(
-        $"{functionName}: succeeded: projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.polygonUID}.");
+        $"{functionName}: succeeded: projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.PolygonUid}.");
       return newFilterJson;
     }
 

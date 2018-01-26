@@ -14,7 +14,6 @@ using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
@@ -249,7 +248,7 @@ namespace VSS.Productivity3D.Filter.Tests
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string boundaryUid = Guid.NewGuid().ToString();
-      string filterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + boundaryUid + "\"}";
+      string filterJson = "{\"designUid\": \"id\", \"vibeStateOn\": true, \"polygonUid\": \"" + boundaryUid + "\"}";
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -314,9 +313,9 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.IsFalse(String.IsNullOrEmpty(result.FilterDescriptor.FilterUid));
       //Because of mocking can't use result JSON but request JSON should be hydrated
       var boundary = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(/*result.FilterDescriptor.FilterJson*/request.FilterJson);
-      Assert.AreEqual(geofence.GeofenceUID, boundary.polygonUID, "Wrong polygonUID");
-      Assert.AreEqual(geofence.Name, boundary.polygonName, "Wrong polygonName");
-      Assert.AreEqual(geofence.GeometryWKT, GetWicketFromPoints(boundary.polygonLL), "Wrong polygonLL");
+      Assert.AreEqual(geofence.GeofenceUID, boundary.PolygonUid, "Wrong polygonUID");
+      Assert.AreEqual(geofence.Name, boundary.PolygonName, "Wrong polygonName");
+      Assert.AreEqual(geofence.GeometryWKT, GetWicketFromPoints(boundary.PolygonLL), "Wrong polygonLL");
     }
 
     [TestMethod]
@@ -329,7 +328,7 @@ namespace VSS.Productivity3D.Filter.Tests
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "not entry";
-      string filterJson = "{\"designUID\":\"id\",\"vibeStateOn\":true}";
+      string filterJson = "{\"designUid\":\"id\",\"vibeStateOn\":true}";
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();

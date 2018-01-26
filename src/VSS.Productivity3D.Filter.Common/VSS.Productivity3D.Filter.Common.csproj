@@ -23,9 +23,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.2.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.11.*" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.5.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.10.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.20.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.6.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.13.*" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

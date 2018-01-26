@@ -244,13 +244,13 @@ namespace VSS.Productivity3D.Filter.Tests
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + geofence.GeofenceUID + "\"}", Name = "a filter" });
+        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUid\": \"id\", \"vibeStateOn\": true, \"polygonUid\": \"" + geofence.GeofenceUID + "\"}", Name = "a filter" });
 
       var result = await ValidationUtil
         .HydrateJsonWithBoundary(geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false);
 
       var expectedResult =
-        "{\"designUID\":\"id\",\"vibeStateOn\":true,\"polygonUID\":\"" + geofence.GeofenceUID + "\",\"polygonName\":\"" + geofence.Name + "\",\"polygonLL\":[{\"Lat\":12.677856,\"Lon\":80.257874},{\"Lat\":13.039345,\"Lon\":79.856873},{\"Lat\":13.443052,\"Lon\":80.375977}]}";
+        "{\"designUid\":\"id\",\"vibeStateOn\":true,\"polygonUid\":\"" + geofence.GeofenceUID + "\",\"polygonName\":\"" + geofence.Name + "\",\"polygonLL\":[{\"Lat\":12.677856,\"Lon\":80.257874},{\"Lat\":13.039345,\"Lon\":79.856873},{\"Lat\":13.443052,\"Lon\":80.375977}]}";
 
       Assert.AreEqual(expectedResult, result, "Wrong hydrated json");
     }
