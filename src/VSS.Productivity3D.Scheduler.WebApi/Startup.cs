@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Hangfire;
+using Hangfire.Dashboard;
 using Hangfire.MySql;
 using Hangfire.Storage;
 using Microsoft.AspNetCore.Builder;
@@ -57,6 +59,23 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
+
+    internal class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
+    {
+      private readonly string[] _roles;
+
+      public HangfireAuthorizationFilter(params string[] roles)
+      {
+        _roles = roles;
+      }
+
+      public bool Authorize(DashboardContext context)
+      {
+        return true;
+      }
+    }
+
+
     /// <summary>
     /// Gets the configuration.
     /// </summary>
@@ -103,7 +122,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       try
       {
-        services.AddHangfire(x => x.UseStorage(_storage));  
+        services.AddHangfire(x => x.UseStorage(_storage)); 
       }
       catch (Exception ex)
       {
@@ -162,10 +181,16 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         {
           ServerName = hangfireServerName,
           WorkerCount = workerCount,
-          SchedulePollingInterval = TimeSpan.FromSeconds(schedulePollingIntervalSeconds)
+          SchedulePollingInterval = TimeSpan.FromSeconds(schedulePollingIntervalSeconds),
         };
         log.LogDebug($"Scheduler.Configure: hangfire options: {JsonConvert.SerializeObject(options)}.");
-        app.UseHangfireDashboard();
+        app.UseHangfireDashboard(options: new DashboardOptions
+        {
+          Authorization = new[]
+          {
+            new HangfireAuthorizationFilter()
+          }
+        });
         app.UseHangfireServer(options);
 
         int expirationManagerWaitMs = 2000;
