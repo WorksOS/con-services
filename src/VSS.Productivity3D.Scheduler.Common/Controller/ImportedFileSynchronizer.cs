@@ -62,64 +62,72 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       //                 else error (e)
       foreach (var ifo in fileListNhOp.ToList())
       {
-        // (a)
-        var startUtc = DateTime.UtcNow;
-        var gotMatchingProject =
-          fileListProject.FirstOrDefault(o => o.LegacyImportedFileId == ifo.LegacyImportedFileId);
+        if (ifo.ImportedFileType == ImportedFileType.Alignment ||
+            ifo.ImportedFileType == ImportedFileType.DesignSurface ||
+            ifo.ImportedFileType == ImportedFileType.Linework ||
+            ifo.ImportedFileType == ImportedFileType.SurveyedSurface)
+        {
+          // (a)
+          var startUtc = DateTime.UtcNow;
+          var gotMatchingProject =
+            fileListProject.FirstOrDefault(o => o.LegacyImportedFileId == ifo.LegacyImportedFileId);
 
-        if (gotMatchingProject == null)
-        {
-          if (repoProject.ProjectAndCustomerExist(ifo.CustomerUid, ifo.ProjectUid))
+          if (gotMatchingProject == null)
           {
-            // (d)
-            await CreateFileInNewTable(repoProject, startUtc, ifo);
-          }
-          else
-          {
-            // (e)
-            NotifyNewRelic(ifo, startUtc, $"{ifo.ImportedFileType} file created in NhOp, cannot create in Project as the project and/or customer relationship doesn't exist.", "Error");
-          }
-        }
-        else
-        {
-          if (gotMatchingProject.IsDeleted)
-          {
-            // (b)
-            if (gotMatchingProject.ImportedFileType == ImportedFileType.SurveyedSurface)
+            if (repoProject.ProjectAndCustomerExist(ifo.CustomerUid, ifo.ProjectUid))
             {
-              DeleteFileInOldTable(repoNhOp, gotMatchingProject, ifo, startUtc);
+              // (d)
+              await CreateFileInNewTable(repoProject, startUtc, ifo);
+            }
+            else
+            {
+              // (e)
+              NotifyNewRelic(ifo, startUtc,
+                $"{ifo.ImportedFileType} file created in NhOp, cannot create in Project as the project and/or customer relationship doesn't exist.",
+                "Error");
             }
           }
           else
           {
-            var projectCreatedUtcRounded = RoundDateTimeToSeconds(gotMatchingProject.FileCreatedUtc);
-            var projectUpdatedUtcRounded = RoundDateTimeToSeconds(gotMatchingProject.FileUpdatedUtc);
-            var nhOpCreatedUtcRounded = RoundDateTimeToSeconds(ifo.FileCreatedUtc);
-            var nhOpUpdatedUtcRounded = RoundDateTimeToSeconds(ifo.FileUpdatedUtc);
-
-            if (projectCreatedUtcRounded != nhOpCreatedUtcRounded
-                || projectUpdatedUtcRounded != nhOpUpdatedUtcRounded)
+            if (gotMatchingProject.IsDeleted)
             {
-              // (c)
-              if (projectCreatedUtcRounded > nhOpCreatedUtcRounded
-                  || projectUpdatedUtcRounded > nhOpUpdatedUtcRounded)
+              // (b)
+              if (gotMatchingProject.ImportedFileType == ImportedFileType.SurveyedSurface)
               {
-                // project is more recent, update nh_op
-                if (gotMatchingProject.ImportedFileType == ImportedFileType.SurveyedSurface)
+                DeleteFileInOldTable(repoNhOp, gotMatchingProject, ifo, startUtc);
+              }
+            }
+            else
+            {
+              var projectCreatedUtcRounded = RoundDateTimeToSeconds(gotMatchingProject.FileCreatedUtc);
+              var projectUpdatedUtcRounded = RoundDateTimeToSeconds(gotMatchingProject.FileUpdatedUtc);
+              var nhOpCreatedUtcRounded = RoundDateTimeToSeconds(ifo.FileCreatedUtc);
+              var nhOpUpdatedUtcRounded = RoundDateTimeToSeconds(ifo.FileUpdatedUtc);
+
+              if (projectCreatedUtcRounded != nhOpCreatedUtcRounded
+                  || projectUpdatedUtcRounded != nhOpUpdatedUtcRounded)
+              {
+                // (c)
+                if (projectCreatedUtcRounded > nhOpCreatedUtcRounded
+                    || projectUpdatedUtcRounded > nhOpUpdatedUtcRounded)
                 {
-                  UpdateFileInOldTable(repoNhOp, gotMatchingProject, ifo, startUtc);
+                  // project is more recent, update nh_op
+                  if (gotMatchingProject.ImportedFileType == ImportedFileType.SurveyedSurface)
+                  {
+                    UpdateFileInOldTable(repoNhOp, gotMatchingProject, ifo, startUtc);
+                  }
+                }
+                else
+                {
+                  // nh_op is more recent, update project
+                  await UpdateFileInNewTable(repoProject, gotMatchingProject, ifo, startUtc);
                 }
               }
-              else
-              {
-                // nh_op is more recent, update project
-                await UpdateFileInNewTable(repoProject, gotMatchingProject, ifo, startUtc);
-              }
             }
-          }
 
-          // (a) no change
-          fileListProjectToRemove.Add(gotMatchingProject);
+            // (a) no change
+            fileListProjectToRemove.Add(gotMatchingProject);
+          }
         }
       }
       fileListProject.RemoveAll(
@@ -149,40 +157,50 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       //        deleted project in project but no link to nhOp since in the list here so user must have created & deleted in project only, just ignore it. (p)
       foreach (var ifp in fileListProject)
       {
-        var startUtc = DateTime.UtcNow;
+        if (ifp.ImportedFileType == ImportedFileType.Alignment ||
+            ifp.ImportedFileType == ImportedFileType.DesignSurface ||
+            ifp.ImportedFileType == ImportedFileType.Linework ||
+            ifp.ImportedFileType == ImportedFileType.SurveyedSurface)
+        {
+          var startUtc = DateTime.UtcNow;
 
-        if (ifp.IsDeleted)
-        {
-          // (p) ignore
-        }
-        else
-        {
-          if (ifp.LegacyImportedFileId != null && ifp.LegacyImportedFileId > 0)
+          if (ifp.IsDeleted)
           {
-            // (m)
-            await DeleteFileInNewTable(repoProject, startUtc, ifp);
+            // (p) ignore
           }
           else
           {
-            if (ifp.LegacyCustomerId == 0 || ifp.LegacyProjectId >= 1000000)
+            if (ifp.LegacyImportedFileId != null && ifp.LegacyImportedFileId > 0)
             {
-              // (o)
-              NotifyNewRelic(ifp, startUtc, $"{ifp.ImportedFileType} file in Project which has no legacyCustomerId so cannot be synced to NhOp.", "Warning");
+              // (m)
+              await DeleteFileInNewTable(repoProject, startUtc, ifp);
             }
             else
             {
-              if (repoNhOp.ProjectAndCustomerExist(ifp.CustomerUid, ifp.ProjectUid))
+              if (ifp.LegacyCustomerId == 0 || ifp.LegacyProjectId >= 1000000)
               {
-                // (n)
-                if (ifp.ImportedFileType == ImportedFileType.SurveyedSurface)
-                {
-                  CreateFileInOldTable(repoProject, repoNhOp, startUtc, ifp);
-                }
+                // (o)
+                NotifyNewRelic(ifp, startUtc,
+                  $"{ifp.ImportedFileType} file in Project which has no legacyCustomerId so cannot be synced to NhOp.",
+                  "Warning");
               }
               else
               {
-                // (q)
-                NotifyNewRelic(ifp, startUtc, $"{ifp.ImportedFileType} file created in project, cannot create in NhOp as the project and/or customer relationship doesn't exist.", "Error");
+                if (repoNhOp.ProjectAndCustomerExist(ifp.CustomerUid, ifp.ProjectUid))
+                {
+                  // (n)
+                  if (ifp.ImportedFileType == ImportedFileType.SurveyedSurface)
+                  {
+                    CreateFileInOldTable(repoProject, repoNhOp, startUtc, ifp);
+                  }
+                }
+                else
+                {
+                  // (q)
+                  NotifyNewRelic(ifp, startUtc,
+                    $"{ifp.ImportedFileType} file created in project, cannot create in NhOp as the project and/or customer relationship doesn't exist.",
+                    "Error");
+                }
               }
             }
           }
