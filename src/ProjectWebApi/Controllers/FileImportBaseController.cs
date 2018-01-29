@@ -505,30 +505,22 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       log.LogDebug($"SetFileActivatedState: now {deactivatedFileList.Count} deactivated files, {missingUids.Count} missingUids");
 
+      ProjectSettingsRequest projectSettingsRequest = 
+        requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+          .CustomerUid(customerUid))
+        .CreateProjectSettingsRequest(projectUid, JsonConvert.SerializeObject(deactivatedFileList), ProjectSettingsType.ImportedFiles);
+      projectSettingsRequest.Validate();
 
-      ProjectSettingsRequest projectSettingsRequest = null;
-      try
-      {
-        projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
-            .CustomerUid(customerUid))
-          .CreateProjectSettingsRequest(projectUid, JsonConvert.SerializeObject(deactivatedFileList), ProjectSettingsType.ImportedFiles);
-        projectSettingsRequest.Validate();
+      var result = await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
+            customerUid, userId, null, customHeaders,
+            producer, kafkaTopicName,
+            null, raptorProxy, null,
+            projectRepo)
+          .ProcessAsync(projectSettingsRequest)
+      ) as ProjectSettingsResult;
 
-        var result = await WithServiceExceptionTryExecuteAsync(() =>
-          RequestExecutorContainerFactory
-            .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
-              customerUid, userId, null, customHeaders,
-              producer, kafkaTopicName,
-              null, raptorProxy, null,
-              projectRepo)
-            .ProcessAsync(projectSettingsRequest)
-        ) as ProjectSettingsResult;
-      }
-      catch (Exception ex)
-      {
-        log.LogInformation($"SetFileActivatedState: Failed to set activation state for imported files: {ex.Message}, {JsonConvert.SerializeObject(projectSettingsRequest)}");
-        missingUids = fileUids.Keys.ToList();
-      }
       var changedUids = fileUids.Keys.Except(missingUids);
       log.LogDebug($"SetFileActivatedState: {changedUids.Count()} changedUids");
       return changedUids;
