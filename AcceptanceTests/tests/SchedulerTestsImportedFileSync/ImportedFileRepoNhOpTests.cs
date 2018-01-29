@@ -24,7 +24,8 @@ namespace SchedulerTestsImportedFileSync
       _log = LoggerFactory.CreateLogger<ImportedFileRepoNhOpTests>();
       _projectDbConnectionString = ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, "_PROJECT");
       _nhOpDbConnectionString = ConnectionUtils.GetConnectionStringMsSql(ConfigStore, Log, "NH_OP");
-
+      _earliestHistoricalDateTime = DateTime.UtcNow.AddYears(-29);
+      _defaultHistoricalDateTime = new DateTime(2018, 01, 01);
       Assert.IsNotNull(_log, "Log is null");
     }
 
@@ -70,9 +71,97 @@ namespace SchedulerTestsImportedFileSync
         "unable to find the ProjectDb file we just inserted");
       Assert.AreEqual(importedFile.LegacyImportedFileId, importFileResponse.LegacyImportedFileId, "should have returned the legacy ID");
       Assert.AreEqual(importedFile.Name, importFileResponse.Name, "should have returned the name");
+      Assert.AreEqual(importedFile.FileCreatedUtc, importFileResponse.FileCreatedUtc, "should have good fileCreateDate");
+      Assert.AreEqual(importedFile.FileUpdatedUtc, importFileResponse.FileUpdatedUtc, "should have good fileUpdateDate");
     }
 
-    
+    [TestMethod]
+    public void ImportedFileRepoNhOp_OneFileIn_NoHistory()
+    {
+      var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
+
+      var importedFile = new ImportedFileNhOp()
+      {
+        LegacyImportedFileId = new Random().Next(1, 19999999),
+        LegacyProjectId = new Random().Next(100000, 19999999),
+        ProjectUid = Guid.NewGuid().ToString(),
+        LegacyCustomerId = new Random().Next(1, 19999999),
+        CustomerUid = Guid.NewGuid().ToString(),
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        Name = "ImportedFileRepoNhOp_OneFileIn.TTM",
+        SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
+        LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
+      };
+
+      var insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFile);
+      Assert.AreEqual(2, insertedCount, "should have been customerProject written to NhOpDb");
+
+      // need this for when sync occurs
+      var importedFileProject = AutoMapperUtility.Automapper.Map<ImportedFileProject>(importedFile);
+      insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFileProject);
+      Assert.AreEqual(2, insertedCount, "should have written customer and project to ProjectDB");
+
+      insertedCount = WriteNhOpDbImportedFileAndHistory(_nhOpDbConnectionString, importedFile);
+      Assert.AreEqual(1, insertedCount, "should not have written history to NhOpDb");
+
+      var listOfNhOpFiles = importedFileRepoNhOp.Read(true);
+      Assert.AreNotEqual(0, listOfNhOpFiles.Count, "should have been at least 1 file read from NhOpDb");
+
+      ImportedFileNhOp importFileResponse = listOfNhOpFiles.FirstOrDefault(x => x.LegacyImportedFileId == importedFile.LegacyImportedFileId);
+      Assert.IsNotNull(importFileResponse, "should have the one we tried to inserted");
+      Assert.IsTrue((String.Compare(importFileResponse.ProjectUid, importedFile.ProjectUid, StringComparison.OrdinalIgnoreCase) == 0),
+        "unable to find the ProjectDb file we just inserted");
+      Assert.AreEqual(importedFile.LegacyImportedFileId, importFileResponse.LegacyImportedFileId, "should have returned the legacy ID");
+      Assert.AreEqual(importedFile.Name, importFileResponse.Name, "should have returned the name");
+      Assert.AreEqual(_defaultHistoricalDateTime, importFileResponse.FileCreatedUtc, "should have constant fileCreateDate");
+      Assert.AreEqual(_defaultHistoricalDateTime, importFileResponse.FileUpdatedUtc, "should have constant fileUpdateDate");
+    }
+
+    [TestMethod]
+    public void ImportedFileRepoNhOp_OneFileIn_OldHistory()
+    {
+      var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
+
+      var importedFile = new ImportedFileNhOp()
+      {
+        LegacyImportedFileId = new Random().Next(1, 19999999),
+        LegacyProjectId = new Random().Next(100000, 19999999),
+        ProjectUid = Guid.NewGuid().ToString(),
+        LegacyCustomerId = new Random().Next(1, 19999999),
+        CustomerUid = Guid.NewGuid().ToString(),
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        Name = "ImportedFileRepoNhOp_OneFileIn.TTM",
+        SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
+        FileCreatedUtc = _earliestHistoricalDateTime.AddHours(-1),
+        FileUpdatedUtc = _earliestHistoricalDateTime.AddHours(-1),
+        LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
+      };
+
+      var insertedCount = WriteNhOpDbCustomerAndProject(_nhOpDbConnectionString, importedFile);
+      Assert.AreEqual(2, insertedCount, "should have been customerProject written to NhOpDb");
+
+      // need this for when sync occurs
+      var importedFileProject = AutoMapperUtility.Automapper.Map<ImportedFileProject>(importedFile);
+      insertedCount = WriteToProjectDBCustomerProjectAndProject(_projectDbConnectionString, importedFileProject);
+      Assert.AreEqual(2, insertedCount, "should have written customer and project to ProjectDB");
+
+      insertedCount = WriteNhOpDbImportedFileAndHistory(_nhOpDbConnectionString, importedFile);
+      Assert.AreEqual(2, insertedCount, "should have written old history to NhOpDb");
+
+      var listOfNhOpFiles = importedFileRepoNhOp.Read(true);
+      Assert.AreNotEqual(0, listOfNhOpFiles.Count, "should have been at least 1 file read from NhOpDb");
+
+      ImportedFileNhOp importFileResponse = listOfNhOpFiles.FirstOrDefault(x => x.LegacyImportedFileId == importedFile.LegacyImportedFileId);
+      Assert.IsNotNull(importFileResponse, "should have the one we tried to inserted");
+      Assert.IsTrue((String.Compare(importFileResponse.ProjectUid, importedFile.ProjectUid, StringComparison.OrdinalIgnoreCase) == 0),
+        "unable to find the ProjectDb file we just inserted");
+      Assert.AreEqual(importedFile.LegacyImportedFileId, importFileResponse.LegacyImportedFileId, "should have returned the legacy ID");
+      Assert.AreEqual(importedFile.Name, importFileResponse.Name, "should have returned the name");
+      Assert.AreEqual(_defaultHistoricalDateTime, importFileResponse.FileCreatedUtc, "should have constant fileCreateDate");
+      Assert.AreEqual(_defaultHistoricalDateTime, importFileResponse.FileUpdatedUtc, "should have constant fileUpdateDate");
+    }
+
+
     [TestMethod]
     public void ImportedFileRepoNhOp_Create()
     {
@@ -114,6 +203,8 @@ namespace SchedulerTestsImportedFileSync
         "unable to find the ProjectDb file we just inserted");
       Assert.AreEqual(importedFile.LegacyImportedFileId, importFileResponse.LegacyImportedFileId, "should have returned the legacy ID");
       Assert.AreEqual(importedFile.Name, importFileResponse.Name, "should have returned the name");
+      Assert.AreEqual(importedFile.FileCreatedUtc, importFileResponse.FileCreatedUtc, "should have good fileCreateDate");
+      Assert.AreEqual(importedFile.FileUpdatedUtc, importFileResponse.FileUpdatedUtc, "should have good fileUpdateDate");
     }
 
     [TestMethod]

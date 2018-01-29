@@ -30,6 +30,8 @@ namespace SchedulerTestsImportedFileSync
     protected ITPaasProxy TPaasProxy;
     protected IImportedFileProxy ImpFileProxy;
     protected IFileRepository FileRepo;
+    protected DateTime _earliestHistoricalDateTime;
+    protected DateTime _defaultHistoricalDateTime;
 
     protected void SetupDi()
     {
@@ -176,7 +178,9 @@ namespace SchedulerTestsImportedFileSync
 
       insertedCount = dbConnection.Execute(insertCommand, importedFile);
 
-      if (insertedCount == 1)
+      if (importedFile.FileCreatedUtc > DateTime.MinValue // not set
+          && importedFile.FileUpdatedUtc > DateTime.MinValue // not set
+          && insertedCount == 1)
       {
         insertCommand = string.Format(
           "INSERT ImportedFileHistory " +
