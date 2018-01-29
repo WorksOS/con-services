@@ -47,8 +47,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="payload">The payload of the request</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <param name="method">Http method, defaults to POST</param>
+    /// <param name="queryParameters">Query parameters (optional)</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null, string method="POST")
+    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null, string method="POST", string queryParameters=null)
     {
       var url = ExtractUrl(urlKey, route);
       T result = default(T);
