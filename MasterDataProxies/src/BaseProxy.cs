@@ -51,7 +51,7 @@ namespace VSS.MasterData.Proxies
     /// <returns>The item</returns>
     protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null, string method="POST", string queryParameters=null)
     {
-      var url = ExtractUrl(urlKey, route);
+      var url = ExtractUrl(urlKey, route, queryParameters);
       T result = default(T);
       try
       {
@@ -158,11 +158,7 @@ namespace VSS.MasterData.Proxies
     /// <returns>List of items</returns>
     protected async Task<T> GetMasterDataItem<T>(string urlKey, IDictionary<string, string> customHeaders, string queryParams=null, string route=null)
     {
-      var url = ExtractUrl(urlKey, route);
-      if (!string.IsNullOrEmpty(queryParams))
-      {
-        url += queryParams;
-      }
+      var url = ExtractUrl(urlKey, route, queryParams);
 
       T result = default(T);
       try
@@ -287,14 +283,16 @@ namespace VSS.MasterData.Proxies
       }
     /// <summary>
     /// Gets the requested base URL from the configuration and adds the route to get the full URL.
+    /// Also adds any query parameters.
     /// </summary>
     /// <param name="urlKey">The configuration key for the URL to get</param>
     /// <param name="route">Any additional routing</param>
+    /// <param name="queryParameters">Any query parameters</param>
     /// <returns></returns>
-    private string ExtractUrl(string urlKey, string route)
+    private string ExtractUrl(string urlKey, string route, string queryParameters=null)
     {
       string url = configurationStore.GetValueString(urlKey);
-      log.LogInformation(string.Format("{0}: {1}, route={2}", urlKey, url, route));
+      log.LogInformation(string.Format("{0}: {1}, route={2}, queryParameters={3}", urlKey, url, route, queryParameters));
 
       if (string.IsNullOrEmpty(url))
       {
@@ -305,6 +303,10 @@ namespace VSS.MasterData.Proxies
       if (!string.IsNullOrEmpty(route))
       {
         url += route;
+      }
+      if (!string.IsNullOrEmpty(queryParameters))
+      {
+        url += queryParameters;
       }
       return url;
     }
