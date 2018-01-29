@@ -109,7 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
             .CustomerUid(customerUid))
-          .CreateProjectSettingsRequest(request?.projectUid, request?.settings, ProjectSettingsType.Targets);
+          .CreateProjectSettingsRequest(request?.projectUid, request?.Settings, ProjectSettingsType.Targets);
       projectSettingsRequest.Validate();
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>

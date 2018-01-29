@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -18,8 +19,13 @@ namespace TestUtility
     public ImportedFileDescriptor importFileDescriptor = new ImportedFileDescriptor();
     public ImportedFileDescriptorSingleResult expectedImportFileDescriptorSingleResult;
     public string importedFileUid;
-    private const string BOUNDARY = "------WebKitFormBoundarym45GFZc25WVhjtVB";
-    private const string BOUNDARY_START = "----WebKitFormBoundarym45GFZc25WVhjtVB";
+
+    private const string CONTENT_DISPOSITION = "Content-Disposition: form-data; name=";
+    private const string NEWLINE = "\r\n";
+    private const string BOUNDARY_BLOCK_DELIMITER = "--";
+    private const string BOUNDARY_START = "----WebKitFormBoundary";
+    private const string BOUNDARY = BOUNDARY_BLOCK_DELIMITER + BOUNDARY_START;
+    private const int CHUNK_SIZE = 1048576; //1024 * 1024
 
     public ImportedFileDescriptorListResult expectedImportFileDescriptorsListResult = new ImportedFileDescriptorListResult()
     { ImportedFileDescriptors = ImmutableList<ImportedFileDescriptor>.Empty };
@@ -62,7 +68,7 @@ namespace TestUtility
     /// <param name="row">Add a single row at a time</param>
     /// <param name="method">HTTP methodf</param>
     /// <returns></returns>
-    public ImportedFileDescriptorSingleResult SendToImportedFilesToWebApi(TestSupport ts, string[] importFileArray, int row, string method = "POST")
+    public ImportedFileDescriptorSingleResult SendImportedFilesToWebApi(TestSupport ts, string[] importFileArray, int row, string method = "POST")
     {
       var uri = ts.GetBaseUri();
 
@@ -102,22 +108,6 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Generate a stream from a string
-    /// </summary>
-    /// <param name="s"></param>
-    /// <returns>stream</returns>
-    public Stream GenerateStreamFromString(string s)
-    {
-      MemoryStream stream = new MemoryStream();
-      StreamWriter writer = new StreamWriter(stream);
-      writer.Write(s);
-      writer.Flush();
-      stream.Position = 0;
-      return stream;
-    }
-
-
-    /// <summary>
     /// Upload a single file to the web api 
     /// </summary>
     /// <param name="fullFileName">Full filename</param>
@@ -125,28 +115,75 @@ namespace TestUtility
     /// <param name="customerUid">Customer Uid</param>
     /// <param name="method">HTTP method</param>
     /// <returns>Repsonse from web api as string</returns>
-    public string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, string method)
+    private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, string method)
     {
       try
       {
         var name = new DirectoryInfo(fullFileName).Name;
         Byte[] bytes = File.ReadAllBytes(fullFileName);
-        var inputStream = new MemoryStream(bytes);
-        var inputAsString = Convert.ToBase64String(inputStream.ToArray());
-
-        using (var filestream = new MemoryStream(Convert.FromBase64String(inputAsString)))
+        var fileSize = bytes.Length;
+        var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
+        string result = null;
+        for (var offset = 0; offset < chunks; offset++)
         {
-          var flowFileUpload = SetAllAttributesForFlowFile(filestream, name);
-          var content = FormatTheContentDisposition(flowFileUpload, filestream, name);
-          var response = DoHttpRequest(uri, method, content, customerUid);
-
-          return response;
+          var startByte = offset * CHUNK_SIZE;
+          var endByte = Math.Min(fileSize, (offset + 1) * CHUNK_SIZE);
+          if (fileSize - endByte < CHUNK_SIZE)
+          {
+            // The last chunk will be bigger than the chunk size,
+            // but less than 2*chunkSize
+            endByte = fileSize;
+          }
+          int currentChunkSize = (int)(endByte - startByte);
+          var flowId = GenerateId();
+          var flowFileUpload = SetAllAttributesForFlowFile(fileSize, name, offset + 1, chunks, currentChunkSize);
+          var currentBytes = bytes.Skip(startByte).Take(currentChunkSize).ToArray();
+          string contentType = $"multipart/form-data; boundary={BOUNDARY_START}{flowId}";
+          using (var content = new MemoryStream())
+          {
+            FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY}{flowId}", content);
+            result = DoHttpRequest(uri, method, content, customerUid, contentType);
+          }
         }
+        //The last chunk should have the result
+        return result;
       }
       catch (Exception ex)
       {
         return ex.Message;
       }
+    }
+
+    /// <summary>
+    /// Send HTTP request for importing a file with json payload
+    /// </summary>
+    /// <param name="resourceUri">Full URI</param>
+    /// <param name="httpMethod">Method to use</param>
+    /// <param name="payloadData"></param>
+    /// <param name="customerUid"></param>
+    /// <param name="contentType"></param>
+    /// <param name="jwt"></param>
+    /// <returns></returns>
+    public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, string customerUid, string contentType, string jwt = null)
+    {
+      byte[] bytes = new UTF8Encoding().GetBytes(payloadData);
+      return DoHttpRequest(resourceUri, httpMethod, bytes, customerUid, contentType, jwt);
+    }
+
+    /// <summary>
+    /// Send HTTP request for importing a file with binary (file contents) payload
+    /// </summary>
+    /// <param name="resourceUri">Full URI</param>
+    /// <param name="httpMethod">Method to use</param>
+    /// <param name="payloadData"></param>
+    /// <param name="customerUid"></param>
+    /// <param name="contentType"></param>
+    /// <param name="jwt"></param>
+    /// <returns></returns>
+    public string DoHttpRequest(string resourceUri, string httpMethod, MemoryStream payloadData, string customerUid, string contentType, string jwt = null)
+    {
+      byte[] bytes = payloadData.ToArray();
+      return DoHttpRequest(resourceUri, httpMethod, bytes, customerUid, contentType, jwt);
     }
 
     /// <summary>
@@ -157,8 +194,9 @@ namespace TestUtility
     /// <param name="payloadData"></param>
     /// <param name="customerUid"></param>
     /// <param name="contentType"></param>
+    /// <param name="jwt"></param>
     /// <returns></returns>
-    public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, string customerUid = null, string contentType = null, string jwt = null)
+    private string DoHttpRequest(string resourceUri, string httpMethod, byte[] payloadData, string customerUid, string contentType, string jwt = null)
     {
       var request = WebRequest.Create(resourceUri) as HttpWebRequest;
       if (request == null)
@@ -169,10 +207,9 @@ namespace TestUtility
       request.Headers["X-VisionLink-ClearCache"] = "true";
       if (payloadData != null)
       {
-        request.ContentType = contentType ?? "multipart/form-data; boundary=" + BOUNDARY_START;
+        request.ContentType = contentType;
         var writeStream = request.GetRequestStreamAsync().Result;
-        byte[] bytes = new UTF8Encoding().GetBytes(payloadData);
-        writeStream.Write(bytes, 0, bytes.Length);
+        writeStream.Write(payloadData, 0, payloadData.Length);
       }
 
       try
@@ -200,23 +237,26 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// File upload
+    /// Sets the attributes for uploading using flow.
     /// </summary>
-    /// <param name="filestream"></param>
+    /// <param name="fileSize"></param>
     /// <param name="name"></param>
+    /// <param name="currentChunkNumber"></param>
+    /// <param name="totalChunks"></param>
+    /// <param name="currentChunkSize"></param>
     /// <returns></returns>
-    private static FlowFileUpload SetAllAttributesForFlowFile(Stream filestream, string name)
+    private FlowFileUpload SetAllAttributesForFlowFile(long fileSize, string name, int currentChunkNumber, int totalChunks, int currentChunkSize)
     {
       var flowFileUpload = new FlowFileUpload
       {
-        flowChunkNumber = 1,
-        flowChunkSize = 1048576,
-        flowCurrentChunkSize = filestream.Length,
-        flowTotalSize = filestream.Length,
-        flowIdentifier = filestream.Length + "-" + name.Replace(".", string.Empty),
+        flowChunkNumber = currentChunkNumber,
+        flowChunkSize = CHUNK_SIZE,
+        flowCurrentChunkSize = currentChunkSize,
+        flowTotalSize = fileSize,
+        flowIdentifier = fileSize + "-" + name.Replace(".", ""),
         flowFilename = name,
         flowRelativePath = name,
-        flowTotalChunks = 1
+        flowTotalChunks = totalChunks
       };
       return flowFileUpload;
     }
@@ -225,24 +265,50 @@ namespace TestUtility
     /// Format the Content Disposition. This is very specific / fussy with the boundary
     /// </summary>
     /// <param name="flowFileUpload"></param>
-    /// <param name="filestream"></param>
+    /// <param name="chunkContent"></param>
+    /// <param name="name"></param>
+    /// <param name="boundary"></param>
+    /// <param name="resultingStream"></param>
     /// <returns></returns>
-    private static string FormatTheContentDisposition(FlowFileUpload flowFileUpload, Stream filestream, string name)
+    private void FormatTheContentDisposition(FlowFileUpload flowFileUpload, byte[] chunkContent, string name,
+      string boundary, MemoryStream resultingStream)
     {
       var sb = new StringBuilder();
-      var nl = "\r\n";
-      sb.AppendFormat($"{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowChunkNumber\"{nl}{nl}{flowFileUpload.flowChunkNumber}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowChunkSize\"{nl}{nl}{flowFileUpload.flowChunkSize}{nl}" +
-                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowCurrentChunkSize\"{nl}{nl}{flowFileUpload.flowCurrentChunkSize}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowTotalSize\"{nl}{nl}{flowFileUpload.flowTotalSize}{nl}" +
-                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowIdentifier\"{nl}{nl}{flowFileUpload.flowIdentifier}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowFilename\"{nl}{nl}{flowFileUpload.flowFilename}{nl}" +
-                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}" +
-                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"file\"; filename=\"{name}\"{nl}Content-Type: application/octet-stream{nl}{nl}");
+      sb.AppendFormat(
+        $"{NEWLINE}{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowChunkNumber\"{NEWLINE}{NEWLINE}{flowFileUpload.flowChunkNumber}{NEWLINE}"+
+        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowChunkSize\"{NEWLINE}{NEWLINE}{flowFileUpload.flowChunkSize}{NEWLINE}" +
+        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowCurrentChunkSize\"{NEWLINE}{NEWLINE}{flowFileUpload.flowCurrentChunkSize}{NEWLINE}"+
+        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowTotalSize\"{NEWLINE}{NEWLINE}{flowFileUpload.flowTotalSize}{NEWLINE}" +
+        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowIdentifier\"{NEWLINE}{NEWLINE}{flowFileUpload.flowIdentifier}{NEWLINE}"+
+        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowFilename\"{NEWLINE}{NEWLINE}{flowFileUpload.flowFilename}{NEWLINE}" +
+        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowRelativePath\"{NEWLINE}{NEWLINE}{flowFileUpload.flowRelativePath}{NEWLINE}"+
+        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowTotalChunks\"{NEWLINE}{NEWLINE}{flowFileUpload.flowTotalChunks}{NEWLINE}" +
+        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"file\"; filename=\"{name}\"{NEWLINE}Content-Type: application/octet-stream{NEWLINE}{NEWLINE}");
 
-      StreamReader reader = new StreamReader(filestream);
-      sb.Append(reader.ReadToEnd());
-      sb.Append($"{nl}");
-      sb.Append($"{BOUNDARY}--{nl}");
-      reader.Dispose();
-      return Regex.Replace(sb.ToString(), "(?<!\r)\n", "\r\n");
+      byte[] header = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
+      resultingStream.Write(header, 0, header.Length);
+      resultingStream.Write(chunkContent, 0, chunkContent.Length);
+
+      sb = new StringBuilder();
+      sb.Append($"{NEWLINE}{boundary}{BOUNDARY_BLOCK_DELIMITER}{NEWLINE}");
+      byte[] tail = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
+      resultingStream.Write(tail, 0, tail.Length);
+    }
+
+    /// <summary>
+    /// Generate a unique flow identifier for the upload.
+    /// </summary>
+    /// <returns></returns>
+    private string GenerateId()
+    {
+      //see https://madskristensen.net/blog/generate-unique-strings-and-numbers-in-c/
+
+      long i = 1;
+      foreach (byte b in Guid.NewGuid().ToByteArray())
+      {
+        i *= ((int)b + 1);
+      }
+      return string.Format("{0:x}", i - DateTime.Now.Ticks);
     }
 
     /// <summary>
