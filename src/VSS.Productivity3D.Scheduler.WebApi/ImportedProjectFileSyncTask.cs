@@ -16,21 +16,16 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   ///   1) MySql Project.ImportedFiles
   ///   2) MSSql NH_OP.ImportedFiles 
   /// </summary>
-  public class ImportedProjectFileSyncTask
+  public abstract class ImportedProjectFileSyncTask
   {
-    private readonly IConfigurationStore _configStore;
+    protected readonly IConfigurationStore _configStore;
     private readonly ILoggerFactory _logger;
-    private readonly ILogger _log;
+    protected readonly ILogger _log;
     private readonly IRaptorProxy _raptorProxy;
     private readonly ITPaasProxy _tPaasProxy;
     private readonly IImportedFileProxy _impFileProxy;
     private readonly IFileRepository _fileRepo;
-    private static int DefaultTaskIntervalDefaultMinutes { get; } = 4;
-
-    /// <summary>
-    /// Gets or sets whether the file sync task is for surveyed surface.
-    /// </summary>
-    public static bool ProcessSurveyedSurfaceType { get; set; }
+    protected static int DefaultTaskIntervalDefaultMinutes { get; } = 4;
 
     /// <summary>
     /// Initializes the ImportedProjectFileSyncTask 
@@ -54,55 +49,24 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     }
 
     /// <summary>
-    /// Add a Task to the scheduler
-    /// </summary>
-    public void AddTask()
-    {
-      var startUtc = DateTime.UtcNow;
-
-      // lowest interval is minutes 
-      if (!int.TryParse(_configStore.GetValueString((ProcessSurveyedSurfaceType ? "SCHEDULER_IMPORTEDPROJECTFILES_SYNC_SS_TASK_INTERVAL_MINUTES" : "SCHEDULER_IMPORTEDPROJECTFILES_SYNC_NonSS_TASK_INTERVAL_MINUTES")),
-        out int taskIntervalMinutes))
-      {
-        taskIntervalMinutes = DefaultTaskIntervalDefaultMinutes;
-      }
-
-      var importedProjectFileSyncTask = (ProcessSurveyedSurfaceType ? "ImportedProjectFileSyncSurveyedSurfaceTask" : "ImportedProjectFileSyncNonSurveyedSurfaceTask");
-      _log.LogInformation($"ImportedProjectFileSyncTask: ({(ProcessSurveyedSurfaceType ? "processSurveyedSurfaceType" : "processNonSurveyedSurfaceType")}) taskIntervalMinutes: {taskIntervalMinutes}.");
-
-      try
-      {
-        RecurringJob.AddOrUpdate(importedProjectFileSyncTask, () => ImportedFilesSyncTask(),
-          Cron.MinuteInterval(taskIntervalMinutes));
-      }
-      catch (Exception ex)
-      {
-        var newRelicAttributes = new Dictionary<string, object>
-        {
-          {"message", string.Format($"Unable to schedule recurring job: exception {ex.Message}")}
-        };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Fatal", startUtc, _log, newRelicAttributes);
-        throw;
-      }
-    }
-
-    /// <summary>
     /// bi-sync between 2 databases, 1 table in each
     /// </summary>
-    [AutomaticRetry(Attempts = 1, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
-    [DisableConcurrentExecution(5)]
-    public async Task ImportedFilesSyncTask()
+    protected void ImportedFilesSyncTask(bool processSurveyedSurfaceType)
     {
+      _log.LogDebug($"ImportedFilesSyncTask: ProcessSurveyedSurfaceType={processSurveyedSurfaceType}");
+
       var startUtc = DateTime.UtcNow;
       _log.LogDebug($"ImportedFilesSyncTask()  beginning. startUtc: {startUtc}");
 
-      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy, _tPaasProxy, _impFileProxy, _fileRepo, ProcessSurveyedSurfaceType);
-      await sync.SyncTables().ConfigureAwait(false);
+      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy, _tPaasProxy, _impFileProxy, _fileRepo, processSurveyedSurfaceType);
+      sync.SyncTables().Wait();
 
       var newRelicAttributes = new Dictionary<string, object> {
         { "message", "Task completed." }
       };
       NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, _log, newRelicAttributes);
+      _log.LogDebug($"ImportedFilesSyncTask()  ended. endUtc: {DateTime.UtcNow}");
+
     }
   }
 }
