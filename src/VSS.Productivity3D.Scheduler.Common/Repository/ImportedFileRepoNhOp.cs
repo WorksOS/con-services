@@ -19,6 +19,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
     private readonly string _dbConnectionString;
     private readonly SqlConnection _dbConnection;
     private readonly List<CustomerProject> _customerProjectList;
+    private readonly DateTime _earliestHistoricalDateTime;
+    private readonly DateTime _defaultHistoricalDateTime;
 
     public ImportedFileRepoNhOp(IConfigurationStore configStore, ILoggerFactory logger)
     {
@@ -27,9 +29,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       _dbConnectionString = ConnectionUtils.GetConnectionStringMsSql(_configStore, _log, "_NH_OP");
       _dbConnection = new SqlConnection(_dbConnectionString);
       _customerProjectList = new List<CustomerProject>();
+      _earliestHistoricalDateTime = DateTime.UtcNow.AddYears(-29);
+      _defaultHistoricalDateTime = new DateTime(2018, 01, 01);
     }
 
-    public List<T> Read(bool processSurveyedSurfaceType)
+  public List<T> Read(bool processSurveyedSurfaceType)
     {
       var startUtc = DateTime.UtcNow;
       var members = new List<ImportedFileNhOp>();
@@ -82,7 +86,16 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       try
       {
         var responseImportedFiles = _dbConnection.Query<ImportedFileNhOp>(selectImportedFilesCommand).ToList();
-        members.AddRange(responseImportedFiles);
+        // members.AddRange(responseImportedFiles);
+        foreach (var importedFile in responseImportedFiles)
+        {
+          importedFile.FileCreatedUtc = importedFile.FileCreatedUtc < _earliestHistoricalDateTime
+            ? _defaultHistoricalDateTime : importedFile.FileCreatedUtc;
+          importedFile.FileUpdatedUtc = importedFile.FileUpdatedUtc < _earliestHistoricalDateTime
+            ? _defaultHistoricalDateTime : importedFile.FileUpdatedUtc;
+          members.Add(importedFile);
+        }
+
         _log.LogTrace($"ImportedFileRepoNhOp.Read: responseImportedFiles {responseImportedFiles.Count}");
 
         var responseCustomerProject = _dbConnection.Query<CustomerProject>(selectCustomerProjectCommand).ToList();
