@@ -27,9 +27,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for reporting requests
   /// </summary>
-  [ResponseCache(Duration = 60, VaryByQueryKeys = new[] { "*" })]
   public class CompactionReportTileController : BaseController
   {
+    private readonly TileOverlayType[] PROJECT_THUMBNAIL_OVERLAYS = {
+      TileOverlayType.BaseMap, TileOverlayType.ProjectBoundary, TileOverlayType.ProductionData };
+
+    private const int PROJECT_THUMBNAIL_WIDTH = 220;
+    private const int PROJECT_THUMBNAIL_HEIGHT = 182;
+
     /// <summary>
     /// Logger for logging
     /// </summary>
@@ -103,6 +108,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [Route("api/v2/reporttiles")]
     [Route("api/v2/compaction/reporttiles")]
     [HttpGet]
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetReportTile(
       [FromQuery] TileOverlayType[] overlays,
       [FromQuery] int width,
@@ -139,13 +145,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
     /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
-    /// <param name="volumeCalcType">Summary volumes calculation type</param>    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. 
-    /// </returns>
+    /// <param name="volumeCalcType">Summary volumes calculation type</param>    
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/reporttiles/png")]
     [Route("api/v2/compaction/reporttiles/png")]
     [HttpGet]
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     public async Task<FileResult> GetReportTileRaw(
       [FromQuery] TileOverlayType[] overlays,
       [FromQuery] int width,
@@ -163,6 +170,44 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
         volumeCalcType, overlays, width, height, mapType, mode);
+
+      Response.Headers.Add("X-Warning", "false");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+    }
+
+    /// <summary>
+    /// Gets a project thumbnail
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
+    [ProjectUidVerifier]
+    [Route("api/v2/projectthumbnail")]
+    [Route("api/v2/compaction/projectthumbnail")]
+    [HttpGet]
+    [ResponseCache(Duration = 14400, VaryByQueryKeys = new[] { "*" })]
+    public async Task<TileResult> GetProjectThumbnail(
+      [FromQuery] Guid projectUid)
+    {
+      log.LogDebug("GetProjectThumbnail: " + Request.QueryString);
+
+      var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
+        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height);
+
+      return tileResult;
+    }
+
+    [ProjectUidVerifier]
+    [Route("api/v2/projectthumbnail/png")]
+    [Route("api/v2/compaction/projectthumbnail/png")]
+    [HttpGet]
+    [ResponseCache(Duration = 14400, VaryByQueryKeys = new[] { "*" })]
+    public async Task<FileResult> GetProjectThumbnailRaw(
+      [FromQuery] Guid projectUid)
+    {
+      log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
+
+      var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
+        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height);
 
       Response.Headers.Add("X-Warning", "false");
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
@@ -225,7 +270,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var fileList = await FileListProxy.GetFiles(projectUid.ToString(), userId, CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
-        return null;
+        return new List<FileData>();
       }
 
       return fileList.Where(f => f.ImportedFileType == fileType && f.IsActivated).ToList();
@@ -239,10 +284,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private async Task<List<DesignDescriptor>> GetAlignmentDescriptors(Guid projectUid)
     {
       var alignmentFiles = await GetFilesOfType(projectUid, ImportedFileType.Alignment);
-      List<DesignDescriptor> alignmentDescriptors = null;
+      List<DesignDescriptor> alignmentDescriptors = new List<DesignDescriptor>();
       if (alignmentFiles != null)
       {
-        alignmentDescriptors = new List<DesignDescriptor>();
         foreach (var alignmentFile in alignmentFiles)
         {
           alignmentDescriptors.Add(await GetAndValidateDesignDescriptor(projectUid, new Guid(alignmentFile.ImportedFileUid)));

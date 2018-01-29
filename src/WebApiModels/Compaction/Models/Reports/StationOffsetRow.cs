@@ -1,4 +1,6 @@
-﻿namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
+﻿using ASNodeRaptorReports;
+
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 {
   public class StationOffsetRow : ReportRowBase
   {
@@ -6,32 +8,23 @@
     public double Station { get; private set; }
 
     /// <summary>
-    /// Create an instance of the GridRoW class.
+    /// Static constructor for the <see cref="StationOffsetRow"/> type.
     /// </summary>
-    /// <returns>Returns an instance of <see cref="StationOffsetRow"/>.</returns>
-    public static StationOffsetRow CreateRow(
-      double northing,
-      double easting,
-      double elevation,
-      double cutFill,
-      short cmv,
-      short mdp,
-      int passCount,
-      double temperature,
-      double offset,
-      double station)
+    /// <returns>Returns an instance of <see cref="StationOffsetRow"/> populated from the supplied <see cref="TStationOffset"/> object.</returns>
+    public static StationOffsetRow CreateRow(TStationOffset offset)
     {
       return new StationOffsetRow
       {
-        CMV = cmv,
-        CutFill = cutFill,
-        Easting = easting,
-        Elevation = elevation,
-        MDP = mdp,
-        Northing = northing,
-        Offset = offset,
-        Station = station,
-        Temperature = temperature
+        CMV = offset.CMV,
+        CutFill = offset.CutFill,
+        Easting = offset.Easting,
+        Elevation = offset.Elevation,
+        MDP = offset.MDP,
+        PassCount = offset.PassCount,
+        Northing = offset.Northing,
+        Offset = offset.Position,
+        Station = offset.Station,
+        Temperature = offset.Temperature
       };
     }
   }

@@ -116,21 +116,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// <summary>
     /// Sets flags that indicates which of the reported values present in the report.
     /// </summary> 
-    public void SetReportFlags(
-      bool reportElevation,
-      bool reportCutFill,
-      bool reportCMV,
-      bool reportMDP,
-      bool reportPassCount,
-      bool reportTemperature
-    )
+    public void SetReportFlags(CompactionReportRequest request)
     {
-      ElevationReport = reportElevation;
-      CutFillReport = reportCutFill;
-      CMVReport = reportCMV;
-      MDPReport = reportMDP;
-      PassCountReport = reportPassCount;
-      TemperatureReport = reportTemperature;
+      ElevationReport = request.ReportElevation;
+      CutFillReport = request.ReportCutFill;
+      CMVReport = request.ReportCMV;
+      MDPReport = request.ReportMDP;
+      PassCountReport = request.ReportPassCount;
+      TemperatureReport = request.ReportTemperature;
     }
   }
 }

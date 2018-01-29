@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
 
       try
       {
@@ -94,23 +94,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             //foreach (TGridRow row in reportPackager.GridReport.Rows)
             for (var i = 0; i < reportPackager.GridReport.NumberOfRows; i++)
             {
-              gridRows[i] = GridRow.CreateRow(
-                reportPackager.GridReport.Rows[i].Northing,
-                reportPackager.GridReport.Rows[i].Easting,
-                reportPackager.GridReport.Rows[i].Elevation,
-                reportPackager.GridReport.Rows[i].CutFill,
-                reportPackager.GridReport.Rows[i].CMV,
-                reportPackager.GridReport.Rows[i].MDP,
-                reportPackager.GridReport.Rows[i].PassCount,
-                reportPackager.GridReport.Rows[i].Temperature);
-
-              gridRows[i].SetReportFlags(
-                request.ReportElevation,
-                request.ReportCutFill,
-                request.ReportCMV,
-                request.ReportMDP,
-                request.ReportPassCount,
-                request.ReportTemperature);
+              gridRows[i] = GridRow.CreateRow(reportPackager.GridReport.Rows[i]);
+              gridRows[i].SetReportFlags(request);
             }
 
             var startTime = request.Filter.StartUtc ?? DateTime.Now;

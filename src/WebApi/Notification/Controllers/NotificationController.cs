@@ -182,7 +182,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         var filters = await GetFilters(projectUid, customHeaders);
         if (filters != null)
         {
-          if (filters.Any(f => f.designUID == fileUid.ToString()))
+          if (filters.Any(f => f.DesignUid == fileUid.ToString()))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
