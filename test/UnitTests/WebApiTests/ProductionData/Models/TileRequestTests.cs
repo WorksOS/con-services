@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using VSS.Common.Exceptions;
+using VSS.Productivity3D.Common.Exceptions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -85,7 +86,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
       TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.CutFill, null, liftSettings,
         RaptorConverters.VolumesType.BetweenDesignAndFilter, 0.0, null, null, 0, null, 0,
         FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
-      Assert.ThrowsException<ServiceException>(() => request.Validate());
+      Assert.ThrowsException<MissingDesignDescriptorException>(() => request.Validate());
     }
 
 
@@ -94,7 +95,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     {
       //missing filter (for volumes display mode)
       TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.VolumeCoverage, null, liftSettings, RaptorConverters.VolumesType.Between2Filters, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
-      Assert.ThrowsException<ServiceException>(() => request.Validate());
+      Assert.ThrowsException<TwoFiltersRequiredException>(() => request.Validate());
     }
 
     [TestMethod]
