@@ -63,16 +63,21 @@ namespace VSS.MasterData.Proxies
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null, string method = "POST")
     {
-      var queryParameters = $"?projectUid={projectUid}&importedFileType={importedFileType}&fileCreatedUtc={FormattedDate(fileCreatedUtc)}&fileUpdatedUtc={FormattedDate(fileUpdatedUtc)}";
+
+      var queryParams = new Dictionary<string,string>();
+      queryParams.Add("projectUid", projectUid.ToString());
+      queryParams.Add("importedFileType", importedFileType.ToString());
+      queryParams.Add("fileCreatedUtc", FormattedDate(fileCreatedUtc));
+      queryParams.Add("fileUpdatedUtc", FormattedDate(fileUpdatedUtc));
       if (importedFileType == ImportedFileType.SurveyedSurface)
       {
-        queryParameters += $"&SurveyedUtc={FormattedDate(surveyedUtc)}";
+        queryParams.Add("SurveyedUtc",FormattedDate(surveyedUtc));
       }
       if (importedFileType == ImportedFileType.Linework)
       {
-        queryParameters += $"&DxfUnitsType={dxfUnitsType}";
+        queryParams.Add("DxfUnitsType", dxfUnitsType.ToString());
       }
-      return await UploadFileToWebApi(importedFileName, queryParameters, method, customHeaders);
+      return await UploadFileToWebApi(importedFileName, queryParams, method, customHeaders);
     }
 
     private string FormattedDate(DateTime? utcDate)
@@ -93,7 +98,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">HTTP method</param>
     /// <param name="customHeaders">Custom headers for the request</param>
     /// <returns>Repsonse from web api as string</returns>
-    public async Task<FileDataSingleResult> UploadFileToWebApi(string fullFileName, string queryParameters, string method, IDictionary<string, string> customHeaders = null)
+    public async Task<FileDataSingleResult> UploadFileToWebApi(string fullFileName, IDictionary<string,string> queryParameters, string method, IDictionary<string, string> customHeaders = null)
     {
       if (customHeaders == null)
       {
@@ -123,7 +128,7 @@ namespace VSS.MasterData.Proxies
         {
           FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY}{flowId}", content);
           customHeaders.Add("Content-Type", $"multipart/form-data; boundary={BOUNDARY_START}{flowId}");
-          result = await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL2", content, customHeaders, queryParameters, method);
+          result = await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL2", content, customHeaders, string.Empty , method, queryParameters);
           customHeaders.Remove("Content-Type");
         }   
       }
