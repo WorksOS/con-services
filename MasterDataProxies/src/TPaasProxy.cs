@@ -31,7 +31,7 @@ namespace VSS.MasterData.Proxies
       var tPaasOauthResult = new TPaasOauthResult();
       try
       {
-        tPaasOauthResult.tPaasOauthRawResult = await SendRequest<TPaasOauthRawResult>("TPAAS_OAUTH_URL", payLoadToSend, customHeaders, String.Empty, String.Empty, String.Empty);
+        tPaasOauthResult.tPaasOauthRawResult = await SendRequest<TPaasOauthRawResult>("TPAAS_OAUTH_URL", payLoadToSend, customHeaders, String.Empty, "POST", String.Empty);
       }
       catch (Exception e)
       {

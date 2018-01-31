@@ -33,7 +33,7 @@ namespace VSS.MasterData.Proxies
         SubscriptionUID = subscriptionUid
       };
       await SendRequest<EmptyModel>("ASSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
-        customHeaders, String.Empty, String.Empty, String.Empty);
+        customHeaders, String.Empty, "POST", String.Empty);
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ namespace VSS.MasterData.Proxies
         SubscriptionUID = subscriptionUid
       };
       await SendRequest<EmptyModel>("DISSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
-        customHeaders, String.Empty, String.Empty, String.Empty);
+        customHeaders, String.Empty, "POST", String.Empty);
     }
   }
 }
