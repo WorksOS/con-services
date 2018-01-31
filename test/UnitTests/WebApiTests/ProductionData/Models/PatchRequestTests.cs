@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using VSS.Common.Exceptions;
+using VSS.Productivity3D.Common.Exceptions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -91,7 +92,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
       PatchRequest request = PatchRequest.CreatePatchRequest(
                 projectId, callId, DisplayMode.VolumeCoverage, palettes, liftSettings, false, RaptorConverters.VolumesType.Between2Filters, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, 5, 50);
-      Assert.ThrowsException<ServiceException>(() => request.Validate());
+      Assert.ThrowsException<TwoFiltersRequiredException>(() => request.Validate());
     }
 
     [TestMethod]
