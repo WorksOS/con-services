@@ -1,5 +1,5 @@
-﻿using System.Net;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.Net;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -11,20 +11,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The settings to be CRUD
     /// </summary>
     [JsonProperty(PropertyName = "settings", Required = Required.Always)]
-    public string settings { get; set; }
+    public string Settings { get; set; }
 
     /// <summary>
     /// The type of project settings
     /// </summary>
     [JsonIgnore]//So existing contract is not broken
-    public ProjectSettingsType projectSettingsType { get; set; }
+    public ProjectSettingsType ProjectSettingsType { get; set; }
 
     /// <summary>
     /// Private constructor
     /// </summary>
     private ProjectSettingsRequest()
-    {
-    }
+    { }
 
     /// <summary>
     /// Create instance of ProjectSettingsRequest
@@ -34,20 +33,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       return new ProjectSettingsRequest
       {
         projectUid = projectUid,
-        settings = settings,
-        projectSettingsType = projectSettingsType
+        Settings = settings,
+        ProjectSettingsType = projectSettingsType
       };
     }
 
     public override void Validate()
     {
       base.Validate();
-      if (settings == null)
+      if (Settings == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(2073, "ProjectSettings cannot be null."));
       }
-
     }
   }
 }
