@@ -652,12 +652,18 @@ namespace VSS.TCCFileAccess
     {
       var requestString = $"{tccBaseUrl}/tcc/{endpoint}?ticket={token ?? Ticket}";
       var headers = new Dictionary<string, string>();
-      var properties = from p in request.GetType().GetRuntimeFields()
+      /*var properties = from p in request.GetType().GetRuntimeFields()
                        where p.GetValue(request) != null
-                       select new { p.Name, Value = p.GetValue(request) };
-      foreach (var p in properties)
+                       select new { p.Name, Value = p.GetValue(request) };*/
+      var dProperties = request.GetType().GetRuntimeFields().Where(p => p.GetValue(request) != null)
+        .ToDictionary(d => d.Name, v => v.GetValue(request).ToString());
+
+//      foreach (var p in properties)
       {
-        requestString += $"&{p.Name}={p.Value.ToString()}";
+        requestString += new System.Net.Http.FormUrlEncodedContent(dProperties)
+          .ReadAsStringAsync().Result;
+
+        //$"&{p.Name}={p.Value.ToString()}";
       }
       return (requestString, headers);
     }
