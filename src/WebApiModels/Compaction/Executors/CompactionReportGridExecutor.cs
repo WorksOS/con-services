@@ -98,8 +98,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               gridRows[i].SetReportFlags(request);
             }
 
-            var startTime = request.Filter.StartUtc ?? DateTime.Now;
-            var endTime = request.Filter.EndUtc ?? DateTime.Now;
+            var startTime = request.Filter != null && request.Filter.StartUtc.HasValue ? request.Filter.StartUtc.Value : DateTime.Now;
+            var endTime = request.Filter != null && request.Filter.EndUtc.HasValue ? request.Filter.EndUtc.Value : DateTime.Now;
 
             var gridReport = GridReport.CreateGridReport(startTime, endTime, gridRows);
 
