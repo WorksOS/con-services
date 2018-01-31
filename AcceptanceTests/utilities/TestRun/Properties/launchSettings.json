@@ -2,7 +2,7 @@
   "profiles": {
     "TestRun": {
       "commandName": "Project",
-      "commandLineArgs": "results=\\testresults\\results.xml project=KafkaTests messages=false"
+      "commandLineArgs": "results=\\testresults\\results.xml project=ExecutorTests messages=false"
     }
   }
 }

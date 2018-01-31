@@ -1,9 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
@@ -11,7 +8,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
-  [TestClass]
+    [TestClass]
   public class ProjectSettingsTests : ExecutorTestsBase
   {
     [TestMethod]
@@ -224,9 +221,5 @@ namespace ExecutorTests
       Assert.AreEqual(settingsUpdated, result.settings, "executor returned incorrect Settings");
       Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
     }
-
-   
-
   }
 }
-
