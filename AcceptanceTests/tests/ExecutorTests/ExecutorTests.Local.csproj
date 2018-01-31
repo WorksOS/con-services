@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
     <ProjectReference Include="..\..\..\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.Local.csproj" />
+    <ProjectReference Include="..\..\utilities\TestUtility\TestUtility.Local.csproj" />
   </ItemGroup>
 
   <ItemGroup>
