@@ -650,7 +650,7 @@ namespace VSS.TCCFileAccess
 
     private (string, Dictionary<string, string>) FormRequest(object request, string endpoint, string token = null)
     {
-      var requestString = $"{tccBaseUrl}/tcc/{endpoint}?ticket={token ?? Ticket}";
+      var requestString = $"{tccBaseUrl}/tcc/{endpoint}?ticket={token ?? Ticket}&";
       var headers = new Dictionary<string, string>();
       /*var properties = from p in request.GetType().GetRuntimeFields()
                        where p.GetValue(request) != null
