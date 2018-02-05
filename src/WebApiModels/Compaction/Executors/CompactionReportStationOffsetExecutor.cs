@@ -37,7 +37,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         }
 
         var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.projectId);
-        var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
+        var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
+        var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
         var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences);
 
         log.LogDebug("About to call GetReportStationOffset");
@@ -48,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtProdDataReport),
           userPreferences,
           alignmentDescriptor,
-          RaptorConverters.DesignDescriptor(request.DesignFile),
+          cutfillDesignDescriptor,
           request.StartStation,
           request.EndStation,
           request.Offsets,

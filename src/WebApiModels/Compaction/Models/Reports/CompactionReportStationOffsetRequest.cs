@@ -15,6 +15,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
   public class CompactionReportStationOffsetRequest : CompactionReportRequest
   {
     /// <summary>
+    /// Sets the alignment file to be used for station/offset calculations
+    /// </summary>
+    /// 
+    [JsonProperty(Required = Required.Always)]
+    public DesignDescriptor AlignmentFile { get; protected set; }
+
+    /// <summary>
     /// The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.
     /// </summary>
     [JsonProperty(Required = Required.Always)]
@@ -45,6 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
       bool reportPassCount,
       bool reportTemperature,
       bool reportCutFill,
+      DesignDescriptor cutFillDesignDescriptor,
       DesignDescriptor alignmentDescriptor,
       double crossSectionInterval,
       double startStation,
@@ -64,7 +72,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
         ReportPassCount = reportPassCount,
         ReportTemperature = reportTemperature,
         ReportCutFill = reportCutFill,
-        DesignFile = alignmentDescriptor,
+        DesignFile = cutFillDesignDescriptor,
+        AlignmentFile = alignmentDescriptor,
         CrossSectionInterval = crossSectionInterval,
         StartStation = startStation,
         EndStation = endStation,
@@ -80,14 +89,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     {
       base.Validate();
 
+      // Alignment file...
+      AlignmentFile?.Validate();
+
       if (this.CrossSectionInterval < ValidationConstants.MIN_SPACING_INTERVAL || this.CrossSectionInterval > ValidationConstants.MAX_SPACING_INTERVAL)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             $"Interval must be >= {ValidationConstants.MIN_SPACING_INTERVAL}m and <= {ValidationConstants.MAX_SPACING_INTERVAL}m. Actual value: {this.CrossSectionInterval}"));
       }
-
-
+      
 
 
       //if (this.UserPreferences.Equals(Preferences.EmptyUserPreferences()))

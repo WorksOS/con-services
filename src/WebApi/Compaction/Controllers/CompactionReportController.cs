@@ -170,6 +170,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] bool reportCutFill,
       [FromQuery] Guid filterUid,
       [FromQuery] Guid? cutfillDesignUid,
+      [FromQuery] Guid? alignmentUid,
       [FromQuery] double crossSectionInterval,
       [FromQuery] double startStation,
       [FromQuery] double endStation,
@@ -179,7 +180,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = GetProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
+      var cutFillDesignDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
+      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var userPreferences = await GetUserPreferences();
 
@@ -195,6 +197,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         reportPassCount,
         reportTemperature,
         reportCutFill,
+        cutFillDesignDescriptor,
         alignmentDescriptor,
         crossSectionInterval,
         startStation,

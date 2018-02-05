@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       SettingsManager = settingsManager;
     }
 
-    public CompactionReportStationOffsetRequest CreateRequest(bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill, DesignDescriptor alignmentDescriptor, double crossSectionInterval, double startStation, double endStation, double[] offsets, UserPreferenceData userPreferences)
+    public CompactionReportStationOffsetRequest CreateRequest(bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill, DesignDescriptor cutFillDesignDescriptor, DesignDescriptor alignmentDescriptor, double crossSectionInterval, double startStation, double endStation, double[] offsets, UserPreferenceData userPreferences)
     {
       var liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
@@ -45,6 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         reportPassCount,
         reportTemperature,
         reportCutFill,
+        cutFillDesignDescriptor,
         alignmentDescriptor,
         crossSectionInterval,
         startStation,
