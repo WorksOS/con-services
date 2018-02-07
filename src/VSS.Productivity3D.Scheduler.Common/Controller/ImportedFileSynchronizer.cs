@@ -175,7 +175,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               // (m)
               await DeleteFileInNewTable(repoProject, startUtc, ifp);
             }
-            else
+            //The remainder of the logic only applies to surveyed surfaces
+            else if (ifp.ImportedFileType == ImportedFileType.SurveyedSurface)
             {
               if (ifp.LegacyCustomerId == 0 || ifp.LegacyProjectId >= 1000000)
               {
@@ -189,10 +190,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 if (repoNhOp.ProjectAndCustomerExist(ifp.CustomerUid, ifp.ProjectUid))
                 {
                   // (n)
-                  if (ifp.ImportedFileType == ImportedFileType.SurveyedSurface)
-                  {
-                    CreateFileInOldTable(repoProject, repoNhOp, startUtc, ifp);
-                  }
+                  CreateFileInOldTable(repoProject, repoNhOp, startUtc, ifp);                  
                 }
                 else
                 {
