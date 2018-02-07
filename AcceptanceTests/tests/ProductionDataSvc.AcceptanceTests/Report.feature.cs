@@ -295,6 +295,7 @@ this.ScenarioSetup(scenarioInfo);
                     string cutFill, 
                     string filterUid, 
                     string cutfillDesignUid, 
+                    string alignmentUid, 
                     string crossSectionInterval, 
                     string startStation, 
                     string endStation, 
@@ -316,8 +317,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 27
   testRunner.And(string.Format("I select columns \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\'", elevation, cMV, mDP, passCount, temperature, cutFill), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 28
-  testRunner.And(string.Format("I select Station offset report parameters \'{0}\' \'{1}\' \'{0}\' \'{2}\' \'{3}\' \'{4}\' \'{5" +
-                        "}\'", cutfillDesignUid, filterUid, crossSectionInterval, startStation, endStation, offsets), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("I select Station offset report parameters \'{0}\' \'{1}\' \'{2}\' \'{3}\' \'{4}\' \'{5}\'", cutfillDesignUid, alignmentUid, crossSectionInterval, startStation, endStation, offsets), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 29
   testRunner.When(string.Format("I request a report the response body should contain http code \'{0}\'", httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 30
@@ -338,7 +338,8 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Temperature", "N")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFill", "N")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "3ead0c55-1e1f-4d30-aaf8-873526a2ab82")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:alignmentUid", "3ead0c55-1e1f-4d30-aaf8-873526a2ab82")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:crossSectionInterval", "0.5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startStation", "0.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endStation", "1.75")]
@@ -347,7 +348,7 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void StationOffsetReport_NoColumns()
         {
-            this.StationOffsetReport("NoColumns", "N", "N", "N", "N", "N", "N", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "3ead0c55-1e1f-4d30-aaf8-873526a2ab82", "0.5", "0.0", "1.75", "-1, 0.5", "400", "-1", ((string[])(null)));
+            this.StationOffsetReport("NoColumns", "N", "N", "N", "N", "N", "N", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "3ead0c55-1e1f-4d30-aaf8-873526a2ab82", "0.5", "0.0", "1.75", "-1, 0.5", "400", "-1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -362,7 +363,8 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Temperature", "Y")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFill", "Y")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "3ead0c55-1e1f-4d30-aaf8-873526a2ab82")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:alignmentUid", "3ead0c55-1e1f-4d30-aaf8-873526a2ab82")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:crossSectionInterval", "0.5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startStation", "0.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endStation", "1.75")]
@@ -371,7 +373,7 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "0")]
         public virtual void StationOffsetReport_AllColumns()
         {
-            this.StationOffsetReport("AllColumns", "Y", "Y", "Y", "Y", "Y", "Y", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "3ead0c55-1e1f-4d30-aaf8-873526a2ab82", "0.5", "0.0", "1.75", "-1, 0.5", "200", "0", ((string[])(null)));
+            this.StationOffsetReport("AllColumns", "Y", "Y", "Y", "Y", "Y", "Y", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "3ead0c55-1e1f-4d30-aaf8-873526a2ab82", "0.5", "0.0", "1.75", "-1, 0.5", "200", "0", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -386,7 +388,8 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Temperature", "N")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFill", "N")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:alignmentUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:crossSectionInterval", "1.2")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startStation", "0.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endStation", "4")]
@@ -395,7 +398,7 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "0")]
         public virtual void StationOffsetReport_Elevation()
         {
-            this.StationOffsetReport("Elevation", "Y", "N", "N", "N", "N", "N", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "1.2", "0.0", "4", "-1, -1.3, -2, 1.5", "200", "0", ((string[])(null)));
+            this.StationOffsetReport("Elevation", "Y", "N", "N", "N", "N", "N", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "1.2", "0.0", "4", "-1, -1.3, -2, 1.5", "200", "0", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -410,7 +413,8 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Temperature", "N")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFill", "Y")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:alignmentUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:crossSectionInterval", "0.5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startStation", "0.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endStation", "4")]
@@ -419,7 +423,7 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "0")]
         public virtual void StationOffsetReport_CMV()
         {
-            this.StationOffsetReport("CMV", "N", "Y", "N", "N", "N", "Y", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "0.5", "0.0", "4", "-1, -1.3, 1", "200", "0", ((string[])(null)));
+            this.StationOffsetReport("CMV", "N", "Y", "N", "N", "N", "Y", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "0.5", "0.0", "4", "-1, -1.3, 1", "200", "0", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -434,7 +438,8 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Temperature", "N")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFill", "N")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:alignmentUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:crossSectionInterval", "0.5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startStation", "0.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endStation", "4")]
@@ -443,7 +448,7 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "0")]
         public virtual void StationOffsetReport_MDP()
         {
-            this.StationOffsetReport("MDP", "N", "N", "Y", "N", "N", "N", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "0.5", "0.0", "4", "-1, -1.3, 1", "200", "0", ((string[])(null)));
+            this.StationOffsetReport("MDP", "N", "N", "Y", "N", "N", "N", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "0.5", "0.0", "4", "-1, -1.3, 1", "200", "0", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -458,7 +463,8 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Temperature", "N")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFill", "N")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:alignmentUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:crossSectionInterval", "1.2")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startStation", "0.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endStation", "4")]
@@ -467,7 +473,7 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "0")]
         public virtual void StationOffsetReport_PassCount()
         {
-            this.StationOffsetReport("PassCount", "N", "N", "N", "Y", "N", "N", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "1.2", "0.0", "4", "-1, -1.3, -2, 1.5", "200", "0", ((string[])(null)));
+            this.StationOffsetReport("PassCount", "N", "N", "N", "Y", "N", "N", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "1.2", "0.0", "4", "-1, -1.3, -2, 1.5", "200", "0", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -482,7 +488,8 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Temperature", "N")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFill", "Y")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:alignmentUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:crossSectionInterval", "0.5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startStation", "0.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endStation", "4")]
@@ -491,7 +498,7 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "0")]
         public virtual void StationOffsetReport_CutFill()
         {
-            this.StationOffsetReport("CutFill", "N", "N", "N", "N", "N", "Y", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "0.5", "0.0", "4", "-1, -1.3, 1", "200", "0", ((string[])(null)));
+            this.StationOffsetReport("CutFill", "N", "N", "N", "N", "N", "Y", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "0.5", "0.0", "4", "-1, -1.3, 1", "200", "0", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -506,7 +513,8 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Temperature", "Y")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFill", "N")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUid", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutfillDesignUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:alignmentUid", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:crossSectionInterval", "0.5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startStation", "0.0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endStation", "4")]
@@ -515,7 +523,7 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "0")]
         public virtual void StationOffsetReport_Temperature()
         {
-            this.StationOffsetReport("Temperature", "N", "N", "N", "N", "Y", "N", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "0.5", "0.0", "4", "-1, -1.3, 1", "200", "0", ((string[])(null)));
+            this.StationOffsetReport("Temperature", "N", "N", "N", "N", "Y", "N", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "0.5", "0.0", "4", "-1, -1.3, 1", "200", "0", ((string[])(null)));
         }
     }
 }

@@ -64,13 +64,17 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
     }
 
-    [Given(@"I select Station offset report parameters '(.*)' '(.*)' '(.*)' '(.*)' '(.*)' '(.*)' '(.*)'")]
-    public void GivenISelectStationOffsetReportParameters(string cutfillDesignUid, string filterUid, string alignmentDesignUid,
+    [Given(@"I select Station offset report parameters '(.*)' '(.*)' '(.*)' '(.*)' '(.*)' '(.*)'")]
+    public void GivenISelectStationOffsetReportParameters(string cutfillDesignUid, string alignmentUid,
       double crossSectionInterval, double startStation, double endStation, string offsets)
     {
       if (!string.IsNullOrEmpty(cutfillDesignUid))
       {
         gridReportRequester.QueryString.Add("cutfillDesignUid", cutfillDesignUid);
+      }
+      if (!string.IsNullOrEmpty(alignmentUid))
+      {
+        gridReportRequester.QueryString.Add("alignmentUid", alignmentUid);
       }
       if (crossSectionInterval > 0)
       {
