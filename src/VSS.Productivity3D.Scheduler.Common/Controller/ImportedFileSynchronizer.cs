@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -17,6 +19,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 {
   public class ImportedFileSynchronizer : ImportedFileSynchronizerBase
   {
+    //set of characters we want to keep files for 0-9a-zA-Z'' -._[]=@
+    readonly string pattern = @"^[0-9a-zA-Z' " + Regex.Escape("-") + Regex.Escape(".") + Regex.Escape("[") +
+                     Regex.Escape("]") + @"_=@]+$";
     protected ILogger _log;
 
     public ImportedFileSynchronizer(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy,
@@ -50,6 +55,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       List<ImportedFileProject> fileListProject,
       ImportedFileRepoNhOp<ImportedFileNhOp> repoNhOp, ImportedFileRepoProject<ImportedFileProject> repoProject)
     {
+      var fileCount = 0;
       // cannot modify collectionB from within collectionA
       // put it in here and remove later
       var fileListProjectToRemove = new List<ImportedFileProject>();
@@ -62,6 +68,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       //                 else error (e)
       foreach (var ifo in fileListNhOp.ToList())
       {
+        //Every 10 non-surveyed surface files, pause for 5 mins to give TCC a chance to catch up
+        if (fileCount > 0 && fileCount % 10 == 0)
+          Thread.Sleep(300000);
+
         if (ifo.ImportedFileType == ImportedFileType.Alignment ||
             ifo.ImportedFileType == ImportedFileType.DesignSurface ||
             ifo.ImportedFileType == ImportedFileType.Linework ||
@@ -77,7 +87,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             if (repoProject.ProjectAndCustomerExist(ifo.CustomerUid, ifo.ProjectUid))
             {
               // (d)
-              await CreateFileInNewTable(repoProject, startUtc, ifo);
+              bool success = await CreateFileInNewTable(repoProject, startUtc, ifo);
+              if (success && ifo.ImportedFileType != ImportedFileType.SurveyedSurface)
+                fileCount++;
             }
             else
             {
@@ -121,6 +133,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 {
                   // nh_op is more recent, update project
                   await UpdateFileInNewTable(repoProject, gotMatchingProject, ifo, startUtc);
+                  if (ifo.ImportedFileType != ImportedFileType.SurveyedSurface)
+                    fileCount++;
                 }
               }
             }
@@ -148,6 +162,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     private async Task SyncNewTableToOldTable(List<ImportedFileProject> fileListProject,
       ImportedFileRepoNhOp<ImportedFileNhOp> repoNhOp, ImportedFileRepoProject<ImportedFileProject> repoProject)
     {
+      var fileCount = 0;
+
       // row in Project but doesn't exist in nhOp. LegacyImportedFileId determines if previously from nhOp.
       //        if project has LegacyImportedFileId ,  and not already deleted, then delete in Project (m)
       //        if project has no LegacyImportedFileId, and not already deleted, 
@@ -157,6 +173,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       //        deleted project in project but no link to nhOp since in the list here so user must have created & deleted in project only, just ignore it. (p)
       foreach (var ifp in fileListProject)
       {
+        //Every 10 non-surveyed surface files, pause for 5 mins to give TCC a chance to catch up
+        if (fileCount > 0 && fileCount % 10 == 0)
+          Thread.Sleep(300000);
+
         if (ifp.ImportedFileType == ImportedFileType.Alignment ||
             ifp.ImportedFileType == ImportedFileType.DesignSurface ||
             ifp.ImportedFileType == ImportedFileType.Linework ||
@@ -174,8 +194,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             {
               // (m)
               await DeleteFileInNewTable(repoProject, startUtc, ifp);
+              if (ifp.ImportedFileType != ImportedFileType.SurveyedSurface)
+                fileCount++;
             }
-            else
+            //The remainder of the logic only applies to surveyed surfaces
+            else if (ifp.ImportedFileType == ImportedFileType.SurveyedSurface)
             {
               if (ifp.LegacyCustomerId == 0 || ifp.LegacyProjectId >= 1000000)
               {
@@ -189,10 +212,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 if (repoNhOp.ProjectAndCustomerExist(ifp.CustomerUid, ifp.ProjectUid))
                 {
                   // (n)
-                  if (ifp.ImportedFileType == ImportedFileType.SurveyedSurface)
-                  {
-                    CreateFileInOldTable(repoProject, repoNhOp, startUtc, ifp);
-                  }
+                  CreateFileInOldTable(repoProject, repoNhOp, startUtc, ifp);                  
                 }
                 else
                 {
@@ -227,9 +247,10 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     /// <summary>
     /// Create the file in Project
     /// </summary>
-    private async Task CreateFileInNewTable(ImportedFileRepoProject<ImportedFileProject> repoProject, DateTime startUtc,
+    private async Task<bool> CreateFileInNewTable(ImportedFileRepoProject<ImportedFileProject> repoProject, DateTime startUtc,
       ImportedFileNhOp ifo)
     {
+      bool success = false;
       var projectEvent = AutoMapperUtility.Automapper.Map<ImportedFileProject>(ifo);
       if (projectEvent.ImportedFileType == ImportedFileType.SurveyedSurface)
       {
@@ -248,32 +269,47 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         if (projectEvent.LegacyImportedFileId != null) // Note that LegacyImportedFileId will always be !null 
           await NotifyRaptorImportedFileChange(projectEvent.CustomerUid, Guid.Parse(projectEvent.ProjectUid),
               Guid.Parse(projectEvent.ImportedFileUid));
+        success = true;
       }
       else if (projectEvent.ImportedFileType == ImportedFileType.Linework || 
                projectEvent.ImportedFileType == ImportedFileType.DesignSurface || 
                projectEvent.ImportedFileType == ImportedFileType.Alignment)
       {
-        var result = await DownloadFileAndCallProjectWebApi(projectEvent, WebApiAction.Creating);
-        if (result != null)
+        //For now, skip any files with names with non-Latin characters
+ 
+        if (!Regex.IsMatch(projectEvent.Name, pattern))
         {
-          //Now update LegacyImportedFileId in project so we won't try to sync it again. 
-          //Project Web Api will have given the file a new imported file UID
-          projectEvent.LegacyImportedFileId = ifo.LegacyImportedFileId;
-          var createdFile = (result as FileDataSingleResult).ImportedFileDescriptor;
-          projectEvent.ImportedFileUid = createdFile.ImportedFileUid;
-          projectEvent.FileCreatedUtc = createdFile.FileCreatedUtc;
-          projectEvent.FileUpdatedUtc = createdFile.FileUpdatedUtc;
-          projectEvent.LastActionedUtc = DateTime.UtcNow;
-          repoProject.Update(projectEvent);
-          Log.LogTrace($"Call to project web api succeeded: ImportedFileUid={createdFile.ImportedFileUid}, LegacyImportedFileId={ifo.LegacyImportedFileId}");
+          Log.LogTrace($"Ignoring file with non-Latin filename {projectEvent.Name}");
         }
         else
         {
-          Log.LogTrace("Call to project web api failed, null result");
+          var result = await DownloadFileAndCallProjectWebApi(projectEvent, WebApiAction.Creating);
+          if (result != null)
+          {
+            //Now update LegacyImportedFileId in project so we won't try to sync it again. 
+            //Project Web Api will have given the file a new imported file UID
+            projectEvent.LegacyImportedFileId = ifo.LegacyImportedFileId;
+            var createdFile = (result as FileDataSingleResult).ImportedFileDescriptor;
+            projectEvent.ImportedFileUid = createdFile.ImportedFileUid;
+            projectEvent.FileCreatedUtc = createdFile.FileCreatedUtc;
+            projectEvent.FileUpdatedUtc = createdFile.FileUpdatedUtc;
+            projectEvent.LastActionedUtc = DateTime.UtcNow;
+            repoProject.Update(projectEvent);
+            Log.LogTrace(
+              $"Call to project web api succeeded: ImportedFileUid={createdFile.ImportedFileUid}, LegacyImportedFileId={ifo.LegacyImportedFileId}");
+            success = true;
+          }
+          else
+          {
+            Log.LogTrace("Call to project web api failed, null result");
+          }
         }
       }
-
-      NotifyNewRelic(projectEvent, startUtc, $"{ifo.ImportedFileType} file created in NhOp, now created in Project.");
+      if (success)
+      {
+        NotifyNewRelic(projectEvent, startUtc, $"{ifo.ImportedFileType} file created in NhOp, now created in Project.");
+      }
+      return success;
     }
 
     /// <summary>
