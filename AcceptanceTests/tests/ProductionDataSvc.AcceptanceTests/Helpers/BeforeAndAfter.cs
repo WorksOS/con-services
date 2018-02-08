@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TechTalk.SpecFlow;
-using RaptorSvcAcceptTestsCommon.Utils;
+﻿using RaptorSvcAcceptTestsCommon.Utils;
 using RestAPICoreTestFramework.Utils.Common;
+using TechTalk.SpecFlow;
 
 namespace ProductionDataSvc.AcceptanceTests.Helpers
 {
-    [Binding]
+  [Binding]
     public class BeforeAndAfter
     {
         [BeforeScenario("requireDummySurveyedSurface")]
