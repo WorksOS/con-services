@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
   public class ImportedFileSynchronizer : ImportedFileSynchronizerBase
   {
     //set of characters we want to keep files for 0-9a-zA-Z'' -._[]=@
-    private readonly string pattern = "^[0-9a-zA-Z\' \\[\\]\\-\\._=#@+]"; //@"^[0-9a-zA-Z' " + Regex.Escape("-") + Regex.Escape(".") + Regex.Escape("[") +
+    private readonly string pattern = "^[0-9a-zA-Z\' \\[\\]\\-\\._=#@]+$"; //@"^[0-9a-zA-Z' " + Regex.Escape("-") + Regex.Escape(".") + Regex.Escape("[") +
                      //Regex.Escape("]") + @"_=@]+$";
     protected ILogger _log;
 
