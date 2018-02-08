@@ -115,7 +115,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
       try
       {
         RecurringJob.AddOrUpdate(importedProjectFileSyncTask, () => OtherImportedFilesSyncTask(),
-          Cron.MinuteInterval(5)); //.MinuteInterval(taskIntervalMinutes));
+          Cron.MinuteInterval(taskIntervalMinutes));
       }
       catch (Exception ex)
       {
