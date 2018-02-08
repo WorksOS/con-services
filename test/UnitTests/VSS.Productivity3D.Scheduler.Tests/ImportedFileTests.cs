@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -214,6 +215,22 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var bearer = await importFileSync.Get3DPmSchedulerBearerToken().ConfigureAwait(false);
 
       Assert.AreEqual(accessToken, bearer, "should have returned a bearer token");
+    }
+
+    [TestMethod]
+    public void FindSpecialChars_allMatch()
+    {
+      var projectName = @"JB to-po sou=#@+th[e]rn (mo'torway).TTM";
+      var matches = Regex.IsMatch(projectName, ImportedFileSynchronizer.pattern);
+      Assert.IsTrue(matches, "File name should match all chars");
+    }
+
+    [TestMethod]
+    public void FindSpecialChars_oneMismatch()
+    {
+      var projectName = "JB topo southern motor%way.TTM";
+      var matches = Regex.IsMatch(projectName, ImportedFileSynchronizer.pattern);
+      Assert.IsFalse(matches, "File name should not match all chars");
     }
   }
 }
