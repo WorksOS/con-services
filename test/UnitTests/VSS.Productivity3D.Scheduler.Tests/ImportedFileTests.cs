@@ -220,7 +220,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void FindSpecialChars_allMatch()
     {
-      var projectName = @"JB to-po sou=#@+th[e]rn (mo'torway).TTM";
+      var projectName = @"JB to-po,_ &sou=#@+th[e]rn (mo'torway).TTM";
       var matches = Regex.IsMatch(projectName, ImportedFileSynchronizer.pattern);
       Assert.IsTrue(matches, "File name should match all chars");
     }
@@ -232,5 +232,13 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var matches = Regex.IsMatch(projectName, ImportedFileSynchronizer.pattern);
       Assert.IsFalse(matches, "File name should not match all chars");
     }
+
+    //[TestMethod]
+    //public void FindSpecialChars_random()
+    //{
+    //  var projectName = @"plan 33+700-37+200.ttm";
+    //  var matches = Regex.IsMatch(projectName, ImportedFileSynchronizer.pattern);
+    //  Assert.IsTrue(matches, "File name should match all chars");
+    //}
   }
 }
