@@ -115,9 +115,10 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         new MySqlStorageOptions
         {
           QueuePollInterval = TimeSpan.FromSeconds(queuePollIntervalSeconds), 
-          JobExpirationCheckInterval = TimeSpan.FromHours(jobExpirationCheckIntervalHours),
+          JobExpirationCheckInterval = TimeSpan.FromHours(24),
           CountersAggregateInterval = TimeSpan.FromMinutes(countersAggregateIntervalMinutes),
-          PrepareSchemaIfNecessary = false
+          PrepareSchemaIfNecessary = false,
+          InvisibilityTimeout = TimeSpan.FromHours(24)
         });
 
       try
