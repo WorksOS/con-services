@@ -69,7 +69,8 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       {
         //Every 10 non-surveyed surface files, pause for 5 mins to give TCC a chance to catch up
         if (fileCount > 0 && fileCount % 10 == 0)
-          Thread.Sleep(300000);
+          await Task.Delay(100000);
+          //Thread.Sleep(300000);
 
         if (ifo.ImportedFileType == ImportedFileType.Alignment ||
             ifo.ImportedFileType == ImportedFileType.DesignSurface ||
@@ -174,7 +175,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       {
         //Every 10 non-surveyed surface files, pause for 5 mins to give TCC a chance to catch up
         if (fileCount > 0 && fileCount % 10 == 0)
-          Thread.Sleep(300000);
+          await Task.Delay(100000);
 
         if (ifp.ImportedFileType == ImportedFileType.Alignment ||
             ifp.ImportedFileType == ImportedFileType.DesignSurface ||
@@ -276,11 +277,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       {
         //For now, skip any files with names with non-Latin characters
  
-        if (!Regex.IsMatch(projectEvent.Name, pattern))
+        //if (!Regex.IsMatch(projectEvent.Name, pattern))
         {
-          Log.LogDebug($"Ignoring file with non-Latin filename {projectEvent.Name}");
+        //  Log.LogDebug($"Ignoring file with non-Latin filename {projectEvent.Name}");
         }
-        else
+        //else
         {
           var result = await DownloadFileAndCallProjectWebApi(projectEvent, WebApiAction.Creating);
           if (result != null)
