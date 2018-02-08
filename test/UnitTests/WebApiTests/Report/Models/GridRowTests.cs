@@ -28,10 +28,10 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
       Assert.AreEqual(stationOffset.Easting, result.Easting);
       Assert.AreEqual(stationOffset.Elevation, result.Elevation);
       Assert.AreEqual(stationOffset.CutFill, result.CutFill);
-      Assert.AreEqual(stationOffset.CMV, result.CMV);
-      Assert.AreEqual(stationOffset.MDP, result.MDP);
+      Assert.AreEqual((double)stationOffset.CMV / 10, result.CMV);
+      Assert.AreEqual((double)stationOffset.MDP / 10, result.MDP);
       Assert.AreEqual(stationOffset.PassCount, result.PassCount);
-      Assert.AreEqual(stationOffset.Temperature, result.Temperature);
+      Assert.AreEqual((double)stationOffset.Temperature / 10, result.Temperature);
     }
   }
 }

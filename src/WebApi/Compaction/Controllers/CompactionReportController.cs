@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An instance of the <see cref="ContractExecutionResult"/> class.</returns>
     [Route("api/v2/report/grid")]
     [HttpGet]
-    public async Task<CompactionReportResult> GetReporGrid(
+    public async Task<CompactionReportResult> GetReportGrid(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] bool reportElevation,
@@ -115,7 +115,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double endEasting,
       [FromQuery] double azimuth)
     {
-      log.LogInformation("GetReporGrid: " + Request.QueryString);
+      log.LogInformation("GetReportGrid: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
