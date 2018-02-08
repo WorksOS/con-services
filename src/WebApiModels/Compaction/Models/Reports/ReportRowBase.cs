@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using VSS.Productivity3D.WebApi.Models.Common;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
@@ -88,8 +89,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     [JsonIgnore]
     public bool TemperatureReport { get; protected set; }
 
-    public bool ShouldSerializeElevation() => ElevationReport;
-    public bool ShouldSerializeCutFill() => CutFillReport;
+    public bool ShouldSerializeElevation() => ElevationReport && Math.Abs(Elevation - VelociraptorConstants.NULL_SINGLE) > 0.001;
+    public bool ShouldSerializeCutFill() => CutFillReport && Math.Abs(CutFill - VelociraptorConstants.NULL_SINGLE) > 0.001;
     public bool ShouldSerializeCMV() => CMVReport && CMV != VelociraptorConstants.NO_CCV;
     public bool ShouldSerializeMDP() => MDPReport && MDP != VelociraptorConstants.NO_MDP;
     public bool ShouldSerializePassCount() => PassCountReport && PassCount != VelociraptorConstants.NO_PASSCOUNT;
