@@ -65,11 +65,18 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       // row in  NH_OP NOT in project, 
       //                 if project and customer exist, then create it (d)
       //                 else error (e)
+      int totalfilecount = 0;
       foreach (var ifo in fileListNhOp.ToList())
       {
+        totalfilecount++;
         //Every 10 non-surveyed surface files, pause for 5 mins to give TCC a chance to catch up
-        if (fileCount > 0 && fileCount % 10 == 0)
-          Thread.Sleep(300000);
+        if (fileCount > 0 && fileCount % 25 == 0)
+        {
+          _log. LogInformation($"Sleeping at {fileCount}");
+          await Task.Delay(100000);
+          _log.LogInformation($"Exit sleeping at {fileCount}");
+        }
+        //Thread.Sleep(300000);
 
         if (ifo.ImportedFileType == ImportedFileType.Alignment ||
             ifo.ImportedFileType == ImportedFileType.DesignSurface ||
@@ -86,6 +93,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             if (repoProject.ProjectAndCustomerExist(ifo.CustomerUid, ifo.ProjectUid))
             {
               // (d)
+              _log.LogInformation($"Processing file toNew {totalfilecount} out of {fileListNhOp.Count}");
               bool success = await CreateFileInNewTable(repoProject, startUtc, ifo);
               if (success && ifo.ImportedFileType != ImportedFileType.SurveyedSurface)
                 fileCount++;
@@ -131,6 +139,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 else
                 {
                   // nh_op is more recent, update project
+                  _log.LogInformation($"Processing SS file toNew {totalfilecount} out of {fileListNhOp.Count}");
                   await UpdateFileInNewTable(repoProject, gotMatchingProject, ifo, startUtc);
                   if (ifo.ImportedFileType != ImportedFileType.SurveyedSurface)
                     fileCount++;
@@ -170,11 +179,19 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       //                                 else error (q) 
       //        if project has no LegacyImportedFileId, not deleted, but has no valid legacy customer or projectID then can't be added to NhOp (o)
       //        deleted project in project but no link to nhOp since in the list here so user must have created & deleted in project only, just ignore it. (p)
+      int totalfilecount = 0;
       foreach (var ifp in fileListProject)
       {
+
+        totalfilecount++;
         //Every 10 non-surveyed surface files, pause for 5 mins to give TCC a chance to catch up
-        if (fileCount > 0 && fileCount % 10 == 0)
-          Thread.Sleep(300000);
+        if (fileCount > 0 && fileCount % 25 == 0)
+        {
+          _log.LogInformation($"Sleeping at {fileCount}");
+          await Task.Delay(100000);
+          _log.LogInformation($"Exit sleeping at {fileCount}");
+         // return;
+        }
 
         if (ifp.ImportedFileType == ImportedFileType.Alignment ||
             ifp.ImportedFileType == ImportedFileType.DesignSurface ||
@@ -191,6 +208,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           {
             if (ifp.LegacyImportedFileId != null && ifp.LegacyImportedFileId > 0)
             {
+              _log.LogInformation($"Processing SS file toOld {totalfilecount} out of {fileListProject.Count}");
               // (m)
               await DeleteFileInNewTable(repoProject, startUtc, ifp);
               if (ifp.ImportedFileType != ImportedFileType.SurveyedSurface)
@@ -211,6 +229,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 if (repoNhOp.ProjectAndCustomerExist(ifp.CustomerUid, ifp.ProjectUid))
                 {
                   // (n)
+                  _log.LogInformation($"Processing SS file toOld {totalfilecount} out of {fileListProject.Count}");
                   CreateFileInOldTable(repoProject, repoNhOp, startUtc, ifp);                  
                 }
                 else
@@ -276,11 +295,11 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       {
         //For now, skip any files with names with non-Latin characters
  
-        if (!Regex.IsMatch(projectEvent.Name, pattern))
+        //if (!Regex.IsMatch(projectEvent.Name, pattern))
         {
-          Log.LogDebug($"Ignoring file with non-Latin filename {projectEvent.Name}");
+        //  Log.LogDebug($"Ignoring file with non-Latin filename {projectEvent.Name}");
         }
-        else
+        //else
         {
           var result = await DownloadFileAndCallProjectWebApi(projectEvent, WebApiAction.Creating);
           if (result != null)

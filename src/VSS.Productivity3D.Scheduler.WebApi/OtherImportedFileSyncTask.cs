@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
     /// This is just so we can have the Hangfire attributes on different methods for different tasks
     /// </summary>
     [AutomaticRetry(Attempts = 1, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
-    [DisableConcurrentExecution(0)]
+    //[DisableConcurrentExecution(0)]
     [SkipWhenPreviousJobIsRunning]
     public void OtherImportedFilesSyncTask()
     {
@@ -115,7 +115,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
       try
       {
         RecurringJob.AddOrUpdate(importedProjectFileSyncTask, () => OtherImportedFilesSyncTask(),
-          Cron.MinuteInterval(taskIntervalMinutes));
+          Cron.MinuteInterval(5)); //.MinuteInterval(taskIntervalMinutes));
       }
       catch (Exception ex)
       {

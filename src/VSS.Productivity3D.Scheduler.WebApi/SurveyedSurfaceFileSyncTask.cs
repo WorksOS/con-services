@@ -25,7 +25,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
     /// This is just so we can have the Hangfire attributes on different methods for different tasks
     /// </summary>
     [AutomaticRetry(Attempts = 1, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
-    [DisableConcurrentExecution(5)]
+    // [DisableConcurrentExecution(5)]
+    [SkipWhenPreviousJobIsRunning]
     public void SurveyedSurfaceFilesSyncTask()
     {
       ImportedFilesSyncTask(true);
