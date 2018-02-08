@@ -330,13 +330,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
         switch (action)
         {
           case WebApiAction.Creating:
-           result = await ImpFileProxy.CreateImportedFile(fullName, fileDescriptor.fileName,
+           result = await ImpFileProxy.CreateImportedFile(fullName, System.Net.WebUtility.UrlDecode(fileDescriptor.fileName),
               projectUid, projectEvent.ImportedFileType, projectEvent.FileCreatedUtc, 
               projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType,
               projectEvent.SurveyedUtc, customHeaders);
             break;
           case WebApiAction.Updating:
-            result = await ImpFileProxy.UpdateImportedFile(fullName, fileDescriptor.fileName,
+            result = await ImpFileProxy.UpdateImportedFile(fullName, System.Net.WebUtility.UrlDecode(fileDescriptor.fileName),
               projectUid, projectEvent.ImportedFileType, projectEvent.FileCreatedUtc, 
               projectEvent.FileUpdatedUtc, projectEvent.DxfUnitsType, 
               projectEvent.SurveyedUtc, customHeaders);

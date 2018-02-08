@@ -65,12 +65,19 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       // row in  NH_OP NOT in project, 
       //                 if project and customer exist, then create it (d)
       //                 else error (e)
+      int totalfilecount = 0;
       foreach (var ifo in fileListNhOp.ToList())
       {
+        _log.LogInformation($"Processing file {totalfilecount} out of {fileListNhOp.Count}");
+        totalfilecount++;
         //Every 10 non-surveyed surface files, pause for 5 mins to give TCC a chance to catch up
         if (fileCount > 0 && fileCount % 10 == 0)
+        {
+          _log. LogInformation($"Sleeping at {fileCount}");
           await Task.Delay(100000);
-          //Thread.Sleep(300000);
+          _log.LogInformation($"Exit sleeping at {fileCount}");
+        }
+        //Thread.Sleep(300000);
 
         if (ifo.ImportedFileType == ImportedFileType.Alignment ||
             ifo.ImportedFileType == ImportedFileType.DesignSurface ||
@@ -171,11 +178,19 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       //                                 else error (q) 
       //        if project has no LegacyImportedFileId, not deleted, but has no valid legacy customer or projectID then can't be added to NhOp (o)
       //        deleted project in project but no link to nhOp since in the list here so user must have created & deleted in project only, just ignore it. (p)
+      int totalfilecount = 0;
       foreach (var ifp in fileListProject)
       {
+
+        _log.LogInformation($"Processing file {totalfilecount} out of {fileListProject.Count}");
+        totalfilecount++;
         //Every 10 non-surveyed surface files, pause for 5 mins to give TCC a chance to catch up
         if (fileCount > 0 && fileCount % 10 == 0)
+        {
+          _log.LogInformation($"Sleeping at {fileCount}");
           await Task.Delay(100000);
+          _log.LogInformation($"Exit sleeping at {fileCount}");
+        }
 
         if (ifp.ImportedFileType == ImportedFileType.Alignment ||
             ifp.ImportedFileType == ImportedFileType.DesignSurface ||
