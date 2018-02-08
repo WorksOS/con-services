@@ -28,6 +28,7 @@ namespace VSS.MasterData.Proxies
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"ImportedFileProxy.CreateImportedFile: request for file {utf8filename}");
       FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
         importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, "POST");
       log.LogDebug("ImportedFileProxy.CreateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
@@ -151,7 +152,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private FlowFileUpload SetAllAttributesForFlowFile(long fileSize, string name, int currentChunkNumber, int totalChunks, int currentChunkSize)
     {
-      var filename = System.Net.WebUtility.UrlEncode(name);
+      var filename = name;
       var flowFileUpload = new FlowFileUpload
       {
         flowChunkNumber = currentChunkNumber,
