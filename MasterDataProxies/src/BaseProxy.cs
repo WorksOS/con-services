@@ -410,6 +410,7 @@ namespace VSS.MasterData.Proxies
       }
       if (queryParameters!=null)
       {
+        url += "?";
         url += new System.Net.Http.FormUrlEncodedContent(queryParameters)
           .ReadAsStringAsync().Result; 
       }

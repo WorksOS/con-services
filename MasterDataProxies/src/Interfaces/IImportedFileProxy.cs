@@ -10,12 +10,12 @@ namespace VSS.MasterData.Proxies.Interfaces
   public interface IImportedFileProxy
   {
     Task<FileDataSingleResult> CreateImportedFile(
-      string fullFileName, Guid projectUid, ImportedFileType importedFileType,
+      string fullFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null);
 
     Task<FileDataSingleResult> UpdateImportedFile(
-      string fullFileName, Guid projectUid, ImportedFileType importedFileType,
+      string fullFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null);
 

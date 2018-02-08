@@ -24,11 +24,11 @@ namespace VSS.MasterData.Proxies
     { }
 
     public async Task<FileDataSingleResult> CreateImportedFile(
-      string fullFileName, Guid projectUid, ImportedFileType importedFileType,
+      string fullFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
     {
-      FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", projectUid,
+      FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
         importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, "POST");
       log.LogDebug("ImportedFileProxy.CreateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
@@ -36,11 +36,11 @@ namespace VSS.MasterData.Proxies
     }
 
     public async Task<FileDataSingleResult> UpdateImportedFile(
-      string fullFileName, Guid projectUid, ImportedFileType importedFileType,
+      string fullFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
     {
-      FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", projectUid,
+      FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
         importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, "PUT");
       log.LogDebug("ImportedFileProxy.UpdateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
@@ -59,7 +59,7 @@ namespace VSS.MasterData.Proxies
 
     #region Flow.js Implementation/Emulation
 
-    private async Task<FileDataSingleResult> SendImportedFileToWebApi(string importedFileName, Guid projectUid, ImportedFileType importedFileType,
+    private async Task<FileDataSingleResult> SendImportedFileToWebApi(string importedFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null, string method = "POST")
     {
@@ -77,7 +77,7 @@ namespace VSS.MasterData.Proxies
       {
         queryParams.Add("DxfUnitsType", dxfUnitsType.ToString());
       }
-      return await UploadFileToWebApi(importedFileName, queryParams, method, customHeaders);
+      return await UploadFileToWebApi(importedFileName, utf8filename, queryParams, method, customHeaders);
     }
 
     private string FormattedDate(DateTime? utcDate)
@@ -98,14 +98,14 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">HTTP method</param>
     /// <param name="customHeaders">Custom headers for the request</param>
     /// <returns>Repsonse from web api as string</returns>
-    public async Task<FileDataSingleResult> UploadFileToWebApi(string fullFileName, IDictionary<string,string> queryParameters, string method, IDictionary<string, string> customHeaders = null)
+    public async Task<FileDataSingleResult> UploadFileToWebApi(string fullFileName, string utf8filename, IDictionary<string,string> queryParameters, string method, IDictionary<string, string> customHeaders = null)
     {
       if (customHeaders == null)
       {
         customHeaders = new Dictionary<string, string>();
       }
 
-      var name = new DirectoryInfo(fullFileName).Name;
+      var name = utf8filename;
       Byte[] bytes = File.ReadAllBytes(fullFileName);
       var fileSize = bytes.Length;
       var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
@@ -147,15 +147,16 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private FlowFileUpload SetAllAttributesForFlowFile(long fileSize, string name, int currentChunkNumber, int totalChunks, int currentChunkSize)
     {
+      var filename = System.Net.WebUtility.UrlEncode(name);
       var flowFileUpload = new FlowFileUpload
       {
         flowChunkNumber = currentChunkNumber,
         flowChunkSize = CHUNK_SIZE,
         flowCurrentChunkSize = currentChunkSize,
         flowTotalSize = fileSize,
-        flowIdentifier = fileSize + "-" + name.Replace(".", ""),
-        flowFilename = name,
-        flowRelativePath = name,
+        flowIdentifier = fileSize + "-" + filename.Replace(".", ""),
+        flowFilename = filename,
+        flowRelativePath = filename,
         flowTotalChunks = totalChunks
       };
       return flowFileUpload;
