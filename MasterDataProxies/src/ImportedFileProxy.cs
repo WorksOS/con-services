@@ -188,13 +188,13 @@ namespace VSS.MasterData.Proxies
         $"{boundary}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}" +
         $"{boundary}{nl}Content-Disposition: form-data; name=\"file\"; filename=\"{name}\"{nl}Content-Type: application/octet-stream{nl}{nl}");
 
-      byte[] header = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", nl));
+      byte[] header = Encoding.UTF8.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", nl));
       resultingStream.Write(header,0,header.Length);
       resultingStream.Write(chunkContent,0,chunkContent.Length);
       
       sb = new StringBuilder();  
       sb.Append($"{nl}{boundary}{BOUNDARY_BLOCK_DELIMITER}{nl}");
-      byte[] tail = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", nl));
+      byte[] tail = Encoding.UTF8.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", nl));
       resultingStream.Write(tail, 0, tail.Length);
     }
 
