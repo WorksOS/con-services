@@ -110,6 +110,7 @@ namespace VSS.MasterData.Proxies
       var fileSize = bytes.Length;
       var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
       FileDataSingleResult result = null;
+      FileDataSingleResult chunkResult = null;
       for (var offset = 0; offset < chunks; offset++)
       {
         var startByte = offset * CHUNK_SIZE;
@@ -128,11 +129,14 @@ namespace VSS.MasterData.Proxies
         {
           FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY}{flowId}", content);
           customHeaders.Add("Content-Type", $"multipart/form-data; boundary={BOUNDARY_START}{flowId}");
-          result = await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL2", content, customHeaders, string.Empty , method, queryParameters);
+          chunkResult = await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL2", content, customHeaders,
+            string.Empty, method, queryParameters);
+          if (chunkResult != null)
+            result = chunkResult;
           customHeaders.Remove("Content-Type");
         }   
       }
-      //The last chunk should have the result
+      //Some chunk should have the result
       return result;
     }
 
