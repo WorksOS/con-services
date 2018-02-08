@@ -279,7 +279,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
  
         if (!Regex.IsMatch(projectEvent.Name, pattern))
         {
-          Log.LogTrace($"Ignoring file with non-Latin filename {projectEvent.Name}");
+          Log.LogDebug($"Ignoring file with non-Latin filename {projectEvent.Name}");
         }
         else
         {
@@ -295,13 +295,13 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             projectEvent.FileUpdatedUtc = createdFile.FileUpdatedUtc;
             projectEvent.LastActionedUtc = DateTime.UtcNow;
             repoProject.Update(projectEvent);
-            Log.LogTrace(
+            Log.LogDebug(
               $"Call to project web api succeeded: ImportedFileUid={createdFile.ImportedFileUid}, LegacyImportedFileId={ifo.LegacyImportedFileId}");
             success = true;
           }
           else
           {
-            Log.LogTrace("Call to project web api failed, null result");
+            Log.LogDebug("Call to project web api failed, null result");
           }
         }
       }
@@ -319,7 +319,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       ImportedFileProject gotMatchingProject, ImportedFileNhOp ifo, DateTime startUtc)
     {
       repoNhOp.Delete(ifo);
-      _log.LogTrace(
+      _log.LogDebug(
         $"SyncTables: nhOp.IF is in nh_Op but was deleted in project. Deleted from NhOp: {JsonConvert.SerializeObject(ifo)}");
 
       NotifyNewRelic(gotMatchingProject, startUtc, $"{gotMatchingProject.ImportedFileType} file deleted in Project, now deleted in NhOp.");
