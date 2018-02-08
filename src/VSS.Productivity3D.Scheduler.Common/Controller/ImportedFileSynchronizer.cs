@@ -68,10 +68,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       int totalfilecount = 0;
       foreach (var ifo in fileListNhOp.ToList())
       {
-        _log.LogInformation($"Processing file {totalfilecount} out of {fileListNhOp.Count}");
         totalfilecount++;
         //Every 10 non-surveyed surface files, pause for 5 mins to give TCC a chance to catch up
-        if (fileCount > 0 && fileCount % 10 == 0)
+        if (fileCount > 0 && fileCount % 25 == 0)
         {
           _log. LogInformation($"Sleeping at {fileCount}");
           await Task.Delay(100000);
@@ -94,6 +93,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
             if (repoProject.ProjectAndCustomerExist(ifo.CustomerUid, ifo.ProjectUid))
             {
               // (d)
+              _log.LogInformation($"Processing file toNew {totalfilecount} out of {fileListNhOp.Count}");
               bool success = await CreateFileInNewTable(repoProject, startUtc, ifo);
               if (success && ifo.ImportedFileType != ImportedFileType.SurveyedSurface)
                 fileCount++;
@@ -139,6 +139,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 else
                 {
                   // nh_op is more recent, update project
+                  _log.LogInformation($"Processing SS file toNew {totalfilecount} out of {fileListNhOp.Count}");
                   await UpdateFileInNewTable(repoProject, gotMatchingProject, ifo, startUtc);
                   if (ifo.ImportedFileType != ImportedFileType.SurveyedSurface)
                     fileCount++;
@@ -182,14 +183,14 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       foreach (var ifp in fileListProject)
       {
 
-        _log.LogInformation($"Processing file {totalfilecount} out of {fileListProject.Count}");
         totalfilecount++;
         //Every 10 non-surveyed surface files, pause for 5 mins to give TCC a chance to catch up
-        if (fileCount > 0 && fileCount % 10 == 0)
+        if (fileCount > 0 && fileCount % 25 == 0)
         {
           _log.LogInformation($"Sleeping at {fileCount}");
           await Task.Delay(100000);
           _log.LogInformation($"Exit sleeping at {fileCount}");
+         // return;
         }
 
         if (ifp.ImportedFileType == ImportedFileType.Alignment ||
@@ -207,6 +208,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           {
             if (ifp.LegacyImportedFileId != null && ifp.LegacyImportedFileId > 0)
             {
+              _log.LogInformation($"Processing SS file toOld {totalfilecount} out of {fileListProject.Count}");
               // (m)
               await DeleteFileInNewTable(repoProject, startUtc, ifp);
               if (ifp.ImportedFileType != ImportedFileType.SurveyedSurface)
@@ -227,6 +229,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                 if (repoNhOp.ProjectAndCustomerExist(ifp.CustomerUid, ifp.ProjectUid))
                 {
                   // (n)
+                  _log.LogInformation($"Processing SS file toOld {totalfilecount} out of {fileListProject.Count}");
                   CreateFileInOldTable(repoProject, repoNhOp, startUtc, ifp);                  
                 }
                 else
