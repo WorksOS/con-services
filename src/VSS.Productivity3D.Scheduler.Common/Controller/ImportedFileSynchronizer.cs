@@ -170,7 +170,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     private async Task SyncNewTableToOldTable(List<ImportedFileProject> fileListProject,
       ImportedFileRepoNhOp<ImportedFileNhOp> repoNhOp, ImportedFileRepoProject<ImportedFileProject> repoProject)
     {
-      var fileCount = 0;
 
       // row in Project but doesn't exist in nhOp. LegacyImportedFileId determines if previously from nhOp.
       //        if project has LegacyImportedFileId ,  and not already deleted, then delete in Project (m)
@@ -185,13 +184,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
         totalfilecount++;
         //Every 10 non-surveyed surface files, pause for 5 mins to give TCC a chance to catch up
-        if (fileCount > 0 && fileCount % 25 == 0)
-        {
-          _log.LogInformation($"Sleeping at {fileCount}");
-          await Task.Delay(100000);
-          _log.LogInformation($"Exit sleeping at {fileCount}");
-         // return;
-        }
+
 
         if (ifp.ImportedFileType == ImportedFileType.Alignment ||
             ifp.ImportedFileType == ImportedFileType.DesignSurface ||
@@ -211,8 +204,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
               _log.LogInformation($"Processing SS file toOld {totalfilecount} out of {fileListProject.Count}");
               // (m)
               await DeleteFileInNewTable(repoProject, startUtc, ifp);
-              if (ifp.ImportedFileType != ImportedFileType.SurveyedSurface)
-                fileCount++;
             }
             //The remainder of the logic only applies to surveyed surfaces
             else if (ifp.ImportedFileType == ImportedFileType.SurveyedSurface)
