@@ -75,6 +75,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           _log. LogInformation($"Sleeping at {fileCount}");
           await Task.Delay(100000);
           _log.LogInformation($"Exit sleeping at {fileCount}");
+          fileCount++;
         }
         //Thread.Sleep(300000);
 
