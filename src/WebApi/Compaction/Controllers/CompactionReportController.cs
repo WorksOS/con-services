@@ -10,6 +10,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -187,10 +188,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var userPreferences = await GetUserPreferences();
 
       // Add 0.0 value to the offests array, remove any duplicates and sort contents by ascending order...
-      var updatedOffsetsList = offsets.ToList();
-      updatedOffsetsList.Add(0.0);
-      var updatedOffsets = updatedOffsetsList.Distinct().OrderBy(d => d).ToArray();
-      
+      var updatedOffsets = offsets.AddZeroDistinctSortBy();
+
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
         .ProjectId(projectId)
         .Headers(CustomHeaders)
