@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
@@ -185,6 +186,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var userPreferences = await GetUserPreferences();
 
+      // Add 0.0 value to the offests array, remove any duplicates and sort contents by ascending order...
+      var updatedOffsetsList = offsets.ToList();
+      updatedOffsetsList.Add(0.0);
+      var updatedOffsets = updatedOffsetsList.Distinct().OrderBy(d => d).ToArray();
+      
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
         .ProjectId(projectId)
         .Headers(CustomHeaders)
@@ -202,7 +208,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         crossSectionInterval,
         startStation,
         endStation,
-        offsets,
+        updatedOffsets,
         userPreferences);
 
       reportRequest.Validate();
