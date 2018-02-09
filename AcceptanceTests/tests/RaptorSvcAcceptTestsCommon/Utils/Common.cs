@@ -1,15 +1,11 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net.Mime;
-using System.Net.NetworkInformation;
-using System.Reflection;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using XnaFan.ImageComparison;
 
 namespace RaptorSvcAcceptTestsCommon.Utils
@@ -20,17 +16,16 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     /// Convert file to byte array.
     /// </summary>
     /// <param name="input">Name of file (with full path) to convert.</param>
-    /// <returns></returns>
     public static byte[] FileToByteArray(string input)
     {
-      byte[] output = null;
+      byte[] output;
 
       FileStream sourceFile = new FileStream(input, FileMode.Open, FileAccess.Read); // Open streamer...
 
       BinaryReader binReader = new BinaryReader(sourceFile);
       try
       {
-        output = binReader.ReadBytes((int) sourceFile.Length);
+        output = binReader.ReadBytes((int)sourceFile.Length);
       }
       finally
       {
@@ -44,36 +39,27 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     /// <summary>
     /// Test whether two lists are equivalent.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="listA"></param>
-    /// <param name="listB"></param>
-    /// <returns></returns>
     public static bool ListsAreEqual<T>(List<T> listA, List<T> listB)
     {
       if (listA == null && listB == null)
         return true;
-      else if (listA == null || listB == null)
+      if (listA == null || listB == null)
         return false;
-      else
+      if (listA.Count != listB.Count)
+        return false;
+
+      for (int i = 0; i < listA.Count; ++i)
       {
-        if (listA.Count != listB.Count)
+        if (!listB.Exists(item => item.Equals(listA[i])))
           return false;
-
-        for (int i = 0; i < listA.Count; ++i)
-        {
-          if (!listB.Exists(item => item.Equals(listA[i])))
-            return false;
-        }
-
-        return true;
       }
+
+      return true;
     }
 
     /// <summary>
     /// Decompress a zip archive file - assuming there is only one file in the archive.
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
     public static byte[] Decompress(byte[] data)
     {
       using (var compressedData = new MemoryStream(data))
@@ -81,12 +67,10 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         ZipArchive archive = new ZipArchive(compressedData);
 
         using (var decompressedData = archive.Entries[0].Open())
+        using (var ms = new MemoryStream())
         {
-          using (var ms = new MemoryStream())
-          {
-            decompressedData.CopyTo(ms);
-            return ms.ToArray();
-          }
+          decompressedData.CopyTo(ms);
+          return ms.ToArray();
         }
       }
     }
@@ -94,29 +78,23 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     /// <summary>
     /// Test whether two arrays of doubles are equivalent.
     /// </summary>
-    /// <param name="arrayA"></param>
-    /// <param name="arrayB"></param>
-    /// /// <param name="precision"></param>
     /// <returns>True or False.</returns>
     public static bool ArraysOfDoublesAreEqual(double[] arrayA, double[] arrayB, int precision = 2)
     {
       if (arrayA == null && arrayB == null)
         return true;
-      else if (arrayA == null || arrayB == null)
+      if (arrayA == null || arrayB == null)
         return false;
-      else
+      if (arrayA.Length != arrayB.Length)
+        return false;
+
+      for (int i = 0; i < arrayA.Length; ++i)
       {
-        if (arrayA.Length != arrayB.Length)
+        if (Math.Abs(Math.Round(arrayA[i]) - Math.Round(arrayB[i])) > precision)
           return false;
-
-        for (int i = 0; i < arrayA.Length; ++i)
-        {
-          if (Math.Round(arrayA[i], precision) != Math.Round(arrayB[i], precision))
-            return false;
-        }
-
-        return true;
       }
+
+      return true;
     }
 
     /// <summary>
@@ -131,11 +109,12 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     public static bool CompareDouble(double expectedDouble, double actualDouble, string field, int rowCount,
       int precision = 6)
     {
-      if (expectedDouble == actualDouble)
+      if (Math.Abs(expectedDouble - actualDouble) < precision)
       {
         return true;
       }
-      if (Math.Round(expectedDouble, precision) != Math.Round(actualDouble, precision))
+
+      if (Math.Abs(Math.Round(expectedDouble) - Math.Round(actualDouble)) > precision)
       {
         Console.WriteLine("RowCount:" + rowCount + " " + field + " actual: " + actualDouble + " expected: " +
                           expectedDouble);
@@ -155,13 +134,13 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       var idx = csvData.IndexOf(Environment.NewLine, StringComparison.Ordinal);
       var header = csvData.Substring(0, idx);
       var datalines = csvData.Substring(idx + 2)
-        .Split(new string[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+        .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
       var sorted = datalines.Select(line => new
-        {
-          SortKey = DateTime.Parse(line.Split(',')[0]), // Sort by data time
-          SortKeyThenBy = line.Split(',')[1], // Sort by string for 2nd key
-          Line = line
-        }
+      {
+        SortKey = DateTime.Parse(line.Split(',')[0]), // Sort by data time
+        SortKeyThenBy = line.Split(',')[1], // Sort by string for 2nd key
+        Line = line
+      }
       ).OrderBy(x => x.SortKey).ThenBy(x => x.SortKeyThenBy).Select(x => x.Line);
 
       var sb = new StringBuilder();
@@ -178,8 +157,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     /// <summary>
     /// Convert an byte stream to image
     /// </summary>
-    /// <param name="imageStream">byte array</param>
-    /// <returns>image</returns>
     public static Image ConvertToImage(byte[] imageStream)
     {
       using (var ms = new MemoryStream(imageStream))
