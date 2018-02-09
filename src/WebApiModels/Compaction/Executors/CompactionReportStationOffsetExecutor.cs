@@ -97,12 +97,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           for (var i = 0; i < reportPackager.StationOffsetReport.NumberOfStations; i++)
           {
             var station = reportPackager.StationOffsetReport.Stations[i];
-
-            var stationRow = new StationRow
-            {
-              Station = station.Station,
-              Offsets = new StationOffsetRow[station.NumberOfOffsets]
-            };
+            var stationRow = StationRow.Create(station, request);
 
             for (var j = 0; j < station.NumberOfOffsets; j++)
             {
@@ -111,6 +106,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               stationOffsetRow.SetReportFlags(request);
               stationRow.Offsets[j] = stationOffsetRow;
             }
+
+            stationRow.SetStatisticsReportFlags();
 
             stationRows[i] = stationRow;
           }
