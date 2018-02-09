@@ -173,7 +173,7 @@ namespace VSS.TCCFileAccess
       var gracefulClient = new GracefulWebRequest(logFactory, configStore);
       var (requestString, headers) = FormRequest(sendFileParams, "PutFile");
 
-      headers.Add("X-File-Name", filename);
+      headers.Add("X-File-Name", WebUtility.UrlEncode(filename));
       headers.Add("X-File-Size", sizeOfContents.ToString());
       headers.Add("X-FileType", "");
 
