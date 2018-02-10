@@ -135,6 +135,22 @@ namespace ExecutorTests
       return g.Result != null;
     }
 
+    protected bool DeleteProject(Guid projectUid)
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      
+      var deleteProjectEvent = new DeleteProjectEvent()
+      {
+        ProjectUID = projectUid,
+        ActionUTC = actionUtc
+      };
+      
+      projectRepo.StoreEvent(deleteProjectEvent).Wait();
+      
+      var g = projectRepo.GetProject(projectUid.ToString()); g.Wait();
+      return g.Result == null;
+    }
+
     protected bool CreateProjectSub(Guid projectUid, Guid customerUid, string subToInsert)
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
