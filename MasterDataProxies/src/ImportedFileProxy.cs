@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -23,11 +24,12 @@ namespace VSS.MasterData.Proxies
     { }
 
     public async Task<FileDataSingleResult> CreateImportedFile(
-      string fullFileName, Guid projectUid, ImportedFileType importedFileType,
+      string fullFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
     {
-      FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", projectUid,
+      log.LogDebug($"ImportedFileProxy.CreateImportedFile: request for file {utf8filename}");
+      FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
         importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, "POST");
       log.LogDebug("ImportedFileProxy.CreateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
@@ -35,11 +37,11 @@ namespace VSS.MasterData.Proxies
     }
 
     public async Task<FileDataSingleResult> UpdateImportedFile(
-      string fullFileName, Guid projectUid, ImportedFileType importedFileType,
+      string fullFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
     {
-      FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", projectUid,
+      FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
         importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, "PUT");
       log.LogDebug("ImportedFileProxy.UpdateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
@@ -49,7 +51,8 @@ namespace VSS.MasterData.Proxies
 
     public async Task<BaseDataResult> DeleteImportedFile(Guid projectUid, Guid importedFileUid, IDictionary<string, string> customHeaders = null)
     {
-      BaseDataResult response = await SendRequest<BaseDataResult>("IMPORTED_FILE_API_URL2", null, customHeaders, null, "DELETE");
+      BaseDataResult response = await SendRequest<BaseDataResult>("IMPORTED_FILE_API_URL2", string.Empty, customHeaders, null, "DELETE", 
+        $"?projectUid={projectUid}&importedFileUid={importedFileUid}");
       log.LogDebug("ImportedFileProxy.DeleteImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -57,20 +60,25 @@ namespace VSS.MasterData.Proxies
 
     #region Flow.js Implementation/Emulation
 
-    private async Task<FileDataSingleResult> SendImportedFileToWebApi(string importedFileName, Guid projectUid, ImportedFileType importedFileType,
+    private async Task<FileDataSingleResult> SendImportedFileToWebApi(string importedFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null, string method = "POST")
     {
-      var queryParameters = $"?projectUid={projectUid}&importedFileType={importedFileType}&fileCreatedUtc={FormattedDate(fileCreatedUtc)}&fileUpdatedUtc={FormattedDate(fileUpdatedUtc)}";
+
+      var queryParams = new Dictionary<string,string>();
+      queryParams.Add("projectUid", projectUid.ToString());
+      queryParams.Add("importedFileType", importedFileType.ToString());
+      queryParams.Add("fileCreatedUtc", FormattedDate(fileCreatedUtc));
+      queryParams.Add("fileUpdatedUtc", FormattedDate(fileUpdatedUtc));
       if (importedFileType == ImportedFileType.SurveyedSurface)
       {
-        queryParameters += $"&SurveyedUtc={FormattedDate(surveyedUtc)}";
+        queryParams.Add("SurveyedUtc",FormattedDate(surveyedUtc));
       }
       if (importedFileType == ImportedFileType.Linework)
       {
-        queryParameters += $"&DxfUnitsType={dxfUnitsType}";
+        queryParams.Add("DxfUnitsType", dxfUnitsType.ToString());
       }
-      return await UploadFileToWebApi(importedFileName, queryParameters, method, customHeaders);
+      return await UploadFileToWebApi(importedFileName, utf8filename, queryParams, method, customHeaders);
     }
 
     private string FormattedDate(DateTime? utcDate)
@@ -91,37 +99,45 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">HTTP method</param>
     /// <param name="customHeaders">Custom headers for the request</param>
     /// <returns>Repsonse from web api as string</returns>
-    public async Task<FileDataSingleResult> UploadFileToWebApi(string fullFileName, string queryParameters, string method, IDictionary<string, string> customHeaders = null)
+    public async Task<FileDataSingleResult> UploadFileToWebApi(string fullFileName, string utf8filename, IDictionary<string,string> queryParameters, string method, IDictionary<string, string> customHeaders = null)
     {
-      FileDataSingleResult result = null;
+      if (customHeaders == null)
+      {
+        customHeaders = new Dictionary<string, string>();
+      }
 
-      var name = new DirectoryInfo(fullFileName).Name;
+      var name = utf8filename;
       Byte[] bytes = File.ReadAllBytes(fullFileName);
       var fileSize = bytes.Length;
       var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
-
+      FileDataSingleResult result = null;
+      FileDataSingleResult chunkResult = null;
       for (var offset = 0; offset < chunks; offset++)
       {
         var startByte = offset * CHUNK_SIZE;
         var endByte = Math.Min(fileSize, (offset + 1) * CHUNK_SIZE);
+        if (fileSize - endByte < CHUNK_SIZE)
+        {
+          // The last chunk will be bigger than the chunk size,
+          // but less than 2*chunkSize
+          endByte = fileSize;
+        }
         int currentChunkSize = (int) (endByte - startByte);
         var flowId = GenerateId();
-
-        using (var filestream = new MemoryStream(bytes, offset, currentChunkSize))
+        var flowFileUpload = SetAllAttributesForFlowFile(fileSize, name, offset + 1, chunks, currentChunkSize);
+        var currentBytes = bytes.Skip(startByte).Take(currentChunkSize).ToArray();
+        using (var content = new MemoryStream())
         {
-          var flowFileUpload = SetAllAttributesForFlowFile(fileSize, name, offset + 1, chunks, currentChunkSize);
-          var content = FormatTheContentDisposition(flowFileUpload, filestream, name, $"{BOUNDARY}{flowId}");
-          if (customHeaders == null)
-          {
-            customHeaders = new Dictionary<string, string>();
-          }
+          FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY}{flowId}", content);
           customHeaders.Add("Content-Type", $"multipart/form-data; boundary={BOUNDARY_START}{flowId}");
-          result = await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL2", content, customHeaders,
-            queryParameters, method);
+          chunkResult = await SendRequest<FileDataSingleResult>("IMPORTED_FILE_API_URL2", content, customHeaders,
+            string.Empty, method, queryParameters);
+          if (chunkResult != null)
+            result = chunkResult;
           customHeaders.Remove("Content-Type");
-        }
+        }   
       }
-      //The last chunk should have the result
+      //Some chunk should have the result
       return result;
     }
 
@@ -136,15 +152,16 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private FlowFileUpload SetAllAttributesForFlowFile(long fileSize, string name, int currentChunkNumber, int totalChunks, int currentChunkSize)
     {
+      var filename = name;
       var flowFileUpload = new FlowFileUpload
       {
         flowChunkNumber = currentChunkNumber,
         flowChunkSize = CHUNK_SIZE,
         flowCurrentChunkSize = currentChunkSize,
         flowTotalSize = fileSize,
-        flowIdentifier = fileSize + "-" + name.Replace(".", ""),
-        flowFilename = name,
-        flowRelativePath = name,
+        flowIdentifier = fileSize + "-" + filename.Replace(".", ""),
+        flowFilename = filename,
+        flowRelativePath = filename,
         flowTotalChunks = totalChunks
       };
       return flowFileUpload;
@@ -154,26 +171,31 @@ namespace VSS.MasterData.Proxies
     /// Format the Content Disposition. This is very specific / fussy with the boundary
     /// </summary>
     /// <param name="flowFileUpload"></param>
-    /// <param name="filestream"></param>
+    /// <param name="chunkContent"></param>
     /// <param name="name"></param>
     /// <param name="boundary"></param>
+    /// <param name="resultingStream"></param>
     /// <returns></returns>
-    private string FormatTheContentDisposition(FlowFileUpload flowFileUpload, Stream filestream, string name, string boundary)
+    private void FormatTheContentDisposition(FlowFileUpload flowFileUpload, byte[] chunkContent, string name,
+      string boundary, MemoryStream resultingStream)
     {
       var sb = new StringBuilder();
       var nl = "\r\n";
-      sb.AppendFormat($"{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowChunkNumber\"{nl}{nl}{flowFileUpload.flowChunkNumber}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowChunkSize\"{nl}{nl}{flowFileUpload.flowChunkSize}{nl}" +
-                      $"{boundary}{nl}Content-Disposition: form-data; name=\"flowCurrentChunkSize\"{nl}{nl}{flowFileUpload.flowCurrentChunkSize}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowTotalSize\"{nl}{nl}{flowFileUpload.flowTotalSize}{nl}" +
-                      $"{boundary}{nl}Content-Disposition: form-data; name=\"flowIdentifier\"{nl}{nl}{flowFileUpload.flowIdentifier}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowFilename\"{nl}{nl}{flowFileUpload.flowFilename}{nl}" +
-                      $"{boundary}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}" +
-                      $"{boundary}{nl}Content-Disposition: form-data; name=\"file\"; filename=\"{name}\"{nl}Content-Type: application/octet-stream{nl}{nl}");
+      sb.AppendFormat(
+        $"{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowChunkNumber\"{nl}{nl}{flowFileUpload.flowChunkNumber}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowChunkSize\"{nl}{nl}{flowFileUpload.flowChunkSize}{nl}" +
+        $"{boundary}{nl}Content-Disposition: form-data; name=\"flowCurrentChunkSize\"{nl}{nl}{flowFileUpload.flowCurrentChunkSize}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowTotalSize\"{nl}{nl}{flowFileUpload.flowTotalSize}{nl}" +
+        $"{boundary}{nl}Content-Disposition: form-data; name=\"flowIdentifier\"{nl}{nl}{flowFileUpload.flowIdentifier}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowFilename\"{nl}{nl}{flowFileUpload.flowFilename}{nl}" +
+        $"{boundary}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{boundary}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}" +
+        $"{boundary}{nl}Content-Disposition: form-data; name=\"file\"; filename=\"{name}\"{nl}Content-Type: application/octet-stream{nl}{nl}");
 
-      StreamReader reader = new StreamReader(filestream);
-      sb.Append(reader.ReadToEnd());
-      sb.Append($"{nl}");
-      sb.Append($"{boundary}{BOUNDARY_BLOCK_DELIMITER}{nl}");
-      reader.Dispose();
-      return Regex.Replace(sb.ToString(), "(?<!\r)\n", "\r\n");
+      byte[] header = Encoding.UTF8.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", nl));
+      resultingStream.Write(header,0,header.Length);
+      resultingStream.Write(chunkContent,0,chunkContent.Length);
+      
+      sb = new StringBuilder();  
+      sb.Append($"{nl}{boundary}{BOUNDARY_BLOCK_DELIMITER}{nl}");
+      byte[] tail = Encoding.UTF8.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", nl));
+      resultingStream.Write(tail, 0, tail.Length);
     }
 
     /// <summary>

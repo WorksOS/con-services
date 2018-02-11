@@ -17,5 +17,7 @@ namespace VSS.TCCFileAccess.Models
     public bool leaf;
     [JsonProperty(PropertyName = "modifyTime", Required = Required.Default)]
     public DateTime modifyTime;
+    [JsonProperty(PropertyName = "size", Required = Required.Default)]
+    public long size;
   }
 }

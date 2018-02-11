@@ -34,6 +34,10 @@ namespace VSS.FlowJSHandler
 
         private FlowJsPostChunkResponse PostChunkBase(HttpRequest request, string folder, FlowValidationRules validationRules)
         {
+            Console.WriteLine($"Request Content-Length={request.ContentLength}");
+            //var body = new StreamReader(request.Body).ReadToEnd();
+           //Console.WriteLine($"Request Body={body}");
+
             var chunk = new FlowChunk();
             var requestIsSane = chunk.ParseForm(request.Form);
             if (!requestIsSane)
@@ -71,7 +75,7 @@ namespace VSS.FlowJSHandler
                 // save file
                 using (var chunkFile = File.Create(chunkFullPathName))
                 {
-                    Console.WriteLine($"Saving chunk file {chunkFullPathName}");
+                    Console.WriteLine($"Saving chunk file {chunkFullPathName} of length {file.Length}");
                     file.CopyTo(chunkFile);
                 }
             }
@@ -85,7 +89,7 @@ namespace VSS.FlowJSHandler
             for (int i = 1, l = chunk.TotalChunks; i <= l; i++)
             {
                 var chunkNameToTest = GetChunkFilename(i, chunk.Identifier, folder);
-                Console.WriteLine($"Checking if chuck exists already {chunkNameToTest}");
+                Console.WriteLine($"Checking if chunk exists already {chunkNameToTest}");
                 var exists = File.Exists(chunkNameToTest);
                 if (!exists)
                 {
@@ -136,17 +140,22 @@ namespace VSS.FlowJSHandler
                 Console.WriteLine($"Deleting file {destFile}");
                 File.Delete(Path.Combine(dirPath, destFile));
             }
+            long fileSize = 0;
             using (var destStream = new FileStream(Path.Combine(dirPath, destFile), FileMode.Create))
             {
                 foreach (string filePath in fileAry)
                 {
-                    Console.WriteLine($"Adding {filePath} into {destFile}");
-                    using (var sourceStream = File.OpenRead(Path.Combine(dirPath, filePath)))
-                        sourceStream.CopyTo(destStream); // You can pass the buffer size as second argument.
+                  using (var sourceStream = File.OpenRead(Path.Combine(dirPath, filePath)))
+                  {
+                    Console.WriteLine($"Adding {filePath} of length {sourceStream.Length} into {destFile}");
+                    sourceStream.CopyTo(destStream); // You can pass the buffer size as second argument.
+                  }
+
                 }
                 destStream.Flush();
+                fileSize = destStream.Length;
             }
-            Console.WriteLine($"Succefully merged file {destFile}");
+            Console.WriteLine($"Successfully merged file {destFile} with length {fileSize}");
         }
 
         private string GetChunkFilename(int chunkNumber, string identifier, string folder)
