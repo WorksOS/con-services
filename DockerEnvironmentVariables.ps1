@@ -46,6 +46,7 @@
 [Environment]::SetEnvironmentVariable("LOG_MAX_CHAR", "1000", "Machine")
 [Environment]::SetEnvironmentVariable("TPAAS_OAUTH_URL", "https://identity-stg.trimble.com/i/oauth2/token", "Machine")
 [Environment]::SetEnvironmentVariable("3DPMSCHEDULER_CONSUMER_KEYS", "ZmFzRm9KV09QZ1FrV2tVREtYQUVQYVZZb180YTpnbno0M2dYX3MyN25VVGk1M1BKNG1meG91c1Vh", "Machine")
+[Environment]::SetEnvironmentVariable("MAX_FILE_SIZE", "100000000", "Machine")
 
 #>
 <#  Dev environment
@@ -83,7 +84,6 @@
 [Environment]::SetEnvironmentVariable("DOWNLOAD_FOLDER", "C:/temp/", "Machine")
 [Environment]::SetEnvironmentVariable("LOG_MAX_CHAR", "1000", "Machine")
 [Environment]::SetEnvironmentVariable("TPAAS_OAUTH_URL", "https://identity-stg.trimble.com/i/oauth2/token", "Machine")
-[Environment]::SetEnvironmentVariable("3DPMSCHEDULER_CONSUMER_KEYS", "ZmFzRm9KV09QZ1FrV2tVREtYQUVQYVZZb180YTpnbno0M2dYX3MyN25VVGk1M1BKNG1meG91c1Vh", "Machine")
-
+[Environment]::SetEnvironmentVariable("MAX_FILE_SIZE", "100000000", "Machine")
 
 #>

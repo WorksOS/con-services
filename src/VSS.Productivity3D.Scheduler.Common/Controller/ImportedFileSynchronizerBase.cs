@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -35,6 +36,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     private readonly int _refreshPeriodMinutes = 480;
     private readonly string _3DPmSchedulerConsumerKeys = null;
     private string TemporaryDownloadFolder = null;
+    private long MaxFileSize = 0;
 
     /// <summary>
     /// </summary>
@@ -82,6 +84,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
       Log.LogInformation($"ImportedFileSynchronizerBase: {(ProcessSurveyedSurfaceType ? "processSurveyedSurfaceType" : "processNonSurveyedSurfaceTypes")} FileSpaceId: {FileSpaceId} _refreshPeriodMinutes: {_refreshPeriodMinutes}  _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _3DPmSchedulerBearerToken: {_3DPmSchedulerBearerToken} _3DPmSchedulerConsumerKeys: {_3DPmSchedulerConsumerKeys}");
       //Console.WriteLine($"ImportedFileSynchronizerBase: (console temp)  FileSpaceId: {FileSpaceId} _refreshPeriodMinutes: {_refreshPeriodMinutes}  _lastTPaasTokenObtainedUtc: {_lastTPaasTokenObtainedUtc} _3DPmSchedulerBearerToken: {_3DPmSchedulerBearerToken} _3DPmSchedulerConsumerKeys: {_3DPmSchedulerConsumerKeys}");
+
+      MaxFileSize = ConfigStore.GetValueInt("MAX_FILE_SIZE");
+      if (MaxFileSize <= 0)
+      {
+        Log.LogWarning("Missing MAX_FILE_SIZE environment variable so no restriction on downloaded files");
+      }
     }
 
 
@@ -380,45 +388,68 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
       if (await FileRepo.FileExists(fileDescriptor.filespaceId, fullFileName))
       {
-        using (Stream inStream = await FileRepo.GetFile(fileDescriptor.filespaceId, fullFileName))
+        bool ok = true;
+        if (MaxFileSize > 0)
         {
-          if (inStream.Length > 0)
+          //Ignore very big files as will fail to download with timeout. We will fix them manually.
+          var fileList = await FileRepo.GetFileList(fileDescriptor.filespaceId, fileDescriptor.path, Path.GetExtension(fileDescriptor.fileName));
+          var fileSize = fileList?.entries.SingleOrDefault(f => f.entryName == fileDescriptor.fileName)?.size;
+          ok = fileSize <= MaxFileSize;
+          if (!ok)
           {
-            inStream.Position = 0;
-
-            try
+            var message = $"ImportedFileSynchroniser: File {fullFileName} ignored as too big";
+            Log.LogWarning(message);
+            var newRelicAttributes = new Dictionary<string, object>
             {
-              Log.LogInformation($"ImportedFileSynchroniser: Saving to temporary file {fullFileName}");
+              {"message", message},
+              {"fullFileName", fullFileName}
+            };
+            NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
+          }
+        }
+        if (ok)
+        {
+          using (Stream inStream = await FileRepo.GetFile(fileDescriptor.filespaceId, fullFileName))
+          {
+            if (inStream.Length > 0)
+            {
+              inStream.Position = 0;
 
-              var path = FullTemporaryPath(fileDescriptor.path);
-              DirectoryInfo dirInfo = new DirectoryInfo(path);
-              if (!dirInfo.Exists)
+              try
               {
-                try
+                Log.LogInformation($"ImportedFileSynchroniser: Saving to temporary file {fullFileName}");
+
+                var path = FullTemporaryPath(fileDescriptor.path);
+                DirectoryInfo dirInfo = new DirectoryInfo(path);
+                if (!dirInfo.Exists)
                 {
-                  dirInfo.Create();
+                  try
+                  {
+                    dirInfo.Create();
+                  }
+                  catch (Exception e)
+                  {
+                    Log.LogWarning($"Failed to create temporary download folder {path}: {e.Message}");
+                    throw;
+                  }
                 }
-                catch (Exception e)
+
+                using (Stream outStream = File.Create($"{FullTemporaryFileName(fileDescriptor)}"))
                 {
-                  Log.LogWarning($"Failed to create temporary download folder {path}: {e.Message}");
-                  throw;
+                  inStream.CopyTo(outStream);
+                  result = true;
                 }
               }
-
-              using (Stream outStream = File.Create($"{FullTemporaryFileName(fileDescriptor)}"))
+              catch (Exception e)
               {
-                inStream.CopyTo(outStream);
-                result = true;
+                var message = string.Format($"DownloadFileAndSaveToTemp call failed with exception {e.Message}");
+                var newRelicAttributes = new Dictionary<string, object>
+                {
+                  {"message", message},
+                  {"fullTemporaryFileName", FullTemporaryFileName(fileDescriptor)}
+                };
+                NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
               }
-            }
-            catch (Exception e)
-            {
-              var message = string.Format($"DownloadFileAndSaveToTemp call failed with exception {e.Message}");
-              var newRelicAttributes = new Dictionary<string, object> {
-                { "message", message},
-                { "fullTemporaryFileName", FullTemporaryFileName(fileDescriptor)}
-              };
-              NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, Log, newRelicAttributes);
             }
           }
         }
