@@ -80,7 +80,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         if (p != null)
         {
           projects = p.ToList()
-            .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate);
+            .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsDeleted);
         }
       }
       return projects;

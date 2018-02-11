@@ -213,6 +213,53 @@ namespace ExecutorTests
     }
 
     [TestMethod]
+    public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndCustSubAnd2Projects_OneDeleted()
+    {
+      Guid assetUID = Guid.NewGuid();
+      long legacyAssetId = new Random().Next(0, int.MaxValue);
+      Guid owningCustomerUID = Guid.NewGuid();
+      Guid deviceUID = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      string tccOrgId = "";
+
+      CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber,
+        deviceType.ToString());
+      CreateCustomer(owningCustomerUID, tccOrgId);
+      CreateCustomerSub(owningCustomerUID, "Manual 3D Project Monitoring");
+
+      Guid projectUID = Guid.NewGuid();
+      int legacyProjectId = new Random().Next(0, int.MaxValue);
+      CreateProject(projectUID, legacyProjectId, owningCustomerUID,
+        VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard);
+
+      Guid projectUID2 = Guid.NewGuid();
+      int legacyProjectId2 = new Random().Next(0, int.MaxValue);
+      CreateProject(projectUID2, legacyProjectId2, owningCustomerUID,
+        VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.LandFill,
+        "POLYGON((170 10, 190 10, 190 40, 180 40, 170 40, 170 10))");
+      DeleteProject(projectUID2);
+
+      DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
+      GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest =
+        GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
+      projectBoundariesAtDateExecutorRequest.Validate();
+
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(logger, configStore,
+        assetRepo, deviceRepo, customerRepo,
+        projectRepo, subscriptionRepo);
+      var result =
+        await executor.ProcessAsync(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsTrue(result.Result, "unsuccessful");
+      Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
+      Assert.AreEqual(1, result.projectBoundaries.Length, "executor returned incorrect number of projects");
+
+      Assert.AreEqual(legacyProjectId, result.projectBoundaries[0].ProjectID, "executor returned incorrect legacyProjectId");
+      Assert.AreEqual(5, result.projectBoundaries[0].Boundary.FencePoints.Length, "executor returned incorrect projectBoundary");
+    }
+
+    [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndCustSubAndProject_MissingAssetOwner()
     {
       Guid assetUID = Guid.NewGuid();
