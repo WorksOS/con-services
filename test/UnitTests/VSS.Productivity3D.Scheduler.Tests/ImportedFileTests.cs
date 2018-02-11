@@ -233,22 +233,6 @@ namespace VSS.Productivity3D.Scheduler.Tests
       Assert.IsFalse(matches, "File name should not match all chars");
     }
 
-    [TestMethod]
-    public void FindSpecialChars_allMatch()
-    {
-      var projectName = @"JB to-po,_ &sou=#@+th[e]rn (mo'torway).TTM";
-      var matches = Regex.IsMatch(projectName, ImportedFileSynchronizer.pattern);
-      Assert.IsTrue(matches, "File name should match all chars");
-    }
-
-    [TestMethod]
-    public void FindSpecialChars_oneMismatch()
-    {
-      var projectName = "JB topo southern motor%way.TTM";
-      var matches = Regex.IsMatch(projectName, ImportedFileSynchronizer.pattern);
-      Assert.IsFalse(matches, "File name should not match all chars");
-    }
-
     //[TestMethod]
     //public void FindSpecialChars_random()
     //{
