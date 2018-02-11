@@ -407,10 +407,14 @@ namespace VSS.TCCFileAccess
         var dirResult = await ExecuteRequest<DirResult>(Ticket, "Dir", dirParams);
         if (dirResult != null)
         {
-          return dirResult;
+          if (dirResult.success)
+            return dirResult;
+          CheckForInvalidTicket(dirResult, "GetFolders");
         }
-        CheckForInvalidTicket(dirResult, "GetFolders");
-        Log.LogError("Null result from GetFolders for org {0}", org.shortName);
+        else
+        {
+          Log.LogError("Null result from GetFolders for org {0}", org.shortName);
+        }
       }
       catch (Exception ex)
       {
@@ -437,10 +441,14 @@ namespace VSS.TCCFileAccess
         var dirResult = await ExecuteRequest<DirResult>(Ticket, "Dir", dirParams);
         if (dirResult != null)
         {
-          return dirResult;
+          if (dirResult.success)
+            return dirResult;
+          CheckForInvalidTicket(dirResult, "GetFileList");
         }
-        CheckForInvalidTicket(dirResult, "GetFileList");
-        Log.LogError("Null result from GetFileList for filespaceId {0}", filespaceId);
+        else
+        {
+          Log.LogError("Null result from GetFileList for filespaceId {0}", filespaceId);
+        }
       }
       catch (Exception ex)
       {
