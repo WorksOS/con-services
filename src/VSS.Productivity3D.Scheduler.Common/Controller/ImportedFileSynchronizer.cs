@@ -42,9 +42,32 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
 
       var fileListProject = repoProject.Read(ProcessSurveyedSurfaceType);
       var fileListNhOp = repoNhOp.Read(ProcessSurveyedSurfaceType);
+      //CG allows duplicate files as it has file history. NG doesn't allow duplicates
+      //as it currently doesn't have file history. So, for now, we'll remove duplicates
+      //and just sync the latest from CG to NG.
+      fileListNhOp = RemoveDuplicates(fileListNhOp);
 
       await SyncOldTableToNewTable(fileListNhOp, fileListProject, repoNhOp, repoProject);
       await SyncNewTableToOldTable(fileListProject, repoNhOp, repoProject);
+    }
+
+    /// <summary>
+    /// Returns a list with duplicates removed. For duplicates, the item kept is the last updated.
+    /// </summary>
+    /// <param name="fileListNhOp"></param>
+    /// <returns></returns>
+    private List<ImportedFileNhOp> RemoveDuplicates(IEnumerable<ImportedFileNhOp> fileListNhOp)
+    {
+      var d = new Dictionary<string, ImportedFileNhOp>();
+      foreach (var f in fileListNhOp)
+      {
+        var key = $"{f.CustomerUid}{f.ProjectUid}{f.Name}";
+        if (!d.ContainsKey(key) || f.FileUpdatedUtc > d[key].FileUpdatedUtc)
+        {
+          d[key] = f;
+        }
+      }
+      return d.Values.ToList();
     }
 
     /// <summary>
