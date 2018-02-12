@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
@@ -9,6 +10,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -97,7 +99,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An instance of the <see cref="ContractExecutionResult"/> class.</returns>
     [Route("api/v2/report/grid")]
     [HttpGet]
-    public async Task<CompactionReportResult> GetReporGrid(
+    public async Task<CompactionReportResult> GetReportGrid(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] bool reportElevation,
@@ -115,7 +117,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double endEasting,
       [FromQuery] double azimuth)
     {
-      log.LogInformation("GetReporGrid: " + Request.QueryString);
+      log.LogInformation("GetReportGrid: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -170,6 +172,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] bool reportCutFill,
       [FromQuery] Guid filterUid,
       [FromQuery] Guid? cutfillDesignUid,
+      [FromQuery] Guid? alignmentUid,
       [FromQuery] double crossSectionInterval,
       [FromQuery] double startStation,
       [FromQuery] double endStation,
@@ -179,9 +182,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = GetProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
+      var cutFillDesignDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
+      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var userPreferences = await GetUserPreferences();
+
+      // Add 0.0 value to the offests array, remove any duplicates and sort contents by ascending order...
+      var updatedOffsets = offsets.AddZeroDistinctSortBy();
 
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
         .ProjectId(projectId)
@@ -195,11 +202,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         reportPassCount,
         reportTemperature,
         reportCutFill,
+        cutFillDesignDescriptor,
         alignmentDescriptor,
         crossSectionInterval,
         startStation,
         endStation,
-        offsets,
+        updatedOffsets,
         userPreferences);
 
       reportRequest.Validate();

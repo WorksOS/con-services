@@ -37,7 +37,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         }
 
         var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.projectId);
-        var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
+        var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
+        var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
         var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences);
 
         log.LogDebug("About to call GetReportStationOffset");
@@ -48,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtProdDataReport),
           userPreferences,
           alignmentDescriptor,
-          RaptorConverters.DesignDescriptor(request.DesignFile),
+          cutfillDesignDescriptor,
           request.StartStation,
           request.EndStation,
           request.Offsets,
@@ -96,29 +97,17 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           for (var i = 0; i < reportPackager.StationOffsetReport.NumberOfStations; i++)
           {
             var station = reportPackager.StationOffsetReport.Stations[i];
-
-            var stationRow = new StationRow
-            {
-              Station = station.Station,
-              Offsets = new StationOffsetRow[station.NumberOfOffsets]
-            };
+            var stationRow = StationRow.Create(station, request);
 
             for (var j = 0; j < station.NumberOfOffsets; j++)
             {
-              var offset = station.Offsets[j];
+              var stationOffsetRow = StationOffsetRow.CreateRow(station.Offsets[j]);
 
-              var stationOffsetRow = StationOffsetRow.CreateRow(offset.Northing, offset.Easting, offset.Elevation, offset.CutFill, offset.CMV, offset.MDP, offset.PassCount, offset.Temperature, offset.Position, offset.Station);
-
-              stationOffsetRow.SetReportFlags(
-                request.ReportElevation,
-                request.ReportCutFill,
-                request.ReportCMV,
-                request.ReportMDP,
-                request.ReportPassCount,
-                request.ReportTemperature);
-
+              stationOffsetRow.SetReportFlags(request);
               stationRow.Offsets[j] = stationOffsetRow;
             }
+
+            stationRow.SetStatisticsReportFlags();
 
             stationRows[i] = stationRow;
           }

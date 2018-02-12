@@ -354,6 +354,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="ProjectThumbnails.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProjectThumbnails.feature</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CellDatum.feature.cs">
       <AutoGen>True</AutoGen>
@@ -427,6 +432,7 @@
     <Compile Include="StepDefinitions\PassCountSummarySteps.cs" />
     <Compile Include="StepDefinitions\ProjectSettingsSteps.cs" />
     <Compile Include="StepDefinitions\ProjectStatisticsSteps.cs" />
+    <Compile Include="StepDefinitions\ProjectThumbnailSteps.cs" />
     <Compile Include="StepDefinitions\RaptorConfigSteps.cs" />
     <Compile Include="StepDefinitions\ReportTileSteps.cs" />
     <Compile Include="StepDefinitions\ReportSteps.cs" />
@@ -668,6 +674,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ProjectStatistics.feature.cs</LastGenOutput>
     </None>
+    <None Include="ProjectThumbnails.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ProjectThumbnails.feature.cs</LastGenOutput>
+    </None>
     <None Include="ReportTile.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ReportTile.feature.cs</LastGenOutput>
@@ -830,6 +840,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\Profiles\DesignProfileSummaryResponse.json" />
+    <None Include="TestData\ProjectThumbnailResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\ReportGridResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

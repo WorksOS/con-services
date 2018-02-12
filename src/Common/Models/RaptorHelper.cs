@@ -3,6 +3,7 @@ using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Exceptions;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 
@@ -134,23 +135,17 @@ namespace VSS.Productivity3D.Common.Models
 
       if (noDesign)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
+        throw new MissingDesignDescriptorException(HttpStatusCode.BadRequest,
              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                  string.Format("Design descriptor required for cut/fill and design to filter or filter to design volumes display")));
       }
 
-      /* if (mode == DisplayMode.VolumeCoverage && computeVolType == RaptorConverters.VolumesType.None)
-       {
-         throw new ServiceException(HttpStatusCode.BadRequest,
-             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                 string.Format(
-                     "None volume detection method is not applicable.")));
-       }*/
+
       if (computeVolType != RaptorConverters.VolumesType.Between2Filters)
       {
         if (mode == DisplayMode.CutFill && designDescriptor == null)
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
+          throw new MissingDesignDescriptorException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               string.Format(
                 "Design descriptor required for cut/fill and design to filter or filter to design volumes display")));
@@ -169,7 +164,7 @@ namespace VSS.Productivity3D.Common.Models
         case RaptorConverters.VolumesType.Between2Filters:
           if ((filter1 == null && filterId1 <= 0) || (filter2 == null && filterId2 <= 0))
           {
-            throw new ServiceException(HttpStatusCode.BadRequest,
+            throw new TwoFiltersRequiredException(HttpStatusCode.BadRequest,
                  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                      string.Format("Two filters required for filter to filter volumes display")));
 
@@ -180,7 +175,7 @@ namespace VSS.Productivity3D.Common.Models
         case RaptorConverters.VolumesType.BetweenFilterAndDesign:
           if (filter1 == null && filterId1 <= 0 && filter2 == null && filterId2 <= 0)
           {
-            throw new ServiceException(HttpStatusCode.BadRequest,
+            throw new SingleFilterRequiredException(HttpStatusCode.BadRequest,
                  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                      string.Format("One filter required for design to filter or filter to design volumes display")));
 

@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     public bool ReportCutFill { get; protected set; }
 
     /// <summary>
-    /// Sets the design file to be used for cut/fill or station/offset calculations
+    /// Sets the design file to be used for cut/fill calculations
     /// </summary>
     /// 
     [JsonProperty(Required = Required.Default)]

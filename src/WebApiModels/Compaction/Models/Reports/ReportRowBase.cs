@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using VSS.Productivity3D.WebApi.Models.Common;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
@@ -33,13 +34,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// CMV value
     /// </summary>
     [JsonProperty(Required = Required.Default)]
-    public short CMV { get; protected set; }
+    public double CMV { get; protected set; }
 
     /// <summary>
     /// MDP value
     /// </summary>
     [JsonProperty(Required = Required.Default)]
-    public short MDP { get; protected set; }
+    public double MDP { get; protected set; }
 
     /// <summary>
     /// Pass Count value
@@ -88,49 +89,24 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     [JsonIgnore]
     public bool TemperatureReport { get; protected set; }
 
-    public bool ShouldSerializeElevation()
-    {
-      return ElevationReport;
-    }
-    public bool ShouldSerializeCutFill()
-    {
-      return CutFillReport;
-    }
-    public bool ShouldSerializeCMV()
-    {
-      return CMVReport && CMV != VelociraptorConstants.NO_CCV;
-    }
-    public bool ShouldSerializeMDP()
-    {
-      return MDPReport && MDP != VelociraptorConstants.NO_MDP;
-    }
-    public bool ShouldSerializePassCount()
-    {
-      return PassCountReport;
-    }
-    public bool ShouldSerializeTemperature()
-    {
-      return TemperatureReport && Temperature != VelociraptorConstants.NO_TEMPERATURE;
-    }
+    public bool ShouldSerializeElevation() => ElevationReport && Math.Abs(Elevation - VelociraptorConstants.NULL_SINGLE) > 0.001;
+    public bool ShouldSerializeCutFill() => CutFillReport && Math.Abs(CutFill - VelociraptorConstants.NULL_SINGLE) > 0.001;
+    public bool ShouldSerializeCMV() => CMVReport && CMV != VelociraptorConstants.NO_CCV;
+    public bool ShouldSerializeMDP() => MDPReport && MDP != VelociraptorConstants.NO_MDP;
+    public bool ShouldSerializePassCount() => PassCountReport && PassCount != VelociraptorConstants.NO_PASSCOUNT;
+    public bool ShouldSerializeTemperature() => TemperatureReport && Temperature != VelociraptorConstants.NO_TEMPERATURE;
 
     /// <summary>
     /// Sets flags that indicates which of the reported values present in the report.
     /// </summary> 
-    public void SetReportFlags(
-      bool reportElevation,
-      bool reportCutFill,
-      bool reportCMV,
-      bool reportMDP,
-      bool reportPassCount,
-      bool reportTemperature
-    )
+    public void SetReportFlags(CompactionReportRequest request)
     {
-      ElevationReport = reportElevation;
-      CutFillReport = reportCutFill;
-      CMVReport = reportCMV;
-      MDPReport = reportMDP;
-      PassCountReport = reportPassCount;
-      TemperatureReport = reportTemperature;
+      ElevationReport = request.ReportElevation;
+      CutFillReport = request.ReportCutFill;
+      CMVReport = request.ReportCMV;
+      MDPReport = request.ReportMDP;
+      PassCountReport = request.ReportPassCount;
+      TemperatureReport = request.ReportTemperature;
     }
   }
 }

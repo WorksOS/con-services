@@ -64,13 +64,17 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
     }
 
-    [Given(@"I select Station offset report parameters '(.*)' '(.*)' '(.*)' '(.*)' '(.*)' '(.*)' '(.*)'")]
-    public void GivenISelectStationOffsetReportParameters(string cutfillDesignUid, string filterUid, string alignmentDesignUid,
+    [Given(@"I select Station offset report parameters '(.*)' '(.*)' '(.*)' '(.*)' '(.*)' '(.*)'")]
+    public void GivenISelectStationOffsetReportParameters(string cutfillDesignUid, string alignmentUid,
       double crossSectionInterval, double startStation, double endStation, string offsets)
     {
       if (!string.IsNullOrEmpty(cutfillDesignUid))
       {
         gridReportRequester.QueryString.Add("cutfillDesignUid", cutfillDesignUid);
+      }
+      if (!string.IsNullOrEmpty(alignmentUid))
+      {
+        gridReportRequester.QueryString.Add("alignmentUid", alignmentUid);
       }
       if (crossSectionInterval > 0)
       {
@@ -194,21 +198,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         Common.CompareDouble(expectedrowList[rowIdx].PassCount, actualrowList[rowIdx].PassCount, "PassCount", rowIdx);
         Common.CompareDouble(expectedrowList[rowIdx].Temperature, actualrowList[rowIdx].Temperature, "Temperature", rowIdx);
       }
-    }
-
-    private bool CompareDouble(double expectedDouble, double actualDouble, string field, int rowCount,int precision = 6)
-    {
-      if (expectedDouble == actualDouble)
-      {
-        return true;
-      }
-
-      if (Math.Round(expectedDouble, precision) != Math.Round(actualDouble, precision))
-      {
-        Console.WriteLine("RowCount:" + rowCount + " " + field + " actual: " + actualDouble + " expected: " + expectedDouble);
-        Assert.Fail("Expected: " + expectedDouble + " Actual: " + actualDouble + " at row index " + rowCount + " for field " + field);
-      }
-      return true;
     }
   }
 }
