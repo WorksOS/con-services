@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestUtility;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
@@ -13,6 +14,7 @@ using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.Identity.User;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using RdKafkaDriver = VSS.KafkaConsumer.Kafka.RdKafkaDriver;
 
 namespace ExecutorTests
 {
@@ -25,7 +27,6 @@ namespace ExecutorTests
     protected ProjectRepository projectRepo;
     protected CustomerRepository customerRepo;
     protected IRaptorProxy raptorProxy;
-    protected Dictionary<string, string> customHeaders;
     protected IKafka producer;
     protected string kafkaTopicName;
 
@@ -59,13 +60,21 @@ namespace ExecutorTests
       projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
       customerRepo = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
       raptorProxy = serviceProvider.GetRequiredService<IRaptorProxy>();
-      customHeaders = new Dictionary<string, string>();
       producer = serviceProvider.GetRequiredService<IKafka>();
       if (!producer.IsInitializedProducer)
         producer.InitProducer(configStore);
 
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+    }
+
+    protected IDictionary<string, string> CustomHeaders(string customerUid)
+    {
+      var headers = new Dictionary<string, string>();
+      headers.Add("X-JWT-Assertion", RestClientUtil.DEFAULT_JWT);
+      headers.Add("X-VisionLink-CustomerUid", customerUid);
+      headers.Add("X-VisionLink-ClearCache", "true");
+      return headers;
     }
 
     protected bool CreateCustomerProject(string customerUid, string projectUid)

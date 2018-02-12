@@ -8,7 +8,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
-  [TestClass]
+    [TestClass]
   public class ProjectSettingsTests : ExecutorTestsBase
   {
     [TestMethod]
@@ -43,7 +43,7 @@ namespace ExecutorTests
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
-          customerUidSomeOther, userId, userEmailAddress, null,
+          customerUidSomeOther, userId, userEmailAddress, CustomHeaders(customerUidOfProject),
           null, null,
           null, null, null,
           projectRepo);
@@ -70,7 +70,7 @@ namespace ExecutorTests
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
           ( logger, configStore, serviceExceptionHandler,
-            customerUid, userId, userEmailAddress, null,
+            customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
             null, null,
             null, null, null,
             projectRepo);
@@ -103,7 +103,7 @@ namespace ExecutorTests
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
-          customerUid, userId, userEmailAddress, null,
+          customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
           null, null,
           null, null, null,
           projectRepo);
@@ -151,7 +151,7 @@ namespace ExecutorTests
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
       (logger, configStore, serviceExceptionHandler,
-        customerUidSomeOther, userId, userEmailAddress, null,
+        customerUidSomeOther, userId, userEmailAddress, CustomHeaders(customerUidOfProject),
         producer, kafkaTopicName,
         null, raptorProxy, null,
         projectRepo);
@@ -177,7 +177,7 @@ namespace ExecutorTests
       
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
-        customerUid, userId, userEmailAddress, null,
+        customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
         producer, kafkaTopicName,
         null, raptorProxy, null,
         projectRepo);
@@ -211,7 +211,7 @@ namespace ExecutorTests
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
       (logger, configStore, serviceExceptionHandler,
-        customerUid, userId, userEmailAddress, null,
+        customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
         producer, kafkaTopicName,
         null, raptorProxy, null,
         projectRepo);
@@ -221,7 +221,5 @@ namespace ExecutorTests
       Assert.AreEqual(settingsUpdated, result.settings, "executor returned incorrect Settings");
       Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
     }
-
   }
 }
-

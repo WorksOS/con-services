@@ -474,7 +474,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected async Task<IEnumerable<Guid>> SetFileActivatedState(string projectUid, Dictionary<Guid, bool> fileUids)
     {
+      log.LogDebug($"SetFileActivatedState: projectUid={projectUid}, {fileUids.Keys.Count} files with changed state");
+
       var deactivatedFileList = await GetImportedFileProjectSettings(projectUid).ConfigureAwait(false) ?? new List<ActivatedFileDescriptor>();
+      log.LogDebug($"SetFileActivatedState: originally {deactivatedFileList.Count} deactivated files");
+
       var missingUids = new List<Guid>();
       foreach (var key in fileUids.Keys)
       {
@@ -499,31 +503,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           deactivatedFileList.Add(new ActivatedFileDescriptor{ImportedFileUid = key.ToString(), IsActivated = false});
         }
       }
+      log.LogDebug($"SetFileActivatedState: now {deactivatedFileList.Count} deactivated files, {missingUids.Count} missingUids");
 
-      ProjectSettingsRequest projectSettingsRequest = null;
-      try
-      {
-        projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
-            .CustomerUid(customerUid))
-          .CreateProjectSettingsRequest(projectUid, JsonConvert.SerializeObject(deactivatedFileList), ProjectSettingsType.ImportedFiles);
-        projectSettingsRequest.Validate();
+      ProjectSettingsRequest projectSettingsRequest = 
+        requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+          .CustomerUid(customerUid))
+        .CreateProjectSettingsRequest(projectUid, JsonConvert.SerializeObject(deactivatedFileList), ProjectSettingsType.ImportedFiles);
+      projectSettingsRequest.Validate();
 
-        var result = await WithServiceExceptionTryExecuteAsync(() =>
-          RequestExecutorContainerFactory
-            .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
-              customerUid, userId, null, customHeaders,
-              producer, kafkaTopicName,
-              null, raptorProxy, null,
-              projectRepo)
-            .ProcessAsync(projectSettingsRequest)
-        ) as ProjectSettingsResult;
-      }
-      catch (Exception ex)
-      {
-        log.LogInformation($"SetFileActivatedState: Failed to set activation state for imported files: {ex.Message}, {JsonConvert.SerializeObject(projectSettingsRequest)}");
-        missingUids = fileUids.Keys.ToList();
-      }
-      return fileUids.Keys.Except(missingUids);
+      var result = await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
+            customerUid, userId, null, customHeaders,
+            producer, kafkaTopicName,
+            null, raptorProxy, null,
+            projectRepo)
+          .ProcessAsync(projectSettingsRequest)
+      ) as ProjectSettingsResult;
+
+      var changedUids = fileUids.Keys.Except(missingUids);
+      log.LogDebug($"SetFileActivatedState: {changedUids.Count()} changedUids");
+      return changedUids;
     }
 
     private async Task<List<ActivatedFileDescriptor>> GetImportedFileProjectSettings(string projectUid)

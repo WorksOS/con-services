@@ -46,24 +46,24 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       try
       {
         result = await raptorProxy
-          .ValidateProjectSettings(Guid.Parse(request.projectUid), request.settings, customHeaders)
+          .ValidateProjectSettings(Guid.Parse(request.projectUid), request.Settings, customHeaders)
           .ConfigureAwait(false);
       }
       catch (Exception e)
       {
         log.LogError(
-          $"RaptorValidateProjectSettings: RaptorServices failed with exception. projectUid:{request.projectUid} settings:{request.settings}. Exception Thrown: {e.Message}. ");
+          $"RaptorValidateProjectSettings: RaptorServices failed with exception. projectUid:{request.projectUid} settings:{request.Settings}. Exception Thrown: {e.Message}. ");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 70,
           "raptorProxy.ValidateProjectSettings", e.Message);
       }
 
       log.LogDebug(
-        $"RaptorValidateProjectSettings: projectUid: {request.projectUid} settings: {request.settings}. RaptorServices returned code: {result?.Code ?? -1} Message {result?.Message ?? "result == null"}.");
+        $"RaptorValidateProjectSettings: projectUid: {request.projectUid} settings: {request.Settings}. RaptorServices returned code: {result?.Code ?? -1} Message {result?.Message ?? "result == null"}.");
 
       if (result != null && result.Code != 0)
       {
         log.LogError(
-          $"RaptorValidateProjectSettings: RaptorServices failed. projectUid:{request.projectUid} settings:{request.settings}. Reason: {result?.Code ?? -1} {result?.Message ?? "null"}. ");
+          $"RaptorValidateProjectSettings: RaptorServices failed. projectUid:{request.projectUid} settings:{request.Settings}. Reason: {result?.Code ?? -1} {result?.Message ?? "null"}. ");
 
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, result.Code.ToString(),
           result.Message);
