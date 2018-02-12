@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         { "message", "Task completed." }
       };
       NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, _log, newRelicAttributes);
-      _log.LogDebug($"ImportedFilesSyncTask()  ended. endUtc: {DateTime.UtcNow}");
+      _log.LogDebug($"|ImportedFilesSyncTask()  ended. ProcessSurveyedSurfaceType={processSurveyedSurfaceType} endUtc: {DateTime.UtcNow}");
 
     }
   }
