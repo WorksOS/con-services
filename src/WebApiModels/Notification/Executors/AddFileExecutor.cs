@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             log.LogWarning("Failed to get requested " + FileUtils.PROJECTION_FILE_EXTENSION + " file with error: {0}.",
               ContractExecutionStates.FirstNameWithOffset((int)result2));
 
-            return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful - not tiles can be generated")
+            return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful - no tiles can be generated")
               { MinZoomLevel = 0, MaxZoomLevel = 0 };
 
             /*throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
@@ -113,11 +113,17 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             request.projectId.Value, dxfUnitsType, out string haFile);
           if (result3 != TASNodeErrorStatus.asneOK)
           {
-            throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
-              ContractExecutionStatesEnum.FailedToGetResults,
-              string.Format(
-                "Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + " file with error: {0}.",
-                ContractExecutionStates.FirstNameWithOffset((int)result2))));
+            log.LogWarning(string.Format(
+              "Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + " file with error: {0}.",
+              ContractExecutionStates.FirstNameWithOffset((int)result2)));
+            return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful. Can not create horizontal adjustment - no tiles can be generated")
+              { MinZoomLevel = 0, MaxZoomLevel = 0 };
+
+            /* throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+               ContractExecutionStatesEnum.FailedToGetResults,
+               string.Format(
+                 "Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + " file with error: {0}.",
+                 ContractExecutionStates.FirstNameWithOffset((int)result2))));*/
           }
           //An empty string means there is no horizontal adjustment in coordinate system so no file to create
           if (haFile != string.Empty)
@@ -129,7 +135,14 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           if (fileType != ImportedFileType.Linework)
           {
             //Get alignment or surface boundary as DXF file from Raptor
-            await CreateDxfFile(request.projectId.Value, request.File, suffix, request.DXFUnitsType);    
+            if (!await CreateDxfFile(request.projectId.Value, request.File, suffix, request.DXFUnitsType))
+            {
+              //We need gracefully fail here as the file may be imported to an empty datamodel
+              log.LogWarning("Failed to get requested " + FileUtils.DXF_FILE_EXTENSION);
+
+              return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful. Can not create DXF - no tiles can be generated")
+                { MinZoomLevel = 0, MaxZoomLevel = 0 };
+            }
           }
           //Calculate the zoom range
           string generatedName = FileUtils.GeneratedFileName(request.File.fileName, suffix, FileUtils.DXF_FILE_EXTENSION);
@@ -242,10 +255,15 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
       else
       {
         log.LogWarning("Failed to generate DXF boundary for file {0} for project {1}. Raptor error {2}", fileDescr.fileName, projectId, designProfilerResult);
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+
+        //We need gracefully fail here as the file may be imported to an empty datamodel
+
+        return false;
+
+        /*throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
           ContractExecutionStatesEnum.FailedToGetResults,
           string.Format("Failed to create " + FileUtils.DXF_FILE_EXTENSION + " file with error: {0}",
-            ContractExecutionStates.FirstNameWithOffset((int)designProfilerResult))));
+            ContractExecutionStates.FirstNameWithOffset((int)designProfilerResult))));*/
       }
     }
 
