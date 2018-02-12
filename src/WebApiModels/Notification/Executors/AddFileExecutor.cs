@@ -90,10 +90,18 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             dxfUnitsType, out string prjFile);
           if (result2 != TASNodeErrorStatus.asneOK)
           {
-            throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+            //We need gracefully fail here as the file may be imported to an empty datamodel
+            log.LogWarning("Failed to get requested " + FileUtils.PROJECTION_FILE_EXTENSION + " file with error: {0}.",
+              ContractExecutionStates.FirstNameWithOffset((int)result2));
+
+            return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful - not tiles can be generated")
+              { MinZoomLevel = 0, MaxZoomLevel = 0 };
+
+            /*throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
               ContractExecutionStatesEnum.FailedToGetResults,
               string.Format("Failed to get requested " + FileUtils.PROJECTION_FILE_EXTENSION + " file with error: {0}.",
-                ContractExecutionStates.FirstNameWithOffset((int)result2))));
+                ContractExecutionStates.FirstNameWithOffset((int)result2))));*/
+
           }
           //Note: Cannot have async void therefore bool result from method. However, failure handled inside method so ignore return value here.
           await CreateTransformFile(request.projectId.Value, request.File, prjFile, suffix, FileUtils.PROJECTION_FILE_EXTENSION);
