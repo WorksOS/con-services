@@ -1,5 +1,3 @@
-#FROM microsoft/dotnet:nanoserver
-#FROM microsoft/nanoserver
 FROM microsoft/windowsservercore:latest
 
 # Set the Working Directory
