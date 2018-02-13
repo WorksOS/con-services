@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
+using VSS.ConfigurationStore;
 
 namespace VSS.MasterData.Proxies
 {
@@ -15,11 +16,17 @@ namespace VSS.MasterData.Proxies
   public class GracefulWebRequest
   {
     private readonly ILogger log;
+    private readonly int logMaxChar;
 
-    public GracefulWebRequest(ILoggerFactory logger)
+    public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore)
     {
-
       log = logger.CreateLogger<GracefulWebRequest>();
+      logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR");
+
+      if (logMaxChar == 0)
+      {
+        log.LogWarning("Missing environment variable LOG_MAX_CHAR, long web api responses will not be truncated");
+      }
     }
 
 
@@ -31,6 +38,7 @@ namespace VSS.MasterData.Proxies
       private readonly string payloadData;
       private readonly ILogger log;
       private const int BUFFER_MAX_SIZE = 1024;
+      private readonly int logMaxChar;
 
       private async Task<string> GetStringFromResponseStream(WebResponse response)
       {
@@ -115,9 +123,13 @@ namespace VSS.MasterData.Proxies
           {
             foreach (var key in customHeaders.Keys)
             {
-              if (key == "Content-Type")
+              if (string.Equals(key, "Content-Type", StringComparison.OrdinalIgnoreCase))
               {
                 httpRequest.ContentType = customHeaders[key];
+              }
+              else if (string.Equals(key, "Accept", StringComparison.OrdinalIgnoreCase))
+              {
+                httpRequest.Accept = customHeaders[key];
               }
               else
               {
@@ -126,40 +138,55 @@ namespace VSS.MasterData.Proxies
             }
           }
         }
+
         if (requestStream != null)
         {
           using (var writeStream = await request.GetRequestStreamAsync())
           {
-            await requestStream.CopyToAsync(writeStream);
+            if (requestStream is MemoryStream)
+            {
+              var reqS = ((MemoryStream)requestStream).ToArray();
+              await writeStream.WriteAsync(reqS, 0, reqS.Length);
+            }
+            else
+            {
+              await requestStream.CopyToAsync(writeStream);
+            }
           }
         }
         else
           //Apply payload if any
-        if (!String.IsNullOrEmpty(payloadData))
-        {
-          // don't overwrite any existing one.
-          if (!customHeaders.ContainsKey("Content-Type"))
+          if (!String.IsNullOrEmpty(payloadData))
           {
-            request.ContentType = "application/json";
+            // don't overwrite any existing one.
+            if (customHeaders == null || !customHeaders.ContainsKey("Content-Type"))
+            {
+              request.ContentType = "application/json";
+            }
+            log.LogDebug($"PrepareWebRequest() T : requestWithPayload {JsonConvert.SerializeObject(request).Truncate(logMaxChar)}");
+
+
+            using (var writeStream = await request.GetRequestStreamAsync())
+            {
+              UTF8Encoding encoding = new UTF8Encoding();
+              byte[] bytes = encoding.GetBytes(payloadData);
+              await writeStream.WriteAsync(bytes, 0, bytes.Length);
+            }
           }
-          using (var writeStream = await request.GetRequestStreamAsync())
-          {
-            UTF8Encoding encoding = new UTF8Encoding();
-            byte[] bytes = encoding.GetBytes(payloadData);
-            await writeStream.WriteAsync(bytes, 0, bytes.Length);
-          }
-        }
         return request;
       }
 
       public RequestExecutor(string endpoint, string method, IDictionary<string, string> customHeaders,
-        string payloadData, ILogger log)
+        string payloadData, ILogger log, int logMaxChar)
       {
         this.endpoint = endpoint;
         this.method = method;
-        this.customHeaders = customHeaders;
+        var comparer = StringComparer.OrdinalIgnoreCase;
+        this.customHeaders = new Dictionary<string, string>(customHeaders, comparer);
+
         this.payloadData = payloadData;
         this.log = log;
+        this.logMaxChar = logMaxChar;
       }
 
 
@@ -214,7 +241,7 @@ namespace VSS.MasterData.Proxies
           {
             log.LogDebug($"ExecuteRequest() T executed the request");
             responseString = await GetStringFromResponseStream(response);
-            log.LogDebug($"ExecuteRequest() T success: responseString {responseString}");
+            log.LogDebug($"ExecuteRequest() T success: responseString {responseString.Truncate(logMaxChar)}");
           }
         }
         catch (WebException ex)
@@ -227,7 +254,7 @@ namespace VSS.MasterData.Proxies
             responseString = await GetStringFromResponseStream(exResponse);
             HttpWebResponse httpResponse = (HttpWebResponse) exResponse;
             log.LogDebug(
-              $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString}");
+              $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString.Truncate(logMaxChar)}");
             throw new Exception($"{httpResponse.StatusCode} {responseString}");
           }
         }
@@ -246,12 +273,12 @@ namespace VSS.MasterData.Proxies
         if (!string.IsNullOrEmpty(responseString))
         {     
           var toReturn = JsonConvert.DeserializeObject<T>(responseString);
-          log.LogDebug($"ExecuteRequest() T. toReturn:{JsonConvert.SerializeObject(toReturn)}");
+          log.LogDebug($"ExecuteRequest() T. toReturn:{JsonConvert.SerializeObject(toReturn).Truncate(logMaxChar)}");
           return toReturn;
           
         }
         var defaultToReturn = default(T);
-        log.LogDebug($"ExecuteRequest() T. defaultToReturn:{JsonConvert.SerializeObject(defaultToReturn)}");
+        log.LogDebug($"ExecuteRequest() T. defaultToReturn:{JsonConvert.SerializeObject(defaultToReturn).Truncate(logMaxChar)}");
         return defaultToReturn;
 
       }
@@ -273,7 +300,7 @@ namespace VSS.MasterData.Proxies
       string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
-        $"ExecuteRequest() T : endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))} payloadData {payloadData}");
+        $"ExecuteRequest() T : endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData.Truncate(logMaxChar)}");
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -281,7 +308,7 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(() =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log);
+          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log, logMaxChar);
           return executor.ExecuteActualRequest<T>();
         });
 
@@ -317,7 +344,7 @@ namespace VSS.MasterData.Proxies
       string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
-        $"ExecuteRequest() Stream: endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))} payloadData {payloadData}");
+        $"ExecuteRequest() Stream: endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData.Truncate(logMaxChar)}");
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -325,7 +352,7 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(async () =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log);
+          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log, logMaxChar);
           return await executor.ExecuteActualStreamRequest();
         });
 
@@ -361,7 +388,7 @@ namespace VSS.MasterData.Proxies
       IDictionary<string, string> customHeaders = null, string method = "POST", int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
-        $"ExecuteRequest() T(no method) : endpoint {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))}");
+        $"ExecuteRequest() T(no method) : endpoint {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))}");
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -369,7 +396,7 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(async () =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, method, customHeaders, "", log);
+          var executor = new RequestExecutor(endpoint, method, customHeaders, "", log, logMaxChar);
           return await executor.ExecuteActualRequest<T>(payload);
         });
 

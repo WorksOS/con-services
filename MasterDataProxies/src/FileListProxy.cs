@@ -16,9 +16,9 @@ namespace VSS.MasterData.Proxies
       {
       }
      
-      public async Task<List<FileData>> GetFiles(string projectUid, IDictionary<string, string> customHeaders)
+      public async Task<List<FileData>> GetFiles(string projectUid, string userId, IDictionary<string, string> customHeaders)
       {
-        var result = await GetContainedMasterDataList<FileDataResult>(CacheKeyByUser(projectUid, customHeaders), 
+        var result = await GetContainedMasterDataList<FileDataResult>(projectUid, userId, 
           "IMPORTED_FILE_CACHE_LIFE", "IMPORTED_FILE_API_URL", customHeaders, $"?projectUid={projectUid}");
         if (result.Code == 0)
         {
@@ -35,10 +35,10 @@ namespace VSS.MasterData.Proxies
     /// Clears an item from the cache
     /// </summary>
     /// <param name="projectUid">The projectUid of the item to remove from the cache</param>
-    /// <param name="customHeaders">Request headers</param>
-    public void ClearCacheItem(string projectUid, IDictionary<string, string> customHeaders)
+    /// <param name="userId">The user ID</param>
+    public void ClearCacheItem(string projectUid, string userId)
     {
-      ClearCacheItem<FileDataResult>(CacheKeyByUser(projectUid, customHeaders));
+      ClearCacheItem<FileDataResult>(projectUid, userId);
     }
   }
 

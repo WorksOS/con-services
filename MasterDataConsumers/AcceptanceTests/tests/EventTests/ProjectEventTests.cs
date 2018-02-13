@@ -349,7 +349,7 @@ namespace EventTests
       testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectSettings", "fk_ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectSettings", "fk_ProjectUID",
-        "Settings, fk_ProjectSettingsID, UserID", //Fields
+        "Settings, fk_ProjectSettingsTypeID, UserID", //Fields
         $"{settings}, 1, {userId}", //Expected
         projectGuid);
     }
