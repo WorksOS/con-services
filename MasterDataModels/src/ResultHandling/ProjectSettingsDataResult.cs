@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.Models;
 
 namespace VSS.MasterData.Models.ResultHandling
@@ -15,7 +16,7 @@ namespace VSS.MasterData.Models.ResultHandling
     /// The projects settings
     /// </summary>
     [JsonProperty(PropertyName = "settings")]
-    public string Settings { get; set; }
+    public JObject Settings { get; set; }
 
   }
 }

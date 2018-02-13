@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
@@ -15,7 +16,7 @@ namespace VSS.MasterData.Proxies
     {
     }
 
-    public async Task<string> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders)
+    public async Task<JObject> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders)
     {
       var result = await GetMasterDataItem<ProjectSettingsDataResult>(projectUid, userId, 
         "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, $"/{projectUid}");

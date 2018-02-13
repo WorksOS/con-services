@@ -162,10 +162,10 @@ namespace VSS.TCCFileAccess
       PutFileRequest sendFileParams = new PutFileRequest()
       {
         filespaceid = filespaceId,
-        path = WebUtility.UrlEncode(path),
+        path = path,//WebUtility.UrlEncode(path),
         replace = true,
         commitUpload = true,
-        filename = WebUtility.UrlEncode(filename)
+        filename = filename//WebUtility.UrlEncode(filename)
       };
       if (String.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
@@ -173,7 +173,7 @@ namespace VSS.TCCFileAccess
       var gracefulClient = new GracefulWebRequest(logFactory, configStore);
       var (requestString, headers) = FormRequest(sendFileParams, "PutFile");
 
-      headers.Add("X-File-Name", filename);
+      headers.Add("X-File-Name", WebUtility.UrlEncode(filename));
       headers.Add("X-File-Size", sizeOfContents.ToString());
       headers.Add("X-FileType", "");
 
@@ -239,7 +239,7 @@ namespace VSS.TCCFileAccess
       GetFileParams getFileParams = new GetFileParams
       {
         filespaceid = filespaceId,
-        path = WebUtility.UrlEncode(fullName)
+        path = fullName//WebUtility.UrlEncode(fullName)
       };
 
       if (string.IsNullOrEmpty(tccBaseUrl))
@@ -313,9 +313,9 @@ namespace VSS.TCCFileAccess
         RenParams renParams = new RenParams
         {
           filespaceid = org.filespaceId,
-          path = WebUtility.UrlEncode(srcFullName),
+          path = srcFullName,//WebUtility.UrlEncode(srcFullName),
           newfilespaceid = org.filespaceId,
-          newPath = WebUtility.UrlEncode(dstFullName),
+          newPath = dstFullName,//WebUtility.UrlEncode(dstFullName),
           merge = false,
           replace = true
         };
@@ -362,9 +362,9 @@ namespace VSS.TCCFileAccess
         CopyParams copyParams = new CopyParams
         {
           filespaceid = filespaceId,
-          path = WebUtility.UrlEncode(srcFullName),
+          path = srcFullName, //WebUtility.UrlEncode(srcFullName),
           newfilespaceid = filespaceId,
-          newPath = WebUtility.UrlEncode(dstFullName),
+          newPath = dstFullName,//WebUtility.UrlEncode(dstFullName),
           merge = false,
           replace = true//Not sure if we want true or false here
         };
@@ -400,17 +400,21 @@ namespace VSS.TCCFileAccess
         DirParams dirParams = new DirParams
         {
           filespaceid = org.filespaceId,
-          path = WebUtility.UrlEncode(path),
+          path = path,//WebUtility.UrlEncode(path),
           recursive = false,
           filterfolders = true,
         };
         var dirResult = await ExecuteRequest<DirResult>(Ticket, "Dir", dirParams);
         if (dirResult != null)
         {
-          return dirResult;
+          if (dirResult.success)
+            return dirResult;
+          CheckForInvalidTicket(dirResult, "GetFolders");
         }
-        CheckForInvalidTicket(dirResult, "GetFolders");
-        Log.LogError("Null result from GetFolders for org {0}", org.shortName);
+        else
+        {
+          Log.LogError("Null result from GetFolders for org {0}", org.shortName);
+        }
       }
       catch (Exception ex)
       {
@@ -428,7 +432,7 @@ namespace VSS.TCCFileAccess
         DirParams dirParams = new DirParams
         {
           filespaceid = filespaceId,
-          path = WebUtility.UrlEncode(path),
+          path = path,//WebUtility.UrlEncode(path),
           recursive = false,
           filterfolders = false,
         };
@@ -437,10 +441,14 @@ namespace VSS.TCCFileAccess
         var dirResult = await ExecuteRequest<DirResult>(Ticket, "Dir", dirParams);
         if (dirResult != null)
         {
-          return dirResult;
+          if (dirResult.success)
+            return dirResult;
+          CheckForInvalidTicket(dirResult, "GetFileList");
         }
-        CheckForInvalidTicket(dirResult, "GetFileList");
-        Log.LogError("Null result from GetFileList for filespaceId {0}", filespaceId);
+        else
+        {
+          Log.LogError("Null result from GetFileList for filespaceId {0}", filespaceId);
+        }
       }
       catch (Exception ex)
       {
@@ -458,7 +466,7 @@ namespace VSS.TCCFileAccess
         LastDirChangeParams lastDirChangeParams = new LastDirChangeParams
         {
           filespaceid = filespaceId,
-          path = WebUtility.UrlEncode(path),
+          path = path,//WebUtility.UrlEncode(path),
           recursive = true
         };
         var lastDirChangeResult =
@@ -505,7 +513,7 @@ namespace VSS.TCCFileAccess
         GetFileAttributesParams getFileAttrParams = new GetFileAttributesParams
         {
           filespaceid = filespaceId,
-          path = WebUtility.UrlEncode(path)
+          path = path,//WebUtility.UrlEncode(path)
         };
         var getFileAttrResult =
           await ExecuteRequestWithAllowedError<GetFileAttributesResult>(Ticket, "GetFileAttributes", getFileAttrParams);
@@ -545,7 +553,7 @@ namespace VSS.TCCFileAccess
         DeleteFileParams deleteParams = new DeleteFileParams
         {
           filespaceid = filespaceId,
-          path = WebUtility.UrlEncode(fullName),
+          path = fullName,//WebUtility.UrlEncode(fullName),
           recursive = isFolder
         };
         var deleteResult = await ExecuteRequest<DeleteFileResult>(Ticket, "Del", deleteParams);
@@ -574,7 +582,7 @@ namespace VSS.TCCFileAccess
         MkDir mkDirParams = new MkDir
         {
           filespaceid = filespaceId,
-          path = WebUtility.UrlEncode(path),
+          path = path,//WebUtility.UrlEncode(path),
           force = true
         };
         var mkDirResult = await ExecuteRequest<MkDirResult>(Ticket, "MkDir", mkDirParams);
@@ -650,14 +658,21 @@ namespace VSS.TCCFileAccess
 
     private (string, Dictionary<string, string>) FormRequest(object request, string endpoint, string token = null)
     {
-      var requestString = $"{tccBaseUrl}/tcc/{endpoint}?ticket={token ?? Ticket}";
+      var requestString = $"{tccBaseUrl}/tcc/{endpoint}?";
       var headers = new Dictionary<string, string>();
-      var properties = from p in request.GetType().GetRuntimeFields()
+      /*var properties = from p in request.GetType().GetRuntimeFields()
                        where p.GetValue(request) != null
-                       select new { p.Name, Value = p.GetValue(request) };
-      foreach (var p in properties)
+                       select new { p.Name, Value = p.GetValue(request) };*/
+      var dProperties = request.GetType().GetRuntimeFields().Where(p => p.GetValue(request) != null).Select(p=> new { p.Name, Value = p.GetValue(request) })
+        .ToDictionary(d => d.Name, v => v.Value.ToString());
+      dProperties.Add("ticket", token ?? Ticket);
+
+//      foreach (var p in properties)
       {
-        requestString += $"&{p.Name}={p.Value.ToString()}";
+        requestString += new System.Net.Http.FormUrlEncodedContent(dProperties)
+          .ReadAsStringAsync().Result;
+
+        //$"&{p.Name}={p.Value.ToString()}";
       }
       return (requestString, headers);
     }
@@ -764,7 +779,7 @@ namespace VSS.TCCFileAccess
         CreateFileJobParams jobParams = new CreateFileJobParams
         {
           filespaceid = filespaceId,
-          path = WebUtility.UrlEncode(path),
+          path = path,//WebUtility.UrlEncode(path),
           type = "GEOFILEINFO",
           forcerender = false
         };
