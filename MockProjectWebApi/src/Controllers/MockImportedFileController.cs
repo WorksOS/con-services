@@ -267,7 +267,7 @@ namespace MockProjectWebApi.Controllers
         ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "SurveyedSurfaceAcceptanceTest",
         ImportedFileType = ImportedFileType.SurveyedSurface,
-        ImportedFileUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = "dcb41fbd-7d43-4b36-a144-e22bbccc24a8",
         LegacyFileId = 14175,
         IsActivated = true,
         MinZoomLevel = 0,
