@@ -97,9 +97,9 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     public ContractExecutionResult PostTagFile([FromBody]CompactionTagFileRequest request)
     {
       log.LogDebug("PostTagFile: " + JsonConvert.SerializeObject(request));
-      var projectDescr = (User as RaptorPrincipal).GetProject(request.projectUid);
-      var boundary = WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectDescr.projectGeofenceWKT).ToArray());
-      TagFileRequest tfRequest = TagFileRequest.CreateTagFile(request.fileName, request.data, projectDescr.projectId, boundary, -1, false, false);
+//      var projectDescr = (User as RaptorPrincipal).GetProject(request.projectUid);
+//      var boundary = WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectDescr.projectGeofenceWKT).ToArray());
+      TagFileRequest tfRequest = TagFileRequest.CreateTagFile(request.fileName, request.data, -1 /*projectDescr.projectId*/, null /*boundary*/, -1, false, false);
       tfRequest.Validate();
       return RequestExecutorContainerFactory.Build<TagFileExecutor>(logger, raptorClient, tagProcessor).Process(tfRequest);
     }

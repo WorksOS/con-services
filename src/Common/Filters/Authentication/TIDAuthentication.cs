@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
                 string authorization = context.Request.Headers["X-Jwt-Assertion"];
 
                 // The v1 TAG file submission end point does not require a customer UID to be provided
-                if (context.Request.Path.Value.Contains("api/v1/tagfiles") && context.Request.Method == "POST")
+                if ((context.Request.Path.Value.Contains("api/v1/tagfiles") || context.Request.Path.Value.Contains("api/v2/tagfiles")) && context.Request.Method == "POST")
                     requireCustomerUid = false;
                 else
                     customerUid = context.Request.Headers["X-VisionLink-CustomerUid"];
