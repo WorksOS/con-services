@@ -107,8 +107,8 @@ namespace VSS.Productivity3D.Filter.WebApi
         options.SingleApiVersion(new Info
         {
           Version = "v1",
-          Title = "Project Master Data API",
-          Description = "API for project data",
+          Title = "Filter Service API",
+          Description = "API for filter data",
           TermsOfService = "None"
         });
 
