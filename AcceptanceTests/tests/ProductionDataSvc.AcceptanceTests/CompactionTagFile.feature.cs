@@ -71,25 +71,24 @@ namespace ProductionDataSvc.AcceptanceTests
         public virtual void FeatureBackground()
         {
 #line 4
-#line 5
- testRunner.Given("the Compaction Tag file service URI \"/api/v2/tagfiles\" and request repo \"Compacti" +
-                    "onTagFileRequest.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionTagFile - Bad Request - Returns Failed to process tagfile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTagFile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void CompactionTagFile_BadRequest_ReturnsFailedToProcessTagfile()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CompactionTagFile - Bad Request - Returns Failed to process tagfile", ((string[])(null)));
-#line 7
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CompactionTagFile - Bad Request - Returns Failed to process tagfile", new string[] {
+                        "ignore"});
+#line 9
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 8
+#line 10
  testRunner.When("I POST a compaction tag file with code 100 from the repository", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 9
+#line 11
  testRunner.Then("the Tag File Service response should contain Code 2008 and Message \"Failed to pro" +
                     "cess tagfile with error: OnChooseMachine. Machine Subscriptions Invalid.\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
