@@ -60,11 +60,11 @@ namespace ExecutorTests
       subscriptionRepo = serviceProvider.GetRequiredService<IRepository<ISubscriptionEvent>>() as SubscriptionRepository;
 
 
-      producer = serviceProvider.GetRequiredService<IKafka>();
-      if (!producer.IsInitializedProducer)
-        producer.InitProducer(configStore);
-      kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
-                       configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      //producer = serviceProvider.GetRequiredService<IKafka>();
+      //if (!producer.IsInitializedProducer)
+      //  producer.InitProducer(configStore);
+      //kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
+      //                 configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
     protected bool CreateAssetDeviceAssociation(Guid assetUid, long legacyAssetId, Guid? owningCustomerUid, Guid deviceUid, string deviceSerialNumber, string deviceType)
@@ -133,6 +133,22 @@ namespace ExecutorTests
 
       var g = projectRepo.GetProject(legacyProjectId); g.Wait();
       return g.Result != null;
+    }
+
+    protected bool DeleteProject(Guid projectUid)
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var deleteProjectEvent = new DeleteProjectEvent()
+      {
+        ProjectUID = projectUid,
+        ActionUTC = actionUtc
+      };
+
+      projectRepo.StoreEvent(deleteProjectEvent).Wait();
+
+      var g = projectRepo.GetProject(projectUid.ToString()); g.Wait();
+      return g.Result == null;
     }
 
     protected bool DeleteProject(Guid projectUid)

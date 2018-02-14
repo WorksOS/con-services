@@ -48,12 +48,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       this.projectRepository = projectRepository as ProjectRepository;
       this.subscriptionsRepository = subscriptionsRepository as SubscriptionRepository;
 
-      this.producer = producer;
-      if (!this.producer.IsInitializedProducer)
-        this.producer.InitProducer(configStore);
+      //temp fix as TFProcessor was inadvertently changed to call Notification v2 endpoint
+      //this.producer = producer;
+      //if (!this.producer.IsInitializedProducer)
+      //  this.producer.InitProducer(configStore);
 
-      kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
-                       configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      //kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
+      //                 configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
   }
 }
