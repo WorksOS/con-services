@@ -87,6 +87,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       DynamicAddwithOffset("Landfill projects are not supported.", 74);
       DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is an unrecognized type.", 75);
       DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is not supported at present.", 76);
+      DynamicAddwithOffset("Unsupported ProjectSettings type.", 77);
     }
 
     /// <summary>

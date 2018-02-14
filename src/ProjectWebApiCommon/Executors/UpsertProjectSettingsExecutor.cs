@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
@@ -67,7 +69,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       try
       {
         var projectSettings = await projectRepo.GetProjectSettings(request.projectUid, userId, request.ProjectSettingsType).ConfigureAwait(false);
-        result = ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, projectSettings.Settings, projectSettings.ProjectSettingsType);
+
+        switch (request.ProjectSettingsType)
+        {
+          case ProjectSettingsType.Targets:
+            result = projectSettings == null ?
+              ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, null, request.ProjectSettingsType) :
+              ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, JsonConvert.DeserializeObject<JObject>(projectSettings.Settings), projectSettings.ProjectSettingsType);
+            break;
+          case ProjectSettingsType.ImportedFiles:
+            var tempObj = JsonConvert.DeserializeObject<JArray>(projectSettings.Settings);
+            var tempJObject = new JObject { ["importedFiles"] = tempObj };
+            result = ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, tempJObject, projectSettings.ProjectSettingsType);
+            break;
+          default:
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 77);
+            break;
+        }
       }
       catch (Exception e)
       {
