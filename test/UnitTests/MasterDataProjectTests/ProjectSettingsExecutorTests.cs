@@ -182,7 +182,9 @@ namespace VSS.MasterData.ProjectTests
     {
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
-      string settings = @"{firstValue: 10, lastValue: 20}";
+
+      string settings = settingsType == ProjectSettingsType.Targets ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";
+      //[{"ImportedFileUid":"83dcb4d2-1ade-4aa5-82b4-978289a48922","IsActivated":false}]
       string userId = "my app";
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -211,14 +213,30 @@ namespace VSS.MasterData.ProjectTests
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
-      var tempSettings = JsonConvert.DeserializeObject<JObject>(settings);
-
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect projectUid");
       Assert.IsNotNull(result.settings, "executor should have returned settings");
-      Assert.AreEqual(tempSettings["firstValue"], result.settings["firstValue"], "executor returned incorrect firstValue of settings");
-      Assert.AreEqual(tempSettings["lastValue"], result.settings["lastValue"], "executor should have returned lastValue of settings");
-      Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
+
+      if (settingsType == ProjectSettingsType.Targets)
+      {
+        var tempSettings = JsonConvert.DeserializeObject<JObject>(settings);
+        
+        Assert.AreEqual(tempSettings["firstValue"], result.settings["firstValue"],
+          "executor returned incorrect firstValue of settings");
+        Assert.AreEqual(tempSettings["lastValue"], result.settings["lastValue"],
+          "executor should have returned lastValue of settings");
+        Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
+      }
+      else
+      {
+        var tempObj = JsonConvert.DeserializeObject<JArray>(settings);
+        var tempJObject = new JObject { ["importedFiles"] = tempObj };
+
+        Assert.AreEqual(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"], "executor returned incorrect firstValue of the first object of the settings");
+        Assert.AreEqual(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"], "executor returned incorrect lastValue of the first object of the settings");
+        Assert.AreEqual(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"], "executor returned incorrect firstValue of the last object of the settings");
+        Assert.AreEqual(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"], "executor returned incorrect lastValue of the last object of the settings");
+      }
     }
 
     [TestMethod]
