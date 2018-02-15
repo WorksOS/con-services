@@ -14,8 +14,7 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
     /// A project unique identifier.
     /// </summary>
     [JsonProperty(PropertyName = "projectUid", Required = Required.Default)]
-    [ValidProjectUID]
-    public Guid projectUid { get; private set; }
+    public Guid? projectUid { get; private set; }
 
     /// <summary>
     /// The name of the TAG file.
