@@ -12,8 +12,16 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
   /// If not set, Raptor will determine automatically which project the TAG file should be processed into. 
   /// When provided it acts as an override value. 
   /// </summary>
-  public class TagFileRequest : ProjectID, IValidatable//
+  public class TagFileRequest : /* ProjectID,*/ IValidatable
     {
+
+        /// <summary>
+        /// Dummy project ID field to keep things in order until we straighten the TAG files submission endpoint out.
+        /// </summary>
+        [JsonProperty(PropertyName = "projectId", Required = Required.Default)]
+        public long? projectId { get; private set; }
+
+
         /// <summary>
         /// The name of the TAG file.
         /// </summary>
@@ -59,8 +67,7 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
         /// The boundary of the project to process the TAG file into. If the location of the data in the TAG file is outside of this boundary it will not be processed into the project.
         /// May be null.
         /// </summary>
-        [JsonProperty(PropertyName = "boundary", Required = Required.Always)]
-        [Required]
+        [JsonProperty(PropertyName = "boundary", Required = Required.Default)]
         public WGS84Fence boundary { get; private set; }
 
         /// <summary>
@@ -124,9 +131,9 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
         /// <summary>
         /// Validates all properties
         /// </summary>
-        public override void Validate()
+        public /* override */ void Validate()
         {         
-          base.Validate();
+          // base.Validate();
         }
 
     }
