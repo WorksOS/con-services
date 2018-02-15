@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.Swagger.Model;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Swashbuckle.AspNetCore.Swagger;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
@@ -100,18 +100,13 @@ namespace VSS.Productivity3D.Filter.WebApi
         }
       );
       //Configure swagger
-      services.AddSwaggerGen();
+      services.AddSwaggerGen(c =>
+      {
+        c.SwaggerDoc("v1", new Info { Title = "Filter Service API", Version = "v1" });
+      });
 
       services.ConfigureSwaggerGen(options =>
       {
-        options.SingleApiVersion(new Info
-        {
-          Version = "v1",
-          Title = "Project Master Data API",
-          Description = "API for project data",
-          TermsOfService = "None"
-        });
-
         string pathToXml;
 
         var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
@@ -157,12 +152,18 @@ namespace VSS.Productivity3D.Filter.WebApi
 #endif
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
-      app.UseTIDAuthentication();
-
-      app.UseMvc();
 
       app.UseSwagger();
-      app.UseSwaggerUi();
+
+      app.UseSwaggerUI(c =>
+      {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Filter Service API V1");
+      });
+
+      app.UseTIDAuthentication();
+      app.UseMvc();
+
+
     }
   }
 }
