@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -32,7 +34,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
         result = projectSettings == null ? 
           ProjectSettingsResult.CreateProjectSettingsResult(projectSettingsRequest.projectUid, null, projectSettingsRequest.ProjectSettingsType) : 
-          ProjectSettingsResult.CreateProjectSettingsResult(projectSettings.ProjectUid, projectSettings.Settings, projectSettings.ProjectSettingsType);
+          ProjectSettingsResult.CreateProjectSettingsResult(projectSettings.ProjectUid, JsonConvert.DeserializeObject<JObject>(projectSettings.Settings), projectSettings.ProjectSettingsType);
       }
       catch (Exception e)
       {

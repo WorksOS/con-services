@@ -173,7 +173,7 @@ namespace TestRun
     /// <summary>
     /// Load any dll's that are used by the testing classes
     /// </summary>
-    private static void LoadNecessaryDlls()
+    private void LoadNecessaryDlls()
     {
       // Invoke any of the dll's used by the testing framework.
       Thread.Sleep(1);
@@ -261,7 +261,7 @@ namespace TestRun
     /// </summary>
     /// <param name="current"></param>
     /// <param name="instance"></param>
-    private static void RunAnyTestInitializeMethods(Type current, object instance)
+    private void RunAnyTestInitializeMethods(Type current, object instance)
     {
       var initializeMethod = current.GetMethods().FirstOrDefault(m => m.GetCustomAttributes(typeof(TestInitializeAttribute)).Any());
       if (initializeMethod != null)
@@ -405,7 +405,7 @@ namespace TestRun
     /// </summary>
     /// <param name="message">test results to be logged</param>
     /// <param name="logfile">log file name</param>
-    private static void Write(string message, string logfile)
+    private void Write(string message, string logfile)
     {
       using (var w = File.AppendText(logfile))
       {

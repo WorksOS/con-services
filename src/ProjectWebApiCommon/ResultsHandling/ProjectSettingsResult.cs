@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
@@ -15,7 +16,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     /// The projects settings
     /// </summary>
     [JsonProperty(PropertyName = "settings")]
-    public string settings { get; set; }
+    public JObject settings { get; set; }
 
     /// <summary>
     /// The type of project settings
@@ -38,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     /// <param name="projectSettingsType"></param>
     /// <returns></returns>
     public static ProjectSettingsResult CreateProjectSettingsResult(
-      string projectUid, string settings, ProjectSettingsType projectSettingsType)
+      string projectUid, JObject settings, ProjectSettingsType projectSettingsType)
     {
       return new ProjectSettingsResult
       {

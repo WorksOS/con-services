@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
@@ -95,7 +96,7 @@ namespace VSS.MasterData.ProjectTests
 
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect projectUid");
-      Assert.AreEqual(settings, result.settings, "executor should have returned settings");
+      Assert.IsNull(result.settings, "executor should have returned null settings");
       Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
     }
 
@@ -105,7 +106,7 @@ namespace VSS.MasterData.ProjectTests
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string settings1 = string.Empty;
-      string settings2 = "more blah";
+      string settings2 = @"{firstValue: 10, lastValue: 20}";
       string userId = "my app";
       ProjectSettingsType settingsType1 = ProjectSettingsType.Targets;
       ProjectSettingsType settingsType2 = ProjectSettingsType.ImportedFiles;
@@ -124,7 +125,7 @@ namespace VSS.MasterData.ProjectTests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings1, settingsType1);
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings2, settingsType2);
 
       var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
       (logger, configStore, serviceExceptionHandler,
@@ -134,10 +135,14 @@ namespace VSS.MasterData.ProjectTests
         projectRepo.Object);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
+      var tempSettings = JsonConvert.DeserializeObject<JObject>(settings2);
+
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect projectUid");
-      Assert.AreEqual(settings1, result.settings, "executor should have returned settings");
-      Assert.AreEqual(settingsType1, result.projectSettingsType, "executor returned incorrect projectSettingsType");
+      Assert.IsNotNull(result.settings, "executor should have returned settings");
+      Assert.AreEqual(tempSettings["firstValue"], result.settings["firstValue"], "executor returned incorrect firstValue of settings");
+      Assert.AreEqual(tempSettings["lastValue"], result.settings["lastValue"], "executor should have returned lastValue of settings");
+      Assert.AreEqual(settingsType2, result.projectSettingsType, "executor returned incorrect projectSettingsType");
     }
 
     [TestMethod]
@@ -177,7 +182,9 @@ namespace VSS.MasterData.ProjectTests
     {
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
-      string settings = "blah";
+
+      string settings = settingsType == ProjectSettingsType.Targets ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";
+      //[{"ImportedFileUid":"83dcb4d2-1ade-4aa5-82b4-978289a48922","IsActivated":false}]
       string userId = "my app";
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -208,8 +215,28 @@ namespace VSS.MasterData.ProjectTests
 
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect projectUid");
-      Assert.AreEqual(settings, result.settings, "executor returned incorrect settings");
-      Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
+      Assert.IsNotNull(result.settings, "executor should have returned settings");
+
+      if (settingsType == ProjectSettingsType.Targets)
+      {
+        var tempSettings = JsonConvert.DeserializeObject<JObject>(settings);
+        
+        Assert.AreEqual(tempSettings["firstValue"], result.settings["firstValue"],
+          "executor returned incorrect firstValue of settings");
+        Assert.AreEqual(tempSettings["lastValue"], result.settings["lastValue"],
+          "executor should have returned lastValue of settings");
+        Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
+      }
+      else
+      {
+        var tempObj = JsonConvert.DeserializeObject<JArray>(settings);
+        var tempJObject = new JObject { ["importedFiles"] = tempObj };
+
+        Assert.AreEqual(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"], "executor returned incorrect firstValue of the first object of the settings");
+        Assert.AreEqual(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"], "executor returned incorrect lastValue of the first object of the settings");
+        Assert.AreEqual(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"], "executor returned incorrect firstValue of the last object of the settings");
+        Assert.AreEqual(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"], "executor returned incorrect lastValue of the last object of the settings");
+      }
     }
 
     [TestMethod]
@@ -217,8 +244,9 @@ namespace VSS.MasterData.ProjectTests
     {
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
-      string settings1 = "blah";
-      string settings2 = "more blah";
+      string settings1 = @"{firstValue: 10, lastValue: 20}";
+      string settings2 = @"{firstValue: 30, lastValue: 40}";
+
       string userId = "my app";
       ProjectSettingsType settingsType1 = ProjectSettingsType.Targets;
       ProjectSettingsType settingsType2 = ProjectSettingsType.ImportedFiles;
@@ -252,9 +280,13 @@ namespace VSS.MasterData.ProjectTests
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings1, settingsType1);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
+      var tempSettings = JsonConvert.DeserializeObject<JObject>(settings1);
+
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect projectUid");
-      Assert.AreEqual(settings1, result.settings, "executor returned incorrect settings");
+      Assert.IsNotNull(result.settings, "executor should have returned settings");
+      Assert.AreEqual(tempSettings["firstValue"], result.settings["firstValue"], "executor returned incorrect firstValue of settings");
+      Assert.AreEqual(tempSettings["lastValue"], result.settings["lastValue"], "executor should have returned lastValue of settings");
       Assert.AreEqual(settingsType1, result.projectSettingsType, "executor returned incorrect projectSettingsType");
     }
 
@@ -273,9 +305,9 @@ namespace VSS.MasterData.ProjectTests
     public void ProjectSettingsResultShouldNotSerializeType()
     {
       string projectUid = Guid.NewGuid().ToString();
-      string settings = "blah";
+      string settings = @"{firstValue: 10, lastValue: 20}";
 
-      var result = ProjectSettingsResult.CreateProjectSettingsResult(projectUid, settings, ProjectSettingsType.Targets);
+      var result = ProjectSettingsResult.CreateProjectSettingsResult(projectUid, JsonConvert.DeserializeObject<JObject>(settings), ProjectSettingsType.Targets);
       var json = JsonConvert.SerializeObject(result);
       Assert.IsFalse(json.Contains("ProjectSettingsType"));
     }
