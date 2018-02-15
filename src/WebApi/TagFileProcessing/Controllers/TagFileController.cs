@@ -66,12 +66,12 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <executor>TagFileExecutor</executor>
     /// 
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [ProjectWritableVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [ProjectWritableWithUIDVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+        // [ProjectIdVerifier]  Not a requirement to present a TAG file for processing
+        // [ProjectWritableVerifier]  Not a requirement to present a TAG file for processing
+        // [NotLandFillProjectVerifier]  Not a requirement to present a TAG file for processing
+        // [ProjectUidVerifier]  Not a requirement to present a TAG file for processing
+        // [ProjectWritableWithUIDVerifier]  Not a requirement to present a TAG file for processing
+        // [NotLandFillProjectWithUIDVerifier]  Not a requirement to present a TAG file for processing
     [Route("api/v1/tagfiles")]
     [HttpPost]
     public TAGFilePostResult Post([FromBody]TagFileRequest request)
@@ -89,17 +89,17 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <executor>TagFileExecutor</executor>
     /// 
     [PostRequestVerifier]
-    [ProjectUidVerifier]
-    [ProjectWritableWithUIDVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+        // [ProjectUidVerifier]  Not a requirement to present a TAG file for processing
+        // [ProjectWritableWithUIDVerifier]  Not a requirement to present a TAG file for processing
+        // [NotLandFillProjectWithUIDVerifier]  Not a requirement to present a TAG file for processing
     [Route("api/v2/tagfiles")]
     [HttpPost]
     public ContractExecutionResult PostTagFile([FromBody]CompactionTagFileRequest request)
     {
       log.LogDebug("PostTagFile: " + JsonConvert.SerializeObject(request));
-      var projectDescr = (User as RaptorPrincipal).GetProject(request.projectUid);
-      var boundary = WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectDescr.projectGeofenceWKT).ToArray());
-      TagFileRequest tfRequest = TagFileRequest.CreateTagFile(request.fileName, request.data, projectDescr.projectId, boundary, -1, false, false);
+//      var projectDescr = (User as RaptorPrincipal).GetProject(request.projectUid);
+//      var boundary = WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectDescr.projectGeofenceWKT).ToArray());
+      TagFileRequest tfRequest = TagFileRequest.CreateTagFile(request.fileName, request.data, -1 /*projectDescr.projectId*/, null /*boundary*/, -1, false, false);
       tfRequest.Validate();
       return RequestExecutorContainerFactory.Build<TagFileExecutor>(logger, raptorClient, tagProcessor).Process(tfRequest);
     }
