@@ -24,6 +24,6 @@ Scenario Outline: TagFile - Bad Request
   | paramName        | code |
   | NullFileName     | -1   |
   | NullData         | -1   |
-  | NullBoundary     | -1   |
-  | InvalidProjectId | -1   |
+  #| NullBoundary     | -1   |
+  #| InvalidProjectId | -1   |
   | FilenameTooLong  | -1   |
