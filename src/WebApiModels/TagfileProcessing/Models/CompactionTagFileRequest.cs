@@ -13,7 +13,7 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
     /// <summary>
     /// A project unique identifier.
     /// </summary>
-    [JsonProperty(PropertyName = "projectUid", Required = Required.Always)]
+    [JsonProperty(PropertyName = "projectUid", Required = Required.Default)]
     [ValidProjectUID]
     public Guid projectUid { get; private set; }
 
