@@ -152,7 +152,6 @@ namespace VSS.Productivity3D.Filter.WebApi
 #endif
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
-      app.UseTIDAuthentication();
 
       app.UseSwagger();
 
@@ -161,6 +160,7 @@ namespace VSS.Productivity3D.Filter.WebApi
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Filter Service API V1");
       });
 
+      app.UseTIDAuthentication();
       app.UseMvc();
 
 
