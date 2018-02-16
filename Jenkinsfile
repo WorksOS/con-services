@@ -62,6 +62,8 @@ node('Ubuntu_Slave') {
 	{
 		echo "An error occurred during execution of packaging - ${error.getMessage()}."
 		sendBuildFailureMessage()
+		// re-throw error to maintain logic flow
+		throw error
 	}
 
     //Here we need to find test results and decide if the build successful
