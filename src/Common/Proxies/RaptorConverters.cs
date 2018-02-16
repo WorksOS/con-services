@@ -408,7 +408,7 @@ namespace VSS.Productivity3D.Common.Proxies
     {
       TWGS84FenceContainer fenceContainer = new TWGS84FenceContainer()
       {
-        FencePoints = fence?.Points.ToList().ConvertAll(p => { return new TWGS84Point() { Lat = p.Lat, Lon = p.Lon }; }).ToArray()
+        FencePoints = fence.Points.ToList().ConvertAll(p => { return new TWGS84Point() { Lat = p.Lat, Lon = p.Lon }; }).ToArray()
       };
 
       return fenceContainer;
