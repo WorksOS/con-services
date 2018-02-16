@@ -1,4 +1,6 @@
-﻿Feature: CompactionCmv
+﻿# (Aaron) Ignored at Raymond's request.
+@IgnoreAll
+Feature: CompactionCmv
 I should be able to request compaction CMV data
 
 ######################################################## CMV Summary ############################################################
