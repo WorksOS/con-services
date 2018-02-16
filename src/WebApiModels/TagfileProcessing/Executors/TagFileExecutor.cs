@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Net;
 using TAGProcServiceDecls;
+using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
@@ -42,11 +43,14 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors
       {
         TagFileRequest request = item as TagFileRequest;
 
-        TTAGProcServerProcessResult returnResult = tagProcessor.ProjectDataServerTAGProcessorClient().SubmitTAGFileToTAGFileProcessor
-                            (request.fileName,
-                            new MemoryStream(request.data),
-                            request.projectId ?? -1, 0, 0, request.machineId ?? -1,
-                            RaptorConverters.convertWGS84Fence(request.boundary));
+        TTAGProcServerProcessResult returnResult = tagProcessor.ProjectDataServerTAGProcessorClient()
+          .SubmitTAGFileToTAGFileProcessor
+          (request.fileName,
+            new MemoryStream(request.data),
+            request.projectId ?? -1, 0, 0, request.machineId ?? -1,
+            request.boundary != null
+              ? RaptorConverters.convertWGS84Fence(request.boundary)
+              : TWGS84FenceContainer.Null());
 
         if (returnResult == TTAGProcServerProcessResult.tpsprOK)
           return TAGFilePostResult.CreateTAGFilePostResult();
