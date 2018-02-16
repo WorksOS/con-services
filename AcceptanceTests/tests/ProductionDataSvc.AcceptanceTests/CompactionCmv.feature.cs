@@ -71,7 +71,7 @@ namespace ProductionDataSvc.AcceptanceTests
         public virtual void CompactionGetCMVSummary_NoDesignFilter(string requestName, string projectUID, string resultName, string[] exampleTags)
         {
             string[] @__tags = new string[] {
-                    "IgnoreAll"};
+                    "Ignore"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
@@ -96,7 +96,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_Summary")]
@@ -108,7 +108,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ProjectSettings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "ProjectSettings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "3335311a-f0e2-4dbe-8acd-f21135bafee4")]
@@ -121,7 +121,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         public virtual void CompactionGetCMVSummary(string requestName, string projectUID, string filterUID, string resultName, string[] exampleTags)
         {
             string[] @__tags = new string[] {
-                    "IgnoreAll"};
+                    "Ignore"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
@@ -148,7 +148,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignOutside")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignOutside")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
@@ -162,7 +162,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignIntersects")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignIntersects")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
@@ -176,7 +176,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "FilterArea")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "FilterArea")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
@@ -190,7 +190,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         public virtual void CompactionGetCMVDetails_NoDesignFilter(string requestName, string projectUID, string resultName, string[] exampleTags)
         {
             string[] @__tags = new string[] {
-                    "IgnoreAll"};
+                    "Ignore"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
@@ -215,7 +215,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Details - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_Details")]
@@ -227,7 +227,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Details - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ProjectSettings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "ProjectSettings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "3335311a-f0e2-4dbe-8acd-f21135bafee4")]
@@ -240,7 +240,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         public virtual void CompactionGetCMVDetails(string requestName, string projectUID, string filterUID, string resultName, string[] exampleTags)
         {
             string[] @__tags = new string[] {
-                    "IgnoreAll"};
+                    "Ignore"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
@@ -267,7 +267,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Details")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignOutside")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignOutside")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
@@ -281,7 +281,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Details")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignIntersects")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignIntersects")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
@@ -295,7 +295,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         public virtual void CompactionGetCMVChangeSummary_NoDesignFilter(string requestName, string projectUID, string resultName, string[] exampleTags)
         {
             string[] @__tags = new string[] {
-                    "IgnoreAll"};
+                    "Ignore"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
@@ -321,7 +321,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_PercentChange")]
@@ -333,7 +333,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ProjectSettings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "ProjectSettings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "3335311a-f0e2-4dbe-8acd-f21135bafee4")]
@@ -346,7 +346,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         public virtual void CompactionGetCMVChangeSummary(string requestName, string projectUID, string filterUID, string resultName, string[] exampleTags)
         {
             string[] @__tags = new string[] {
-                    "IgnoreAll"};
+                    "Ignore"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
@@ -374,7 +374,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignOutside")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignOutside")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
@@ -388,7 +388,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignIntersects")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignIntersects")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
@@ -402,7 +402,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("IgnoreAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "FilterArea")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "FilterArea")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
