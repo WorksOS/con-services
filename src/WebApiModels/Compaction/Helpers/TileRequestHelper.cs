@@ -85,11 +85,12 @@ namespace VSS.Productivity3D.Common.Helpers
         ProjectId, null, mode, palette, liftSettings, (RaptorConverters.VolumesType) computeVolType,
         0, design, filter1, 0, filter2, 0,
         Filter == null || !Filter.LayerType.HasValue ? FilterLayerMethod.None : Filter.LayerType.Value,
-        bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, false);
+        bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, CMV_PERCENT_CHANGE_NUMBER_OF_COLORS, false);
 
       return tileRequest;
     }
 
     private const int CMV_DETAILS_NUMBER_OF_COLORS = 16;
+    private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS = 9;
   }
 }

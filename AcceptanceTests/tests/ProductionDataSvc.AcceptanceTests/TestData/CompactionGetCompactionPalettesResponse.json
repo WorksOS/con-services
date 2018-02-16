@@ -304,19 +304,35 @@
     "cmvPercentChangePalette": {
       "colorValues": [
         {
-          "color": 9159498,
-          "value": 5
+          "color": 13251120,
+          "value": -50.0
         },
         {
-          "color": 16764370,
-          "value": 20
+          "color": 14449787,
+          "value": -20.0
         },
         {
-          "color": 15037299,
-          "value": 50
+          "color": 16437460,
+          "value": -10.0
+        },
+        {
+          "color": 9094217,
+          "value": 0.0
+        },
+        {
+          "color": 11789821,
+          "value": 10.0
+        },
+        {
+          "color": 6991061,
+          "value": 20.0
+        },
+        {
+          "color": 433125,
+          "value": 50.0
         }
       ],
-      "aboveLastColor": 13959168,
+      "aboveLastColor": 153499,
       "belowFirstColor": 33554431
     },
     "speedSummaryPalette": {

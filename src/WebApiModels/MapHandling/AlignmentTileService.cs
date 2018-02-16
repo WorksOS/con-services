@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           {
             IEnumerable<WGSPoint> alignmentPoints = GetAlignmentPoints(projectId, alignmentDescriptor);
 
-            if (alignmentPoints.Any())
+            if (alignmentPoints != null && alignmentPoints.Any())
             {
               PointF[] pixelPoints = TileServiceUtils.LatLngToPixelOffset(alignmentPoints, parameters.pixelTopLeft, parameters.numTiles);
               Pen pen = new Pen(Color.Red, 1);
