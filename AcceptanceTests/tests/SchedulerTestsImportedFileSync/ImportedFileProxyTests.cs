@@ -21,7 +21,7 @@ namespace SchedulerTestsImportedFileSync
     {
       const string fileName = "Section 1 IFC Rev J.ttm";
 
-      var result = await ImpFileProxy.CreateImportedFile(fileName,
+      var result = await ImpFileProxy.CreateImportedFile(fileName, fileName,
         Guid.Parse(_fixedProjectUid), ImportedFileType.DesignSurface, DateTime.UtcNow, 
         DateTime.UtcNow, null,
         null, GetCustomHeaders(_fixedCustomerUid)).ConfigureAwait(false);
