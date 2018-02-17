@@ -1,3 +1,5 @@
+#!/bin/bash 
+
 echo ">>> Making sure MsSQL is up"
 echo ">>> Sleep for 25 seconds"
 sleep 25s

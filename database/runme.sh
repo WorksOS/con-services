@@ -1,3 +1,5 @@
+#!/bin/bash 
+
 echo ">>> Making sure MySQL is up"
 echo ">>> Sleep for 25 seconds"
 sleep 25s
