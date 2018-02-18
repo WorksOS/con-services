@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories.DBModels
@@ -13,15 +14,20 @@ namespace VSS.MasterData.Repositories.DBModels
     public ImportedFileType ImportedFileType { get; set; }
     public string Name { get; set; }
     public string FileDescriptor { get; set; }
+
+    // These 3 refer to the most recent udpates of the importedFile.
+    // History is contained in ImportedFileHistory, and includes this most recent update.
     public DateTime FileCreatedUtc { get; set; }
     public DateTime FileUpdatedUtc { get; set; }
     public string ImportedBy { get; set; }
+
     public DateTime? SurveyedUtc { get; set; }
     public DxfUnitsType DxfUnitsType { get; set; }
     public int MinZoomLevel { get; set; }
     public int MaxZoomLevel { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime LastActionedUtc { get; set; }
+    public ImportedFileHistory ImportedFileHistory { get; set; }
 
 
     public override bool Equals(object obj)
@@ -44,7 +50,8 @@ namespace VSS.MasterData.Repositories.DBModels
              && otherImportedFile.DxfUnitsType == DxfUnitsType
              && otherImportedFile.LastActionedUtc == LastActionedUtc
              && otherImportedFile.MinZoomLevel == MinZoomLevel
-             && otherImportedFile.MaxZoomLevel == MaxZoomLevel;
+             && otherImportedFile.MaxZoomLevel == MaxZoomLevel
+             && otherImportedFile.ImportedFileHistory == ImportedFileHistory;
     }
 
     public override int GetHashCode()
