@@ -70,6 +70,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ImportedFileDescriptorListResult> GetImportedFilesV4([FromQuery] string projectUid)
     {
       log.LogInformation("GetImportedFilesV4");
+
       return new ImportedFileDescriptorListResult
       {
         ImportedFileDescriptors = await GetImportedFileList(projectUid).ConfigureAwait(false)
