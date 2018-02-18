@@ -50,13 +50,13 @@ namespace VSS.MasterData.Proxies
         {
           Array.Clear(buffer, 0, buffer.Length);
           var read = await readStream.ReadAsync(buffer, 0, buffer.Length);
-          responseString = Encoding.ASCII.GetString(buffer);
+          responseString = Encoding.UTF8.GetString(buffer);
           responseString = responseString.Trim(Convert.ToChar(0));
           while (read > 0)
           {
             Array.Clear(buffer, 0, buffer.Length);
             read = await readStream.ReadAsync(buffer, 0, buffer.Length);
-            responseString += Encoding.ASCII.GetString(buffer);
+            responseString += Encoding.UTF8.GetString(buffer);
             responseString = responseString.Trim(Convert.ToChar(0));
           }
         }

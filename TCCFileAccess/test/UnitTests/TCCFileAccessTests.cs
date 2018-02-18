@@ -38,7 +38,13 @@ namespace VSS.TCCFileAccess.UnitTests
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }
 
-
+    [TestMethod]
+    public void CanParseUTF8Files()
+    {
+      string filename = "abcпривет123.txt";
+      var noExtName = Path.GetFileNameWithoutExtension(filename);
+      Assert.AreEqual("abcпривет123", noExtName);
+    }
 
     [TestMethod]
     public void CanCreateFileAccessService()
