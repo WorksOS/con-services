@@ -66,7 +66,7 @@ namespace RepositoryTests
       var g = _projectContext.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve ImportedFile from ProjectRepo");
-      Assert.AreEqual(1, g.Result.ImportedFileHistory.ImportedFileUpsertList.Count, "Should be 1 history record for this create.");
+      Assert.AreEqual(1, g.Result.ImportedFileHistory.ImportedFileHistoryItems.Count, "Should be 1 history record for this create.");
 
       var gList = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
       gList.Wait();
@@ -75,11 +75,11 @@ namespace RepositoryTests
       var ifList = gList.Result.ToList();
       Assert.AreEqual(1, ifList.Count, "ImportedFile count is incorrect from ProjectRepo");
       Assert.AreEqual(DxfUnitsType.Meters, ifList[0].DxfUnitsType, "ImportedFile DXF units is incorrect from ProjectRepo");
-      Assert.AreEqual(1, ifList[0].ImportedFileHistory.ImportedFileUpsertList.Count, "Should be 1 history record for this create.");
-      Assert.AreEqual(createImportedFileEvent.FileUpdatedUtc, ifList[0].ImportedFileHistory.ImportedFileUpsertList[0].FileUpdatedUtc, "FileUpdateUtc in history record should be latest.");
+      Assert.AreEqual(1, ifList[0].ImportedFileHistory.ImportedFileHistoryItems.Count, "Should be 1 history record for this create.");
+      Assert.AreEqual(createImportedFileEvent.FileUpdatedUtc, ifList[0].ImportedFileHistory.ImportedFileHistoryItems[0].FileUpdatedUtc, "FileUpdateUtc in history record should be latest.");
 
       Assert.AreEqual(g.Result.ImportedFileHistory, ifList[0].ImportedFileHistory, "History list should be identical");
-      Assert.AreEqual(g.Result.ImportedFileHistory.ImportedFileUpsertList[0], ifList[0].ImportedFileHistory.ImportedFileUpsertList[0], "History should be identical");
+      Assert.AreEqual(g.Result.ImportedFileHistory.ImportedFileHistoryItems[0], ifList[0].ImportedFileHistory.ImportedFileHistoryItems[0], "History should be identical");
     }
 
     /// <summary>
@@ -201,7 +201,7 @@ namespace RepositoryTests
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve ImportedFile from ProjectRepo");
       Assert.IsNotNull(g.Result.FileDescriptor, "Unable to retrieve fileDescriptor from ImportedFile");
-      Assert.AreEqual(1, g.Result.ImportedFileHistory.ImportedFileUpsertList.Count, "Should be 1 history record for this create.");
+      Assert.AreEqual(1, g.Result.ImportedFileHistory.ImportedFileHistoryItems.Count, "Should be 1 history record for this create.");
 
       var gList = _projectContext.GetImportedFiles(project1.ToString());
       gList.Wait();
@@ -214,7 +214,7 @@ namespace RepositoryTests
       gList.Wait();
       Assert.IsNotNull(gList.Result, "Unable to retrieve ImportedFiles for Project2 from ProjectRepo");
       ifList = gList.Result.ToList();
-      Assert.AreEqual(1, ifList.Count(), "ImportedFile count is incorrect for Project2 from ProjectRepo");
+      Assert.AreEqual(1, ifList.Count, "ImportedFile count is incorrect for Project2 from ProjectRepo");
 
       gList = _projectContext.GetImportedFiles(project3.ToString());
       gList.Wait();
@@ -277,13 +277,13 @@ namespace RepositoryTests
         "ImportedFile FileDescriptor was not updated");
       Assert.AreEqual(updateImportedFileEvent.MinZoomLevel, g.Result.MinZoomLevel, "ImportedFile MinZoomLevel was not updated");
       Assert.AreEqual(updateImportedFileEvent.MaxZoomLevel, g.Result.MaxZoomLevel, "ImportedFile MaxZoomLevel was not updated");
-      Assert.AreEqual(2, g.Result.ImportedFileHistory.ImportedFileUpsertList.Count, "Should be 2 history records for this create+update.");
-      Assert.AreEqual(createImportedFileEvent.FileCreatedUtc, g.Result.ImportedFileHistory.ImportedFileUpsertList[0].FileCreatedUtc, "Oldest history record FileCreatedUtc incorrect.");
-      Assert.AreEqual(createImportedFileEvent.FileUpdatedUtc, g.Result.ImportedFileHistory.ImportedFileUpsertList[0].FileUpdatedUtc, "Oldest history record FileUpdateUtc incorrect.");
-      Assert.AreEqual(createImportedFileEvent.ImportedBy, g.Result.ImportedFileHistory.ImportedFileUpsertList[0].ImportedBy, "Oldest history record ImportedBy incorrect.");
-      Assert.AreEqual(updateImportedFileEvent.FileCreatedUtc, g.Result.ImportedFileHistory.ImportedFileUpsertList[1].FileCreatedUtc, "Newer history record FileCreatedUtc incorrect.");
-      Assert.AreEqual(updateImportedFileEvent.FileUpdatedUtc, g.Result.ImportedFileHistory.ImportedFileUpsertList[1].FileUpdatedUtc, "Newer history record FileUpdateUtc incorrect.");
-      Assert.AreEqual(updateImportedFileEvent.ImportedBy, g.Result.ImportedFileHistory.ImportedFileUpsertList[1].ImportedBy, "Newer history record ImportedBy incorrect.");
+      Assert.AreEqual(2, g.Result.ImportedFileHistory.ImportedFileHistoryItems.Count, "Should be 2 history records for this create+update.");
+      Assert.AreEqual(createImportedFileEvent.FileCreatedUtc, g.Result.ImportedFileHistory.ImportedFileHistoryItems[0].FileCreatedUtc, "Oldest history record FileCreatedUtc incorrect.");
+      Assert.AreEqual(createImportedFileEvent.FileUpdatedUtc, g.Result.ImportedFileHistory.ImportedFileHistoryItems[0].FileUpdatedUtc, "Oldest history record FileUpdateUtc incorrect.");
+      Assert.AreEqual(createImportedFileEvent.ImportedBy, g.Result.ImportedFileHistory.ImportedFileHistoryItems[0].ImportedBy, "Oldest history record ImportedBy incorrect.");
+      Assert.AreEqual(updateImportedFileEvent.FileCreatedUtc, g.Result.ImportedFileHistory.ImportedFileHistoryItems[1].FileCreatedUtc, "Newer history record FileCreatedUtc incorrect.");
+      Assert.AreEqual(updateImportedFileEvent.FileUpdatedUtc, g.Result.ImportedFileHistory.ImportedFileHistoryItems[1].FileUpdatedUtc, "Newer history record FileUpdateUtc incorrect.");
+      Assert.AreEqual(updateImportedFileEvent.ImportedBy, g.Result.ImportedFileHistory.ImportedFileHistoryItems[1].ImportedBy, "Newer history record ImportedBy incorrect.");
     }
 
 

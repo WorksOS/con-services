@@ -677,7 +677,8 @@ namespace VSS.MasterData.Repositories
         log.LogDebug(
           $"ProjectRepository/CreateImportedFile: (insert): inserted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
-        await UpsertImportedFileHistory(importedFile);
+        if (upsertedCount > 0)
+          upsertedCount = await UpsertImportedFileHistory(importedFile);
       }
       else if (existing.LastActionedUtc >= importedFile.LastActionedUtc)
       {
@@ -710,7 +711,9 @@ namespace VSS.MasterData.Repositories
           log.LogDebug(
             $"ProjectRepository/CreateImportedFile: (updateExisting): upserted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
-          await UpsertImportedFileHistory(importedFile);
+          // don't really care if this didn't pass as may already exist for create/update utc
+          if (upsertedCount > 0)
+            await UpsertImportedFileHistory(importedFile);
         }
       }
       else
@@ -749,8 +752,8 @@ namespace VSS.MasterData.Repositories
           log.LogDebug(
             $"ProjectRepository/UpdateImportedFile: updated {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
-          await UpsertImportedFileHistory(importedFile);
-          return upsertedCount;
+          if (upsertedCount > 0)
+            upsertedCount = await UpsertImportedFileHistory(importedFile);
         }
 
         log.LogDebug(
@@ -766,13 +769,15 @@ namespace VSS.MasterData.Repositories
       return upsertedCount;
     }
 
-    private async Task UpsertImportedFileHistory(ImportedFile importedFile)
+    private async Task<int> UpsertImportedFileHistory(ImportedFile importedFile)
     {
-      var importedFileUpsert = (await QueryWithAsyncPolicy<ImportedFileUpsert>
+      var insertedCount = 0;
+      var importedFileUpsert = (await QueryWithAsyncPolicy<ImportedFileHistoryItem>
       (@"SELECT 
             fk_ImportedFileUID AS ImportedFileUid, FileCreatedUTC, FileUpdatedUTC, ImportedBy
           FROM ImportedFileHistory
             WHERE fk_ImportedFileUID = @importedFileUid
+              AND FileCreatedUTC = @fileCreatedUtc
               AND FileUpdatedUTC = @fileUpdatedUtc",
         new { importedFileUid = importedFile.ImportedFileUid, fileUpdatedUtc = importedFile.FileCreatedUtc }
       )).FirstOrDefault();
@@ -785,11 +790,17 @@ namespace VSS.MasterData.Repositories
             VALUES
               (@ImportedFileUid, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy)";
 
-        var insertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
+        insertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
 
         log.LogDebug(
-          $"ProjectRepository/UpsertImportedFileHistory: inserted {insertedCount} rows for: ImportedFileUid:{importedFile.ImportedFileUid} FileUpdatedUTC: {importedFile.FileUpdatedUtc}");
+          $"ProjectRepository/UpsertImportedFileHistory: inserted {insertedCount} rows for: ImportedFileUid:{importedFile.ImportedFileUid} FileCreatedUTC: {importedFile.FileCreatedUtc} FileUpdatedUTC: {importedFile.FileUpdatedUtc}");
       }
+      else
+      {
+        log.LogDebug(
+          $"ProjectRepository/UpsertImportedFileHistory: History already exists ImportedFileUid:{importedFile.ImportedFileUid} FileCreatedUTC: {importedFile.FileCreatedUtc} FileUpdatedUTC: {importedFile.FileUpdatedUtc}");
+      }
+      return insertedCount;
     }
 
     private async Task<int> DeleteImportedFile(ImportedFile importedFile, ImportedFile existing, bool isDeletePermanently)
@@ -1302,9 +1313,9 @@ namespace VSS.MasterData.Repositories
       return importedFile;
     }
 
-    private async Task<List<ImportedFileUpsert>> GetImportedFileHistory(string projectUid, string importedFileUid = null)
+    private async Task<List<ImportedFileHistoryItem>> GetImportedFileHistory(string projectUid, string importedFileUid = null)
     {
-      return (await QueryWithAsyncPolicy<ImportedFileUpsert>
+      return (await QueryWithAsyncPolicy<ImportedFileHistoryItem>
       (@"SELECT 
               ImportedFileUID, ifh.FileCreatedUTC, ifh.FileUpdatedUTC, ifh.ImportedBy
             FROM ImportedFile iff
