@@ -1,6 +1,10 @@
 ﻿{
   "AllLayersNoFilterAtAll": {
     "Values": [
+      0,
+      0,
+      0,
+      0,
       8.524833209785026,
       8.549542871262664,
       16.234247590808007,
@@ -12,6 +16,10 @@
   },
   "AllLayersExcludeSupersededLifts": {
     "Values": [
+      0,
+      0,
+      0,
+      0,
       31.57894736842105,
       10.526315789473685,
       21.05263157894737,
@@ -23,6 +31,10 @@
   },
   "AllLayersIncludeSupersededLifts": {
     "Values": [
+      0,
+      0,
+      0,
+      0,
       30,
       10,
       15,
@@ -35,6 +47,10 @@
   "TopLayerIncludeSupersededLifts": {
     "Values": [
       0,
+      0,
+      0,
+      0,
+      0,
       12.5,
       12.5,
       75
@@ -45,6 +61,10 @@
   },
   "TopLayerNoFilterAtAll": {
     "Values": [
+      0,
+      0,
+      0,
+      0,
       7.36409608091024,
       8.09102402022756,
       13.211125158027812,
@@ -56,6 +76,10 @@
   },
   "NoneLiftDetection": {
     "Values": [
+      0,
+      0,
+      0,
+      0,
       30,
       10,
       15,
@@ -67,6 +91,10 @@
   },
   "NoneLiftDetectionNoFilterAtAll": {
     "Values": [
+      0,
+      0,
+      0,
+      0,
       9.147350993377483,
       8.443708609271523,
       16.452814569536425,
