@@ -96,8 +96,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetCmvSummary: " + Request.QueryString);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        //Change FailedToGetResults to 204
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
+
       CMVRequest request = await GetCmvRequest(projectUid, filterUid);
       request.Validate();
+
+
+
       log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
       try
       {
@@ -136,6 +145,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        //Change FailedToGetResults to 204
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
+
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       MDPSettings mdpSettings = this.SettingsManager.CompactionMdpSettings(projectSettings);
@@ -183,6 +198,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetPassCountSummary: " + Request.QueryString);
 
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        //Change FailedToGetResults to 204
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
+
+
       PassCounts request = await GetPassCountRequest(projectUid, filterUid, true);
       request.Validate();
 
@@ -221,6 +242,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        //Change FailedToGetResults to 204
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
+
+
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       TemperatureSettings temperatureSettings = this.SettingsManager.CompactionTemperatureSettings(projectSettings, false);
@@ -267,6 +295,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetSpeedSummary: " + Request.QueryString);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        //Change FailedToGetResults to 204
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
+
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       //Speed settings are in LiftBuildSettings
@@ -313,6 +347,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        //Change FailedToGetResults to 204
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
+
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await this.GetProjectSettings(projectUid);
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
@@ -570,6 +610,55 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     #endregion
 
     #region privates
+
+    /// <summary>
+    /// Tests if there is overlapping data in Raptor 
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="filterUid">The filter uid.</param>
+    /// <returns></returns>
+    private async Task<bool> ValidateFilterAgainstProjectExtents(Guid projectUid, Guid? filterUid)
+    {
+      log.LogInformation("GetProjectStatistics: " + Request.QueryString);
+
+      //No filter - so proceed further
+      if (!filterUid.HasValue)
+        return true;
+
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
+      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
+      request.Validate();
+      try
+      {
+        var projectExtents =
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
+            .Process(request) as ProjectStatisticsResult;
+
+        //No data in Raptor - stop
+        if (projectExtents == null)
+          return false;
+
+        var filter = await GetCompactionFilter(projectUid, filterUid);
+
+        //No filter dates defined - project extents requested. Proceed further
+        if (filter.StartUtc == null && filter.EndUtc == null)
+          return true;
+
+        //Do we have intersecting dates? True if yes
+        if (filter.StartUtc != null && filter.EndUtc != null)
+          return projectExtents.startTime <= filter.EndUtc && filter.StartUtc <= projectExtents.endTime;
+
+        //All other cases - rpoceed further
+        return true;
+      }
+      catch (Exception se)
+      {
+        //Some expcetion - do not proceed further
+        return false;
+      }
+    }
+
     /// <summary>
     /// Creates an instance of the CMVRequest class and populate it with data.
     /// </summary>

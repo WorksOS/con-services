@@ -243,7 +243,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
-    [ResponseCache(Duration = 1800000, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Duration = 31536000, VaryByQueryKeys = new[] { "*" })]
     [ProjectUidVerifier]
     [Route("api/v2/lineworktiles")]
     [Route("api/v2/compaction/lineworktiles")]
@@ -296,7 +296,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
-    [ResponseCache(Duration = 1800000, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Duration = 31536000, VaryByQueryKeys = new[] { "*" })]
     [ProjectUidVerifier]
     [Route("api/v2/lineworktiles/png")]
     [Route("api/v2/compaction/lineworktiles/png")]

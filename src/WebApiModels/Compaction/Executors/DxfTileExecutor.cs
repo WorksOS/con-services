@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     {
       //Check how many requests we can execute
       if (ServicePointManager.DefaultConnectionLimit != 32)
-          ServicePointManager.DefaultConnectionLimit = 32;
+        ServicePointManager.DefaultConnectionLimit = 32;
 
       DxfTileRequest request = item as DxfTileRequest;
 
@@ -66,40 +66,41 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       log.LogDebug(string.Join(",", request.files.Select(f => f.Name).ToList()));
 
       List<byte[]> tileList = new List<byte[]>();
-      request.files.AsParallel().ForAll(file => { 
-      //foreach (var file in request.files)
-          //Check file type to see if it has tiles
-          if (file.ImportedFileType == ImportedFileType.Alignment ||
-              file.ImportedFileType == ImportedFileType.DesignSurface ||
-              file.ImportedFileType == ImportedFileType.Linework)
+      request.files.AsParallel().ForAll(file =>
+      {
+        //foreach (var file in request.files)
+        //Check file type to see if it has tiles
+        if (file.ImportedFileType == ImportedFileType.Alignment ||
+            file.ImportedFileType == ImportedFileType.DesignSurface ||
+            file.ImportedFileType == ImportedFileType.Linework)
+        {
+          if (zoomLevel >= file.MinZoomLevel)
           {
-            if (zoomLevel >= file.MinZoomLevel)
+            var suffix = FileUtils.GeneratedFileSuffix(file.ImportedFileType);
+            string generatedName = FileUtils.GeneratedFileName(file.Name, suffix, FileUtils.DXF_FILE_EXTENSION);
+            byte[] tileData = null;
+            if (zoomLevel <= file.MaxZoomLevel || file.MaxZoomLevel == 0) //0 means not calculated
             {
-              var suffix = FileUtils.GeneratedFileSuffix(file.ImportedFileType);
-              string generatedName = FileUtils.GeneratedFileName(file.Name, suffix, FileUtils.DXF_FILE_EXTENSION);
-              byte[] tileData = null;
-              if (zoomLevel <= file.MaxZoomLevel || file.MaxZoomLevel == 0) //0 means not calculated
-              {
-                tileData = GetTileAtRequestedZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId).Result;
-              }
-              else if (zoomLevel - file.MaxZoomLevel <= 5) //Don't try to scale if the difference is too excessive
-              {
-                tileData = GetTileAtHigherZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId,
-                  file.MaxZoomLevel, numTiles).Result;
+              tileData = GetTileAtRequestedZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId).Result;
+            }
+            else if (zoomLevel - file.MaxZoomLevel <= 5) //Don't try to scale if the difference is too excessive
+            {
+              tileData = GetTileAtHigherZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId,
+                file.MaxZoomLevel, numTiles).Result;
 
-              }
-              else
-              {
-                log.LogDebug(
-                  "DxfTileExecutor: difference between requested and maximum zooms too large; not even going to try to scale tile");
-              }
-              if (tileData != null)
-              {
-                tileList.Add(tileData);
-              }
+            }
+            else
+            {
+              log.LogDebug(
+                "DxfTileExecutor: difference between requested and maximum zooms too large; not even going to try to scale tile");
+            }
+            if (tileData != null)
+            {
+              tileList.Add(tileData);
             }
           }
-        });
+        }
+      });
 
       //Overlay the tiles. Return an empty tile if none to overlay.
       log.LogDebug("DxfTileExecutor: Overlaying {0} tiles", tileList.Count);
@@ -131,7 +132,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// <param name="generatedName">The name of the DXF file (for design and alignment files it is generated)</param>
     /// <param name="filespaceId">The filespace ID</param>
     /// <returns>A generated tile</returns>
-    private async Task<byte[]> GetTileAtRequestedZoom(Point topLeftTile, int zoomLevel, string path, string generatedName, string filespaceId)
+    private async Task<byte[]> GetTileAtRequestedZoom(Point topLeftTile, int zoomLevel, string path,
+      string generatedName, string filespaceId)
     {
       //Work out tile location
       string fullTileName = GetFullTileName(topLeftTile, zoomLevel, path, generatedName);
@@ -158,7 +160,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       int zoomLevelFound = maxZoomLevel;
 
       // Calculate the tile coords of the higher zoom level tile that covers the requested tile
-      Point ptRequestedTile = new Point(topLeftTile.y, topLeftTile.x); 
+      Point ptRequestedTile = new Point(topLeftTile.y, topLeftTile.x);
       Point ptRequestedPixel = WebMercatorProjection.TileToPixel(ptRequestedTile);
 
       int numTilesAtRequestedZoomLevel = numTiles;
@@ -180,7 +182,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
       if (tileData != null)
       {
-        tileData = ScaleTile(tileData, zoomLevel - zoomLevelFound, ptHigherTile, ptRequestedWorld, numTilesAtFoundZoomLevel);
+        tileData = ScaleTile(tileData, zoomLevel - zoomLevelFound, ptHigherTile, ptRequestedWorld,
+          numTilesAtFoundZoomLevel);
       }
       return tileData;
     }
@@ -194,7 +197,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// <param name="ptRequestedWorld"></param>
     /// <param name="numTilesAtFoundZoomLevel">The number of tiles for the higher zoom level</param>
     /// <returns>A scaled tile</returns>
-    private byte[] ScaleTile(byte[] tileData, int zoomLevelDifference, Point ptHigherTile, Point ptRequestedWorld, int numTilesAtFoundZoomLevel)
+    private byte[] ScaleTile(byte[] tileData, int zoomLevelDifference, Point ptHigherTile, Point ptRequestedWorld,
+      int numTilesAtFoundZoomLevel)
     {
       // Calculate the tile coords of the BR corner of the higher zoom level tile
       // so that we can identify which sub-part of it to crop and scale
@@ -216,8 +220,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       double ratioY = (ptRequestedWorld.y - ptHigherWorldTopLeft.y) /
                       (ptHigherWorldBotRight.y - ptHigherWorldTopLeft.y);
 
-      int startX = (int)Math.Floor(WebMercatorProjection.TILE_SIZE * ratioX);
-      int startY = (int)Math.Floor(WebMercatorProjection.TILE_SIZE * ratioY);
+      int startX = (int) Math.Floor(WebMercatorProjection.TILE_SIZE * ratioX);
+      int startY = (int) Math.Floor(WebMercatorProjection.TILE_SIZE * ratioY);
 
       // Calculate how much up-scaling of higher level zoom tile we need to do
       // based on the difference between the requested and higher zoom levels
@@ -231,7 +235,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       //source bitmap
       using (var tileStream = new MemoryStream(tileData))
       using (Bitmap higherBitmap = new Bitmap(tileStream))
-      //destination bitmap
+        //destination bitmap
       using (Bitmap target = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
       using (Graphics g = Graphics.FromImage(target))
       {
@@ -272,20 +276,22 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     {
       byte[] tileData = null;
 
-      if (await fileRepo.FileExists(filespaceId, fullTileName))
+      //if (await fileRepo.FileExists(filespaceId, fullTileName))
+      //{
+      var stream = await fileRepo.GetFile(filespaceId, fullTileName);
+      if (stream != null)
       {
-        using (Stream stream = await fileRepo.GetFile(filespaceId, fullTileName))
-        {
-          log.LogDebug($"DxfTileExecutor: {what} tile downloaded with size of {stream.Length} bytes");
+        log.LogDebug($"DxfTileExecutor: {what} tile downloaded with size of {stream.Length} bytes");
 
-          if (stream.Length > 0)
-          {
-            stream.Position = 0;
-            tileData = new byte[stream.Length];
-            stream.Read(tileData, 0, (int)stream.Length);
-          }
+        if (stream.Length > 0)
+        {
+          stream.Position = 0;
+          tileData = new byte[stream.Length];
+          stream.Read(tileData, 0, (int) stream.Length);
         }
+        stream.Dispose();
       }
+      //}
       else
       {
         log.LogDebug(
