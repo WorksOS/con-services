@@ -82,5 +82,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
       return
         $"constantTargetPassCountRange:({this.constantTargetPassCountRange.min}, {this.constantTargetPassCountRange.max}), isTargetPassCountConstant:{this.isTargetPassCountConstant}, percentEqualsTarget:{this.percentEqualsTarget}, percentGreaterThanTarget:{this.percentGreaterThanTarget}, percentLessThanTarget:{this.percentLessThanTarget}, totalAreaCoveredSqMeters:{this.totalAreaCoveredSqMeters}, returnCode:{this.returnCode}";
     }
+
+    public static PassCountSummaryResult Empty()
+    {
+      return new PassCountSummaryResult();
+    }
   }
 }

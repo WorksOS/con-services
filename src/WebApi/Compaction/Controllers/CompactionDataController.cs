@@ -97,13 +97,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetCmvSummary: " + Request.QueryString);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
-        //Change FailedToGetResults to 204
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
-
       CMVRequest request = await GetCmvRequest(projectUid, filterUid);
       request.Validate();
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        return CompactionCmvSummaryResult.CreateCmvSummaryResult(CMVSummaryResult.Empty(), request.cmvSettings);
 
 
 
@@ -146,15 +144,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
-        //Change FailedToGetResults to 204
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
-
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       MDPSettings mdpSettings = this.SettingsManager.CompactionMdpSettings(projectSettings);
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        return CompactionMdpSummaryResult.CreateMdpSummaryResult(MDPSummaryResult.Empty(), mdpSettings);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
@@ -199,9 +195,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetPassCountSummary: " + Request.QueryString);
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
-        //Change FailedToGetResults to 204
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
+        return CompactionPassCountSummaryResult.CreatePassCountSummaryResult(PassCountSummaryResult.Empty());
 
 
       PassCounts request = await GetPassCountRequest(projectUid, filterUid, true);
@@ -244,10 +238,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
-        //Change FailedToGetResults to 204
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
-
+       return CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(TemperatureSummaryResult.Empty());
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
@@ -296,15 +287,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetSpeedSummary: " + Request.QueryString);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
-        //Change FailedToGetResults to 204
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
-
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        return CompactionSpeedSummaryResult.CreateSpeedSummaryResult(SummarySpeedResult.Empty(), liftSettings.machineSpeedTarget);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
@@ -349,9 +338,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
-        //Change FailedToGetResults to 204
         throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No data - didn't pass ProjectStatistics validation"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No CMV Data"));
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await this.GetProjectSettings(projectUid);
