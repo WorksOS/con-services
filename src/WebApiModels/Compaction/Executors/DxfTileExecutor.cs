@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Extensions;
@@ -31,6 +32,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
+      //Check how many requests we can execute
+      if (ServicePointManager.DefaultConnectionLimit != 32)
+          ServicePointManager.DefaultConnectionLimit = 32;
+
       DxfTileRequest request = item as DxfTileRequest;
 
       string filespaceId = FileDescriptor.GetFileSpaceId(configStore, log);
@@ -46,42 +51,55 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         topLeftTile.x, topLeftTile.y);
 
       log.LogDebug("DxfTileExecutor: {0} files", request.files.Count());
+
+      //Short circuit overlaying if there no files to overlay as ForAll is an expensive operation
+      if (!request.files.Any())
+      {
+        byte[] emptyOverlayData = null;
+        using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
+        {
+          emptyOverlayData = bitmap.BitmapToByteArray();
+        }
+        return TileResult.CreateTileResult(emptyOverlayData, TASNodeErrorStatus.asneOK);
+      }
+
       log.LogDebug(string.Join(",", request.files.Select(f => f.Name).ToList()));
 
       List<byte[]> tileList = new List<byte[]>();
-      foreach (var file in request.files)
-      {
-        //Check file type to see if it has tiles
-        if (file.ImportedFileType == ImportedFileType.Alignment ||
-            file.ImportedFileType == ImportedFileType.DesignSurface ||
-            file.ImportedFileType == ImportedFileType.Linework)
-        {
-          if (zoomLevel >= file.MinZoomLevel)
+      request.files.AsParallel().ForAll(file => { 
+      //foreach (var file in request.files)
+          //Check file type to see if it has tiles
+          if (file.ImportedFileType == ImportedFileType.Alignment ||
+              file.ImportedFileType == ImportedFileType.DesignSurface ||
+              file.ImportedFileType == ImportedFileType.Linework)
           {
-            var suffix = FileUtils.GeneratedFileSuffix(file.ImportedFileType);
-            string generatedName = FileUtils.GeneratedFileName(file.Name, suffix, FileUtils.DXF_FILE_EXTENSION);
-            byte[] tileData = null;
-            if (zoomLevel <= file.MaxZoomLevel || file.MaxZoomLevel == 0) //0 means not calculated
+            if (zoomLevel >= file.MinZoomLevel)
             {
-              tileData = await GetTileAtRequestedZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId);
-            }
-            else if (zoomLevel - file.MaxZoomLevel <= 5) //Don't try to scale if the difference is too excessive
-            {
-              tileData = await GetTileAtHigherZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId, file.MaxZoomLevel, numTiles);
-           
-            }
-            else
-            {
-              log.LogDebug(
-                "DxfTileExecutor: difference between requested and maximum zooms too large; not even going to try to scale tile");
-            }
-            if (tileData != null)
-            {
-              tileList.Add(tileData);
+              var suffix = FileUtils.GeneratedFileSuffix(file.ImportedFileType);
+              string generatedName = FileUtils.GeneratedFileName(file.Name, suffix, FileUtils.DXF_FILE_EXTENSION);
+              byte[] tileData = null;
+              if (zoomLevel <= file.MaxZoomLevel || file.MaxZoomLevel == 0) //0 means not calculated
+              {
+                tileData = GetTileAtRequestedZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId).Result;
+              }
+              else if (zoomLevel - file.MaxZoomLevel <= 5) //Don't try to scale if the difference is too excessive
+              {
+                tileData = GetTileAtHigherZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId,
+                  file.MaxZoomLevel, numTiles).Result;
+
+              }
+              else
+              {
+                log.LogDebug(
+                  "DxfTileExecutor: difference between requested and maximum zooms too large; not even going to try to scale tile");
+              }
+              if (tileData != null)
+              {
+                tileList.Add(tileData);
+              }
             }
           }
-        }
-      }
+        });
 
       //Overlay the tiles. Return an empty tile if none to overlay.
       log.LogDebug("DxfTileExecutor: Overlaying {0} tiles", tileList.Count);
