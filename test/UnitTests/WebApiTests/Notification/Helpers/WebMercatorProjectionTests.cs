@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
@@ -10,20 +12,21 @@ namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
     [DataRow((double)0, 0)]
     [DataRow((double)100, 1.74532925199433)]
     [DataRow((double)42, 0.733038285837618)]
+    [DataRow(179.5, 3.13286600732982)]
+    [DataRow((double)180, Math.PI)]
     public void Point_DegreesToRadians(double deg, double expectedResult)
     {
-      //TODO:  WebMercatorProjection.DegreesToRadians has been replaced by extension method larDegreesToRadians and lonDegreesToRadians
-      Assert.AreEqual(expectedResult, WebMercatorProjection.DegreesToRadians(deg), 0.00000001);
+      Assert.AreEqual(expectedResult, deg.LonDegreesToRadians(), 0.00000001);
     }
 
     [TestMethod]
     [DataRow((double)0, 0)]
     [DataRow((double)42, 2406.42273954946)]
     [DataRow((double)100, 5729.57795130823)]
+    [DataRow(456.32, 26145.2101074097)]
     public void Point_RadianToDegreesPoint(double rad, double expectedResult)
     {
-      //TODO:  WebMercatorProjection.DegreesToRadians has been replaced by extension method larDegreesToRadians and lonDegreesToRadians
-      Assert.AreEqual(expectedResult, WebMercatorProjection.RadiansToDegrees(rad), 0.00000001);
+      Assert.AreEqual(expectedResult, rad.LatRadiansToDegrees(), 0.00000001);
     }
 
     [TestMethod]
@@ -37,6 +40,16 @@ namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
       Assert.AreEqual(expectedY, result.Latitude, 0.00000001);
     }
 
+    [TestMethod]
+    [DataRow((double)128, (double)128, 0, 0)]
+    [DataRow(132.26666667, 125.15324216, -4.0032532125, -5.98906374664545)]
+    public void Point_FromPointToLatLng(double x, double y, double expectedX, double expectedY)
+    {
+      var result = WebMercatorProjection.FromPointToLatLng(new Point(x, y));
+
+      Assert.AreEqual(expectedX, result.Longitude, 0.00000001);
+      Assert.AreEqual(expectedY, result.Latitude, 0.00000001);
+    }
 
     [TestMethod]
     [DataRow(0, 0, 0, 0, 0)]
