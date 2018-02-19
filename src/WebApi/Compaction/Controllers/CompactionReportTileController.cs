@@ -14,6 +14,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -208,7 +209,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
         null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height);
-
+      //Short-circuit cache time for Archived projects
+      if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+        Response.Headers["Cache-Control"] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
