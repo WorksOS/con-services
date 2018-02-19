@@ -102,6 +102,28 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         if (geofencesBitmap != null)
           tileList.Add(geofencesBitmap);
       }
+      if (request.overlays.Contains(TileOverlayType.CustomBoundaries))
+      {
+        var boundariesBitmap = geofenceTileService.GetBoundariesBitmap(parameters, request.boundaries);
+        if (boundariesBitmap != null)
+        {
+          tileList.Add(boundariesBitmap);
+        }
+      }
+      if (request.overlays.Contains(TileOverlayType.FilterBoundary))
+      {
+        List<List<WGSPoint>> filterPoints = new List<List<WGSPoint>>
+        {
+          request.filter?.PolygonLL,
+          request.baseFilter?.PolygonLL,
+          request.topFilter?.PolygonLL
+        };
+        var filterBoundaryBitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, filterPoints);
+        if (filterBoundaryBitmap != null)
+        {
+          tileList.Add(filterBoundaryBitmap);
+        }
+      }
       if (request.overlays.Contains(TileOverlayType.Alignments))
       {
         var alignmentsBitmap = alignmentTileService.GetAlignmentsBitmap(parameters, request.project.projectId,
