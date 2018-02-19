@@ -6,9 +6,11 @@ using Dapper;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Scheduler.Common.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
+using CustomerProject = VSS.Productivity3D.Scheduler.Common.Models.CustomerProject;
 
 namespace VSS.Productivity3D.Scheduler.Common.Repository
 {
@@ -44,7 +46,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoProject", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
@@ -63,6 +65,14 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
               INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID";
       selectImportedFilesCommand += string.Format($"   WHERE fk_ImportedFileTypeID {(processSurveyedSurfaceType ? "= 2" : "!= 2")}");
 
+      string selectImportedFilesHistoryCommand =
+        @"SELECT 
+              ImportedFileUID, ifh.FileCreatedUTC, ifh.FileUpdatedUTC, ifh.ImportedBy	        
+            FROM ImportedFile iff
+				      INNER JOIN ImportedFileHistory ifh ON ifh.fk_ImportedFileUID = iff.ImportedFileUID";
+      selectImportedFilesHistoryCommand += string.Format($"   WHERE fk_ImportedFileTypeID {(processSurveyedSurfaceType ? "= 2" : "!= 2")}");
+      selectImportedFilesHistoryCommand += string.Format("   ORDER BY ImportedFileUID, ifh.FileCreatedUTC, ifh.FileUpdatedUTC");
+
       string selectCustomerProjectCommand =
         @"SELECT 
               LegacyCustomerID, fk_CustomerUID as CustomerUID,
@@ -76,6 +86,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         members.AddRange(responseImportedFiles);
         _log.LogTrace($"ImportedFileRepoProject.Read: responseImportedFiles {responseImportedFiles.Count}");
 
+        var responseImportedFileHistory = _dbConnection.Query<ImportedFileHistoryItem>(selectImportedFilesHistoryCommand).ToList();
+        members.ForEach(y => y.ImportedFileHistory = (new ImportedFileHistory(responseImportedFileHistory.Where(h => h.ImportedFileUid == y.ImportedFileUid).ToList())));
+
         var responseCustomerProject = _dbConnection.Query<CustomerProject>(selectCustomerProjectCommand).ToList();
         _customerProjectList.AddRange(responseCustomerProject);
         _log.LogTrace($"ImportedFileRepoProject.Read: responseCustomerProject {responseCustomerProject.Count}");
@@ -87,7 +100,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoProject", "Error", startUtc, _log, newRelicAttributes);
 
         // throw on system issues, not business rule failure
         throw;
@@ -121,7 +134,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoProject", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
@@ -143,15 +156,68 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoProject", "Error", startUtc, _log, newRelicAttributes);
       }
       finally
       {
         _dbConnection.Close();
       }
 
+      if (countInserted > 0)
+      {
+        CreateHistory(member);
+      }
+
       return countInserted;
     }
+
+    public int CreateHistory(T member)
+    {
+      var startUtc = DateTime.UtcNow;
+      try
+      {
+        _dbConnection.Open();
+      }
+      catch (Exception ex)
+      {
+        var message = $"ImportedFileRepoProject.CreateHistory: open DB exeception {ex.Message}.";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoProject", "Error", startUtc, _log, newRelicAttributes);
+        throw;
+      }
+
+      var importedFileHistoryCommand = string.Format(
+        "INSERT ImportedFileHistory " +
+        "    (fk_ImportedFileUID, FileCreatedUtc, FileUpdatedUtc, ImportedBy) " +
+        " VALUES " +
+        " (@ImportedFileUid, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy)");
+
+      int countInserted = 0;
+      try
+      {
+        countInserted += _dbConnection.Execute(importedFileHistoryCommand,
+          new { member.ImportedFileUid, member.FileCreatedUtc, member.FileUpdatedUtc, member.ImportedBy });
+        _log.LogTrace($"ImportedFileRepoProject.CreateHistory: countInserted {countInserted}");
+      }
+      catch (Exception ex)
+      {
+        var message = $"ImportedFileRepoProject.CreateHistory:  execute exeception {ex.Message} projectHistoryToCreate: {JsonConvert.SerializeObject(member)}";
+        var newRelicAttributes = new Dictionary<string, object>
+        {
+          {"message",message}
+        };
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoProject", "Error", startUtc, _log, newRelicAttributes);
+      }
+      finally
+      {
+        _dbConnection.Close();
+      }
+      return countInserted;
+    }
+
 
     public int Update(T member)
     {
@@ -167,7 +233,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoProject", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
@@ -193,13 +259,18 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFileRepoProject", "Error", startUtc, _log, newRelicAttributes);
       }
       finally
       {
         _dbConnection.Close();
       }
 
+      if (countUpdated > 0)
+      {
+        // as per Dmitry: don't bother backfilling entire history
+        CreateHistory(member);
+      }
       return countUpdated;
     }
 

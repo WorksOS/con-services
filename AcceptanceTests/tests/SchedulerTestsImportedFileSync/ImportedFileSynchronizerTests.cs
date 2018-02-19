@@ -306,7 +306,7 @@ namespace SchedulerTestsImportedFileSync
         LegacyCustomerId = new Random().Next(1, 19999999),
         CustomerUid = Guid.NewGuid().ToString(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
-        Name = "ImportedFileRepoProject_NewFileInNhOp.TTM",
+        Name = $"ImportedFileRepoProject_NewFileInNhOp {Guid.NewGuid()}.TTM",
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
         FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
         FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
@@ -369,12 +369,19 @@ namespace SchedulerTestsImportedFileSync
         importFileResponse.LegacyCustomerId.ToString(), importFileResponse.LegacyProjectId.ToString(),
         importFileResponse.Name));
       Assert.AreEqual(fileDescriptor, importFileResponse.FileDescriptor,
-        "FileDescriptor not created corerectly in Project.");
+        "FileDescriptor not created correctly in Project.");
 
       Assert.AreEqual(importedFileNhOp.FileCreatedUtc, importFileResponse.FileCreatedUtc,
         "FileCreatedUtc not synced to Project.");
       Assert.AreEqual(importedFileNhOp.FileUpdatedUtc, importFileResponse.FileUpdatedUtc,
         "FileUpdatedUtc not synced to Project.");
+
+      Assert.IsNotNull(importFileResponse.ImportedFileHistory, "ImportedFileHistory was not created.");
+      Assert.AreEqual(1, importFileResponse.ImportedFileHistory.ImportedFileHistoryItems.Count,"ImportedFileHistory count is incorrect.");
+      Assert.AreEqual(importedFileNhOp.FileCreatedUtc, importFileResponse.ImportedFileHistory.ImportedFileHistoryItems[0].FileCreatedUtc,
+        "FileCreatedUtc not synced to ImportedFileHistory.");
+      Assert.AreEqual(importedFileNhOp.FileUpdatedUtc, importFileResponse.ImportedFileHistory.ImportedFileHistoryItems[0].FileUpdatedUtc,
+        "FileUpdatedUtc not synced to ImportedFileHistory.");
 
       Assert.AreEqual("", importFileResponse.ImportedBy, "ImportedBy not synced to Project.");
       Assert.IsFalse(importFileResponse.IsDeleted, "IsDeleted not synced to Project.");
@@ -453,6 +460,8 @@ namespace SchedulerTestsImportedFileSync
     public async Task ImpFileSyncSS_CreatedInNhOp_UpdatedInNhOp()
     {
       var importedFileRepoNhOp = new ImportedFileRepoNhOp<ImportedFileNhOp>(ConfigStore, LoggerFactory);
+      var initialFileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01);
+      var initialFileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12);
 
       var importedFileNhOp = new ImportedFileNhOp()
       {
@@ -463,8 +472,8 @@ namespace SchedulerTestsImportedFileSync
         ImportedFileType = ImportedFileType.SurveyedSurface,
         Name = "ImportedFileRepoProject_NewFileInNhOp.TTM",
         SurveyedUtc = new DateTime(2016, 12, 15, 10, 23, 01),
-        FileCreatedUtc = new DateTime(2017, 1, 2, 10, 23, 01),
-        FileUpdatedUtc = new DateTime(2017, 1, 2, 11, 50, 12),
+        FileCreatedUtc = initialFileCreatedUtc,
+        FileUpdatedUtc = initialFileUpdatedUtc,
         ImportedBy = "someoneElse@gmail.com",
         LastActionedUtc = new DateTime(2017, 1, 1, 10, 23, 01, 555),
       };
@@ -503,6 +512,17 @@ namespace SchedulerTestsImportedFileSync
         "should have the updated FilecreatedUtc in project");
       Assert.AreEqual(importedFileNhOp.FileUpdatedUtc, importFileProjectResponse.FileUpdatedUtc,
         "should have the updated FileUpdatedUtc in project");
+
+      Assert.IsNotNull(importFileProjectResponse.ImportedFileHistory, "ImportedFileHistory was not created.");
+      Assert.AreEqual(2, importFileProjectResponse.ImportedFileHistory.ImportedFileHistoryItems.Count, "ImportedFileHistory count is incorrect.");
+      Assert.AreEqual(initialFileCreatedUtc, importFileProjectResponse.ImportedFileHistory.ImportedFileHistoryItems[0].FileCreatedUtc,
+        "The initial FileCreatedUtc not synced to ImportedFileHistory.");
+      Assert.AreEqual(initialFileUpdatedUtc, importFileProjectResponse.ImportedFileHistory.ImportedFileHistoryItems[0].FileUpdatedUtc,
+        "The initial FileUpdatedUtc not synced to ImportedFileHistory.");
+      Assert.AreEqual(importedFileNhOp.FileCreatedUtc, importFileProjectResponse.ImportedFileHistory.ImportedFileHistoryItems[1].FileCreatedUtc,
+        "FileCreatedUtc not synced to ImportedFileHistory.");
+      Assert.AreEqual(importedFileNhOp.FileUpdatedUtc, importFileProjectResponse.ImportedFileHistory.ImportedFileHistoryItems[1].FileUpdatedUtc,
+        "FileUpdatedUtc not synced to ImportedFileHistory.");
     }
 
     [TestMethod]

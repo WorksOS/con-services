@@ -205,7 +205,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         throw;
       }
 
-      var insertImportedFileHistoryeCommand = string.Format(
+      var insertImportedFileHistoryCommand = string.Format(
         "INSERT ImportedFileHistory " +
         "    (fk_ImportedFileID, InsertUTC, CreateUTC, fk_UserID) " +
         "  VALUES " +
@@ -214,7 +214,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
       int countInserted = 0;
       try
       {
-        countInserted += _dbConnection.Execute(insertImportedFileHistoryeCommand,
+        countInserted += _dbConnection.Execute(insertImportedFileHistoryCommand,
           new {member.FileCreatedUtc, member.FileUpdatedUtc, member.LegacyImportedFileId});
         _log.LogTrace($"ImportedFileRepoNhOp.CreateHistory: countInserted {countInserted}");
       }
