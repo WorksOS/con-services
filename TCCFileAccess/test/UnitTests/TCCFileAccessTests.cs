@@ -38,6 +38,34 @@ namespace VSS.TCCFileAccess.UnitTests
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }
 
+
+    [TestMethod]
+    public async Task TestConcurrencyTCCAccess()
+    {
+      var serviceCollection = new ServiceCollection();
+      string loggerRepoName = "UnitTestLogTest";
+      var logPath = Directory.GetCurrentDirectory();
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(loggerRepoName);
+
+      serviceCollection.AddLogging();
+      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      serviceCollection.AddTransient<IFileRepository, FileRepository>();
+      ServiceProvider = serviceCollection.BuildServiceProvider();
+
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var orgName = configuration.GetValueString("TCCORG");
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
+      var orgs = await fileaccess.ListOrganizations();
+      var org = (from o in orgs where o.shortName == orgName select o).First();
+      fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
+      var folders = await fileaccess.GetFolders(org, DateTime.MinValue, "/");
+    }
+
     [TestMethod]
     public void CanParseUTF8Files()
     {
