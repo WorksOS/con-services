@@ -50,5 +50,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
         MatchTarget = matchTarget,
       };
     }
+
+    public static SummarySpeedResult Empty()
+    {
+      return new SummarySpeedResult();
+    }
   }
 }

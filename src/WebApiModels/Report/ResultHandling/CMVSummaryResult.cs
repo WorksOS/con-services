@@ -48,6 +48,12 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     private CMVSummaryResult() 
     {}
 
+
+    public static CMVSummaryResult Empty()
+    {
+      return new CMVSummaryResult();
+    }
+
     /// <summary>
     /// Create instance of CMVSummaryResult
     /// </summary>

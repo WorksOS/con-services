@@ -4,8 +4,6 @@
 Background: 
 	Given the CMV change summary service URI "/api/v1/cmvchange/summary", request repo "CMVChangeRequest.json" and result repo "CMVChangeResponse.json"
 
-# (Aaron) Ignored at Raymond's request.
-@Ignore
 Scenario Outline: CMVChange - Good Request
 	When I request CMV change summary supplying "<RequestName>" from the request repository
 	Then the result should match "<ResultName>" from the result repository

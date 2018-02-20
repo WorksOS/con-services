@@ -31,13 +31,18 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     public double CoverageArea { get; private set; }
 
 
-    public static CMVChangeSummaryResult CreateSummarySpeedResult(double[] values, double coverageArea)
+    public static CMVChangeSummaryResult CreateSummaryCMVChangeResult(double[] values, double coverageArea)
     {
       return new CMVChangeSummaryResult
       {
                  Values = values,
                  CoverageArea = coverageArea
              };
+    }
+
+    public static CMVChangeSummaryResult Empty()
+    {
+      return new CMVChangeSummaryResult();
     }
   }
 }

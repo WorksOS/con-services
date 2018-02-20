@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     private CMVChangeSummaryResult ConvertResult(TASNodeCMVChangeResult result)
     {
 
-      return CMVChangeSummaryResult.CreateSummarySpeedResult
+      return CMVChangeSummaryResult.CreateSummaryCMVChangeResult
           (
               result.Values,
               result.CoverageArea

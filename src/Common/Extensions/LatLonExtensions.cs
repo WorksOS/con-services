@@ -4,7 +4,6 @@ namespace VSS.Productivity3D.Common.Extensions
 {
   public static class LatLonExtensions
   {
-
     /// <summary>
     /// Latitude(y) must be in range -pi/2 to pi/2
     /// </summary>
@@ -45,8 +44,6 @@ namespace VSS.Productivity3D.Common.Extensions
     /// <summary>
     /// Convert latitude in radians to degrees
     /// </summary>
-    /// <param name="lat"></param>
-    /// <returns></returns>
     public static double LatRadiansToDegrees(this double lat)
     {
       return lat.RadiansToDegrees();
@@ -55,8 +52,6 @@ namespace VSS.Productivity3D.Common.Extensions
     /// <summary>
     /// Convert longitude in radians to degrees
     /// </summary>
-    /// <param name="lon"></param>
-    /// <returns></returns>
     public static double LonRadiansToDegrees(this double lon)
     {
       return lon.RadiansToDegrees();
@@ -65,8 +60,6 @@ namespace VSS.Productivity3D.Common.Extensions
     /// <summary>
     /// Convert a value in radians to degrees
     /// </summary>
-    /// <param name="rad"></param>
-    /// <returns></returns>
     private static double RadiansToDegrees(this double rad)
     {
       return rad / (Math.PI / 180.0);

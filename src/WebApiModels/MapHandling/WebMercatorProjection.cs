@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Productivity3D.Common.Extensions;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -10,25 +11,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     private const int ONE_HALF_CIRCLE = 180;
     private const int ONE_FULL_CIRCLE = 360;
 
-    [Obsolete("Use extension method latDegreesToRadians or lonDegreesToRadians")]
-    public static double DegreesToRadians(double deg)
-    {
-      return deg * (Math.PI / ONE_HALF_CIRCLE);
-    }
-
-    [Obsolete("Use extension method LatRadiansToDegrees or LonRadiansToDegrees")]
-    public static double RadiansToDegrees(double rad)
-    {
-      return rad / (Math.PI / ONE_HALF_CIRCLE);
-    }
-
     public static Point FromLatLngToPoint(Point latLng)
     {
       var pt = new Point {
         x = (latLng.Longitude + ONE_HALF_CIRCLE) / ONE_FULL_CIRCLE * TILE_SIZE
       };
 
-      double latRad = DegreesToRadians(latLng.Latitude);
+      double latRad = latLng.Latitude.LatDegreesToRadians();
       pt.y = ((1 - Math.Log(Math.Tan(latRad) + 1 / Math.Cos(latRad)) / Math.PI) / 2 * Math.Pow(2, 0)) * TILE_SIZE;
 
       return pt;
@@ -38,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     {
       double lng = point.x / TILE_SIZE * ONE_FULL_CIRCLE - ONE_HALF_CIRCLE;
       double n = Math.PI - 2 * Math.PI * point.y / TILE_SIZE;
-      double lat = RadiansToDegrees(Math.Atan(0.5 * (Math.Exp(n) - Math.Exp(-n))));
+      double lat = (Math.Atan(0.5 * (Math.Exp(n) - Math.Exp(-n)))).LatRadiansToDegrees();
 
       return new Point(lat, lng);
     }

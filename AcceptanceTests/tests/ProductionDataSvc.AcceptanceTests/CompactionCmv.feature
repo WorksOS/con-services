@@ -2,8 +2,6 @@
 I should be able to request compaction CMV data
 
 ######################################################## CMV Summary ############################################################
-# (Aaron) Ignored at Raymond's request.
-@Ignore
 Scenario Outline: Compaction Get CMV Summary - No Design Filter
 Given the Compaction service URI "/api/v2/cmv/summary" for operation "CMVSummary"
 And the result file "CompactionGetCMVDataResponse.json"
@@ -15,8 +13,6 @@ Examples:
 |                 | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_Summary    |
 | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_Summary_PS |
 
-# (Aaron) Ignored at Raymond's request.
-@Ignore
 Scenario Outline: Compaction Get CMV Summary
 Given the Compaction service URI "/api/v2/cmv/summary" for operation "CMVSummary"
 And the result file "CompactionGetCMVDataResponse.json"
@@ -32,8 +28,6 @@ Examples:
 
 
 ######################################################## CMV Details ############################################################
-# (Aaron) Ignored at Raymond's request.
-@Ignore
 Scenario Outline: Compaction Get CMV Details - No Design Filter
 Given the Compaction service URI "/api/v2/cmv/details" for operation "CMVDetails"
 And the result file "CompactionGetCMVDataResponse.json"
@@ -45,8 +39,6 @@ Examples:
 |                 | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_Details    |
 | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_Details_PS |
 
-# (Aaron) Ignored at Raymond's request.
-@Ignore
 Scenario Outline: Compaction Get CMV Details
 Given the Compaction service URI "/api/v2/cmv/details" for operation "CMVDetails"
 And the result file "CompactionGetCMVDataResponse.json"
@@ -61,8 +53,6 @@ Examples:
 
 
 ######################################################## CMV % Change Summary ###################################################
-# (Aaron) Ignored at Raymond's request.
-@Ignore
 Scenario Outline: Compaction Get CMV % Change Summary - No Design Filter
 Given the Compaction service URI "/api/v2/cmv/percentchange" for operation "CMVPercentChangeSummary"
 And the result file "CompactionGetCMVDataResponse.json"
@@ -74,8 +64,6 @@ Examples:
 |                 | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_PercentChange    |
 | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_PercentChange_PS |
 
-# (Aaron) Ignored at Raymond's request.
-@Ignore
 Scenario Outline: Compaction Get CMV % Change Summary
 Given the Compaction service URI "/api/v2/cmv/percentchange" for operation "CMVPercentChangeSummary"
 And the result file "CompactionGetCMVDataResponse.json"
