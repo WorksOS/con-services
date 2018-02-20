@@ -31,14 +31,15 @@ namespace VSS.TCCFileAccess
     private const string INVALID_TICKET_MESSAGE = "You have not authenticated, use login action";
 
     //Reinvalidate tcc ticket every 30 min
-    private DateTime lastLoginTimestamp;
+    private static DateTime lastLoginTimestamp;
 
 
     private readonly ILogger<FileRepository> Log;
     private readonly ILoggerFactory logFactory;
     private readonly IConfigurationStore configStore;
 
-    private string ticket = String.Empty;
+    private static string ticket = String.Empty;
+    private static object ticketLockObj = new object();
 
     /// <summary>
     /// The file cache - contains byte array for PNGs as a value and a full filename (path to the PNG) as a key. 
@@ -62,12 +63,13 @@ namespace VSS.TCCFileAccess
     {
       get
       {
-        if (string.IsNullOrEmpty(ticket) || lastLoginTimestamp < DateTime.UtcNow.AddMinutes(-30))
+        lock (ticketLockObj)
         {
+          if (!string.IsNullOrEmpty(ticket) && lastLoginTimestamp >= DateTime.UtcNow.AddMinutes(-30)) return ticket;
           ticket = Login().Result;
           lastLoginTimestamp = DateTime.UtcNow;
+          return ticket;
         }
-        return ticket;
       }
     }
 
@@ -254,7 +256,7 @@ namespace VSS.TCCFileAccess
       {
         if (!cacheable)
         {
-          using (var responseStream = await gracefulClient.ExecuteRequest(requestString, "GET", headers))
+          using (var responseStream = await gracefulClient.ExecuteRequest(requestString, "GET", headers, retries: 1))
           {
             responseStream.Position = 0;
             file = new byte[responseStream.Length];
