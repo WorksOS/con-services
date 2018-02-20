@@ -386,11 +386,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>The filter with the date range set</returns>
     private MasterData.Models.Models.Filter ApplyDateRange(Guid projectUid, MasterData.Models.Models.Filter filter)
     {
-      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom || filter.DateRangeType.Value == DateRangeType.ProjectExtents)
+
+      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
       {
-        log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom or ProjectExtents. Returning without setting filter start and end dates.");
+        log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom. Returning without setting filter start and end dates.");
         return filter;
       }
+
 
       var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
       if (project == null)
@@ -402,8 +404,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var utcNow = DateTime.UtcNow;
 
-      DateTime? startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
-      DateTime? endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
+      //Force daterange filters to be null if ProjectExtents is specified
+      DateTime? startUtc=null;
+      DateTime? endUtc=null;
+
+      if (filter.DateRangeType.Value != DateRangeType.ProjectExtents)
+      {
+         startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
+         endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
+      }
 
       return MasterData.Models.Models.Filter.CreateFilter(
         startUtc, endUtc, filter.DesignUid, filter.ContributingMachines, filter.OnMachineDesignId, filter.ElevationType,

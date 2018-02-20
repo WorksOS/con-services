@@ -39,5 +39,10 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
                  CoverageArea = coverageArea
              };
     }
+
+    public static CMVChangeSummaryResult Empty()
+    {
+      return new CMVChangeSummaryResult();
+    }
   }
 }

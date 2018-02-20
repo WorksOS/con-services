@@ -50,6 +50,11 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     private MDPSummaryResult()
     { }
 
+    public static MDPSummaryResult Empty()
+    {
+      return new MDPSummaryResult();
+    }
+
     /// <summary>
     /// Create instance of MDPSummaryResult
     /// </summary>

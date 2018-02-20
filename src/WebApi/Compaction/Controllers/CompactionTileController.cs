@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for displaying production data and linework.
   /// </summary>
-  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+
   public class CompactionTileController : BaseController
   {
     /// <summary>
@@ -108,6 +108,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ProjectUidVerifier]
     [Route("api/v2/productiondatatiles")]
     [Route("api/v2/compaction/productiondatatiles")]
@@ -177,6 +178,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).
     /// </returns>
     /// <executor>CompactionTileExecutor</executor> 
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ProjectUidVerifier]
     [Route("api/v2/productiondatatiles/png")]
     [Route("api/v2/compaction/productiondatatiles/png")]
@@ -241,6 +243,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
+    [ResponseCache(Duration = 31536000, VaryByQueryKeys = new[] { "*" })]
     [ProjectUidVerifier]
     [Route("api/v2/lineworktiles")]
     [Route("api/v2/compaction/lineworktiles")]
@@ -293,6 +296,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
+    [ResponseCache(Duration = 31536000, VaryByQueryKeys = new[] { "*" })]
     [ProjectUidVerifier]
     [Route("api/v2/lineworktiles/png")]
     [Route("api/v2/compaction/lineworktiles/png")]

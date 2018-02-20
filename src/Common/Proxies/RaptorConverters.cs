@@ -406,13 +406,12 @@ namespace VSS.Productivity3D.Common.Proxies
     /// <returns></returns>
     public static TWGS84FenceContainer convertWGS84Fence(WGS84Fence fence)
     {
-
       TWGS84FenceContainer fenceContainer = new TWGS84FenceContainer()
       {
         FencePoints = fence.Points.ToList().ConvertAll(p => { return new TWGS84Point() { Lat = p.Lat, Lon = p.Lon }; }).ToArray()
       };
-      return fenceContainer;
 
+      return fenceContainer;
     }
 
     public static TICFilterSettings ConvertFilter(long? filterID, Filter filter, long? projectid, DateTime? overrideStartUTC = null,
