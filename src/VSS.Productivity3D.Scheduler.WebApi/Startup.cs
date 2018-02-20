@@ -117,8 +117,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           QueuePollInterval = TimeSpan.FromSeconds(queuePollIntervalSeconds), 
           JobExpirationCheckInterval = TimeSpan.FromHours(24),
           CountersAggregateInterval = TimeSpan.FromMinutes(countersAggregateIntervalMinutes),
-          PrepareSchemaIfNecessary = false,
-          InvisibilityTimeout = TimeSpan.FromHours(24)
+          PrepareSchemaIfNecessary = false
         });
 
       try

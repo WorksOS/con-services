@@ -15,9 +15,15 @@ using VSS.TCCFileAccess;
 namespace VSS.Productivity3D.Scheduler.WebAPI
 {
 
-
+  /// <summary>
+  /// 
+  /// </summary>
   public class SkipWhenPreviousJobIsRunningAttribute : JobFilterAttribute, IClientFilter, IApplyStateFilter
   {
+    /// <summary>
+    /// OnCreating
+    /// </summary>
+    /// <param name="context"></param>
     public void OnCreating(CreatingContext context)
     {
       var connection = context.Connection as JobStorageConnection;
@@ -41,10 +47,19 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
       }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="filterContext"></param>
     public void OnCreated(CreatedContext filterContext)
     {
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="transaction"></param>
     public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
     {
       if (context.NewState is EnqueuedState)
@@ -67,6 +82,11 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
       }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="transaction"></param>
     public void OnStateUnapplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
     {
     }
@@ -78,6 +98,15 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
   /// </summary>
   public class OtherImportedFileSyncTask : ImportedProjectFileSyncTask
   {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="configStore"></param>
+    /// <param name="logger"></param>
+    /// <param name="raptorProxy"></param>
+    /// <param name="tPaasProxy"></param>
+    /// <param name="impFileProxy"></param>
+    /// <param name="fileRepo"></param>
     public OtherImportedFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy,
       ITPaasProxy tPaasProxy, IImportedFileProxy impFileProxy, IFileRepository fileRepo) :
       base(configStore, logger, raptorProxy, tPaasProxy, impFileProxy, fileRepo)
@@ -103,14 +132,14 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
       var startUtc = DateTime.UtcNow;
 
       // lowest interval is minutes 
-      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_NonSS_TASK_INTERVAL_MINUTES"),
+      if (!int.TryParse(ConfigStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_NonSS_TASK_INTERVAL_MINUTES"),
         out int taskIntervalMinutes))
       {
         taskIntervalMinutes = DefaultTaskIntervalDefaultMinutes;
       }
 
       var importedProjectFileSyncTask = "ImportedProjectFileSyncNonSurveyedSurfaceTask";
-      _log.LogInformation($"ImportedProjectFileSyncTask: (processNonSurveyedSurfaceType) taskIntervalMinutes: {taskIntervalMinutes}.");
+      Log.LogInformation($"ImportedProjectFileSyncTask: (processNonSurveyedSurfaceType) taskIntervalMinutes: {taskIntervalMinutes}.");
 
       try
       {
@@ -123,7 +152,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
         {
           {"message", string.Format($"Unable to schedule recurring job: exception {ex.Message}")}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Fatal", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Fatal", startUtc, Log, newRelicAttributes);
         throw;
       }
     }

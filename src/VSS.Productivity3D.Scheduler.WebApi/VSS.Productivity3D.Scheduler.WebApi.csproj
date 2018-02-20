@@ -1,23 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp1.1;net47</TargetFrameworks>
-      <GenerateDocumentationFile>true</GenerateDocumentationFile>
-      <PreserveCompilationContext>true</PreserveCompilationContext>
-      <AssemblyName>VSS.Productivity3D.Scheduler.WebAPI</AssemblyName>
-      <OutputType>exe</OutputType>
-      <PackageId>SchedulerWebApi</PackageId>
-      <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
-      <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
-      <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
-      <RootNamespace>VSS.Productivity3D.Scheduler.WebAPI</RootNamespace>
-      <ApplicationIcon />
-      <OutputTypeEx>exe</OutputTypeEx>
-      <DependsOnNETStandard>netstandard1.6</DependsOnNETStandard>
+    <TargetFrameworks>net47;netcoreapp1.1</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AssemblyName>VSS.Productivity3D.Scheduler.WebAPI</AssemblyName>
+    <OutputType>exe</OutputType>
+    <PackageId>SchedulerWebApi</PackageId>
+    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
+    <RootNamespace>VSS.Productivity3D.Scheduler.WebAPI</RootNamespace>
+    <ApplicationIcon />
+    <OutputTypeEx>exe</OutputTypeEx>
     <StartupObject />
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="logs\**" />
+    <Content Remove="logs\**" />
+    <EmbeddedResource Remove="logs\**" />
+    <None Remove="logs\**" />
+  </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Dockerfile;log4net.xml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.2" />
@@ -47,29 +67,6 @@
     <ProjectReference Include="..\VSS.Productivity3D.Scheduler.Common\VSS.Productivity3D.Scheduler.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Dockerfile;log4net.xml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-    <None Update="log4net.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="web.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>True</DebugSymbols>
-  </PropertyGroup>
-
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
     <ItemGroup>
       <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
@@ -78,31 +75,43 @@
   </Target>
 
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
-    <PackageReference Include="Hangfire.MySqlStorage" Version="1.0.5" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.6.15" />
-    <PackageReference Include="Hangfire.Core" Version="1.6.15" />
-    <PackageReference Include="Topshelf">
-      <Version>4.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Data.SqlClient" Version="4.4.0"></PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
-    <PackageReference Include="Hangfire.MySql.NetCore" Version="1.0.7" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.6.15" />
-    <PackageReference Include="Hangfire.Core" Version="1.6.17" />
-  </ItemGroup>
-  
   <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="1.1.2" />
-  </ItemGroup>  
+    <PackageReference Include="NewRelic.Agent.Api" Version="6.16.178" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
+    <PackageReference Include="Hangfire.MySqlStorage" Version="1.0.5" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.6.17" />
+    <PackageReference Include="Hangfire.Core" Version="1.6.17" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.0"></PackageReference>
+    <PackageReference Include="Topshelf"><Version>4.0.3</Version></PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
+    <PackageReference Include="Hangfire.MySql.NetCore" Version="1.0.7" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.6.17" />
+    <PackageReference Include="Hangfire.Core" Version="1.6.17" />
+  </ItemGroup>
+  
   
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
   </PropertyGroup>
 
-
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp1.1|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
 </Project>

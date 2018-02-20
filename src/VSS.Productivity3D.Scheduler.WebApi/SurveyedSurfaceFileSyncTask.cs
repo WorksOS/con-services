@@ -15,6 +15,15 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
   /// </summary>
   public class SurveyedSurfaceFileSyncTask : ImportedProjectFileSyncTask
   {
+    /// <summary>
+    /// SurveyedSurfaceFileSyncTask
+    /// </summary>
+    /// <param name="configStore"></param>
+    /// <param name="logger"></param>
+    /// <param name="raptorProxy"></param>
+    /// <param name="tPaasProxy"></param>
+    /// <param name="impFileProxy"></param>
+    /// <param name="fileRepo"></param>
     public SurveyedSurfaceFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy,
       ITPaasProxy tPaasProxy, IImportedFileProxy impFileProxy, IFileRepository fileRepo) :
       base (configStore, logger, raptorProxy, tPaasProxy, impFileProxy, fileRepo)
@@ -40,14 +49,14 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
       var startUtc = DateTime.UtcNow;
 
       // lowest interval is minutes 
-      if (!int.TryParse(_configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_SS_TASK_INTERVAL_MINUTES"),
+      if (!int.TryParse(ConfigStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_SS_TASK_INTERVAL_MINUTES"),
         out int taskIntervalMinutes))
       {
         taskIntervalMinutes = DefaultTaskIntervalDefaultMinutes;
       }
 
       var importedProjectFileSyncTask = "ImportedProjectFileSyncSurveyedSurfaceTask";
-      _log.LogInformation($"ImportedProjectFileSyncTask: (processSurveyedSurfaceType) taskIntervalMinutes: {taskIntervalMinutes}.");
+      Log.LogInformation($"ImportedProjectFileSyncTask: (processSurveyedSurfaceType) taskIntervalMinutes: {taskIntervalMinutes}.");
 
       try
       {
@@ -60,7 +69,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI
         {
           {"message", string.Format($"Unable to schedule recurring job: exception {ex.Message}")}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Fatal", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Fatal", startUtc, Log, newRelicAttributes);
         throw;
       }
     }
