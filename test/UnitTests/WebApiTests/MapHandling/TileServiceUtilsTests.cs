@@ -25,6 +25,23 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     }
 
     [TestMethod]
+    public void RoundingZoomLevelTest()
+    {
+      double diff1 = 0.000365585907798893;
+      double diff2 = 0.000766990393942846;
+
+      double diff1_1 = 0.000365339467977011;
+      double diff2_1 = 0.000766990393942818;
+
+      var res1 = TileServiceUtils.CalculateZoomLevel(diff1, diff2);
+      var res2 = TileServiceUtils.CalculateZoomLevel(diff1_1, diff2_1);
+
+      Assert.AreEqual(res1,res2);
+      Assert.AreEqual(13,res1);
+
+    }
+
+    [TestMethod]
     public void CanConvertLatLngToPixelOffset()
     {
       List<WGSPoint> latLngs = new List<WGSPoint>
