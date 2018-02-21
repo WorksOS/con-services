@@ -12,7 +12,9 @@
     DxfLinework,
     Alignments,
     Geofences,
-    CustomBoundaries,
-    FilterBoundary
+    FilterCustomBoundary,
+    FilterDesignBoundary,
+    FilterAlignmentBoundary,
+    CustomBoundaries
   }
 }

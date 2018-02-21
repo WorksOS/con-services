@@ -110,15 +110,28 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           tileList.Add(boundariesBitmap);
         }
       }
-      if (request.overlays.Contains(TileOverlayType.FilterBoundary))
+      if (request.overlays.Contains(TileOverlayType.FilterCustomBoundary))
       {
-        List<List<WGSPoint>> filterPoints = new List<List<WGSPoint>>
+        var filterBoundaries = boundingBoxService.GetFilterBoundaries(request.project, request.filter, request.baseFilter, request.topFilter, FilterBoundaryType.Polygon);
+        var filterBoundaryBitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, filterBoundaries, FilterBoundaryType.Polygon);
+        if (filterBoundaryBitmap != null)
         {
-          request.filter?.PolygonLL,
-          request.baseFilter?.PolygonLL,
-          request.topFilter?.PolygonLL
-        };
-        var filterBoundaryBitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, filterPoints);
+          tileList.Add(filterBoundaryBitmap);
+        }
+      }
+      if (request.overlays.Contains(TileOverlayType.FilterDesignBoundary))
+      {
+        var filterBoundaries = boundingBoxService.GetFilterBoundaries(request.project, request.filter, request.baseFilter, request.topFilter, FilterBoundaryType.Design);
+        var filterBoundaryBitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, filterBoundaries, FilterBoundaryType.Design);
+        if (filterBoundaryBitmap != null)
+        {
+          tileList.Add(filterBoundaryBitmap);
+        }
+      }
+      if (request.overlays.Contains(TileOverlayType.FilterAlignmentBoundary))
+      {
+        var filterBoundaries = boundingBoxService.GetFilterBoundaries(request.project, request.filter, request.baseFilter, request.topFilter, FilterBoundaryType.Alignment);
+        var filterBoundaryBitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, filterBoundaries, FilterBoundaryType.Alignment);
         if (filterBoundaryBitmap != null)
         {
           tileList.Add(filterBoundaryBitmap);

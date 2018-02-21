@@ -19,7 +19,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
 
-    const int DEFAULT_BOUNDARY_COLOR = 0xF4511E;
+    const int DEFAULT_CUSTOM_BOUNDARY_COLOR = 0xF4511E;
+    const int DEFAULT_DESIGN_BOUNDARY_COLOR = 0x008DBD;
+    const int DEFAULT_ALIGNMENT_BOUNDARY_COLOR = 0xFF0000;
 
     public GeofenceTileService(ILoggerFactory logger)
     {
@@ -28,14 +30,15 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     }
 
     /// <summary>
-    /// 
+    /// Gets a map tile with spatial filter boundaries drawn on it
     /// </summary>
     /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
     /// <param name="filterPolygons">List of filter polygons</param>
-    /// <returns></returns>
-    public byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<CommonModels.WGSPoint>> filterPolygons)
+    /// <param name="boundaryType">Type of filter boundary which determines the color</param>
+    /// <returns>A bitmap</returns>
+    public byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<CommonModels.WGSPoint>> filterPolygons, FilterBoundaryType boundaryType)
     {
-      byte[] sitesImage = null;
+      byte[] geofenceImage = null;
 
       if (filterPolygons != null && filterPolygons.Any())
       {
@@ -46,13 +49,26 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           {
             if (polygonPoints != null && polygonPoints.Any())
             {
-              DrawGeofence(parameters, g, "Filter Boundary", polygonPoints, DEFAULT_BOUNDARY_COLOR, true);
+              int color = 0;
+              switch (boundaryType)
+              {
+                  case FilterBoundaryType.Alignment:
+                    color = DEFAULT_ALIGNMENT_BOUNDARY_COLOR;
+                    break;
+                case FilterBoundaryType.Design:
+                  color = DEFAULT_DESIGN_BOUNDARY_COLOR;
+                  break;
+                default:
+                  color = DEFAULT_CUSTOM_BOUNDARY_COLOR;
+                  break;
+              }
+              DrawGeofence(parameters, g, $"{boundaryType} Filter Boundary", polygonPoints, color, true);
             }
           }
-          sitesImage = bitmap.BitmapToByteArray();
+          geofenceImage = bitmap.BitmapToByteArray();
         }
       }
-      return sitesImage;
+      return geofenceImage;
     }
     /// <summary>
     /// Gets a map tile with geofences drawn on it.
@@ -123,7 +139,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             }
             else
             {
-              int siteColor = site.FillColor > 0 ? site.FillColor : (isSites ? DEFAULT_SITE_COLOR : DEFAULT_BOUNDARY_COLOR);
+              int siteColor = site.FillColor > 0 ? site.FillColor : (isSites ? DEFAULT_SITE_COLOR : DEFAULT_CUSTOM_BOUNDARY_COLOR);
               bool transparent = isSites ? site.IsTransparent : true;
               DrawGeofence(parameters, g, site.GeofenceUID.ToString(), sitePoints, siteColor, transparent);
             }
@@ -158,6 +174,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   {
     byte[] GetSitesBitmap(MapParameters parameters, IEnumerable<GeofenceData> sites);
     byte[] GetBoundariesBitmap(MapParameters parameters, IEnumerable<GeofenceData> customBoundaries);
-    byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<CommonModels.WGSPoint>> filterPoints);
+    byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<CommonModels.WGSPoint>> filterPoints, FilterBoundaryType boundaryType);
   }
 }
