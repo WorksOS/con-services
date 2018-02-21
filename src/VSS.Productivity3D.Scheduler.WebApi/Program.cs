@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 #if NET_4_7
 using Topshelf;
 using System.Diagnostics;

@@ -18,9 +18,9 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   /// </summary>
   public abstract class ImportedProjectFileSyncTask
   {
-    protected readonly IConfigurationStore _configStore;
+    protected readonly IConfigurationStore ConfigStore;
     private readonly ILoggerFactory _logger;
-    protected readonly ILogger _log;
+    protected readonly ILogger Log;
     private readonly IRaptorProxy _raptorProxy;
     private readonly ITPaasProxy _tPaasProxy;
     private readonly IImportedFileProxy _impFileProxy;
@@ -39,9 +39,9 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     public ImportedProjectFileSyncTask(IConfigurationStore configStore, ILoggerFactory logger, IRaptorProxy raptorProxy,
       ITPaasProxy tPaasProxy, IImportedFileProxy impFileProxy, IFileRepository fileRepo)
     {
-      _configStore = configStore;
+      ConfigStore = configStore;
       _logger = logger;
-      _log = logger.CreateLogger<ImportedProjectFileSyncTask>();
+      Log = logger.CreateLogger<ImportedProjectFileSyncTask>();
       _raptorProxy = raptorProxy;
       _tPaasProxy = tPaasProxy;
       _impFileProxy = impFileProxy;
@@ -53,19 +53,19 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     protected void ImportedFilesSyncTask(bool processSurveyedSurfaceType)
     {
-      _log.LogDebug($"ImportedFilesSyncTask: ProcessSurveyedSurfaceType={processSurveyedSurfaceType}");
+      Log.LogDebug($"ImportedFilesSyncTask: ProcessSurveyedSurfaceType={processSurveyedSurfaceType}");
 
       var startUtc = DateTime.UtcNow;
-      _log.LogDebug($"ImportedFilesSyncTask()  beginning. startUtc: {startUtc}");
+      Log.LogDebug($"ImportedFilesSyncTask()  beginning. startUtc: {startUtc}");
 
-      var sync = new ImportedFileSynchronizer(_configStore, _logger, _raptorProxy, _tPaasProxy, _impFileProxy, _fileRepo, processSurveyedSurfaceType);
+      var sync = new ImportedFileSynchronizer(ConfigStore, _logger, _raptorProxy, _tPaasProxy, _impFileProxy, _fileRepo, processSurveyedSurfaceType);
       sync.SyncTables().Wait();
 
       var newRelicAttributes = new Dictionary<string, object> {
         { "message", "Task completed." }
       };
-      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, _log, newRelicAttributes);
-      _log.LogDebug($"|ImportedFilesSyncTask()  ended. ProcessSurveyedSurfaceType={processSurveyedSurfaceType} endUtc: {DateTime.UtcNow}");
+      NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Information", startUtc, Log, newRelicAttributes);
+      Log.LogDebug($"|ImportedFilesSyncTask()  ended. ProcessSurveyedSurfaceType={processSurveyedSurfaceType} endUtc: {DateTime.UtcNow}");
 
     }
   }
