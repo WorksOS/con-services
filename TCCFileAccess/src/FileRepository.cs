@@ -231,9 +231,12 @@ namespace VSS.TCCFileAccess
       bool cacheable = TCCFile.FileCacheable(fullName);
       if (cacheable)
       {
+        Log.LogDebug("Trying to extract from cache {0} with cache size {1}", fullName,fileCache.Count);
         if (fileCache.TryGetValue(fullName, out file))
         {
           Log.LogDebug("Serving TCC tile request from cache {0}", fullName);
+          if (file.Length == 0)
+            return null;
           return new MemoryStream(file);
         }
       }
@@ -286,6 +289,8 @@ namespace VSS.TCCFileAccess
           Log.LogWarning(
             $"Can not execute request TCC request with error {webException.Status} and {webException.Message}. {GetStringFromResponseStream(response)}");
         }
+        //let's cache the response anyway but for a limited time
+        fileCache.Set(fullName, new byte[0], DateTimeOffset.UtcNow.AddMinutes(30));
       }
       catch (Exception e)
       {

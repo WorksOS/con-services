@@ -236,6 +236,7 @@ namespace VSS.MasterData.Proxies
         WebResponse response = null;
         try
         {
+          log.LogDebug($"ExecuteRequest() T starting the request");
           response = await request.GetResponseAsync();
           if (response != null)
           {
