@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Proxies
 {
@@ -16,19 +17,18 @@ namespace VSS.MasterData.Proxies
     {
     }
 
-    public async Task<JObject> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders)
+    public async Task<JObject> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders, ProjectSettingsType settingsType)
     {
-      var result = await GetMasterDataItem<ProjectSettingsDataResult>(projectUid, userId, 
-        "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, $"/{projectUid}");
+      var result = await GetMasterDataItem<ProjectSettingsDataResult>(projectUid, userId,
+        "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, $"/{projectUid}/{settingsType}");
 
       if (result.Code == 0)
       {
         return result.Settings;
       }
  
-      log.LogWarning("Failed to get project settings, using default values: {0}, {1}", result.Code, result.Message);
+      log.LogWarning("Failed to get project settings {0}, using default values: {1}, {2}", nameof(settingsType), result.Code, result.Message);
       return null;
-      
     }
 
     /// <summary>
@@ -40,5 +40,6 @@ namespace VSS.MasterData.Proxies
     {
       ClearCacheItem<ProjectSettingsDataResult>(projectUid, userId);
     }
+
   }
 }
