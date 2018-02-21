@@ -145,7 +145,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       MDPSettings mdpSettings = this.SettingsManager.CompactionMdpSettings(projectSettings);
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
@@ -241,7 +241,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
        return CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(TemperatureSummaryResult.Empty());
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       TemperatureSettings temperatureSettings = this.SettingsManager.CompactionTemperatureSettings(projectSettings, false);
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
@@ -288,7 +288,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetSpeedSummary: " + Request.QueryString);
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
@@ -342,7 +342,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No CMV Data"));
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
-      var projectSettings = await this.GetProjectSettings(projectUid);
+      var projectSettings = await this.GetProjectSettingsTargets(projectUid);
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -455,13 +455,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Build<SummaryVolumesExecutorV2>(logger, raptorClient)
           .Process(request) as SummaryVolumesResult;
 
-        returnResult = CompactionSummaryVolumesResult.CreateInstance(result, await GetProjectSettings(projectUid));
+        returnResult = CompactionSummaryVolumesResult.CreateInstance(result, await GetProjectSettingsTargets(projectUid));
       }
       catch (ServiceException)
       {
         returnResult = CompactionSummaryVolumesResult.CreateInstance(
           SummaryVolumesResult.CreateEmptySummaryVolumesResult(),
-          await GetProjectSettings(projectUid));
+          await GetProjectSettingsTargets(projectUid));
       }
       finally
       {
@@ -576,7 +576,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetCutFillDetails: " + Request.QueryString);
 
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
@@ -656,7 +656,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private async Task<CMVRequest> GetCmvRequest(Guid projectUid, Guid? filterUid)
     {
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       CMVSettings cmvSettings = this.SettingsManager.CompactionCmvSettings(projectSettings);
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
@@ -675,7 +675,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private async Task<PassCounts> GetPassCountRequest(Guid projectUid, Guid? filterUid, bool isSummary)
     {
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
-      var projectSettings = await this.GetProjectSettings(projectUid);
+      var projectSettings = await this.GetProjectSettingsTargets(projectUid);
       PassCountSettings passCountSettings = isSummary ? null : this.SettingsManager.CompactionPassCountSettings(projectSettings);
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
 

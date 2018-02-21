@@ -137,7 +137,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
@@ -207,7 +207,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue

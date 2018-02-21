@@ -69,7 +69,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid)
     {
       log.LogInformation("GetColorPalettes: " + Request.QueryString);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
 
       //Note: elevation palette is a separate call as it requires a filter
       List<DisplayMode> modes = new List<DisplayMode>
@@ -115,7 +116,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       foreach (var mode in modes)
       {
         List<ColorValue> colorValues;
-        var compactionPalette = this.SettingsManager.CompactionPalette(mode, null, projectSettings);
+        var compactionPalette = this.SettingsManager.CompactionPalette(mode, null, projectSettings, projectSettingsColors);
         switch (mode)
         {
           case DisplayMode.CCV:
@@ -200,12 +201,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetElevationPalette: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await this.GetProjectSettings(projectUid);
+      var projectSettings = await this.GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = await this.GetProjectSettingsColors(projectUid);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
       ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(projectId, filter, projectSettings);
-      var compactionPalette = this.SettingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettings);
+      var compactionPalette = this.SettingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettings, projectSettingsColors);
 
       DetailPalette elevationPalette = null;
       if (compactionPalette != null)

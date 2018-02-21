@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.Common.Helpers
     {
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
       Filter?.Validate();//Why is this here? Should be done where filter set up???
-      var palette = SettingsManager.CompactionPalette(mode, elevExtents, ProjectSettings);
+      var palette = SettingsManager.CompactionPalette(mode, elevExtents, ProjectSettings, ProjectSettingsColors);
       var computeVolType = (int) (volCalcType ?? VolumeCalcType.None);
       DesignDescriptor design = mode == DisplayMode.CutFill && (volCalcType == VolumeCalcType.GroundToDesign ||
                                                                 volCalcType == VolumeCalcType.DesignToGround)

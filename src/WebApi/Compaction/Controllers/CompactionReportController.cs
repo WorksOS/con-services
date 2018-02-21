@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = GetProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
 
       var reportGridRequest = await requestFactory.Create<CompactionReportGridRequestHelper>(r => r
           .ProjectId(projectId)
@@ -184,7 +184,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesignDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       var userPreferences = await GetUserPreferences();
 
       // Add 0.0 value to the offests array, remove any duplicates and sort contents by ascending order...

@@ -107,7 +107,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetProfileProductionDataSlicer: " + Request.QueryString);
       var projectId = GetProjectId(projectUid);
 
-      var settings = await GetProjectSettings(projectUid);
+      var settings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
 
@@ -230,7 +230,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetProfileDesignSlicer: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var settings = await GetProjectSettings(projectUid);
+      var settings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
       if (importedFileUid.Length == 0)
