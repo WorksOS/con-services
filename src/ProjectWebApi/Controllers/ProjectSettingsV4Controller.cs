@@ -65,10 +65,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets the target project settings for a project and user.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
+    /// <param name="settingsType">The project settings' type.</param>
     /// <returns></returns>
-    [Route("api/v4/projectsettings/{projectUid}")]
+    [Route("api/v4/projectsettings/{projectUid}/{settingsType}")]
     [HttpGet]
-    public async Task<ProjectSettingsResult> GetProjectSettings(string projectUid)
+    public async Task<ProjectSettingsResult> GetProjectSettings(string projectUid, ProjectSettingsType settingsType)
     {
       if (string.IsNullOrEmpty(projectUid))
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
@@ -76,7 +77,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
           .CustomerUid(customerUid))
-        .CreateProjectSettingsRequest(projectUid, string.Empty, ProjectSettingsType.Targets);
+        .CreateProjectSettingsRequest(projectUid, string.Empty, settingsType);
       projectSettingsRequest.Validate();
      
       var result = (await WithServiceExceptionTryExecuteAsync(() => 
