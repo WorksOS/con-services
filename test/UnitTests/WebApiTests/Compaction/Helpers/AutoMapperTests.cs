@@ -107,10 +107,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     public void MapProjectSettingsToCMVPercentChangeSettings()
     {
       var ps = CompactionProjectSettings.CreateProjectSettings();
+      double[] expectedPercents = ps.CmvPercentChange;
 
       var cmvChange = AutoMapperUtility.Automapper.Map<CmvPercentChangeSettings>(ps);
-      Assert.AreEqual(3, cmvChange.percents.Length, "percents total not mapped correctly");
-      double[] expectedPercents = ps.CmvPercentChange;
+      Assert.AreEqual(expectedPercents.Length, cmvChange.percents.Length, "percents total not mapped correctly");
       for (int i = 0; i < cmvChange.percents.Length; i++)
       {
         Assert.AreEqual(expectedPercents[i], cmvChange.percents[i], $"percents item {i} not mapped correctly");

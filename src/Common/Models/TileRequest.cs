@@ -164,6 +164,7 @@ namespace VSS.Productivity3D.Common.Models
         ushort height,
         uint representationalDisplayColor = 0,
         uint cmvDetailsColorNumber = 5,
+        uint cmvPercentChangeColorNumber = 6,
         bool setSummaryDataLayersVisibility = true
       )
     {
@@ -188,6 +189,7 @@ namespace VSS.Productivity3D.Common.Models
         height = height,
         representationalDisplayColor = representationalDisplayColor,
         cmvDetailsColorNumber = cmvDetailsColorNumber,
+        cmvPercentChangeColorNumber = cmvPercentChangeColorNumber,
         setSummaryDataLayersVisibility = setSummaryDataLayersVisibility
       };
     }
