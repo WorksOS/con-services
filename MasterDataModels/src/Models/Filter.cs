@@ -315,12 +315,12 @@ namespace VSS.MasterData.Models.Models
       }
 
       // must have both or neither; must increase 
-      if ((StartStation == null) != (EndStation == null))
+      if (StartStation.HasValue != EndStation.HasValue)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 65);
       }
 
-      if (EndStation != null && (StartStation != null && StartStation.Value >= EndStation.Value))
+      if (EndStation.HasValue && StartStation.HasValue && StartStation.Value >= EndStation.Value)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 65);
       }
@@ -330,15 +330,14 @@ namespace VSS.MasterData.Models.Models
       // Negative offsets allow the user to indicate a slice on one side of the centreline
       //   e.g. LeftOffset = -20 and RightOffset = 25
       //      will result in the strip on the right side of the road between 20 and 25
-      if ((LeftOffset == null) != (RightOffset == null))
+      if (LeftOffset.HasValue != RightOffset.HasValue)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 66);
       }
 
       // if any present then ALL must exist.
-      if (((StartStation == null) != (LeftOffset == null) != string.IsNullOrEmpty(AlignmentUid))
-          && (StartStation != null)
-          )
+      if ((StartStation.HasValue != LeftOffset.HasValue != string.IsNullOrEmpty(AlignmentUid))
+          && StartStation.HasValue)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 67);
       }
