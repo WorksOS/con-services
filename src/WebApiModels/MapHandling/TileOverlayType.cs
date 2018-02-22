@@ -15,6 +15,7 @@
     FilterCustomBoundary,
     FilterDesignBoundary,
     FilterAlignmentBoundary,
-    CustomBoundaries
+    CutFillDesignBoundary
+    //CustomBoundaries
   }
 }

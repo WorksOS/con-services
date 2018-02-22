@@ -253,9 +253,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var geofences = overlayTypes.Contains(TileOverlayType.Geofences)
         ? await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders)
         : new List<GeofenceData>();
+      /*
       var boundaries = overlayTypes.Contains(TileOverlayType.CustomBoundaries)
         ? await boundaryProxy.GetBoundaries(projectUid.ToString(), CustomHeaders)
         : new List<GeofenceData>();
+        */
 
       var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
           .ProjectId(project.projectId)
@@ -267,7 +269,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetTopFilter(sumVolParameters.Item2)
         .SetVolumeCalcType(volumeCalcType)
         .SetGeofences(geofences)
-        .SetCustomBoundaries(boundaries)
+        //.SetCustomBoundaries(boundaries)
         .SetAlignmentDescriptors(alignmentDescriptors)
         .SetDxfFiles(dxfFiles)
         .SetProject(project)

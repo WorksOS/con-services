@@ -128,10 +128,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             var sitePoints = RaptorConverters.geometryToPoints(site.GeometryWKT);
 
             //Exclude site if outside bbox
-            bool outside = sitePoints.Min(p => p.Lat) < parameters.bbox.minLat || 
-                           sitePoints.Max(p => p.Lat) > parameters.bbox.maxLat ||
-                           sitePoints.Min(p => p.Lon) < parameters.bbox.minLng || 
-                           sitePoints.Max(p => p.Lon) > parameters.bbox.maxLng;
+            bool outside = sitePoints.Min(p => p.Lat) > parameters.bbox.maxLat || 
+                           sitePoints.Max(p => p.Lat) < parameters.bbox.minLat ||
+                           sitePoints.Min(p => p.Lon) > parameters.bbox.maxLng || 
+                           sitePoints.Max(p => p.Lon) < parameters.bbox.minLng;
 
             if (outside)
             {

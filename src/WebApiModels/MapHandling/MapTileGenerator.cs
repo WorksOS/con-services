@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       log.LogDebug("TileGenerationRequest: " + JsonConvert.SerializeObject(request));
 
       MapBoundingBox bbox = boundingBoxService.GetBoundingBox(request.project, request.filter,
-        request.overlays, request.baseFilter, request.topFilter);
+        request.overlays, request.baseFilter, request.topFilter, request.designDescriptor);
 
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(bbox.maxLat - bbox.minLat, bbox.maxLng - bbox.minLng);
       long numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
@@ -102,6 +102,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         if (geofencesBitmap != null)
           tileList.Add(geofencesBitmap);
       }
+      /*
       if (request.overlays.Contains(TileOverlayType.CustomBoundaries))
       {
         var boundariesBitmap = geofenceTileService.GetBoundariesBitmap(parameters, request.boundaries);
@@ -110,6 +111,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           tileList.Add(boundariesBitmap);
         }
       }
+      */
       if (request.overlays.Contains(TileOverlayType.FilterCustomBoundary))
       {
         var filterBoundaries = boundingBoxService.GetFilterBoundaries(request.project, request.filter, request.baseFilter, request.topFilter, FilterBoundaryType.Polygon);
@@ -135,6 +137,15 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         if (filterBoundaryBitmap != null)
         {
           tileList.Add(filterBoundaryBitmap);
+        }
+      }
+      if (request.overlays.Contains(TileOverlayType.CutFillDesignBoundary))
+      {
+        var designBoundaries = boundingBoxService.GetDesignBoundaryPolygons(request.project.projectId, request.designDescriptor);
+        var designBoundaryBitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, designBoundaries, FilterBoundaryType.Design);
+        if (designBoundaryBitmap != null)
+        {
+          tileList.Add(designBoundaryBitmap);
         }
       }
       if (request.overlays.Contains(TileOverlayType.Alignments))

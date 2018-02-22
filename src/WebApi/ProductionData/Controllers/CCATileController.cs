@@ -238,6 +238,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         null,
         null,
         null,
+        null,
         null);
 
       var request = TileRequest.CreateTileRequest

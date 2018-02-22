@@ -84,10 +84,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         }
         if (boundaryType == FilterBoundaryType.Design || boundaryType == FilterBoundaryType.All)
         {
-          if (filter.DesignOrAlignmentFile != null)
+          if (filter.DesignFile != null)
           {
             log.LogDebug($"GetFilterBoundaries: adding design boundary polygons for projectId={project.projectId}, filter name={filter.Name}");
-            boundaries.AddRange(GetDesignBoundaryPolygons(project.projectId, filter.DesignOrAlignmentFile));
+            boundaries.AddRange(GetDesignBoundaryPolygons(project.projectId, filter.DesignFile));
           }
         }
         if (boundaryType == FilterBoundaryType.Polygon || boundaryType == FilterBoundaryType.All)
@@ -101,10 +101,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
       return boundaries;
     }
- 
+
 
     /// <summary>
-    /// Gets a single list of points representing all the spatial filters in the given filters.
+    /// Gets a single list of points representing all the spatial filters in the given filters 
+    /// and the design boundary for cut-fill and volumes.
     /// </summary>
     /// <param name="project">The project for the report</param>
     /// <param name="filter">The filter for production data tiles</param>
@@ -114,12 +115,22 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     private List<WGSPoint> GetFilterPoints(ProjectDescriptor project, Filter filter, Filter baseFilter, Filter topFilter)
     {
       var boundaries = GetFilterBoundaries(project, filter, baseFilter, topFilter, FilterBoundaryType.All);
-      var filterPoints = new List<WGSPoint>();
-      foreach (var boundary in boundaries)
+      return GetPointsFromPolygons(boundaries);
+    }
+
+    /// <summary>
+    /// Gets a single list containing all the points from a list of polygons
+    /// </summary>
+    /// <param name="polygons"></param>
+    /// <returns></returns>
+    private List<WGSPoint> GetPointsFromPolygons(List<List<WGSPoint>> polygons)
+    {
+      var points = new List<WGSPoint>();
+      foreach (var polygon in polygons)
       {
-        filterPoints.AddRange(boundary);
+        points.AddRange(polygon);
       }
-      return filterPoints;
+      return points;
     }
 
     /// <summary>
@@ -130,8 +141,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="overlays">The overlay or layer types</param>
     /// <param name="baseFilter">The base filter for summary volumes</param>
     /// <param name="topFilter">The top filter for summary volumes</param>
+    /// <param name="designDescriptor">The design for cut-fill & summary volumes</param>
     /// <returns>A bounding box in latitude/longitude (radians)</returns>
-    public MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, TileOverlayType[] overlays, Filter baseFilter, Filter topFilter)
+    public MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, TileOverlayType[] overlays, Filter baseFilter, Filter topFilter, DesignDescriptor designDescriptor)
     {
       log.LogInformation($"GetBoundingBox: project {project.projectUid}");
 
@@ -141,6 +153,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       List<WGSPoint> filterPoints = GetFilterPoints(project, filter, baseFilter, topFilter);
       if (filterPoints.Count > 0)
       {
+        log.LogDebug("GetBoundingBox: Using area filter");
+
         bbox = new MapBoundingBox
         {
           minLat = filterPoints.Min(p => p.Lat),
@@ -151,55 +165,73 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
       else
       {
-        log.LogDebug("GetBoundingBox: No area filter");
-        //No area filter so use production data extents as the bounding box.
-        //Only applies if doing production data tiles.
-        //Also if doing the project boundary tile we assume the user wants to see that so production data extents not applicable.
-        if (overlays.Contains(TileOverlayType.ProductionData) && !overlays.Contains(TileOverlayType.ProjectBoundary))
+        //If no spatial filter then use cut-fill/volumes design
+        var boundaryPoints = GetPointsFromPolygons(GetDesignBoundaryPolygons(project.projectId, designDescriptor));
+        if (boundaryPoints.Count > 0)
         {
-          var productionDataExtents = GetProductionDataExtents(project.projectId, filter);
-          if (productionDataExtents != null)
+          log.LogDebug("GetBoundingBox: Using cut-fill design boundary");
+          bbox = new MapBoundingBox
           {
-            log.LogDebug($"GetBoundingBox: Production data extents {productionDataExtents.conversionCoordinates[0].y},{productionDataExtents.conversionCoordinates[0].x},{productionDataExtents.conversionCoordinates[1].y},{productionDataExtents.conversionCoordinates[1].x}");
+            minLat = boundaryPoints.Min(p => p.Lat),
+            minLng = boundaryPoints.Min(p => p.Lon),
+            maxLat = boundaryPoints.Max(p => p.Lat),
+            maxLng = boundaryPoints.Max(p => p.Lon)
+          };
+        }
+        else
+        {
+          log.LogDebug("GetBoundingBox: No spatial filter");
+          //No area filter so use production data extents as the bounding box.
+          //Only applies if doing production data tiles.
+          //Also if doing the project boundary tile we assume the user wants to see that so production data extents not applicable.
+          if (overlays.Contains(TileOverlayType.ProductionData) && !overlays.Contains(TileOverlayType.ProjectBoundary))
+          {
+            var productionDataExtents = GetProductionDataExtents(project.projectId, filter);
+            if (productionDataExtents != null)
+            {
+              log.LogDebug(
+                $"GetBoundingBox: Production data extents {productionDataExtents.conversionCoordinates[0].y},{productionDataExtents.conversionCoordinates[0].x},{productionDataExtents.conversionCoordinates[1].y},{productionDataExtents.conversionCoordinates[1].x}");
+
+              bbox = new MapBoundingBox
+              {
+                minLat = productionDataExtents.conversionCoordinates[0].y,
+                minLng = productionDataExtents.conversionCoordinates[0].x,
+                maxLat = productionDataExtents.conversionCoordinates[1].y,
+                maxLng = productionDataExtents.conversionCoordinates[1].x
+              };
+            }
+          }
+
+          //Sometimes tag files way outside the project boundary are imported. These mean the data extents are
+          //invalid and and give problems. So need to check for this and use project extents in this case.
+
+          //Also use project boundary extents if fail to get production data extents or not doing production data tiles
+          //e.g. project thumbnails or user has requested project boundary overlay
+          var projectPoints = RaptorConverters.geometryToPoints(project.projectGeofenceWKT);
+          var projectMinLat = projectPoints.Min(p => p.Lat);
+          var projectMinLng = projectPoints.Min(p => p.Lon);
+          var projectMaxLat = projectPoints.Max(p => p.Lat);
+          var projectMaxLng = projectPoints.Max(p => p.Lon);
+          bool assign = bbox == null
+            ? true
+            : bbox.minLat < projectMinLat || bbox.minLat > projectMaxLat ||
+              bbox.maxLat < projectMinLat || bbox.maxLat > projectMaxLat ||
+              bbox.minLng < projectMinLng || bbox.minLng > projectMaxLng ||
+              bbox.maxLng < projectMinLng || bbox.minLng > projectMaxLng;
+
+          if (assign)
+          {
+            log.LogDebug(
+              $"GetBoundingBox: Using project extents {projectMinLat},{projectMinLng},{projectMaxLat},{projectMaxLng}");
 
             bbox = new MapBoundingBox
             {
-              minLat = productionDataExtents.conversionCoordinates[0].y,
-              minLng = productionDataExtents.conversionCoordinates[0].x,
-              maxLat = productionDataExtents.conversionCoordinates[1].y,
-              maxLng = productionDataExtents.conversionCoordinates[1].x
+              minLat = projectMinLat,
+              minLng = projectMinLng,
+              maxLat = projectMaxLat,
+              maxLng = projectMaxLng
             };
           }
-        }
-
-        //Sometimes tag files way outside the project boundary are imported. These mean the data extents are
-        //invalid and and give problems. So need to check for this and use project extents in this case.
-
-        //Also use project boundary extents if fail to get production data extents or not doing production data tiles
-        //e.g. project thumbnails or user has requested project boundary overlay
-        var projectPoints = RaptorConverters.geometryToPoints(project.projectGeofenceWKT);
-        var projectMinLat = projectPoints.Min(p => p.Lat);
-        var projectMinLng = projectPoints.Min(p => p.Lon);
-        var projectMaxLat = projectPoints.Max(p => p.Lat);
-        var projectMaxLng = projectPoints.Max(p => p.Lon);
-        bool assign = bbox == null
-          ? true
-          : bbox.minLat < projectMinLat || bbox.minLat > projectMaxLat ||
-            bbox.maxLat < projectMinLat || bbox.maxLat > projectMaxLat ||
-            bbox.minLng < projectMinLng || bbox.minLng > projectMaxLng ||
-            bbox.maxLng < projectMinLng || bbox.minLng > projectMaxLng;
-
-        if (assign)
-        {
-          log.LogDebug($"GetBoundingBox: Using project extents {projectMinLat},{projectMinLng},{projectMaxLat},{projectMaxLng}");
-
-          bbox = new MapBoundingBox
-          {
-            minLat = projectMinLat,
-            minLng = projectMinLng,
-            maxLat = projectMaxLat,
-            maxLng = projectMaxLng
-          };
         }
       }
 
@@ -381,27 +413,31 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="designDescriptor">The design to get the boundary of</param>
     /// <returns>A list of latitude/longitude points in degrees</returns>
-    private List<List<WGSPoint>> GetDesignBoundaryPolygons(long projectId, DesignDescriptor designDescriptor)
+    public List<List<WGSPoint>> GetDesignBoundaryPolygons(long projectId, DesignDescriptor designDescriptor)
     {
+      List<List<WGSPoint>> polygons = new List<List<WGSPoint>>();
       var description = TileServiceUtils.DesignDescriptionForLogging(designDescriptor);
       log.LogDebug($"GetDesignBoundaryPolygons: projectId={projectId}, design={description}");
-      List<List<WGSPoint>> polygons = new List<List<WGSPoint>>();
-      var geoJson = GetDesignBoundary(projectId, designDescriptor);
-      log.LogDebug($"GetDesignBoundaryPolygons: geoJson={geoJson}");
-      if (!string.IsNullOrEmpty(geoJson))
+      if (designDescriptor != null)
       {
-        var root = JsonConvert.DeserializeObject<RootObject>(geoJson);
-        foreach (var feature in root.features)
+        var geoJson = GetDesignBoundary(projectId, designDescriptor);
+        log.LogDebug($"GetDesignBoundaryPolygons: geoJson={geoJson}");
+        if (!string.IsNullOrEmpty(geoJson))
         {
-          var points = new List<WGSPoint>();
-          foreach (var coordList in feature.geometry.coordinates)
+          var root = JsonConvert.DeserializeObject<RootObject>(geoJson);
+          foreach (var feature in root.features)
           {
-            foreach (var coordPair in coordList)
+            var points = new List<WGSPoint>();
+            foreach (var coordList in feature.geometry.coordinates)
             {
-              points.Add(WGSPoint.CreatePoint(coordPair[1].LatDegreesToRadians(), coordPair[0].LonDegreesToRadians()));//GeoJSON is lng/lat
+              foreach (var coordPair in coordList)
+              {
+                points.Add(WGSPoint.CreatePoint(coordPair[1].LatDegreesToRadians(),
+                  coordPair[0].LonDegreesToRadians())); //GeoJSON is lng/lat
+              }
             }
+            polygons.Add(points);
           }
-          polygons.Add(points);
         }
       }
       return polygons;
@@ -526,7 +562,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
   public interface IBoundingBoxService
   {
-    MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, TileOverlayType[] overlays, Filter baseFilter, Filter topFilter);
+    MapBoundingBox GetBoundingBox(ProjectDescriptor project, Filter filter, TileOverlayType[] overlays, Filter baseFilter, Filter topFilter, DesignDescriptor designDescriptor);
 
     void AdjustBoundingBoxToFit(MapParameters parameters);
 
@@ -535,6 +571,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
     IEnumerable<WGSPoint> GetAlignmentPoints(long projectId, DesignDescriptor alignDescriptor,
       double startStation=0, double endStation=0, double leftOffset=0, double rightOffset=0);
+
+    List<List<WGSPoint>> GetDesignBoundaryPolygons(long projectId, DesignDescriptor designDescriptor);
   }
 
   public enum FilterBoundaryType
@@ -542,6 +580,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     All,
     Polygon,
     Design,
-    Alignment
+    Alignment,
+    CutFillDesign,
+    VolumeDesign
   }
 }
