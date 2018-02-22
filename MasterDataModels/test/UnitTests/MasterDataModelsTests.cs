@@ -296,6 +296,153 @@ namespace VSS.MasterData.Models.UnitTests
       Assert.AreEqual(newBoundaryPoints[2].Lat, filter.PolygonLL[2].Lat, "updated 3rd filter point is invalid");
     }
 
+    [TestMethod]
+    public void IncludeAlignmentSuccess()
+    {
+      var alignmentUid = Guid.NewGuid().ToString();
+      double? startStation = 10.0;
+      double? endStation = 50.6;
+      double? leftOffset = 4.5;
+      double? rightOffset = 8.94;
+      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), this._machines, 123,
+        ElevationType.Lowest, true, null, true, 1, null, null,
+        alignmentUid, startStation, endStation, leftOffset, rightOffset);
+
+      var jsonString = JsonConvert.SerializeObject(filter);
+      Assert.IsTrue(jsonString != String.Empty);
+
+      filter = JsonConvert.DeserializeObject<Filter>(jsonString);
+      filter.Validate(this._serviceExceptionHandler);
+      Assert.AreEqual(alignmentUid, filter.AlignmentUid, "alignmentUid is wrong.");
+      Assert.AreEqual(startStation, filter.StartStation, "startStation is wrong.");
+      Assert.AreEqual(endStation, filter.EndStation, "endStation is wrong.");
+      Assert.AreEqual(leftOffset, filter.LeftOffset, "leftOffset is wrong.");
+      Assert.AreEqual(rightOffset, filter.RightOffset, "rightOffset is wrong.");
+    }
+
+    [TestMethod]
+    public void IncludeAlignmentFailure_InvalidAlignmentUid()
+    {
+      string alignmentUid = "34545";
+      double? startStation = 10;
+      double? endStation = 50.6;
+      double? leftOffset = 4.5;
+      double? rightOffset = 8.94;
+      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), this._machines, 123,
+        ElevationType.Lowest, true, null, true, 1, null, null,
+        alignmentUid, startStation, endStation, leftOffset, rightOffset);
+
+      var jsonString = JsonConvert.SerializeObject(filter);
+      Assert.IsTrue(jsonString != String.Empty);
+
+      filter = JsonConvert.DeserializeObject<Filter>(jsonString);
+      var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
+      Assert.IsTrue(ex.GetContent.Contains(":2064"), "wrong code for invalid alignment Uid.");
+    }
+    [TestMethod]
+    public void IncludeAlignmentFailure_NoAlignmentUid()
+    {
+      string alignmentUid = null;
+      double? startStation = 10;
+      double? endStation = 50.6;
+      double? leftOffset = 4.5;
+      double? rightOffset = 8.94;
+      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), this._machines, 123,
+        ElevationType.Lowest, true, null, true, 1, null, null,
+        alignmentUid, startStation, endStation, leftOffset, rightOffset);
+
+      var jsonString = JsonConvert.SerializeObject(filter);
+      Assert.IsTrue(jsonString != String.Empty);
+
+      filter = JsonConvert.DeserializeObject<Filter>(jsonString);
+      var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
+      Assert.IsTrue(ex.GetContent.Contains(":2067"), "wrong code for missing alignment definition.");
+    }
+
+    [TestMethod]
+    public void IncludeAlignmentFailure_MissingEndStation()
+    {
+      string alignmentUid = Guid.NewGuid().ToString();
+      double? startStation = 10;
+      double? endStation = null;
+      double? leftOffset = 4.5;
+      double? rightOffset = 8.94;
+      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), this._machines, 123,
+        ElevationType.Lowest, true, null, true, 1, null, null,
+        alignmentUid, startStation, endStation, leftOffset, rightOffset);
+
+      var jsonString = JsonConvert.SerializeObject(filter);
+      Assert.IsTrue(jsonString != String.Empty);
+
+      filter = JsonConvert.DeserializeObject<Filter>(jsonString);
+      var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
+      Assert.IsTrue(ex.GetContent.Contains(":2065"), "wrong code for missing station.");
+    }
+
+    [TestMethod]
+    public void IncludeAlignmentFailure_InvalidEndStation()
+    {
+      string alignmentUid = Guid.NewGuid().ToString();
+      double? startStation = 50;
+      double? endStation = 49.5;
+      double? leftOffset = 0;
+      double? rightOffset = 29.5;
+      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), this._machines, 123,
+        ElevationType.Lowest, true, null, true, 1, null, null,
+        alignmentUid, startStation, endStation, leftOffset, rightOffset);
+
+      var jsonString = JsonConvert.SerializeObject(filter);
+      Assert.IsTrue(jsonString != String.Empty);
+
+      filter = JsonConvert.DeserializeObject<Filter>(jsonString);
+      var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
+      Assert.IsTrue(ex.GetContent.Contains(":2065"), "wrong code for invalid Station.");
+    }
+
+    [TestMethod]
+    public void IncludeAlignmentFailure_InvalidRightOffset()
+    {
+      string alignmentUid = Guid.NewGuid().ToString();
+      double? startStation = 50;
+      double? endStation = 65;
+      double? leftOffset = 0;
+      double? rightOffset = null;
+      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), this._machines, 123,
+        ElevationType.Lowest, true, null, true, 1, null, null,
+        alignmentUid, startStation, endStation, leftOffset, rightOffset);
+
+      var jsonString = JsonConvert.SerializeObject(filter);
+      Assert.IsTrue(jsonString != String.Empty);
+
+      filter = JsonConvert.DeserializeObject<Filter>(jsonString);
+      var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
+      Assert.IsTrue(ex.GetContent.Contains(":2066"), "wrong code for invalid Offset.");
+    }
+
+    [TestMethod]
+    public void IncludeAlignmentSuccess_WithNegativeOffset()
+    {
+      var alignmentUid = Guid.NewGuid().ToString();
+      double? startStation = 10.0;
+      double? endStation = 50.6;
+      double? leftOffset = -20;
+      double? rightOffset = 25;
+      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), this._machines, 123,
+        ElevationType.Lowest, true, null, true, 1, null, null,
+        alignmentUid, startStation, endStation, leftOffset, rightOffset);
+
+      var jsonString = JsonConvert.SerializeObject(filter);
+      Assert.IsTrue(jsonString != String.Empty);
+
+      filter = JsonConvert.DeserializeObject<Filter>(jsonString);
+      filter.Validate(this._serviceExceptionHandler);
+      Assert.AreEqual(alignmentUid, filter.AlignmentUid, "alignmentUid is wrong.");
+      Assert.AreEqual(startStation, filter.StartStation, "startStation is wrong.");
+      Assert.AreEqual(endStation, filter.EndStation, "endStation is wrong.");
+      Assert.AreEqual(leftOffset, filter.LeftOffset, "leftOffset is wrong.");
+      Assert.AreEqual(rightOffset, filter.RightOffset, "rightOffset is wrong.");
+    }
+
     private string INVALID_GUID = "39823294vf-vbfb";
 
   }

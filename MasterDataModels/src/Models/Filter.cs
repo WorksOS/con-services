@@ -106,6 +106,37 @@ namespace VSS.MasterData.Models.Models
     [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
     public int? LayerNumber { get; private set; }
 
+    /// <summary>
+    /// The alignmentFile unique identifier. Used as a spatial filter along with station and offset.
+    /// </summary>
+    [JsonProperty(PropertyName = "alignmentUid", Required = Required.Default)]
+    public string AlignmentUid { get; protected set; }
+
+    /// <summary>
+    /// The starting Station along the alignment.
+    /// </summary>
+    [JsonProperty(PropertyName = "startStation", Required = Required.Default)]
+    public double? StartStation { get; protected set; }
+
+    /// <summary>
+    /// The ending Station along the alignment.
+    /// </summary>
+    [JsonProperty(PropertyName = "endStation", Required = Required.Default)]
+    public double? EndStation { get; protected set; }
+
+    /// <summary>
+    /// The leftmost offset from the alignment.
+    /// </summary>
+    [JsonProperty(PropertyName = "leftOffset", Required = Required.Default)]
+    public double? LeftOffset { get; protected set; }
+
+    /// <summary>
+    /// The leftmost offset from the alignment.
+    /// </summary>
+    [JsonProperty(PropertyName = "rightOffset", Required = Required.Default)]
+    public double? RightOffset { get; protected set; }
+
+
     #region For JSON Serialization
     public bool ShouldSerializeStartUtc()
     {
@@ -200,7 +231,12 @@ namespace VSS.MasterData.Models.Models
         bool? forwardDirection,
         int? layerNumber,
         string polygonUid = null,
-        string polygonName = null
+        string polygonName = null,
+        string alignmentUid = null,
+        double? startStation = null,
+        double? endStation = null,
+        double? leftOffset = null,
+        double? rightOffset = null
       )
     {
       return new Filter
@@ -216,13 +252,20 @@ namespace VSS.MasterData.Models.Models
         ForwardDirection = forwardDirection,
         LayerNumber = layerNumber,
         PolygonUid = polygonUid,
-        PolygonName = polygonName
+        PolygonName = polygonName,
+        AlignmentUid = alignmentUid,
+        StartStation = startStation,
+        EndStation = endStation,
+        LeftOffset = leftOffset,
+        RightOffset = rightOffset
       };
     }
 
     public string ToJsonString()
     {
-      var filter = CreateFilter(StartUtc, EndUtc, DesignUid, ContributingMachines, OnMachineDesignId, ElevationType, VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, PolygonUid, PolygonName);
+      var filter = CreateFilter(StartUtc, EndUtc, DesignUid, ContributingMachines, OnMachineDesignId, ElevationType, VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, 
+        PolygonUid, PolygonName, 
+        AlignmentUid, StartStation, EndStation, LeftOffset, RightOffset);
 
       return JsonConvert.SerializeObject(filter);
     }
@@ -264,6 +307,42 @@ namespace VSS.MasterData.Models.Models
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 35);
       }
+
+      // check alignment
+      if (AlignmentUid != null && Guid.TryParse(AlignmentUid, out Guid _) == false)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 64); 
+      }
+
+      // must have both or neither; must increase 
+      if ((StartStation == null) != (EndStation == null))
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 65);
+      }
+
+      if (EndStation != null && (StartStation != null && StartStation.Value >= EndStation.Value))
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 65);
+      }
+
+      // must have both or neither; 
+      // offsets if positive apply to their side of the centerline
+      // Negative offsets allow the user to indicate a slice on one side of the centreline
+      //   e.g. LeftOffset = -20 and RightOffset = 25
+      //      will result in the strip on the right side of the road between 20 and 25
+      if ((LeftOffset == null) != (RightOffset == null))
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 66);
+      }
+
+      // if any present then ALL must exist.
+      if (((StartStation == null) != (LeftOffset == null) != string.IsNullOrEmpty(AlignmentUid))
+          && (StartStation != null)
+          )
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 67);
+      }
+
     }
 
     public bool Equals(Filter other)
@@ -275,7 +354,9 @@ namespace VSS.MasterData.Models.Models
              OnMachineDesignId == other.OnMachineDesignId && ElevationType == other.ElevationType &&
              VibeStateOn == other.VibeStateOn && string.Equals(PolygonUid, other.PolygonUid) &&
              string.Equals(PolygonName, other.PolygonName) && PolygonLL.ScrambledEquals(other.PolygonLL) &&
-             ForwardDirection == other.ForwardDirection && LayerNumber == other.LayerNumber;
+             ForwardDirection == other.ForwardDirection && LayerNumber == other.LayerNumber && 
+             string.Equals(AlignmentUid, other.AlignmentUid) && string.Equals(StartStation, other.StartStation) && string.Equals(EndStation, other.EndStation) &&
+             string.Equals(LeftOffset, other.LeftOffset) && string.Equals(RightOffset, other.RightOffset);
     }
 
     public override bool Equals(object obj)
@@ -303,6 +384,11 @@ namespace VSS.MasterData.Models.Models
         hashCode = (hashCode * 397) ^ (PolygonLL != null ? PolygonLL.GetListHashCode() : 0);
         hashCode = (hashCode * 397) ^ ForwardDirection.GetHashCode();
         hashCode = (hashCode * 397) ^ LayerNumber.GetHashCode();
+        hashCode = (hashCode * 397) ^ (AlignmentUid != null ? AlignmentUid.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (StartStation != null ? StartStation.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (EndStation != null ? EndStation.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (LeftOffset != null ? LeftOffset.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (RightOffset != null ? RightOffset.GetHashCode() : 0);
         return hashCode;
       }
     }
