@@ -1,11 +1,11 @@
-﻿using System;
+﻿using DesignProfilerDecls;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using DesignProfilerDecls;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -19,7 +19,6 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Coord.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
-using VSS.Productivity3D.WebApiModels.MapHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
