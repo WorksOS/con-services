@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       log.LogDebug(string.Join(",", request.files.Select(f => f.Name).ToList()));
 
       List<byte[]> tileList = new List<byte[]>();
-      request.files.AsParallel().ForAll(file =>
+      Parallel.ForEach(request.files, file => 
       {
         //foreach (var file in request.files)
         //Check file type to see if it has tiles
