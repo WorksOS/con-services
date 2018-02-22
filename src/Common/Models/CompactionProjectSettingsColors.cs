@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Net.Configuration;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -72,7 +73,7 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "cmvUnderTargetColor", Required = Required.Default)]
     public uint? cmvUnderTargetColor { get; private set; }
-    
+
     /// <summary>
     /// Flag to determine if default or custom CMV percent change colour values are used. Default is true.
     /// </summary>
@@ -352,63 +353,64 @@ namespace VSS.Productivity3D.Common.Models
       }
 
       // Elevation...
-      ValidateColorValuesList(elevationColors, nameof(elevationColors), NUMBER_OF_ELEVATION_COLORS);
+      ValidateColorValuesList(elevationColors, nameof(elevationColors), useDefaultElevationColors, NUMBER_OF_ELEVATION_COLORS);
       
       // CMV..
-      ValidateColorValuesList(cmvDetailsColors, nameof(cmvDetailsColors), NUMBER_OF_CMV_DETAILS_COLORS);
-      ValidateColorValue(cmvOnTargetColor, nameof(cmvOnTargetColor));
-      ValidateColorValue(cmvOverTargetColor, nameof(cmvOverTargetColor));
-      ValidateColorValue(cmvUnderTargetColor, nameof(cmvUnderTargetColor));
-      ValidateColorValuesList(cmvPercentColors, nameof(cmvPercentColors), NUMBER_OF_CMV_PERCENT_COLORS);
+      ValidateColorValuesList(cmvDetailsColors, nameof(cmvDetailsColors), useDefaultCMVDetailsColors, NUMBER_OF_CMV_DETAILS_COLORS);
+      ValidateColorValue(cmvOnTargetColor, nameof(cmvOnTargetColor), useDefaultCMVSummaryColors);
+      ValidateColorValue(cmvOverTargetColor, nameof(cmvOverTargetColor), useDefaultCMVSummaryColors);
+      ValidateColorValue(cmvUnderTargetColor, nameof(cmvUnderTargetColor), useDefaultCMVSummaryColors);
+      ValidateColorValuesList(cmvPercentColors, nameof(cmvPercentColors), useDefaultCMVPercentColors, NUMBER_OF_CMV_PERCENT_COLORS);
 
       // Pass Count...
-      ValidateColorValuesList(passCountDetailsColors, nameof(passCountDetailsColors), NUMBER_OF_PASS_COUNT_DETAILS_COLORS);
-      ValidateColorValue(passCountOnTargetColor, nameof(passCountOnTargetColor));
-      ValidateColorValue(passCountOverTargetColor, nameof(passCountOverTargetColor));
-      ValidateColorValue(passCountUnderTargetColor, nameof(passCountUnderTargetColor));
+      ValidateColorValuesList(passCountDetailsColors, nameof(passCountDetailsColors), useDefaultPassCountDetailsColors, NUMBER_OF_PASS_COUNT_DETAILS_COLORS);
+      ValidateColorValue(passCountOnTargetColor, nameof(passCountOnTargetColor), useDefaultPassCountSummaryColors);
+      ValidateColorValue(passCountOverTargetColor, nameof(passCountOverTargetColor), useDefaultPassCountSummaryColors);
+      ValidateColorValue(passCountUnderTargetColor, nameof(passCountUnderTargetColor), useDefaultPassCountSummaryColors);
 
       // Cut/Fill...
-      ValidateColorValuesList(cutFillColors, nameof(cutFillColors), NUMBER_OF_CUT_FILL_COLORS);
+      ValidateColorValuesList(cutFillColors, nameof(cutFillColors), useDefaultCutFillColors, NUMBER_OF_CUT_FILL_COLORS);
 
       // Temperature...
-      ValidateColorValue(temperatureOnTargetColor, nameof(temperatureOnTargetColor));
-      ValidateColorValue(temperatureOverTargetColor, nameof(temperatureOverTargetColor));
-      ValidateColorValue(temperatureUnderTargetColor, nameof(temperatureUnderTargetColor));
+      ValidateColorValue(temperatureOnTargetColor, nameof(temperatureOnTargetColor), useDefaultTemperatureSummaryColors);
+      ValidateColorValue(temperatureOverTargetColor, nameof(temperatureOverTargetColor), useDefaultTemperatureSummaryColors);
+      ValidateColorValue(temperatureUnderTargetColor, nameof(temperatureUnderTargetColor), useDefaultTemperatureSummaryColors);
 
       // Speed...
-      ValidateColorValue(speedOnTargetColor, nameof(speedOnTargetColor));
-      ValidateColorValue(speedOverTargetColor, nameof(speedOverTargetColor));
-      ValidateColorValue(speedUnderTargetColor, nameof(speedUnderTargetColor));
+      ValidateColorValue(speedOnTargetColor, nameof(speedOnTargetColor), useDefaultSpeedSummaryColors);
+      ValidateColorValue(speedOverTargetColor, nameof(speedOverTargetColor), useDefaultSpeedSummaryColors);
+      ValidateColorValue(speedUnderTargetColor, nameof(speedUnderTargetColor), useDefaultSpeedSummaryColors);
 
       // MDP...
-      ValidateColorValue(mdpOnTargetColor, nameof(mdpOnTargetColor));
-      ValidateColorValue(mdpOverTargetColor, nameof(mdpOverTargetColor));
-      ValidateColorValue(mdpUnderTargetColor, nameof(mdpUnderTargetColor));
+      ValidateColorValue(mdpOnTargetColor, nameof(mdpOnTargetColor), useDefaultMDPSummaryColors);
+      ValidateColorValue(mdpOverTargetColor, nameof(mdpOverTargetColor), useDefaultMDPSummaryColors);
+      ValidateColorValue(mdpUnderTargetColor, nameof(mdpUnderTargetColor), useDefaultMDPSummaryColors);
     }
 
-    private void ValidateColorValue(uint? colorValue, string what)
+    private void ValidateColorValue(uint? colorValue, string what, bool? useDefaultValue)
     {
-      if (!colorValue.HasValue)
+      if (useDefaultValue.HasValue && !useDefaultValue.Value)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"{what} colour values must be specified"));
+        if (!colorValue.HasValue)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              $"{what} colour values must be specified"));
+        }
       }
     }
 
-    private void ValidateColorValuesList(List<uint> colorValuesList, string what, byte listLength)
+    private void ValidateColorValuesList(List<uint> colorValuesList, string what, bool? useDefaultValue, byte listLength)
     {
-      if (colorValuesList.Count == 0)
+      if (useDefaultValue.HasValue && !useDefaultValue.Value)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"{what} list should not be empty"));
+        if (colorValuesList == null || colorValuesList.Count != listLength)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              $"{what} list should contain {listLength} element(s)"));
+        }
       }
-
-      if (colorValuesList.Count != listLength)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"{what} list should contain {listLength} element(s)"));
     }
     #endregion
 

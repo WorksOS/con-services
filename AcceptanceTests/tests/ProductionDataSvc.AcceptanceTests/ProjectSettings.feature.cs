@@ -68,25 +68,72 @@ namespace ProductionDataSvc.AcceptanceTests
             testRunner.CollectScenarioErrors();
         }
         
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project Settings Validate Default Settings")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectSettings")]
-        public virtual void ProjectSettingsValidateDefaultSettings()
+        public virtual void ProjectSettingsValidateDefaultSettings(string requestName, string projectUID, string projectSettingsType, string code, string message, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Default Settings", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Default Settings", exampleTags);
 #line 4
 this.ScenarioSetup(scenarioInfo);
 #line 5
  testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
   testRunner.And("a projectSettings \"\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
- testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+  testRunner.And(string.Format("a settingsType \"{0}\"", projectSettingsType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
- testRunner.Then("the settings validation result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Project settings are valid\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 10
+  testRunner.Then(string.Format("the reuslt should contain code {0} and message \"{1}\"", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project Settings Validate Default Settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectSettings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Targets")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "Targets")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectSettingsType", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "Project settings Targets are valid")]
+        public virtual void ProjectSettingsValidateDefaultSettings_Targets()
+        {
+            this.ProjectSettingsValidateDefaultSettings("Targets", "ff91dd40-1569-4765-a2bc-014321f76ace", "1", "0", "Project settings Targets are valid", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project Settings Validate Default Settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectSettings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Colors")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "Colors")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectSettingsType", "3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "Project settings Colors are valid")]
+        public virtual void ProjectSettingsValidateDefaultSettings_Colors()
+        {
+            this.ProjectSettingsValidateDefaultSettings("Colors", "ff91dd40-1569-4765-a2bc-014321f76ace", "3", "0", "Project settings Colors are valid", ((string[])(null)));
+        }
+        
+        public virtual void ProjectSettingsValidatePartialCustomSettings(string requestName, string projectUID, string projectSettings, string projectSettingsType, string code, string message, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Partial Custom Settings", exampleTags);
+#line 16
+this.ScenarioSetup(scenarioInfo);
+#line 17
+ testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 18
+ testRunner.And(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 19
+  testRunner.And(string.Format("a projectSettings \"{0}\"", projectSettings), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 20
+  testRunner.And(string.Format("a settingsType \"{0}\"", projectSettingsType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 21
+ testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 22
+  testRunner.Then(string.Format("the reuslt should contain code {0} and message \"{1}\"", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -94,41 +141,53 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project Settings Validate Partial Custom Settings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectSettings")]
-        public virtual void ProjectSettingsValidatePartialCustomSettings()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Targets")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "Targets")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectSettings", "{ useMachineTargetPassCount : false, customTargetPassCountMinimum : 5, customTarg" +
+            "etPassCountMaximum : 7 }")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectSettingsType", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "Project settings Targets are valid")]
+        public virtual void ProjectSettingsValidatePartialCustomSettings_Targets()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Partial Custom Settings", ((string[])(null)));
-#line 17
-this.ScenarioSetup(scenarioInfo);
-#line 18
- testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 19
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 20
-  testRunner.And("a projectSettings \"{ useMachineTargetPassCount : false, customTargetPassCountMini" +
-                    "mum : 5, customTargetPassCountMaximum : 7 }\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 21
- testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 22
- testRunner.Then("the settings validation result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Project settings are valid\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
+            this.ProjectSettingsValidatePartialCustomSettings("Targets", "ff91dd40-1569-4765-a2bc-014321f76ace", "{ useMachineTargetPassCount : false, customTargetPassCountMinimum : 5, customTarg" +
+                    "etPassCountMaximum : 7 }", "1", "0", "Project settings Targets are valid", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project Settings Validate Full Custom Settings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project Settings Validate Partial Custom Settings")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectSettings")]
-        public virtual void ProjectSettingsValidateFullCustomSettings()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Colors")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "Colors")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectSettings", "{ useDefaultMDPSummaryColors : false, mdpOnTargetColor : 0x8BC34A, mdpOverTargetC" +
+            "olor : 0xD50000, mdpUnderTargetColor : 0x1579B }")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectSettingsType", "3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "Project settings Colors are valid")]
+        public virtual void ProjectSettingsValidatePartialCustomSettings_Colors()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Full Custom Settings", ((string[])(null)));
-#line 30
+            this.ProjectSettingsValidatePartialCustomSettings("Colors", "ff91dd40-1569-4765-a2bc-014321f76ace", "{ useDefaultMDPSummaryColors : false, mdpOnTargetColor : 0x8BC34A, mdpOverTargetC" +
+                    "olor : 0xD50000, mdpUnderTargetColor : 0x1579B }", "3", "0", "Project settings Colors are valid", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project Settings Validate Full Custom Settings Targets")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectSettings")]
+        public virtual void ProjectSettingsValidateFullCustomSettingsTargets()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Full Custom Settings Targets", ((string[])(null)));
+#line 41
 this.ScenarioSetup(scenarioInfo);
-#line 31
+#line 42
  testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 32
+#line 43
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 44
+  testRunner.And("a settingsType \"1\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 33
+#line 45
   testRunner.And("a projectSettings (multiline)", @"{
   useMachineTargetPassCount: false,
   customTargetPassCountMinimum: 5,
@@ -157,11 +216,81 @@ this.ScenarioSetup(scenarioInfo);
   useDefaultPassCountTargets: false,
   customPassCountTargets: [1,3,5,8,11,16,20,25]
 }", ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 64
+#line 76
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 65
- testRunner.Then("the settings validation result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Project settings are valid\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 77
+ testRunner.Then("the settings validation result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Project settings Targets are valid\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project Settings Validate Full Custom Settings Colors")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectSettings")]
+        public virtual void ProjectSettingsValidateFullCustomSettingsColors()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Full Custom Settings Colors", ((string[])(null)));
+#line 85
+this.ScenarioSetup(scenarioInfo);
+#line 86
+ testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 87
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 88
+  testRunner.And("a settingsType \"3\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 89
+  testRunner.And("a projectSettings (multiline)", "{\n  useDefaultElevationColors: true,\r\n  elevationColors: [0xC80000, 0xFF0000, 0xF" +
+                    "F3C00, 0xFF5A00, 0xFF8200, 0xFFAA00, 0xFFC800, \r\n                      0xFFDC00," +
+                    " 0xFAE600, 0xDCE600, 0xD2E600, 0xC8E600, 0xB4E600, 0x96E600, \r\n                 " +
+                    "     0x82E600, 0x64F000, 0x00FF00, 0x00F064, 0x00E682, 0x00E696, 0x00E6B4,\r\n    " +
+                    "                  0x00E6C8, 0x00E6D2, 0x00DCDC, 0x00E6E6, 0x00C8E6, 0x00B4F0, 0x" +
+                    "0096F5,\r\n                      0x0078FA, 0x005AFF, 0x0046FF, 0x0000FF],\r\n  useDe" +
+                    "faultCMVDetailsColors: true,\r\n  cmvDetailsColors: [0x01579B, 0x2473AE, 0x488FC1," +
+                    " 0x6BACD5, 0x8FC8E8, 0xB3E5FC, 0xDBECC8, \r\n                      0x99CB65, 0x649" +
+                    "E38, 0x2D681D, 0xFFCCD2, 0xF6A3A8, 0xEE7A7E, 0xE55154,\r\n                      0x" +
+                    "DD282A, 0xD50000],\r\n  useDefaultCMVSummaryColors: true,\r\n  cmvOnTargetColor: 0x8" +
+                    "BC34A,\r\n  cmvOverTargetColor: 0xD50000,\r\n  cmvUnderTargetColor: 0x1579B,\r\n  useD" +
+                    "efaultCMVPercentColors: true,\r\n  cmvPercentColors: [0xD50000, 0xE57373, 0xFFCDD2" +
+                    ", 0x8BC34A, 0xB3E5FC, 0x005AFF, 0x039BE5, 0x01579B],\r\n  useDefaultPassCountDetai" +
+                    "lsColors: true,\r\n  passCountDetailsColors: [0x2D5783, 0x439BDC, 0xBEDFF1, 0x9DCE" +
+                    "67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037],\r\n  useDefaultPassCountSum" +
+                    "maryColors: true,\r\n  passCountOnTargetColor: 0x8BC34A,\r\n  passCountOverTargetCol" +
+                    "or: 0xD50000,\r\n  passCountUnderTargetColor: 0x1579B,\r\n  useDefaultCutFillColors:" +
+                    " true,\r\n  cutFillColors: [0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x03" +
+                    "9BE5, 0x01579B],\r\n  useDefaultTemperatureSummaryColors: true,\r\n  temperatureOnTa" +
+                    "rgetColor: 0x8BC34A,\r\n  temperatureOverTargetColor: 0xD50000,\r\n  temperatureUnde" +
+                    "rTargetColor: 0x1579B,\r\n  useDefaultSpeedSummaryColors: true,\r\n  speedOnTargetCo" +
+                    "lor: 0x8BC34A,\r\n  speedOverTargetColor: 0xD50000,\r\n  speedUnderTargetColor: 0x15" +
+                    "79B,\r\n  useDefaultMDPSummaryColors: true,\r\n  mdpOnTargetColor: 0x8BC34A,\r\n  mdpO" +
+                    "verTargetColor: 0xD50000,\r\n  mdpUnderTargetColor: 0x1579B\r\n}", ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 130
+ testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 131
+ testRunner.Then("the settings validation result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Project settings Colors are valid\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        public virtual void ProjectSettingsValidateInvalidSettingsMissingValues(string requestName, string projectUID, string projectSettings, string projectSettingsType, string code, string message, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Invalid Settings Missing Values", exampleTags);
+#line 140
+this.ScenarioSetup(scenarioInfo);
+#line 141
+ testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 142
+ testRunner.And(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 143
+  testRunner.And(string.Format("a projectSettings \"{0}\"", projectSettings), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 144
+  testRunner.And(string.Format("a settingsType \"{0}\"", projectSettingsType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 145
+ testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 147
+  testRunner.Then(string.Format("the reuslt should contain code {0} and message \"{1}\"", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -169,25 +298,33 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project Settings Validate Invalid Settings Missing Values")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectSettings")]
-        public virtual void ProjectSettingsValidateInvalidSettingsMissingValues()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Targets")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "Targets")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectSettings", "{ useMachineTargetPassCount : false, customTargetPassCountMinimum : 5 }")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectSettingsType", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "-1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "Both minimum and maximum target pass count must be specified")]
+        public virtual void ProjectSettingsValidateInvalidSettingsMissingValues_Targets()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Invalid Settings Missing Values", ((string[])(null)));
-#line 73
-this.ScenarioSetup(scenarioInfo);
-#line 74
- testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 75
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 76
-  testRunner.And("a projectSettings \"{ useMachineTargetPassCount : false, customTargetPassCountMini" +
-                    "mum : 5 }\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 77
- testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 78
- testRunner.Then("I should get error code -1 and message \"Both minimum and maximum target pass coun" +
-                    "t must be specified\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
+            this.ProjectSettingsValidateInvalidSettingsMissingValues("Targets", "ff91dd40-1569-4765-a2bc-014321f76ace", "{ useMachineTargetPassCount : false, customTargetPassCountMinimum : 5 }", "1", "-1", "Both minimum and maximum target pass count must be specified", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project Settings Validate Invalid Settings Missing Values")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectSettings")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Colors")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "Colors")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectSettings", "{ useDefaultMDPSummaryColors : false, mdpOnTargetColor : 0x8BC34A, mdpOverTargetC" +
+            "olor : 0xD50000 }")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectSettingsType", "3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "-1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "mdpUnderTargetColor colour values must be specified")]
+        public virtual void ProjectSettingsValidateInvalidSettingsMissingValues_Colors()
+        {
+            this.ProjectSettingsValidateInvalidSettingsMissingValues("Colors", "ff91dd40-1569-4765-a2bc-014321f76ace", "{ useDefaultMDPSummaryColors : false, mdpOnTargetColor : 0x8BC34A, mdpOverTargetC" +
+                    "olor : 0xD50000 }", "3", "-1", "mdpUnderTargetColor colour values must be specified", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -196,18 +333,20 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ProjectSettingsValidateInvalidSettingsOutOfRangeValues()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Invalid Settings Out Of Range Values", ((string[])(null)));
-#line 80
+#line 154
  this.ScenarioSetup(scenarioInfo);
-#line 81
+#line 155
  testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 82
+#line 156
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 83
+#line 157
   testRunner.And("a projectSettings \"{ useMachineTargetPassCount : false, customTargetPassCountMini" +
                     "mum : 0, customTargetPassCountMaximum : 7 }\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 84
+#line 158
+  testRunner.And("a settingsType \"1\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 159
  testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 85
+#line 160
  testRunner.Then("I should get error code -1 and message \"The field customTargetPassCountMinimum mu" +
                     "st be between 1 and 80.\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -220,18 +359,20 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ProjectSettingsValidateInvalidSettingsOutOfOrderValues()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Invalid Settings Out Of Order Values", ((string[])(null)));
-#line 87
+#line 162
 this.ScenarioSetup(scenarioInfo);
-#line 88
+#line 163
  testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 89
+#line 164
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 90
+#line 165
   testRunner.And("a projectSettings \"{ useDefaultCutFillTolerances : false, customCutFillTolerances" +
                     " : [3,2,1,0,-1,-3,-2] }\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 91
+#line 166
+  testRunner.And("a settingsType \"1\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 167
  testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 92
+#line 168
  testRunner.Then("I should get error code -1 and message \"Cut-fill tolerances must be in order of h" +
                     "ighest cut to lowest fill\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

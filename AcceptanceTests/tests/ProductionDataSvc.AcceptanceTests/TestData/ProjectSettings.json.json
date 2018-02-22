@@ -1,0 +1,32 @@
+{
+  "Targets": {
+    "useMachineTargetPassCount": false,
+    "customTargetPassCountMinimum": 5,
+    "customTargetPassCountMaximum": 7,
+    "useMachineTargetTemperature": false,
+    "customTargetTemperatureMinimum": 75,
+    "customTargetTemperatureMaximum": 150,
+    "useMachineTargetCmv": false,
+    "customTargetCmv": 77,
+    "useMachineTargetMdp": false,
+    "customTargetMdp": 88,
+    "useDefaultTargetRangeCmvPercent": false,
+    "customTargetCmvPercentMinimum": 75,
+    "customTargetCmvPercentMaximum": 105,
+    "useDefaultTargetRangeMdpPercent": false,
+    "customTargetMdpPercentMinimum": 85,
+    "customTargetMdpPercentMaximum": 115,
+    "useDefaultTargetRangeSpeed": false,
+    "customTargetSpeedMinimum": 10,
+    "customTargetSpeedMaximum": 30,
+    "useDefaultCutFillTolerances": false,
+    "customCutFillTolerances": [ 3, 2, 1, 0, -1, -2, -3 ],
+    "useDefaultVolumeShrinkageBulking": false,
+    "customShrinkagePercent": 5,
+    "customBulkingPercent": 7.5,
+    "useDefaultPassCountTargets": false,
+    "customPassCountTargets": [ 1, 3, 5, 8, 11, 16, 20, 25 ]
+  },
+  "Colors": {
+  }
+}

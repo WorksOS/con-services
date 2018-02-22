@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             break;
           default:
             throw new ServiceException(HttpStatusCode.InternalServerError,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, $"Unsupported project settings type {nameof(settingsType)} to validate."));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, $"Unsupported project settings type {settingsType} to validate."));
         }
         //It is assumed that the settings are about to be saved.
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);
-      return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, $"Project settings {nameof(settingsType)} are valid");
+      return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, $"Project settings {settingsType} are valid");
     }
 
     /// <summary>
