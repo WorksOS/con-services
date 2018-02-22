@@ -57,7 +57,7 @@
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.4.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.22.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.23.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.7.*" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.6.*" />
   </ItemGroup>
