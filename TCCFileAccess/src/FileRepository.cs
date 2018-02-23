@@ -293,7 +293,7 @@ namespace VSS.TCCFileAccess
             $"Can not execute request TCC request with error {webException.Status} and {webException.Message}. {GetStringFromResponseStream(response)}");
         }
         //let's cache the response anyway but for a limited time
-        fileCache.Set(fullName, new byte[0], DateTimeOffset.MaxValue);
+        fileCache.Set(fullName, new byte[0], DateTimeOffset.UtcNow.AddHours(12));
       }
       catch (Exception e)
       {
