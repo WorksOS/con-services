@@ -179,7 +179,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       //TODO: When scheduled reports are implemented, extend this check to them as well.
       if (fileType == ImportedFileType.DesignSurface)
       {
-        var filters = await GetFilters(projectUid, customHeaders);
+        var filters = await GetFilters(projectUid, Request.Headers.GetCustomHeaders(true));
         if (filters != null)
         {
           if (filters.Any(f => f.DesignUid == fileUid.ToString()))

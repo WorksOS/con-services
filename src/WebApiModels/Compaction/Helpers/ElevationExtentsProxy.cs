@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
@@ -21,7 +22,12 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
   /// </summary>
   public class ElevationExtentsProxy : IElevationExtentsProxy
   {
-    private static readonly object lockObject = new object();
+
+
+    private static readonly object listLockObject = new object();
+    private static readonly Dictionary<string, object> statisticsRequestsDictionary = new Dictionary<string, object>();
+
+
 
     /// <summary>
     /// Logger factory for use by executor
@@ -84,12 +90,21 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     public ElevationStatisticsResult GetElevationRange(long projectId, Filter filter, CompactionProjectSettings projectSettings)
     {
       string cacheKey;
-      lock (lockObject)
+      cacheKey = ElevationCacheKey(projectId, filter);
+      lock (listLockObject)
       {
-        cacheKey = ElevationCacheKey(projectId, filter);
+     /*   cacheKey = ElevationCacheKey(projectId, filter);
+        if (statisticsRequestsDictionary.ContainsKey(cacheKey))
+          Monitor.Wait(statisticsRequestsDictionary[cacheKey]);*/
       }
+
       if (!elevationExtentsCache.TryGetValue(cacheKey, out ElevationStatisticsResult result))
       {
+       /* lock (listLockObject)
+        {
+          statisticsRequestsDictionary.Add(cacheKey, new object());
+          Monitor.Enter(statisticsRequestsDictionary[cacheKey]);
+        }*/
         LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
         ElevationStatisticsRequest statsRequest =
@@ -110,6 +125,12 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
         var opts = MemoryCacheExtensions.GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
         elevationExtentsCache.Set(cacheKey, result, opts);
+    /*    lock (listLockObject)
+        {
+          if (statisticsRequestsDictionary.ContainsKey(cacheKey))
+            statisticsRequestsDictionary.Remove(cacheKey);
+          Monitor.Exit(statisticsRequestsDictionary[cacheKey]);
+        }*/
       }
       return result;
     }

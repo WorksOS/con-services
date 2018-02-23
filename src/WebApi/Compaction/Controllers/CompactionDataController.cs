@@ -113,6 +113,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             CMVSummaryResult;
         var returnResult = CompactionCmvSummaryResult.CreateCmvSummaryResult(result, request.cmvSettings);
         log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(returnResult));
+
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
+
         return returnResult;
       }
       catch (ServiceException se)
@@ -164,6 +169,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(request) as MDPSummaryResult;
         var returnResult = CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
         log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(returnResult));
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
         return returnResult;
       }
       catch (ServiceException se)
@@ -207,6 +215,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(request) as PassCountSummaryResult;
         var returnResult = CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);
         log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(returnResult));
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
         return returnResult;
       }
       catch (ServiceException se)
@@ -257,6 +268,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             .Process(request) as TemperatureSummaryResult;
         var returnResult = CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(result);
         log.LogInformation("GetTemperatureSummary result: " + JsonConvert.SerializeObject(returnResult));
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
         return returnResult;
       }
       catch (ServiceException se)
@@ -307,6 +321,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var returnResult =
           CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, liftSettings.machineSpeedTarget);
         log.LogInformation("GetSpeedSummary result: " + JsonConvert.SerializeObject(returnResult));
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
         return returnResult;
       }
       catch (ServiceException se)
@@ -357,6 +374,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(request) as CMVChangeSummaryResult;
         var returnResult = CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(result);
         log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
         return returnResult;
       }
       catch (ServiceException se)
