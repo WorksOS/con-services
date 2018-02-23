@@ -70,7 +70,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       log.LogDebug(string.Join(",", request.files.Select(f => f.Name).ToList()));
 
       List<byte[]> tileList = new List<byte[]>();
-      Parallel.ForEach(request.files, file => 
+
+      var fileTasks = request.files.Select(async file=>
       {
         //foreach (var file in request.files)
         //Check file type to see if it has tiles
@@ -85,12 +86,12 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
             byte[] tileData = null;
             if (zoomLevel <= file.MaxZoomLevel || file.MaxZoomLevel == 0) //0 means not calculated
             {
-              tileData = GetTileAtRequestedZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId).Result;
+              tileData = await GetTileAtRequestedZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId);
             }
             else if (zoomLevel - file.MaxZoomLevel <= 5) //Don't try to scale if the difference is too excessive
             {
-              tileData = GetTileAtHigherZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId,
-                file.MaxZoomLevel, numTiles).Result;
+              tileData = await GetTileAtHigherZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId,
+                file.MaxZoomLevel, numTiles);
 
             }
             else
@@ -105,6 +106,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           }
         }
       });
+
+      await Task.WhenAll(fileTasks);
 
       //Overlay the tiles. Return an empty tile if none to overlay.
       log.LogDebug("DxfTileExecutor: Overlaying {0} tiles", tileList.Count);
