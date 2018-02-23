@@ -501,14 +501,14 @@ namespace VSS.Productivity3D.Common.Models
 
     private static List<uint> CMVPercentChangePalette => new List<uint>
     {
-      0xD50000,
-      0xE57373,
-      0xFFCDD2,
-      0x8BC34A,
-      0xB3E5FC,
-      0x005AFF,
+      0x01579B,
       0x039BE5,
-      0x01579B
+      0x4FC3F7,
+      0xB3E5FC,
+      0x8BC34A,
+      0xFFCDD2,
+      0xE57373,
+      0xD50000
     };
     #endregion
 
