@@ -74,7 +74,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           cfg.CreateMap<ImportedFile, ImportedFileDescriptor>()
             .ForMember(x => x.ImportedUtc, opt => opt.MapFrom(src => src.LastActionedUtc))
             .ForMember(x => x.LegacyFileId, opt => opt.MapFrom(src => src.ImportedFileId))
+            .ForMember(x => x.ImportedFileHistory, opt => opt.MapFrom(src => src.ImportedFileHistory.ImportedFileHistoryItems))
             .ForMember(x => x.IsActivated, opt => opt.UseValue(true));
+          cfg.CreateMap<Repositories.DBModels.ImportedFileHistoryItem, Models.ImportedFileHistoryItem>()
+            .ForMember(x => x.FileCreatedUtc, opt => opt.MapFrom(src => src.FileCreatedUtc))
+            .ForMember(x => x.FileUpdatedUtc, opt => opt.MapFrom(src => src.FileUpdatedUtc));
           cfg.CreateMap<ImportedFile, UpdateImportedFileEvent>()
             .ForMember(x => x.ImportedFileUID, opt => opt.MapFrom(src => Guid.Parse(src.ImportedFileUid)))
             .ForMember(x => x.ProjectUID, opt => opt.MapFrom(src => Guid.Parse(src.ProjectUid)))

@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
@@ -76,6 +79,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The file uid.
     /// </value>
     public string ImportedFileUid { get; set; }
+
     /// <summary>
     /// Gets or sets a unique file identifier's value from legacy VisionLink.
     /// </summary>
@@ -83,6 +87,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The file id.
     /// </value>
     public long LegacyFileId { get; set; }
+
     /// <summary>
     /// Gets or sets the customer uid.
     /// </summary>
@@ -179,10 +184,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The minimum zoom level for DXF tiles
     /// </summary>
     public int MinZoomLevel { get; set; }
+
     /// <summary>
     /// The maximum zoom level for DXF tiles
     /// </summary>
     public int MaxZoomLevel { get; set; }
+
+    public List<ImportedFileHistoryItem> ImportedFileHistory { get; set; }
 
     public override int GetHashCode()
     {
@@ -208,7 +216,28 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
              && otherImportedFile.IsActivated == this.IsActivated
              && otherImportedFile.MinZoomLevel == this.MinZoomLevel
              && otherImportedFile.MaxZoomLevel == this.MaxZoomLevel
+             && otherImportedFile.ImportedFileHistory == this.ImportedFileHistory
         ;
+    }
+  }
+
+  public class ImportedFileHistoryItem
+  {
+    public DateTime FileCreatedUtc { get; set; }
+    public DateTime FileUpdatedUtc { get; set; }
+    
+
+    public override bool Equals(object obj)
+    {
+      var otherImportedFileImport = obj as ImportedFileHistoryItem;
+      if (otherImportedFileImport == null) return false;
+      return otherImportedFileImport.FileCreatedUtc == FileCreatedUtc
+             && otherImportedFileImport.FileUpdatedUtc == FileUpdatedUtc;
+    }
+
+    public override int GetHashCode()
+    {
+      return 0;
     }
   }
 }
