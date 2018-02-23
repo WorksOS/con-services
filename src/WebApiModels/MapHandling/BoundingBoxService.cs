@@ -580,8 +580,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     All,
     Polygon,
     Design,
-    Alignment,
-    CutFillDesign,
-    VolumeDesign
+    Alignment
   }
 }
