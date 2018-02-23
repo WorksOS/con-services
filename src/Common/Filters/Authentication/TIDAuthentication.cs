@@ -151,7 +151,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
                         var principal = new RaptorPrincipal(identity, customerUid, authProjects, username,
                           isApplicationContext
                             ? "Application"
-                            : this.customerDataResult.customer.First(cst => cst.uid == customerUid).name, isApplicationContext);
+                            : this.customerDataResult.customer.First(cst => cst.uid == customerUid).name, projectListProxy, isApplicationContext);
                         context.User = principal;
                     }
                     catch (Exception ex)

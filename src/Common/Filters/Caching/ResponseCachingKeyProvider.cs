@@ -90,7 +90,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
           if (request.Query.ContainsKey("filterUid"))
           {
             builder.Append(FilterDelimiter).Append(GenerateFilterHash(request.Query["projectUid"],
-              request.Query["filterUid"], request.Headers.GetCustomHeaders()));
+              request.Query["filterUid"], request.Headers.GetCustomHeaders(true)));
           }
         }
         var baseKey = builder.ToString();
