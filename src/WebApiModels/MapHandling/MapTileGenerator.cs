@@ -102,16 +102,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         if (geofencesBitmap != null)
           tileList.Add(geofencesBitmap);
       }
-      /*
-      if (request.overlays.Contains(TileOverlayType.CustomBoundaries))
-      {
-        var boundariesBitmap = geofenceTileService.GetBoundariesBitmap(parameters, request.boundaries);
-        if (boundariesBitmap != null)
-        {
-          tileList.Add(boundariesBitmap);
-        }
-      }
-      */
       if (request.overlays.Contains(TileOverlayType.FilterCustomBoundary))
       {
         var filterBoundaries = boundingBoxService.GetFilterBoundaries(request.project, request.filter, request.baseFilter, request.topFilter, FilterBoundaryType.Polygon);

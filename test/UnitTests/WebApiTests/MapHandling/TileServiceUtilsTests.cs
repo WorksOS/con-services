@@ -101,6 +101,87 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       Assert.AreEqual(1024, TileServiceUtils.NumberOfTiles(10));
     }
 
+    [TestMethod]
+    public void PolygonOutsideBoundingBox()
+    {
+      var bbox = new MapBoundingBox
+      {
+        minLat = 36.0, minLng = -115.9, maxLat = 36.5, maxLng = -115.0
+      };
+      var points = new List<WGSPoint>
+      {
+        WGSPoint.CreatePoint(35.0, -116.0),
+        WGSPoint.CreatePoint(35.5, -116.0),
+        WGSPoint.CreatePoint(35.5, -116.5),
+        WGSPoint.CreatePoint(35.0, -116.5),
+        WGSPoint.CreatePoint(35.0, -116.0),
+      };
+      Assert.IsTrue(TileServiceUtils.Outside(bbox, points));
+    }
+
+    [TestMethod]
+    public void PolygonInsideBoundingBox()
+    {
+      var bbox = new MapBoundingBox
+      {
+        minLat = 36.0,
+        minLng = -115.9,
+        maxLat = 36.5,
+        maxLng = -115.0
+      };
+      var points = new List<WGSPoint>
+      {
+        WGSPoint.CreatePoint(36.1, -115.5),
+        WGSPoint.CreatePoint(36.3, -115.5),
+        WGSPoint.CreatePoint(36.3, -115.7),
+        WGSPoint.CreatePoint(36.1, -115.7),
+        WGSPoint.CreatePoint(36.1, -115.5),
+      };
+      Assert.IsFalse(TileServiceUtils.Outside(bbox, points));
+    }
+
+    [TestMethod]
+    public void PolygonIntersectsBoundingBox()
+    {
+      var bbox = new MapBoundingBox
+      {
+        minLat = 36.0,
+        minLng = -115.9,
+        maxLat = 36.5,
+        maxLng = -115.0
+      };
+      var points = new List<WGSPoint>
+      {
+        WGSPoint.CreatePoint(35.9, -115.5),
+        WGSPoint.CreatePoint(36.3, -115.5),
+        WGSPoint.CreatePoint(36.3, -115.7),
+        WGSPoint.CreatePoint(35.9, -115.7),
+        WGSPoint.CreatePoint(35.9, -115.5),
+      };
+      Assert.IsFalse(TileServiceUtils.Outside(bbox, points));
+    }
+
+    [TestMethod]
+    public void PolygonEnvelopsBoundingBox()
+    {
+      var bbox = new MapBoundingBox
+      {
+        minLat = 36.0,
+        minLng = -115.9,
+        maxLat = 36.5,
+        maxLng = -115.0
+      };
+      var points = new List<WGSPoint>
+      {
+        WGSPoint.CreatePoint(35.9, -116.0),
+        WGSPoint.CreatePoint(36.6, -116.0),
+        WGSPoint.CreatePoint(36.6, -114.9),
+        WGSPoint.CreatePoint(35.9, -114.9),
+        WGSPoint.CreatePoint(35.9, -116.0),
+      };
+      Assert.IsFalse(TileServiceUtils.Outside(bbox, points));
+    }
+
 
   }
 }

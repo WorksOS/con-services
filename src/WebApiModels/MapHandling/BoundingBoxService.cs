@@ -207,7 +207,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
           //Also use project boundary extents if fail to get production data extents or not doing production data tiles
           //e.g. project thumbnails or user has requested project boundary overlay
-          var projectPoints = RaptorConverters.geometryToPoints(project.projectGeofenceWKT);
+          var projectPoints = RaptorConverters.geometryToPoints(project.projectGeofenceWKT).ToList();
           var projectMinLat = projectPoints.Min(p => p.Lat);
           var projectMinLng = projectPoints.Min(p => p.Lon);
           var projectMaxLat = projectPoints.Max(p => p.Lat);

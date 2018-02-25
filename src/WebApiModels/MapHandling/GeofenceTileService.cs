@@ -125,13 +125,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
               continue;
             }
 
-            var sitePoints = RaptorConverters.geometryToPoints(site.GeometryWKT);
+            var sitePoints = RaptorConverters.geometryToPoints(site.GeometryWKT).ToList();
 
             //Exclude site if outside bbox
-            bool outside = sitePoints.Min(p => p.Lat) > parameters.bbox.maxLat || 
-                           sitePoints.Max(p => p.Lat) < parameters.bbox.minLat ||
-                           sitePoints.Min(p => p.Lon) > parameters.bbox.maxLng || 
-                           sitePoints.Max(p => p.Lon) < parameters.bbox.minLng;
+            bool outside = TileServiceUtils.Outside(parameters.bbox, sitePoints);
 
             if (outside)
             {
