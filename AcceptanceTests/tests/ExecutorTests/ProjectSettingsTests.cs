@@ -26,7 +26,8 @@ namespace ExecutorTests
 
     [TestMethod]
     [DataRow(ProjectSettingsType.Targets)]
-    [DataRow(ProjectSettingsType.ImportedFiles)]
+    //[DataRow(ProjectSettingsType.ImportedFiles)]
+    [DataRow(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_InvalidCustomerProjectRelationship(ProjectSettingsType settingsType)
     {
       string customerUidOfProject = Guid.NewGuid().ToString();
@@ -54,7 +55,8 @@ namespace ExecutorTests
 
     [TestMethod]
     [DataRow(ProjectSettingsType.Targets)]
-    [DataRow(ProjectSettingsType.ImportedFiles)]
+    //[DataRow(ProjectSettingsType.ImportedFiles)]
+    [DataRow(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_NoSettingsExists(ProjectSettingsType settingsType)
     {
       string customerUid = Guid.NewGuid().ToString();
