@@ -170,8 +170,8 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
 #line 50
 this.ScenarioSetup(scenarioInfo);
 #line 51
-testRunner.Given("the Compaction service URI \"api/v2/alignmentoffest\" for operation \"GetAlignmentOf" +
-                    "fests\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/alignmentoffest\" for operation \"GetAlignmentO" +
+                    "ffests\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 52
 testRunner.And("the result file \"CompactionGetElevationAndProjectStatisticsDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 53

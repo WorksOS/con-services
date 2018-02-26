@@ -48,7 +48,7 @@ Examples:
 
 #######################################################Alignment offset test####################################################
 Scenario Outline: Compaction Get Alignment File Offsets - Good request
-Given the Compaction service URI "api/v2/alignmentoffest" for operation "GetAlignmentOffests"   
+Given the Compaction service URI "/api/v2/alignmentoffest" for operation "GetAlignmentOffests"   
 And the result file "CompactionGetElevationAndProjectStatisticsDataResponse.json"
 And projectUid "<ProjectUID>"
 And fileUid "<FileUID>"
