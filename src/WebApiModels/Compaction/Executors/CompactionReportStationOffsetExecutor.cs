@@ -3,6 +3,7 @@ using ASNodeRaptorReports;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
@@ -39,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.projectId);
         var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
         var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
-        var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences);
+        var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences, request.ProjectTimezone);
 
         log.LogDebug("About to call GetReportStationOffset");
 

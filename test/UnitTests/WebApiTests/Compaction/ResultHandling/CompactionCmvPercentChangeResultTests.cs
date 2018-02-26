@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [TestMethod]
     public void CreateCmvPercentChangeResult_Should_return_empty_object_When_CoverageArea_is_null()
     {
-      var changeSummaryResult = CMVChangeSummaryResult.CreateSummarySpeedResult(null, 0);
+      var changeSummaryResult = CMVChangeSummaryResult.CreateSummaryCMVChangeResult(null, 0);
       var result = CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(changeSummaryResult);
 
       Assert.IsNotNull(result);
@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [TestMethod]
     public void CreateCmvPercentChangeResult_Should_return_full_object_When_CoverageArea_is_not_null()
     {
-      var changeSummaryResult = CMVChangeSummaryResult.CreateSummarySpeedResult(new[] { 3.4, 5.6 }, 34534);
+      var changeSummaryResult = CMVChangeSummaryResult.CreateSummaryCMVChangeResult(new[] { 3.4, 5.6 }, 34534);
       var result = CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(changeSummaryResult);
 
       Assert.IsNotNull(result);
