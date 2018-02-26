@@ -7,14 +7,17 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
+
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
   /// <summary>
-  /// The request representation for getting production data from Raptor for a grid report.
+  /// The request representation for getting production data from Raptor for a station and offset report.
   /// </summary>
   /// 
   public class CompactionReportStationOffsetRequestHelper : DataRequestBase, ICompactionReportStationOffsetRequestHelper
   {
+    public string projectTimezone { get; set; }
+  
     /// <summary>
     /// Parameterless constructor is required to support factory create function in <see cref="VSS.Productivity3D.WebApi"/> project.
     /// </summary>
@@ -30,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       SettingsManager = settingsManager;
     }
 
-    public CompactionReportStationOffsetRequest CreateRequest(bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill, DesignDescriptor cutFillDesignDescriptor, DesignDescriptor alignmentDescriptor, double crossSectionInterval, double startStation, double endStation, double[] offsets, UserPreferenceData userPreferences)
+    public CompactionReportStationOffsetRequest CreateRequest(bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill, DesignDescriptor cutFillDesignDescriptor, DesignDescriptor alignmentDescriptor, double crossSectionInterval, double startStation, double endStation, double[] offsets, UserPreferenceData userPreferences, string projectTimzone)
     {
       var liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
@@ -51,7 +54,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         startStation,
         endStation,
         offsets,
-        userPreferences);
+        userPreferences,
+        projectTimzone);
     }
   }
 }

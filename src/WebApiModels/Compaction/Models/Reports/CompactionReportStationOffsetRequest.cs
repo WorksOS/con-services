@@ -38,6 +38,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 
     public UserPreferenceData UserPreferences { get; set; }
 
+    public string ProjectTimezone { get; set; }
+
     protected CompactionReportStationOffsetRequest()
     { }
 
@@ -58,7 +60,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
       double startStation,
       double endStation,
       double[] offsets,
-      UserPreferenceData userPreferences)
+      UserPreferenceData userPreferences,
+      string projectTimezone)
     {
       return new CompactionReportStationOffsetRequest
       {
@@ -78,7 +81,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
         StartStation = startStation,
         EndStation = endStation,
         Offsets = offsets,
-        UserPreferences = userPreferences
+        UserPreferences = userPreferences,
+        ProjectTimezone =  projectTimezone
       };
     }
 
