@@ -62,7 +62,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenFileUid(string FileUid)
     {
       if (operation == "GetAlignmentOffests")
-        elevationRangeRequester.QueryString.Add("fileUid", FileUid);
+        alignemntRequester.QueryString.Add("fileUid", FileUid);
       else
         Assert.Fail(TEST_FAIL_MESSAGE);
     }
