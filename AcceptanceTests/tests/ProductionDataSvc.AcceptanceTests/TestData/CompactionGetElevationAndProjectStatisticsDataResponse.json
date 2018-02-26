@@ -1,4 +1,10 @@
 {
+  "GoodAlignment": {
+    "StartOffset": 591.9539794921875,
+    "EndOffset": 624.0980224609375,
+    "Code": 0,
+    "Message": "success"
+  },
   "NoDesignFilter_ER": {
     "boundingExtents": {
       "maxX": -115.01824137935459,
