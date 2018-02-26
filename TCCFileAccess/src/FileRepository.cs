@@ -236,7 +236,10 @@ namespace VSS.TCCFileAccess
         {
           Log.LogDebug("Serving TCC tile request from cache {0}", fullName);
           if (file.Length == 0)
+          {
+            Log.LogDebug("Serving TCC tile request from cache empty tile");
             return null;
+          }
           return new MemoryStream(file);
         }
       }
@@ -259,7 +262,7 @@ namespace VSS.TCCFileAccess
       {
         if (!cacheable)
         {
-          using (var responseStream = await gracefulClient.ExecuteRequest(requestString, "GET", headers, retries: 1))
+          using (var responseStream = await gracefulClient.ExecuteRequest(requestString, "GET", headers, retries: 0))
           {
             responseStream.Position = 0;
             file = new byte[responseStream.Length];
@@ -290,7 +293,7 @@ namespace VSS.TCCFileAccess
             $"Can not execute request TCC request with error {webException.Status} and {webException.Message}. {GetStringFromResponseStream(response)}");
         }
         //let's cache the response anyway but for a limited time
-        fileCache.Set(fullName, new byte[0], DateTimeOffset.UtcNow.AddMinutes(30));
+        fileCache.Set(fullName, new byte[0], DateTimeOffset.UtcNow.AddHours(12));
       }
       catch (Exception e)
       {
