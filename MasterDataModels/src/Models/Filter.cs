@@ -20,15 +20,15 @@ namespace VSS.MasterData.Models.Models
     /// The 'start' time for a time based filter. Data recorded earlier to this time is not considered.
     /// Optional. If not present then there is no start time bound.
     /// </summary>
-    [JsonProperty(PropertyName = "startUTC", Required = Required.Default)]
-    public DateTime? startUTC { get; private set; }
+    [JsonProperty(PropertyName = "startUtc", Required = Required.Default)]
+    public DateTime? StartUtc { get; private set; }
 
     /// <summary>
     /// The 'end' time for a time based filter. Data recorded after this time is not considered.
     /// Optional. If not present there is no end time bound.
     /// </summary>
-    [JsonProperty(PropertyName = "endUTC", Required = Required.Default)]
-    public DateTime? endUTC { get; private set; }
+    [JsonProperty(PropertyName = "endUtc", Required = Required.Default)]
+    public DateTime? EndUtc { get; private set; }
 
     /// <summary>
     /// Gets the date range type for this filter, e.g. day, week, project extents.
@@ -45,58 +45,58 @@ namespace VSS.MasterData.Models.Models
     /// <summary>
     /// A design file unique identifier. Used as a spatial filter.
     /// </summary>
-    [JsonProperty(PropertyName = "designUID", Required = Required.Default)]
-    public string designUID { get; protected set; }
+    [JsonProperty(PropertyName = "designUid", Required = Required.Default)]
+    public string DesignUid { get; protected set; }
 
     /// <summary>
     /// A comma-separated list of contributing machines.
     /// Optional as it is not used in the proper functioning of a filter.
     /// </summary>
     [JsonProperty(PropertyName = "contributingMachines", Required = Required.Default)]
-    public List<MachineDetails> contributingMachines { get; private set; }
+    public List<MachineDetails> ContributingMachines { get; private set; }
 
     /// <summary>
     /// A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
     /// May be null/empty, which indicates no restriction. 
     /// </summary>
-    [JsonProperty(PropertyName = "onMachineDesignID", Required = Required.Default)]
-    public long? onMachineDesignID { get; private set; } //PDS not VL ID
+    [JsonProperty(PropertyName = "onMachineDesignId", Required = Required.Default)]
+    public long? OnMachineDesignId { get; private set; } //PDS not VL ID
 
     /// <summary>
     /// Controls the cell pass from which to determine data based on its elevation.
     /// </summary>
     [JsonProperty(PropertyName = "elevationType", Required = Required.Default)]
-    public ElevationType? elevationType { get; private set; }
+    public ElevationType? ElevationType { get; private set; }
 
     /// <summary>
     /// Only filter cell passes recorded when the vibratory drum was 'on'.  If set to null, returns all cell passes.  If true, returns only cell passes with the cell pass parameter and the drum was on.  If false, returns only cell passes with the cell pass parameter and the drum was off.
     /// </summary>
     [JsonProperty(PropertyName = "vibeStateOn", Required = Required.Default)]
-    public bool? vibeStateOn { get; private set; }
+    public bool? VibeStateOn { get; private set; }
 
     /// <summary>
     /// The boundary/geofence unique identifier. Used as a spatial filter.
     /// </summary>
-    [JsonProperty(PropertyName = "polygonUID", Required = Required.Default)]
-    public string polygonUID { get; protected set; }
+    [JsonProperty(PropertyName = "polygonUid", Required = Required.Default)]
+    public string PolygonUid { get; protected set; }
 
     /// <summary>
-    /// name of polygonLL 
+    /// name of PolygonLL 
     /// </summary>
     [JsonProperty(PropertyName = "polygonName", Required = Required.Default)]
-    public string polygonName { get; private set; }
+    public string PolygonName { get; private set; }
 
     /// <summary>
     /// A polygon to be used as a spatial filter boundary. The vertices are WGS84 positions
     /// </summary>
     [JsonProperty(PropertyName = "polygonLL", Required = Required.Default)]
-    public List<WGSPoint> polygonLL { get; private set; }
+    public List<WGSPoint> PolygonLL { get; private set; }
 
     /// <summary>
     /// Only use cell passes recorded when the machine was driving in the forwards direction. If true, only returns machines travelling forward, if false, returns machines travelling in reverse, if null, returns all machines.
     /// </summary>
     [JsonProperty(PropertyName = "forwardDirection", Required = Required.Default)]
-    public bool? forwardDirection { get; private set; }
+    public bool? ForwardDirection { get; private set; }
 
     /// <summary>
     /// The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file) to be used as the layer type filter. Layer 3 is then the third layer from the
@@ -104,16 +104,16 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     [Range(ValidationConstants.MIN_LAYER_NUMBER, ValidationConstants.MAX_LAYER_NUMBER)]
     [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
-    public int? layerNumber { get; private set; }
+    public int? LayerNumber { get; private set; }
 
     #region For JSON Serialization
-    public bool ShouldSerializestartUTC()
+    public bool ShouldSerializeStartUtc()
     {
-      return startUTC != null;
+      return StartUtc != null;
     }
-    public bool ShouldSerializeendUTC()
+    public bool ShouldSerializeEndUtc()
     {
-      return endUTC != null;
+      return EndUtc != null;
     }
     public bool ShouldSerializeDateRangeType()
     {
@@ -123,65 +123,65 @@ namespace VSS.MasterData.Models.Models
     {
       return DateRangeType != null;
     }
-    public bool ShouldSerializedesignUID()
+    public bool ShouldSerializeDesignUid()
     {
-      return designUID != null;
+      return DesignUid != null;
     }
-    public bool ShouldSerializecontributingMachines()
+    public bool ShouldSerializeContributingMachines()
     {
-      return contributingMachines != null;
+      return ContributingMachines != null;
     }
-    public bool ShouldSerializeonMachineDesignID()
+    public bool ShouldSerializeOnMachineDesignId()
     {
-      return onMachineDesignID != null;
+      return OnMachineDesignId != null;
     }
-    public bool ShouldSerializeelevationType()
+    public bool ShouldSerializeElevationType()
     {
-      return elevationType != null;
+      return ElevationType != null;
     }
-    public bool ShouldSerializevibeStateOn()
+    public bool ShouldSerializeVibeStateOn()
     {
-      return vibeStateOn != null;
+      return VibeStateOn != null;
     }
-    public bool ShouldSerializepolygonUID()
+    public bool ShouldSerializePolygonUid()
     {
-      return polygonUID != null;
+      return PolygonUid != null;
     }
-    public bool ShouldSerializepolygonName()
+    public bool ShouldSerializePolygonName()
     {
-      return polygonName != null;
+      return PolygonName != null;
     }
-    public bool ShouldSerializepolygonLL()
+    public bool ShouldSerializePolygonLL()
     {
-      return polygonLL != null;
+      return PolygonLL != null;
     }
-    public bool ShouldSerializeforwardDirection()
+    public bool ShouldSerializeForwardDirection()
     {
-      return forwardDirection != null;
+      return ForwardDirection != null;
     }
-    public bool ShouldSerializelayerNumber()
+    public bool ShouldSerializeLayerNumber()
     {
-      return layerNumber != null;
+      return LayerNumber != null;
     }
     #endregion
 
     public bool HasData() =>
-      startUTC.HasValue ||
-      endUTC.HasValue ||
+      StartUtc.HasValue ||
+      EndUtc.HasValue ||
       DateRangeType.HasValue ||
-      onMachineDesignID.HasValue ||
-      vibeStateOn.HasValue ||
-      elevationType.HasValue ||
-      layerNumber.HasValue ||
-      forwardDirection.HasValue ||
-      (contributingMachines != null && contributingMachines.Count > 0) ||
-      (polygonLL != null && polygonLL.Count > 0);
+      OnMachineDesignId.HasValue ||
+      VibeStateOn.HasValue ||
+      ElevationType.HasValue ||
+      LayerNumber.HasValue ||
+      ForwardDirection.HasValue ||
+      (ContributingMachines != null && ContributingMachines.Count > 0) ||
+      (PolygonLL != null && PolygonLL.Count > 0);
 
     public void AddBoundary(string polygonUID, string polygonName, List<WGSPoint> polygonLL)
     {
-      this.polygonUID = polygonUID;
-      this.polygonName = polygonName;
-      this.polygonLL = polygonLL;
+      this.PolygonUid = polygonUID;
+      this.PolygonName = polygonName;
+      this.PolygonLL = polygonLL;
     }
 
     /// <summary>
@@ -191,38 +191,38 @@ namespace VSS.MasterData.Models.Models
       (
         DateTime? startUtc,
         DateTime? endUtc,
-        string designUID,
+        string designUid,
         List<MachineDetails> contributingMachines,
-        long? onMachineDesignID,
+        long? onMachineDesignId,
         ElevationType? elevationType,
         bool? vibeStateOn,
         List<WGSPoint> polygonLL,
         bool? forwardDirection,
         int? layerNumber,
-        string polygonUID = null,
+        string polygonUid = null,
         string polygonName = null
       )
     {
       return new Filter
       {
-        startUTC = startUtc,
-        endUTC = endUtc,
-        designUID = designUID,
-        contributingMachines = contributingMachines,
-        onMachineDesignID = onMachineDesignID,
-        elevationType = elevationType,
-        vibeStateOn = vibeStateOn,
-        polygonLL = polygonLL,
-        forwardDirection = forwardDirection,
-        layerNumber = layerNumber,
-        polygonUID = polygonUID,
-        polygonName = polygonName
+        StartUtc = startUtc,
+        EndUtc = endUtc,
+        DesignUid = designUid,
+        ContributingMachines = contributingMachines,
+        OnMachineDesignId = onMachineDesignId,
+        ElevationType = elevationType,
+        VibeStateOn = vibeStateOn,
+        PolygonLL = polygonLL,
+        ForwardDirection = forwardDirection,
+        LayerNumber = layerNumber,
+        PolygonUid = polygonUid,
+        PolygonName = polygonName
       };
     }
 
     public string ToJsonString()
     {
-      var filter = CreateFilter(startUTC, endUTC, designUID, contributingMachines, onMachineDesignID, elevationType, vibeStateOn, polygonLL, forwardDirection, layerNumber, polygonUID, polygonName);
+      var filter = CreateFilter(StartUtc, EndUtc, DesignUid, ContributingMachines, OnMachineDesignId, ElevationType, VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, PolygonUid, PolygonName);
 
       return JsonConvert.SerializeObject(filter);
     }
@@ -230,11 +230,11 @@ namespace VSS.MasterData.Models.Models
     public void Validate([FromServices] IServiceExceptionHandler serviceExceptionHandler)
     {
       //Check date range properties
-      if (startUTC.HasValue || endUTC.HasValue)
+      if (StartUtc.HasValue || EndUtc.HasValue)
       {
-        if (startUTC.HasValue && endUTC.HasValue)
+        if (StartUtc.HasValue && EndUtc.HasValue)
         {
-          if (startUTC.Value > endUTC.Value)
+          if (StartUtc.Value > EndUtc.Value)
           {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 29);
           }
@@ -245,14 +245,14 @@ namespace VSS.MasterData.Models.Models
         }
       }
 
-      if (designUID != null && Guid.TryParse(designUID, out Guid designUIDGuid) == false)
+      if (DesignUid != null && Guid.TryParse(DesignUid, out Guid _) == false)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 31);
       }
 
-      if (contributingMachines != null)
+      if (ContributingMachines != null)
       {
-        foreach (var machine in contributingMachines)
+        foreach (var machine in ContributingMachines)
         {
           machine.Validate();
         }
@@ -260,7 +260,7 @@ namespace VSS.MasterData.Models.Models
 
       //Check boundary if provided
       //Raptor handles any weird boundary you give it and automatically closes it if not closed already therefore we just need to check we have at least 3 points
-      if (polygonLL != null && polygonLL.Count < 3)
+      if (PolygonLL != null && PolygonLL.Count < 3)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 35);
       }
@@ -270,12 +270,12 @@ namespace VSS.MasterData.Models.Models
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return startUTC.Equals(other.startUTC) && endUTC.Equals(other.endUTC) && DateRangeType == other.DateRangeType &&
-             string.Equals(designUID, other.designUID) && contributingMachines.ScrambledEquals(other.contributingMachines) &&
-             onMachineDesignID == other.onMachineDesignID && elevationType == other.elevationType &&
-             vibeStateOn == other.vibeStateOn && string.Equals(polygonUID, other.polygonUID) &&
-             string.Equals(polygonName, other.polygonName) && polygonLL.ScrambledEquals(other.polygonLL) &&
-             forwardDirection == other.forwardDirection && layerNumber == other.layerNumber;
+      return StartUtc.Equals(other.StartUtc) && EndUtc.Equals(other.EndUtc) && DateRangeType == other.DateRangeType &&
+             string.Equals(DesignUid, other.DesignUid) && ContributingMachines.ScrambledEquals(other.ContributingMachines) &&
+             OnMachineDesignId == other.OnMachineDesignId && ElevationType == other.ElevationType &&
+             VibeStateOn == other.VibeStateOn && string.Equals(PolygonUid, other.PolygonUid) &&
+             string.Equals(PolygonName, other.PolygonName) && PolygonLL.ScrambledEquals(other.PolygonLL) &&
+             ForwardDirection == other.ForwardDirection && LayerNumber == other.LayerNumber;
     }
 
     public override bool Equals(object obj)
@@ -283,26 +283,26 @@ namespace VSS.MasterData.Models.Models
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((Filter) obj);
+      return Equals((Filter)obj);
     }
 
     public override int GetHashCode()
     {
       unchecked
       {
-        var hashCode = startUTC.GetHashCode();
-        hashCode = (hashCode * 397) ^ endUTC.GetHashCode();
+        var hashCode = StartUtc.GetHashCode();
+        hashCode = (hashCode * 397) ^ EndUtc.GetHashCode();
         hashCode = (hashCode * 397) ^ DateRangeType.GetHashCode();
-        hashCode = (hashCode * 397) ^ (designUID != null ? designUID.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (contributingMachines != null ? contributingMachines.GetListHashCode() : 0);
-        hashCode = (hashCode * 397) ^ onMachineDesignID.GetHashCode();
-        hashCode = (hashCode * 397) ^ elevationType.GetHashCode();
-        hashCode = (hashCode * 397) ^ vibeStateOn.GetHashCode();
-        hashCode = (hashCode * 397) ^ (polygonUID != null ? polygonUID.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (polygonName != null ? polygonName.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (polygonLL != null ? polygonLL.GetListHashCode() : 0);
-        hashCode = (hashCode * 397) ^ forwardDirection.GetHashCode();
-        hashCode = (hashCode * 397) ^ layerNumber.GetHashCode();
+        hashCode = (hashCode * 397) ^ (DesignUid != null ? DesignUid.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (ContributingMachines != null ? ContributingMachines.GetListHashCode() : 0);
+        hashCode = (hashCode * 397) ^ OnMachineDesignId.GetHashCode();
+        hashCode = (hashCode * 397) ^ ElevationType.GetHashCode();
+        hashCode = (hashCode * 397) ^ VibeStateOn.GetHashCode();
+        hashCode = (hashCode * 397) ^ (PolygonUid != null ? PolygonUid.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (PolygonName != null ? PolygonName.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (PolygonLL != null ? PolygonLL.GetListHashCode() : 0);
+        hashCode = (hashCode * 397) ^ ForwardDirection.GetHashCode();
+        hashCode = (hashCode * 397) ^ LayerNumber.GetHashCode();
         return hashCode;
       }
     }
@@ -317,10 +317,10 @@ namespace VSS.MasterData.Models.Models
       return !Equals(left, right);
     }
 
-    public void SetDates(DateTime? startUTC, DateTime? endUTC)
+    public void SetDates(DateTime? startUtc, DateTime? endUtc)
     {
-      this.startUTC = startUTC;
-      this.endUTC = endUTC;
+      this.StartUtc = startUtc;
+      this.EndUtc = endUtc;
     }
   }
 }

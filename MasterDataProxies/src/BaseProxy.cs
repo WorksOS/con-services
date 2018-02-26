@@ -3,11 +3,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using VSS.Authentication.JWT;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Interfaces;
-using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
 {
@@ -49,15 +47,127 @@ namespace VSS.MasterData.Proxies
     /// <param name="payload">The payload of the request</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <param name="method">Http method, defaults to POST</param>
+    /// <param name="queryParameters">Query parameters (optional)</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null, string method="POST")
+    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null, string method="POST", string queryParameters=null)
     {
-      var url = ExtractUrl(urlKey, route);
+      var url = ExtractUrl(urlKey, route, queryParameters);
       T result = default(T);
       try
       {
         GracefulWebRequest request = new GracefulWebRequest(logger, configurationStore);
         result = await request.ExecuteRequest<T>(url, method, customHeaders, payload);
+        log.LogDebug("Result of send to master data request: {0}", result);
+      }
+      catch (Exception ex)
+      {
+        string message = ex.Message;
+        string stacktrace = ex.StackTrace;
+        //Check for 400 and 500 errors which come through as an inner exception
+        if (ex.InnerException != null)
+        {
+          message = ex.InnerException.Message;
+          stacktrace = ex.InnerException.StackTrace;
+        }
+        log.LogWarning("Error sending data from master data: ", message);
+        log.LogWarning("Stacktrace: ", stacktrace);
+        throw;
+      }
+      return result;
+    }
+
+    /// <summary>
+    /// Executes a request against masterdata service
+    /// </summary>
+    /// <param name="urlKey">The configuration store key for the URL</param>
+    /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="payload">The payload of the request</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <param name="method">Http method, defaults to POST</param>
+    /// <param name="queryParameters">Query parameters (optional)</param>
+    /// <returns>The item</returns>
+    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null, string method = "POST", IDictionary<string,string> queryParameters = null)
+    {
+      var url = ExtractUrl(urlKey, route, queryParameters);
+      T result = default(T);
+      try
+      {
+        GracefulWebRequest request = new GracefulWebRequest(logger, configurationStore);
+        result = await request.ExecuteRequest<T>(url, method, customHeaders, payload);
+        log.LogDebug("Result of send to master data request: {0}", result);
+      }
+      catch (Exception ex)
+      {
+        string message = ex.Message;
+        string stacktrace = ex.StackTrace;
+        //Check for 400 and 500 errors which come through as an inner exception
+        if (ex.InnerException != null)
+        {
+          message = ex.InnerException.Message;
+          stacktrace = ex.InnerException.StackTrace;
+        }
+        log.LogWarning("Error sending data from master data: ", message);
+        log.LogWarning("Stacktrace: ", stacktrace);
+        throw;
+      }
+      return result;
+    }
+
+    /// <summary>
+    /// Executes a request against masterdata service
+    /// </summary>
+    /// <param name="urlKey">The configuration store key for the URL</param>
+    /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="payload">The payload of the request</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <param name="method">Http method, defaults to POST</param>
+    /// <returns>The item</returns>
+    protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders, string route = null, string method = "POST", IDictionary<string, string> queryParameters = null)
+    {
+      var url = ExtractUrl(urlKey, route, queryParameters);
+      T result = default(T);
+      try
+      {
+        GracefulWebRequest request = new GracefulWebRequest(logger, configurationStore);
+        result = await request.ExecuteRequest<T>(url, payload, customHeaders,method);
+        log.LogDebug("Result of send to master data request: {0}", result);
+      }
+      catch (Exception ex)
+      {
+        string message = ex.Message;
+        string stacktrace = ex.StackTrace;
+        //Check for 400 and 500 errors which come through as an inner exception
+        if (ex.InnerException != null)
+        {
+          message = ex.InnerException.Message;
+          stacktrace = ex.InnerException.StackTrace;
+        }
+        log.LogWarning("Error sending data from master data: ", message);
+        log.LogWarning("Stacktrace: ", stacktrace);
+        throw;
+      }
+      return result;
+    }
+
+
+    /// <summary>
+    /// Executes a request against masterdata service
+    /// </summary>
+    /// <param name="urlKey">The configuration store key for the URL</param>
+    /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="payload">The payload of the request</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <param name="queryParams"></param>
+    /// <param name="method">Http method, defaults to POST</param>
+    /// <returns>The item</returns>
+    protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders, string route = null, IDictionary<string,string> queryParams = null, string method = "POST")
+    {
+      var url = ExtractUrl(urlKey, route,queryParams);
+      T result = default(T);
+      try
+      {
+        GracefulWebRequest request = new GracefulWebRequest(logger, configurationStore);
+        result = await request.ExecuteRequest<T>(url, payload, customHeaders, method);
         log.LogDebug("Result of send to master data request: {0}", result);
       }
       catch (Exception ex)
@@ -86,7 +196,7 @@ namespace VSS.MasterData.Proxies
     /// <returns>List of items</returns>
     private async Task<List<T>> GetMasterDataList<T>(string urlKey, IDictionary<string, string> customHeaders, string route = null) 
     {
-      var url = ExtractUrl(urlKey, route);
+      var url = ExtractUrl(urlKey, route, string.Empty);
 
       List<T> result = null;
       try
@@ -122,11 +232,7 @@ namespace VSS.MasterData.Proxies
     /// <returns>List of items</returns>
     protected async Task<T> GetMasterDataItem<T>(string urlKey, IDictionary<string, string> customHeaders, string queryParams=null, string route=null)
     {
-      var url = ExtractUrl(urlKey, route);
-      if (!string.IsNullOrEmpty(queryParams))
-      {
-        url += queryParams;
-      }
+      var url = ExtractUrl(urlKey, route, queryParams);
 
       T result = default(T);
       try
@@ -251,14 +357,16 @@ namespace VSS.MasterData.Proxies
       }
     /// <summary>
     /// Gets the requested base URL from the configuration and adds the route to get the full URL.
+    /// Also adds any query parameters.
     /// </summary>
     /// <param name="urlKey">The configuration key for the URL to get</param>
     /// <param name="route">Any additional routing</param>
+    /// <param name="queryParameters">Any query parameters</param>
     /// <returns></returns>
-    private string ExtractUrl(string urlKey, string route)
+    private string ExtractUrl(string urlKey, string route, string queryParameters=null)
     {
       string url = configurationStore.GetValueString(urlKey);
-      log.LogInformation(string.Format("{0}: {1}, route={2}", urlKey, url, route));
+      log.LogInformation(string.Format("{0}: {1}, route={2}, queryParameters={3}", urlKey, url, route, queryParameters));
 
       if (string.IsNullOrEmpty(url))
       {
@@ -269,6 +377,42 @@ namespace VSS.MasterData.Proxies
       if (!string.IsNullOrEmpty(route))
       {
         url += route;
+      }
+      if (!string.IsNullOrEmpty(queryParameters))
+      {
+        url += queryParameters;
+      }
+      return url;
+    }
+
+    /// <summary>
+    /// Gets the requested base URL from the configuration and adds the route to get the full URL.
+    /// Also adds any query parameters.
+    /// </summary>
+    /// <param name="urlKey">The configuration key for the URL to get</param>
+    /// <param name="route">Any additional routing</param>
+    /// <param name="queryParameters">Any query parameters</param>
+    /// <returns></returns>
+    private string ExtractUrl(string urlKey, string route, IDictionary<string,string> queryParameters = null)
+    {
+      string url = configurationStore.GetValueString(urlKey);
+      log.LogInformation(string.Format("{0}: {1}, route={2}, queryParameters={3}", urlKey, url, route, queryParameters));
+
+      if (string.IsNullOrEmpty(url))
+      {
+        var errorString = string.Format("Your application is missing an environment variable {0}", urlKey);
+        log.LogError(errorString);
+        throw new InvalidOperationException(errorString);
+      }
+      if (!string.IsNullOrEmpty(route))
+      {
+        url += route;
+      }
+      if (queryParameters!=null)
+      {
+        url += "?";
+        url += new System.Net.Http.FormUrlEncodedContent(queryParameters)
+          .ReadAsStringAsync().Result; 
       }
       return url;
     }

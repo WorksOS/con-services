@@ -109,7 +109,7 @@ namespace MockProjectWebApi.Controllers
         FilterUid = "3d9086f2-3c04-4d92-9141-5134932b1523",
         Name = "Filter 1",
         FilterJson =
-          "{\"startUTC\": null,\"endUTC\": null,\"designUid\": \"220e12e5-ce92-4645-8f01-1942a2d5a57f\",\"contributingMachines\": null,\"onMachineDesignID\": null,\"elevationType\": null,\"vibeStateOn\": null,\"polygonName\": null,\"polygonUid\": null,\"polygonLL\": null,\"forwardDirection\": null,\"layerNumber\": null,\"layerType\": null}"
+          "{\"startUTC\": null,\"endUTC\": null,\"designUid\": \"220e12e5-ce92-4645-8f01-1942a2d5a57f\",\"contributingMachines\": null,\"onMachineDesignID\": null,\"elevationType\": null,\"vibeStateOn\": null,\"polygonName\": null,\"polygonUid\": null,\"polygonLL\": null,\"forwardDirection\": null,\"layerNumber\": null,\"layerType\": null,\"SpatialFilter\":false}"
       },
       new FilterDescriptor
       {
@@ -157,7 +157,7 @@ namespace MockProjectWebApi.Controllers
       {
         FilterUid = "3ef41e3c-d1f5-40cd-b012-99d11ff432ef",
         Name = "Dimensions boundary mdp",
-        FilterJson = "{\"polygonUID\":\"318f0103-a0c3-4b50-88d4-d4fa12370a63\",\"polygonName\":\"Dimensions boundary mdp\",\"polygonLL\":[{\"Lat\":36.207659,\"Lon\":-115.018943},{\"Lat\":36.207265,\"Lon\":-115.018926},{\"Lat\":36.207412,\"Lon\":-115.018471}]}"
+        FilterJson = "{\"polygonUID\":\"318f0103-a0c3-4b50-88d4-d4fa12370a63\",\"polygonName\":\"Dimensions boundary mdp\",\"polygonLL\":[{\"Lat\":36.207659,\"Lon\":-115.018943},{\"Lat\":36.207265,\"Lon\":-115.018926},{\"Lat\":36.207412,\"Lon\":-115.018471,\"SpatialFilter\":false}]}"
       },
       new FilterDescriptor
       {

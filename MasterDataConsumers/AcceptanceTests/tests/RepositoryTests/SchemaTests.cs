@@ -134,6 +134,17 @@ namespace RepositoryTests
     }
 
     [TestMethod]
+    public void ImportedFileHistorySchemaExists()
+    {
+      const string tableName = "ImportedFileHistory";
+      List<string> columnNames = new List<string>
+      {
+        "ID", "fk_ImportedFileUID", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "InsertUTC", "UpdateUTC"
+      };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
     public void SubscriptionSchemaExists()
     {
       const string tableName = "Subscription";

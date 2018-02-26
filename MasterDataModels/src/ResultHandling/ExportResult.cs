@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VSS.Common.ResultsHandling;
+﻿using VSS.Common.ResultsHandling;
 
 namespace VSS.MasterData.Models.ResultHandling
 {
@@ -18,6 +15,7 @@ namespace VSS.MasterData.Models.ResultHandling
     /// The export data.
     /// </value>
     public byte[] ExportData { get; set; }
+
     /// <summary>
     /// Gets or sets the result code.
     /// </summary>

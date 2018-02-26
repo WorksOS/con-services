@@ -61,8 +61,14 @@ namespace VSS.MasterData.Proxies
     public async Task<AddFileResult> AddFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.AddFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} dxfUnitsType: {dxfUnitsType}");
-      var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&dxfUnitsType={dxfUnitsType}";
-      //log.LogDebug($"RaptorProxy.AddFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
+
+      Dictionary<string,string> parameters = new Dictionary<string, string>
+      {
+        { "projectUid", projectUid.ToString() }, {"fileType" , fileType.ToString() }, { "fileUid", fileUid.ToString() },
+        { "fileDescriptor", fileDescriptor}, {"fileId", fileId.ToString()}, {"dxfUnitsType",dxfUnitsType.ToString()}
+      };
+
+      var queryParams = $"?{new System.Net.Http.FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
 
       return await NotifyFile<AddFileResult>("/addfile", queryParams, customHeaders);
     }
@@ -82,7 +88,6 @@ namespace VSS.MasterData.Proxies
     {
       log.LogDebug($"RaptorProxy.DeleteFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} legacyFileId: {legacyFileId}");
       var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&legacyFileId={legacyFileId}";
-      //log.LogDebug($"RaptorProxy.DeleteFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
 
       return await NotifyFile<BaseDataResult>("/deletefile", queryParams, customHeaders);
     }
@@ -96,9 +101,8 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<BaseDataResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.UpdateFiles: projectUid: {projectUid} fileUids: {fileUids}");
-      var queryParams = $"?projectUid={projectUid}&fileUids={string.Join("&fileUids=", fileUids)}";
-      //log.LogDebug($"RaptorProxy.UpdateFiles: queryParams: {JsonConvert.SerializeObject(queryParams)}");
+      log.LogDebug($"RaptorProxy.UpdateFiles: projectUid: {projectUid} fileUids: {string.Join<Guid>(",", fileUids)}");
+      var queryParams = $"?projectUid={projectUid}&fileUids={string.Join<Guid>("&fileUids=", fileUids)}";
 
       return await NotifyFile<BaseDataResult>("/updatefiles", queryParams, customHeaders);
     }
@@ -208,7 +212,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private async Task<CoordinateSystemSettingsResult> CoordSystemPost(string payload, IDictionary<string, string> customHeaders, string route)
     {
-      CoordinateSystemSettingsResult response = await SendRequest<CoordinateSystemSettingsResult>("COORDSYSPOST_API_URL", payload, customHeaders, route);
+      CoordinateSystemSettingsResult response = await SendRequest<CoordinateSystemSettingsResult>("COORDSYSPOST_API_URL", payload, customHeaders, route, "POST", String.Empty);
       log.LogDebug("RaptorProxy.CoordSystemPost: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;

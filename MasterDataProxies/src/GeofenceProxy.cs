@@ -75,7 +75,7 @@ namespace VSS.MasterData.Proxies
                 AreaSqMeters = areaSqMeters
             };
             await SendRequest<GeofenceData>("CREATEGEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
-                customHeaders);
+                customHeaders,String.Empty, "POST", String.Empty);
             return geofenceGuid;
         }
 

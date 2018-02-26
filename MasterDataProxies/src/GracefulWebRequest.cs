@@ -50,13 +50,13 @@ namespace VSS.MasterData.Proxies
         {
           Array.Clear(buffer, 0, buffer.Length);
           var read = await readStream.ReadAsync(buffer, 0, buffer.Length);
-          responseString = Encoding.ASCII.GetString(buffer);
+          responseString = Encoding.UTF8.GetString(buffer);
           responseString = responseString.Trim(Convert.ToChar(0));
           while (read > 0)
           {
             Array.Clear(buffer, 0, buffer.Length);
             read = await readStream.ReadAsync(buffer, 0, buffer.Length);
-            responseString += Encoding.ASCII.GetString(buffer);
+            responseString += Encoding.UTF8.GetString(buffer);
             responseString = responseString.Trim(Convert.ToChar(0));
           }
         }
@@ -123,9 +123,13 @@ namespace VSS.MasterData.Proxies
           {
             foreach (var key in customHeaders.Keys)
             {
-              if (key == "Content-Type")
+              if (string.Equals(key, "Content-Type", StringComparison.OrdinalIgnoreCase))
               {
                 httpRequest.ContentType = customHeaders[key];
+              }
+              else if (string.Equals(key, "Accept", StringComparison.OrdinalIgnoreCase))
+              {
+                httpRequest.Accept = customHeaders[key];
               }
               else
               {
@@ -134,29 +138,41 @@ namespace VSS.MasterData.Proxies
             }
           }
         }
+
         if (requestStream != null)
         {
           using (var writeStream = await request.GetRequestStreamAsync())
           {
-            await requestStream.CopyToAsync(writeStream);
+            if (requestStream is MemoryStream)
+            {
+              var reqS = ((MemoryStream)requestStream).ToArray();
+              await writeStream.WriteAsync(reqS, 0, reqS.Length);
+            }
+            else
+            {
+              await requestStream.CopyToAsync(writeStream);
+            }
           }
         }
         else
           //Apply payload if any
-        if (!String.IsNullOrEmpty(payloadData))
-        {
-          // don't overwrite any existing one.
-          if (!customHeaders.ContainsKey("Content-Type"))
+          if (!String.IsNullOrEmpty(payloadData))
           {
-            request.ContentType = "application/json";
+            // don't overwrite any existing one.
+            if (customHeaders == null || !customHeaders.ContainsKey("Content-Type"))
+            {
+              request.ContentType = "application/json";
+            }
+            log.LogDebug($"PrepareWebRequest() T : requestWithPayload {JsonConvert.SerializeObject(request).Truncate(logMaxChar)}");
+
+
+            using (var writeStream = await request.GetRequestStreamAsync())
+            {
+              UTF8Encoding encoding = new UTF8Encoding();
+              byte[] bytes = encoding.GetBytes(payloadData);
+              await writeStream.WriteAsync(bytes, 0, bytes.Length);
+            }
           }
-          using (var writeStream = await request.GetRequestStreamAsync())
-          {
-            UTF8Encoding encoding = new UTF8Encoding();
-            byte[] bytes = encoding.GetBytes(payloadData);
-            await writeStream.WriteAsync(bytes, 0, bytes.Length);
-          }
-        }
         return request;
       }
 
@@ -165,7 +181,9 @@ namespace VSS.MasterData.Proxies
       {
         this.endpoint = endpoint;
         this.method = method;
-        this.customHeaders = customHeaders;
+        var comparer = StringComparer.OrdinalIgnoreCase;
+        this.customHeaders = new Dictionary<string, string>(customHeaders, comparer);
+
         this.payloadData = payloadData;
         this.log = log;
         this.logMaxChar = logMaxChar;
@@ -218,6 +236,7 @@ namespace VSS.MasterData.Proxies
         WebResponse response = null;
         try
         {
+          log.LogDebug($"ExecuteRequest() T starting the request");
           response = await request.GetResponseAsync();
           if (response != null)
           {
@@ -282,7 +301,7 @@ namespace VSS.MasterData.Proxies
       string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
-        $"ExecuteRequest() T : endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData}");
+        $"ExecuteRequest() T : endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData.Truncate(logMaxChar)}");
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -326,7 +345,7 @@ namespace VSS.MasterData.Proxies
       string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
-        $"ExecuteRequest() Stream: endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData}");
+        $"ExecuteRequest() Stream: endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData.Truncate(logMaxChar)}");
 
       var policyResult = await Policy
         .Handle<Exception>()

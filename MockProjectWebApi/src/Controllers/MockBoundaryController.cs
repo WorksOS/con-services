@@ -8,16 +8,16 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockBoundaryController : Controller
   {
-    [Route("api/v4/mockboundary/{projectUid}")]
+    [Route("api/v1/mock/boundaries/{projectUid}")]//must match same base route as mock filters and same route suffix as real api
     [HttpGet]
-    public IEnumerable<GeofenceData> GetMockFilter(string projectUid)
+    public GeofenceListData GetMockBoundary(string projectUid)
     {
-      Console.WriteLine("GetMockBoundariesForProject: projectUid={0}");
+      Console.WriteLine($"GetMockBoundariesForProject: projectUid={projectUid}");
 
-      return GetFilters(projectUid);
+      return new GeofenceListData {GeofenceData = GetMockBoundaries(projectUid)};
     }
 
-    private IEnumerable<GeofenceData> GetFilters(string projectUid)
+    private List<GeofenceData> GetMockBoundaries(string projectUid)
     {
       switch (projectUid)
       {
