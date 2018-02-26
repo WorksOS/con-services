@@ -187,8 +187,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettings(projectUid);
       var userPreferences = await GetUserPreferences();
 
-      // Add 0.0 value to the offests array, remove any duplicates and sort contents by ascending order...
-      var updatedOffsets = offsets.AddZeroDistinctSortBy();
+      // Add 0.0 value to the offsets array, remove any duplicates and sort contents by ascending order...
+      var updatedOffsets = offsets?.AddZeroDistinctSortBy();
 
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
         .ProjectId(projectId)
