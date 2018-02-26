@@ -11,6 +11,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -180,7 +181,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetStationOffset: " + Request.QueryString);
 
-      var projectId = GetProjectId(projectUid);
+      var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesignDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
@@ -188,12 +189,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var userPreferences = await GetUserPreferences();
 
       // Add 0.0 value to the offsets array, remove any duplicates and sort contents by ascending order...
-      log.LogDebug("About to sort offsets");
       var updatedOffsets = offsets?.AddZeroDistinctSortBy();
 
-      log.LogDebug("Creating request");
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
-        .ProjectId(projectId)
+        .ProjectId(project.projectId)
         .Headers(CustomHeaders)
         .ProjectSettings(projectSettings)
         .Filter(filter))
@@ -210,9 +209,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         startStation,
         endStation,
         updatedOffsets,
-        userPreferences);
+        userPreferences,
+        project.projectTimeZone);
 
-      log.LogDebug("Validating request");
       reportRequest.Validate();
 
       return WithServiceExceptionTryExecute(() =>

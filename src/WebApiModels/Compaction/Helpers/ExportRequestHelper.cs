@@ -102,9 +102,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         }
       }
 
-      // Set User Preferences' time zone to the project's one and retrieve...
-      this.userPreferences.Timezone = this.projectDescriptor.projectTimeZone;
-
       if (!string.IsNullOrEmpty(fileName))
       {
         fileName = StripInvalidCharacters(fileName);
@@ -133,7 +130,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         false,
         fileName,
         exportType,
-        ConvertUserPreferences(this.userPreferences));
+        ConvertUserPreferences(this.userPreferences, this.projectDescriptor.projectTimeZone));
     }
 
     private static string StripInvalidCharacters(string str)
@@ -156,14 +153,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// It is solely used by production data export WebAPIs.
     /// </summary>
     /// <param name="userPref">The set of user preferences.</param>
+    /// <param name="projectTimezone">The project time zone.</param>
     /// <returns>The set of user preferences in Raptor's format</returns>
-    public static TASNodeUserPreferences ConvertUserPreferences(UserPreferenceData userPref)
+    public static TASNodeUserPreferences ConvertUserPreferences(UserPreferenceData userPref, string projectTimezone)
     {
-      TimeZoneInfo projecTimeZone = TimeZoneInfo.FindSystemTimeZoneById(userPref.Timezone);
-      double projectTimeZoneOffset = projecTimeZone.GetUtcOffset(DateTime.Now).TotalHours;
+      var timezone = projectTimezone ?? userPref.Timezone;
+      TimeZoneInfo projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+      double projectTimeZoneOffset = projectTimeZone?.GetUtcOffset(DateTime.Now).TotalHours ?? 0;
+
+      var languageIndex = Array.FindIndex(LanguageLocales.LanguageLocaleStrings, s => s.Equals(userPref.Language, StringComparison.OrdinalIgnoreCase));
+      //If not found set to en-US
+      if (languageIndex == -1)
+        languageIndex = 1;
 
       return ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(
-        userPref.Timezone,
+        timezone,
         Preferences.DefaultDateSeparator,
         Preferences.DefaultTimeSeparator,
         //Hardwire number format as "xxx,xxx.xx" or it causes problems with the CSV file as comma is the column separator.
@@ -172,7 +176,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         Preferences.DefaultThousandsSeparator,
         Preferences.DefaultDecimalSeparator,
         projectTimeZoneOffset,
-        Array.IndexOf(LanguageLocales.LanguageLocaleStrings, userPref.Language),
+        languageIndex,
         (int)userPref.Units.UnitsType(),
         Preferences.DefaultDateTimeFormat,
         Preferences.DefaultNumberFormat,

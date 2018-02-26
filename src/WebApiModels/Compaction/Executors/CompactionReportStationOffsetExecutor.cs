@@ -25,8 +25,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// <returns>Returns an instance of the <see cref="CompactionReportResult"/> class if successful.</returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      log.LogDebug($"Start CompactionReportStationOffsetExecutor: {JsonConvert.SerializeObject(item)}");
-
       ContractExecutionResult result;
 
       try
@@ -39,14 +37,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               "Request item is not compatible with Station Offset request."));
         }
 
-        log.LogDebug("About to convert filter");
         var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.projectId);
-        log.LogDebug("About to convert cut-fill design");
         var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
-        log.LogDebug("About to convet alignment file");
         var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
-        log.LogDebug("About to convert user preferences");
-        var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences);
+        var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences, request.ProjectTimezone);
 
         log.LogDebug("About to call GetReportStationOffset");
 
