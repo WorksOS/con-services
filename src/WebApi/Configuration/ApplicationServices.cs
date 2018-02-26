@@ -64,6 +64,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<ISchedulerProxy, SchedulerProxy>();
       services.AddScoped<ITransferProxy, TransferProxy>();
+      services.AddScoped<IAlignmentTileService, AlignmentTileService>();
 
       // Action services
       services.AddSingleton<IVolumeSummaryHelper, VolumeSummaryHelper>();
