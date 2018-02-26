@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace VSS.MasterData.Proxies.Interfaces
 {
   public interface IProjectSettingsProxy : ICacheProxy
   {
-    Task<string> GetProjectSettings(string projectUid, IDictionary<string, string> customHeaders = null);
+    Task<JObject> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders);
   }
 }

@@ -106,7 +106,7 @@ namespace RepositoryTests
       const string tableName = "ProjectSettings";
       List<string> columnNames = new List<string>
       {
-        "fk_ProjectUID", "Settings", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+        "fk_ProjectUID", "fk_ProjectSettingsTypeID", "Settings", "UserID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
       };
       CheckSchema(tableName, columnNames);
     }
@@ -128,7 +128,18 @@ namespace RepositoryTests
       const string tableName = "ImportedFile";
       List<string> columnNames = new List<string>
       {
-        "fk_ProjectUID", "ImportedFileUID", "ImportedFileID", "LegacyImportedFileID", "fk_CustomerUID", "fk_ImportedFileTypeID", "Name", "FileDescriptor", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "SurveyedUTC", "fk_DXFUnitsTypeID", "MinZoomLevel", "MaxZoomLevel", "IsDeleted", "IsActivated", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+        "fk_ProjectUID", "ImportedFileUID", "ImportedFileID", "LegacyImportedFileID", "fk_CustomerUID", "fk_ImportedFileTypeID", "Name", "FileDescriptor", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "SurveyedUTC", "fk_DXFUnitsTypeID", "MinZoomLevel", "MaxZoomLevel", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+      };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void ImportedFileHistorySchemaExists()
+    {
+      const string tableName = "ImportedFileHistory";
+      List<string> columnNames = new List<string>
+      {
+        "ID", "fk_ImportedFileUID", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "InsertUTC", "UpdateUTC"
       };
       CheckSchema(tableName, columnNames);
     }

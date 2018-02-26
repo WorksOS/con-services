@@ -159,8 +159,7 @@ namespace VSS.MasterData.Repositories
           DxfUnitsType = projectEvent.DxfUnitsType,
           MinZoomLevel = projectEvent.MinZoomLevel,
           MaxZoomLevel = projectEvent.MaxZoomLevel,
-          LastActionedUtc = projectEvent.ActionUTC,
-          IsActivated = true
+          LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "CreateImportedFileEvent");
       }
@@ -178,8 +177,7 @@ namespace VSS.MasterData.Repositories
           SurveyedUtc = projectEvent.SurveyedUtc,
           MinZoomLevel = projectEvent.MinZoomLevel,
           MaxZoomLevel = projectEvent.MaxZoomLevel,
-          LastActionedUtc = projectEvent.ActionUTC,
-          IsActivated = projectEvent.IsActivated
+          LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "UpdateImportedFileEvent");
       }
@@ -212,7 +210,9 @@ namespace VSS.MasterData.Repositories
         var projectSettings = new ProjectSettings
         {
           ProjectUid = projectEvent.ProjectUID.ToString(),
+          ProjectSettingsType = projectEvent.ProjectSettingsType,
           Settings = projectEvent.Settings,
+          UserID = projectEvent.UserID,
           LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertProjectSettings(projectSettings);
@@ -638,7 +638,7 @@ namespace VSS.MasterData.Repositories
               fk_ImportedFileTypeID as ImportedFileType, Name, 
               FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, 
               fk_DXFUnitsTypeID as DxfUnitsType, MinZoomLevel, MaxZoomLevel,
-              IsDeleted, IsActivated, LastActionedUTC
+              IsDeleted, LastActionedUTC
             FROM ImportedFile
             WHERE ImportedFileUID = @importedFileUid", new {importedFileUid = importedFile.ImportedFileUid}
       )).FirstOrDefault();
@@ -669,18 +669,18 @@ namespace VSS.MasterData.Repositories
 
         var insert = string.Format(
           "INSERT ImportedFile " +
-          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsDeleted, IsActivated, LastActionedUTC) " +
+          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC) " +
           "  VALUES " +
-          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, 1, @LastActionedUtc)");
+          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc)");
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
         log.LogDebug(
           $"ProjectRepository/CreateImportedFile: (insert): inserted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
-        return upsertedCount;
+        if (upsertedCount > 0)
+          upsertedCount = await UpsertImportedFileHistory(importedFile);
       }
-      else
-      if (existing.LastActionedUtc >= importedFile.LastActionedUtc)
+      else if (existing.LastActionedUtc >= importedFile.LastActionedUtc)
       {
         // an update/delete was processed before the create, even though it's actionUTC is later (due to kafka partioning issue)
         // The only thing which can be updated is a) the file content, and the LastActionedUtc. A file cannot be moved between projects/customers.
@@ -688,7 +688,7 @@ namespace VSS.MasterData.Repositories
 
         log.LogDebug(
           $"ProjectRepository/CreateImportedFile: create arrived after an update so inserting importedFile={importedFile.ImportedFileUid}");
-        
+
         const string update =
           @"UPDATE ImportedFile
               SET fk_ProjectUID = @projectUID, 
@@ -711,12 +711,18 @@ namespace VSS.MasterData.Repositories
           log.LogDebug(
             $"ProjectRepository/CreateImportedFile: (updateExisting): upserted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
-          return upsertedCount;
+          // don't really care if this didn't pass as may already exist for create/update utc
+          if (upsertedCount > 0)
+            await UpsertImportedFileHistory(importedFile);
         }
       }
+      else
+      {
 
-      log.LogDebug(
-        $"ProjectRepository/CreateImportedFile: can't create as older actioned importedFile already exists: {importedFile.ImportedFileUid}.");
+        log.LogDebug(
+          $"ProjectRepository/CreateImportedFile: can't create as older actioned importedFile already exists: {importedFile.ImportedFileUid}.");
+      }
+
       return upsertedCount;
     }
 
@@ -739,15 +745,15 @@ namespace VSS.MasterData.Repositories
                   SurveyedUTC = @surveyedUTC,
                   MinZoomLevel = @MinZoomLevel,
                   MaxZoomLevel = @MaxZoomLevel,
-                  LastActionedUTC = @LastActionedUTC,
-                  IsActivated = @IsActivated
+                  LastActionedUTC = @LastActionedUTC
                 WHERE ImportedFileUID = @ImportedFileUid";
 
           upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
           log.LogDebug(
             $"ProjectRepository/UpdateImportedFile: updated {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
-          return upsertedCount;
+          if (upsertedCount > 0)
+            upsertedCount = await UpsertImportedFileHistory(importedFile);
         }
 
         log.LogDebug(
@@ -761,6 +767,40 @@ namespace VSS.MasterData.Repositories
       }
 
       return upsertedCount;
+    }
+
+    private async Task<int> UpsertImportedFileHistory(ImportedFile importedFile)
+    {
+      var insertedCount = 0;
+      var importedFileUpsert = (await QueryWithAsyncPolicy<ImportedFileHistoryItem>
+      (@"SELECT 
+            fk_ImportedFileUID AS ImportedFileUid, FileCreatedUTC, FileUpdatedUTC, ImportedBy
+          FROM ImportedFileHistory
+            WHERE fk_ImportedFileUID = @importedFileUid
+              AND FileCreatedUTC = @fileCreatedUtc
+              AND FileUpdatedUTC = @fileUpdatedUtc",
+        new { importedFileUid = importedFile.ImportedFileUid, fileUpdatedUtc = importedFile.FileCreatedUtc }
+      )).FirstOrDefault();
+
+      if (importedFileUpsert == null)
+      {
+        const string insert =
+          @"INSERT ImportedFileHistory
+                 (fk_ImportedFileUID, FileCreatedUtc, FileUpdatedUtc, ImportedBy)
+            VALUES
+              (@ImportedFileUid, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy)";
+
+        insertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
+
+        log.LogDebug(
+          $"ProjectRepository/UpsertImportedFileHistory: inserted {insertedCount} rows for: ImportedFileUid:{importedFile.ImportedFileUid} FileCreatedUTC: {importedFile.FileCreatedUtc} FileUpdatedUTC: {importedFile.FileUpdatedUtc}");
+      }
+      else
+      {
+        log.LogDebug(
+          $"ProjectRepository/UpsertImportedFileHistory: History already exists ImportedFileUid:{importedFile.ImportedFileUid} FileCreatedUTC: {importedFile.FileCreatedUtc} FileUpdatedUTC: {importedFile.FileUpdatedUtc}");
+      }
+      return insertedCount;
     }
 
     private async Task<int> DeleteImportedFile(ImportedFile importedFile, ImportedFile existing, bool isDeletePermanently)
@@ -844,6 +884,7 @@ namespace VSS.MasterData.Repositories
     ///     Only an upsert is implemented.
     /// 1) because as that is the only endpoint in ProjectMDM
     /// 2) because create and Update have to cover both scenarios anyway
+    /// can't update the type or UserID, only the Settings
     /// </summary>
     /// <param name="projectSettings"></param>
     /// <returns></returns>
@@ -854,9 +895,9 @@ namespace VSS.MasterData.Repositories
       
       const string upsert =
         @"INSERT ProjectSettings
-                 (fk_ProjectUID, Settings, LastActionedUTC)
+                 (fk_ProjectUID, fk_ProjectSettingsTypeID, Settings, UserID, LastActionedUTC)
             VALUES
-              (@ProjectUID, @Settings, @LastActionedUTC)
+              (@ProjectUID, @ProjectSettingsType, @Settings, @UserID, @LastActionedUTC)
             ON DUPLICATE KEY UPDATE
               LastActionedUTC =
                 IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
@@ -1180,18 +1221,42 @@ namespace VSS.MasterData.Repositories
 
 
     /// <summary>
-    /// At this stage there is only 1 setting/project
+    /// At this stage 2 types
     /// </summary>
     /// <param name="projectUid"></param>
+    /// <param name="userId"></param>
+    /// <param name="projectSettingsType"></param>
     /// <returns></returns>
-    public async Task<ProjectSettings> GetProjectSettings(string projectUid)
+    public async Task<ProjectSettings> GetProjectSettings(string projectUid, string userId, ProjectSettingsType projectSettingsType)
     {
       var projectSettings = (await QueryWithAsyncPolicy<ProjectSettings>(@"SELECT 
-                fk_ProjectUID AS ProjectUid, Settings, LastActionedUTC
+                fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
               FROM ProjectSettings
-              WHERE fk_ProjectUID = @projectUid",
-        new { projectUid })).FirstOrDefault();
+              WHERE fk_ProjectUID = @projectUid
+                AND UserID = @userId
+                AND fk_ProjectSettingsTypeID = @projectSettingsType
+              ORDER BY fk_ProjectUID, UserID, fk_ProjectSettingsTypeID",
+        new { projectUid, userId, projectSettingsType })).FirstOrDefault();
       return projectSettings;
+    }
+
+    /// <summary>
+    /// At this stage 2 types, user must eval result
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<ProjectSettings>> GetProjectSettings(string projectUid, string userId)
+    {
+      var projectSettingsList = await QueryWithAsyncPolicy<ProjectSettings>
+        (@"SELECT 
+                fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
+              FROM ProjectSettings
+              WHERE fk_ProjectUID = @projectUid
+                AND UserID = @userId",
+        new { projectUid, userId }
+        );
+      return projectSettingsList;
     }
 
     #endregion getters
@@ -1201,16 +1266,26 @@ namespace VSS.MasterData.Repositories
 
     public async Task<IEnumerable<ImportedFile>> GetImportedFiles(string projectUid)
     {
-      var importedFileList = await QueryWithAsyncPolicy<ImportedFile>
+      var importedFileList = ( await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
-            MinZoomLevel, MaxZoomLevel, IsDeleted, IsActivated, LastActionedUTC
+            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC
           FROM ImportedFile
             WHERE fk_ProjectUID = @projectUid
               AND IsDeleted = 0",
         new {projectUid}
-      );
+      )).ToList();
+
+      var historyAllFiles = await GetImportedFileHistory(projectUid);
+      foreach (var importedFile in importedFileList)
+      {
+        var historyOne = historyAllFiles.FindAll(x => x.ImportedFileUid == importedFile.ImportedFileUid);
+        if (historyOne.Any())
+        {
+          importedFile.ImportedFileHistory = new ImportedFileHistory(historyOne);
+        }
+      }
 
       return importedFileList;
     }
@@ -1221,13 +1296,36 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType, 
-            MinZoomLevel, MaxZoomLevel, IsDeleted, IsActivated, LastActionedUTC
+            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC
           FROM ImportedFile
             WHERE importedFileUID = @importedFileUid",
         new {importedFileUid}
       )).FirstOrDefault();
 
+      if (importedFile != null)
+      {
+        var historyAllFiles = await GetImportedFileHistory(importedFile.ProjectUid, importedFileUid);
+        if (historyAllFiles.Any())
+        {
+          importedFile.ImportedFileHistory = new ImportedFileHistory(historyAllFiles);
+        }
+      }
       return importedFile;
+    }
+
+    private async Task<List<ImportedFileHistoryItem>> GetImportedFileHistory(string projectUid, string importedFileUid = null)
+    {
+      return (await QueryWithAsyncPolicy<ImportedFileHistoryItem>
+      (@"SELECT 
+              ImportedFileUID, ifh.FileCreatedUTC, ifh.FileUpdatedUTC, ifh.ImportedBy
+            FROM ImportedFile iff
+              INNER JOIN ImportedFileHistory ifh ON ifh.fk_ImportedFileUID = iff.ImportedFileUID
+            WHERE fk_ProjectUID = @projectUid
+              AND IsDeleted = 0
+              AND (@importedFileUid IS NULL OR ImportedFileUID = @importedFileUid)
+            ORDER BY ImportedFileUID, ifh.FileUpdatedUTC",
+        new { projectUid, importedFileUid }
+      )).ToList();
     }
 
     #endregion gettersImportedFiles
@@ -1382,11 +1480,15 @@ namespace VSS.MasterData.Repositories
       var source = (Point) obj;
       return (source.X == X) && (source.Y == Y);
     }
+    public override int GetHashCode()
+    {
+      return 0;
+    }
   }
 
   internal static class ExtensionString
   {
-    private static Dictionary<string, string> _replacements = new Dictionary<string, string>();
+    private static readonly Dictionary<string, string> _replacements = new Dictionary<string, string>();
 
     static ExtensionString()
     {

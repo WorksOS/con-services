@@ -6,6 +6,6 @@ namespace VSS.MasterData.Proxies.Interfaces
 {
   public interface ICustomerProxy : ICacheProxy
   {
-    Task<CustomerDataResult> GetCustomersForMe(string userUid, IDictionary < string, string> customHeaders);
+    Task<CustomerDataResult> GetCustomersForMe(string userUid, IDictionary <string, string> customHeaders);
   }
 }

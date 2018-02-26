@@ -39,6 +39,40 @@ namespace VSS.TCCFileAccess.UnitTests
     }
 
 
+    [TestMethod]
+    public async Task TestConcurrencyTCCAccess()
+    {
+      var serviceCollection = new ServiceCollection();
+      string loggerRepoName = "UnitTestLogTest";
+      var logPath = Directory.GetCurrentDirectory();
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(loggerRepoName);
+
+      serviceCollection.AddLogging();
+      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      serviceCollection.AddTransient<IFileRepository, FileRepository>();
+      ServiceProvider = serviceCollection.BuildServiceProvider();
+
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var orgName = configuration.GetValueString("TCCORG");
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
+      var orgs = await fileaccess.ListOrganizations();
+      var org = (from o in orgs where o.shortName == orgName select o).First();
+      fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
+      var folders = await fileaccess.GetFolders(org, DateTime.MinValue, "/");
+    }
+
+    [TestMethod]
+    public void CanParseUTF8Files()
+    {
+      string filename = "abcпривет123.txt";
+      var noExtName = Path.GetFileNameWithoutExtension(filename);
+      Assert.AreEqual("abcпривет123", noExtName);
+    }
 
     [TestMethod]
     public void CanCreateFileAccessService()
@@ -56,7 +90,7 @@ namespace VSS.TCCFileAccess.UnitTests
     }
 
     [TestMethod]
-    public async Task CanListFoldersFiles()
+    public async Task CanListFolders()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var orgName = configuration.GetValueString("TCCORG");
@@ -65,6 +99,33 @@ namespace VSS.TCCFileAccess.UnitTests
       var org = (from o in orgs where o.shortName == orgName select o).First();
       var folders = await fileaccess.GetFolders(org, DateTime.MinValue, "/");
       Assert.IsTrue(folders.entries.Length > 0);
+    }
+
+    [TestMethod]
+    public async Task CanListFiles()
+    {
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
+      var filespaceId = configuration.GetValueString("TCCFILESPACEID");
+      var fileList = await fileaccess.GetFileList(filespaceId, "/barney");
+      Assert.IsTrue(fileList.entries.Length > 0);
+    }
+
+
+    [TestMethod]
+    public async Task CanCopyFile()
+    {
+      const string srcFolderName = "/barney";
+      const string dstFolderName = "/unittest";
+      const string filename = "file-for-get-file-test.json";
+
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var filespaceId = configuration.GetValueString("TCCFILESPACEID");
+
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
+      var copied = await fileaccess.CopyFile(filespaceId, $"{srcFolderName}/{filename}",
+        $"{dstFolderName}/{filename}");
+      Assert.IsTrue(copied);
     }
 
     [TestMethod]

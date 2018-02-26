@@ -26,7 +26,7 @@ namespace VSS.MasterData.Proxies
     public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid,
       IDictionary<string, string> customHeaders = null)
     {
-      var result = await GetContainedMasterDataList<FilterData>(filterUid, "FILTER_CACHE_LIFE", "FILTER_API_URL",
+      var result = await GetContainedMasterDataList<FilterData>(filterUid, null, "FILTER_CACHE_LIFE", "FILTER_API_URL",
         customHeaders, $"/{projectUid}?filterUid={filterUid}", "/filter");
       if (result.Code == 0)
       {
@@ -48,7 +48,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<List<FilterDescriptor>> GetFilters(string projectUid, IDictionary<string, string> customHeaders = null)
     {
-      var result = await GetContainedMasterDataList<FilterListData>(projectUid, "FILTER_CACHE_LIFE", "FILTER_API_URL",
+      var result = await GetContainedMasterDataList<FilterListData>(projectUid, null, "FILTER_CACHE_LIFE", "FILTER_API_URL",
         customHeaders, $"/{projectUid}", "/filters");
       if (result.Code == 0)
       {
@@ -67,18 +67,20 @@ namespace VSS.MasterData.Proxies
     /// Clears an item from the cache
     /// </summary>
     /// <param name="filterUid">The filterUid of the item to remove from the cache</param>
-    public void ClearCacheItem(string filterUid)
+    /// <param name="userId">The user ID</param>
+    public void ClearCacheItem(string filterUid, string userId=null)
     {
-      ClearCacheItem<FilterData>(filterUid);
+      ClearCacheItem<FilterData>(filterUid, userId);
     }
 
     /// <summary>
     /// Clears an item containg a list from the cache
     /// </summary>
     /// <param name="projectUid">The projectUid of the item to remove from the cache</param>
-    public void ClearCacheListItem(string projectUid)
+    /// <param name="userId">The user ID, only required if caching per user</param>
+    public void ClearCacheListItem(string projectUid, string userId=null)
     {
-      ClearCacheItem<FilterListData>(projectUid);
+      ClearCacheItem<FilterListData>(projectUid, userId);
     }
   }
 }

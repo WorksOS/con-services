@@ -52,7 +52,7 @@ namespace VSS.MasterData.Proxies
       /// <returns></returns>
       public async Task<List<GeofenceData>> GetGeofences(string customerUid, IDictionary<string, string> customHeaders = null)
       {
-        var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders);
+        var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, null, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders);
         return result.Geofences;
       }
 
@@ -75,7 +75,7 @@ namespace VSS.MasterData.Proxies
                 AreaSqMeters = areaSqMeters
             };
             await SendRequest<GeofenceData>("CREATEGEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
-                customHeaders);
+                customHeaders,String.Empty, "POST", String.Empty);
             return geofenceGuid;
         }
 
@@ -83,9 +83,10 @@ namespace VSS.MasterData.Proxies
     /// Clears an item from the cache
     /// </summary>
     /// <param name="geofenceUid">The geofenceUid of the item to remove from the cache</param>
-    public void ClearCacheItem(string geofenceUid)
+    /// <param name="userId">The user ID</param>
+    public void ClearCacheItem(string geofenceUid, string userId=null)
       {
-        ClearCacheItem<GeofenceData>(geofenceUid);
+        ClearCacheItem<GeofenceData>(geofenceUid, userId);
       }
   }
 }

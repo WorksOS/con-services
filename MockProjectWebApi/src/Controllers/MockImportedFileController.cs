@@ -220,6 +220,18 @@ namespace MockProjectWebApi.Controllers
         IsActivated = true,
         MinZoomLevel = 15,
         MaxZoomLevel = 19
+      },
+      new FileData
+      {
+        Name = "Section 1 IFC Rev J.ttm",
+        ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+        CustomerUid = "ImportFileProxyTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = "eb798b46-c927-4fdd-b998-b11011ee7365",
+        LegacyFileId = 115,
+        IsActivated = true,
+        MinZoomLevel = 16,
+        MaxZoomLevel = 19
       }
     };
 
@@ -255,7 +267,7 @@ namespace MockProjectWebApi.Controllers
         ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "SurveyedSurfaceAcceptanceTest",
         ImportedFileType = ImportedFileType.SurveyedSurface,
-        ImportedFileUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = "dcb41fbd-7d43-4b36-a144-e22bbccc24a8",
         LegacyFileId = 14175,
         IsActivated = true,
         MinZoomLevel = 0,
