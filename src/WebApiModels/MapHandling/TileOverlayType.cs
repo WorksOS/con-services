@@ -5,11 +5,16 @@
   /// </summary>
   public enum TileOverlayType
   {
+    AllOverlays,
     BaseMap,
     ProjectBoundary,
     ProductionData,
     DxfLinework,
     Alignments,
-    Geofences
+    Geofences,
+    FilterCustomBoundary,
+    FilterDesignBoundary,
+    FilterAlignmentBoundary,
+    CutFillDesignBoundary
   }
 }

@@ -54,6 +54,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IErrorCodesProvider, RaptorResult>();
       services.AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
+      services.AddSingleton<IBoundaryProxy, BoundaryProxy>();
       services.AddScoped<IMapTileGenerator, MapTileGenerator>();
       services.AddScoped<IMapTileService, MapTileService>();
       services.AddScoped<IProjectTileService, ProjectTileService>();

@@ -387,8 +387,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               return Filter.CreateFilter(null, null, null, filterData.StartUtc, filterData.EndUtc,
                 filterData.OnMachineDesignId, null, filterData.VibeStateOn, null, filterData.ElevationType,
                 polygonPoints, null, filterData.ForwardDirection, null, null, null, null, null, null,
-                layerMethod, designDescriptor, null, filterData.LayerNumber, null, filterData.ContributingMachines,
-                excludedIds, returnEarliest, null, null, null, null, null);
+                layerMethod, null, null, filterData.LayerNumber, null, filterData.ContributingMachines,
+                excludedIds, returnEarliest, null, null, null, null, null, designDescriptor);
             }
           }
         }

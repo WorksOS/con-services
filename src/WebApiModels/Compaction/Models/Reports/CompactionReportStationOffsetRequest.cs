@@ -89,7 +89,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     {
       base.Validate();
 
-      // Alignment file...
+      if (AlignmentFile == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Alignment file must be specified for station and offset report."));
+
+      }
       AlignmentFile?.Validate();
 
       if (this.CrossSectionInterval < ValidationConstants.MIN_SPACING_INTERVAL || this.CrossSectionInterval > ValidationConstants.MAX_SPACING_INTERVAL)
@@ -98,33 +104,20 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             $"Interval must be >= {ValidationConstants.MIN_SPACING_INTERVAL}m and <= {ValidationConstants.MAX_SPACING_INTERVAL}m. Actual value: {this.CrossSectionInterval}"));
       }
-      
 
+      if (Offsets == null || Offsets.Length == 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Offsets must be specified for station and offset report."));
+      }
 
-      //if (this.UserPreferences.Equals(Preferences.EmptyUserPreferences()))
-      //{
-      //  User = ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(
-      //    "NZ",
-      //    Preferences.DefaultDateSeparator,
-      //    Preferences.DefaultTimeSeparator,
-      //    Preferences.DefaultThousandsSeparator,
-      //    Preferences.DefaultDecimalSeparator,
-      //    0.0,
-      //    (int)LanguageEnum.enUS,
-      //    (int)UnitsTypeEnum.Metric,
-      //    Preferences.DefaultDateTimeFormat,
-      //    Preferences.DefaultNumberFormat,
-      //    Preferences.DefaultTemperatureUnit,
-      //    Preferences.DefaultAssetLabelTypeId);
-      //}
-
-      // TODO (Aaron) what else needs to be validated?
-
-      // check at least one 'report...' param is set
-      // check if reportCutFill then cutFillDesign is good.
-
-      // Is there a max value for left and right offsets?
-      // Presumably the max number of offsets (per side) is ((endStation - startStation) convert to meters) / crossSectionInterval
+      if (StartStation < 0 || EndStation < 0 || StartStation > EndStation)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid station range for station and offset report."));
+      }
     }
   }
 }

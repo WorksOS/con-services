@@ -187,9 +187,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var userPreferences = await GetUserPreferences();
 
-      // Add 0.0 value to the offests array, remove any duplicates and sort contents by ascending order...
-      var updatedOffsets = offsets.AddZeroDistinctSortBy();
+      // Add 0.0 value to the offsets array, remove any duplicates and sort contents by ascending order...
+      log.LogDebug("About to sort offsets");
+      var updatedOffsets = offsets?.AddZeroDistinctSortBy();
 
+      log.LogDebug("Creating request");
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
         .ProjectId(projectId)
         .Headers(CustomHeaders)
@@ -210,6 +212,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         updatedOffsets,
         userPreferences);
 
+      log.LogDebug("Validating request");
       reportRequest.Validate();
 
       return WithServiceExceptionTryExecute(() =>
