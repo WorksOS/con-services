@@ -219,6 +219,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect projectUid");
       Assert.IsNotNull(result.settings, "executor should have returned settings");
+      Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
       {
@@ -228,7 +229,6 @@ namespace VSS.MasterData.ProjectTests
           "executor returned incorrect firstValue of settings");
         Assert.AreEqual(tempSettings["lastValue"], result.settings["lastValue"],
           "executor should have returned lastValue of settings");
-        Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
       }
       else
       {
