@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Interfaces;
 
@@ -14,21 +15,27 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "x", Required = Required.Always)]
     [Required]
-    public double x { get; private set; }
+    public double x { get; set; }
 
     /// <summary>
     /// The Y-ordinate of the position, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "y", Required = Required.Always)]
     [Required]
-    public double y { get; private set; }
+    public double y { get; set; }
 
-    
-    /// <summary>
-    /// Private constructor
-    /// </summary>
-    private Point()
-    {}
+    public double Latitude => y;
+
+    public double Longitude => x;
+
+    public Point(double lat, double lon)
+    {
+      x = lon;
+      y = lat;
+    }
+
+    public Point ()
+    { }
 
     /// <summary>
     /// Create instance of Point
@@ -52,5 +59,42 @@ namespace VSS.Productivity3D.Common.Models
     {
       //Nothing else to validate
     }
+
+    #region Equality test
+    public bool Equals(Point other)
+    {
+      if (other == null)
+        return false;
+
+      const double EPSILON = 0.000001;
+
+      return Math.Abs(this.Latitude - other.Latitude) < EPSILON &&
+             Math.Abs(this.Longitude - other.Longitude) < EPSILON;
+
+    }
+
+    public override int GetHashCode()
+    {
+      return base.GetHashCode();
+    }
+
+    public static bool operator ==(Point a, Point b)
+    {
+      if ((object)a == null || (object)b == null)
+        return Object.Equals(a, b);
+
+      return a.Equals(b);
+    }
+
+    public static bool operator !=(Point a, Point b)
+    {
+      return !(a == b);
+    }
+
+    public override bool Equals(object obj)
+    {
+      return obj is Point && this == (Point)obj;
+    }
+    #endregion
   }
 }

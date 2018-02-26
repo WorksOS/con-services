@@ -15,6 +15,11 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 
@@ -49,6 +54,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
+    /// The request factory
+    /// </summary>
+    private readonly IProductionDataRequestFactory requestFactory;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -62,13 +72,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterServiceProxy">Filter service proxy</param>
     public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy,
-      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) :
+      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory productionDataRequestFactory) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionElevationController>();
       this.elevProxy = elevProxy;
+      requestFactory = productionDataRequestFactory;
     }
 
 
@@ -118,6 +129,41 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     #endregion
+
+    /// <summary>
+    /// Gets alignment file extents (offsets) from Raptor.
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="alignmentFileUid">Project UID</param>
+    /// <returns>Project statistics</returns>
+    /// <executor>ProjectStatisticsExecutor</executor>
+    [ProjectUidVerifier]
+    [Route("api/v2/alignmentoffest")]
+    [HttpGet]
+    public async Task<AlignmentOffsetResult> GetAlignmentOffests(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid alignmentFileUid,
+      [FromServices] IAlignmentTileService alignmentService)
+    {
+      log.LogInformation("GetAlignmentOffests: " + Request.QueryString);
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+
+      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentFileUid);
+
+      var request = await requestFactory.Create<AlignmentOffsetsRequestHelper>(r => r
+          .ProjectId(projectId)
+          .Headers(CustomHeaders))
+        .CreateExportAlignmentOffsetsRequest(alignmentDescriptor);
+
+      request.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<AlignmentOffsetExecutor>(logger, raptorClient, alignmentTileService: alignmentService,
+            serviceException: serviceExceptionHandler)
+          .Process(request) as AlignmentOffsetResult);
+    }
+
 
     #region Project Extents
 

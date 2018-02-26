@@ -21,6 +21,7 @@
     <PackageReference Include="System.Net.Security" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
     <PackageReference Include="AutoMapper" Version="6.1.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
   </ItemGroup>
 

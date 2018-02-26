@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.TCCFileAccess;
@@ -16,7 +17,7 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
     /// <returns></returns>
     public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient = null,
       ITagProcessor tagProcessor = null, IConfigurationStore configStore = null, IFileRepository fileRepo = null,
-      ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper=null)
+      ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper=null, IAlignmentTileService alignmentTileService=null, IServiceExceptionHandler serviceException=null)
       where TExecutor : RequestExecutorContainer, new()
     {
       ILogger log = null;
@@ -35,7 +36,9 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
       fileRepo,
       tileGenerator,
       fileList,
-      profileResultHelper);
+      profileResultHelper,
+      alignmentTileService,
+      serviceException);
 
       return executor;
     }

@@ -5,7 +5,7 @@ using System.Drawing;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using Point = VSS.Productivity3D.WebApi.Models.MapHandling.Point;
+using Point = VSS.Productivity3D.Common.Models.Point;
 
 namespace VSS.Productivity3D.WebApiTests.MapHandling
 {

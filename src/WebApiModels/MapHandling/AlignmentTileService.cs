@@ -60,6 +60,24 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       return alignmentsImage;
     }
 
+    public (double? startOffset, double? endOffset) GetAlignmentOffsets(long projectId, DesignDescriptor alignDescriptor)
+    {
+      var description = TileServiceUtils.DesignDescriptionForLogging(alignDescriptor);
+      log.LogDebug($"GetAlignmentPoints: projectId={projectId}, alignment={description}");
+      if (alignDescriptor != null)
+      {
+        //Get the station extents
+        TVLPDDesignDescriptor alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
+        double startStation = 0;
+        double endStation = 0;
+        bool success = raptorClient.GetStationExtents(projectId, alignmentDescriptor,
+          out startStation, out endStation);
+        if (success)
+          return (startStation, endStation);
+      }
+      return (null, null);
+    }
+
     /// <summary>
     /// Gets the list of points making up the alignment center line. 
     /// </summary>
@@ -71,26 +89,22 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       var description = TileServiceUtils.DesignDescriptionForLogging(alignDescriptor);
       log.LogDebug($"GetAlignmentPoints: projectId={projectId}, alignment={description}");
       List<WGSPoint> alignmentPoints = null;
-      if (alignDescriptor != null)
-      {
-        //Get the station extents
-        TVLPDDesignDescriptor alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
-        double startStation = 0;
-        double endStation = 0;
-        bool success = raptorClient.GetStationExtents(projectId, alignmentDescriptor,
-          out startStation, out endStation);
-        if (success)
+      double? startStation = 0;
+      double? endStation = 0;
+      (startStation, endStation) = GetAlignmentOffsets(projectId, alignDescriptor);
+
+        if (startStation.HasValue && endStation.HasValue)
         {
           log.LogDebug($"GetAlignmentPoints: projectId={projectId}, station range={startStation}-{endStation}");
 
           //Get the alignment points
           TWGS84Point[] pdsPoints = null;
 
-          success = raptorClient.GetDesignFilterBoundaryAsPolygon(
+          var success = raptorClient.GetDesignFilterBoundaryAsPolygon(
             DesignProfiler.ComputeDesignFilterBoundary.RPC.__Global.Construct_CalculateDesignFilterBoundary_Args(
               projectId,
-              alignmentDescriptor,
-              startStation, endStation, 0, 0,
+              RaptorConverters.DesignDescriptor(alignDescriptor),
+              startStation.Value, endStation.Value, 0, 0,
               DesignProfiler.ComputeDesignFilterBoundary.RPC.TDesignFilterBoundaryReturnType.dfbrtList), out pdsPoints);
 
           if (success && pdsPoints != null && pdsPoints.Length > 0)
@@ -107,13 +121,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             }
           }
         }
-      }
       return alignmentPoints;
     }
 
-  }
-  public interface IAlignmentTileService
-  {
-    byte[] GetAlignmentsBitmap(MapParameters parameters, long projectId, IEnumerable<DesignDescriptor> alignmentDescriptors);
   }
 }
