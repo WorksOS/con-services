@@ -22,6 +22,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     public Filter topFilter { get; private set; }
     public VolumeCalcType? volCalcType { get; private set; }
     public IEnumerable<GeofenceData> geofences { get; private set; }
+    public IEnumerable<GeofenceData> boundaries { get; private set; }
     public IEnumerable<DesignDescriptor> alignmentDescriptors { get; private set; }
     public IEnumerable<FileData> dxfFiles { get; private set; }
     public TileOverlayType[] overlays { get; private set; }
@@ -44,6 +45,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
       Filter topFilter,
       VolumeCalcType? volCalcType,
       IEnumerable<GeofenceData> geofences,
+      IEnumerable<GeofenceData> boundaries,
       IEnumerable<DesignDescriptor> alignmentDescriptors,
       IEnumerable<FileData> dxfFiles,
       TileOverlayType[] overlays,
@@ -64,6 +66,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
         topFilter = topFilter,
         volCalcType = volCalcType ?? VolumeCalcType.None,
         geofences = geofences,
+        boundaries = boundaries,
         alignmentDescriptors = alignmentDescriptors,
         dxfFiles = dxfFiles,
         overlays = overlays,

@@ -3,6 +3,7 @@ using ASNodeRaptorReports;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
@@ -24,6 +25,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// <returns>Returns an instance of the <see cref="CompactionReportResult"/> class if successful.</returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      log.LogDebug($"Start CompactionReportStationOffsetExecutor: {JsonConvert.SerializeObject(item)}");
+
       ContractExecutionResult result;
 
       try
@@ -36,9 +39,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               "Request item is not compatible with Station Offset request."));
         }
 
+        log.LogDebug("About to convert filter");
         var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.projectId);
+        log.LogDebug("About to convert cut-fill design");
         var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
+        log.LogDebug("About to convet alignment file");
         var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
+        log.LogDebug("About to convert user preferences");
         var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences);
 
         log.LogDebug("About to call GetReportStationOffset");
