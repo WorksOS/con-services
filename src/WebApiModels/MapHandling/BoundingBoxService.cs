@@ -415,30 +415,26 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>A list of latitude/longitude points in degrees</returns>
     public List<List<WGSPoint>> GetDesignBoundaryPolygons(long projectId, DesignDescriptor designDescriptor)
     {
-      List<List<WGSPoint>> polygons = new List<List<WGSPoint>>();
+      var polygons = new List<List<WGSPoint>>();
       var description = TileServiceUtils.DesignDescriptionForLogging(designDescriptor);
       log.LogDebug($"GetDesignBoundaryPolygons: projectId={projectId}, design={description}");
-      if (designDescriptor != null)
+      if (designDescriptor == null) return polygons;
+      var geoJson = GetDesignBoundary(projectId, designDescriptor);
+      log.LogDebug($"GetDesignBoundaryPolygons: geoJson={geoJson}");
+      if (string.IsNullOrEmpty(geoJson)) return polygons;
+      var root = JsonConvert.DeserializeObject<RootObject>(geoJson);
+      foreach (var feature in root.features)
       {
-        var geoJson = GetDesignBoundary(projectId, designDescriptor);
-        log.LogDebug($"GetDesignBoundaryPolygons: geoJson={geoJson}");
-        if (!string.IsNullOrEmpty(geoJson))
+        var points = new List<WGSPoint>();
+        foreach (var coordList in feature.geometry.coordinates)
         {
-          var root = JsonConvert.DeserializeObject<RootObject>(geoJson);
-          foreach (var feature in root.features)
+          foreach (var coordPair in coordList)
           {
-            var points = new List<WGSPoint>();
-            foreach (var coordList in feature.geometry.coordinates)
-            {
-              foreach (var coordPair in coordList)
-              {
-                points.Add(WGSPoint.CreatePoint(coordPair[1].LatDegreesToRadians(),
-                  coordPair[0].LonDegreesToRadians())); //GeoJSON is lng/lat
-              }
-            }
-            polygons.Add(points);
+            points.Add(WGSPoint.CreatePoint(coordPair[1].LatDegreesToRadians(),
+              coordPair[0].LonDegreesToRadians())); //GeoJSON is lng/lat
           }
         }
+        polygons.Add(points);
       }
       return polygons;
     }
@@ -453,9 +449,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     {
       MemoryStream memoryStream = null;
       try
-      {        
-        TDesignProfilerRequestResult designProfilerResult;
-
+      {
         bool success = raptorClient.GetDesignBoundary(
           DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args(
             projectId,
@@ -465,7 +459,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             TVLPDDistanceUnits.vduMeters,
             0),
           out memoryStream,
-          out designProfilerResult);
+          out var designProfilerResult);
 
         if (success)
         {
@@ -475,7 +469,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             memoryStream.Position = 0;
             using (StreamReader sr = new StreamReader(memoryStream))
             {
-              return sr.ReadToEnd();
+              var resultPolygon = sr.ReadToEnd();
+              log.LogDebug($"Design file {JsonConvert.SerializeObject(designDescriptor)} generated bounary {resultPolygon}");
+              return resultPolygon;
             }
           }
         }
