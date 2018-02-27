@@ -1,9 +1,9 @@
 SET @s = (SELECT IF(
     (SELECT COUNT(*)
-			FROM  INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+			FROM  INFORMATION_SCHEMA.STATISTICS
 			WHERE TABLE_SCHEMA = DATABASE()
 			AND   TABLE_NAME   = 'Asset'
-			AND   CONSTRAINT_NAME   = 'IX_Asset_LegacyAssetID'
+			AND INDEX_NAME     = 'IX_Asset_LegacyAssetID'
 		) > 0,
     "SELECT 1",
     "ALTER TABLE `Asset` ADD KEY IX_Asset_LegacyAssetID (LegacyAssetID, IsDeleted)"
