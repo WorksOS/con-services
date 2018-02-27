@@ -30,10 +30,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     {
       const int noPassCountData = 0;
 
-      if (Math.Abs(result.TotalCoverageArea - noPassCountData) < 0.001)
+
+      //TODO remove this due to bug in Raptor
+      /*if (Math.Abs(result.TotalCoverageArea - noPassCountData) < 0.001)
       {
         return new CompactionPassCountDetailedResult { DetailedData = new PassCountDetailsData { PassCountTarget = new PassCountTargetData() } };
-      }
+      }*/
 
       return new CompactionPassCountDetailedResult
       {

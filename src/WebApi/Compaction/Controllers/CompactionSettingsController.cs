@@ -7,7 +7,6 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -56,7 +55,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>ContractExecutionResult</returns>
     [ProjectUidVerifier]
     [Route("api/v2/validatesettings")]
-    [Route("api/v2/compaction/validatesettings")]
     [HttpGet]
     public async Task<ContractExecutionResult> ValidateProjectSettings(
       [FromQuery] Guid projectUid,

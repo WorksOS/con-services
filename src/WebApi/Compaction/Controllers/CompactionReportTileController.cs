@@ -14,7 +14,6 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -114,7 +113,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/reporttiles")]
-    [Route("api/v2/compaction/reporttiles")]
     [HttpGet]
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetReportTile(
@@ -158,7 +156,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/reporttiles/png")]
-    [Route("api/v2/compaction/reporttiles/png")]
     [HttpGet]
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     public async Task<FileResult> GetReportTileRaw(
@@ -190,7 +187,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     [ProjectUidVerifier]
     [Route("api/v2/projectthumbnail")]
-    [Route("api/v2/compaction/projectthumbnail")]
     [HttpGet]
     [ResponseCache(Duration = 14400, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetProjectThumbnail(
@@ -206,7 +202,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     [ProjectUidVerifier]
     [Route("api/v2/projectthumbnail/png")]
-    [Route("api/v2/compaction/projectthumbnail/png")]
     [HttpGet]
     [ResponseCache(Duration = 14400, VaryByQueryKeys = new[] { "*" })]
     public async Task<FileResult> GetProjectThumbnailRaw(
