@@ -27,7 +27,7 @@
         2.0126278268618436,
         47.929232006433452
       ],
-      "totalCoverageArea": 1678.9744000000003,
+      "totalCoverageArea": 10637.396400000001,
       "passCountTarget": {
         "minPassCountMachineTarget": 0,
         "maxPassCountMachineTarget": 0,
@@ -179,7 +179,7 @@
       0.9873495834618945,
       0.37025609379821045
     ],
-    "totalCoverageArea": 0.0,
+    "totalCoverageArea": 374.65960000000007,
     "PassCountTarget": {
       "minPassCountMachineTarget": 0.0,
       "maxPassCountMachineTarget": 0.0,
@@ -202,7 +202,7 @@
       3.6729122719940435,
       39.595483310584441
     ],
-    "totalCoverageArea": 0.0,
+    "totalCoverageArea": 931.62040000000013,
     "PassCountTarget": {
       "minPassCountMachineTarget": 0.0,
       "maxPassCountMachineTarget": 0.0,
