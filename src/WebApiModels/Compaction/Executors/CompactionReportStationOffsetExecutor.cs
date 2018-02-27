@@ -4,9 +4,11 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using Newtonsoft.Json;
+using SVOICDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
@@ -42,6 +44,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
         var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences, request.ProjectTimezone);
 
+        var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
+          request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);
+
         log.LogDebug("About to call GetReportStationOffset");
 
         var args = ASNode.StationOffsetReport.RPC.__Global.Construct_StationOffsetReport_Args(
@@ -65,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           0, 0, 0, 0, 0, 0, 0, // Northings, Eastings and Direction values are not used on Station Offset report.
           filterSettings,
           RaptorConverters.ConvertLift(request.LiftBuildSettings, filterSettings.LayerMethod),
-          new SVOICOptionsDecls.TSVOICOptions() // ICOptions, need to resolve what this should be
+          options
         );
 
         int returnedResult = raptorClient.GetReportStationOffset(args, out var responseData);
