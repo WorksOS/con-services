@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     public void OverlayTilesReturnsTileForEmptyList()
     {
       var mapParameters = new MapParameters {mapWidth = 4, mapHeight = 4};
-      var result = TileServiceUtils.OverlayTiles(mapParameters, new List<byte[]>());
+      var result = TileServiceUtils.OverlayTiles(mapParameters, new Dictionary<TileOverlayType, byte[]>());
       var expectedResult = new byte[]
       {
         137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 4, 0, 0, 0, 4, 8, 6, 0, 0, 0, 169, 241,

@@ -58,10 +58,16 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       //Order overlays
       List<byte[]> overlays = new List<byte[]>();
 
-      overlays.Add(tileList[TileOverlayType.BaseMap]);
-      tileList.Remove(TileOverlayType.BaseMap);
-      overlays.Add(tileList[TileOverlayType.ProductionData]);
-      tileList.Remove(TileOverlayType.ProductionData);
+      if (tileList.ContainsKey(TileOverlayType.BaseMap))
+      {
+        overlays.Add(tileList[TileOverlayType.BaseMap]);
+        tileList.Remove(TileOverlayType.BaseMap);
+      }
+      if (tileList.ContainsKey(TileOverlayType.ProductionData))
+      {
+        overlays.Add(tileList[TileOverlayType.ProductionData]);
+        tileList.Remove(TileOverlayType.ProductionData);
+      }
 
       //Everything else is to follow
       foreach (var bytese in tileList)

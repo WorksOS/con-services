@@ -48,12 +48,12 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       if (dxfFiles != null && dxfFiles.Any())
       {
-        List<byte[]> tileList = new List<byte[]>();
+        Dictionary<TileOverlayType,byte[]> tileList = new Dictionary<TileOverlayType, byte[]>();
         foreach (var dxfFile in dxfFiles)
         {
           if (dxfFile.ImportedFileType == ImportedFileType.Linework)
           {
-            tileList.Add(await JoinDxfTiles(parameters, dxfFile));
+            tileList.Add(TileOverlayType.DxfLinework,await JoinDxfTiles(parameters, dxfFile));
           }
         }
         overlayData = TileServiceUtils.OverlayTiles(parameters, tileList);
