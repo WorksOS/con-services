@@ -80,8 +80,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       Dictionary<TileOverlayType,byte[]> tileList = new Dictionary<TileOverlayType, byte[]>();
       object lockObject = new object();
-      try
-      {
+
       var overlayTasks = request.overlays.Select(async overlay =>
       {
         byte[] bitmap = null;
@@ -141,14 +140,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       log.LogDebug("Awating tiles to be completed");
       await Task.WhenAll(overlayTasks);
       log.LogDebug("Tiles completed");
-
-      }
-      catch (Exception e)
-      {
-       log.LogDebug($"Odd exception {e.Message} {e.StackTrace}");
-        if (e.InnerException!=null)
-          log.LogDebug($"Odd exception {e.InnerException.Message} {e.InnerException.StackTrace}");
-      }
 
       var overlayTile = TileServiceUtils.OverlayTiles(parameters, tileList);
       log.LogDebug("Tiles overlaid");

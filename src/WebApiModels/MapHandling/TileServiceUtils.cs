@@ -51,9 +51,39 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
     /// <param name="tileList">The list of tiles to overlay</param>
     /// <returns>A single bitmap of the overlayed tiles</returns>
-    public static byte[] OverlayTiles(MapParameters parameters, IDictionary<TileOverlayType,byte[]> tileList)
+    public static byte[] OverlayTiles(MapParameters parameters, IEnumerable<byte[]> tileList)
     {
       byte[] overlayData = null;
+      //Overlay the tiles. Return an empty tile if none to overlay.
+      System.Drawing.Point origin = new System.Drawing.Point(0, 0);
+      using (Bitmap bitmap = new Bitmap(parameters.mapWidth, parameters.mapHeight))
+      using (Graphics g = Graphics.FromImage(bitmap))
+      {
+        foreach (byte[] tileData in tileList)
+        {
+          if (tileData != null)
+          {
+            using (var tileStream = new MemoryStream(tileData))
+            {
+              Image image = Image.FromStream(tileStream);
+              g.DrawImage(image, origin);
+            }
+          }
+        }
+        overlayData = bitmap.BitmapToByteArray();
+      }
+
+      return overlayData;
+    }
+
+    /// <summary>
+    /// Overlays the collection of tiles on top of each other and returns a single tile
+    /// </summary>
+    /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
+    /// <param name="tileList">The list of tiles to overlay</param>
+    /// <returns>A single bitmap of the overlayed tiles</returns>
+    public static byte[] OverlayTiles(MapParameters parameters, IDictionary<TileOverlayType,byte[]> tileList)
+    {
 
       //Order overlays
       List<byte[]> overlays = new List<byte[]>();
@@ -74,27 +104,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       {
         overlays.Add(bytese.Value);
       }
-
-      //Overlay the tiles. Return an empty tile if none to overlay.
-      System.Drawing.Point origin = new System.Drawing.Point(0, 0);
-      using (Bitmap bitmap = new Bitmap(parameters.mapWidth, parameters.mapHeight))
-      using (Graphics g = Graphics.FromImage(bitmap))
-      {
-        foreach (byte[] tileData in overlays)
-        {
-          if (tileData != null)
-          {
-            using (var tileStream = new MemoryStream(tileData))
-            {
-              Image image = Image.FromStream(tileStream);
-              g.DrawImage(image, origin);
-            }
-          }
-        }
-        overlayData = bitmap.BitmapToByteArray();
-      }
-
-      return overlayData;
+      return OverlayTiles(parameters,overlays);
     }
 
     /// <summary>
