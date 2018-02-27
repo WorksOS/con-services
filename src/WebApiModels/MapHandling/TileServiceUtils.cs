@@ -51,16 +51,30 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
     /// <param name="tileList">The list of tiles to overlay</param>
     /// <returns>A single bitmap of the overlayed tiles</returns>
-    public static byte[] OverlayTiles(MapParameters parameters, IEnumerable<byte[]> tileList)
+    public static byte[] OverlayTiles(MapParameters parameters, IDictionary<TileOverlayType,byte[]> tileList)
     {
       byte[] overlayData = null;
+
+      //Order overlays
+      List<byte[]> overlays = new List<byte[]>();
+
+      overlays.Add(tileList[TileOverlayType.BaseMap]);
+      tileList.Remove(TileOverlayType.BaseMap);
+      overlays.Add(tileList[TileOverlayType.ProductionData]);
+      tileList.Remove(TileOverlayType.ProductionData);
+
+      //Everything else is to follow
+      foreach (var bytese in tileList)
+      {
+        overlays.Add(bytese.Value);
+      }
 
       //Overlay the tiles. Return an empty tile if none to overlay.
       System.Drawing.Point origin = new System.Drawing.Point(0, 0);
       using (Bitmap bitmap = new Bitmap(parameters.mapWidth, parameters.mapHeight))
       using (Graphics g = Graphics.FromImage(bitmap))
       {
-        foreach (byte[] tileData in tileList)
+        foreach (byte[] tileData in overlays)
         {
           if (tileData != null)
           {
@@ -152,6 +166,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
              points.Min(p => p.Lon) > bbox.maxLng ||
              points.Max(p => p.Lon) < bbox.minLng;
     }
+
   }
 
 }

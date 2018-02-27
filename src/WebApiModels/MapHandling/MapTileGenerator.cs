@@ -78,7 +78,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       parameters.pixelTopLeft = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.minLng, parameters.numTiles);
       log.LogDebug("MapParameters: " + JsonConvert.SerializeObject(parameters));
 
-      List<byte[]> tileList = new List<byte[]>();
+      Dictionary<TileOverlayType,byte[]> tileList = new Dictionary<TileOverlayType, byte[]>();
+      object lockObject = new object();
       var overlayTasks = request.overlays.Select(async overlay =>
       {
         byte[] bitmap = null;
@@ -127,8 +128,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             break;
         }
         if (bitmap != null)
-        {          
-          tileList.Add(bitmap);
+        {
+          lock (lockObject)
+          {
+            tileList.Add(overlay,bitmap);
+          }
         }
       });
 
