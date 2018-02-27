@@ -408,7 +408,6 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       gotMatchingProject.FileCreatedUtc = ifo.FileCreatedUtc;
       gotMatchingProject.FileUpdatedUtc = ifo.FileUpdatedUtc;
       gotMatchingProject.LastActionedUtc = DateTime.UtcNow;
-      repoProject.Update(gotMatchingProject);
 
       if (gotMatchingProject.ImportedFileType == ImportedFileType.SurveyedSurface)
       {
@@ -418,6 +417,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
           await NotifyRaptorImportedFileChange(gotMatchingProject.CustomerUid,
               Guid.Parse(gotMatchingProject.ProjectUid),
               Guid.Parse(gotMatchingProject.ImportedFileUid));
+        repoProject.Update(gotMatchingProject);
       }
       else if (gotMatchingProject.ImportedFileType == ImportedFileType.Linework ||
                gotMatchingProject.ImportedFileType == ImportedFileType.DesignSurface ||
