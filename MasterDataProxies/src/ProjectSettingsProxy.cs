@@ -20,7 +20,7 @@ namespace VSS.MasterData.Proxies
     public async Task<JObject> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders, ProjectSettingsType settingsType)
     {
       var result = await GetMasterDataItem<ProjectSettingsDataResult>(projectUid, userId,
-        "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, $"/{projectUid}/{settingsType}");
+        "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, $"/{projectUid}/{(int) settingsType}");
 
       if (result.Code == 0)
       {
