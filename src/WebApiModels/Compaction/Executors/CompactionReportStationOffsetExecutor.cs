@@ -4,9 +4,11 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using Newtonsoft.Json;
+using SVOICDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
@@ -25,8 +27,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// <returns>Returns an instance of the <see cref="CompactionReportResult"/> class if successful.</returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      log.LogDebug($"Start CompactionReportStationOffsetExecutor: {JsonConvert.SerializeObject(item)}");
-
       ContractExecutionResult result;
 
       try
@@ -39,14 +39,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               "Request item is not compatible with Station Offset request."));
         }
 
-        log.LogDebug("About to convert filter");
         var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.projectId);
-        log.LogDebug("About to convert cut-fill design");
         var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
-        log.LogDebug("About to convet alignment file");
         var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
-        log.LogDebug("About to convert user preferences");
-        var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences);
+        var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences, request.ProjectTimezone);
+
+        var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
+          request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);
 
         log.LogDebug("About to call GetReportStationOffset");
 
@@ -71,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           0, 0, 0, 0, 0, 0, 0, // Northings, Eastings and Direction values are not used on Station Offset report.
           filterSettings,
           RaptorConverters.ConvertLift(request.LiftBuildSettings, filterSettings.LayerMethod),
-          new SVOICOptionsDecls.TSVOICOptions() // ICOptions, need to resolve what this should be
+          options
         );
 
         int returnedResult = raptorClient.GetReportStationOffset(args, out var responseData);

@@ -7,6 +7,7 @@ using System.Net;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -37,6 +38,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         TICFilterSettings raptorFilter =
           RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.projectId);
 
+        var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
+          request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);
+
         log.LogDebug("About to call GetReportGrid");
 
         var args = ASNode.GridReport.RPC.__Global.Construct_GridReport_Args(
@@ -60,7 +64,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           request.Azimuth,
           raptorFilter,
           RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
-          new SVOICOptionsDecls.TSVOICOptions() // ICOptions, need to resolve what this should be
+          options
         );
 
         int returnedResult = raptorClient.GetReportGrid(args, out var responseData);
