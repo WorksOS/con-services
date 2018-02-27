@@ -129,17 +129,21 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         }
         if (bitmap != null)
         {
-          lock (lockObject)
+       //   lock (lockObject)
           {
             tileList.Add(overlay,bitmap);
           }
         }
       });
 
+      log.LogDebug("Awating tiles to be completed");
       await Task.WhenAll(overlayTasks);
+      log.LogDebug("Tiles completed");
 
       var overlayTile = TileServiceUtils.OverlayTiles(parameters, tileList);
-      overlayTile = ScaleTile(request, overlayTile);      
+      log.LogDebug("Tiles overlaid");
+      overlayTile = ScaleTile(request, overlayTile);
+      log.LogDebug("Tiles scaled");
       return TileResult.CreateTileResult(overlayTile, TASNodeErrorStatus.asneOK);
     }
 
