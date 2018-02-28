@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           case TileOverlayType.ProductionData:
             log.LogInformation($"GetProductionDataTile: project {request.project.projectUid}");
             BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(parameters.bbox.minLng, parameters.bbox.minLat, parameters.bbox.maxLng, parameters.bbox.maxLat);
-            var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.filter, request.project.projectId,
+            var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.ProjectSettingsColors, request.filter, request.project.projectId,
               request.mode.Value, (ushort)parameters.mapWidth, (ushort)parameters.mapHeight, prodDataBox, request.designDescriptor, request.baseFilter,
               request.topFilter, request.designDescriptor, request.volCalcType, null);//custom headers not used
             bitmap = tileResult.TileData;

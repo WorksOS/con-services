@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       ProjectId = projectId;
       Headers = headers;
       ProjectSettings = projectSettings;
-      projectSettingsColors = ProjectSettingsColors;
+      ProjectSettingsColors = projectSettingsColors;
       Filter = filter;
       DesignDescriptor = designDescriptor;
     }

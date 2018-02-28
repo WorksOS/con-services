@@ -33,6 +33,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     public string language { get; private set; }
     public ProjectDescriptor project { get; private set; }
     public CompactionProjectSettings projectSettings { get; private set; }
+    public CompactionProjectSettingsColors ProjectSettingsColors { get; private set; }
 
 
     /// <summary>
@@ -55,7 +56,8 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
       DisplayMode? mode,
       string language,
       ProjectDescriptor project,
-      CompactionProjectSettings projectSettings
+      CompactionProjectSettings projectSettings,
+      CompactionProjectSettingsColors projectSettingsColors
       )
     {
       return new TileGenerationRequest
@@ -76,7 +78,8 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
         mode = mode,
         language = language ?? "en-US",
         project = project,
-        projectSettings = projectSettings
+        projectSettings = projectSettings,
+        ProjectSettingsColors = projectSettingsColors
       };
     }
 

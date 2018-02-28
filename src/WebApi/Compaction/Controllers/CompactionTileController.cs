@@ -137,11 +137,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
-        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, WIDTH, HEIGHT,
+        tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, mode, WIDTH, HEIGHT,
           GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
 
@@ -206,6 +207,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue
@@ -214,7 +216,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
-        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, WIDTH, HEIGHT,
+        tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, mode, WIDTH, HEIGHT,
           GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
