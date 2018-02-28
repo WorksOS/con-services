@@ -37,8 +37,8 @@ namespace VSS.Productivity3D.Common.Models
             count = 5;
             break;
           case DisplayMode.CMVChange:
-            palettes.Insert(0, ColorPalette.CreateColorPalette(0, 0));
-            count = 6;
+            //palettes.Insert(0, ColorPalette.CreateColorPalette(0, 0));
+            count = 9;
             break;
           case DisplayMode.Latency:
             break;
