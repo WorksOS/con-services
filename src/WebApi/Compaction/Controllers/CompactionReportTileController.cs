@@ -232,6 +232,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       var project = (User as RaptorPrincipal).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
@@ -253,6 +254,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectId(project.projectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
+          .ProjectSettingsColors(projectSettingsColors)
           .Filter(filter)
           .DesignDescriptor(designDescriptor))
         .SetBaseFilter(sumVolParameters.Item1)
