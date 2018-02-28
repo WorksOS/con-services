@@ -15,8 +15,8 @@ namespace VSS.Productivity3D.Common.Models
     protected uint cmvPercentChangeColorNumber = CMV_PERCENT_CHANGE_NUMBER_OF_COLORS;
     public bool setSummaryDataLayersVisibility = true;
 
-    protected const int CMV_DETAILS_NUMBER_OF_COLORS = 5;
-    protected const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS = 9;
+    private const int CMV_DETAILS_NUMBER_OF_COLORS = 5;
+    private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS = 6;
 
     public void ValidatePalettes(List<ColorPalette> palettes, DisplayMode mode)
     {
@@ -37,8 +37,8 @@ namespace VSS.Productivity3D.Common.Models
             count = 5;
             break;
           case DisplayMode.CMVChange:
-            //palettes.Insert(0, ColorPalette.CreateColorPalette(0, 0));
-            count = cmvPercentChangeColorNumber;
+            palettes.Insert(0, ColorPalette.CreateColorPalette(0, 0));
+            count = 6;
             break;
           case DisplayMode.Latency:
             break;

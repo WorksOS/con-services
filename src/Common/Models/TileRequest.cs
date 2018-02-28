@@ -163,8 +163,8 @@ namespace VSS.Productivity3D.Common.Models
         ushort width,
         ushort height,
         uint representationalDisplayColor = 0,
-        uint cmvDetailsColorNumber = CMV_DETAILS_NUMBER_OF_COLORS,
-        uint cmvPercentChangeColorNumber = CMV_PERCENT_CHANGE_NUMBER_OF_COLORS,
+        uint cmvDetailsColorNumber = 5,
+        uint cmvPercentChangeColorNumber = 6,
         bool setSummaryDataLayersVisibility = true
       )
     {
