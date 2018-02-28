@@ -24,13 +24,13 @@ Examples:
 | CMVsummary            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 13   | 3          |
 | Speed                 | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 26   | 8          |
 | Temperature           | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 10   | 3          |
-| CMVchangeOverlay      | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 27   | 3          |
-| CMVsummaryOverlay     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 13   | 3          |
-| SpeedOverlay          | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 26   | 8          |
-| TemperatureOverlay    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 10   | 3          |
-| ElevationOverlay      | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 0    | 3          |
-| MDPOverlay            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 20   | 3          |
-| CMVOverlay            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 1    | 3          |
+| CMVchangeOverlay      | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 27   | 10         |
+| CMVsummaryOverlay     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 13   | 10         |
+| SpeedOverlay          | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 26   | 20         |
+| TemperatureOverlay    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 10   | 10         |
+| ElevationOverlay      | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 0    | 20         |
+| MDPOverlay            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 20   | 10         |
+| CMVOverlay            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 1    | 10         |
 | ElevationOverlayAll   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 0    | 3          |
 | CMVchangeOverlayAll   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 27   | 3          |
 | CMVsummaryOverlayAll  | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 13   | 3          |
@@ -51,7 +51,7 @@ When I request a Report Tile and the result file "CompactionReportTileResponse.j
 Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
 Examples: 
 | ResultName            | ProjectUID                           | filterUID                            | overlayType                                                             | mapType   | mode | Difference |
-| CMVLarge              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary                                  | SATELLITE | 1    | 3          |
+| CMVLarge              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary                                  | SATELLITE | 1    | 10         |
 
 Scenario Outline: Report cutfill and volume tiles
 Given the Report Tile service URI "/api/v2/reporttiles" 
@@ -69,8 +69,8 @@ Then the result tile should match the "<ResultName>" from the repository within 
 Examples: 
 | ResultName        | ProjectUID                           | cutFillDesignUid                     | volumeCalcType | volumeTopUid                         | volumeBaseUid                        | overlayType                            | mapType | mode | Difference |
 | CutFill           | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff |                |                                      |                                      | ProductionData                         |         | 8    | 5          |
-| CutFillOverlay    | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff |                |                                      |                                      | ProductionData,BaseMap,ProjectBoundary | MAP     | 8    | 5          |
-| CutFillTerrain    | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff |                |                                      |                                      | ProductionData,BaseMap,ProjectBoundary | TERRAIN | 8    | 5          |
+| CutFillOverlay    | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff |                |                                      |                                      | ProductionData,BaseMap,ProjectBoundary | MAP     | 8    | 30         |
+| CutFillTerrain    | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff |                |                                      |                                      | ProductionData,BaseMap,ProjectBoundary | TERRAIN | 8    | 30         |
 | CutFillOverlayAll | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff |                |                                      |                                      | AllOverlays                            | HYBRID  | 8    | 5          |
 | GroundToGround    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToGround | A40814AA-9CDB-4981-9A21-96EA30FFECDD | F07ED071-F8A1-42C3-804A-1BDE7A78BE5B | ProductionData                         |         | 8    | 1          |
 | DesignToGround    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | DesignToGround | a54e5945-1aaa-4921-9cc1-c9d8c0a343d3 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | ProductionData                         |         | 8    | 5          |

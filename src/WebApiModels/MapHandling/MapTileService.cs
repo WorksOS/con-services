@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Web.Script.Serialization;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 
@@ -14,6 +16,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     private readonly IConfigurationStore config;
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
+
+    private static readonly MemoryCache alkCache = new MemoryCache(new MemoryCacheOptions());
 
     private readonly string alkKey;
 
@@ -70,17 +74,23 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       {
         mapURL += "&imgOption=BACKGROUND";
       }
-      byte[] mapImage = null;
-      using (WebClient wc = new WebClient())
-      using (Stream stream = wc.OpenRead(mapURL))
-      using (var ms = new MemoryStream())
+
+      return alkCache.GetOrCreate(mapURL, entry =>
       {
-        stream.CopyTo(ms);
-        mapImage = ms.ToArray();
-        ms.Close();
-        stream.Close();
-      }
-      return mapImage;
+
+        byte[] mapImage = null;
+        using (WebClient wc = new WebClient())
+        using (Stream stream = wc.OpenRead(mapURL))
+        using (var ms = new MemoryStream())
+        {
+          stream.CopyTo(ms);
+          mapImage = ms.ToArray();
+          ms.Close();
+          stream.Close();
+        }
+        entry.AbsoluteExpiration = DateTimeOffset.MaxValue;
+        return mapImage;
+      });
     }
 
     /// <summary>

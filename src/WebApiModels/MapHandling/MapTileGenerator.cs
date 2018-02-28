@@ -78,81 +78,73 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       parameters.pixelTopLeft = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.minLng, parameters.numTiles);
       log.LogDebug("MapParameters: " + JsonConvert.SerializeObject(parameters));
 
-      List<byte[]> tileList = new List<byte[]>();
-      if (request.overlays.Contains(TileOverlayType.BaseMap))
-        tileList.Add(mapTileService.GetMapBitmap(parameters, request.mapType.Value, request.language.Substring(0, 2)));
-      if (request.overlays.Contains(TileOverlayType.ProductionData))
+      Dictionary<TileOverlayType,byte[]> tileList = new Dictionary<TileOverlayType, byte[]>();
+      object lockObject = new object();
+
+      var overlayTasks = request.overlays.Select(async overlay =>
       {
-        log.LogInformation($"GetProductionDataTile: project {request.project.projectUid}");
-        BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(parameters.bbox.minLng, parameters.bbox.minLat, parameters.bbox.maxLng, parameters.bbox.maxLat);
-        var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.filter, request.project.projectId,
-          request.mode.Value, (ushort)parameters.mapWidth, (ushort)parameters.mapHeight, prodDataBox, request.designDescriptor, request.baseFilter, 
-          request.topFilter, request.designDescriptor, request.volCalcType, null);//custom headers not used
-        tileList.Add(tileResult.TileData);
-      }
-      if (request.overlays.Contains(TileOverlayType.ProjectBoundary))
-      {
-        var projectBitmap = projectTileService.GetProjectBitmap(parameters, request.project);
-        if (projectBitmap != null)
-          tileList.Add(projectBitmap);
-      }
-      if (request.overlays.Contains(TileOverlayType.Geofences))
-      {
-        var geofencesBitmap = geofenceTileService.GetSitesBitmap(parameters, request.geofences);
-        if (geofencesBitmap != null)
-          tileList.Add(geofencesBitmap);
-      }
-      if (request.overlays.Contains(TileOverlayType.FilterCustomBoundary))
-      {
-        var filterBoundaries = boundingBoxService.GetFilterBoundaries(request.project, request.filter, request.baseFilter, request.topFilter, FilterBoundaryType.Polygon);
-        var filterBoundaryBitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, filterBoundaries, FilterBoundaryType.Polygon);
-        if (filterBoundaryBitmap != null)
+        byte[] bitmap = null;
+        switch (overlay)
         {
-          tileList.Add(filterBoundaryBitmap);
+          case TileOverlayType.BaseMap:
+            bitmap = mapTileService.GetMapBitmap(parameters, request.mapType.Value, request.language.Substring(0, 2));
+            break;
+          case TileOverlayType.ProductionData:
+            log.LogInformation($"GetProductionDataTile: project {request.project.projectUid}");
+            BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(parameters.bbox.minLng, parameters.bbox.minLat, parameters.bbox.maxLng, parameters.bbox.maxLat);
+            var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.filter, request.project.projectId,
+              request.mode.Value, (ushort)parameters.mapWidth, (ushort)parameters.mapHeight, prodDataBox, request.designDescriptor, request.baseFilter,
+              request.topFilter, request.designDescriptor, request.volCalcType, null);//custom headers not used
+            bitmap = tileResult.TileData;
+            break;
+          case TileOverlayType.ProjectBoundary:
+            bitmap = projectTileService.GetProjectBitmap(parameters, request.project);
+            break;
+          case TileOverlayType.Geofences:
+            bitmap = geofenceTileService.GetSitesBitmap(parameters, request.geofences);
+            break;
+          case TileOverlayType.FilterCustomBoundary:
+            var filterCustomBoundaries = boundingBoxService.GetFilterBoundaries(request.project, request.filter, request.baseFilter, request.topFilter, FilterBoundaryType.Polygon);
+            bitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, filterCustomBoundaries, FilterBoundaryType.Polygon);
+            break;
+          case TileOverlayType.FilterDesignBoundary:
+            var filterDesignBoundaries = boundingBoxService.GetFilterBoundaries(request.project, request.filter, request.baseFilter, request.topFilter, FilterBoundaryType.Design);
+            bitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, filterDesignBoundaries, FilterBoundaryType.Design);
+            break;
+          case TileOverlayType.FilterAlignmentBoundary:
+            var filterAlignmentBoundaries = boundingBoxService.GetFilterBoundaries(request.project, request.filter, request.baseFilter, request.topFilter, FilterBoundaryType.Alignment);
+            bitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, filterAlignmentBoundaries,
+              FilterBoundaryType.Alignment);
+            break;
+          case TileOverlayType.CutFillDesignBoundary:
+            var designBoundaries = boundingBoxService.GetDesignBoundaryPolygons(request.project.projectId, request.designDescriptor);
+            bitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, designBoundaries, FilterBoundaryType.Design);
+            break;
+          case TileOverlayType.Alignments:
+            bitmap = alignmentTileService.GetAlignmentsBitmap(parameters, request.project.projectId,
+              request.alignmentDescriptors);
+            break;
+          case TileOverlayType.DxfLinework:
+            bitmap = await dxfTileService.GetDxfBitmap(parameters, request.dxfFiles);
+            break;
         }
-      }
-      if (request.overlays.Contains(TileOverlayType.FilterDesignBoundary))
-      {
-        var filterBoundaries = boundingBoxService.GetFilterBoundaries(request.project, request.filter, request.baseFilter, request.topFilter, FilterBoundaryType.Design);
-        var filterBoundaryBitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, filterBoundaries, FilterBoundaryType.Design);
-        if (filterBoundaryBitmap != null)
+        if (bitmap != null)
         {
-          tileList.Add(filterBoundaryBitmap);
+          lock (lockObject)
+          {
+            tileList.Add(overlay,bitmap);
+          }
         }
-      }
-      if (request.overlays.Contains(TileOverlayType.FilterAlignmentBoundary))
-      {
-        var filterBoundaries = boundingBoxService.GetFilterBoundaries(request.project, request.filter, request.baseFilter, request.topFilter, FilterBoundaryType.Alignment);
-        var filterBoundaryBitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, filterBoundaries, FilterBoundaryType.Alignment);
-        if (filterBoundaryBitmap != null)
-        {
-          tileList.Add(filterBoundaryBitmap);
-        }
-      }
-      if (request.overlays.Contains(TileOverlayType.CutFillDesignBoundary))
-      {
-        var designBoundaries = boundingBoxService.GetDesignBoundaryPolygons(request.project.projectId, request.designDescriptor);
-        var designBoundaryBitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, designBoundaries, FilterBoundaryType.Design);
-        if (designBoundaryBitmap != null)
-        {
-          tileList.Add(designBoundaryBitmap);
-        }
-      }
-      if (request.overlays.Contains(TileOverlayType.Alignments))
-      {
-        var alignmentsBitmap = alignmentTileService.GetAlignmentsBitmap(parameters, request.project.projectId,
-          request.alignmentDescriptors);
-        if (alignmentsBitmap != null)
-          tileList.Add(alignmentsBitmap);
-      }
-      if (request.overlays.Contains(TileOverlayType.DxfLinework))
-      {
-        var dxfBitmap = await dxfTileService.GetDxfBitmap(parameters, request.dxfFiles);
-        if (dxfBitmap != null)
-          tileList.Add(dxfBitmap);
-      }
+      });
+
+      log.LogDebug("Awating tiles to be completed");
+      await Task.WhenAll(overlayTasks);
+      log.LogDebug("Tiles completed");
+
       var overlayTile = TileServiceUtils.OverlayTiles(parameters, tileList);
-      overlayTile = ScaleTile(request, overlayTile);      
+      log.LogDebug("Tiles overlaid");
+      overlayTile = ScaleTile(request, overlayTile);
+      log.LogDebug("Tiles scaled");
       return TileResult.CreateTileResult(overlayTile, TASNodeErrorStatus.asneOK);
     }
 

@@ -56,6 +56,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             tileList.Add(await JoinDxfTiles(parameters, dxfFile));
           }
         }
+
+        log.LogDebug("Overlaying DXF bitmaps");
         overlayData = TileServiceUtils.OverlayTiles(parameters, tileList);
       }
       return overlayData;

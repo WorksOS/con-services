@@ -54,7 +54,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     public static byte[] OverlayTiles(MapParameters parameters, IEnumerable<byte[]> tileList)
     {
       byte[] overlayData = null;
-
       //Overlay the tiles. Return an empty tile if none to overlay.
       System.Drawing.Point origin = new System.Drawing.Point(0, 0);
       using (Bitmap bitmap = new Bitmap(parameters.mapWidth, parameters.mapHeight))
@@ -75,6 +74,37 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
 
       return overlayData;
+    }
+
+    /// <summary>
+    /// Overlays the collection of tiles on top of each other and returns a single tile
+    /// </summary>
+    /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
+    /// <param name="tileList">The list of tiles to overlay</param>
+    /// <returns>A single bitmap of the overlayed tiles</returns>
+    public static byte[] OverlayTiles(MapParameters parameters, IDictionary<TileOverlayType,byte[]> tileList)
+    {
+
+      //Order overlays
+      List<byte[]> overlays = new List<byte[]>();
+
+      if (tileList.ContainsKey(TileOverlayType.BaseMap))
+      {
+        overlays.Add(tileList[TileOverlayType.BaseMap]);
+        tileList.Remove(TileOverlayType.BaseMap);
+      }
+      if (tileList.ContainsKey(TileOverlayType.ProductionData))
+      {
+        overlays.Add(tileList[TileOverlayType.ProductionData]);
+        tileList.Remove(TileOverlayType.ProductionData);
+      }
+
+      //Everything else is to follow
+      foreach (var bytese in tileList)
+      {
+        overlays.Add(bytese.Value);
+      }
+      return OverlayTiles(parameters,overlays);
     }
 
     /// <summary>
@@ -152,6 +182,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
              points.Min(p => p.Lon) > bbox.maxLng ||
              points.Max(p => p.Lon) < bbox.minLng;
     }
+
   }
 
 }
