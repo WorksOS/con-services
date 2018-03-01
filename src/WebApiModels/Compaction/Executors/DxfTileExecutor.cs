@@ -34,9 +34,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      //Check how many requests we can execute
-      if (ServicePointManager.DefaultConnectionLimit != 32)
-        ServicePointManager.DefaultConnectionLimit = 32;
+
 
       DxfTileRequest request = item as DxfTileRequest;
 
