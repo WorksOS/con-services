@@ -39,7 +39,7 @@ namespace VSS.Log4Net.Extensions
 
     public static void AddLog4Net(this ILoggerFactory loggerFactory, string repoName)
     {
-      loggerFactory.AddProvider(new Log4NetProvider(repoName));
+      loggerFactory.AddProvider(new Log4NetProvider(null));
     }
 
   }
