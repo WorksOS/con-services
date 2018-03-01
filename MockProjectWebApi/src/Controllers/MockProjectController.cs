@@ -81,7 +81,7 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The mocked settings</returns>
     [Route("api/v4/mock/projectsettings/{projectUid}/{settingsType}")]
     [HttpGet]
-    public ProjectSettingsDataResult GetMockProjectSettings(string projectUid, ProjectSettingsType settingsType)
+    public ProjectSettingsDataResult GetMockProjectSettingsTyped(string projectUid, ProjectSettingsType settingsType)
     {
       Console.WriteLine($"GetMockProjectSettings: projectUid={projectUid}, settingsType={nameof(settingsType)}");
       JObject settings = null;
