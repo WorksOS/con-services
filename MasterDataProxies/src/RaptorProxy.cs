@@ -129,11 +129,12 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="projectSettings">The projectSettings in Json to be validated.</param>
+    /// <param name="settingsType">The projectSettings' type.</param>
     /// <param name="customHeaders">The custom headers.</param>
-    public async Task<BaseDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, ProjectSettingsType settingsType, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {projectUid}");
-      var queryParams = $"?projectUid={projectUid}&projectSettings={projectSettings}";
+      var queryParams = $"?projectUid={projectUid}&projectSettings={projectSettings}&settingsType={settingsType}";
       BaseDataResult response = await GetMasterDataItem<BaseDataResult>("PROJECTSETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
       log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 

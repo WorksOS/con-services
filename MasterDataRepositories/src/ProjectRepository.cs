@@ -752,8 +752,9 @@ namespace VSS.MasterData.Repositories
           log.LogDebug(
             $"ProjectRepository/UpdateImportedFile: updated {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
+          // don't really care if this didn't pass as may already exist for create/update utc
           if (upsertedCount > 0)
-            upsertedCount = await UpsertImportedFileHistory(importedFile);
+            await UpsertImportedFileHistory(importedFile);
         }
 
         log.LogDebug(
@@ -769,20 +770,38 @@ namespace VSS.MasterData.Repositories
       return upsertedCount;
     }
 
+    /// <summary>
+    /// Round date time to nearest second
+    /// </summary>
+    private DateTime RoundDateTimeToSeconds(DateTime dateTime)
+    {
+      return DateTime.Parse(dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+    }
+
     private async Task<int> UpsertImportedFileHistory(ImportedFile importedFile)
     {
       var insertedCount = 0;
-      var importedFileUpsert = (await QueryWithAsyncPolicy<ImportedFileHistoryItem>
+      var importedFileHistoryExisting = (await QueryWithAsyncPolicy<ImportedFileHistoryItem>
       (@"SELECT 
             fk_ImportedFileUID AS ImportedFileUid, FileCreatedUTC, FileUpdatedUTC, ImportedBy
           FROM ImportedFileHistory
-            WHERE fk_ImportedFileUID = @importedFileUid
-              AND FileCreatedUTC = @fileCreatedUtc
-              AND FileUpdatedUTC = @fileUpdatedUtc",
+            WHERE fk_ImportedFileUID = @importedFileUid",
         new { importedFileUid = importedFile.ImportedFileUid, fileUpdatedUtc = importedFile.FileCreatedUtc }
-      )).FirstOrDefault();
+      )).ToList();
 
-      if (importedFileUpsert == null)
+      bool alreadyExists = false;
+      // comparing sql dateTimes to c# doesn't work
+      if (importedFileHistoryExisting.Any())
+      {
+        var newCreatedUtcRounded = RoundDateTimeToSeconds(importedFile.FileCreatedUtc);
+        var newUpdatedUtcRounded = RoundDateTimeToSeconds(importedFile.FileUpdatedUtc);
+
+        alreadyExists = importedFileHistoryExisting
+                .Any(h => RoundDateTimeToSeconds(h.FileCreatedUtc) == newCreatedUtcRounded &&
+                          RoundDateTimeToSeconds(h.FileUpdatedUtc) == newUpdatedUtcRounded);
+      }
+
+      if (!alreadyExists)
       {
         const string insert =
           @"INSERT ImportedFileHistory
