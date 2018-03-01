@@ -27,6 +27,53 @@ namespace MockProjectWebApi.Controllers
       return new ProjectDataResult { ProjectDescriptors = this.projectList };
     }
 
+/// <summary>
+    /// Gets the project settings used in the Raptor service acceptance tests.
+    /// The data is mocked.
+    /// </summary>
+    /// <returns>The mocked settings</returns>
+    [Route("api/v4/mock/projectsettings/{projectUid}")]
+    [HttpGet]
+    public ProjectSettingsDataResult GetMockProjectSettings(string projectUid)
+    {
+      Console.WriteLine("GetMockProjectSettings: projectUid={0}", projectUid);
+      JObject settings = null;
+      if (projectUid == ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID)
+      {
+        string projectSettings = @"{
+            customBulkingPercent: 6,
+            customCutFillTolerances: [0.22, 0.11, 0.055, 0, -0.055, -0.11, -0.22],
+            customPassCountTargets: [1,2,3,4,5,10,20,30],
+            customShrinkagePercent: 3,
+            customTargetCmv: 10,
+            customTargetCmvPercentMaximum: 100,
+            customTargetCmvPercentMinimum: 75,
+            customTargetMdp: 145,
+            customTargetMdpPercentMaximum: 100,
+            customTargetMdpPercentMinimum: 90,
+            customTargetPassCountMaximum: 3,
+            customTargetPassCountMinimum: 2,
+            customTargetSpeedMaximum: 11,
+            customTargetSpeedMinimum: 7,
+            customTargetTemperatureMaximum: 130,
+            customTargetTemperatureMinimum: 75,
+            useDefaultCutFillTolerances: false,
+            useDefaultPassCountTargets: false,
+            useDefaultTargetRangeCmvPercent: false,
+            useDefaultTargetRangeMdpPercent: false,
+            useDefaultTargetRangeSpeed: false,
+            useDefaultVolumeShrinkageBulking: false,
+            useMachineTargetCmv: false,
+            useMachineTargetMdp: false,
+            useMachineTargetPassCount: false,
+            useMachineTargetTemperature: false
+          }";
+
+        settings = JsonConvert.DeserializeObject<JObject>(projectSettings);
+      }
+      return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
+    }
+
     /// <summary>
     /// Gets the project settings used in the Raptor service acceptance tests.
     /// The data is mocked.
