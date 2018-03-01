@@ -248,6 +248,9 @@ namespace VSS.Productivity3D.Common.Models
     [JsonProperty(PropertyName = "designFile", Required = Required.Default)]
     public DesignDescriptor DesignFile { get; private set; }
 
+
+    public bool isFilterContainsSSOnly { get; private set; } = false;
+  
     /// <summary>
     /// Private constructor
     /// </summary>
@@ -339,6 +342,7 @@ namespace VSS.Productivity3D.Common.Models
     {
       return new Filter
       {
+        isFilterContainsSSOnly = true,
         SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList
       };
     }
@@ -519,7 +523,8 @@ namespace VSS.Productivity3D.Common.Models
              BladeOnGround.Equals(other.BladeOnGround) &&
              TrackMapping.Equals(other.TrackMapping) &&
              WheelTracking.Equals(other.WheelTracking) &&
-             (DesignFile == null ? other.DesignFile == null : DesignFile.Equals(other.DesignFile));
+             (DesignFile == null ? other.DesignFile == null : DesignFile.Equals(other.DesignFile)) &&
+             isFilterContainsSSOnly == other.isFilterContainsSSOnly;
     }
 
     public override bool Equals(object obj)

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <AssemblyName>VSS.3DProductivity.WebApiModels</AssemblyName>
     <PackageId>WebApiModels</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>

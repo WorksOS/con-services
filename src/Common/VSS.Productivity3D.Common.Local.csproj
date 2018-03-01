@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <AssemblyName>VSS.Productivity3D.Common</AssemblyName>
     <PackageId>Common</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>

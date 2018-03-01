@@ -102,7 +102,7 @@ node('Jenkins-Win2016-Raptor') {
                 bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion latest-release-${fullVersion}"
             }
         } else if (branch.contains("master")) {
-            def buildArtifact = '3DPMWebApiNet47.zip'
+            def buildArtifact = '3DPRaptorWebApi.zip'
             archiveArtifacts artifacts: buildArtifact, fingerprint: true
 
             // This stage is only necessarly so long as the Prod deployments are not containerised.

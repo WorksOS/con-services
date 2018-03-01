@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,6 +31,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IErrorCodesProvider, ErrorCodesProvider>()
+        .AddTransient<IMemoryCache,MemoryCache>()
         .AddTransient<IMapTileService, MapTileService>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();

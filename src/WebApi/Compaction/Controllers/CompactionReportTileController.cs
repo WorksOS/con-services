@@ -86,12 +86,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       IPreferenceProxy prefProxy, IProductionDataRequestFactory requestFactory)
       : base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
-      this.log = logger.CreateLogger<CompactionDataController>();
+     // this.log = logger.CreateLogger<CompactionDataController>();
       this.tileGenerator = tileGenerator;
       this.prefProxy = prefProxy;
       this.geofenceProxy = geofenceProxy;
       this.boundaryProxy = boundaryProxy;
       this.requestFactory = requestFactory;
+      this.log = logger.CreateLogger<CompactionReportTileController>();
     }
 
     /// <summary>
@@ -188,7 +189,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/projectthumbnail")]
     [HttpGet]
-    [ResponseCache(Duration = 14400, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Duration = 86400, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetProjectThumbnail(
       [FromQuery] Guid projectUid)
     {
@@ -196,14 +197,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
         null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height);
-
+      //Short-circuit cache time for Archived projects
+      if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+        Response.Headers["Cache-Control"] = "public,max-age=31536000";
+      Response.Headers.Add("X-Warning", "false");
       return tileResult;
     }
 
     [ProjectUidVerifier]
     [Route("api/v2/projectthumbnail/png")]
     [HttpGet]
-    [ResponseCache(Duration = 14400, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Duration = 86400, VaryByQueryKeys = new[] { "*" })]
     public async Task<FileResult> GetProjectThumbnailRaw(
       [FromQuery] Guid projectUid)
     {
