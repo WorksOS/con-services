@@ -1,5 +1,4 @@
-#FROM microsoft/windowsservercore:latest
-FROM microsoft/dotnet-framework:4.7.1-windowsservercore-1709
+FROM microsoft/windowsservercore:latest
 
 # Set the Working Directory
 WORKDIR /app
