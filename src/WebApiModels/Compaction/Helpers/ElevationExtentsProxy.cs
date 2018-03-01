@@ -93,6 +93,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       string cacheKey;
       cacheKey = ElevationCacheKey(projectId, filter);
 
+      if (filter == null || (filter.isFilterContainsSSOnly))
+      {
+        var projectExtentsRequest = ExtentRequest.CreateExtentRequest(projectId)
+      }
+
 
       if (!elevationExtentsCache.TryGetValue(cacheKey, out ElevationStatisticsResult result))
       {
