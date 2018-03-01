@@ -93,20 +93,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       string cacheKey;
       cacheKey = ElevationCacheKey(projectId, filter);
 
-      lock (listLockObject)
-      {
-     /*   cacheKey = ElevationCacheKey(projectId, filter);
-        if (statisticsRequestsDictionary.ContainsKey(cacheKey))
-          Monitor.Wait(statisticsRequestsDictionary[cacheKey]);*/
-      }
 
       if (!elevationExtentsCache.TryGetValue(cacheKey, out ElevationStatisticsResult result))
       {
-       /* lock (listLockObject)
-        {
-          statisticsRequestsDictionary.Add(cacheKey, new object());
-          Monitor.Enter(statisticsRequestsDictionary[cacheKey]);
-        }*/
         LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
         ElevationStatisticsRequest statsRequest =
@@ -127,12 +116,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
         var opts = MemoryCacheExtensions.GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
         elevationExtentsCache.Set(cacheKey, result, opts);
-    /*    lock (listLockObject)
-        {
-          if (statisticsRequestsDictionary.ContainsKey(cacheKey))
-            statisticsRequestsDictionary.Remove(cacheKey);
-          Monitor.Exit(statisticsRequestsDictionary[cacheKey]);
-        }*/
       }
       return result;
     }

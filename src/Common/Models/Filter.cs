@@ -248,6 +248,9 @@ namespace VSS.Productivity3D.Common.Models
     [JsonProperty(PropertyName = "designFile", Required = Required.Default)]
     public DesignDescriptor DesignFile { get; private set; }
 
+
+    public bool isFilterContainsSSOnly { get; private set; } = false;
+  
     /// <summary>
     /// Private constructor
     /// </summary>
