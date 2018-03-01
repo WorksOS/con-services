@@ -25,6 +25,23 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     }
 
     [TestMethod]
+    public void RoundingZoomLevelTest()
+    {
+      double diff1 = 0.000365585907798893;
+      double diff2 = 0.000766990393942846;
+
+      double diff1_1 = 0.000365339467977011;
+      double diff2_1 = 0.000766990393942818;
+
+      var res1 = TileServiceUtils.CalculateZoomLevel(diff1, diff2);
+      var res2 = TileServiceUtils.CalculateZoomLevel(diff1_1, diff2_1);
+
+      Assert.AreEqual(res1,res2);
+      Assert.AreEqual(13,res1);
+
+    }
+
+    [TestMethod]
     public void CanConvertLatLngToPixelOffset()
     {
       List<WGSPoint> latLngs = new List<WGSPoint>
@@ -53,7 +70,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     public void OverlayTilesReturnsTileForEmptyList()
     {
       var mapParameters = new MapParameters {mapWidth = 4, mapHeight = 4};
-      var result = TileServiceUtils.OverlayTiles(mapParameters, new List<byte[]>());
+      var result = TileServiceUtils.OverlayTiles(mapParameters, new Dictionary<TileOverlayType, byte[]>());
       var expectedResult = new byte[]
       {
         137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 4, 0, 0, 0, 4, 8, 6, 0, 0, 0, 169, 241,
@@ -82,6 +99,87 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     public void CanCalculateNumberOfTiles()
     {
       Assert.AreEqual(1024, TileServiceUtils.NumberOfTiles(10));
+    }
+
+    [TestMethod]
+    public void PolygonOutsideBoundingBox()
+    {
+      var bbox = new MapBoundingBox
+      {
+        minLat = 36.0, minLng = -115.9, maxLat = 36.5, maxLng = -115.0
+      };
+      var points = new List<WGSPoint>
+      {
+        WGSPoint.CreatePoint(35.0, -116.0),
+        WGSPoint.CreatePoint(35.5, -116.0),
+        WGSPoint.CreatePoint(35.5, -116.5),
+        WGSPoint.CreatePoint(35.0, -116.5),
+        WGSPoint.CreatePoint(35.0, -116.0),
+      };
+      Assert.IsTrue(TileServiceUtils.Outside(bbox, points));
+    }
+
+    [TestMethod]
+    public void PolygonInsideBoundingBox()
+    {
+      var bbox = new MapBoundingBox
+      {
+        minLat = 36.0,
+        minLng = -115.9,
+        maxLat = 36.5,
+        maxLng = -115.0
+      };
+      var points = new List<WGSPoint>
+      {
+        WGSPoint.CreatePoint(36.1, -115.5),
+        WGSPoint.CreatePoint(36.3, -115.5),
+        WGSPoint.CreatePoint(36.3, -115.7),
+        WGSPoint.CreatePoint(36.1, -115.7),
+        WGSPoint.CreatePoint(36.1, -115.5),
+      };
+      Assert.IsFalse(TileServiceUtils.Outside(bbox, points));
+    }
+
+    [TestMethod]
+    public void PolygonIntersectsBoundingBox()
+    {
+      var bbox = new MapBoundingBox
+      {
+        minLat = 36.0,
+        minLng = -115.9,
+        maxLat = 36.5,
+        maxLng = -115.0
+      };
+      var points = new List<WGSPoint>
+      {
+        WGSPoint.CreatePoint(35.9, -115.5),
+        WGSPoint.CreatePoint(36.3, -115.5),
+        WGSPoint.CreatePoint(36.3, -115.7),
+        WGSPoint.CreatePoint(35.9, -115.7),
+        WGSPoint.CreatePoint(35.9, -115.5),
+      };
+      Assert.IsFalse(TileServiceUtils.Outside(bbox, points));
+    }
+
+    [TestMethod]
+    public void PolygonEnvelopsBoundingBox()
+    {
+      var bbox = new MapBoundingBox
+      {
+        minLat = 36.0,
+        minLng = -115.9,
+        maxLat = 36.5,
+        maxLng = -115.0
+      };
+      var points = new List<WGSPoint>
+      {
+        WGSPoint.CreatePoint(35.9, -116.0),
+        WGSPoint.CreatePoint(36.6, -116.0),
+        WGSPoint.CreatePoint(36.6, -114.9),
+        WGSPoint.CreatePoint(35.9, -114.9),
+        WGSPoint.CreatePoint(35.9, -116.0),
+      };
+      Assert.IsFalse(TileServiceUtils.Outside(bbox, points));
     }
 
 

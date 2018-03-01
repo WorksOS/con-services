@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
@@ -53,7 +54,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     public static byte[] OverlayTiles(MapParameters parameters, IEnumerable<byte[]> tileList)
     {
       byte[] overlayData = null;
-
       //Overlay the tiles. Return an empty tile if none to overlay.
       System.Drawing.Point origin = new System.Drawing.Point(0, 0);
       using (Bitmap bitmap = new Bitmap(parameters.mapWidth, parameters.mapHeight))
@@ -77,6 +77,37 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     }
 
     /// <summary>
+    /// Overlays the collection of tiles on top of each other and returns a single tile
+    /// </summary>
+    /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
+    /// <param name="tileList">The list of tiles to overlay</param>
+    /// <returns>A single bitmap of the overlayed tiles</returns>
+    public static byte[] OverlayTiles(MapParameters parameters, IDictionary<TileOverlayType,byte[]> tileList)
+    {
+
+      //Order overlays
+      List<byte[]> overlays = new List<byte[]>();
+
+      if (tileList.ContainsKey(TileOverlayType.BaseMap))
+      {
+        overlays.Add(tileList[TileOverlayType.BaseMap]);
+        tileList.Remove(TileOverlayType.BaseMap);
+      }
+      if (tileList.ContainsKey(TileOverlayType.ProductionData))
+      {
+        overlays.Add(tileList[TileOverlayType.ProductionData]);
+        tileList.Remove(TileOverlayType.ProductionData);
+      }
+
+      //Everything else is to follow
+      foreach (var bytese in tileList)
+      {
+        overlays.Add(bytese.Value);
+      }
+      return OverlayTiles(parameters,overlays);
+    }
+
+    /// <summary>
     /// Calculates the zoom level from the bounding box
     /// </summary>
     /// <param name="deltaLat">The height (maximum latitude - minimum latitude) of the bounding box in radians</param>
@@ -94,13 +125,22 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       int zoomLevel = 0;
       double latSize = Math.PI; //180.0;
       double longSize = 2 * Math.PI; //360.0;
-      while (latSize > selectionLatSize && longSize > selectionLongSize && zoomLevel < MAXZOOM)
+
+
+      while (CompareWithPrecision(latSize,selectionLatSize) > 0 && CompareWithPrecision(longSize,selectionLongSize) > 0 && zoomLevel < MAXZOOM)
       {
         zoomLevel++;
         latSize /= 2;
         longSize /= 2;
       }
       return zoomLevel;
+    }
+
+    private static int CompareWithPrecision(double d1, double d2)
+    {
+      var d1_rounded = Math.Round(d1, 9);
+      var d2_rounded = Math.Round(d2, 9);
+      return d1_rounded.CompareTo(d2_rounded);
     }
 
     /// <summary>
@@ -128,6 +168,21 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       return designDescriptor.id.ToString();
     }
+
+    /// <summary>
+    /// Determines if a polygon lies outside a bounding box.
+    /// </summary>
+    /// <param name="bbox">The bounding box</param>
+    /// <param name="points">The polygon</param>
+    /// <returns>True if the polygon is completely outside the bounding box otherwise false</returns>
+    public static bool Outside(MapBoundingBox bbox, List<WGSPoint> points)
+    {
+      return points.Min(p => p.Lat) > bbox.maxLat ||
+             points.Max(p => p.Lat) < bbox.minLat ||
+             points.Min(p => p.Lon) > bbox.maxLng ||
+             points.Max(p => p.Lon) < bbox.minLng;
+    }
+
   }
 
 }

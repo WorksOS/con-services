@@ -356,8 +356,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               return Filter.CreateFilter(null, null, null, filterData.StartUtc, filterData.EndUtc,
                 filterData.OnMachineDesignId, null, filterData.VibeStateOn, null, filterData.ElevationType,
                 polygonPoints, null, filterData.ForwardDirection, null, null, null, null, null, null,
-                layerMethod, designDescriptor, null, filterData.LayerNumber, null, filterData.ContributingMachines,
-                excludedIds, returnEarliest, null, null, null, null, null);
+                layerMethod, null, null, filterData.LayerNumber, null, filterData.ContributingMachines,
+                excludedIds, returnEarliest, null, null, null, null, null, designDescriptor);
             }
           }
         }
@@ -386,11 +386,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>The filter with the date range set</returns>
     private MasterData.Models.Models.Filter ApplyDateRange(Guid projectUid, MasterData.Models.Models.Filter filter)
     {
-      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom || filter.DateRangeType.Value == DateRangeType.ProjectExtents)
+
+      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
       {
-        log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom or ProjectExtents. Returning without setting filter start and end dates.");
+        log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom. Returning without setting filter start and end dates.");
         return filter;
       }
+
 
       var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
       if (project == null)
@@ -402,8 +404,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var utcNow = DateTime.UtcNow;
 
-      DateTime? startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
-      DateTime? endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
+      //Force daterange filters to be null if ProjectExtents is specified
+      DateTime? startUtc=null;
+      DateTime? endUtc=null;
+
+      if (filter.DateRangeType.Value != DateRangeType.ProjectExtents)
+      {
+         startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
+         endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
+      }
 
       return MasterData.Models.Models.Filter.CreateFilter(
         startUtc, endUtc, filter.DesignUid, filter.ContributingMachines, filter.OnMachineDesignId, filter.ElevationType,
@@ -412,7 +421,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     public async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
-      var filterDescriptor = await this.FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), this.CustomHeaders);
+      var filterDescriptor = await this.FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders(true));
 
       return filterDescriptor == null
         ? null

@@ -2,6 +2,8 @@
 using SVOICFilterSettings;
 using System;
 using System.Net;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
@@ -39,6 +41,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         raptorFilter,
         RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
         out passCountDetails);
+      log.LogDebug($"Result from Raptor {success} with {JsonConvert.SerializeObject(passCountDetails)}");
       if (success)
       {
         result = ConvertResult(passCountDetails, request.liftBuildSettings);

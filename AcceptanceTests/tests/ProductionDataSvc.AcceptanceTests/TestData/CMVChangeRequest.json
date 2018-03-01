@@ -12,6 +12,10 @@
     },
     "filter": null,
     "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
       10,
       20,
       40
@@ -49,6 +53,10 @@
       ]
     },
     "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
       10,
       20,
       40
@@ -86,6 +94,10 @@
       ]
     },
     "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
       10,
       20,
       40
@@ -123,6 +135,10 @@
       ]
     },
     "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
       10,
       20,
       40
@@ -141,6 +157,10 @@
     },
     "filter": null,
     "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
       10,
       20,
       40
@@ -178,6 +198,10 @@
       ]
     },
     "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
       10,
       20,
       40
@@ -196,6 +220,10 @@
     },
     "filter": null,
     "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
       10,
       20,
       40
@@ -214,6 +242,10 @@
     },
     "filter": null,
     "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
       40,
       20,
       10

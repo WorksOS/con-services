@@ -32,6 +32,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  //temporarily switch off cache
+  //[ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CompactionDataController : BaseController
   {
     /// <summary>
@@ -89,15 +91,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>CMV summary</returns>
     [ProjectUidVerifier]
     [Route("api/v2/cmv/summary")]
-    [Route("api/v2/compaction/cmv/summary")]
     [HttpGet]
     public async Task<CompactionCmvSummaryResult> GetCmvSummary(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetCmvSummary: " + Request.QueryString);
+
       CMVRequest request = await GetCmvRequest(projectUid, filterUid);
       request.Validate();
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        return CompactionCmvSummaryResult.CreateCmvSummaryResult(CMVSummaryResult.Empty(), request.cmvSettings);
+
+
+
       log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
       try
       {
@@ -106,6 +114,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             CMVSummaryResult;
         var returnResult = CompactionCmvSummaryResult.CreateCmvSummaryResult(result, request.cmvSettings);
         log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(returnResult));
+
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
+
         return returnResult;
       }
       catch (ServiceException se)
@@ -129,17 +142,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>MDP summary</returns>
     [ProjectUidVerifier]
     [Route("api/v2/mdp/summary")]
-    [Route("api/v2/compaction/mdp/summary")]
     [HttpGet]
     public async Task<CompactionMdpSummaryResult> GetMdpSummary(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
+
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       MDPSettings mdpSettings = this.SettingsManager.CompactionMdpSettings(projectSettings);
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        return CompactionMdpSummaryResult.CreateMdpSummaryResult(MDPSummaryResult.Empty(), mdpSettings);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
@@ -153,6 +169,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(request) as MDPSummaryResult;
         var returnResult = CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
         log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(returnResult));
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
         return returnResult;
       }
       catch (ServiceException se)
@@ -175,13 +194,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>Pass count summary</returns>
     [ProjectUidVerifier]
     [Route("api/v2/passcounts/summary")]
-    [Route("api/v2/compaction/passcounts/summary")]
     [HttpGet]
     public async Task<CompactionPassCountSummaryResult> GetPassCountSummary(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetPassCountSummary: " + Request.QueryString);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        return CompactionPassCountSummaryResult.CreatePassCountSummaryResult(PassCountSummaryResult.Empty());
+
 
       PassCounts request = await GetPassCountRequest(projectUid, filterUid, true);
       request.Validate();
@@ -192,6 +214,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(request) as PassCountSummaryResult;
         var returnResult = CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);
         log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(returnResult));
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
         return returnResult;
       }
       catch (ServiceException se)
@@ -214,13 +239,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>Temperature summary</returns>
     [ProjectUidVerifier]
     [Route("api/v2/temperature/summary")]
-    [Route("api/v2/compaction/temperature/summary")]
     [HttpGet]
     public async Task<CompactionTemperatureSummaryResult> GetTemperatureSummary(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+       return CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(TemperatureSummaryResult.Empty());
+
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       TemperatureSettings temperatureSettings = this.SettingsManager.CompactionTemperatureSettings(projectSettings, false);
@@ -238,6 +266,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             .Process(request) as TemperatureSummaryResult;
         var returnResult = CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(result);
         log.LogInformation("GetTemperatureSummary result: " + JsonConvert.SerializeObject(returnResult));
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
         return returnResult;
       }
       catch (ServiceException se)
@@ -260,17 +291,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>Speed summary</returns>
     [ProjectUidVerifier]
     [Route("api/v2/speed/summary")]
-    [Route("api/v2/compaction/speed/summary")]
     [HttpGet]
     public async Task<CompactionSpeedSummaryResult> GetSpeedSummary(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetSpeedSummary: " + Request.QueryString);
+
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        return CompactionSpeedSummaryResult.CreateSpeedSummaryResult(SummarySpeedResult.Empty(), liftSettings.machineSpeedTarget);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
@@ -284,6 +318,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var returnResult =
           CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, liftSettings.machineSpeedTarget);
         log.LogInformation("GetSpeedSummary result: " + JsonConvert.SerializeObject(returnResult));
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
         return returnResult;
       }
       catch (ServiceException se)
@@ -306,13 +343,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>CMV % change</returns>
     [ProjectUidVerifier]
     [Route("api/v2/cmv/percentchange")]
-    [Route("api/v2/compaction/cmv/percentchange")]
     [HttpGet]
     public async Task<CompactionCmvPercentChangeResult> GetCmvPercentChange(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
       log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
+
+      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No CMV Data"));
+
       var projectId = ((RaptorPrincipal)this.User).GetProjectId(projectUid);
       var projectSettings = await this.GetProjectSettings(projectUid);
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
@@ -329,6 +370,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(request) as CMVChangeSummaryResult;
         var returnResult = CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(result);
         log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
+        //Short-circuit cache time for Archived projects
+        if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+          Response.Headers["Cache-Control"] = "public,max-age=31536000";
         return returnResult;
       }
       catch (ServiceException se)
@@ -364,7 +408,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="topUid">The Uid for the top surface, either a filter or design.</param>
     [ProjectUidVerifier]
     [Route("api/v2/volumes/summary")]
-    [Route("api/v2/compaction/volumes/summary")]
     [HttpGet]
     public async Task<CompactionSummaryVolumesResult> GetSummaryVolumes(
       [FromServices] IVolumeSummaryHelper volumeSummaryHelper,
@@ -457,7 +500,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>CMV details</returns>
     [ProjectUidVerifier]
     [Route("api/v2/cmv/details")]
-    [Route("api/v2/compaction/cmv/details")]
     [HttpGet]
     public async Task<CompactionCmvDetailedResult> GetCmvDetails(
       [FromQuery] Guid projectUid,
@@ -498,7 +540,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>Pass count details</returns>
     [ProjectUidVerifier]
     [Route("api/v2/passcounts/details")]
-    [Route("api/v2/compaction/passcounts/details")]
     [HttpGet]
     public async Task<CompactionPassCountDetailedResult> GetPassCountDetails(
       [FromQuery] Guid projectUid,
@@ -538,7 +579,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>Cut-fill details</returns>
     [ProjectUidVerifier]
     [Route("api/v2/cutfill/details")]
-    [Route("api/v2/compaction/cutfill/details")]
     [HttpGet]
     public async Task<CompactionCutFillDetailedResult> GetCutFillDetails(
       [FromQuery] Guid projectUid,
@@ -570,6 +610,55 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     #endregion
 
     #region privates
+
+    /// <summary>
+    /// Tests if there is overlapping data in Raptor 
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="filterUid">The filter uid.</param>
+    /// <returns></returns>
+    private async Task<bool> ValidateFilterAgainstProjectExtents(Guid projectUid, Guid? filterUid)
+    {
+      log.LogInformation("GetProjectStatistics: " + Request.QueryString);
+
+      //No filter - so proceed further
+      if (!filterUid.HasValue)
+        return true;
+
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
+      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
+      request.Validate();
+      try
+      {
+        var projectExtents =
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
+            .Process(request) as ProjectStatisticsResult;
+
+        //No data in Raptor - stop
+        if (projectExtents == null)
+          return false;
+
+        var filter = await GetCompactionFilter(projectUid, filterUid);
+
+        //No filter dates defined - project extents requested. Proceed further
+        if (filter.StartUtc == null && filter.EndUtc == null)
+          return true;
+
+        //Do we have intersecting dates? True if yes
+        if (filter.StartUtc != null && filter.EndUtc != null)
+          return projectExtents.startTime <= filter.EndUtc && filter.StartUtc <= projectExtents.endTime;
+
+        //All other cases - rpoceed further
+        return true;
+      }
+      catch (Exception se)
+      {
+        //Some expcetion - do not proceed further
+        return false;
+      }
+    }
+
     /// <summary>
     /// Creates an instance of the CMVRequest class and populate it with data.
     /// </summary>

@@ -82,7 +82,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>Elevation statistics</returns>
     [ProjectUidVerifier]
     [Route("api/v2/elevationrange")]
-    [Route("api/v2/compaction/elevationrange")]
     [HttpGet]
     public async Task<ElevationStatisticsResult> GetElevationRange(
       [FromQuery] Guid projectUid,
@@ -129,7 +128,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <executor>ProjectStatisticsExecutor</executor>
     [ProjectUidVerifier]
     [Route("api/v2/projectstatistics")]
-    [Route("api/v2/compaction/projectstatistics")]
     [HttpGet]
     public async Task<ProjectStatisticsResult> GetProjectStatistics(
       [FromQuery] Guid projectUid)

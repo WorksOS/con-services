@@ -146,6 +146,14 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           break;
         case DisplayMode.CMVChange:
           var cmvPercentChangeSettings = CompactionCmvPercentChangeSettings(projectSettings);
+          /*          List<uint> cmvPercentChangeColors = new List<uint> { 0x01579B, 0x039BE5, 0x4FC3F7, 0xB3E5FC, 0x8BC34A, 0xFFCDD2, 0xE57373, 0xD50000 };
+                    palette.Add(ColorPalette.CreateColorPalette(Colors.None, double.MinValue));
+                    for (int i = 0; i < cmvPercentChangeSettings.Length; i++)
+                    {
+                      palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[i], cmvPercentChangeSettings[i]));
+                    }
+                    palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[cmvPercentChangeColors.Count-1], NO_CCV));*/
+
           palette.Add(ColorPalette.CreateColorPalette(Colors.None, 0));
           palette.Add(ColorPalette.CreateColorPalette(0x8BC34A, cmvPercentChangeSettings[0]));
           palette.Add(ColorPalette.CreateColorPalette(0xFFCDD2, cmvPercentChangeSettings[1]));

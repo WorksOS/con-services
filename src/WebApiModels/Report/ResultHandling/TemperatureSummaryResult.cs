@@ -81,5 +81,10 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
         belowTemperaturePercent = belowTemperaturePercent
       };
     }
+
+    public static TemperatureSummaryResult Empty()
+    {
+      return new TemperatureSummaryResult();
+    }
   }
 }

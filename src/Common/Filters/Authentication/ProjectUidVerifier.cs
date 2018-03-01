@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Filters;
+using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 
 namespace VSS.Productivity3D.Common.Filters.Authentication
@@ -40,7 +41,8 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
         return;
 
       //Check done in RaptorPrincipal
-      var projectDescr = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((string)projectUidValue);
+      var projectDescr = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((string) projectUidValue,
+        actionContext.HttpContext.Request.Headers.GetCustomHeaders());
     }
   }
 }

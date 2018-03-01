@@ -401,7 +401,8 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// The CMV % change settings (no custom ones for now)
     /// </summary>
-    public double[] CmvPercentChange => new double[] {5, 20, 50};
+    //public double[] CmvPercentChange => new double[] {-50, -20, -10, 0, 10, 20, 50};
+    public double[] CmvPercentChange => new double[] { 5, 20, 50 };
     /// <summary>
     /// Minimum CMV for Raptor (10ths)
     /// </summary>

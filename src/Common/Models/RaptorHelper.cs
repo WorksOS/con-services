@@ -12,9 +12,11 @@ namespace VSS.Productivity3D.Common.Models
   public abstract class RaptorHelper : ProjectID
   {
     protected uint cmvDetailsColorNumber = CMV_DETAILS_NUMBER_OF_COLORS;
+    protected uint cmvPercentChangeColorNumber = CMV_PERCENT_CHANGE_NUMBER_OF_COLORS;
     public bool setSummaryDataLayersVisibility = true;
 
     private const int CMV_DETAILS_NUMBER_OF_COLORS = 5;
+    private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS = 6;
 
     public void ValidatePalettes(List<ColorPalette> palettes, DisplayMode mode)
     {
@@ -35,7 +37,7 @@ namespace VSS.Productivity3D.Common.Models
             count = 5;
             break;
           case DisplayMode.CMVChange:
-            palettes.Insert(0,ColorPalette.CreateColorPalette(0,0));
+            palettes.Insert(0, ColorPalette.CreateColorPalette(0, 0));
             count = 6;
             break;
           case DisplayMode.Latency:

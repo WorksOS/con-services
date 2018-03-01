@@ -6,7 +6,9 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Interfaces;
@@ -24,6 +26,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
   /// </summary>
   public class DxfTileExecutor : RequestExecutorContainer
   {
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException("Use the asynchronous form of this method");
@@ -31,6 +34,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
+      //Check how many requests we can execute
+      if (ServicePointManager.DefaultConnectionLimit != 32)
+        ServicePointManager.DefaultConnectionLimit = 32;
+
       DxfTileRequest request = item as DxfTileRequest;
 
       string filespaceId = FileDescriptor.GetFileSpaceId(configStore, log);
@@ -38,6 +45,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       //Calculate zoom level
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.topRightLat - request.bbox.bottomLeftLat,
         request.bbox.topRightLon - request.bbox.bottomLeftLon);
+      log.LogDebug("DxfTileExecutor: BBOX differences {0} {1} {2}", request.bbox.topRightLat - request.bbox.bottomLeftLat,
+        request.bbox.topRightLon - request.bbox.bottomLeftLon,zoomLevel);
       int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
       Point topLeftLatLng = new Point(request.bbox.topRightLat.LatRadiansToDegrees(),
         request.bbox.bottomLeftLon.LonRadiansToDegrees());
@@ -46,11 +55,25 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         topLeftTile.x, topLeftTile.y);
 
       log.LogDebug("DxfTileExecutor: {0} files", request.files.Count());
+
+      //Short circuit overlaying if there no files to overlay as ForAll is an expensive operation
+      if (!request.files.Any())
+      {
+        byte[] emptyOverlayData = null;
+        using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
+        {
+          emptyOverlayData = bitmap.BitmapToByteArray();
+        }
+        return TileResult.CreateTileResult(emptyOverlayData, TASNodeErrorStatus.asneOK);
+      }
+
       log.LogDebug(string.Join(",", request.files.Select(f => f.Name).ToList()));
 
       List<byte[]> tileList = new List<byte[]>();
-      foreach (var file in request.files)
+
+      var fileTasks = request.files.Select(async file=>
       {
+        //foreach (var file in request.files)
         //Check file type to see if it has tiles
         if (file.ImportedFileType == ImportedFileType.Alignment ||
             file.ImportedFileType == ImportedFileType.DesignSurface ||
@@ -67,8 +90,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
             }
             else if (zoomLevel - file.MaxZoomLevel <= 5) //Don't try to scale if the difference is too excessive
             {
-              tileData = await GetTileAtHigherZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId, file.MaxZoomLevel, numTiles);
-           
+              tileData = await GetTileAtHigherZoom(topLeftTile, zoomLevel, file.Path, generatedName, filespaceId,
+                file.MaxZoomLevel, numTiles);
+
             }
             else
             {
@@ -81,7 +105,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
             }
           }
         }
-      }
+      });
+
+      await Task.WhenAll(fileTasks);
 
       //Overlay the tiles. Return an empty tile if none to overlay.
       log.LogDebug("DxfTileExecutor: Overlaying {0} tiles", tileList.Count);
@@ -113,7 +139,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// <param name="generatedName">The name of the DXF file (for design and alignment files it is generated)</param>
     /// <param name="filespaceId">The filespace ID</param>
     /// <returns>A generated tile</returns>
-    private async Task<byte[]> GetTileAtRequestedZoom(Point topLeftTile, int zoomLevel, string path, string generatedName, string filespaceId)
+    private async Task<byte[]> GetTileAtRequestedZoom(Point topLeftTile, int zoomLevel, string path,
+      string generatedName, string filespaceId)
     {
       //Work out tile location
       string fullTileName = GetFullTileName(topLeftTile, zoomLevel, path, generatedName);
@@ -140,7 +167,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       int zoomLevelFound = maxZoomLevel;
 
       // Calculate the tile coords of the higher zoom level tile that covers the requested tile
-      Point ptRequestedTile = new Point(topLeftTile.y, topLeftTile.x); 
+      Point ptRequestedTile = new Point(topLeftTile.y, topLeftTile.x);
       Point ptRequestedPixel = WebMercatorProjection.TileToPixel(ptRequestedTile);
 
       int numTilesAtRequestedZoomLevel = numTiles;
@@ -162,7 +189,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
       if (tileData != null)
       {
-        tileData = ScaleTile(tileData, zoomLevel - zoomLevelFound, ptHigherTile, ptRequestedWorld, numTilesAtFoundZoomLevel);
+        tileData = ScaleTile(tileData, zoomLevel - zoomLevelFound, ptHigherTile, ptRequestedWorld,
+          numTilesAtFoundZoomLevel);
       }
       return tileData;
     }
@@ -176,7 +204,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// <param name="ptRequestedWorld"></param>
     /// <param name="numTilesAtFoundZoomLevel">The number of tiles for the higher zoom level</param>
     /// <returns>A scaled tile</returns>
-    private byte[] ScaleTile(byte[] tileData, int zoomLevelDifference, Point ptHigherTile, Point ptRequestedWorld, int numTilesAtFoundZoomLevel)
+    private byte[] ScaleTile(byte[] tileData, int zoomLevelDifference, Point ptHigherTile, Point ptRequestedWorld,
+      int numTilesAtFoundZoomLevel)
     {
       // Calculate the tile coords of the BR corner of the higher zoom level tile
       // so that we can identify which sub-part of it to crop and scale
@@ -198,8 +227,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       double ratioY = (ptRequestedWorld.y - ptHigherWorldTopLeft.y) /
                       (ptHigherWorldBotRight.y - ptHigherWorldTopLeft.y);
 
-      int startX = (int)Math.Floor(WebMercatorProjection.TILE_SIZE * ratioX);
-      int startY = (int)Math.Floor(WebMercatorProjection.TILE_SIZE * ratioY);
+      int startX = (int) Math.Floor(WebMercatorProjection.TILE_SIZE * ratioX);
+      int startY = (int) Math.Floor(WebMercatorProjection.TILE_SIZE * ratioY);
 
       // Calculate how much up-scaling of higher level zoom tile we need to do
       // based on the difference between the requested and higher zoom levels
@@ -213,7 +242,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       //source bitmap
       using (var tileStream = new MemoryStream(tileData))
       using (Bitmap higherBitmap = new Bitmap(tileStream))
-      //destination bitmap
+        //destination bitmap
       using (Bitmap target = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
       using (Graphics g = Graphics.FromImage(target))
       {
@@ -252,11 +281,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// <returns>The downloaded tile if it exists</returns>
     private async Task<byte[]> DownloadTile(string filespaceId, string fullTileName, string what)
     {
-      byte[] tileData = null;
-
-      if (await fileRepo.FileExists(filespaceId, fullTileName))
-      {
-        using (Stream stream = await fileRepo.GetFile(filespaceId, fullTileName))
+        byte[] tileData = null;
+        var stream = await fileRepo.GetFile(filespaceId, fullTileName);
+        if (stream != null)
         {
           log.LogDebug($"DxfTileExecutor: {what} tile downloaded with size of {stream.Length} bytes");
 
@@ -264,16 +291,16 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           {
             stream.Position = 0;
             tileData = new byte[stream.Length];
-            stream.Read(tileData, 0, (int)stream.Length);
+            stream.Read(tileData, 0, (int) stream.Length);
           }
+          stream.Dispose();
         }
-      }
-      else
-      {
-        log.LogDebug(
-          $"DxfTileExecutor: tile at {what} zoom level does not exist - design simply doesn't fall over the requested tile");
-      }
-      return tileData;
+        else
+        {
+          log.LogDebug(
+            $"DxfTileExecutor: tile at {what} zoom level does not exist - design simply doesn't fall over the requested tile");
+        }
+        return tileData;
     }
   }
 }

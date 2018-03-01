@@ -406,13 +406,12 @@ namespace VSS.Productivity3D.Common.Proxies
     /// <returns></returns>
     public static TWGS84FenceContainer convertWGS84Fence(WGS84Fence fence)
     {
-
       TWGS84FenceContainer fenceContainer = new TWGS84FenceContainer()
       {
         FencePoints = fence.Points.ToList().ConvertAll(p => { return new TWGS84Point() { Lat = p.Lat, Lon = p.Lon }; }).ToArray()
       };
-      return fenceContainer;
 
+      return fenceContainer;
     }
 
     public static TICFilterSettings ConvertFilter(long? filterID, Filter filter, long? projectid, DateTime? overrideStartUTC = null,
@@ -596,7 +595,7 @@ namespace VSS.Productivity3D.Common.Proxies
             }
             else
             {
-              filter.ElevationRangeDesign = DesignDescriptor(pdf.DesignOrAlignmentFile);
+              filter.ElevationRangeDesign = DesignDescriptor(pdf.LayerDesignOrAlignmentFile);
             }
             if (pdf.LayerNumber.HasValue && pdf.LayerThickness.HasValue)
             {
@@ -647,15 +646,15 @@ namespace VSS.Productivity3D.Common.Proxies
           filter.PassTypeSelections = filter.PassTypeSelections.Set(TICPassType.ptWheel);
         }
 
-        if (pdf.DesignOrAlignmentFile != null)
+        if (pdf.DesignFile != null)
         {
           filter.DesignFilter = VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(
-            pdf.DesignOrAlignmentFile.id,
+            pdf.DesignFile.id,
             fileSpaceName,
-            pdf.DesignOrAlignmentFile.file.filespaceId,
-            pdf.DesignOrAlignmentFile.file.path,
-            pdf.DesignOrAlignmentFile.file.fileName,
-            pdf.DesignOrAlignmentFile.offset);
+            pdf.DesignFile.file.filespaceId,
+            pdf.DesignFile.file.path,
+            pdf.DesignFile.file.fileName,
+            pdf.DesignFile.offset);
           
           filter.SetDesignFilterMaskCellSelectionState(true);
         }
