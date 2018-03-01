@@ -88,7 +88,8 @@ namespace MockProjectWebApi.Controllers
                 FilterDescriptors.Dimensions.SummaryVolumesFilterCustom20121101Last,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterNull,
                 FilterDescriptors.Dimensions.SummaryVolumesTemperature,
-                FilterDescriptors.Dimensions.ReportDxfTile
+                FilterDescriptors.Dimensions.ReportDxfTile,
+                FilterDescriptors.Dimensions.DimensionsAlignmentFilter
               }
             };
           }
