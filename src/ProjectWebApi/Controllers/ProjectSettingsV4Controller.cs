@@ -60,9 +60,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.requestFactory = requestFactory;
     }
 
-
     /// <summary>
     /// Gets the target project settings for a project and user.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <returns></returns>
+    [Route("api/v4/projectsettings/{projectUid}")]
+    [HttpGet]
+    public async Task<ProjectSettingsResult> GetProjectSettingsTargets(string projectUid)
+    {
+      return await GetProjectSettingsForType(projectUid, ProjectSettingsType.Targets);
+    }
+
+    /// <summary>
+    /// Gets the target settings for a project and user.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <param name="settingsType">The project settings' type.</param>
@@ -71,27 +82,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ProjectSettingsResult> GetProjectSettings(string projectUid, ProjectSettingsType settingsType)
     {
-      if (string.IsNullOrEmpty(projectUid))
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
-      LogCustomerDetails("GetProjectSettings", projectUid);
-
-      var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
-          .CustomerUid(customerUid))
-        .CreateProjectSettingsRequest(projectUid, string.Empty, settingsType);
-      projectSettingsRequest.Validate();
-     
-      var result = (await WithServiceExceptionTryExecuteAsync(() => 
-        RequestExecutorContainerFactory
-        .Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler, 
-                customerUid, userId, null, null,
-                null, null,
-                null, null, null,
-                projectRepo)
-        .ProcessAsync(projectSettingsRequest) 
-        )) as ProjectSettingsResult;
-     
-      log.LogResult(this.ToString(), projectUid, result);
-      return result;
+      return await GetProjectSettingsForType(projectUid, settingsType);
     }
 
 
@@ -124,6 +115,31 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       )) as ProjectSettingsResult;
 
       log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
+      return result;
+    }
+
+    private async Task<ProjectSettingsResult> GetProjectSettingsForType(string projectUid, ProjectSettingsType settingsType)
+    {
+      if (string.IsNullOrEmpty(projectUid))
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
+      LogCustomerDetails("GetProjectSettings", projectUid);
+
+      var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+          .CustomerUid(customerUid))
+        .CreateProjectSettingsRequest(projectUid, string.Empty, settingsType);
+      projectSettingsRequest.Validate();
+
+      var result = (await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
+            customerUid, userId, null, null,
+            null, null,
+            null, null, null,
+            projectRepo)
+          .ProcessAsync(projectSettingsRequest)
+      )) as ProjectSettingsResult;
+
+      log.LogResult(this.ToString(), projectUid, result);
       return result;
     }
   }
