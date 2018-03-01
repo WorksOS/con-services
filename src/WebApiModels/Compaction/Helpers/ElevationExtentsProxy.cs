@@ -95,7 +95,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         log.LogDebug($"Calling elevation statistics from Cache for project {projectId} and filter {strFilter}");
         return result;
       }
-      if (filter == null || (filter.isFilterContainsSSOnly))
+      if (filter == null || (filter.isFilterContainsSSOnly) || (filter.IsFilterEmpty))
       {
         log.LogDebug($"Calling elevation statistics from Project Extents for project {projectId} and filter {strFilter}");
 

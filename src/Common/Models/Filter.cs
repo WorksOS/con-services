@@ -250,12 +250,51 @@ namespace VSS.Productivity3D.Common.Models
 
 
     public bool isFilterContainsSSOnly { get; private set; } = false;
-  
+
+    public bool IsFilterEmpty => isFilterEmpty();
+
     /// <summary>
     /// Private constructor
     /// </summary>
     private Filter()
     { }
+
+
+    private bool isFilterEmpty()
+    {
+      if (
+        !StartUtc.HasValue &&
+        !EndUtc.HasValue &&
+        !OnMachineDesignId.HasValue &&
+        AssetIDs == null &&
+        !VibeStateOn.HasValue &&
+        !CompactorDataOnly.HasValue &&
+        !ElevationType.HasValue &&
+        PolygonLL == null&&
+        PolygonGrid == null &&
+        !ForwardDirection.HasValue &&
+        AlignmentFile == null &&
+        !StartStation.HasValue &&
+        !EndStation.HasValue &&
+        !LeftOffset.HasValue &&
+        !RightOffset.HasValue &&
+        string.IsNullOrEmpty(MachineDesignName) &&
+        !LayerType.HasValue &&
+        LayerDesignOrAlignmentFile == null &&
+        !BenchElevation.HasValue &&
+        !LayerNumber.HasValue &&
+        !LayerThickness.HasValue &&
+        ContributingMachines == null &&
+        SurveyedSurfaceExclusionList == null &&
+        !ReturnEarliest.HasValue &&
+        !GpsAccuracy.HasValue &&
+        !GpsAccuracyIsInclusive.HasValue &&
+        !BladeOnGround.HasValue &&
+        !TrackMapping.HasValue &&
+        !WheelTracking.HasValue &&
+        DesignFile == null) return true;
+      return false;
+    }
 
     /// <summary>
     /// Create instance of Filter
