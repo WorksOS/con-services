@@ -1,7 +1,7 @@
 param ([switch] $uploadArtifact = $false)
 
 $artifactsDir = "$PSScriptRoot/artifacts"
-$artfifactZip = "3DPMWebApiNet47.zip"
+$artfifactZip = "3DPRaptorWebApi.zip"
 
 # Tidy up old artifacts.
 Write-Host "Removing existing build artifacts..." -ForegroundColor "darkgray"
@@ -14,12 +14,12 @@ If (Test-path $artfifactZip) {
     Remove-item $artfifactZip
 }
 
-# Restore, build/publish for configuration net47.
+# Restore, build/publish for configuration net471.
 Write-Host "Restoring .NET packages..." -ForegroundColor "darkgray"
 Invoke-Expression "dotnet restore ./VSS.Productivity3D.Service.sln --no-cache"
 
 Write-Host "Publishing WebApi project..." -ForegroundColor "darkgray"
-Invoke-Expression "dotnet publish ./src/WebApi/VSS.Productivity3D.WebApi.csproj -o ../../Artifacts/WebApi -f net47"
+Invoke-Expression "dotnet publish ./src/WebApi/VSS.Productivity3D.WebApi.csproj -o ../../Artifacts/WebApi -f net471"
 Invoke-Expression "dotnet build ./test/UnitTests/WebApiTests/VSS.Productivity3D.WebApi.Tests.csproj"
 Invoke-Expression "#msbuild ./AcceptanceTests/VSS.Productivity3D.Service.AcceptanceTests.sln"
 

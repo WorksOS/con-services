@@ -248,11 +248,53 @@ namespace VSS.Productivity3D.Common.Models
     [JsonProperty(PropertyName = "designFile", Required = Required.Default)]
     public DesignDescriptor DesignFile { get; private set; }
 
+
+    public bool isFilterContainsSSOnly { get; private set; } = false;
+
+    public bool IsFilterEmpty => isFilterEmpty();
+
     /// <summary>
     /// Private constructor
     /// </summary>
     private Filter()
     { }
+
+
+    private bool isFilterEmpty()
+    {
+      if (
+        !StartUtc.HasValue &&
+        !EndUtc.HasValue &&
+        !OnMachineDesignId.HasValue &&
+        AssetIDs == null &&
+        !VibeStateOn.HasValue &&
+        !CompactorDataOnly.HasValue &&
+        !ElevationType.HasValue &&
+        PolygonLL == null&&
+        PolygonGrid == null &&
+        !ForwardDirection.HasValue &&
+        AlignmentFile == null &&
+        !StartStation.HasValue &&
+        !EndStation.HasValue &&
+        !LeftOffset.HasValue &&
+        !RightOffset.HasValue &&
+        string.IsNullOrEmpty(MachineDesignName) &&
+        !LayerType.HasValue &&
+        LayerDesignOrAlignmentFile == null &&
+        !BenchElevation.HasValue &&
+        !LayerNumber.HasValue &&
+        !LayerThickness.HasValue &&
+        ContributingMachines == null &&
+        SurveyedSurfaceExclusionList == null &&
+        !ReturnEarliest.HasValue &&
+        !GpsAccuracy.HasValue &&
+        !GpsAccuracyIsInclusive.HasValue &&
+        !BladeOnGround.HasValue &&
+        !TrackMapping.HasValue &&
+        !WheelTracking.HasValue &&
+        DesignFile == null) return true;
+      return false;
+    }
 
     /// <summary>
     /// Create instance of Filter
@@ -339,6 +381,7 @@ namespace VSS.Productivity3D.Common.Models
     {
       return new Filter
       {
+        isFilterContainsSSOnly = true,
         SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList
       };
     }
@@ -519,7 +562,8 @@ namespace VSS.Productivity3D.Common.Models
              BladeOnGround.Equals(other.BladeOnGround) &&
              TrackMapping.Equals(other.TrackMapping) &&
              WheelTracking.Equals(other.WheelTracking) &&
-             (DesignFile == null ? other.DesignFile == null : DesignFile.Equals(other.DesignFile));
+             (DesignFile == null ? other.DesignFile == null : DesignFile.Equals(other.DesignFile)) &&
+             isFilterContainsSSOnly == other.isFilterContainsSSOnly;
     }
 
     public override bool Equals(object obj)

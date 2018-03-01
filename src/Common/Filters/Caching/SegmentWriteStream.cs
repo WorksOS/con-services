@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Internal;
 
 //Microsoft reference implementation
 namespace VSS.Productivity3D.Common.Filters.Caching
 {
-  internal class SegmentWriteStream : Stream
+    internal class SegmentWriteStream : Stream
   {
     private readonly List<byte[]> _segments = new List<byte[]>();
     private readonly MemoryStream _bufferStream = new MemoryStream();
@@ -168,7 +167,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
     public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
       Write(buffer, offset, count);
-      return TaskCache.CompletedTask;
+      return Task.CompletedTask;
     }
 
     public override void WriteByte(byte value)

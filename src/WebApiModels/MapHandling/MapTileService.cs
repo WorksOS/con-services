@@ -17,20 +17,21 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
 
-    private static readonly MemoryCache alkCache = new MemoryCache(new MemoryCacheOptions());
+    private readonly IMemoryCache alkCache;
 
     private readonly string alkKey;
 
-    public MapTileService(IConfigurationStore configuration, ILoggerFactory logger)
-   {
+    public MapTileService(IConfigurationStore configuration, IMemoryCache cache, ILoggerFactory logger)
+    {
       config = configuration;
       log = logger.CreateLogger<MapTileService>();
       this.logger = logger;
       alkKey = config.GetValueString("ALK_KEY");
-     if (string.IsNullOrEmpty(alkKey))
-     {
-       log.LogError("Missing ALK maps key");
-     }
+      alkCache = cache;
+      if (string.IsNullOrEmpty(alkKey))
+      {
+        log.LogError("Missing ALK maps key");
+      }
     }
 
     /// <summary>

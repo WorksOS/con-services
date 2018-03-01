@@ -8,6 +8,11 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using log4net;
+using log4net.Config;
+using log4net.Repository;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Extensions;
@@ -24,8 +29,7 @@ namespace VSS.Productivity3D.WebApi
   /// </summary>
   public partial class Startup
   {
-    private const string loggerRepoName = "WebApi";
-    private readonly bool isDevEnv;
+    public  const string loggerRepoName = "WebApi";
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -41,8 +45,6 @@ namespace VSS.Productivity3D.WebApi
 
       env.ConfigureLog4Net("log4net.xml", loggerRepoName);
 
-      isDevEnv = env.IsEnvironment("Development");
-  
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
 
@@ -80,6 +82,8 @@ namespace VSS.Productivity3D.WebApi
           {
             config.Filters.Add(new ValidationFilterAttribute());
           });
+
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       //Configure swagger
       services.AddSwaggerGen();
@@ -128,10 +132,10 @@ namespace VSS.Productivity3D.WebApi
     {
       loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceCollection.AddSingleton(loggerFactory);
       var serviceProvider = serviceCollection.BuildServiceProvider();
+
       app.UseFilterMiddleware<ExceptionsTrap>();
 
       //Enable CORS before TID so OPTIONS works without authentication
@@ -143,6 +147,7 @@ namespace VSS.Productivity3D.WebApi
       if (Configuration["newrelic"] == "true")
         app.UseFilterMiddleware<NewRelicMiddleware>();
 
+      app.UseFilterMiddleware<RequestIDMiddleware>();
       app.UseResponseCompression();
 
       app.UseResponseCaching();
