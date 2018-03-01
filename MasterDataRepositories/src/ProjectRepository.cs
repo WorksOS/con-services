@@ -752,8 +752,9 @@ namespace VSS.MasterData.Repositories
           log.LogDebug(
             $"ProjectRepository/UpdateImportedFile: updated {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
+          // don't really care if this didn't pass as may already exist for create/update utc
           if (upsertedCount > 0)
-            upsertedCount = await UpsertImportedFileHistory(importedFile);
+            await UpsertImportedFileHistory(importedFile);
         }
 
         log.LogDebug(
