@@ -11,6 +11,10 @@ EXPOSE 80
 COPY . /app
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
 RUN set-itemproperty -path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters' -Name ServerPriorityTimeLimit -Value 0 -Type DWord
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+RUN choco install dotnet4.7.1
+RUN choco install dotnetcore-runtime
+
 
 # Create the mount point to hold volume from host for logs
 #VOLUME logs
