@@ -266,12 +266,12 @@ namespace VSS.Productivity3D.Common.Models
         !StartUtc.HasValue &&
         !EndUtc.HasValue &&
         !OnMachineDesignId.HasValue &&
-        AssetIDs == null &&
+        (AssetIDs == null || AssetIDs.Count==0) &&
         !VibeStateOn.HasValue &&
         !CompactorDataOnly.HasValue &&
         !ElevationType.HasValue &&
-        PolygonLL == null&&
-        PolygonGrid == null &&
+        (PolygonLL == null || PolygonLL.Count==0) &&
+        (PolygonGrid == null || PolygonGrid.Count==0) &&
         !ForwardDirection.HasValue &&
         AlignmentFile == null &&
         !StartStation.HasValue &&
@@ -284,8 +284,8 @@ namespace VSS.Productivity3D.Common.Models
         !BenchElevation.HasValue &&
         !LayerNumber.HasValue &&
         !LayerThickness.HasValue &&
-        ContributingMachines == null &&
-        SurveyedSurfaceExclusionList == null &&
+        (ContributingMachines == null || ContributingMachines.Count==0) &&
+        (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Count==0) &&
         !ReturnEarliest.HasValue &&
         !GpsAccuracy.HasValue &&
         !GpsAccuracyIsInclusive.HasValue &&
