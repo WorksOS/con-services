@@ -207,9 +207,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
 
       var insertImportedFileHistoryCommand = string.Format(
         "INSERT ImportedFileHistory " +
-        "    (fk_ImportedFileID, InsertUTC, CreateUTC, fk_UserID) " +
+        "    (fk_ImportedFileID, InsertUTC, CreateUTC) " +
         "  VALUES " +
-        "    (@LegacyImportedFileId, @FileUpdatedUtc, @FileCreatedUtc, 0)");
+        "    (@LegacyImportedFileId, @FileUpdatedUtc, @FileCreatedUtc)");
 
       int countInserted = 0;
       try
