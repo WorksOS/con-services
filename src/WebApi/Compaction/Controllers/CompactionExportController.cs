@@ -17,6 +17,7 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
@@ -139,7 +140,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<ExportReportExecutor>(logger, raptorClient, null, this.ConfigStore)
+          .Build<CompactionExportExecutor>(logger, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
     }
@@ -290,7 +291,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<ExportReportExecutor>(logger, raptorClient, null, this.ConfigStore)
+          .Build<CompactionExportExecutor>(logger, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
     }
@@ -349,7 +350,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<ExportReportExecutor>(logger, raptorClient, null, this.ConfigStore)
+          .Build<CompactionExportExecutor>(logger, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
     }
