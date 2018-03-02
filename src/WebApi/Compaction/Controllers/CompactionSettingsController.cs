@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies.Interfaces;
@@ -32,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IProjectSettingsProxy projectSettingsProxy;
 
-    private readonly IMemoryCacheBuilder<Guid> cacheBuilder;
+    private readonly IMemoryCache cacheBuilder;
 
     /// <summary>
     /// Constructor with dependency injection
@@ -40,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="logger">Logger</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="cacheBuilder">The memory cache for the controller</param>
-    public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy, IMemoryCacheBuilder<Guid> cacheBuilder)
+    public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy, IMemoryCache cacheBuilder)
     {
       this.log = logger.CreateLogger<CompactionSettingsController>();
       this.projectSettingsProxy = projectSettingsProxy;
@@ -70,7 +71,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
         log.LogDebug($"About to clear settings for project {projectUid}");
         projectSettingsProxy.ClearCacheItem(projectUid.ToString(), GetUserId());
-        cacheBuilder.ClearMemoryCache(projectUid);
+        cacheBuilder.Remove($"PRJUID={projectUid.ToString().ToUpperInvariant()}");
+
       }
 
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);
