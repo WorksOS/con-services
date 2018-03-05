@@ -84,25 +84,21 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>A single bitmap of the overlayed tiles</returns>
     public static byte[] OverlayTiles(MapParameters parameters, IDictionary<TileOverlayType,byte[]> tileList)
     {
-
-      //Order overlays
+      //Order for overlays: 
+      List<TileOverlayType> orderedOverlayTypes = new List<TileOverlayType>
+      {
+        TileOverlayType.BaseMap, TileOverlayType.ProjectBoundary, TileOverlayType.Geofences, TileOverlayType.ProductionData,
+        TileOverlayType.FilterCustomBoundary, TileOverlayType.FilterDesignBoundary, TileOverlayType.FilterAlignmentBoundary,
+        TileOverlayType.CutFillDesignBoundary, TileOverlayType.DxfLinework, TileOverlayType.Alignments
+      };
+      //Make an orderd list
       List<byte[]> overlays = new List<byte[]>();
-
-      if (tileList.ContainsKey(TileOverlayType.BaseMap))
+      foreach (var overLayType in orderedOverlayTypes)
       {
-        overlays.Add(tileList[TileOverlayType.BaseMap]);
-        tileList.Remove(TileOverlayType.BaseMap);
-      }
-      if (tileList.ContainsKey(TileOverlayType.ProductionData))
-      {
-        overlays.Add(tileList[TileOverlayType.ProductionData]);
-        tileList.Remove(TileOverlayType.ProductionData);
-      }
-
-      //Everything else is to follow
-      foreach (var bytese in tileList)
-      {
-        overlays.Add(bytese.Value);
+        if (tileList.ContainsKey(overLayType))
+        {
+          overlays.Add(tileList[overLayType]);
+        }
       }
       return OverlayTiles(parameters,overlays);
     }

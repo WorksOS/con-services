@@ -194,9 +194,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid)
     {
       log.LogDebug("GetProjectThumbnail: " + Request.QueryString);
-
+      
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
-        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height);
+        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height,true);
       //Short-circuit cache time for Archived projects
       if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
@@ -213,8 +213,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
 
-      var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
-        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height);
+      var tileResult =await  GetGeneratedTile(projectUid, null, null, null, null,
+        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height,true);
       //Short-circuit cache time for Archived projects
       if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
@@ -226,7 +226,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get the generated tile for the request
     /// </summary>
     private async Task<TileResult> GetGeneratedTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, Guid? volumeBaseUid, Guid? volumeTopUid, VolumeCalcType? volumeCalcType,
-      TileOverlayType[] overlays, int width, int height, MapType? mapType, DisplayMode? mode)
+      TileOverlayType[] overlays, int width, int height, MapType? mapType, DisplayMode? mode, bool thumbnail = false)
     {
       var overlayTypes = overlays.ToList();
       if (overlays.Contains(TileOverlayType.AllOverlays))
@@ -317,7 +317,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private async Task<UserPreferenceData> GetUserPreferences()
     {
-      var userPreferences = await prefProxy.GetUserPreferences(CustomHeaders);
+      var userPreferences = await prefProxy.GetShortCachedUserPreferences((User as RaptorPrincipal).UserEmail, TimeSpan.FromSeconds(10), CustomHeaders);
       if (userPreferences == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

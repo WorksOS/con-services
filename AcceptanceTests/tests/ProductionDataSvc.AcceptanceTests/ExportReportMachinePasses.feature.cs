@@ -361,11 +361,11 @@ testRunner.Then(string.Format("the report result should contain error code {0} a
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "Test")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get requested export data")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "2002")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get requested export data with error: No data for export")]
         public virtual void ExportReportMachinePasses_BadRequestWithFilter_()
         {
-            this.ExportReportMachinePasses_BadRequestWithFilter("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "1cf81668-1739-42d5-b068-ea025588796a", "1", "1", "false", "false", "Test", "-4", "Failed to get requested export data", ((string[])(null)));
+            this.ExportReportMachinePasses_BadRequestWithFilter("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "1cf81668-1739-42d5-b068-ea025588796a", "1", "1", "false", "false", "Test", "2002", "Failed to get requested export data with error: No data for export", ((string[])(null)));
         }
         
         public virtual void ExportReportMachinePasses_GoodRequestWithFilter(string requestName, string projectUID, string filterUID, string coordType, string outputType, string restrictOutput, string rawDataOutput, string fileName, string resultName, string[] exampleTags)

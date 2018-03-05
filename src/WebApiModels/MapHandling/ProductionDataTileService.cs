@@ -122,9 +122,16 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       TileResult tileResult = null;
       if (getTile)
       {
-        tileResult = RequestExecutorContainerFactory
-          .Build<CompactionTileExecutor>(logger, raptorClient)
-          .Process(tileRequest) as TileResult;
+        try
+        {
+          tileResult = RequestExecutorContainerFactory
+            .Build<CompactionTileExecutor>(logger, raptorClient)
+            .Process(tileRequest) as TileResult;
+        }
+        catch (Exception ex)
+        {
+          log.LogWarning($"Exception: {ex.Message} {ex.StackTrace}");
+        }
       }
 
       return tileResult ?? TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);

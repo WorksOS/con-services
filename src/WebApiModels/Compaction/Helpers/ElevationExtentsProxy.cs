@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -18,6 +19,7 @@ using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using Filter = VSS.Productivity3D.Common.Models.Filter;
+
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
@@ -78,6 +80,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       this.configStore = configStore;
     }
 
+
     /// <summary>
     /// Gets the elevation statistics for the given filter from Raptor
     /// </summary>
@@ -85,57 +88,59 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <param name="filter">Compaction filter</param>
     /// <param name="projectSettings">Project settings</param>
     /// <returns>Elevation statistics</returns>
-    public ElevationStatisticsResult GetElevationRange(long projectId, Filter filter, CompactionProjectSettings projectSettings)
+    public ElevationStatisticsResult GetElevationRange(long projectId, Filter filter,
+      CompactionProjectSettings projectSettings)
     {
-      string cacheKey;
-      cacheKey = ElevationCacheKey(projectId, filter);
+      var cacheKey = ElevationCacheKey(projectId, filter);
       var strFilter = filter != null ? JsonConvert.SerializeObject(filter) : "";
-      if (elevationExtentsCache.TryGetValue(cacheKey, out ElevationStatisticsResult result))
-      {
-        log.LogDebug($"Calling elevation statistics from Cache for project {projectId} and filter {strFilter}");
-        return result;
-      }
-      if (filter == null || (filter.isFilterContainsSSOnly) || (filter.IsFilterEmpty))
-      {
-        log.LogDebug($"Calling elevation statistics from Project Extents for project {projectId} and filter {strFilter}");
-
-        var projectExtentsRequest = ExtentRequest.CreateExtentRequest(projectId,
-          filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
-        var extents =
-          RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient)
-            .Process(projectExtentsRequest) as ProjectExtentsResult;
-        result = ElevationStatisticsResult.CreateElevationStatisticsResult(
-          BoundingBox3DGrid.CreatBoundingBox3DGrid(extents.ProjectExtents.minX, extents.ProjectExtents.minY,
-            extents.ProjectExtents.minZ, extents.ProjectExtents.maxX, extents.ProjectExtents.maxY,
-            extents.ProjectExtents.maxZ), extents.ProjectExtents.minZ, extents.ProjectExtents.maxZ, 0);
-      }
-      else
-      {
-        log.LogDebug($"Calling elevation statistics from Elevation Statistics for project {projectId} and filter {strFilter}");
-
-        LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-
-        ElevationStatisticsRequest statsRequest =
-          ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId, null, filter, 0,
-            liftSettings);
-        statsRequest.Validate();
-
-        result =
-          RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient)
-            .Process(statsRequest) as ElevationStatisticsResult;
-
-      }
-      //Check for 'No elevation range' result
-      const double NO_ELEVATION = 10000000000.0;
-      if (Math.Abs(result.MinElevation - NO_ELEVATION) < 0.001 && Math.Abs(result.MaxElevation + NO_ELEVATION) < 0.001)
-      {
-        result = null;
-      }
-
       var opts = MemoryCacheExtensions.GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
-      elevationExtentsCache.Set(cacheKey, result, opts);
-      log.LogDebug($"Done elevation request");
-      return result;
+
+
+      return elevationExtentsCache.GetOrAdd(cacheKey, opts, () =>
+      {
+        ElevationStatisticsResult result;
+        if (filter == null || (filter.isFilterContainsSSOnly) || (filter.IsFilterEmpty))
+        {
+          log.LogDebug(
+            $"Calling elevation statistics from Project Extents for project {projectId} and filter {strFilter}");
+
+          var projectExtentsRequest = ExtentRequest.CreateExtentRequest(projectId,
+            filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
+          var extents =
+            RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient)
+              .Process(projectExtentsRequest) as ProjectExtentsResult;
+          result = ElevationStatisticsResult.CreateElevationStatisticsResult(
+            BoundingBox3DGrid.CreatBoundingBox3DGrid(extents.ProjectExtents.minX, extents.ProjectExtents.minY,
+              extents.ProjectExtents.minZ, extents.ProjectExtents.maxX, extents.ProjectExtents.maxY,
+              extents.ProjectExtents.maxZ), extents.ProjectExtents.minZ, extents.ProjectExtents.maxZ, 0);
+        }
+        else
+        {
+          log.LogDebug(
+            $"Calling elevation statistics from Elevation Statistics for project {projectId} and filter {strFilter}");
+
+          LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
+
+          ElevationStatisticsRequest statsRequest =
+            ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId, null, filter, 0,
+              liftSettings);
+          statsRequest.Validate();
+
+          result =
+            RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient)
+              .Process(statsRequest) as ElevationStatisticsResult;
+
+        }
+        //Check for 'No elevation range' result
+        const double NO_ELEVATION = 10000000000.0;
+        if (Math.Abs(result.MinElevation - NO_ELEVATION) < 0.001 &&
+            Math.Abs(result.MaxElevation + NO_ELEVATION) < 0.001)
+        {
+          result = null;
+        }
+        log.LogDebug($"Done elevation request");
+        return result;
+      });
     }
 
     /// <summary>
