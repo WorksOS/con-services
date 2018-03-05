@@ -173,7 +173,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
             foreach (var query in context.HttpContext.Request.Query.OrderBy(q => q.Key,
               StringComparer.OrdinalIgnoreCase))
             {
-              if (query.Key.ToUpperInvariant() != "TIMESTAMP")
+//              if (query.Key.ToUpperInvariant() != "TIMESTAMP")
               {
                 var value = query.Value;
 
@@ -194,7 +194,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
           {
             foreach (var queryKey in varyByRules.QueryKeys)
             {
-              if (queryKey.ToUpperInvariant() != "TIMESTAMP")
+          //    if (queryKey.ToUpperInvariant() != "TIMESTAMP")
               {
                 var value = context.HttpContext.Request.Query[queryKey];
 
