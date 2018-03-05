@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using log4net.Repository.Hierarchy;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 

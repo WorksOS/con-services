@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, _log, newRelicAttributes);
 
         // throw on system issues, not business rule failure
         throw;
@@ -145,7 +145,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
@@ -172,7 +172,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, _log, newRelicAttributes);
       }
       finally
       {
@@ -201,7 +201,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
@@ -225,7 +225,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, _log, newRelicAttributes);
       }
       finally
       {
@@ -258,7 +258,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, _log, newRelicAttributes);
         throw;
       }
 
@@ -287,7 +287,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Repository
         {
           {"message",message}
         };
-        NewRelicUtils.NotifyNewRelic("ImportedFileRepoNhOp", "Error", startUtc, _log, newRelicAttributes);
+        NewRelicUtils.NotifyNewRelic("ImportedFilesSyncTask", "Error", startUtc, _log, newRelicAttributes);
       }
       finally
       {
