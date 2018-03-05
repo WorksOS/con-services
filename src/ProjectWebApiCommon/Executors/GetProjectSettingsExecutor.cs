@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
