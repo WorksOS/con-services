@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
@@ -130,7 +129,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
-        .SetRaptorClient(raptorClient)
         .CreateCompactionReportGridRequest(
           reportElevation,
           reportCmv,
