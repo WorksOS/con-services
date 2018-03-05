@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
-using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Filter.Common.ResultHandling
 {
