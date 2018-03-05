@@ -68,7 +68,7 @@ namespace VSS.MasterData.Proxies
         { "fileDescriptor", fileDescriptor}, {"fileId", fileId.ToString()}, {"dxfUnitsType",dxfUnitsType.ToString()}
       };
 
-      var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&dxfUnitsType={dxfUnitsType}";
+      var queryParams = $"?{new System.Net.Http.FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
 
       return await NotifyFile<AddFileResult>("/addfile", queryParams, customHeaders);
     }
@@ -87,7 +87,15 @@ namespace VSS.MasterData.Proxies
     public async Task<BaseDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, long? legacyFileId, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.DeleteFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} legacyFileId: {legacyFileId}");
-      var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&legacyFileId={legacyFileId}";
+      //var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&legacyFileId={legacyFileId}";
+
+      Dictionary<string, string> parameters = new Dictionary<string, string>
+      {
+        { "projectUid", projectUid.ToString() }, {"fileType" , fileType.ToString() }, { "fileUid", fileUid.ToString() },
+        { "fileDescriptor", fileDescriptor}, {"fileId", fileId.ToString()}
+      };
+
+      var queryParams = $"?{new System.Net.Http.FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
 
       return await NotifyFile<BaseDataResult>("/deletefile", queryParams, customHeaders);
     }
