@@ -14,7 +14,8 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <param name="cacheLifeKey">The configuration key for the cache life</param>
     /// <returns>Memory cache options for the items</returns>
-    public static MemoryCacheEntryOptions GetCacheOptions(string cacheLifeKey, IConfigurationStore configurationStore, ILogger log)
+    public static MemoryCacheEntryOptions GetCacheOptions(string cacheLifeKey, IConfigurationStore configurationStore,
+      ILogger log)
     {
       const string DEFAULT_TIMESPAN_MESSAGE = "Using default 15 mins.";
 
@@ -23,7 +24,8 @@ namespace VSS.MasterData.Proxies
 
       if (string.IsNullOrEmpty(cacheLife))
       {
-        log.LogWarning($"Your application is missing an environment variable {cacheLifeKey}. {DEFAULT_TIMESPAN_MESSAGE}");
+        log.LogWarning(
+          $"Your application is missing an environment variable {cacheLifeKey}. {DEFAULT_TIMESPAN_MESSAGE}");
         cacheLife = "00:15:00";
       }
 
@@ -38,6 +40,18 @@ namespace VSS.MasterData.Proxies
       {
         SlidingExpiration = result
       };
+    }
+
+    //Lazy memoryCache instantiation 
+    public static T GetOrAdd<T>(this IMemoryCache cache, string key, MemoryCacheEntryOptions opts, Func<T> factory)
+    {
+      return cache.GetOrCreate<T>(key, entry => new Lazy<T>(() =>
+      {
+        entry.SetOptions(opts);
+
+        return factory.Invoke();
+      }).Value);
+
     }
   }
 }

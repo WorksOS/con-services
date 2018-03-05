@@ -37,40 +37,12 @@ namespace MockProjectWebApi.Controllers
     public ProjectSettingsDataResult GetMockProjectSettings(string projectUid)
     {
       Console.WriteLine("GetMockProjectSettings: projectUid={0}", projectUid);
-      JObject settings = null;
-      if (projectUid == ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID)
-      {
-        string projectSettings = @"{
-            customBulkingPercent: 6,
-            customCutFillTolerances: [0.22, 0.11, 0.055, 0, -0.055, -0.11, -0.22],
-            customPassCountTargets: [1,2,3,4,5,10,20,30],
-            customShrinkagePercent: 3,
-            customTargetCmv: 10,
-            customTargetCmvPercentMaximum: 100,
-            customTargetCmvPercentMinimum: 75,
-            customTargetMdp: 145,
-            customTargetMdpPercentMaximum: 100,
-            customTargetMdpPercentMinimum: 90,
-            customTargetPassCountMaximum: 3,
-            customTargetPassCountMinimum: 2,
-            customTargetSpeedMaximum: 11,
-            customTargetSpeedMinimum: 7,
-            customTargetTemperatureMaximum: 130,
-            customTargetTemperatureMinimum: 75,
-            useDefaultCutFillTolerances: false,
-            useDefaultPassCountTargets: false,
-            useDefaultTargetRangeCmvPercent: false,
-            useDefaultTargetRangeMdpPercent: false,
-            useDefaultTargetRangeSpeed: false,
-            useDefaultVolumeShrinkageBulking: false,
-            useMachineTargetCmv: false,
-            useMachineTargetMdp: false,
-            useMachineTargetPassCount: false,
-            useMachineTargetTemperature: false
-          }";
 
-        settings = JsonConvert.DeserializeObject<JObject>(projectSettings);
-      }
+      JObject settings = null;
+
+      if (projectUid == ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID)
+        settings = JsonConvert.DeserializeObject<JObject>(projectSettingsTargets);
+
       return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
     }
 
@@ -90,8 +62,16 @@ namespace MockProjectWebApi.Controllers
         var projectSettings = string.Empty;
 
         if (settingsType == ProjectSettingsType.Targets)
-        {
-          projectSettings = @"{
+          projectSettings = projectSettingsTargets;
+        else if (settingsType == ProjectSettingsType.Colors)
+          projectSettings = projectSettingsColors;
+
+        settings = JsonConvert.DeserializeObject<JObject>(projectSettings);
+      }
+      return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
+    }
+
+    private readonly string projectSettingsTargets = @"{
             customBulkingPercent: 6,
             customCutFillTolerances: [0.22, 0.11, 0.055, 0, -0.055, -0.11, -0.22],
             customPassCountTargets: [1,2,3,4,5,10,20,30],
@@ -119,10 +99,8 @@ namespace MockProjectWebApi.Controllers
             useMachineTargetPassCount: false,
             useMachineTargetTemperature: false
           }";
-        }
-        else if (settingsType == ProjectSettingsType.Colors)
-        {
-          projectSettings = @"{
+
+    private readonly string projectSettingsColors = @"{
             useDefaultElevationColors: true,
             elevationColors: [0xC80000, 0xFF0000, 0xFF3C00, 0xFF5A00, 0xFF8200, 0xFFAA00, 0xFFC800, 
                                 0xFFDC00, 0xFAE600, 0xDCE600, 0xD2E600, 0xC8E600, 0xB4E600, 0x96E600, 
@@ -160,12 +138,6 @@ namespace MockProjectWebApi.Controllers
             mdpOverTargetColor: 0xD50000,
             mdpUnderTargetColor: 0x1579B
           }";
-        }
-        settings = JsonConvert.DeserializeObject<JObject>(projectSettings);
-      }
-      return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
-    }
-
 
     private readonly List<ProjectData> projectList = new List<ProjectData>
     {

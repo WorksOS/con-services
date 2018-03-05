@@ -1,6 +1,6 @@
 ﻿using System.Net;
-using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Common.Exceptions
 {
