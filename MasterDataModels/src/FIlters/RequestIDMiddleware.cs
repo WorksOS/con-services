@@ -34,6 +34,9 @@ namespace VSS.MasterData.Models.FIlters
         context.Request.Headers["X-Request-ID"] = context.Items["RequestID"].ToString();
       }
       await this.NextRequestDelegate.Invoke(context);
+
+      if (!context.Response.Headers.ContainsKey("X-Request-ID"))
+        context.Response.Headers["X-Request-ID"] = context.Items["RequestID"].ToString();
     }
   }
 }
