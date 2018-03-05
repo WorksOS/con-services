@@ -287,6 +287,36 @@ namespace VSS.MasterData.Proxies
       });
     }
 
+
+    /// <summary>
+    /// Gets a master data item. If the item is not in the cache then requests the item from the relevant service and adds it to the cache.
+    /// </summary>
+    /// <param name="uid">The UID of the item to retrieve. Also the cache key</param>
+    /// <param name="userId">The user ID, only required if caching per user</param>
+    /// <param name="cacheLifeKey">The configuration store key for how long to cache items</param>
+    /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
+    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <returns>Master data item</returns>
+    protected async Task<T> GetMasterDataItem<T>(string uid, string userId, TimeSpan cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null)
+      if (cache == null)
+      {
+        throw new InvalidOperationException("This method requires a cache; use the correct constructor");
+      }
+      ClearCacheIfRequired<T>(uid, userId, customHeaders);
+      var cacheKey = GetCacheKey<T>(uid, userId);
+      var opts = new MemoryCacheEntryOptions(){AbsoluteExpirationRelativeToNow = cacheLifeKey };
+      T cacheData;
+
+      return await cache.GetOrAdd(cacheKey, opts, async () =>
+      {
+        log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
+        cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, null, route);
+        return cacheData;
+      });
+    }
+
+
     /// <summary>
     /// Gets a list of master data items for a customer. 
     /// If the list is not in the cache then requests items from the relevant service and adds the list to the cache.

@@ -192,7 +192,7 @@ namespace VSS.MasterData.Proxies
 
       public async Task<Stream> ExecuteActualStreamRequest()
       {
-        var request = PrepareWebRequest(endpoint, method, customHeaders, payloadData).Result;
+        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
 
         WebResponse response = null;
         try

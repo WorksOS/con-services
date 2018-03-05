@@ -7,7 +7,6 @@ using Newtonsoft.Json.Linq;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Proxies
 {
@@ -41,8 +40,9 @@ namespace VSS.MasterData.Proxies
         return result.Settings;
       }
  
-      log.LogWarning($"Failed to get project settings {settingsType}, using default values: {result.Code}, {result.Message}");
+      log.LogWarning("Failed to get project settings, using default values: {0}, {1}", result.Code, result.Message);
       return null;
+      
     }
 
     /// <summary>
@@ -54,6 +54,5 @@ namespace VSS.MasterData.Proxies
     {
       ClearCacheItem<ProjectSettingsDataResult>(projectUid, userId);
     }
-
   }
 }
