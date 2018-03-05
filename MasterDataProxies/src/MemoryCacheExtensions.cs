@@ -42,16 +42,23 @@ namespace VSS.MasterData.Proxies
       };
     }
 
-    //Lazy memoryCache instantiation 
-    public static T GetOrAdd<T>(this IMemoryCache cache, string key, MemoryCacheEntryOptions opts, Func<T> factory)
+    static object cacheLock = new object();
+    public static T GetOrAdd<T>(this IMemoryCache cache, string cacheKey, MemoryCacheEntryOptions opts, Func<T> factory)
     {
-      return cache.GetOrCreate<T>(key, entry => new Lazy<T>(() =>
+      if (cache.TryGetValue(cacheKey, out var promise))
+        return ((Lazy<T>)promise).Value;
+
+      Lazy<T> promiseToSet;
+
+      lock (cacheLock)
       {
-        entry.SetOptions(opts);
+        if (cache.TryGetValue(cacheKey, out var promiseBeforeSet))
+          return ((Lazy<T>)promiseBeforeSet).Value;
+        promiseToSet = new Lazy<T>(factory);
+        cache.Set(cacheKey, promiseToSet);
+      }
 
-        return factory.Invoke();
-      }).Value);
-
+      return promiseToSet.Value;
     }
   }
 }
