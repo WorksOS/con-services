@@ -68,7 +68,7 @@ namespace VSS.MasterData.Proxies
         { "fileDescriptor", fileDescriptor}, {"fileId", fileId.ToString()}, {"dxfUnitsType",dxfUnitsType.ToString()}
       };
 
-      var queryParams = $"?{new System.Net.Http.FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
+      var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&dxfUnitsType={dxfUnitsType}";
 
       return await NotifyFile<AddFileResult>("/addfile", queryParams, customHeaders);
     }
