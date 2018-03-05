@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Common.Exceptions
 {

@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
-using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.FlowJSHandler;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -90,7 +85,7 @@ namespace MockProjectWebApi.Controllers
         return new FileDataSingleResult { ImportedFileDescriptor = dimensionsFileList.SingleOrDefault(f => f.Name.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase))};
       }
 
-      return new FileDataSingleResult {Code = VSS.Common.ResultsHandling.ContractExecutionStatesEnum.InternalProcessingError, Message = "Failed to create imported file"};
+      return new FileDataSingleResult {Code = VSS.MasterData.Models.ResultHandling.Abstractions.ContractExecutionStatesEnum.InternalProcessingError, Message = "Failed to create imported file"};
     }
 
     
@@ -121,7 +116,7 @@ namespace MockProjectWebApi.Controllers
         return new FileDataSingleResult { ImportedFileDescriptor = dimensionsFileList.SingleOrDefault(f => f.Name == file.flowFilename) };
       }
 
-      return new FileDataSingleResult { Code = VSS.Common.ResultsHandling.ContractExecutionStatesEnum.InternalProcessingError, Message = "Failed to update imported file" };
+      return new FileDataSingleResult { Code = VSS.MasterData.Models.ResultHandling.Abstractions.ContractExecutionStatesEnum.InternalProcessingError, Message = "Failed to update imported file" };
     }
     
 

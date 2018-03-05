@@ -3,8 +3,8 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 using VSS.Common.Exceptions;
-using ContractExecutionResult = VSS.Common.ResultsHandling.ContractExecutionResult;
-using ContractExecutionStatesEnum = VSS.Common.ResultsHandling.ContractExecutionStatesEnum;
+using ContractExecutionResult = VSS.MasterData.Models.ResultHandling.Abstractions.ContractExecutionResult;
+using ContractExecutionStatesEnum = VSS.MasterData.Models.ResultHandling.Abstractions.ContractExecutionStatesEnum;
 
 
 namespace MockProjectWebApi.Common
