@@ -260,8 +260,6 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var raptorClient = new Mock<IASNodeClient>();
 
-      TDesignProfilerRequestResult designProfilerResult = TDesignProfilerRequestResult.dppiOK;
-      var ms = new MemoryStream();
       TWGS84Point[] fence = 
       {
         new TWGS84Point{Lat = 36.1.LatDegreesToRadians(), Lon = -115.1.LonDegreesToRadians()},
