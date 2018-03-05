@@ -1,6 +1,6 @@
 ﻿using System;
 using VLPDDecls;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {

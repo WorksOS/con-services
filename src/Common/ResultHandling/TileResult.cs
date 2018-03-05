@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using ASNodeDecls;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Extensions;
 
 namespace VSS.Productivity3D.Common.ResultHandling

@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
