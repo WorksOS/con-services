@@ -276,21 +276,15 @@ namespace VSS.MasterData.Proxies
       }
       ClearCacheIfRequired<T>(uid, userId, customHeaders);
       var cacheKey = GetCacheKey<T>(uid, userId);
+      var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
       T cacheData;
-      if (!cache.TryGetValue(cacheKey, out cacheData))
-      {
-        log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
-        var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
-        cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, null, route);
-        cache.Set(cacheKey, cacheData, opts);
-        
-      }
-      else
+      return await cache.GetOrAdd(cacheKey, opts, async () =>
       {
-        log.LogDebug($"Found item for key {cacheKey} in cache");
-      }
-      return cacheData;
+          log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
+          cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, null, route);
+          return cacheData;
+      });
     }
 
     /// <summary>
@@ -313,15 +307,14 @@ namespace VSS.MasterData.Proxies
       }
       ClearCacheIfRequired<T>(customerUid, userId, customHeaders);
       var cacheKey = GetCacheKey<T>(customerUid, userId);
+      var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
       List<T> cacheData;
-      if (!cache.TryGetValue(cacheKey, out cacheData))
-      {
-        var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
+      return await cache.GetOrAdd(cacheKey, opts, async () =>
+      {
         cacheData = await GetMasterDataList<T>(urlKey, customHeaders, route);
-        cache.Set(cacheKey, cacheData, opts);
-      }
-      return cacheData;
+        return cacheData;
+      });
     }
 
     /// <summary>
@@ -337,24 +330,24 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of Master data items</returns>
     protected async Task<T> GetContainedMasterDataList<T>(string uid, string userId, string cacheLifeKey, string urlKey,
-                  IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
+      IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
+    {
+      if (cache == null)
       {
-        if (cache == null)
-        {
-          throw new InvalidOperationException("This method requires a cache; use the correct constructor");
-        }
-        ClearCacheIfRequired<T>(uid, userId, customHeaders);
-        var cacheKey = GetCacheKey<T>(uid, userId);
-        T cacheData;
-        if (!cache.TryGetValue(cacheKey, out cacheData))
-        {
-          var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
-
-        cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, queryParams, route);
-          cache.Set(cacheKey, cacheData, opts);
-        }
-        return cacheData;
+        throw new InvalidOperationException("This method requires a cache; use the correct constructor");
       }
+      ClearCacheIfRequired<T>(uid, userId, customHeaders);
+      var cacheKey = GetCacheKey<T>(uid, userId);
+      var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
+      T cacheData;
+
+      return await cache.GetOrAdd(cacheKey, opts, async () =>
+      {
+        cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, queryParams, route);
+        return cacheData;
+      });
+    }
+
     /// <summary>
     /// Gets the requested base URL from the configuration and adds the route to get the full URL.
     /// Also adds any query parameters.
