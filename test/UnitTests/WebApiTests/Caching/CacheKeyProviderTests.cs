@@ -80,35 +80,6 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       Assert.IsTrue(key.ToLowerInvariant().Contains(projectGuid.ToString()));
     }
 
-    [TestMethod]
-    public void CanFindProjectUidInBaseKey()
-    {
-      var defaultContext = new DefaultHttpContext();
-      var defaultRequest = new DefaultHttpRequest(defaultContext);
-      defaultRequest.Method = "GET";
-      var projectGuid = Guid.NewGuid();
-      defaultRequest.Path = $"/MYPATH";
-      defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}");
-      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), null, new FakeResponseCacheOptions());
-      var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
-      var parsedGuid = this.ServiceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractProjectGuidFromKey(key);
-      Assert.AreEqual(projectGuid, parsedGuid);
-    }
-
-    [TestMethod]
-    public void CanFindFilterUidInBaseKey()
-    {
-      var defaultContext = new DefaultHttpContext();
-      var defaultRequest = new DefaultHttpRequest(defaultContext);
-      defaultRequest.Method = "GET";
-      var projectGuid = Guid.NewGuid();
-      defaultRequest.Path = $"/MYPATH";
-      defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}&filteruid={projectGuid}");
-      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), null, new FakeResponseCacheOptions());
-      var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
-      var parsedHash = this.ServiceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractFilterHashFromKey(key);
-      Assert.IsTrue(parsedHash!=-1);
-    }
 
     [TestMethod]
     public void CanFindFilterUidInBaseKeyCompareHash()
