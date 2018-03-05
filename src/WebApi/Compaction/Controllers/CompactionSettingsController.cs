@@ -62,12 +62,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<ContractExecutionResult> ValidateProjectSettings(
       [FromQuery] Guid projectUid,
       [FromQuery] string projectSettings,
-      [FromQuery] ProjectSettingsType settingsType)
+      [FromQuery] ProjectSettingsType? settingsType)
     {
       log.LogInformation("ValidateProjectSettings: " + Request.QueryString);
 
       if (!string.IsNullOrEmpty(projectSettings))
       {
+        if (settingsType == null)
+          settingsType = ProjectSettingsType.Targets;
+
         switch (settingsType)
         {
           case ProjectSettingsType.Targets:
