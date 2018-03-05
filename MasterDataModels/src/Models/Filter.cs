@@ -206,7 +206,12 @@ namespace VSS.MasterData.Models.Models
       LayerNumber.HasValue ||
       ForwardDirection.HasValue ||
       (ContributingMachines != null && ContributingMachines.Count > 0) ||
-      (PolygonLL != null && PolygonLL.Count > 0);
+      (PolygonLL != null && PolygonLL.Count > 0) ||
+      !string.IsNullOrEmpty(AlignmentUid) ||
+      StartStation.HasValue ||
+      EndStation.HasValue ||
+      LeftOffset.HasValue ||
+      RightOffset.HasValue;
 
     public void AddBoundary(string polygonUID, string polygonName, List<WGSPoint> polygonLL)
     {

@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Json\Filters\DimensionsAlignmentFilter.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryCMV.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilter.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
@@ -43,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMV.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilter.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
