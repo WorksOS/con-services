@@ -12,7 +12,7 @@ namespace VSS.MasterData.Proxies
   /// <summary>
   /// Base class for proxies getting master data from services.
   /// </summary>
-  public class BaseProxy
+  public class BaseProxy 
   {
     protected readonly ILogger log;
     private readonly ILoggerFactory logger;
@@ -49,7 +49,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">Http method, defaults to POST</param>
     /// <param name="queryParameters">Query parameters (optional)</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null, string method = "POST", string queryParameters = null)
+    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null, string method="POST", string queryParameters=null)
     {
       var url = ExtractUrl(urlKey, route, queryParameters);
       T result = default(T);
@@ -86,7 +86,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">Http method, defaults to POST</param>
     /// <param name="queryParameters">Query parameters (optional)</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null, string method = "POST", IDictionary<string, string> queryParameters = null)
+    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null, string method = "POST", IDictionary<string,string> queryParameters = null)
     {
       var url = ExtractUrl(urlKey, route, queryParameters);
       T result = default(T);
@@ -129,7 +129,7 @@ namespace VSS.MasterData.Proxies
       try
       {
         GracefulWebRequest request = new GracefulWebRequest(logger, configurationStore);
-        result = await request.ExecuteRequest<T>(url, payload, customHeaders, method);
+        result = await request.ExecuteRequest<T>(url, payload, customHeaders,method);
         log.LogDebug("Result of send to master data request: {0}", result);
       }
       catch (Exception ex)
@@ -160,9 +160,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParams"></param>
     /// <param name="method">Http method, defaults to POST</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders, string route = null, IDictionary<string, string> queryParams = null, string method = "POST")
+    protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders, string route = null, IDictionary<string,string> queryParams = null, string method = "POST")
     {
-      var url = ExtractUrl(urlKey, route, queryParams);
+      var url = ExtractUrl(urlKey, route,queryParams);
       T result = default(T);
       try
       {
@@ -194,7 +194,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of items</returns>
-    private async Task<List<T>> GetMasterDataList<T>(string urlKey, IDictionary<string, string> customHeaders, string route = null)
+    private async Task<List<T>> GetMasterDataList<T>(string urlKey, IDictionary<string, string> customHeaders, string route = null) 
     {
       var url = ExtractUrl(urlKey, route, string.Empty);
 
@@ -230,7 +230,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParams">Query parameters for the request (optional)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of items</returns>
-    protected async Task<T> GetMasterDataItem<T>(string urlKey, IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
+    protected async Task<T> GetMasterDataItem<T>(string urlKey, IDictionary<string, string> customHeaders, string queryParams=null, string route=null)
     {
       var url = ExtractUrl(urlKey, route, queryParams);
 
@@ -268,7 +268,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>Master data item</returns>
-    protected async Task<T> GetMasterDataItem<T>(string uid, string userId, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null)
+    protected async Task<T> GetMasterDataItem<T>(string uid, string userId, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) 
     {
       if (cache == null)
       {
@@ -276,21 +276,15 @@ namespace VSS.MasterData.Proxies
       }
       ClearCacheIfRequired<T>(uid, userId, customHeaders);
       var cacheKey = GetCacheKey<T>(uid, userId);
+      var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
       T cacheData;
-      if (!cache.TryGetValue(cacheKey, out cacheData))
-      {
-        log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
-        var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
-        cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, null, route);
-        cache.Set(cacheKey, cacheData, opts);
-
-      }
-      else
+      return await cache.GetOrAdd(cacheKey, opts, async () =>
       {
-        log.LogDebug($"Found item for key {cacheKey} in cache");
-      }
-      return cacheData;
+          log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
+          cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, null, route);
+          return cacheData;
+      });
     }
 
     /// <summary>
@@ -305,7 +299,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of Master data items</returns>
     protected async Task<List<T>> GetMasterDataList<T>(string customerUid, string userId, string cacheLifeKey, string urlKey,
-                IDictionary<string, string> customHeaders, string route = null)
+                IDictionary<string, string> customHeaders, string route = null) 
     {
       if (cache == null)
       {
@@ -313,15 +307,14 @@ namespace VSS.MasterData.Proxies
       }
       ClearCacheIfRequired<T>(customerUid, userId, customHeaders);
       var cacheKey = GetCacheKey<T>(customerUid, userId);
+      var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
       List<T> cacheData;
-      if (!cache.TryGetValue(cacheKey, out cacheData))
-      {
-        var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
+      return await cache.GetOrAdd(cacheKey, opts, async () =>
+      {
         cacheData = await GetMasterDataList<T>(urlKey, customHeaders, route);
-        cache.Set(cacheKey, cacheData, opts);
-      }
-      return cacheData;
+        return cacheData;
+      });
     }
 
     /// <summary>
@@ -337,7 +330,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of Master data items</returns>
     protected async Task<T> GetContainedMasterDataList<T>(string uid, string userId, string cacheLifeKey, string urlKey,
-                  IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
+      IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
     {
       if (cache == null)
       {
@@ -345,16 +338,16 @@ namespace VSS.MasterData.Proxies
       }
       ClearCacheIfRequired<T>(uid, userId, customHeaders);
       var cacheKey = GetCacheKey<T>(uid, userId);
+      var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
       T cacheData;
-      if (!cache.TryGetValue(cacheKey, out cacheData))
-      {
-        var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
+      return await cache.GetOrAdd(cacheKey, opts, async () =>
+      {
         cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, queryParams, route);
-        cache.Set(cacheKey, cacheData, opts);
-      }
-      return cacheData;
+        return cacheData;
+      });
     }
+
     /// <summary>
     /// Gets the requested base URL from the configuration and adds the route to get the full URL.
     /// Also adds any query parameters.
@@ -363,7 +356,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Any additional routing</param>
     /// <param name="queryParameters">Any query parameters</param>
     /// <returns></returns>
-    private string ExtractUrl(string urlKey, string route, string queryParameters = null)
+    private string ExtractUrl(string urlKey, string route, string queryParameters=null)
     {
       string url = configurationStore.GetValueString(urlKey);
       log.LogInformation(string.Format("{0}: {1}, route={2}, queryParameters={3}", urlKey, url, route, queryParameters));
@@ -393,7 +386,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Any additional routing</param>
     /// <param name="queryParameters">Any query parameters</param>
     /// <returns></returns>
-    private string ExtractUrl(string urlKey, string route, IDictionary<string, string> queryParameters = null)
+    private string ExtractUrl(string urlKey, string route, IDictionary<string,string> queryParameters = null)
     {
       string url = configurationStore.GetValueString(urlKey);
       log.LogInformation(string.Format("{0}: {1}, route={2}, queryParameters={3}", urlKey, url, route, queryParameters));
@@ -408,11 +401,11 @@ namespace VSS.MasterData.Proxies
       {
         url += route;
       }
-      if (queryParameters != null)
+      if (queryParameters!=null)
       {
         url += "?";
         url += new System.Net.Http.FormUrlEncodedContent(queryParameters)
-          .ReadAsStringAsync().Result;
+          .ReadAsStringAsync().Result; 
       }
       return url;
     }
