@@ -196,7 +196,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetProjectThumbnail: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
-        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height);
+        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height,true);
       //Short-circuit cache time for Archived projects
       if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
@@ -213,8 +213,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
 
-      var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
-        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height);
+      var tileResult =await  GetGeneratedTile(projectUid, null, null, null, null,
+        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height,true);
       //Short-circuit cache time for Archived projects
       if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
@@ -236,7 +236,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       var project = (User as RaptorPrincipal).GetProject(projectUid);
       var projectSettings = await GetProjectSettings(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var filter = thumbnail ? null : await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var designDescriptor = (!volumeCalcType.HasValue || volumeCalcType.Value == VolumeCalcType.None)
@@ -315,7 +315,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private async Task<UserPreferenceData> GetUserPreferences()
     {
-      var userPreferences = await prefProxy.GetUserPreferences(CustomHeaders);
+      var userPreferences = await prefProxy.GetShortCachedUserPreferences((User as RaptorPrincipal).UserEmail, TimeSpan.FromSeconds(10), CustomHeaders);
       if (userPreferences == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

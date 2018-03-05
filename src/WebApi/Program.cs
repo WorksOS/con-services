@@ -37,7 +37,10 @@ namespace VSS.Productivity3D.WebApi
       var host = new WebHostBuilder()
         .UseConfiguration(config)
         .UseKestrel()
-        .UseLibuv(opts => opts.ThreadCount = 64)
+        .UseLibuv(opts =>
+        {
+          opts.ThreadCount = 32;
+        })
         .UseContentRoot(pathToContentRoot)
         .ConfigureLogging(builder =>
         {
@@ -48,7 +51,9 @@ namespace VSS.Productivity3D.WebApi
         .UseStartup<Startup>()
         .Build();
 
-      ThreadPool.SetMaxThreads(256, 1024);
+      ThreadPool.SetMaxThreads(1024, 2048);
+      ThreadPool.SetMinThreads(1024, 2048);
+
       //Check how many requests we can execute
       ServicePointManager.DefaultConnectionLimit = 128;
 

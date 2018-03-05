@@ -32,50 +32,9 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection
-        .AddSingleton<IMemoryCacheBuilder<Guid>, MemoryCacheBuilder<Guid>>()
         .AddTransient<IOptions<MemoryCacheOptions>, MemoryCacheOptions>();
       
       serviceProvider = serviceCollection.BuildServiceProvider();
     }
-
-    [TestMethod]
-    public void CanResolveMemoryCacheBuilder()
-    {
-      Assert.IsNotNull(serviceProvider.GetRequiredService<IMemoryCacheBuilder<Guid>>());
-    }
-
-    [TestMethod]
-    public void CanGetMemoryCacheObject()
-    {
-      var builder = serviceProvider.GetRequiredService<IMemoryCacheBuilder<Guid>>();
-      var cache1 = builder.GetMemoryCache(Guid.NewGuid());
-      var cache2 = builder.GetMemoryCache(Guid.NewGuid());
-      Assert.IsNotNull(cache1);
-      Assert.IsNotNull(cache2);
-      Assert.AreNotSame(cache1,cache2);
-    }
-
-    [TestMethod]
-    public void CanDisposeMemoryCacheObject()
-    {
-      var builder = serviceProvider.GetRequiredService<IMemoryCacheBuilder<Guid>>();
-      var cacheGuid = Guid.NewGuid();
-      var cache1 = builder.GetMemoryCache(cacheGuid);
-      builder.ClearMemoryCache(cacheGuid);
-
-      Assert.ThrowsException<ObjectDisposedException>(()=>cache1.TryGetValue("123",out var value));
-    }
-
-
-    [TestMethod]
-    public void CanSwallowInvalidClearRequest()
-    {
-      var builder = serviceProvider.GetRequiredService<IMemoryCacheBuilder<Guid>>();
-      var cacheGuid = Guid.NewGuid();
-      var cache1 = builder.GetMemoryCache(cacheGuid);
-      builder.ClearMemoryCache(Guid.NewGuid());
-      Assert.IsNotNull(cache1);
-    }
-
   }
 }
