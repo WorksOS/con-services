@@ -194,7 +194,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid)
     {
       log.LogDebug("GetProjectThumbnail: " + Request.QueryString);
-
+      
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
         null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height,true);
       //Short-circuit cache time for Archived projects
@@ -226,7 +226,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get the generated tile for the request
     /// </summary>
     private async Task<TileResult> GetGeneratedTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, Guid? volumeBaseUid, Guid? volumeTopUid, VolumeCalcType? volumeCalcType,
-      TileOverlayType[] overlays, int width, int height, MapType? mapType, DisplayMode? mode)
+      TileOverlayType[] overlays, int width, int height, MapType? mapType, DisplayMode? mode, bool thumbnail = false)
     {
       var overlayTypes = overlays.ToList();
       if (overlays.Contains(TileOverlayType.AllOverlays))
