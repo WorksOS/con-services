@@ -195,13 +195,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogDebug("GetProjectThumbnail: " + Request.QueryString);
       
-      var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
+   /*   var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
         null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height,true);
       //Short-circuit cache time for Archived projects
       if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
-      Response.Headers.Add("X-Warning", "false");
-      return tileResult;
+      Response.Headers.Add("X-Warning", "false");*/
+      return TileResult.EmptyTile(10,10);
     }
 
     [ProjectUidVerifier]

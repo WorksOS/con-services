@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// </summary>
     private readonly IFilterServiceProxy filterServiceProxy;
 
-    private readonly IMemoryCache cacheBuilder;
+    private readonly IResponseCache cache;
 
     /// <summary>
     /// Constructor with injection
@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
       IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy,
-      IFilterServiceProxy filterServiceProxy, IMemoryCache cacheBuilder)
+      IFilterServiceProxy filterServiceProxy, IResponseCache cache)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       this.tileGenerator = tileGenerator;
       this.fileListProxy = fileListProxy;
       this.filterServiceProxy = filterServiceProxy;
-      this.cacheBuilder = cacheBuilder;
+      this.cache = cache;
     }
 
     /// <summary>
@@ -145,7 +145,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var result = await executor.ProcessAsync(request) as Models.Notification.Models.AddFileResult;
       //Do we need to validate fileUid ?
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
-      cacheBuilder.Remove($"PRJUID={projectUid.ToString().ToUpperInvariant()}");
+      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
       return result;
     }
@@ -198,7 +198,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
-      cacheBuilder.Remove($"PRJUID={projectUid.ToString().ToUpperInvariant()}");
+      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
     }
@@ -231,7 +231,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       }
       var customHeaders = Request.Headers.GetCustomHeaders();
       await ClearFilesCaches(projectUid, fileUids, customHeaders);
-      cacheBuilder.Remove($"PRJUID={projectUid.ToString().ToUpperInvariant()}");
+      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
       log.LogInformation("GetUpdateFiles returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Update files notification successful");
     }
@@ -255,7 +255,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       log.LogDebug("GetNotifyImportedFileChange: " + Request.QueryString);
       var customHeaders = Request.Headers.GetCustomHeaders();
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
-      cacheBuilder.Remove($"PRJUID={projectUid.ToString().ToUpperInvariant()}");
+      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
       log.LogInformation("GetNotifyImportedFileChange returned");
       return new ContractExecutionResult();
     }
