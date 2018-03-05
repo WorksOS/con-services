@@ -299,6 +299,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>Master data item</returns>
     protected async Task<T> GetMasterDataItem<T>(string uid, string userId, TimeSpan cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null)
+    { 
       if (cache == null)
       {
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
