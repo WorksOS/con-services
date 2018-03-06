@@ -78,27 +78,6 @@ namespace VSS.Productivity3D.WebApiTests.Caching
 
       Assert.IsTrue(key.ToLowerInvariant().Contains(projectGuid.ToString()));
     }
-
-    [TestMethod]
-    public void CanFindFilterUidInBaseKeyCompareHash()
-    {
-      var defaultContext = new DefaultHttpContext();
-      var defaultRequest = new DefaultHttpRequest(defaultContext) { Method = "GET" };
-      var projectGuid = Guid.NewGuid();
-      defaultRequest.Path = $"/MYPATH";
-      defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}&filteruid={projectGuid}");
-
-      var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), null, new FakeResponseCacheOptions());
-      var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
-
-      var keyProvider1 = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), null, new FakeResponseCacheOptions());
-      var key1 = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
-
-      var parsedHash = this.ServiceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractFilterHashFromKey(key);
-      var parsedHash1 = this.ServiceProvider.GetRequiredService<IResponseCachingKeyProvider>().ExtractFilterHashFromKey(key1);
-
-      Assert.AreEqual(parsedHash, parsedHash1);
-    }
   }
 
   public class FakeFilterProxy : IFilterServiceProxy

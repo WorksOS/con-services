@@ -241,20 +241,4 @@ namespace VSS.Productivity3D.Common.Filters.Caching
     }
   }
 
-  public static class CachingKeyExtensions
-  {
-    public static Guid ExtractProjectGuidFromKey(this IResponseCachingKeyProvider cachingKeyProvider, string key)
-    {
-      if (key.IndexOf(CustomResponseCachingKeyProvider.ProjectDelimiter) <= 0) return Guid.Empty;
-      var indexOfDelimiter = key.LastIndexOf(CustomResponseCachingKeyProvider.ProjectDelimiter);
-      return Guid.Parse(key.Substring(indexOfDelimiter + 1, 36));
-    }
-
-    public static int ExtractFilterHashFromKey(this IResponseCachingKeyProvider cachingKeyProvider, string key)
-    {
-      if (key.IndexOf(CustomResponseCachingKeyProvider.FilterDelimiter) <= 0) return -1;
-      var indexOfDelimiter = key.LastIndexOf(CustomResponseCachingKeyProvider.FilterDelimiter);
-      return int.Parse(Regex.Match(key.Substring(indexOfDelimiter + 1), @"\d+").Value);
-    }
-  }
 }
