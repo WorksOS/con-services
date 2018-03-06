@@ -1,24 +1,24 @@
 {
-  "GoodAlignment": {
-    "StartOffset": 591.9539794921875,
-    "EndOffset": 624.0980224609375,
+  "GoodRequest_ALGN": {
+    "StartStation": 0.0,
+    "EndStation": 197.7762153912619,
     "Code": 0,
     "Message": "success"
   },
   "NoDesignFilter_ER": {
-  "BoundingExtents": {
-    "maxX": 2913.2900000000004,
-    "maxY": 1250.69,
-    "maxZ": 624.1365966796875,
-    "minX": 2306.05,
-    "minY": 1125.2300000000003,
-    "minZ": 591.953857421875
-  },
-  "MinElevation": 591.953857421875,
-  "MaxElevation": 624.1365966796875,
-  "TotalCoverageArea": 0.0,
-  "Code": 0,
-  "Message": "success"
+    "BoundingExtents": {
+      "maxX": 2913.2900000000004,
+      "maxY": 1250.69,
+      "maxZ": 624.1365966796875,
+      "minX": 2306.05,
+      "minY": 1125.2300000000003,
+      "minZ": 591.953857421875
+    },
+    "MinElevation": 591.953857421875,
+    "MaxElevation": 624.1365966796875,
+    "TotalCoverageArea": 0.0,
+    "Code": 0,
+    "Message": "success"
   },
   "NoData_ER": {
     "boundingExtents": null,

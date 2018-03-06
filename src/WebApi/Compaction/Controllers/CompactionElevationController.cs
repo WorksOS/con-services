@@ -158,8 +158,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       request.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      var result = WithServiceExceptionTryExecute(() =>
         boundingBoxService.GetAlignmentStationRange(projectId, alignmentDescriptor));
+
+      return result;
     }
 
 
