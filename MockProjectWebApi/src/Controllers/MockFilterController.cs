@@ -89,7 +89,8 @@ namespace MockProjectWebApi.Controllers
                 FilterDescriptors.Dimensions.SummaryVolumesFilterNull,
                 FilterDescriptors.Dimensions.SummaryVolumesTemperature,
                 FilterDescriptors.Dimensions.ReportDxfTile,
-                FilterDescriptors.Dimensions.DimensionsAlignmentFilter
+                FilterDescriptors.Dimensions.DimensionsAlignmentFilter0to200,
+                FilterDescriptors.Dimensions.DimensionsAlignmentFilter100to200
               }
             };
           }

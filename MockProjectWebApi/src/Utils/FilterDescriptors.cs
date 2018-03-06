@@ -127,10 +127,15 @@ namespace MockProjectWebApi.Utils
         FilterUid = "7b2bd262-8355-44ba-938a-d50f9712dafc",
         FilterJson = JsonResourceHelper.GetFilterJson("ReportDxfTile")
       };
-      public static FilterDescriptor DimensionsAlignmentFilter => new FilterDescriptor
+      public static FilterDescriptor DimensionsAlignmentFilter0to200 => new FilterDescriptor
+      {
+        FilterUid = "2811c7c3-d270-4d63-97e2-fc3340bf6c7a",
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsAlignmentFilter0to200")
+      };
+      public static FilterDescriptor DimensionsAlignmentFilter100to200 => new FilterDescriptor
       {
         FilterUid = "2811c7c3-d270-4d63-97e2-fc3340bf6c6b",
-        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsAlignmentFilter")
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsAlignmentFilter100to200")
       };
     }
   }
