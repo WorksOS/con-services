@@ -120,7 +120,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     [Route("api/v2/notification/addfile")]
     [HttpGet]
     public async Task<Models.Notification.Models.AddFileResult> GetAddFile(
-      [FromQuery] Guid projectUid,
+      [FromQuery] string projectUid,
       [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
         projectDescr.projectId,
-        projectUid, fileDes,
+        Guid.Parse(projectUid), fileDes,
         coordSystem,
         dxfUnitsType,
         fileId,
@@ -166,7 +166,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     [Route("api/v2/notification/deletefile")]
     [HttpGet]
     public async Task<ContractExecutionResult> GetDeleteFile(
-      [FromQuery] Guid projectUid,
+      [FromQuery] string projectUid,
       [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
@@ -194,7 +194,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         }
       }
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType, legacyFileId);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, Guid.Parse(projectUid), fileDes, null, DxfUnitsType.Meters, fileId, fileType, legacyFileId);
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
@@ -214,11 +214,11 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     [Route("api/v2/notification/updatefiles")]
     [HttpGet]
     public async Task<ContractExecutionResult> GetUpdateFiles(
-      [FromQuery] Guid projectUid,
+      [FromQuery] string projectUid,
       [FromQuery] Guid[] fileUids)
     {
       log.LogDebug("GetUpdateFiles: " + Request.QueryString);
-      if (projectUid == Guid.Empty)
+      if (Guid.Parse(projectUid) == Guid.Empty)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -250,7 +250,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     [Route("api/v2/notification/importedfilechange")]
     [HttpGet]
     public async Task<ContractExecutionResult> GetNotifyImportedFileChange(
-      [FromQuery] Guid projectUid,
+      [FromQuery] string projectUid,
       [FromQuery] Guid fileUid)
     {
       log.LogDebug("GetNotifyImportedFileChange: " + Request.QueryString);
@@ -270,7 +270,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     [Route("api/v2/notification/filterchange")]
     [HttpGet]
     public ContractExecutionResult GetNotifyFilterChange(
-      [FromQuery] Guid filterUid, [FromQuery] Guid projectUid)
+      [FromQuery] Guid filterUid, [FromQuery] string projectUid)
     {
       log.LogDebug("GetNotifyFilterChange: " + Request.QueryString);
       filterServiceProxy.ClearCacheItem(filterUid.ToString());
@@ -286,7 +286,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="fileUids">The file UIDs of files that have been activated/deactivated</param>
     /// <param name="customHeaders">The custom headers of the notification request</param>
     /// <returns>The updated list of imported files</returns>
-    private async Task<List<FileData>> ClearFilesCaches(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders)
+    private async Task<List<FileData>> ClearFilesCaches(string projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders)
     {
       log.LogInformation("Clearing imported files cache for project {0}", projectUid);
       //Clear file list cache and reload
@@ -326,7 +326,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="customHeaders">The custom headers of the notification request</param>
     /// <returns></returns>
-    private async Task<List<MasterData.Models.Models.Filter>> GetFilters(Guid projectUid, IDictionary<string, string> customHeaders)
+    private async Task<List<MasterData.Models.Models.Filter>> GetFilters(string projectUid, IDictionary<string, string> customHeaders)
     {
       var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
       if (filterDescriptors == null || filterDescriptors.Count == 0)
