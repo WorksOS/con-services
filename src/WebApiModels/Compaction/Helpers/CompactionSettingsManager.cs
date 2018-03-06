@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationBelowColor, -1));
             for (int i = 0; i < colors.Count; i++)
             {
-              palette.Add(ColorPalette.CreateColorPalette((uint)colors[i], elevExtents.MinElevation + i * step));
+              palette.Add(ColorPalette.CreateColorPalette((uint) colors[i], elevExtents.MinElevation + i * step));
             }
             palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationAboveColor, -1));
           }
@@ -84,7 +84,25 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         case DisplayMode.CCV:
           const int STEP = 100;
           // Decimal values: 87963, 2388910, 4755393, 7056597, 9423080, 11789820, 14413000, 10079077, 6594104, 2975773, 16764114, 16163752, 15628926, 15028564, 14493738, 13959168
-          List<uint> cmvColors = new List<uint> { 0x01579B, 0x2473AE, 0x488FC1, 0x6BACD5, 0x8FC8E8, 0xB3E5FC, 0xDBECC8, 0x99CB65, 0x649E38, 0x2D681D, 0xFFCCD2, 0xF6A3A8, 0xEE7A7E, 0xE55154, 0xDD282A, 0xD50000 };
+          List<uint> cmvColors = new List<uint>
+          {
+            0x01579B,
+            0x2473AE,
+            0x488FC1,
+            0x6BACD5,
+            0x8FC8E8,
+            0xB3E5FC,
+            0xDBECC8,
+            0x99CB65,
+            0x649E38,
+            0x2D681D,
+            0xFFCCD2,
+            0xF6A3A8,
+            0xEE7A7E,
+            0xE55154,
+            0xDD282A,
+            0xD50000
+          };
 
           for (int i = 0; i < cmvColors.Count; i++)
           {
@@ -94,7 +112,18 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           break;
         case DisplayMode.PassCount:
           PassCountSettings passCountSettings = CompactionPassCountSettings(projectSettings);
-          List<uint> passCountDetailColors = new List<uint> { 0x2D5783, 0x439BDC, 0xBEDFF1, 0x9DCE67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037 };
+          List<uint> passCountDetailColors = new List<uint>
+          {
+            0x2D5783,
+            0x439BDC,
+            0xBEDFF1,
+            0x9DCE67,
+            0x6BA03E,
+            0x3A6B25,
+            0xF6CED3,
+            0xD57A7C,
+            0xC13037
+          };
           for (int i = 0; i < passCountSettings.passCounts.Length; i++)
           {
             //The colors and values for 1-8
@@ -112,7 +141,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         case DisplayMode.CutFill:
           //Note: cut-fill also requires a design for tile requests 
           var cutFillTolerances = CompactionCutFillSettings(projectSettings);
-          List<uint> cutFillColors = new List<uint> { 0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x039BE5,  0x01579B };
+          List<uint> cutFillColors =
+            new List<uint> {0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x039BE5, 0x01579B};
           for (int i = 0; i < cutFillColors.Count; i++)
           {
             palette.Add(ColorPalette.CreateColorPalette(cutFillColors[i], cutFillTolerances[i]));
@@ -146,19 +176,30 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           break;
         case DisplayMode.CMVChange:
           var cmvPercentChangeSettings = CompactionCmvPercentChangeSettings(projectSettings);
-          /*          List<uint> cmvPercentChangeColors = new List<uint> { 0x01579B, 0x039BE5, 0x4FC3F7, 0xB3E5FC, 0x8BC34A, 0xFFCDD2, 0xE57373, 0xD50000 };
-                    palette.Add(ColorPalette.CreateColorPalette(Colors.None, double.MinValue));
-                    for (int i = 0; i < cmvPercentChangeSettings.Length; i++)
-                    {
-                      palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[i], cmvPercentChangeSettings[i]));
-                    }
-                    palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[cmvPercentChangeColors.Count-1], NO_CCV));*/
+          List<uint> cmvPercentChangeColors = new List<uint>
+          {
+            0x01579B,
+            0x039BE5,
+            0x4FC3F7,
+            0xB3E5FC,
+            0x8BC34A,
+            0xFFCDD2,
+            0xE57373,
+            0xD50000
+          };
+          palette.Add(ColorPalette.CreateColorPalette(Colors.None, double.MinValue));
+          for (int i = 0; i < cmvPercentChangeSettings.Length; i++)
+          {
+            palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[i], cmvPercentChangeSettings[i]));
+          }
+          palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[cmvPercentChangeColors.Count - 1],
+            NO_CCV));
 
-          palette.Add(ColorPalette.CreateColorPalette(Colors.None, 0));
+          /*palette.Add(ColorPalette.CreateColorPalette(Colors.None, 0));
           palette.Add(ColorPalette.CreateColorPalette(0x8BC34A, cmvPercentChangeSettings[0]));
           palette.Add(ColorPalette.CreateColorPalette(0xFFCDD2, cmvPercentChangeSettings[1]));
           palette.Add(ColorPalette.CreateColorPalette(0xE57373, cmvPercentChangeSettings[2]));
-          palette.Add(ColorPalette.CreateColorPalette(0xD50000, NO_CCV));
+          palette.Add(ColorPalette.CreateColorPalette(0xD50000, NO_CCV));*/
           break;
       }
       return palette;

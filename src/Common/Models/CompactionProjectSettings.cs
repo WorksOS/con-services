@@ -398,11 +398,12 @@ namespace VSS.Productivity3D.Common.Models
     /// Get the maximum temperature warning level as a value for Raptor in 10ths of °C
     /// </summary>
     public ushort CustomTargetTemperatureWarningLevelMaximum => (ushort)Math.Round(CustomTargetTemperatureMaximum * 10);
+
     /// <summary>
     /// The CMV % change settings (no custom ones for now)
     /// </summary>
-    //public double[] CmvPercentChange => new double[] {-50, -20, -10, 0, 10, 20, 50};
-    public double[] CmvPercentChange => new double[] { 5, 20, 50 };
+    public double[] CmvPercentChange => new double[] {-50, -20, -10, 0, 10, 20, 50};
+
     /// <summary>
     /// Minimum CMV for Raptor (10ths)
     /// </summary>
