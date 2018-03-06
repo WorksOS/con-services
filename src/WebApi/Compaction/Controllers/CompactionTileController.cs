@@ -111,7 +111,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ProjectUidVerifier]
     [Route("api/v2/productiondatatiles")]
-    [Route("api/v2/compaction/productiondatatiles")]
     [HttpGet]
     public async Task<TileResult> GetProductionDataTile(
       [FromQuery] string SERVICE,
@@ -181,7 +180,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ProjectUidVerifier]
     [Route("api/v2/productiondatatiles/png")]
-    [Route("api/v2/compaction/productiondatatiles/png")]
     [HttpGet]
     public async Task<FileResult> GetProductionDataTileRaw(
       [FromQuery] string SERVICE,
@@ -246,7 +244,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ProjectUidVerifier]
     [Route("api/v2/lineworktiles")]
-    [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
     public async Task<TileResult> GetLineworkTile(
       [FromQuery] string SERVICE,
@@ -299,7 +296,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ProjectUidVerifier]
     [Route("api/v2/lineworktiles/png")]
-    [Route("api/v2/compaction/lineworktiles/png")]
     [HttpGet]
     public async Task<FileResult> GetLineworkTileRaw(
       [FromQuery] string SERVICE,

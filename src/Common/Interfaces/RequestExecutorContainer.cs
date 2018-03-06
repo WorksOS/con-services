@@ -60,11 +60,6 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
     protected ICompactionProfileResultHelper profileResultHelper;
 
     /// <summary>
-    /// The aligment tile service
-    /// </summary>
-    protected IAlignmentTileService aligmentTileService;
-
-    /// <summary>
     /// The exception handler
     /// </summary>
     protected IServiceExceptionHandler exceptionHandler;
@@ -153,7 +148,7 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
     protected virtual void ProcessErrorCodes()
     { }
 
-    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper, IAlignmentTileService alignmentService, IServiceExceptionHandler excpetionHandler)
+    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper, IServiceExceptionHandler exceptionHandler)
     {
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
@@ -163,8 +158,7 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
       this.tileGenerator = tileGenerator;
       this.fileList = fileList;
       this.profileResultHelper = profileResultHelper;
-      this.aligmentTileService = alignmentService;
-      this.exceptionHandler = excpetionHandler;
+      this.exceptionHandler = exceptionHandler;
     }
 
     /// <summary>

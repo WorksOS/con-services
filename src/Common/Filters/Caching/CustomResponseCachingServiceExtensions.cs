@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Caching.Memory;
@@ -10,6 +11,7 @@ namespace VSS.Productivity3D.Common.Filters
 {
   public static class CustomResponseCachingServiceExtensions
   {
+
     /// <summary>
     /// Add response caching services.
     /// </summary>
@@ -22,12 +24,11 @@ namespace VSS.Productivity3D.Common.Filters
         throw new ArgumentNullException(nameof(services));
       }
 
-      services.TryAdd(ServiceDescriptor.Singleton<IMemoryCacheBuilder<Guid>, MemoryCacheBuilder<Guid>>());
       services.TryAdd(ServiceDescriptor.Singleton<IResponseCachingPolicyProvider, CustomCachingPolicyProvider>());
       services.TryAdd(ServiceDescriptor.Singleton<IResponseCachingKeyProvider, CustomResponseCachingKeyProvider>());
-      services.TryAdd(ServiceDescriptor.Singleton<IResponseCache, ParametrizedMemoryResponseCache>());
+      services.AddSingleton<IResponseCache>(new MemoryResponseCache(new MemoryCache(new MemoryCacheOptions())));
 
-      return services;
+     return services;
     }
 
     /// <summary>

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
@@ -11,6 +10,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -129,7 +129,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
-        .SetRaptorClient(raptorClient)
         .CreateCompactionReportGridRequest(
           reportElevation,
           reportCmv,
@@ -180,18 +179,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetStationOffset: " + Request.QueryString);
 
-      var projectId = GetProjectId(projectUid);
+      var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesignDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
       var projectSettings = await GetProjectSettings(projectUid);
       var userPreferences = await GetUserPreferences();
 
-      // Add 0.0 value to the offests array, remove any duplicates and sort contents by ascending order...
-      var updatedOffsets = offsets.AddZeroDistinctSortBy();
+      // Add 0.0 value to the offsets array, remove any duplicates and sort contents by ascending order...
+      var updatedOffsets = offsets?.AddZeroDistinctSortBy();
 
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
-        .ProjectId(projectId)
+        .ProjectId(project.projectId)
         .Headers(CustomHeaders)
         .ProjectSettings(projectSettings)
         .Filter(filter))
@@ -208,7 +207,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         startStation,
         endStation,
         updatedOffsets,
-        userPreferences);
+        userPreferences,
+        project.projectTimeZone);
 
       reportRequest.Validate();
 

@@ -75,26 +75,24 @@ namespace VSS.Productivity3D.Common.Filters.Caching
 
       try
       {
-        builder
-          .Append(request.Method.ToUpperInvariant())
-          .Append(KEY_DELIMITER);
-
-        builder.Append(this.options.UseCaseSensitivePaths
-          ? request.Path.Value
-          : request.Path.Value.ToUpperInvariant());
-
+        //In case of multitier cache the top level will be project UID. So ALL cache attributes MUST have VaryTules to invalidate underlying tier properly
+        //FOr the requests with ProjectUID (v1 requests) standard rules apply
         if (request.Query.ContainsKey("projectUid"))
         {
-          builder.Append(ProjectDelimiter).Append(request.Query["projectUid"]);
+          builder.Append($"PRJUID={request.Query["projectUid"][0].ToUpperInvariant()}");
+        }
+        else
+        {
+          builder
+            .Append(request.Method.ToUpperInvariant())
+            .Append(KEY_DELIMITER);
 
-          if (request.Query.ContainsKey("filterUid"))
-          {
-            builder.Append(FilterDelimiter).Append(GenerateFilterHash(request.Query["projectUid"],
-              request.Query["filterUid"], request.Headers.GetCustomHeaders(true)));
-          }
+          builder.Append(this.options.UseCaseSensitivePaths
+            ? request.Path.Value
+            : request.Path.Value.ToUpperInvariant());
         }
         var baseKey = builder.ToString();
-        logger?.LogDebug($"Base cache key: {baseKey}");
+        logger?.LogDebug($"Base key {baseKey}");
         return baseKey;
       }
       finally
@@ -103,7 +101,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
       }
     }
 
-    // BaseKey<delimiter>H<delimiter>HeaderName=HeaderValue<delimiter>Q<delimiter>QueryName=QueryValue
+    //Here fun begins. VaryRule MASUT include proper filter uid hashing
     public string CreateStorageVaryByKey(ResponseCachingContext context)
     {
       if (context == null)
@@ -117,20 +115,26 @@ namespace VSS.Productivity3D.Common.Filters.Caching
         throw new InvalidOperationException($"{nameof(CachedVaryByRules)} must not be null on the {nameof(ResponseCachingContext)}");
       }
 
-      if (StringValues.IsNullOrEmpty(varyByRules.Headers) && StringValues.IsNullOrEmpty(varyByRules.QueryKeys))
-      {
-        return varyByRules.VaryByKeyPrefix;
-      }
-
       var builder = this.builderPool.Get();
       builder.Clear();
+      var request = context.HttpContext.Request;
 
       try
       {
-        // Prepend with the Guid of the CachedVaryByRules
-        builder.Append(varyByRules.VaryByKeyPrefix);
+
+        builder
+          .Append(request.Method.ToUpperInvariant())
+          .Append("QQ")
+          .Append(request.Scheme.ToUpperInvariant())
+          .Append("QQ")
+          .Append(request.Host.Value.ToUpperInvariant());
+
+          builder
+            .Append(request.PathBase.Value.ToUpperInvariant())
+            .Append(request.Path.Value.ToUpperInvariant());
 
         // Vary by headers
+        // This is the default implementation
         if (varyByRules.Headers.Count > 0)
         {
           // Append a group separator for the header segment of the cache key
@@ -154,29 +158,58 @@ namespace VSS.Productivity3D.Common.Filters.Caching
           builder.Append(KEY_DELIMITER)
             .Append('Q');
 
+          var projectUids = context.HttpContext.Request.Query
+            ?.Where(s => string.Equals(s.Key, "projectUid", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault().Value;
+
+          string projectUid = String.Empty;
+
+          if (projectUids.HasValue && projectUids.Value.Count > 0)
+            projectUid = projectUids.Value[0];
+
           if (varyByRules.QueryKeys.Count == 1 && string.Equals(varyByRules.QueryKeys[0], "*", StringComparison.Ordinal))
           {
+
             // Vary by all available query keys
             foreach (var query in context.HttpContext.Request.Query.OrderBy(q => q.Key,
               StringComparer.OrdinalIgnoreCase))
             {
-              if (query.Key.ToUpperInvariant() != "FILTERUID" && query.Key.ToUpperInvariant() != "TIMESTAMP")
+              if (query.Key.ToUpperInvariant() != "TIMESTAMP")
+              {
+                var value = query.Value;
+
+                if (!string.IsNullOrEmpty(projectUid) &&  query.Key.ToUpperInvariant() == "FILTERUID")
+                {
+                  value = GenerateFilterHash(projectUid, query.Value[0],
+                    context.HttpContext.Request.Headers.GetCustomHeaders(true)).ToString();
+                }
+
                 builder.Append(KEY_DELIMITER)
                   .Append(query.Key.ToUpperInvariant())
                   .Append("=")
-                  .Append(query.Value);
+                  .Append(value);
+              }
             }
           }
           else
           {
             foreach (var queryKey in varyByRules.QueryKeys)
             {
-              if (queryKey.ToUpperInvariant() != "FILTERUID" && queryKey.ToUpperInvariant()!="TIMESTAMP")
+              if (queryKey.ToUpperInvariant() != "TIMESTAMP")
+              {
+                var value = context.HttpContext.Request.Query[queryKey];
+
+                if (!string.IsNullOrEmpty(projectUid) && queryKey.ToUpperInvariant() == "FILTERUID")
+                {
+                  value = GenerateFilterHash(projectUid, queryKey,
+                    context.HttpContext.Request.Headers.GetCustomHeaders(true)).ToString();
+                }
+
                 builder.Append(KEY_DELIMITER)
-                .Append(queryKey)
-                .Append("=")
-                // TODO: Perf - iterate the string values instead?
-                .Append(context.HttpContext.Request.Query[queryKey]);
+                  .Append(queryKey)
+                  .Append("=")
+                  // TODO: Perf - iterate the string values instead?
+                  .Append(value);
+              }
             }
           }
         }

@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       byte[] overlayData = null;
 
-      if (dxfFiles.Any())
+      if (dxfFiles != null && dxfFiles.Any())
       {
         List<byte[]> tileList = new List<byte[]>();
         foreach (var dxfFile in dxfFiles)
@@ -55,6 +55,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             tileList.Add(await JoinDxfTiles(parameters, dxfFile));
           }
         }
+
+        log.LogDebug("Overlaying DXF bitmaps");
         overlayData = TileServiceUtils.OverlayTiles(parameters, tileList);
       }
       return overlayData;

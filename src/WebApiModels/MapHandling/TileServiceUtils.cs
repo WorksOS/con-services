@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
@@ -54,7 +55,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     public static byte[] OverlayTiles(MapParameters parameters, IEnumerable<byte[]> tileList)
     {
       byte[] overlayData = null;
-
       //Overlay the tiles. Return an empty tile if none to overlay.
       System.Drawing.Point origin = new System.Drawing.Point(0, 0);
       using (Bitmap bitmap = new Bitmap(parameters.mapWidth, parameters.mapHeight))
@@ -75,6 +75,33 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
 
       return overlayData;
+    }
+
+    /// <summary>
+    /// Overlays the collection of tiles on top of each other and returns a single tile
+    /// </summary>
+    /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
+    /// <param name="tileList">The list of tiles to overlay</param>
+    /// <returns>A single bitmap of the overlayed tiles</returns>
+    public static byte[] OverlayTiles(MapParameters parameters, IDictionary<TileOverlayType,byte[]> tileList)
+    {
+      //Order for overlays: 
+      List<TileOverlayType> orderedOverlayTypes = new List<TileOverlayType>
+      {
+        TileOverlayType.BaseMap, TileOverlayType.ProjectBoundary, TileOverlayType.Geofences, TileOverlayType.ProductionData,
+        TileOverlayType.FilterCustomBoundary, TileOverlayType.FilterDesignBoundary, TileOverlayType.FilterAlignmentBoundary,
+        TileOverlayType.CutFillDesignBoundary, TileOverlayType.DxfLinework, TileOverlayType.Alignments
+      };
+      //Make an orderd list
+      List<byte[]> overlays = new List<byte[]>();
+      foreach (var overLayType in orderedOverlayTypes)
+      {
+        if (tileList.ContainsKey(overLayType))
+        {
+          overlays.Add(tileList[overLayType]);
+        }
+      }
+      return OverlayTiles(parameters,overlays);
     }
 
     /// <summary>
@@ -138,6 +165,21 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       return designDescriptor.id.ToString();
     }
+
+    /// <summary>
+    /// Determines if a polygon lies outside a bounding box.
+    /// </summary>
+    /// <param name="bbox">The bounding box</param>
+    /// <param name="points">The polygon</param>
+    /// <returns>True if the polygon is completely outside the bounding box otherwise false</returns>
+    public static bool Outside(MapBoundingBox bbox, List<WGSPoint> points)
+    {
+      return points.Min(p => p.Lat) > bbox.maxLat ||
+             points.Max(p => p.Lat) < bbox.minLat ||
+             points.Min(p => p.Lon) > bbox.maxLng ||
+             points.Max(p => p.Lon) < bbox.minLng;
+    }
+
   }
 
 }

@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Web.Script.Serialization;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 
@@ -15,18 +17,21 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
 
+    private readonly IMemoryCache alkCache;
+
     private readonly string alkKey;
 
-    public MapTileService(IConfigurationStore configuration, ILoggerFactory logger)
-   {
+    public MapTileService(IConfigurationStore configuration, IMemoryCache cache, ILoggerFactory logger)
+    {
       config = configuration;
       log = logger.CreateLogger<MapTileService>();
       this.logger = logger;
       alkKey = config.GetValueString("ALK_KEY");
-     if (string.IsNullOrEmpty(alkKey))
-     {
-       log.LogError("Missing ALK maps key");
-     }
+      alkCache = cache;
+      if (string.IsNullOrEmpty(alkKey))
+      {
+        log.LogError("Missing ALK maps key");
+      }
     }
 
     /// <summary>
@@ -70,17 +75,23 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       {
         mapURL += "&imgOption=BACKGROUND";
       }
-      byte[] mapImage = null;
-      using (WebClient wc = new WebClient())
-      using (Stream stream = wc.OpenRead(mapURL))
-      using (var ms = new MemoryStream())
+
+      return alkCache.GetOrCreate(mapURL, entry =>
       {
-        stream.CopyTo(ms);
-        mapImage = ms.ToArray();
-        ms.Close();
-        stream.Close();
-      }
-      return mapImage;
+
+        byte[] mapImage = null;
+        using (WebClient wc = new WebClient())
+        using (Stream stream = wc.OpenRead(mapURL))
+        using (var ms = new MemoryStream())
+        {
+          stream.CopyTo(ms);
+          mapImage = ms.ToArray();
+          ms.Close();
+          stream.Close();
+        }
+        entry.AbsoluteExpiration = DateTimeOffset.MaxValue;
+        return mapImage;
+      });
     }
 
     /// <summary>

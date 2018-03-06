@@ -3,17 +3,23 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
+using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using Filter = VSS.Productivity3D.Common.Models.Filter;
+
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
@@ -22,12 +28,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
   /// </summary>
   public class ElevationExtentsProxy : IElevationExtentsProxy
   {
-
-
-    private static readonly object listLockObject = new object();
-    private static readonly Dictionary<string, object> statisticsRequestsDictionary = new Dictionary<string, object>();
-
-
 
     /// <summary>
     /// Logger factory for use by executor
@@ -80,6 +80,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       this.configStore = configStore;
     }
 
+
     /// <summary>
     /// Gets the elevation statistics for the given filter from Raptor
     /// </summary>
@@ -87,52 +88,59 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <param name="filter">Compaction filter</param>
     /// <param name="projectSettings">Project settings</param>
     /// <returns>Elevation statistics</returns>
-    public ElevationStatisticsResult GetElevationRange(long projectId, Filter filter, CompactionProjectSettings projectSettings)
+    public ElevationStatisticsResult GetElevationRange(long projectId, Filter filter,
+      CompactionProjectSettings projectSettings)
     {
-      string cacheKey;
-      cacheKey = ElevationCacheKey(projectId, filter);
-      lock (listLockObject)
-      {
-     /*   cacheKey = ElevationCacheKey(projectId, filter);
-        if (statisticsRequestsDictionary.ContainsKey(cacheKey))
-          Monitor.Wait(statisticsRequestsDictionary[cacheKey]);*/
-      }
+      var cacheKey = ElevationCacheKey(projectId, filter);
+      var strFilter = filter != null ? JsonConvert.SerializeObject(filter) : "";
+      var opts = MemoryCacheExtensions.GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
 
-      if (!elevationExtentsCache.TryGetValue(cacheKey, out ElevationStatisticsResult result))
+
+      return elevationExtentsCache.GetOrAdd(cacheKey, opts, () =>
       {
-       /* lock (listLockObject)
+        ElevationStatisticsResult result;
+        if (filter == null || (filter.isFilterContainsSSOnly) || (filter.IsFilterEmpty))
         {
-          statisticsRequestsDictionary.Add(cacheKey, new object());
-          Monitor.Enter(statisticsRequestsDictionary[cacheKey]);
-        }*/
-        LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
+          log.LogDebug(
+            $"Calling elevation statistics from Project Extents for project {projectId} and filter {strFilter}");
 
-        ElevationStatisticsRequest statsRequest =
-          ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId, null, filter, 0,
-            liftSettings);
-        statsRequest.Validate();
+          var projectExtentsRequest = ExtentRequest.CreateExtentRequest(projectId,
+            filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
+          var extents =
+            RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient)
+              .Process(projectExtentsRequest) as ProjectExtentsResult;
+          result = ElevationStatisticsResult.CreateElevationStatisticsResult(
+            BoundingBox3DGrid.CreatBoundingBox3DGrid(extents.ProjectExtents.minX, extents.ProjectExtents.minY,
+              extents.ProjectExtents.minZ, extents.ProjectExtents.maxX, extents.ProjectExtents.maxY,
+              extents.ProjectExtents.maxZ), extents.ProjectExtents.minZ, extents.ProjectExtents.maxZ, 0);
+        }
+        else
+        {
+          log.LogDebug(
+            $"Calling elevation statistics from Elevation Statistics for project {projectId} and filter {strFilter}");
 
-        result =
-          RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient)
-            .Process(statsRequest) as ElevationStatisticsResult;
+          LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
+          ElevationStatisticsRequest statsRequest =
+            ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId, null, filter, 0,
+              liftSettings);
+          statsRequest.Validate();
+
+          result =
+            RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient)
+              .Process(statsRequest) as ElevationStatisticsResult;
+
+        }
         //Check for 'No elevation range' result
         const double NO_ELEVATION = 10000000000.0;
-        if (Math.Abs(result.MinElevation - NO_ELEVATION) < 0.001 && Math.Abs(result.MaxElevation + NO_ELEVATION) < 0.001)
+        if (Math.Abs(result.MinElevation - NO_ELEVATION) < 0.001 &&
+            Math.Abs(result.MaxElevation + NO_ELEVATION) < 0.001)
         {
           result = null;
         }
-
-        var opts = MemoryCacheExtensions.GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
-        elevationExtentsCache.Set(cacheKey, result, opts);
-    /*    lock (listLockObject)
-        {
-          if (statisticsRequestsDictionary.ContainsKey(cacheKey))
-            statisticsRequestsDictionary.Remove(cacheKey);
-          Monitor.Exit(statisticsRequestsDictionary[cacheKey]);
-        }*/
-      }
-      return result;
+        log.LogDebug($"Done elevation request");
+        return result;
+      });
     }
 
     /// <summary>

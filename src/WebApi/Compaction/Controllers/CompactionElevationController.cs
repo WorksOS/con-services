@@ -70,9 +70,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="settingsManager">Compaction settings manager</param>
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
+    /// <param name="productionDataRequestFactory"></param>
     public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy,
-      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory productionDataRequestFactory) :
+      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, 
+      IProductionDataRequestFactory productionDataRequestFactory) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
@@ -93,7 +95,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>Elevation statistics</returns>
     [ProjectUidVerifier]
     [Route("api/v2/elevationrange")]
-    [Route("api/v2/compaction/elevationrange")]
     [HttpGet]
     public async Task<ElevationStatisticsResult> GetElevationRange(
       [FromQuery] Guid projectUid,
@@ -131,37 +132,34 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     #endregion
 
     /// <summary>
-    /// Gets alignment file extents (offsets) from Raptor.
+    /// Gets alignment file extents (station range) from Raptor.
     /// </summary>
     /// <param name="projectUid">Project UID</param>
-    /// <param name="alignmentFileUid">Project UID</param>
-    /// <returns>Project statistics</returns>
-    /// <executor>ProjectStatisticsExecutor</executor>
+    /// <param name="alignmentFileUid">Alignment file UID</param>
+    /// <param name="boundingBoxService">Project UID</param>
+    /// <returns>Station range for alignment file</returns>
     [ProjectUidVerifier]
-    [Route("api/v2/alignmentoffest")]
+    [Route("api/v2/alignmentstationrange")]
     [HttpGet]
-    public async Task<AlignmentOffsetResult> GetAlignmentOffests(
+    public async Task<AlignmentStationResult> GetAlignmentStationRange(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid alignmentFileUid,
-      [FromServices] IAlignmentTileService alignmentService)
+      [FromServices] IBoundingBoxService boundingBoxService)
     {
-      log.LogInformation("GetAlignmentOffests: " + Request.QueryString);
+      log.LogInformation("GetAlignmentStationRange: " + Request.QueryString);
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
 
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentFileUid);
 
-      var request = await requestFactory.Create<AlignmentOffsetsRequestHelper>(r => r
+      var request = await requestFactory.Create<AlignmentStationRangeRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(CustomHeaders))
-        .CreateExportAlignmentOffsetsRequest(alignmentDescriptor);
+        .CreateAlignmentStationRangeRequest(alignmentDescriptor);
 
       request.Validate();
 
       return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<AlignmentOffsetExecutor>(logger, raptorClient, alignmentTileService: alignmentService,
-            serviceException: serviceExceptionHandler)
-          .Process(request) as AlignmentOffsetResult);
+        boundingBoxService.GetAlignmentStationRange(projectId, alignmentDescriptor));
     }
 
 
@@ -175,7 +173,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <executor>ProjectStatisticsExecutor</executor>
     [ProjectUidVerifier]
     [Route("api/v2/projectstatistics")]
-    [Route("api/v2/compaction/projectstatistics")]
     [HttpGet]
     public async Task<ProjectStatisticsResult> GetProjectStatistics(
       [FromQuery] Guid projectUid)

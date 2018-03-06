@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,13 +20,9 @@ using ValidationFilterAttribute = VSS.Productivity3D.Common.Filters.Validation.V
 
 namespace VSS.Productivity3D.WebApi
 {
-  /// <summary>
-  /// 
-  /// </summary>
   public partial class Startup
   {
-    private const string loggerRepoName = "WebApi";
-    private readonly bool isDevEnv;
+    public const string LOGGER_REPO_NAME = "WebApi";
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -39,10 +36,8 @@ namespace VSS.Productivity3D.WebApi
           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", loggerRepoName);
+      env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
 
-      isDevEnv = env.IsEnvironment("Development");
-  
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
 
@@ -80,6 +75,8 @@ namespace VSS.Productivity3D.WebApi
           {
             config.Filters.Add(new ValidationFilterAttribute());
           });
+
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       //Configure swagger
       services.AddSwaggerGen();
@@ -128,10 +125,10 @@ namespace VSS.Productivity3D.WebApi
     {
       loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceCollection.AddSingleton(loggerFactory);
       var serviceProvider = serviceCollection.BuildServiceProvider();
+
       app.UseFilterMiddleware<ExceptionsTrap>();
 
       //Enable CORS before TID so OPTIONS works without authentication
@@ -143,6 +140,7 @@ namespace VSS.Productivity3D.WebApi
       if (Configuration["newrelic"] == "true")
         app.UseFilterMiddleware<NewRelicMiddleware>();
 
+      app.UseFilterMiddleware<RequestIDMiddleware>();
       app.UseResponseCompression();
 
       app.UseResponseCaching();

@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Linq;
 using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -28,12 +27,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     /// <returns>An instance of the CompactionPassCountDetailedResult class.</returns>
     public static CompactionPassCountDetailedResult CreatePassCountDetailedResult(PassCountDetailedResult result)
     {
-      const int noPassCountData = 0;
-
-      if (Math.Abs(result.TotalCoverageArea - noPassCountData) < 0.001)
+      //TODO remove this due to bug in Raptor
+      /*if (Math.Abs(result.TotalCoverageArea - noPassCountData) < 0.001)
       {
         return new CompactionPassCountDetailedResult { DetailedData = new PassCountDetailsData { PassCountTarget = new PassCountTargetData() } };
-      }
+      }*/
 
       return new CompactionPassCountDetailedResult
       {

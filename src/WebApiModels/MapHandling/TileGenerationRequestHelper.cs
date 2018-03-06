@@ -23,6 +23,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     private VolumeCalcType? volCalcType;
 
     private IEnumerable<GeofenceData> geofences;
+    private IEnumerable<GeofenceData> boundaries;
     private IEnumerable<DesignDescriptor> alignmentDescriptors;
     private IEnumerable<FileData> dxfFiles;
     private ProjectDescriptor project;
@@ -63,6 +64,11 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
       return this;
     }
 
+    public TileGenerationRequestHelper SetCustomBoundaries(IEnumerable<GeofenceData> boundaries)
+    {
+      this.boundaries = boundaries;
+      return this;
+    }
 
     public TileGenerationRequestHelper SetAlignmentDescriptors(IEnumerable<DesignDescriptor> alignmentDescriptors)
     {
@@ -88,7 +94,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
       MapType? mapType, DisplayMode? mode, string language)
     {
       return TileGenerationRequest.CreateTileGenerationRequest(DesignDescriptor, Filter, baseFilter, topFilter, volCalcType,
-        geofences, alignmentDescriptors, dxfFiles, overlays, width, height, mapType, mode, language, project, ProjectSettings);
+        geofences, boundaries, alignmentDescriptors, dxfFiles, overlays, width, height, mapType, mode, language, project, ProjectSettings);
 
     }
 

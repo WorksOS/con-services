@@ -151,11 +151,11 @@ namespace VSS.Productivity3D.Common.Models
     [JsonProperty(PropertyName = "layerType", Required = Required.Default)]
     public FilterLayerMethod? LayerType { get; private set; }
 
-    /// <summary>The design or alignment file in the project that is to be used as a spatial filter when the filter layer method is OffsetFromDesign or OffsetFromProfile.
-    /// 
+    /// <summary>
+    /// The design or alignment file in the project that is to be used as a spatial filter when the filter layer method is OffsetFromDesign or OffsetFromProfile.
     /// </summary>
     [JsonProperty(PropertyName = "designOrAlignmentFile", Required = Required.Default)]
-    public DesignDescriptor DesignOrAlignmentFile { get; private set; }
+    public DesignDescriptor LayerDesignOrAlignmentFile { get; private set; }
 
     /// <summary>
     /// The elevation of the bench to be used as the datum elevation for LayerBenchElevation filter layer type. The value is expressed in meters.
@@ -243,10 +243,58 @@ namespace VSS.Productivity3D.Common.Models
     public bool? WheelTracking { get; private set; }
 
     /// <summary>
+    /// The design file in the project that is to be used as a spatial filter.
+    /// </summary>
+    [JsonProperty(PropertyName = "designFile", Required = Required.Default)]
+    public DesignDescriptor DesignFile { get; private set; }
+
+
+    public bool isFilterContainsSSOnly { get; private set; } = false;
+
+    public bool IsFilterEmpty => isFilterEmpty();
+
+    /// <summary>
     /// Private constructor
     /// </summary>
     private Filter()
     { }
+
+
+    private bool isFilterEmpty()
+    {
+      if (
+        !StartUtc.HasValue &&
+        !EndUtc.HasValue &&
+        !OnMachineDesignId.HasValue &&
+        (AssetIDs == null || AssetIDs.Count==0) &&
+        !VibeStateOn.HasValue &&
+        !CompactorDataOnly.HasValue &&
+        !ElevationType.HasValue &&
+        (PolygonLL == null || PolygonLL.Count==0) &&
+        (PolygonGrid == null || PolygonGrid.Count==0) &&
+        !ForwardDirection.HasValue &&
+        AlignmentFile == null &&
+        !StartStation.HasValue &&
+        !EndStation.HasValue &&
+        !LeftOffset.HasValue &&
+        !RightOffset.HasValue &&
+        string.IsNullOrEmpty(MachineDesignName) &&
+        !LayerType.HasValue &&
+        LayerDesignOrAlignmentFile == null &&
+        !BenchElevation.HasValue &&
+        !LayerNumber.HasValue &&
+        !LayerThickness.HasValue &&
+        (ContributingMachines == null || ContributingMachines.Count==0) &&
+        (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Count==0) &&
+        !ReturnEarliest.HasValue &&
+        !GpsAccuracy.HasValue &&
+        !GpsAccuracyIsInclusive.HasValue &&
+        !BladeOnGround.HasValue &&
+        !TrackMapping.HasValue &&
+        !WheelTracking.HasValue &&
+        DesignFile == null) return true;
+      return false;
+    }
 
     /// <summary>
     /// Create instance of Filter
@@ -273,7 +321,7 @@ namespace VSS.Productivity3D.Common.Models
         double? rightOffset,
         string machineDesignName,
         FilterLayerMethod? layerType,
-        DesignDescriptor designOrAlignmentFile,
+        DesignDescriptor layerDesignOrAlignmentFile,
         double? benchElevation,
         int? layerNumber,
         double? layerThickness,
@@ -284,7 +332,8 @@ namespace VSS.Productivity3D.Common.Models
         bool? inclusive,
         bool? bladeOnGround,
         bool? trackMapping,
-        bool? wheelTracking
+        bool? wheelTracking,
+        DesignDescriptor designFile
         )
     {
       return new Filter
@@ -309,7 +358,7 @@ namespace VSS.Productivity3D.Common.Models
         RightOffset = rightOffset,
         MachineDesignName = machineDesignName,
         LayerType = layerType,
-        DesignOrAlignmentFile = designOrAlignmentFile,
+        LayerDesignOrAlignmentFile = layerDesignOrAlignmentFile,
         BenchElevation = benchElevation,
         LayerNumber = layerNumber,
         LayerThickness = layerThickness,
@@ -320,7 +369,8 @@ namespace VSS.Productivity3D.Common.Models
         GpsAccuracyIsInclusive = inclusive,
         BladeOnGround = bladeOnGround,
         TrackMapping = trackMapping,
-        WheelTracking = wheelTracking
+        WheelTracking = wheelTracking,
+        DesignFile = designFile
       };
     }
 
@@ -331,6 +381,7 @@ namespace VSS.Productivity3D.Common.Models
     {
       return new Filter
       {
+        isFilterContainsSSOnly = true,
         SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList
       };
     }
@@ -352,7 +403,8 @@ namespace VSS.Productivity3D.Common.Models
           pt.Validate();
       }
       this.AlignmentFile?.Validate();
-      this.DesignOrAlignmentFile?.Validate();
+      this.LayerDesignOrAlignmentFile?.Validate();
+      this.DesignFile?.Validate();
 
       if (this.ContributingMachines != null)
       {
@@ -421,13 +473,13 @@ namespace VSS.Productivity3D.Common.Models
             }
             else
             {
-              if (this.DesignOrAlignmentFile == null)
+              if (this.LayerDesignOrAlignmentFile == null)
               {
                 throw new ServiceException(HttpStatusCode.BadRequest,
                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                         "If using an offset from design or profile filter, design or alignment file must be provided"));
               }
-              this.DesignOrAlignmentFile.Validate();
+              this.LayerDesignOrAlignmentFile.Validate();
             }
             if (!this.LayerNumber.HasValue || !this.LayerThickness.HasValue)
             {
@@ -476,38 +528,42 @@ namespace VSS.Productivity3D.Common.Models
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return Id.Equals(other.Id) && 
-        string.Equals(Name, other.Name) &&
+      return Id.Equals(other.Id) &&
+             string.Equals(Name, other.Name) &&
              string.Equals(Description, other.Description) &&
-             StartUtc.Equals(other.StartUtc) && 
-             EndUtc.Equals(other.EndUtc)  &&
-             OnMachineDesignId == other.OnMachineDesignId && 
+             StartUtc.Equals(other.StartUtc) &&
+             EndUtc.Equals(other.EndUtc) &&
+             OnMachineDesignId == other.OnMachineDesignId &&
              AssetIDs.ScrambledEquals(other.AssetIDs) &&
-             VibeStateOn == other.VibeStateOn && 
+             VibeStateOn == other.VibeStateOn &&
              CompactorDataOnly.Equals(other.CompactorDataOnly) &&
-             ElevationType == other.ElevationType && 
+             ElevationType == other.ElevationType &&
              PolygonLL.ScrambledEquals(other.PolygonLL) &&
-             PolygonGrid.ScrambledEquals(other.PolygonGrid) && 
+             PolygonGrid.ScrambledEquals(other.PolygonGrid) &&
              ForwardDirection == other.ForwardDirection &&
              (AlignmentFile == null ? other.AlignmentFile == null : AlignmentFile.Equals(other.AlignmentFile)) &&
-             StartStation.Equals(other.StartStation) && 
+             StartStation.Equals(other.StartStation) &&
              EndStation.Equals(other.EndStation) &&
-             LeftOffset.Equals(other.LeftOffset) && 
+             LeftOffset.Equals(other.LeftOffset) &&
              RightOffset.Equals(other.RightOffset) &&
-             string.Equals(MachineDesignName, other.MachineDesignName) && 
+             string.Equals(MachineDesignName, other.MachineDesignName) &&
              LayerType.Equals(other.LayerType) &&
-             (DesignOrAlignmentFile == null ? other.DesignOrAlignmentFile == null : DesignOrAlignmentFile.Equals(other.DesignOrAlignmentFile)) &&
-             BenchElevation.Equals(other.BenchElevation) && 
+             (LayerDesignOrAlignmentFile == null
+               ? other.LayerDesignOrAlignmentFile == null
+               : LayerDesignOrAlignmentFile.Equals(other.LayerDesignOrAlignmentFile)) &&
+             BenchElevation.Equals(other.BenchElevation) &&
              LayerNumber == other.LayerNumber &&
-             LayerThickness.Equals(other.LayerThickness) && 
+             LayerThickness.Equals(other.LayerThickness) &&
              ContributingMachines.ScrambledEquals(other.ContributingMachines) &&
              SurveyedSurfaceExclusionList.ScrambledEquals(other.SurveyedSurfaceExclusionList) &&
-             ReturnEarliest.Equals(other.ReturnEarliest) && 
+             ReturnEarliest.Equals(other.ReturnEarliest) &&
              GpsAccuracy.Equals(other.GpsAccuracy) &&
-             GpsAccuracyIsInclusive.Equals(other.GpsAccuracyIsInclusive) && 
-             BladeOnGround.Equals(other.BladeOnGround) && 
-             TrackMapping.Equals(other.TrackMapping) && 
-             WheelTracking.Equals(other.WheelTracking);
+             GpsAccuracyIsInclusive.Equals(other.GpsAccuracyIsInclusive) &&
+             BladeOnGround.Equals(other.BladeOnGround) &&
+             TrackMapping.Equals(other.TrackMapping) &&
+             WheelTracking.Equals(other.WheelTracking) &&
+             (DesignFile == null ? other.DesignFile == null : DesignFile.Equals(other.DesignFile)) &&
+             isFilterContainsSSOnly == other.isFilterContainsSSOnly;
     }
 
     public override bool Equals(object obj)
@@ -542,7 +598,7 @@ namespace VSS.Productivity3D.Common.Models
         hashCode = GetHashCode(hashCode, GetNullableHashCode(RightOffset));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(MachineDesignName));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(LayerType));
-        hashCode = GetHashCode(hashCode, GetNullableHashCode(DesignOrAlignmentFile));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(LayerDesignOrAlignmentFile));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(BenchElevation));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(LayerNumber));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(LayerThickness));
@@ -554,6 +610,7 @@ namespace VSS.Productivity3D.Common.Models
         hashCode = GetHashCode(hashCode, GetNullableHashCode(BladeOnGround));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(TrackMapping));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(WheelTracking));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(DesignFile));
 
         return hashCode;
       }

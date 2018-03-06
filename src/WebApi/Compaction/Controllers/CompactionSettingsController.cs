@@ -5,9 +5,10 @@ using System;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.ResponseCaching.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -33,7 +34,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IProjectSettingsProxy projectSettingsProxy;
 
-    private readonly IMemoryCacheBuilder<Guid> cacheBuilder;
+
+    private readonly IResponseCache cache;
 
     /// <summary>
     /// Constructor with dependency injection
@@ -41,11 +43,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="logger">Logger</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="cacheBuilder">The memory cache for the controller</param>
-    public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy, IMemoryCacheBuilder<Guid> cacheBuilder)
+    public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy, IResponseCache cache)
     {
       this.log = logger.CreateLogger<CompactionSettingsController>();
       this.projectSettingsProxy = projectSettingsProxy;
-      this.cacheBuilder = cacheBuilder;
+      this.cache = cache;
     }
 
     /// <summary>
@@ -56,13 +58,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>ContractExecutionResult</returns>
     [ProjectUidVerifier]
     [Route("api/v2/validatesettings")]
-    [Route("api/v2/compaction/validatesettings")]
     [HttpGet]
     public async Task<ContractExecutionResult> ValidateProjectSettings(
       [FromQuery] Guid projectUid,
       [FromQuery] string projectSettings)
     {
       log.LogInformation("ValidateProjectSettings: " + Request.QueryString);
+
 
       if (!string.IsNullOrEmpty(projectSettings))
       {
@@ -72,9 +74,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
         log.LogDebug($"About to clear settings for project {projectUid}");
         projectSettingsProxy.ClearCacheItem(projectUid.ToString(), GetUserId());
-        cacheBuilder.ClearMemoryCache(projectUid);
+        cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
       }
-
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Project settings are valid");
     }
