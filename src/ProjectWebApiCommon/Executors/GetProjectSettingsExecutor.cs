@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -26,6 +27,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ProjectSettingsRequest projectSettingsRequest = item as ProjectSettingsRequest;
       if ( projectSettingsRequest == null )
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
+
+      if (projectSettingsRequest.ProjectSettingsType != ProjectSettingsType.Targets && projectSettingsRequest.ProjectSettingsType != ProjectSettingsType.Colors)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 77);
+
       await ValidateProjectWithCustomer(customerUid, projectSettingsRequest.projectUid);
 
       try
