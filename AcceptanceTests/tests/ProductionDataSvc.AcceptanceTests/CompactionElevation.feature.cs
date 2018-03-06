@@ -192,10 +192,82 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileUID", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GoodRequest_ALGN")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "Large_Sites_Align_Good")]
         public virtual void CompactionGetAlignmentStationRange_GoodRequest_6Ece671B_7959_4A14_86Fa_6Bfe6Ef4Dd62()
         {
-            this.CompactionGetAlignmentStationRange_GoodRequest("6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "ff91dd40-1569-4765-a2bc-014321f76ace", "GoodRequest_ALGN", ((string[])(null)));
+            this.CompactionGetAlignmentStationRange_GoodRequest("6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "ff91dd40-1569-4765-a2bc-014321f76ace", "Large_Sites_Align_Good", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Alignment Station Range - Good request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionElevation")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "c6662be1-0f94-4897-b9af-28aeeabcd09b")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileUID", "c6662be1-0f94-4897-b9af-28aeeabcd09b")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "TopCon_Align_Good")]
+        public virtual void CompactionGetAlignmentStationRange_GoodRequest_C6662Be1_0F94_4897_B9Af_28Aeeabcd09B()
+        {
+            this.CompactionGetAlignmentStationRange_GoodRequest("c6662be1-0f94-4897-b9af-28aeeabcd09b", "ff91dd40-1569-4765-a2bc-014321f76ace", "TopCon_Align_Good", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Alignment Station Range - Good request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionElevation")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "3ead0c55-1e1f-4d30-aaf8-873526a2ab82")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileUID", "3ead0c55-1e1f-4d30-aaf8-873526a2ab82")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "Milling_Align_Good")]
+        public virtual void CompactionGetAlignmentStationRange_GoodRequest_3Ead0C55_1E1F_4D30_Aaf8_873526A2Ab82()
+        {
+            this.CompactionGetAlignmentStationRange_GoodRequest("3ead0c55-1e1f-4d30-aaf8-873526a2ab82", "ff91dd40-1569-4765-a2bc-014321f76ace", "Milling_Align_Good", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetAlignmentStationRange_BadRequest(string fileUID, string projectUID, string errorCode, string message, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Alignment Station Range - Bad request", exampleTags);
+#line 63
+this.ScenarioSetup(scenarioInfo);
+#line 64
+testRunner.Given("the Compaction service URI \"/api/v2/alignmentstationrange\" for operation \"GetAlig" +
+                    "nmentStationRange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 65
+testRunner.And("the result file \"CompactionGetElevationAndProjectStatisticsDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 66
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 67
+testRunner.And(string.Format("fileUid \"{0}\"", fileUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 68
+testRunner.When("I request a Station Range Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 69
+testRunner.Then(string.Format("I should get error code \"{0}\" and message \"{1}\"", errorCode, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Alignment Station Range - Bad request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionElevation")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileUID", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "Failed to get station range for alignment file")]
+        public virtual void CompactionGetAlignmentStationRange_BadRequest_Dd64Fe2E_6F27_4A78_82A3_0C0E8A5E84Ff()
+        {
+            this.CompactionGetAlignmentStationRange_BadRequest("dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "ff91dd40-1569-4765-a2bc-014321f76ace", "-4", "Failed to get station range for alignment file", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Alignment Station Range - Bad request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionElevation")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "dcb41fbd-7d43-4b36-a144-e22bbccc24a8")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileUID", "dcb41fbd-7d43-4b36-a144-e22bbccc24a8")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "Unable to access design file.")]
+        public virtual void CompactionGetAlignmentStationRange_BadRequest_Dcb41Fbd_7D43_4B36_A144_E22Bbccc24A8()
+        {
+            this.CompactionGetAlignmentStationRange_BadRequest("dcb41fbd-7d43-4b36-a144-e22bbccc24a8", "ff91dd40-1569-4765-a2bc-014321f76ace", "-1", "Unable to access design file.", ((string[])(null)));
         }
     }
 }
