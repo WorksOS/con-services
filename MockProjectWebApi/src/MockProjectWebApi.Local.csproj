@@ -13,6 +13,65 @@
     <StartupObject />
   </PropertyGroup>
 
+   <ItemGroup>
+    <Compile Remove="Internal\**" />
+    <Content Remove="Internal\**" />
+    <EmbeddedResource Remove="Internal\**" />
+    <None Remove="Internal\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Json\Filters\DimensionsAlignmentFilter0to200.json" />
+    <Content Remove="Json\Filters\DimensionsAlignmentFilter100to200.json" />
+    <Content Remove="Json\Filters\DimensionsBoundaryCMV.json" />
+    <Content Remove="Json\Filters\DimensionsBoundaryFilter.json" />
+    <Content Remove="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
+    <Content Remove="Json\Filters\DimensionsBoundaryMDP.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonToday.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonYesterday.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNull20121101.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtents.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliest.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatest.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesTemperature.json" />
+    <Content Remove="Json\Filters\ElevationRangeAndPaletteNoDataFilter.json" />
+    <Content Remove="Json\Filters\ReportDxfTile.json" />
+    <Content Remove="Json\Filters\SummaryVolumesBaseFilter.json" />
+    <Content Remove="Json\Filters\SummaryVolumesBaseFilterYesterday.json" />
+    <Content Remove="Json\Filters\SummaryVolumesTopFilter.json" />
+    <Content Remove="Json\Filters\SummaryVolumesTopFilterYesterday.json" />
+    <Content Remove="Json\UserPreferences\DummyUserPreferences.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter100to200.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter0to200.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMV.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilter.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDP.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNull20121101.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtents.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliest.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatest.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonToday.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonYesterday.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesTemperature.json" />
+    <EmbeddedResource Include="Json\Filters\ElevationRangeAndPaletteNoDataFilter.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
+    <EmbeddedResource Include="Json\Filters\ReportDxfTile.json" />
+    <EmbeddedResource Include="Json\Filters\SummaryVolumesBaseFilter.json" />
+    <EmbeddedResource Include="Json\Filters\SummaryVolumesTopFilter.json" />
+    <EmbeddedResource Include="Json\UserPreferences\DummyUserPreferences.json" />
+  </ItemGroup>
+ 
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
@@ -28,8 +87,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
-    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.0" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.4.*" />
+    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.5.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
@@ -46,4 +105,4 @@
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
   </PropertyGroup>
 
-</Project>
+  </Project>
