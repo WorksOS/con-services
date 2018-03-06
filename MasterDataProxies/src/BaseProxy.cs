@@ -268,7 +268,30 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>Master data item</returns>
-    protected async Task<T> GetMasterDataItem<T>(string uid, string userId, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) 
+    protected async Task<T> GetMasterDataItem<T>(string uid, string userId, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null)
+    {
+      return await WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
+        () => GetMasterDataItem<T>(urlKey, customHeaders, null, route));
+    }
+
+
+    /// <summary>
+    /// Execute statement with MemoryCache
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="uid">The uid.</param>
+    /// <param name="userId">The user identifier.</param>
+    /// <param name="cacheLifeKey">The cache life key.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    /// <param name="action">The action.</param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException">
+    /// This method requires a cache; use the correct constructor
+    /// or
+    /// Incorrect expiration time parameter
+    /// </exception>
+    private async Task<T> WithMemoryCacheExecute<T>(string uid, string userId, object cacheLifeKey,
+      IDictionary<string, string> customHeaders, Func<Task<T>> action)
     {
       if (cache == null)
       {
@@ -276,14 +299,27 @@ namespace VSS.MasterData.Proxies
       }
       ClearCacheIfRequired<T>(uid, userId, customHeaders);
       var cacheKey = GetCacheKey<T>(uid, userId);
-      var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
-      T cacheData;
+      var opts = new MemoryCacheEntryOptions();
+
+      switch (cacheLifeKey)
+      {
+        case String s:
+          opts.GetCacheOptions(s, configurationStore, log);
+          break;
+        case TimeSpan t:
+          opts.SlidingExpiration = t;
+          break;
+        default:
+          throw new InvalidOperationException("Incorrect expiration time parameter");
+      }
+
+      T cacheData = default(T);
 
       return await cache.GetOrAdd(cacheKey, opts, async () =>
       {
-          log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
-          cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, null, route);
-          return cacheData;
+        log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
+        await action.Invoke();
+        return cacheData;
       });
     }
 
@@ -299,22 +335,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>Master data item</returns>
     protected async Task<T> GetMasterDataItem<T>(string uid, string userId, TimeSpan cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null)
-    { 
-      if (cache == null)
-      {
-        throw new InvalidOperationException("This method requires a cache; use the correct constructor");
-      }
-      ClearCacheIfRequired<T>(uid, userId, customHeaders);
-      var cacheKey = GetCacheKey<T>(uid, userId);
-      var opts = new MemoryCacheEntryOptions(){AbsoluteExpirationRelativeToNow = cacheLifeKey };
-      T cacheData;
-
-      return await cache.GetOrAdd(cacheKey, opts, async () =>
-      {
-        log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
-        cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, null, route);
-        return cacheData;
-      });
+    {
+      return await WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
+        () => GetMasterDataItem<T>(urlKey, customHeaders, null, route));
     }
 
 
@@ -332,21 +355,10 @@ namespace VSS.MasterData.Proxies
     protected async Task<List<T>> GetMasterDataList<T>(string customerUid, string userId, string cacheLifeKey, string urlKey,
                 IDictionary<string, string> customHeaders, string route = null) 
     {
-      if (cache == null)
-      {
-        throw new InvalidOperationException("This method requires a cache; use the correct constructor");
-      }
-      ClearCacheIfRequired<T>(customerUid, userId, customHeaders);
-      var cacheKey = GetCacheKey<T>(customerUid, userId);
-      var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
-      List<T> cacheData;
 
-      return await cache.GetOrAdd(cacheKey, opts, async () =>
-      {
-        cacheData = await GetMasterDataList<T>(urlKey, customHeaders, route);
-        return cacheData;
-      });
-    }
+      return await WithMemoryCacheExecute(customerUid, userId, cacheLifeKey, customHeaders,
+        () => GetMasterDataList<T>(urlKey, customHeaders, route));
+   }
 
     /// <summary>
     /// Gets a list of master data items for a customer or project where the list is contained in (a property of) an object. 
@@ -363,20 +375,8 @@ namespace VSS.MasterData.Proxies
     protected async Task<T> GetContainedMasterDataList<T>(string uid, string userId, string cacheLifeKey, string urlKey,
       IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
     {
-      if (cache == null)
-      {
-        throw new InvalidOperationException("This method requires a cache; use the correct constructor");
-      }
-      ClearCacheIfRequired<T>(uid, userId, customHeaders);
-      var cacheKey = GetCacheKey<T>(uid, userId);
-      var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
-      T cacheData;
-
-      return await cache.GetOrAdd(cacheKey, opts, async () =>
-      {
-        cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, queryParams, route);
-        return cacheData;
-      });
+      return await WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
+        () => GetMasterDataItem<T>(urlKey, customHeaders, queryParams, route));
     }
 
     /// <summary>

@@ -14,7 +14,7 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <param name="cacheLifeKey">The configuration key for the cache life</param>
     /// <returns>Memory cache options for the items</returns>
-    public static MemoryCacheEntryOptions GetCacheOptions(string cacheLifeKey, IConfigurationStore configurationStore,
+    public static MemoryCacheEntryOptions GetCacheOptions(this MemoryCacheEntryOptions opts, string cacheLifeKey, IConfigurationStore configurationStore,
       ILogger log)
     {
       const string DEFAULT_TIMESPAN_MESSAGE = "Using default 15 mins.";
@@ -36,10 +36,8 @@ namespace VSS.MasterData.Proxies
         result = new TimeSpan(0, 15, 0);
       }
 
-      return new MemoryCacheEntryOptions()
-      {
-        SlidingExpiration = result
-      };
+      opts.SlidingExpiration = result;
+      return opts;
     }
 
     static object cacheLock = new object();
