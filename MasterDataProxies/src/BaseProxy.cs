@@ -313,13 +313,10 @@ namespace VSS.MasterData.Proxies
           throw new InvalidOperationException("Incorrect expiration time parameter");
       }
 
-      T cacheData = default(T);
-
       return await cache.GetOrAdd(cacheKey, opts, async () =>
       {
         log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
-        await action.Invoke();
-        return cacheData;
+        return await action.Invoke();
       });
     }
 
