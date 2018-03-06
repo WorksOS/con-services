@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Caching;
@@ -74,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
         log.LogDebug($"About to clear settings for project {projectUid}");
         projectSettingsProxy.ClearCacheItem(projectUid.ToString(), GetUserId());
-        cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
+        cache.InvalidateReponseCacheForProject(projectUid);
       }
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Project settings are valid");

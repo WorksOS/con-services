@@ -15,6 +15,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Caching;
@@ -145,7 +146,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var result = await executor.ProcessAsync(request) as Models.Notification.Models.AddFileResult;
       //Do we need to validate fileUid ?
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
-      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
+      cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
       return result;
     }
@@ -198,7 +199,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
-      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
+      cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
     }
@@ -231,7 +232,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       }
       var customHeaders = Request.Headers.GetCustomHeaders();
       await ClearFilesCaches(projectUid, fileUids, customHeaders);
-      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
+      cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetUpdateFiles returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Update files notification successful");
     }
@@ -255,7 +256,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       log.LogDebug("GetNotifyImportedFileChange: " + Request.QueryString);
       var customHeaders = Request.Headers.GetCustomHeaders();
       await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
-      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
+      cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetNotifyImportedFileChange returned");
       return new ContractExecutionResult();
     }

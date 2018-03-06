@@ -16,6 +16,7 @@ using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Extensions;
 
 namespace VSS.Productivity3D.Common.Filters.Caching
 {
@@ -79,7 +80,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
         //FOr the requests with ProjectUID (v1 requests) standard rules apply
         if (request.Query.ContainsKey("projectUid"))
         {
-          builder.Append($"PRJUID={request.Query["projectUid"][0].ToUpperInvariant()}");
+          builder.Append(request.Query["projectUid"][0].GetProjectCacheKey());
         }
         else
         {
