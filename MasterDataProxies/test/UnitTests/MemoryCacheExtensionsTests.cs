@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -34,7 +35,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var log = logger.CreateLogger<MemoryCacheExtensionsTests>();
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var opts = MemoryCacheExtensions.GetCacheOptions("PROJECT_SETTINGS_CACHE_LIFE", configStore, log);
+      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions("PROJECT_SETTINGS_CACHE_LIFE", configStore, log);
       Assert.IsNotNull(opts);
       Assert.AreEqual(new TimeSpan(0,10,0), opts.SlidingExpiration);
     }
@@ -45,7 +46,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var log = logger.CreateLogger<MemoryCacheExtensionsTests>();
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var opts = MemoryCacheExtensions.GetCacheOptions(string.Empty, configStore, log);
+      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions(string.Empty, configStore, log);
       Assert.IsNotNull(opts);
       Assert.AreEqual(new TimeSpan(0, 15, 0), opts.SlidingExpiration);
     }

@@ -87,7 +87,15 @@ namespace VSS.MasterData.Proxies
     public async Task<BaseDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, long? legacyFileId, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.DeleteFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} legacyFileId: {legacyFileId}");
-      var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&legacyFileId={legacyFileId}";
+      //var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&legacyFileId={legacyFileId}";
+
+      Dictionary<string, string> parameters = new Dictionary<string, string>
+      {
+        { "projectUid", projectUid.ToString() }, {"fileType" , fileType.ToString() }, { "fileUid", fileUid.ToString() },
+        { "fileDescriptor", fileDescriptor}, {"fileId", fileId.ToString()}
+      };
+
+      var queryParams = $"?{new System.Net.Http.FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
 
       return await NotifyFile<BaseDataResult>("/deletefile", queryParams, customHeaders);
     }
@@ -123,7 +131,21 @@ namespace VSS.MasterData.Proxies
       return await NotifyFile<BaseDataResult>("/importedfilechange", queryParams, customHeaders);
     }
 
+    /// <summary>
+    /// Validates the Settings for the project.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="projectSettings">The projectSettings in Json to be validated.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<BaseDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {projectUid}");
+      var queryParams = $"?projectUid={projectUid}&projectSettings={projectSettings}";
+      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("PROJECTSETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
+      log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
+      return response;
+    }
     /// <summary>
     /// Validates the Settings for the project.
     /// </summary>
@@ -140,8 +162,7 @@ namespace VSS.MasterData.Proxies
 
       return response;
     }
-
-
+    
     /// <summary>
     /// Gets the veta export data.
     /// </summary>

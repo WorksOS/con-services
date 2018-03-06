@@ -41,8 +41,9 @@ namespace VSS.MasterData.Proxies
         return result.Settings;
       }
  
-      log.LogWarning($"Failed to get project settings {settingsType}, using default values: {result.Code}, {result.Message}");
+      log.LogWarning("Failed to get project settings, using default values: {0}, {1}", result.Code, result.Message);
       return null;
+      
     }
 
     /// <summary>
@@ -54,6 +55,5 @@ namespace VSS.MasterData.Proxies
     {
       ClearCacheItem<ProjectSettingsDataResult>(projectUid, userId);
     }
-
   }
 }
