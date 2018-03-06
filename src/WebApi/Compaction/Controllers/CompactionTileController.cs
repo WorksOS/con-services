@@ -8,10 +8,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -136,12 +136,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
       
       var projectId = ((RaptorPrincipal) User).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
-        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, width, height,
+        tileService.GetProductionDataTile(projectSettings, projectSettingsColors,filter, projectId, mode, width, height,
           GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
 
@@ -204,7 +205,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
       
       var projectId = ((RaptorPrincipal) User).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue
@@ -213,7 +215,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
-        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, width, height,
+        tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, mode, width, height,
           GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());

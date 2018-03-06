@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Exceptions;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Helpers;
@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="volumeCalcType">Type of summary volumes calculation</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns>Tile result</returns>
-    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, 
+    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, Filter filter, long projectId, 
       DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, Filter baseFilter,
       Filter topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders)
     {
@@ -78,6 +78,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             .ProjectId(projectId)
             .Headers(customHeaders)
             .ProjectSettings(projectSettings)
+            .ProjectSettingsColors(projectSettingsColors)
             .Filter(filter)
             .DesignDescriptor(cutFillDesign))
             .SetVolumeCalcType(volumeCalcType)
@@ -152,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
   public interface IProductionDataTileService
   {
-    TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, 
+    TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, Filter filter, long projectId, 
       DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, 
       Filter baseFilter, Filter topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders);
   }

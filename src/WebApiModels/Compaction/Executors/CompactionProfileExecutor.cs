@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -20,6 +19,7 @@ using SVOICSummaryVolumesProfileCell;
 using SVOICFilterSettings;
 using VLPDDecls;
 using SVOICLiftBuildSettings;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 {

@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Contracts
 {

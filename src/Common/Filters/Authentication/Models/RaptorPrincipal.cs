@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

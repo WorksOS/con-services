@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Net;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
@@ -33,6 +33,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     public string language { get; private set; }
     public ProjectDescriptor project { get; private set; }
     public CompactionProjectSettings projectSettings { get; private set; }
+    public CompactionProjectSettingsColors ProjectSettingsColors { get; private set; }
 
 
     /// <summary>
@@ -55,7 +56,8 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
       DisplayMode? mode,
       string language,
       ProjectDescriptor project,
-      CompactionProjectSettings projectSettings
+      CompactionProjectSettings projectSettings,
+      CompactionProjectSettingsColors projectSettingsColors
       )
     {
       return new TileGenerationRequest
@@ -76,7 +78,8 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
         mode = mode,
         language = language ?? "en-US",
         project = project,
-        projectSettings = projectSettings
+        projectSettings = projectSettings,
+        ProjectSettingsColors = projectSettingsColors
       };
     }
 

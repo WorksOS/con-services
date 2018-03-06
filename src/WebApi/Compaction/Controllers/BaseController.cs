@@ -9,11 +9,11 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
@@ -252,14 +252,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Gets the project settings for the project.
+    /// Gets the project settings targets for the project.
     /// </summary>
-    /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
-    /// <returns>The project settings</returns>
-    protected async Task<CompactionProjectSettings> GetProjectSettings(Guid projectUid)
+    /// <param name="projectUid">The UID of the project.</param>
+    /// <returns>The project settings targets.</returns>
+    protected async Task<CompactionProjectSettings> GetProjectSettingsTargets(Guid projectUid)
     {
       CompactionProjectSettings ps;
-      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), userId, CustomHeaders);
+      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), userId, CustomHeaders, ProjectSettingsType.Targets);
       if (jsonSettings != null)
       {
         try
@@ -270,14 +270,45 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         catch (Exception ex)
         {
           log.LogInformation(
-            $"JObject conversion to Project Settings or validation failure for projectUid {projectUid}. Error is {ex.Message}");
+            $"JObject conversion to Project Settings targets or validation failure for projectUid {projectUid}. Error is {ex.Message}");
           ps = CompactionProjectSettings.DefaultSettings;
         }
       }
       else
       {
-        log.LogDebug($"No Project Settings for projectUid {projectUid}. Using defaults.");
+        log.LogDebug($"No Project Settings targets for projectUid {projectUid}. Using defaults.");
         ps = CompactionProjectSettings.DefaultSettings;
+      }
+      return ps;
+    }
+
+    /// <summary>
+    /// Gets the project settings colors for the project.
+    /// </summary>
+    /// <param name="projectUid">The UID of the project.</param>
+    /// <returns>The project settings colors.</returns>
+    protected async Task<CompactionProjectSettingsColors> GetProjectSettingsColors(Guid projectUid)
+    {
+      CompactionProjectSettingsColors ps;
+      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), userId, CustomHeaders, ProjectSettingsType.Colors);
+      if (jsonSettings != null)
+      {
+        try
+        {
+          ps = jsonSettings.ToObject<CompactionProjectSettingsColors>();
+          ps.Validate();
+        }
+        catch (Exception ex)
+        {
+          log.LogInformation(
+            $"JObject conversion to Project Settings colours or validation failure for projectUid {projectUid}. Error is {ex.Message}");
+          ps = CompactionProjectSettingsColors.DefaultSettings;
+        }
+      }
+      else
+      {
+        log.LogDebug($"No Project Settings colours for projectUid {projectUid}. Using defaults.");
+        ps = CompactionProjectSettingsColors.DefaultSettings;
       }
       return ps;
     }

@@ -20,6 +20,6 @@ namespace VSS.Productivity3D.Common.Interfaces
     double[] CompactionCutFillSettings(CompactionProjectSettings projectSettings);
 
     List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents,
-      CompactionProjectSettings projectSettings);
+      CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors);
   }
 }

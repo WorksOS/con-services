@@ -7,10 +7,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -236,8 +236,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         overlayTypes.Remove(TileOverlayType.AllOverlays);
       }
       var project = (User as RaptorPrincipal).GetProject(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
-      var filter = thumbnail ? null : await GetCompactionFilter(projectUid, filterUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var designDescriptor = (!volumeCalcType.HasValue || volumeCalcType.Value == VolumeCalcType.None)
@@ -258,6 +259,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectId(project.projectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
+          .ProjectSettingsColors(projectSettingsColors)
           .Filter(filter)
           .DesignDescriptor(designDescriptor))
         .SetBaseFilter(sumVolParameters.Item1)

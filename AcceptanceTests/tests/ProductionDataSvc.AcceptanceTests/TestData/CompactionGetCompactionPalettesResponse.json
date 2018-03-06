@@ -302,40 +302,40 @@
       "belowTargetColor": 87963
     },
     "cmvPercentChangePalette": {
-    "colorValues": [
-      {
-        "color": 87963,
-        "value": -50.0
-      },
-      {
-        "color": 236517,
-        "value": -20.0
-      },
-      {
-        "color": 5227511,
-        "value": -10.0
-      },
-      {
-        "color": 11789820,
-        "value": 0.0
-      },
-      {
-        "color": 9159498,
-        "value": 10.0
-      },
-      {
-        "color": 16764370,
-        "value": 20.0
-      },
-      {
-        "color": 15037299,
-        "value": 50.0
-      }
-    ],
-    "aboveLastColor": 13959168,
-    "belowFirstColor": 33554431
-   },
-   "speedSummaryPalette": {
+      "colorValues": [
+        {
+          "color": 87963,
+          "value": -50.0
+        },
+        {
+          "color": 236517,
+          "value": -20.0
+        },
+        {
+          "color": 5227511,
+          "value": -10.0
+        },
+        {
+          "color": 11789820,
+          "value": 0.0
+        },
+        {
+          "color": 9159498,
+          "value": 10.0
+        },
+        {
+          "color": 16764370,
+          "value": 20.0
+        },
+        {
+          "color": 15037299,
+          "value": 50.0
+        }
+      ],
+      "aboveLastColor": 13959168,
+      "belowFirstColor": 33554431
+    },
+    "speedSummaryPalette": {
       "aboveTargetColor": 13959168,
       "onTargetColor": 9159498,
       "belowTargetColor": 87963

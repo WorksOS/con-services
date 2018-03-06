@@ -4,10 +4,10 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = GetProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
 
       var reportGridRequest = await requestFactory.Create<CompactionReportGridRequestHelper>(r => r
           .ProjectId(projectId)
@@ -183,7 +183,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesignDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       var userPreferences = await GetUserPreferences();
 
       // Add 0.0 value to the offsets array, remove any duplicates and sort contents by ascending order...

@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Exceptions;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -17,6 +15,7 @@ namespace VSS.Productivity3D.Common.Models
 
     private const int CMV_DETAILS_NUMBER_OF_COLORS = 5;
     private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS = 6;
+    private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS_V2 = 9;
 
     public void ValidatePalettes(List<ColorPalette> palettes, DisplayMode mode)
     {
@@ -37,11 +36,10 @@ namespace VSS.Productivity3D.Common.Models
             count = 5;
             break;
           case DisplayMode.CMVChange:
-            count = cmvPercentChangeColorNumber;
+            count = palettes.Count == CMV_PERCENT_CHANGE_NUMBER_OF_COLORS - 1 ? cmvPercentChangeColorNumber : CMV_PERCENT_CHANGE_NUMBER_OF_COLORS_V2;
+
             if (count == CMV_PERCENT_CHANGE_NUMBER_OF_COLORS)
-            {
               palettes.Insert(0, ColorPalette.CreateColorPalette(0, 0));
-            }
             break;
           case DisplayMode.Latency:
             break;
