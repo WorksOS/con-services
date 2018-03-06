@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Caching.Memory;
@@ -25,8 +26,9 @@ namespace VSS.Productivity3D.Common.Filters
 
       services.TryAdd(ServiceDescriptor.Singleton<IResponseCachingPolicyProvider, CustomCachingPolicyProvider>());
       services.TryAdd(ServiceDescriptor.Singleton<IResponseCachingKeyProvider, CustomResponseCachingKeyProvider>());
+      services.AddSingleton<IResponseCache>(new MemoryResponseCache(new MemoryCache(new MemoryCacheOptions())));
 
-      return services;
+     return services;
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -8,11 +9,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using log4net;
-using log4net.Config;
-using log4net.Repository;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Extensions;
@@ -24,12 +20,9 @@ using ValidationFilterAttribute = VSS.Productivity3D.Common.Filters.Validation.V
 
 namespace VSS.Productivity3D.WebApi
 {
-  /// <summary>
-  /// 
-  /// </summary>
   public partial class Startup
   {
-    public  const string loggerRepoName = "WebApi";
+    public const string LOGGER_REPO_NAME = "WebApi";
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -43,7 +36,7 @@ namespace VSS.Productivity3D.WebApi
           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", loggerRepoName);
+      env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();

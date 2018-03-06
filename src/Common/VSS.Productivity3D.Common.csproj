@@ -21,7 +21,6 @@
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.DataAnnotations" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.0.0" />
@@ -59,6 +58,10 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ResponseCaching\src\Microsoft.AspNetCore.ResponseCaching\Microsoft.AspNetCore.ResponseCaching.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Update="System.Xml.Linq">

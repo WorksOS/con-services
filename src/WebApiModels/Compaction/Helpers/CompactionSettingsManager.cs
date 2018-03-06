@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationBelowColor, -1));
             for (int i = 0; i < colors.Count; i++)
             {
-              palette.Add(ColorPalette.CreateColorPalette((uint)colors[i], elevExtents.MinElevation + i * step));
+              palette.Add(ColorPalette.CreateColorPalette((uint) colors[i], elevExtents.MinElevation + i * step));
             }
             palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationAboveColor, -1));
           }

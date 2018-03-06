@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Net;
-using ASNodeDecls;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Net;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Extensions;
+using VSS.Common.ResultsHandling;
+using VSS.Productivity3D.Common.Exceptions;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Helpers;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
-using VSS.Productivity3D.Common.Exceptions;
-
+using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -72,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
       catch (ServiceException se)
       {
-        getTile = mode == DisplayMode.Height ? false : true;
+        getTile = mode != DisplayMode.Height;
         log.LogTrace(
             $"Failed to get elevation extents for height request with error: {se.GetResult.Code}:{se.GetResult.Message} a transparent tile will be generated");
       }
@@ -115,7 +110,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           }
           //Rethrow any other exception
           if (getTile)
-            throw se;
+          {
+            throw;
+          }
         }
       }
 
@@ -136,8 +133,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       return tileResult ?? TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
     }
-
-
 
     /// <summary>
     /// Get the elevation extents for the palette for elevation tile requests

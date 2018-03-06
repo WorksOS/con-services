@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApi
         .UseContentRoot(pathToContentRoot)
         .ConfigureLogging(builder =>
         {
-          Log4NetProvider.RepoName = Startup.loggerRepoName;
+          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
           builder.SetMinimumLevel(LogLevel.Trace);
         })
