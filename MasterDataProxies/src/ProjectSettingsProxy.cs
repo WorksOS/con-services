@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Proxies
 {
