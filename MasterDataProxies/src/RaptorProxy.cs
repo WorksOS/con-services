@@ -146,6 +146,7 @@ namespace VSS.MasterData.Proxies
 
       return response;
     }
+
     /// <summary>
     /// Validates the Settings for the project.
     /// </summary>
@@ -162,7 +163,21 @@ namespace VSS.MasterData.Proxies
 
       return response;
     }
-    
+
+    /// <summary>
+    /// Validates the Settings for the project.
+    /// </summary>
+    /// <param name="request">Description of the Project Settings request.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<BaseDataResult> ValidateProjectSettings(ProjectSettingsRequest request, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {request.projectUid}");
+      BaseDataResult response = await SendRequest<BaseDataResult>("PROJECTSETTINGS_API_URL", JsonConvert.SerializeObject(request), customHeaders, "/validatesettings", null, "POST");
+      log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+
+      return response;
+    }
+
     /// <summary>
     /// Gets the veta export data.
     /// </summary>
