@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 
 namespace VSS.Productivity3D.Common.ResultHandling

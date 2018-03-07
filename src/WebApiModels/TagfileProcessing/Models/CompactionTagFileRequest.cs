@@ -33,6 +33,14 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
     [Required]
     public byte[] data { get; private set; }
 
+
+    /// <summary>
+    /// Defines Org ID (either from TCC or Connect) to support project-based subs
+    /// </summary>
+    [JsonProperty(PropertyName = "OrgID", Required = Required.Default)]
+    public string OrgID { get; private set; }
+
+
     /// <summary>
     /// Private constructor
     /// </summary>
@@ -49,12 +57,14 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
     public static CompactionTagFileRequest CreateCompactionTagFileRequest(
       string fileName,
       byte[] data,
-      Guid projectUid)
+      string orgId = null,
+      Guid? projectUid=null)
     {
       return new CompactionTagFileRequest
       {
         fileName = fileName,
         data = data,
+        OrgID = orgId,
         projectUid = projectUid
       };
     }

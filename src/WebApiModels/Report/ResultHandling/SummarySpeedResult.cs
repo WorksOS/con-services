@@ -1,4 +1,4 @@
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {

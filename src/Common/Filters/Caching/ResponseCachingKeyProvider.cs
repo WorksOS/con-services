@@ -13,9 +13,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Extensions;
 
 namespace VSS.Productivity3D.Common.Filters.Caching
 {
@@ -79,7 +80,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
         //FOr the requests with ProjectUID (v1 requests) standard rules apply
         if (request.Query.ContainsKey("projectUid"))
         {
-          builder.Append($"PRJUID={request.Query["projectUid"][0].ToUpperInvariant()}");
+          builder.Append(request.Query["projectUid"][0].GetProjectCacheKey());
         }
         else
         {
@@ -240,20 +241,4 @@ namespace VSS.Productivity3D.Common.Filters.Caching
     }
   }
 
-  public static class CachingKeyExtensions
-  {
-    public static Guid ExtractProjectGuidFromKey(this IResponseCachingKeyProvider cachingKeyProvider, string key)
-    {
-      if (key.IndexOf(CustomResponseCachingKeyProvider.ProjectDelimiter) <= 0) return Guid.Empty;
-      var indexOfDelimiter = key.LastIndexOf(CustomResponseCachingKeyProvider.ProjectDelimiter);
-      return Guid.Parse(key.Substring(indexOfDelimiter + 1, 36));
-    }
-
-    public static int ExtractFilterHashFromKey(this IResponseCachingKeyProvider cachingKeyProvider, string key)
-    {
-      if (key.IndexOf(CustomResponseCachingKeyProvider.FilterDelimiter) <= 0) return -1;
-      var indexOfDelimiter = key.LastIndexOf(CustomResponseCachingKeyProvider.FilterDelimiter);
-      return int.Parse(Regex.Match(key.Substring(indexOfDelimiter + 1), @"\d+").Value);
-    }
-  }
 }

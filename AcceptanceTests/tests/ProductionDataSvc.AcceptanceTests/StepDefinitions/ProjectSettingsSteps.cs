@@ -15,6 +15,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private string url;
     private string projectUid;
     private string projectSettings;
+    private byte settingsType;
     private Getter<RequestResult> settingsValidationRequester;
 
 
@@ -36,6 +37,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       this.projectSettings = projectSettings;
     }
 
+    [Given(@"a settingsType ""(.*)""")]
+    public void GivenAProjectSettings(byte settingsType)
+    {
+      this.settingsType = settingsType;
+    }
+    
     [Given(@"a projectSettings \(multiline\)")]
     public void GivenAProjectSettingsMultiline(string multilineText)
     {
@@ -70,9 +77,18 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       Assert.AreEqual(message, settingsValidationRequester.CurrentResponse.Message);
     }
 
+    [Then(@"the reuslt should contain code (.*) and message ""(.*)""")]
+    public void ThenTheReusltShouldContainCodeAndMessage(int code, string msg)
+    {
+      Assert.IsTrue(
+        settingsValidationRequester.CurrentResponse.Code == code &&
+        settingsValidationRequester.CurrentResponse.Message == msg,
+        $"Expected to see code {code} and message {msg}, but got {settingsValidationRequester.CurrentResponse.Code} and {settingsValidationRequester.CurrentResponse.Message} instead.");
+    }
+
     private string MakeUrl
     {
-      get { return string.Format("{0}?projectUid={1}&projectSettings={2}", url, projectUid, projectSettings); }
+      get { return $"{url}?projectUid={projectUid}&projectSettings={projectSettings}&settingsType={settingsType}"; }
     }
 
   }

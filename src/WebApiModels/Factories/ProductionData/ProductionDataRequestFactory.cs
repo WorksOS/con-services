@@ -21,6 +21,7 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
     private long projectId;
     private IDictionary<string, string> headers;
     private CompactionProjectSettings projectSettings;
+    private CompactionProjectSettingsColors projectSettingsColors;
     private Filter filter;
     private DesignDescriptor designDescriptor;
 
@@ -50,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, fileListProxy, settingsManager, this.projectId, this.projectSettings, this.headers, this.filter, this.designDescriptor);
+      obj.Initialize(log, configStore, fileListProxy, settingsManager, this.projectId, this.projectSettings, this.projectSettingsColors, this.headers, this.filter, this.designDescriptor);
 
       return obj;
     }
@@ -76,12 +77,22 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
     }
 
     /// <summary>
-    /// Sets the compaction settings used for the project.
+    /// Sets the compaction settings targets used for the project.
     /// </summary>
     /// <param name="projectSettings"></param>
     public ProductionDataRequestFactory ProjectSettings(CompactionProjectSettings projectSettings)
     {
       this.projectSettings = projectSettings;
+      return this;
+    }
+
+    /// <summary>
+    /// Sets the compaction settings colors used for the project.
+    /// </summary>
+    /// <param name="projectSettingsColors"></param>
+    public ProductionDataRequestFactory ProjectSettingsColors(CompactionProjectSettingsColors projectSettingsColors)
+    {
+      this.projectSettingsColors = projectSettingsColors;
       return this;
     }
 

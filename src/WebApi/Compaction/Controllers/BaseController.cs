@@ -9,11 +9,11 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
@@ -94,7 +94,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the User uid/applicationID from the context.
     /// </summary>
-    /// <returns></returns>
     /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
     private string GetUserId()
     {
@@ -110,9 +109,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// With the service exception try execute.
     /// </summary>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns></returns>
     protected TResult WithServiceExceptionTryExecute<TResult>(Func<TResult> action) where TResult : ContractExecutionResult
     {
       TResult result = default(TResult);
@@ -141,9 +137,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Asynch form of WithServiceExceptionTryExecute
     /// </summary>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="action"></param>
-    /// <returns></returns>
     protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
     {
       TResult result = default(TResult);
@@ -259,14 +252,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Gets the project settings for the project.
+    /// Gets the project settings targets for the project.
     /// </summary>
-    /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
-    /// <returns>The project settings</returns>
-    protected async Task<CompactionProjectSettings> GetProjectSettings(Guid projectUid)
+    /// <param name="projectUid">The UID of the project.</param>
+    /// <returns>The project settings targets.</returns>
+    protected async Task<CompactionProjectSettings> GetProjectSettingsTargets(Guid projectUid)
     {
       CompactionProjectSettings ps;
-      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), userId, CustomHeaders);
+      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), userId, CustomHeaders, ProjectSettingsType.Targets);
       if (jsonSettings != null)
       {
         try
@@ -277,14 +270,45 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         catch (Exception ex)
         {
           log.LogInformation(
-            $"JObject conversion to Project Settings or validation failure for projectUid {projectUid}. Error is {ex.Message}");
+            $"JObject conversion to Project Settings targets or validation failure for projectUid {projectUid}. Error is {ex.Message}");
           ps = CompactionProjectSettings.DefaultSettings;
         }
       }
       else
       {
-        log.LogDebug($"No Project Settings for projectUid {projectUid}. Using defaults.");
+        log.LogDebug($"No Project Settings targets for projectUid {projectUid}. Using defaults.");
         ps = CompactionProjectSettings.DefaultSettings;
+      }
+      return ps;
+    }
+
+    /// <summary>
+    /// Gets the project settings colors for the project.
+    /// </summary>
+    /// <param name="projectUid">The UID of the project.</param>
+    /// <returns>The project settings colors.</returns>
+    protected async Task<CompactionProjectSettingsColors> GetProjectSettingsColors(Guid projectUid)
+    {
+      CompactionProjectSettingsColors ps;
+      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), userId, CustomHeaders, ProjectSettingsType.Colors);
+      if (jsonSettings != null)
+      {
+        try
+        {
+          ps = jsonSettings.ToObject<CompactionProjectSettingsColors>();
+          ps.Validate();
+        }
+        catch (Exception ex)
+        {
+          log.LogInformation(
+            $"JObject conversion to Project Settings colours or validation failure for projectUid {projectUid}. Error is {ex.Message}");
+          ps = CompactionProjectSettingsColors.DefaultSettings;
+        }
+      }
+      else
+      {
+        log.LogDebug($"No Project Settings colours for projectUid {projectUid}. Using defaults.");
+        ps = CompactionProjectSettingsColors.DefaultSettings;
       }
       return ps;
     }
@@ -315,15 +339,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Creates an instance of the Filter class and populate it with data.
     /// </summary>
-    /// <param name="projectUid">Project Uid</param>
-    /// <param name="filterUid">Filter UID</param>
     /// <returns>An instance of the Filter class.</returns>
     protected async Task<Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid)
     {
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
-
       DesignDescriptor designDescriptor = null;
+
       if (filterUid.HasValue)
       {
         try
@@ -363,7 +385,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
         catch (ServiceException ex)
         {
-          log.LogDebug($"EXCEPTION caught - cannot find filter {ex.Message} {ex.GetContent} {ex.GetResult.Message}" );
+          log.LogDebug($"EXCEPTION caught - cannot find filter {ex.Message} {ex.GetContent} {ex.GetResult.Message}");
           throw;
         }
         catch (Exception ex)
@@ -386,13 +408,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>The filter with the date range set</returns>
     private MasterData.Models.Models.Filter ApplyDateRange(Guid projectUid, MasterData.Models.Models.Filter filter)
     {
-
       if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
       {
         log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom. Returning without setting filter start and end dates.");
         return filter;
       }
-
 
       var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
       if (project == null)
@@ -405,13 +425,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var utcNow = DateTime.UtcNow;
 
       //Force daterange filters to be null if ProjectExtents is specified
-      DateTime? startUtc=null;
-      DateTime? endUtc=null;
+      DateTime? startUtc = null;
+      DateTime? endUtc = null;
 
       if (filter.DateRangeType.Value != DateRangeType.ProjectExtents)
       {
-         startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
-         endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
+        startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
+        endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
       }
 
       return MasterData.Models.Models.Filter.CreateFilter(
@@ -441,6 +461,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Filter baseFilter = null;
       Filter topFilter = null;
       DesignDescriptor volumeDesign = null;
+
       if (volumeCalcType.HasValue)
       {
         switch (volumeCalcType.Value)
@@ -459,9 +480,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             break;
         }
       }
+
       return new Tuple<Filter, Filter, DesignDescriptor>(baseFilter, topFilter, volumeDesign);
     }
-
-  
   }
 }

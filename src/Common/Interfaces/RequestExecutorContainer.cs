@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.TCCFileAccess;
 

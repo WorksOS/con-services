@@ -5,10 +5,10 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
 
@@ -263,7 +263,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetExportReportVeta: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
       var startEndDate = GetDateRange(projectId, filter);
@@ -322,7 +322,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
       var projectId = GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
       var startEndDate = GetDateRange(projectId, filter);

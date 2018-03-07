@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -7,17 +8,15 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.ResponseCaching.Internal;
-using Microsoft.Extensions.Caching.Memory;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -87,7 +86,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="tileGenerator">DXF tile generator</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
-    /// <param name="cacheBuilder">The in memory cache provider</param>
+    /// <param name="cache">The in memory cache provider</param>
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
       IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy,
@@ -144,8 +143,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request) as Models.Notification.Models.AddFileResult;
       //Do we need to validate fileUid ?
-      await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
-      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
+      await ClearFilesCaches(projectUid, customHeaders);
+      cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
       return result;
     }
@@ -197,8 +196,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
-      await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
-      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
+      await ClearFilesCaches(projectUid, customHeaders);
+      cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
     }
@@ -230,8 +229,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
             "Missing fileUids parameter"));
       }
       var customHeaders = Request.Headers.GetCustomHeaders();
-      await ClearFilesCaches(projectUid, fileUids, customHeaders);
-      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
+      await ClearFilesCaches(projectUid, customHeaders);
+      cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetUpdateFiles returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Update files notification successful");
     }
@@ -254,8 +253,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     {
       log.LogDebug("GetNotifyImportedFileChange: " + Request.QueryString);
       var customHeaders = Request.Headers.GetCustomHeaders();
-      await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
-      cache.Set($"PRJUID={projectUid.ToString().ToUpperInvariant()}", null, TimeSpan.FromTicks(1));
+      await ClearFilesCaches(projectUid, customHeaders);
+      cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetNotifyImportedFileChange returned");
       return new ContractExecutionResult();
     }
@@ -282,10 +281,9 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// Clears the imported files cache in the proxy so that linework tile requests are refreshed appropriately
     /// </summary>
     /// <param name="projectUid">The project UID that the cached items belong to</param>
-    /// <param name="fileUids">The file UIDs of files that have been activated/deactivated</param>
     /// <param name="customHeaders">The custom headers of the notification request</param>
     /// <returns>The updated list of imported files</returns>
-    private async Task<List<FileData>> ClearFilesCaches(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders)
+    private async Task<List<FileData>> ClearFilesCaches(Guid projectUid, IDictionary<string, string> customHeaders)
     {
       log.LogInformation("Clearing imported files cache for project {0}", projectUid);
       //Clear file list cache and reload
@@ -324,7 +322,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="customHeaders">The custom headers of the notification request</param>
-    /// <returns></returns>
     private async Task<List<MasterData.Models.Models.Filter>> GetFilters(Guid projectUid, IDictionary<string, string> customHeaders)
     {
       var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);

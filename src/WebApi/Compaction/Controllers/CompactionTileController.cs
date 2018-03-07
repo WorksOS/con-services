@@ -8,10 +8,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -20,6 +20,7 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
@@ -31,7 +32,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for displaying production data and linework.
   /// </summary>
-
+  [ProjectUidVerifier]
   public class CompactionTileController : BaseController
   {
     /// <summary>
@@ -88,17 +89,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as 
     /// elevation, compaction, temperature, cut/fill, volumes etc
     /// </summary>
-    /// <param name="SERVICE">WMS parameter - value WMS</param>
-    /// <param name="VERSION">WMS parameter - value 1.3.0</param>
-    /// <param name="REQUEST">WMS parameter - value GetMap</param>
-    /// <param name="FORMAT">WMS parameter - value image/png</param>
-    /// <param name="TRANSPARENT">WMS parameter - value true</param>
-    /// <param name="LAYERS">WMS parameter - value Layers</param>
-    /// <param name="CRS">WMS parameter - value EPSG:4326</param>
-    /// <param name="STYLES">WMS parameter - value null</param>
-    /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
+    /// <param name="service">WMS parameter - value WMS</param>
+    /// <param name="version">WMS parameter - value 1.3.0</param>
+    /// <param name="request">WMS parameter - value GetMap</param>
+    /// <param name="format">WMS parameter - value image/png</param>
+    /// <param name="transparent">WMS parameter - value true</param>
+    /// <param name="layers">WMS parameter - value Layers</param>
+    /// <param name="crs">WMS parameter - value EPSG:4326</param>
+    /// <param name="styles">WMS parameter - value null</param>
+    /// <param name="width">The width, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="height">The height, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
     /// <param name="cutFillDesignUid">Design UID for cut-fill</param>
@@ -109,21 +110,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-    [ProjectUidVerifier]
+    [ValidateWmsParameters, ValidateBoundingBox]
     [Route("api/v2/productiondatatiles")]
     [HttpGet]
     public async Task<TileResult> GetProductionDataTile(
-      [FromQuery] string SERVICE,
-      [FromQuery] string VERSION,
-      [FromQuery] string REQUEST,
-      [FromQuery] string FORMAT,
-      [FromQuery] string TRANSPARENT,
-      [FromQuery] string LAYERS,
-      [FromQuery] string CRS,
-      [FromQuery] string STYLES,
-      [FromQuery] ushort WIDTH,
-      [FromQuery] ushort HEIGHT,
-      [FromQuery] string BBOX,
+      [FromQuery] string service,
+      [FromQuery] string version,
+      [FromQuery] string request,
+      [FromQuery] string format,
+      [FromQuery] string transparent,
+      [FromQuery] string layers,
+      [FromQuery] string crs,
+      [FromQuery] string styles,
+      [FromQuery] ushort width,
+      [FromQuery] ushort height,
+      [FromQuery] string bbox,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutFillDesignUid,
@@ -133,16 +134,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
-
-      ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      
+      var projectId = ((RaptorPrincipal) User).GetProjectId(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
-        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, WIDTH, HEIGHT,
-          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
+        tileService.GetProductionDataTile(projectSettings, projectSettingsColors,filter, projectId, mode, width, height,
+          GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
 
       return tileResult;
@@ -152,17 +153,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as elevation, compaction, temperature, cut/fill, volumes etc
     /// </summary>
-    /// <param name="SERVICE">WMS parameter - value WMS</param>
-    /// <param name="VERSION">WMS parameter - value 1.3.0</param>
-    /// <param name="REQUEST">WMS parameter - value GetMap</param>
-    /// <param name="FORMAT">WMS parameter - value image/png</param>
-    /// <param name="TRANSPARENT">WMS parameter - value true</param>
-    /// <param name="LAYERS">WMS parameter - value Layers</param>
-    /// <param name="CRS">WMS parameter - value EPSG:4326</param>
-    /// <param name="STYLES">WMS parameter - value null</param>
-    /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
+    /// <param name="service">WMS parameter - value WMS</param>
+    /// <param name="version">WMS parameter - value 1.3.0</param>
+    /// <param name="request">WMS parameter - value GetMap</param>
+    /// <param name="format">WMS parameter - value image/png</param>
+    /// <param name="transparent">WMS parameter - value true</param>
+    /// <param name="layers">WMS parameter - value Layers</param>
+    /// <param name="crs">WMS parameter - value EPSG:4326</param>
+    /// <param name="styles">WMS parameter - value null</param>
+    /// <param name="width">The width, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="height">The height, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
     /// <param name="cutFillDesignUid">Design UID for cut-fill</param>
@@ -178,21 +179,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-    [ProjectUidVerifier]
+    [ValidateWmsParameters, ValidateBoundingBox]
     [Route("api/v2/productiondatatiles/png")]
     [HttpGet]
     public async Task<FileResult> GetProductionDataTileRaw(
-      [FromQuery] string SERVICE,
-      [FromQuery] string VERSION,
-      [FromQuery] string REQUEST,
-      [FromQuery] string FORMAT,
-      [FromQuery] string TRANSPARENT,
-      [FromQuery] string LAYERS,
-      [FromQuery] string CRS,
-      [FromQuery] string STYLES,
-      [FromQuery] ushort WIDTH,
-      [FromQuery] ushort HEIGHT,
-      [FromQuery] string BBOX,
+      [FromQuery] string service,
+      [FromQuery] string version,
+      [FromQuery] string request,
+      [FromQuery] string format,
+      [FromQuery] string transparent,
+      [FromQuery] string layers,
+      [FromQuery] string crs,
+      [FromQuery] string styles,
+      [FromQuery] ushort width,
+      [FromQuery] ushort height,
+      [FromQuery] string bbox,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutFillDesignUid,
@@ -202,10 +203,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
       log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
-
-      ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
-      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
-      var projectSettings = await GetProjectSettings(projectUid);
+      
+      var projectId = ((RaptorPrincipal) User).GetProjectId(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue
@@ -214,8 +215,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
-        tileService.GetProductionDataTile(projectSettings, filter, projectId, mode, WIDTH, HEIGHT,
-          GetBoundingBox(BBOX), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
+        tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, mode, width, height,
+          GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
@@ -226,50 +227,50 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
     /// The tiles for the supplied list of files are overlaid and a single tile returned.
     /// </summary>
-    /// <param name="SERVICE">WMS parameter - value WMS</param>
-    /// <param name="VERSION">WMS parameter - value 1.3.0</param>
-    /// <param name="REQUEST">WMS parameter - value GetMap</param>
-    /// <param name="FORMAT">WMS parameter - value image/png</param>
-    /// <param name="TRANSPARENT">WMS parameter - value true</param>
-    /// <param name="LAYERS">WMS parameter - value Layers</param>
-    /// <param name="CRS">WMS parameter - value EPSG:4326</param>
-    /// <param name="STYLES">WMS parameter - value null</param>
-    /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
+    /// <param name="service">WMS parameter - value WMS</param>
+    /// <param name="version">WMS parameter - value 1.3.0</param>
+    /// <param name="request">WMS parameter - value GetMap</param>
+    /// <param name="format">WMS parameter - value image/png</param>
+    /// <param name="transparent">WMS parameter - value true</param>
+    /// <param name="layers">WMS parameter - value Layers</param>
+    /// <param name="crs">WMS parameter - value EPSG:4326</param>
+    /// <param name="styles">WMS parameter - value null</param>
+    /// <param name="width">The width, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="height">The height, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-    [ProjectUidVerifier]
+    [ValidateWmsParameters, ValidateWidthAndHeight, ValidateBoundingBox]
     [Route("api/v2/lineworktiles")]
     [HttpGet]
     public async Task<TileResult> GetLineworkTile(
-      [FromQuery] string SERVICE,
-      [FromQuery] string VERSION,
-      [FromQuery] string REQUEST,
-      [FromQuery] string FORMAT,
-      [FromQuery] string TRANSPARENT,
-      [FromQuery] string LAYERS,
-      [FromQuery] string CRS,
-      [FromQuery] string STYLES,
-      [FromQuery] int WIDTH,
-      [FromQuery] int HEIGHT,
-      [FromQuery] string BBOX,
+      [FromQuery] string service,
+      [FromQuery] string version,
+      [FromQuery] string request,
+      [FromQuery] string format,
+      [FromQuery] string transparent,
+      [FromQuery] string layers,
+      [FromQuery] string crs,
+      [FromQuery] string styles,
+      [FromQuery] int width,
+      [FromQuery] int height,
+      [FromQuery] string bbox,
       [FromQuery] Guid projectUid,
       [FromQuery] string fileType)
     {
       log.LogDebug("GetLineworkTile: " + Request.QueryString);
 
-      ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
-      ValidateTileDimensions(WIDTH, HEIGHT);
-
       var requiredFiles = await ValidateFileType(projectUid, fileType);
-      DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
-      request.Validate();
+      var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(bbox));
+
+      dxfTileRequest.Validate();
+
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, this.ConfigStore, fileRepo);
-      var result = await executor.ProcessAsync(request) as TileResult;
+      var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
+
       return result;
     }
 
@@ -278,105 +279,53 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
     /// The tiles for the supplied list of files are overlaid and a single tile returned.
     /// </summary>
-    /// <param name="SERVICE">WMS parameter - value WMS</param>
-    /// <param name="VERSION">WMS parameter - value 1.3.0</param>
-    /// <param name="REQUEST">WMS parameter - value GetMap</param>
-    /// <param name="FORMAT">WMS parameter - value image/png</param>
-    /// <param name="TRANSPARENT">WMS parameter - value true</param>
-    /// <param name="LAYERS">WMS parameter - value Layers</param>
-    /// <param name="CRS">WMS parameter - value EPSG:4326</param>
-    /// <param name="STYLES">WMS parameter - value null</param>
-    /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
+    /// <param name="service">WMS parameter - value WMS</param>
+    /// <param name="version">WMS parameter - value 1.3.0</param>
+    /// <param name="request">WMS parameter - value GetMap</param>
+    /// <param name="format">WMS parameter - value image/png</param>
+    /// <param name="transparent">WMS parameter - value true</param>
+    /// <param name="layers">WMS parameter - value Layers</param>
+    /// <param name="crs">WMS parameter - value EPSG:4326</param>
+    /// <param name="styles">WMS parameter - value null</param>
+    /// <param name="width">The width, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="height">The height, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-    [ProjectUidVerifier]
+    [ValidateWmsParameters, ValidateBoundingBox]
     [Route("api/v2/lineworktiles/png")]
     [HttpGet]
     public async Task<FileResult> GetLineworkTileRaw(
-      [FromQuery] string SERVICE,
-      [FromQuery] string VERSION,
-      [FromQuery] string REQUEST,
-      [FromQuery] string FORMAT,
-      [FromQuery] string TRANSPARENT,
-      [FromQuery] string LAYERS,
-      [FromQuery] string CRS,
-      [FromQuery] string STYLES,
-      [FromQuery] int WIDTH,
-      [FromQuery] int HEIGHT,
-      [FromQuery] string BBOX,
+      [FromQuery] string service,
+      [FromQuery] string version,
+      [FromQuery] string request,
+      [FromQuery] string format,
+      [FromQuery] string transparent,
+      [FromQuery] string layers,
+      [FromQuery] string crs,
+      [FromQuery] string styles,
+      [FromQuery] int width,
+      [FromQuery] int height,
+      [FromQuery] string bbox,
       [FromQuery] Guid projectUid,
       [FromQuery] string fileType)
     {
       log.LogDebug("GetLineworkTileRaw: " + Request.QueryString);
 
-      ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
-      ValidateTileDimensions(WIDTH, HEIGHT);
-
       var requiredFiles = await ValidateFileType(projectUid, fileType);
-      DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
-      request.Validate();
+      var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(bbox));
+
+      dxfTileRequest.Validate();
+
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, this.ConfigStore, fileRepo);
-      var result = await executor.ProcessAsync(request) as TileResult;
+      var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
     }
-
-    /// <summary>
-    /// Validates the WMS parameters for the tile requests
-    /// </summary>
-    /// <param name="SERVICE"></param>
-    /// <param name="VERSION"></param>
-    /// <param name="REQUEST"></param>
-    /// <param name="FORMAT"></param>
-    /// <param name="TRANSPARENT"></param>
-    /// <param name="LAYERS"></param>
-    /// <param name="CRS"></param>
-    /// <param name="STYLES"></param>
-    private void ValidateWmsParameters(
-      string SERVICE,
-      string VERSION,
-      string REQUEST,
-      string FORMAT,
-      string TRANSPARENT,
-      string LAYERS,
-      string CRS,
-      string STYLES)
-    {
-      bool invalid = (!string.IsNullOrEmpty(SERVICE) && SERVICE.ToUpper() != "WMS") ||
-                     (!string.IsNullOrEmpty(VERSION) && VERSION.ToUpper() != "1.3.0") ||
-                     (!string.IsNullOrEmpty(REQUEST) && REQUEST.ToUpper() != "GETMAP") ||
-                     (!string.IsNullOrEmpty(FORMAT) && FORMAT.ToUpper() != "IMAGE/PNG") ||
-                     (!string.IsNullOrEmpty(TRANSPARENT) && TRANSPARENT.ToUpper() != "TRUE") ||
-                     (!string.IsNullOrEmpty(LAYERS) && LAYERS.ToUpper() != "LAYERS") ||
-                     (!string.IsNullOrEmpty(CRS) && CRS.ToUpper() != "EPSG:4326") ||
-                     (!string.IsNullOrEmpty(STYLES));
-
-      if (invalid)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Service supports only the following: SERVICE=WMS, VERSION=1.3.0, REQUEST=GetMap, FORMAT=image/png, TRANSPARENT=true, LAYERS=Layers, CRS=EPSG:4326, STYLES= (no styles supported)"));
-      }
-    }
-
-    /// <summary>
-    /// Validates the tile width and height
-    /// </summary>
-    private void ValidateTileDimensions(int WIDTH, int HEIGHT)
-    {
-      if (WIDTH != WebMercatorProjection.TILE_SIZE || HEIGHT != WebMercatorProjection.TILE_SIZE)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Service supports only tile width and height of " + WebMercatorProjection.TILE_SIZE + " pixels"));
-      }
-    }
-
+    
     /// <summary>
     /// Validates the file type for DXF tile request and gets the imported file data for it
     /// </summary>
@@ -413,14 +362,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       //Get all the imported files for the project
-      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), userId, Request.Headers.GetCustomHeaders());
-      if (fileList == null)
-      {
-        fileList = new List<FileData>();
-      }
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), userId, Request.Headers.GetCustomHeaders()) ?? new List<FileData>();
+
       //Select the required ones from the list
       var filesOfType = fileList.Where(f => f.ImportedFileType == importedFileType && f.IsActivated).ToList();
       log.LogInformation("Found {0} files of type {1} from a total of {2}", filesOfType.Count, fileType, fileList.Count);
+
       return filesOfType;
     }
 
@@ -486,6 +433,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             break;
         }
       }
+
       log.LogDebug("BBOX in radians: blLong=" + blLong + ",blLat=" + blLat + ",trLong=" + trLong + ",trLat=" + trLat);
       return BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat);
     }

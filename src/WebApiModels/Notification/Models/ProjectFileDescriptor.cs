@@ -3,10 +3,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Contracts;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Notification.Models

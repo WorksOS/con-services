@@ -5,9 +5,9 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       try
       {
-        var projectSettings = await GetProjectSettings(projectUid);
+        var projectSettings = await GetProjectSettingsTargets(projectUid);
 
         var filter = await GetCompactionFilter(projectUid, filterUid);
 

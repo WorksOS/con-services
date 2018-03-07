@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Net;
-using ASNodeDecls;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Net;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
-using VSS.Productivity3D.Common.Extensions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common.Exceptions;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Helpers;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
-using VSS.Productivity3D.Common.Exceptions;
-
+using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -58,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="volumeCalcType">Type of summary volumes calculation</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns>Tile result</returns>
-    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, 
+    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, Filter filter, long projectId, 
       DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, Filter baseFilter,
       Filter topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders)
     {
@@ -72,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
       catch (ServiceException se)
       {
-        getTile = mode == DisplayMode.Height ? false : true;
+        getTile = mode != DisplayMode.Height;
         log.LogTrace(
             $"Failed to get elevation extents for height request with error: {se.GetResult.Code}:{se.GetResult.Message} a transparent tile will be generated");
       }
@@ -83,6 +78,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             .ProjectId(projectId)
             .Headers(customHeaders)
             .ProjectSettings(projectSettings)
+            .ProjectSettingsColors(projectSettingsColors)
             .Filter(filter)
             .DesignDescriptor(cutFillDesign))
             .SetVolumeCalcType(volumeCalcType)
@@ -114,7 +110,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           }
           //Rethrow any other exception
           if (getTile)
-            throw se;
+          {
+            throw;
+          }
         }
       }
 
@@ -136,8 +134,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       return tileResult ?? TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
     }
 
-
-
     /// <summary>
     /// Get the elevation extents for the palette for elevation tile requests
     /// </summary>
@@ -157,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
   public interface IProductionDataTileService
   {
-    TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, 
+    TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, Filter filter, long projectId, 
       DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, 
       Filter baseFilter, Filter topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders);
   }

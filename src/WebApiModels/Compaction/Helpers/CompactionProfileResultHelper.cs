@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;

@@ -777,6 +777,9 @@
     <None Include="TestData\CompactionTagFileRequest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\ProjectSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\CoordSysValidationResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
