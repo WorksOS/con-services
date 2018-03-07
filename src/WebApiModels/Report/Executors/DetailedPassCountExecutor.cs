@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         raptorFilter,
         RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
         out passCountDetails);
-      log.LogDebug($"Result from Raptor {success} with {JsonConvert.SerializeObject(passCountDetails)}");
+      //log.LogDebug($"Result from Raptor {success} with {JsonConvert.SerializeObject(passCountDetails)}");
       if (success)
       {
         result = ConvertResult(passCountDetails, request.liftBuildSettings);
