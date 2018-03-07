@@ -353,6 +353,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
           if (filterData != null)
           {
+            log.LogDebug($"Filter from Filter Svc: {JsonConvert.SerializeObject(filterData)}");
             if (filterData.DesignUid != null && Guid.TryParse(filterData.DesignUid, out Guid designUidGuid))
             {
               designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUidGuid);
@@ -375,11 +376,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                 returnEarliest = true;
               }
 
-              return Filter.CreateFilter(null, null, null, filterData.StartUtc, filterData.EndUtc,
+              var raptorFilter = Filter.CreateFilter(null, null, null, filterData.StartUtc, filterData.EndUtc,
                 filterData.OnMachineDesignId, null, filterData.VibeStateOn, null, filterData.ElevationType,
                 polygonPoints, null, filterData.ForwardDirection, null, null, null, null, null, null,
                 layerMethod, null, null, filterData.LayerNumber, null, filterData.ContributingMachines,
                 excludedIds, returnEarliest, null, null, null, null, null, designDescriptor);
+              log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
+              return raptorFilter;
             }
           }
         }
