@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.WebApi.M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiTests.Local", "test\UnitTests\WebApiTests\WebApiTests.Local.csproj", "{BC3F0CEF-20A3-4A41-9D81-376760EA97AA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.ResponseCaching", "src\ResponseCaching\src\Microsoft.AspNetCore.ResponseCaching\Microsoft.AspNetCore.ResponseCaching.csproj", "{FF15A01B-7441-44EF-B74F-8C79EF47EF6B}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore.Local", "..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj", "{0FC4083E-6301-4B1A-81F4-18768D90B664}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions.Local", "..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj", "{8E9784FC-CE36-4573-9C8E-20CF0DD49647}"
