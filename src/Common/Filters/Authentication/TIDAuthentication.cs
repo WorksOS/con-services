@@ -37,7 +37,9 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
           bool internalConnection =
             (context.Request.Path.Value.Contains("api/v1/tagfiles") ||
              context.Request.Path.Value.Contains("api/v2/tagfiles")) && context.Request.Method == "POST" &&
-            context.Request.HttpContext.Connection.RemoteIpAddress.ToString().StartsWith("10.");
+            context.Request.HttpContext.Connection.RemoteIpAddress.ToString().StartsWith("10.") &&
+            !context.Request.Headers.ContainsKey("X-Jwt-Assertion")&&
+            !context.Request.Headers.ContainsKey("Authorization");
 
             if (!context.Request.Path.Value.Contains("swagger")&&!internalConnection)
             {
