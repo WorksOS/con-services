@@ -17,7 +17,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// <summary>
   /// Controller for Surveyed Surfaces resource.
   /// </summary>
-  /// 
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class SurveyedSurfaceController : Controller, ISurveyedSurfaceContract
   {
@@ -27,15 +26,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
- 
+
     /// <summary>
     /// Constructor with injection
     /// </summary>
@@ -45,16 +39,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<SurveyedSurfaceController>();
     }
-
 
     /// <summary>
     /// Posts a Surveyed Surface to Raptor.
     /// </summary>
     /// <param name="request">Description of the Surveyed Surface request.</param>
     /// <returns>Execution result.</returns>
-    ///
     [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
@@ -64,7 +55,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectWritableWithUIDVerifier]
     [Route("api/v1/surveyedsurfaces")]
     [HttpPost]
-
     public ContractExecutionResult Post([FromBody] SurveyedSurfaceRequest request)
     {
       request.Validate();
@@ -76,13 +66,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="projectId">The model/project identifier.</param>
     /// <param name="surveyedSurfaceId">The Surveyed Surface identifier.</param>
-    /// <returns></returns>
-    /// 
+    [Obsolete("This action method is obsolete and no longer used by 3DP application services. It may be in use by Trimble Business Center.")]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectWritableVerifier]
     [HttpGet]
-
     [Route("api/v1/projects/{projectId}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
     public ContractExecutionResult GetDel([FromRoute] long projectId, [FromRoute] long surveyedSurfaceId)
     {
@@ -102,13 +90,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="projectUid">The model/project unique identifier.</param>
     /// <param name="surveyedSurfaceId">The Surveyed Surface identifier.</param>
-    /// <returns></returns>
-    /// 
+    [Obsolete("This action method is obsolete and no longer used by 3DP application services. It may be in use by Trimble Business Center.")]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
     [ProjectWritableWithUIDVerifier]
     [HttpGet]
-
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
     public ContractExecutionResult GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId)
     {
@@ -132,7 +118,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [HttpGet]
-
     [Route("api/v1/projects/{projectId}/surveyedsurfaces")]
     public SurveyedSurfaceResult Get([FromRoute] long projectId)
     {
@@ -150,7 +135,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
     [HttpGet]
-
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces")]
     public SurveyedSurfaceResult Get([FromRoute] Guid projectUid)
     {
@@ -167,7 +151,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="request">Description of the Surveyed Surface request.</param>
     /// <returns>Execution result.</returns>
-    /// 
     [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
@@ -188,7 +171,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="request">Descriptor of the Design File (filename).</param>
     /// <returns>Execution result.</returns>
-    /// 
     [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
