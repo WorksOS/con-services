@@ -110,7 +110,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       try
       {
         result = await raptorProxy
-          .ValidateProjectSettings(Guid.Parse(request.projectUid), request.Settings, request.ProjectSettingsType, headers)
+          .ValidateProjectSettings(request, headers)
           .ConfigureAwait(false);
       }
       catch (Exception e)
