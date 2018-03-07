@@ -27,6 +27,8 @@ namespace VSS.MasterData.Proxies.Interfaces
 
     Task<BaseDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, ProjectSettingsType settingsType, IDictionary<string, string> customHeaders = null);
 
+    Task<BaseDataResult> ValidateProjectSettings(ProjectSettingsRequest request, IDictionary<string, string> customHeaders = null);
+
     Task<BaseDataResult> NotifyFilterChange(Guid filterUid, Guid projectUid, IDictionary<string, string> customHeaders = null);
 
     Task<ExportResult> GetVetaExportData(Guid projectUid, string fileName, string machineNames, Guid? filterUid, IDictionary<string, string> customHeaders);
