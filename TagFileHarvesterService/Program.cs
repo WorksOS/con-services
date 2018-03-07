@@ -125,6 +125,7 @@ namespace TagFileHarvester
         TagFileHarvesterServiceSettings.Default.UseModifyTimeInsteadOfCreateTime;
       OrgsHandler.BookmarkPath = TagFileHarvesterServiceSettings.Default.BookmarkPath;
       OrgsHandler.ShortOrgName = TagFileHarvesterServiceSettings.Default.ShortOrgName;
+      OrgsHandler.TagFileEndpoint = TagFileHarvesterServiceSettings.Default.TagFileEndpoint;
 
       Directory.CreateDirectory(OrgsHandler.BookmarkPath);
 

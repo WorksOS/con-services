@@ -52,6 +52,7 @@ namespace TagFileHarvester
     public static TimeSpan BadFilesToleranceRollback { get; set; }
     public static bool CacheEnabled { get; set; }
     public static bool FilenameDumpEnabled { get; set; }
+    public static string TagFileEndpoint { get; set; }
 
     public static readonly object OrgListLocker = new object();
 

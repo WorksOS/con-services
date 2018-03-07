@@ -114,19 +114,13 @@ namespace TagFileHarvester.TaskQueues
             .StartNewLimitedConcurrency(
               () =>
               {
-                var localresult = new TagFileProcessTask(Container,
+                var localresult = new WebApiTagFileProcessTask(Container,
                   filetasksCancel.Token)
                   .ProcessTagfile(f.fullName, org);
                 lock (filelistlock)
                 {
                   result.AggregateOrgResult(localresult);
-                  if (localresult == null ||
-                      localresult ==
-                      TTAGProcServerProcessResult
-                        .tpsprOnSubmissionBaseConnectionFailure ||
-                      localresult ==
-                      TTAGProcServerProcessResult
-                        .tpsprOnSubmissionResultConnectionFailure)
+                  if (localresult == null)
                   {
                     repositoryError = true;
                     failuredFiles.Add(f);
@@ -216,12 +210,12 @@ namespace TagFileHarvester.TaskQueues
     public int ErroneousFiles;
     private readonly object _resultLocker = new object();
 
-    public void AggregateOrgResult(TTAGProcServerProcessResult? result)
+    public void AggregateOrgResult(BaseDataResult result)
     {
       lock (_resultLocker)
       {
         if (result == null) { ErroneousFiles++; return; }
-        if (result == TTAGProcServerProcessResult.tpsprOK) { ProcessedFiles++; return; }
+        if (result.Code == 0 ) { ProcessedFiles++; return; }
         RefusedFiles++;
       }
     }
