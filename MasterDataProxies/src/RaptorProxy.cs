@@ -172,7 +172,7 @@ namespace VSS.MasterData.Proxies
     public async Task<BaseDataResult> ValidateProjectSettings(ProjectSettingsRequest request, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {request.projectUid}");
-      BaseDataResult response = await SendRequest<BaseDataResult>("PROJECTSETTINGS_API_URL", JsonConvert.SerializeObject(request), customHeaders, "/validatesettings", null, "POST");
+      BaseDataResult response = await SendRequest<BaseDataResult>("PROJECTSETTINGS_API_URL", JsonConvert.SerializeObject(request), customHeaders, "/validatesettings", "POST", String.Empty);
       log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
