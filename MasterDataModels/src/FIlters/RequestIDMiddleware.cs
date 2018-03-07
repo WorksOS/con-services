@@ -33,10 +33,16 @@ namespace VSS.MasterData.Models.FIlters
         context.Items["RequestID"] = Guid.NewGuid();
         context.Request.Headers["X-Request-ID"] = context.Items["RequestID"].ToString();
       }
+      context.Response.OnStarting(() =>
+      {
+        if (!context.Response.Headers.ContainsKey("X-Request-ID"))
+          context.Response.Headers["X-Request-ID"] = context.Items["RequestID"].ToString();
+        return Task.FromResult(0);
+      });
+
       await this.NextRequestDelegate.Invoke(context);
 
-      if (!context.Response.Headers.ContainsKey("X-Request-ID"))
-        context.Response.Headers["X-Request-ID"] = context.Items["RequestID"].ToString();
+
     }
   }
 }

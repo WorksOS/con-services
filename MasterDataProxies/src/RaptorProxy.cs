@@ -254,5 +254,87 @@ namespace VSS.MasterData.Proxies
 
       return response;
     }
+
+
+    /// <summary>
+    /// Uploads the tag file.
+    /// </summary>
+    /// <param name="filename">The filename.</param>
+    /// <param name="data">The data.</param>
+    /// <param name="orgId">The org identifier.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    /// <returns></returns>
+    public async Task<BaseDataResult> UploadTagFile(string filename, byte[] data, string orgId = null, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.UploadTagFile: filename: {filename}, orgId: {orgId}");
+      var request = CompactionTagFileRequest.CreateCompactionTagFileRequest(filename, data, orgId);
+      var response = await SendRequest<BaseDataResult>("TAGFILEPOST_API_URL", JsonConvert.SerializeObject(request),
+        customHeaders, "", "POST", String.Empty);
+      log.LogDebug("RaptorProxy.UploadTagFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      return response;
+    }
+
+  }
+
+  /// <summary>
+  /// TAG file domain object. Model represents TAG file submitted to Raptor.
+  /// </summary>
+  internal class CompactionTagFileRequest
+  {
+    /// <summary>
+    /// A project unique identifier.
+    /// </summary>
+    [JsonProperty(PropertyName = "projectUid", Required = Required.Default)]
+    public Guid? projectUid { get; private set; }
+
+    /// <summary>
+    /// The name of the TAG file.
+    /// </summary>
+    /// <value>Required. Shall contain only ASCII characters. Maximum length is 256 characters.</value>
+    [JsonProperty(PropertyName = "fileName", Required = Required.Always)]
+    public string fileName { get; private set; }
+
+    /// <summary>
+    /// The content of the TAG file as an array of bytes.
+    /// </summary>
+    [JsonProperty(PropertyName = "data", Required = Required.Always)]
+    public byte[] data { get; private set; }
+
+
+    /// <summary>
+    /// Defines Org ID (either from TCC or Connect) to support project-based subs
+    /// </summary>
+    [JsonProperty(PropertyName = "OrgID", Required = Required.Default)]
+    public string OrgID { get; private set; }
+
+
+    /// <summary>
+    /// Private constructor
+    /// </summary>
+    private CompactionTagFileRequest()
+    {
+    }
+
+    /// <summary>
+    /// Create instance of CompactionTagFileRequest
+    /// </summary>
+    /// <param name="fileName">file name</param>
+    /// <param name="data">metadata</param>
+    /// <param name="projectUid">project UID</param>
+    /// <returns></returns>
+    public static CompactionTagFileRequest CreateCompactionTagFileRequest(
+      string fileName,
+      byte[] data,
+      string orgId = null,
+      Guid? projectUid = null)
+    {
+      return new CompactionTagFileRequest
+      {
+        fileName = fileName,
+        data = data,
+        OrgID = orgId,
+        projectUid = projectUid
+      };
+    }
   }
 }
