@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace MockProjectWebApi.Json
@@ -27,8 +28,14 @@ namespace MockProjectWebApi.Json
 
     private static string GetJsonFromEmbeddedResource(string resourceName)
     {
-      resourceName = $"MockProjectWebApi.Json.{resourceName}.json";
+      resourceName = $".Json.{resourceName}.json";
 
+      // this allows for .Local solution
+      resourceName = Assembly.GetEntryAssembly().GetManifestResourceNames().FirstOrDefault(n => n.Contains(resourceName));
+      if (string.IsNullOrEmpty(resourceName))
+      {
+        throw new Exception($"Error attempting to find resource name {resourceName}.");
+      }
 
       using (var stream = Assembly.GetEntryAssembly().GetManifestResourceStream(resourceName))
       {
