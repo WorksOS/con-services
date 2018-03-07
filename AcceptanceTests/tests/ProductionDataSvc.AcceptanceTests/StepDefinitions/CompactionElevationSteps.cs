@@ -12,7 +12,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   {
     private Getter<ProjectStatistics> projectStatisticsRequester;
     private Getter<ElevationStatisticsResult> elevationRangeRequester;
-    private Getter<AlignmentOffsetResult> alignmentRequester;
+    private Getter<AlignmentStationRangeResult> alignmentRequester;
 
     [Given(@"startUtc ""(.*)"" and endUtc ""(.*)""")]
     public void GivenStartUtcAndEndUtc(string startUtc, string endUtc)
@@ -31,7 +31,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       switch (operation)
       {
-        case "GetAlignmentStationRange": alignmentRequester = new Getter<AlignmentOffsetResult>(url, resultFileName); break;
+        case "GetAlignmentStationRange": alignmentRequester = new Getter<AlignmentStationRangeResult>(url, resultFileName); break;
         case "ElevationRange": elevationRangeRequester = new Getter<ElevationStatisticsResult>(url, resultFileName); break;
         case "ProjectStatistics": projectStatisticsRequester = new Getter<ProjectStatistics>(url, resultFileName); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;

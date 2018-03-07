@@ -6,7 +6,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
   public interface IAligmentStationRangeRequestHandler
   {
-    Task<AlignmentOffsetRequest> CreateAlignmentStationRangeRequest(
+    AlignmentStationRangeRequest CreateAlignmentStationRangeRequest(
       DesignDescriptor fileDescriptor);
   }
 }

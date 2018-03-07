@@ -8,18 +8,18 @@ using RaptorSvcAcceptTestsCommon.Models;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
-  public class AlignmentOffsetResult : RequestResult, IEquatable<AlignmentOffsetResult>
+  public class AlignmentStationRangeResult : RequestResult, IEquatable<AlignmentStationRangeResult>
   {
     #region Members
 
     /// <summary>
-    /// StartOffset for the alignment file
+    /// StartStation for the alignment file
     /// </summary>
-    public double StartOffset { get; set; }
+    public double StartStation { get; set; }
     /// <summary>
-    /// EndOffset for the alignment file
+    /// EndStation for the alignment file
     /// </summary>
-    public double EndOffset { get; set; }
+    public double EndStation { get; set; }
 
     #endregion
 
@@ -27,23 +27,23 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     /// <summary>
     /// Constructor: success result by default
     /// </summary>
-    public AlignmentOffsetResult()
+    public AlignmentStationRangeResult()
         : base("success")
     { }
     #endregion
 
     #region Equality test
-    public bool Equals(AlignmentOffsetResult other)
+    public bool Equals(AlignmentStationRangeResult other)
     {
       if (other == null)
         return false;
       
-      return StartOffset==other.StartOffset && EndOffset==other.EndOffset &&
+      return StartStation==other.StartStation && EndStation==other.EndStation &&
           this.Code == other.Code &&
           this.Message == other.Message;
     }
 
-    public static bool operator ==(AlignmentOffsetResult a, AlignmentOffsetResult b)
+    public static bool operator ==(AlignmentStationRangeResult a, AlignmentStationRangeResult b)
     {
       if ((object)a == null || (object)b == null)
         return Object.Equals(a, b);
@@ -51,14 +51,14 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       return a.Equals(b);
     }
 
-    public static bool operator !=(AlignmentOffsetResult a, AlignmentOffsetResult b)
+    public static bool operator !=(AlignmentStationRangeResult a, AlignmentStationRangeResult b)
     {
       return !(a == b);
     }
 
     public override bool Equals(object obj)
     {
-      return obj is AlignmentOffsetResult && this == (AlignmentOffsetResult)obj;
+      return obj is AlignmentStationRangeResult && this == (AlignmentStationRangeResult)obj;
     }
 
     public override int GetHashCode()

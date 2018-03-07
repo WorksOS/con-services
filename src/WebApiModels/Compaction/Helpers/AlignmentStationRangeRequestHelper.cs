@@ -18,18 +18,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
     }
 
-    public AlignmentStationRangeRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
-      IFileListProxy fileListProxy)
+    public AlignmentStationRangeRequestHelper(ILoggerFactory logger)
     {
       this.Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
-      //TODO: Do we need these?
-      this.ConfigurationStore = configurationStore;
-      this.FileListProxy = fileListProxy;
     }
 
-    public Task<AlignmentOffsetRequest> CreateAlignmentStationRangeRequest(DesignDescriptor fileDescriptor)
+    public AlignmentStationRangeRequest CreateAlignmentStationRangeRequest(DesignDescriptor fileDescriptor)
     {
-      return Task.FromResult(new AlignmentOffsetRequest(){projectId = this.ProjectId, fileDescriptor = fileDescriptor});
+      return new AlignmentStationRangeRequest{projectId = this.ProjectId, fileDescriptor = fileDescriptor};
       
     }
   }

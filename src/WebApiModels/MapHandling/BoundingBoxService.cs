@@ -569,32 +569,34 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>The statio range</returns>
     public AlignmentStationResult GetAlignmentStationRange(long projectId, DesignDescriptor alignDescriptor)
     {
-      AlignmentStationResult result;
-      var description = TileServiceUtils.DesignDescriptionForLogging(alignDescriptor);
-      log.LogDebug($"GetAlignmentStationRange: projectId={projectId}, alignment={description}");
-      if (alignDescriptor != null)
-      {
-        //Get the station extents
-        TVLPDDesignDescriptor alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
-        double startStation = 0;
-        double endStation = 0;
-        bool success = raptorClient.GetStationExtents(projectId, alignmentDescriptor,
-          out startStation, out endStation);
-        if (success)
-          result = AlignmentStationResult.CreateAlignmentOffsetResult(startStation, endStation);
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
-            ContractExecutionStatesEnum.FailedToGetResults,
-            "Failed to get station range for alignment file"));
-        }
-      }
-      else
+      if (alignDescriptor == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
           ContractExecutionStatesEnum.FailedToGetResults,
           "Invalid request - Missing alignment file"));
       }
+
+      AlignmentStationResult result = null;
+      var description = TileServiceUtils.DesignDescriptionForLogging(alignDescriptor);
+      log.LogDebug($"GetAlignmentStationRange: projectId={projectId}, alignment={description}");
+ 
+      //Get the station extents
+      TVLPDDesignDescriptor alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
+      double startStation = 0;
+      double endStation = 0;
+      bool success = raptorClient.GetStationExtents(projectId, alignmentDescriptor,
+        out startStation, out endStation);
+      if (success)
+      {
+        result = AlignmentStationResult.CreateAlignmentOffsetResult(startStation, endStation);
+      }
+      else
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+          ContractExecutionStatesEnum.FailedToGetResults,
+          "Failed to get station range for alignment file"));
+      }
+
       return result;
     }
 

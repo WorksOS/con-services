@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.TCCFileAccess;
@@ -58,11 +57,6 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
     /// For working with profiles
     /// </summary>
     protected ICompactionProfileResultHelper profileResultHelper;
-
-    /// <summary>
-    /// The exception handler
-    /// </summary>
-    protected IServiceExceptionHandler exceptionHandler;
 
     /// <summary>
     /// Gets the available contract execution error states.
@@ -148,7 +142,7 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
     protected virtual void ProcessErrorCodes()
     { }
 
-    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper, IServiceExceptionHandler exceptionHandler)
+    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper)
     {
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
@@ -158,7 +152,6 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
       this.tileGenerator = tileGenerator;
       this.fileList = fileList;
       this.profileResultHelper = profileResultHelper;
-      this.exceptionHandler = exceptionHandler;
     }
 
     /// <summary>

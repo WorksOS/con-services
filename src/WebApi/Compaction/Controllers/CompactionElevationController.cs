@@ -151,7 +151,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentFileUid);
 
-      var request = await requestFactory.Create<AlignmentStationRangeRequestHelper>(r => r
+      var request = requestFactory.Create<AlignmentStationRangeRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(CustomHeaders))
         .CreateAlignmentStationRangeRequest(alignmentDescriptor);

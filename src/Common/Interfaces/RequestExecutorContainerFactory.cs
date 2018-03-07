@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
     /// <returns></returns>
     public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient = null,
       ITagProcessor tagProcessor = null, IConfigurationStore configStore = null, IFileRepository fileRepo = null,
-      ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper=null, IServiceExceptionHandler serviceException=null)
+      ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper=null)
       where TExecutor : RequestExecutorContainer, new()
     {
       ILogger log = null;
@@ -36,8 +36,7 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
       fileRepo,
       tileGenerator,
       fileList,
-      profileResultHelper,
-      serviceException);
+      profileResultHelper);
 
       return executor;
     }
