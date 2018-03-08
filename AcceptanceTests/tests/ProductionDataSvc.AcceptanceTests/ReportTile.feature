@@ -26,9 +26,9 @@ Examples:
 | Temperature             | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 10   | 3          |
 | CMVchangeOverlay        | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 27   | 10         |
 | CMVsummaryOverlay       | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 13   | 10         |
-| SpeedOverlay            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 26   | 20         |
+| SpeedOverlay            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 26   | 10         |
 | TemperatureOverlay      | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 10   | 10         |
-| ElevationOverlay        | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 0    | 20         |
+| ElevationOverlay        | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 0    | 10         |
 | MDPOverlay              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 20   | 10         |
 | CMVOverlay              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 1    | 10         |
 | ElevationOverlayAll     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 0    | 3          |
@@ -38,9 +38,9 @@ Examples:
 | TemperatureOverlayAll   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 10   | 3          |
 | MDPOverlayAll           | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 20   | 3          |
 | CMVOverlayAll           | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 1    | 3          |
-| PCWithAlignOverlayAll   | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b | AllOverlays                            | HYBRID    | 4    | 3          |
+| PCWithAlignOverlayAll   | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b | AllOverlays                            | HYBRID    | 4    | 5          |
 | ElevWithAlignOverlayAll | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b | AllOverlays                            | HYBRID    | 0    | 3          |
-| TempWithAlignOverlayAll | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b | AllOverlays                            | HYBRID    | 10    | 3          |
+| TempWithAlignOverlayAll | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b | AllOverlays                            | HYBRID    | 10   | 3          |
 
 
 Scenario Outline: Large Report Tiles
