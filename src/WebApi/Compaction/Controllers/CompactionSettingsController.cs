@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
@@ -70,7 +71,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("ValidateProjectSettings: " + Request.QueryString);
 
+      return await ValidateProjectSettingsEx(projectUid.ToString(), projectSettings, settingsType);
+    }
 
+    /// <summary>
+    /// Validates 3D project settings.
+    /// </summary>
+    /// <param name="request">Description of the Project Settings request.</param>
+    /// <returns>ContractExecutionResult</returns>
+    [Route("api/v2/validatesettings")]
+    [HttpPost]
+    public async Task<ContractExecutionResult> ValidateProjectSettings([FromBody] ProjectSettingsRequest request)
+    {
+      log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
+
+      request.Validate();
+
+      return await ValidateProjectSettingsEx(request.projectUid, request.Settings, request.ProjectSettingsType);
+    }
+
+    private async Task<ContractExecutionResult> ValidateProjectSettingsEx(string projectUid, string projectSettings, ProjectSettingsType? settingsType)
+    {
       if (!string.IsNullOrEmpty(projectSettings))
       {
         if (settingsType == null)
@@ -93,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //It is assumed that the settings are about to be saved.
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
         log.LogDebug($"About to clear settings for project {projectUid}");
-        projectSettingsProxy.ClearCacheItem(projectUid.ToString(), GetUserId());
+        projectSettingsProxy.ClearCacheItem(projectUid, GetUserId());
         cache.InvalidateReponseCacheForProject(projectUid);
       }
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);
