@@ -38,7 +38,7 @@ Examples:
 | TemperatureOverlayAll   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 10   | 3          |
 | MDPOverlayAll           | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 20   | 3          |
 | CMVOverlayAll           | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 1    | 3          |
-| PCWithAlignOverlayAll   | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b | AllOverlays                            | HYBRID    | 4    | 5          |
+| PCWithAlignOverlayAll   | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b | AllOverlays                            | HYBRID    | 4    | 10         |
 | ElevWithAlignOverlayAll | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b | AllOverlays                            | HYBRID    | 0    | 3          |
 | TempWithAlignOverlayAll | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b | AllOverlays                            | HYBRID    | 10   | 3          |
 
