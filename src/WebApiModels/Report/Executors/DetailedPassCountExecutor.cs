@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       TPassCountDetails passCountDetails;
       PassCounts request = item as PassCounts;
       TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
-        request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
+        request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds,log: log);
       bool success = raptorClient.GetPassCountDetails(request.projectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
           TASNodeCancellationDescriptorType.cdtPassCountDetailed),
@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         raptorFilter,
         RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
         out passCountDetails);
-      log.LogDebug($"Result from Raptor {success} with {JsonConvert.SerializeObject(passCountDetails)}");
+      //log.LogDebug($"Result from Raptor {success} with {JsonConvert.SerializeObject(passCountDetails)}");
       if (success)
       {
         result = ConvertResult(passCountDetails, request.liftBuildSettings);

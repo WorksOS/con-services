@@ -345,6 +345,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
       DesignDescriptor designDescriptor = null;
+      DesignDescriptor alignmentDescriptor = null;
 
       if (filterUid.HasValue)
       {
@@ -353,9 +354,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
           if (filterData != null)
           {
+            log.LogDebug($"Filter from Filter Svc: {JsonConvert.SerializeObject(filterData)}");
             if (filterData.DesignUid != null && Guid.TryParse(filterData.DesignUid, out Guid designUidGuid))
             {
               designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUidGuid);
+            }
+
+            if (filterData.AlignmentUid != null && Guid.TryParse(filterData.AlignmentUid, out Guid alignmentUidGuid))
+            {
+              alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUidGuid);
             }
 
             if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
@@ -375,11 +382,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                 returnEarliest = true;
               }
 
-              return Filter.CreateFilter(null, null, null, filterData.StartUtc, filterData.EndUtc,
+              var raptorFilter = Filter.CreateFilter(null, null, null, filterData.StartUtc, filterData.EndUtc,
                 filterData.OnMachineDesignId, null, filterData.VibeStateOn, null, filterData.ElevationType,
-                polygonPoints, null, filterData.ForwardDirection, null, null, null, null, null, null,
+                polygonPoints, null, filterData.ForwardDirection,
+                alignmentDescriptor, filterData.StartStation, filterData.EndStation, filterData.LeftOffset, filterData.RightOffset,
+                null,
                 layerMethod, null, null, filterData.LayerNumber, null, filterData.ContributingMachines,
                 excludedIds, returnEarliest, null, null, null, null, null, designDescriptor);
+              log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
+              return raptorFilter;
             }
           }
         }
@@ -436,7 +447,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return MasterData.Models.Models.Filter.CreateFilter(
         startUtc, endUtc, filter.DesignUid, filter.ContributingMachines, filter.OnMachineDesignId, filter.ElevationType,
-        filter.VibeStateOn, filter.PolygonLL, filter.ForwardDirection, filter.LayerNumber, filter.PolygonUid, filter.PolygonName);
+        filter.VibeStateOn, filter.PolygonLL, filter.ForwardDirection, filter.LayerNumber, filter.PolygonUid, filter.PolygonName,
+        filter.AlignmentUid, filter.StartStation, filter.EndStation, filter.LeftOffset, filter.RightOffset
+      );
     }
 
     public async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)

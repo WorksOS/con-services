@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.TagfileProcessing.Contracts;
@@ -93,9 +94,15 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     public ContractExecutionResult PostTagFile([FromBody]CompactionTagFileRequest request)
     {
       log.LogDebug("PostTagFile: " + JsonConvert.SerializeObject(request));
-//      var projectDescr = (User as RaptorPrincipal).GetProject(request.projectUid);
+      long projectId = -1;
+      if (User is RaptorPrincipal && request.projectUid.HasValue)
+      {
+        var projectDescr = (User as RaptorPrincipal).GetProject(request.projectUid);
+        projectId = projectDescr.projectId;
+
+      }
 //      var boundary = WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectDescr.projectGeofenceWKT).ToArray());
-      TagFileRequest tfRequest = TagFileRequest.CreateTagFile(request.fileName, request.data, -1 /*projectDescr.projectId*/, null /*boundary*/, -1, false, false);
+      TagFileRequest tfRequest = TagFileRequest.CreateTagFile(request.fileName, request.data, projectId, null /*boundary*/, -1, false, false);
       tfRequest.Validate();
       return RequestExecutorContainerFactory.Build<TagFileExecutor>(logger, raptorClient, tagProcessor).Process(tfRequest);
     }

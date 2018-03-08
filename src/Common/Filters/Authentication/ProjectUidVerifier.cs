@@ -41,8 +41,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
         return;
 
       //Check done in RaptorPrincipal
-      _ = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((string) projectUidValue,
-        actionContext.HttpContext.Request.Headers.GetCustomHeaders());
+      _ = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((string) projectUidValue);
     }
   }
 }

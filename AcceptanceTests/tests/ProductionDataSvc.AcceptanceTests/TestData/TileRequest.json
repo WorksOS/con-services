@@ -2885,6 +2885,22 @@
     "mode": 27,
     "palettes": [
       {
+        "color": 80,
+        "value": -255
+      },
+      {
+        "color": 5280,
+        "value": -40
+      },
+	  {
+        "color": 60200,
+        "value": -20
+      },
+	  {
+        "color": 64290,
+        "value": -10
+      },
+      {
         "color": 65280,
         "value": 10
       },
@@ -2924,7 +2940,7 @@
           "x": 2733.598,
           "y": 1161.44
         },
-        {
+        {                                                                                                                                          
           "x": 2733.598,
           "y": 1159.747
         },
@@ -2947,6 +2963,22 @@
     "projectID": 1001158,
     "mode": 27,
     "palettes": [
+      {
+        "color": 80,
+        "value": -255
+      },
+      {
+        "color": 5280,
+        "value": -40
+      },
+	  {
+        "color": 60200,
+        "value": -20
+      },
+	  {
+        "color": 64290,
+        "value": -10
+      },
       {
         "color": 65280,
         "value": 10
@@ -3011,6 +3043,22 @@
     "mode": 27,
     "palettes": [
       {
+        "color": 80,
+        "value": -255
+      },
+      {
+        "color": 5280,
+        "value": -40
+      },
+	  {
+        "color": 60200,
+        "value": -20
+      },
+	  {
+        "color": 64290,
+        "value": -10
+      },
+      {
         "color": 65280,
         "value": 10
       },
@@ -3074,6 +3122,22 @@
     "mode": 27,
     "palettes": [
       {
+        "color": 80,
+        "value": -255
+      },
+      {
+        "color": 5280,
+        "value": -40
+      },
+	  {
+        "color": 60200,
+        "value": -20
+      },
+	  {
+        "color": 64290,
+        "value": -10
+      },
+      {
         "color": 65280,
         "value": 10
       },
@@ -3093,7 +3157,7 @@
         "color": 16711680,
         "value": 1000000
       }
-    ],
+    ], 
     "liftBuildSettings": {
       "deadBandLowerBoundary": 0.2,
       "deadBandUpperBoundary": 0.05,
@@ -3136,6 +3200,22 @@
     "projectID": 1001158,
     "mode": 27,
     "palettes": [
+      {
+        "color": 80,
+        "value": -60
+      },
+      {
+        "color": 5280,
+        "value": -40
+      },
+	  {
+        "color": 60200,
+        "value": -20
+      },
+	  {
+        "color": 64290,
+        "value": -10
+      },
       {
         "color": 65280,
         "value": 10

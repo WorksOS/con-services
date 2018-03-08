@@ -121,28 +121,28 @@
     "Message": "success"
   },
   "DesignOutside_Details": {
-  "passCountDetailsData": {
-    "percents": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
-    ],
-    "totalCoverageArea": 0.0,
-    "PassCountTarget": {
-      "minPassCountMachineTarget": 0.0,
-      "maxPassCountMachineTarget": 0.0,
-      "targetVaries": false
-    }
+    "passCountDetailsData": {
+      "percents": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "totalCoverageArea": 0.0,
+      "PassCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
   },
-  "Code": 0,
-  "Message": "success"
- },
   "DesignIntersects_Details": {
     "passCountDetailsData": {
       "percents": [
@@ -167,49 +167,87 @@
     "Message": "success"
   },
   "BoundaryFilterPCDetails": {
-  "passCountDetailsData": {
-    "percents": [
-      28.910829990743597,
-      21.042887997531626,
-      15.705029311940761,
-      15.334773218142548,
-      10.089478556001234,
-      4.6899105214439993,
-      2.8694847269361308,
-      0.9873495834618945,
-      0.37025609379821045
-    ],
-    "totalCoverageArea": 0.0,
-    "PassCountTarget": {
-      "minPassCountMachineTarget": 0.0,
-      "maxPassCountMachineTarget": 0.0,
-      "targetVaries": false
-    }
-  },
-  "Code": 0,
-  "Message": "success"
+    "passCountDetailsData": {
+      "percents": [
+        28.910829990743597,
+        21.042887997531626,
+        15.705029311940761,
+        15.334773218142548,
+        10.089478556001234,
+        4.6899105214439993,
+        2.8694847269361308,
+        0.9873495834618945,
+        0.37025609379821045
+      ],
+      "totalCoverageArea": 0.0,
+      "PassCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
   },
   "BoundaryMachineFilterPCDetails": {
-  "passCountDetailsData": {
-    "percents": [
-      18.786449931753317,
-      8.214418662365059,
-      4.6159573148033255,
-      5.7451296686933864,
-      6.4400049633949612,
-      7.9538404268519676,
-      4.9758034495594989,
-      3.6729122719940435,
-      39.595483310584441
-    ],
-    "totalCoverageArea": 0.0,
-    "PassCountTarget": {
-      "minPassCountMachineTarget": 0.0,
-      "maxPassCountMachineTarget": 0.0,
-      "targetVaries": false
-    }
+    "passCountDetailsData": {
+      "percents": [
+        18.786449931753317,
+        8.214418662365059,
+        4.6159573148033255,
+        5.7451296686933864,
+        6.4400049633949612,
+        7.9538404268519676,
+        4.9758034495594989,
+        3.6729122719940435,
+        39.595483310584441
+      ],
+      "totalCoverageArea": 0.0,
+      "PassCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
   },
-  "Code": 0,
-  "Message": "success"
- }
+  "AlignmentFilter_Details": {
+    "passCountDetailsData": {
+      "percents": [
+        7.7151799687010953,
+        5.6025039123630673,
+        4.6948356807511731,
+        4.7261345852895147,
+        4.8043818466353683,
+        4.2566510172143976,
+        3.6619718309859155,
+        2.863849765258216,
+        61.674491392801258
+      ],
+      "totalCoverageArea": 0.0,
+      "PassCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AlignmentFilter_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 24.276000000000003,
+      "PassCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  }
 } 

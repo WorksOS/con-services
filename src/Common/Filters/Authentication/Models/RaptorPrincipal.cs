@@ -11,26 +11,28 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace VSS.Productivity3D.Common.Filters.Authentication.Models
 {
   /// <summary>
-  /// Custom principal for Raptor with list of projects.
+  ///   Custom principal for Raptor with list of projects.
   /// </summary>
   public class RaptorPrincipal : ClaimsPrincipal
   {
+    private readonly IProjectListProxy projectProxy;
+    private readonly IDictionary<string, string> authNContext;
+
     //We need to delefgate Project retrieval downstream as project may not accessible to a user once it has been created
-    public RaptorPrincipal(ClaimsIdentity identity, string customerUid, List<ProjectDescriptor> projects, string username, string customername, IProjectListProxy projectProxy, bool isApplication = false) : base(identity)
+    public RaptorPrincipal(ClaimsIdentity identity, string customerUid, 
+      string username, string customername, IProjectListProxy projectProxy, IDictionary<string, string> contextHeaders, bool isApplication = false) : base(identity)
     {
       CustomerUid = customerUid;
-      Projects = projects;
-      this.IsApplication = isApplication;
-      this.UserEmail = username;
-      this.CustomerName = customername;
+      IsApplication = isApplication;
+      UserEmail = username;
+      CustomerName = customername;
       this.projectProxy = projectProxy;
+      this.authNContext = contextHeaders;
     }
-
-    private IProjectListProxy projectProxy;
 
     public string CustomerUid { get; }
 
-    public List<ProjectDescriptor> Projects { get; private set; }
+    public IEnumerable<ProjectDescriptor> Projects => RetreieveProjects();
 
     public string UserEmail { get; }
 
@@ -38,11 +40,14 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
 
     public bool IsApplication { get; }
 
-    private void InvalidateProjectList(IDictionary<string,string> authnContext)
+    private void InvalidateProjectList()
     {
       projectProxy.ClearCacheItem(CustomerUid);
-      var customerProjects = projectProxy.GetProjectsV4(CustomerUid, authnContext).Result;
-      var authProjects = new List<ProjectDescriptor>();
+    }
+
+    private IEnumerable<ProjectDescriptor> RetreieveProjects()
+    {
+      var customerProjects = projectProxy.GetProjectsV4(CustomerUid, authNContext).Result;
       if (customerProjects != null)
       {
         foreach (var project in customerProjects)
@@ -58,91 +63,81 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
             projectTimeZone = project.ProjectTimeZone,
             ianaTimeZone = project.IanaTimeZone
           };
-          authProjects.Add(projectDesc);
+          yield return projectDesc;
         }
-        Projects = authProjects;
       }
     }
 
     /// <summary>
-    /// Get the project descriptor for the specified project id.
+    ///   Get the project descriptor for the specified project id.
     /// </summary>
     /// <param name="projectId">The project ID</param>
     /// <returns>Project descriptor</returns>
     public ProjectDescriptor GetProject(long projectId)
     {
       var projectDescr = Projects.FirstOrDefault(p => p.projectId == projectId);
-      if (projectDescr == null)
-      {
-        throw new ServiceException(HttpStatusCode.Unauthorized,
+
+      if (projectDescr != null) return projectDescr;
+      InvalidateProjectList();
+      projectDescr = Projects.FirstOrDefault(p => p.projectId == projectId);
+      if (projectDescr != null) return projectDescr;
+
+      throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
             $"Missing Project or project does not belong to specified customer or don't have access to the project {projectId}"));
-      }
-
-      return projectDescr;
     }
 
     /// <summary>
-    ///  Get the project descriptor for the specified project uid.
+    ///   Get the project descriptor for the specified project uid.
     /// </summary>
     /// <param name="projectUid">THe project UID</param>
     /// <returns>Project descriptor</returns>
     public ProjectDescriptor GetProject(Guid? projectUid)
     {
       if (!projectUid.HasValue)
-      {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
-      }
       return GetProject(projectUid.ToString());
     }
 
     /// <summary>
-    ///  Get the project descriptor for the specified project uid.
+    ///   Get the project descriptor for the specified project uid.
     /// </summary>
     /// <param name="projectUid">THe project UID</param>
     /// <returns>Project descriptor</returns>
-    public ProjectDescriptor GetProject(string projectUid, IDictionary<string,string> authnContext = null)
+    public ProjectDescriptor GetProject(string projectUid)
     {
       if (string.IsNullOrEmpty(projectUid))
-      {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
-      }
 
-      var projectDescr = Projects.FirstOrDefault(p => string.Equals(p.projectUid, projectUid, StringComparison.OrdinalIgnoreCase));
-      if (projectDescr == null)
-      {
+      var projectDescr =
+        Projects.FirstOrDefault(p => string.Equals(p.projectUid, projectUid, StringComparison.OrdinalIgnoreCase));
+      if (projectDescr != null) return projectDescr;
 
-        if (authnContext!=null)
-          InvalidateProjectList(authnContext);
-        projectDescr = Projects.FirstOrDefault(p => string.Equals(p.projectUid, projectUid, StringComparison.OrdinalIgnoreCase));
+      InvalidateProjectList();
+      projectDescr =
+        Projects.FirstOrDefault(p => string.Equals(p.projectUid, projectUid, StringComparison.OrdinalIgnoreCase));
 
-        if (projectDescr != null)
-          return projectDescr;
+      if (projectDescr != null) return projectDescr;
 
-        throw new ServiceException(HttpStatusCode.Unauthorized,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
-            $"Missing Project or project does not belong to specified customer or don't have access to the project {projectUid}"));
-      }
-
-      return projectDescr;
+      throw new ServiceException(HttpStatusCode.Unauthorized,
+        new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
+          $"Missing Project or project does not belong to specified customer or don't have access to the project {projectUid}"));
     }
 
     /// <summary>
-    /// Gets the legacy project id for the specified project uid
+    ///   Gets the legacy project id for the specified project uid
     /// </summary>
     /// <param name="projectUid">THe project UID</param>
     /// <returns>Legacy project ID</returns>
     public long GetProjectId(Guid? projectUid)
     {
-      long projectId = GetProject(projectUid).projectId;
+      var projectId = GetProject(projectUid).projectId;
 
       if (projectId <= 0)
-      {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing project ID"));
-      }
 
       return projectId;
     }

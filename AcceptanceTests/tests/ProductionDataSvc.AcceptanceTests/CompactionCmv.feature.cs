@@ -170,20 +170,54 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
             this.CompactionGetCMVSummary("FilterArea", "ff91dd40-1569-4765-a2bc-014321f76ace", "a37f3008-65e5-44a8-b406-9a078ec62ece", "BoundaryFilter_Summary", ((string[])(null)));
         }
         
+        public virtual void CompactionGetCMVSummary_NoData(string requestName, string projectUID, string filterUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Summary - No Data", exampleTags);
+#line 29
+this.ScenarioSetup(scenarioInfo);
+#line 30
+testRunner.Given("the Compaction service URI \"/api/v2/cmv/summary\" for operation \"CMVSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 31
+testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 32
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 33
+testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 34
+testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 35
+testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary - No Data")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "AlignmentFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "AlignmentFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "2811c7c3-d270-4d63-97e2-fc3340bf6c7a")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "AlignmentFilter_NoData")]
+        public virtual void CompactionGetCMVSummary_NoData_AlignmentFilter()
+        {
+            this.CompactionGetCMVSummary_NoData("AlignmentFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "2811c7c3-d270-4d63-97e2-fc3340bf6c7a", "AlignmentFilter_NoData", ((string[])(null)));
+        }
+        
         public virtual void CompactionGetCMVDetails_NoDesignFilter(string requestName, string projectUID, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Details - No Design Filter", exampleTags);
-#line 31
+#line 41
 this.ScenarioSetup(scenarioInfo);
-#line 32
+#line 42
 testRunner.Given("the Compaction service URI \"/api/v2/cmv/details\" for operation \"CMVDetails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 33
+#line 43
 testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 34
+#line 44
 testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 35
+#line 45
 testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 36
+#line 46
 testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -215,19 +249,19 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         public virtual void CompactionGetCMVDetails(string requestName, string projectUID, string filterUID, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Details", exampleTags);
-#line 42
+#line 52
 this.ScenarioSetup(scenarioInfo);
-#line 43
+#line 53
 testRunner.Given("the Compaction service URI \"/api/v2/cmv/details\" for operation \"CMVDetails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 44
+#line 54
 testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 45
+#line 55
 testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 46
+#line 56
 testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 47
+#line 57
 testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 48
+#line 58
 testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -262,18 +296,18 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         public virtual void CompactionGetCMVChangeSummary_NoDesignFilter(string requestName, string projectUID, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV % Change Summary - No Design Filter", exampleTags);
-#line 56
+#line 66
 this.ScenarioSetup(scenarioInfo);
-#line 57
+#line 67
 testRunner.Given("the Compaction service URI \"/api/v2/cmv/percentchange\" for operation \"CMVPercentC" +
                     "hangeSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 58
+#line 68
 testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 59
+#line 69
 testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 60
+#line 70
 testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 61
+#line 71
 testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -305,20 +339,20 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         public virtual void CompactionGetCMVChangeSummary(string requestName, string projectUID, string filterUID, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV % Change Summary", exampleTags);
-#line 67
+#line 77
 this.ScenarioSetup(scenarioInfo);
-#line 68
+#line 78
 testRunner.Given("the Compaction service URI \"/api/v2/cmv/percentchange\" for operation \"CMVPercentC" +
                     "hangeSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 69
+#line 79
 testRunner.And("the result file \"CompactionGetCMVDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 70
+#line 80
 testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 71
+#line 81
 testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 72
+#line 82
 testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 73
+#line 83
 testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

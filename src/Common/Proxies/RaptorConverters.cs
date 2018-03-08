@@ -10,6 +10,8 @@ using SVOICVolumeCalculationsDecls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
@@ -415,11 +417,11 @@ namespace VSS.Productivity3D.Common.Proxies
     }
 
     public static TICFilterSettings ConvertFilter(long? filterID, Filter filter, long? projectid, DateTime? overrideStartUTC = null,
-        DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null)
+        DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null, ILogger log = null)
     {
       if (filter != null)
       {
-        return ConvertFilter(filter, overrideStartUTC, overrideEndUTC, overrideAssetIds, fileSpaceName);
+        return ConvertFilter(filter, overrideStartUTC, overrideEndUTC, overrideAssetIds, fileSpaceName, log);
       }
 
       if (filterID > 0)
@@ -444,7 +446,7 @@ namespace VSS.Productivity3D.Common.Proxies
     //TODO split this method
     //TODO think that this method coul be common as will be consumed by others
     //TODO test this
-    public static TICFilterSettings ConvertFilter(Filter pdf, DateTime? overrideStartUTC = null, DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null)
+    public static TICFilterSettings ConvertFilter(Filter pdf, DateTime? overrideStartUTC = null, DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null, ILogger log = null)
     {
       const double RADIANS_TO_DEGREES = 180.0 / Math.PI;
 
@@ -672,6 +674,8 @@ namespace VSS.Productivity3D.Common.Proxies
       }
 
       filter.ReturnEarliestFilteredCellPass = (pdf != null) && pdf.ReturnEarliest.HasValue && pdf.ReturnEarliest.Value;
+
+    //  log?.LogDebug($"Filter to be sent to Raptor: {JsonConvert.SerializeObject(filter)}");
 
       return filter;
     }
