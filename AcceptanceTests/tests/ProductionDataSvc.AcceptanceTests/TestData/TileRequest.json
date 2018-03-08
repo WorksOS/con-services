@@ -3138,6 +3138,22 @@
     "palettes": [
       {
         "color": 65280,
+        "value": -60
+      },
+      {
+        "color": 65280,
+        "value": -40
+      },
+	  {
+        "color": 65280,
+        "value": -20
+      },
+	  {
+        "color": 65280,
+        "value": -10
+      },
+      {
+        "color": 65280,
         "value": 10
       },
       {
