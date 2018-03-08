@@ -56,18 +56,33 @@
     "Message": "success"
   },
   "BoundaryTempFilter": {
-      "temperatureSummaryData": {
-        "percentEqualsTarget": 0.0,
-        "percentGreaterThanTarget": 0.0,
-        "percentLessThanTarget": 100.0,
-        "totalAreaCoveredSqMeters": 364.14000000000004,
-        "temperatureTarget": {
-          "minTemperatureMachineTarget": 90.0,
-          "maxTemperatureMachineTarget": 143.0,
-          "targetVaries": false
-        }
-      },
-      "Code": 0,
-      "Message": "success"
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 364.14000000000004,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AlignmentFilter_Summary": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 22.542000000000005,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
   }
 }

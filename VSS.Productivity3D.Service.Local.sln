@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2010
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E515E228-BB40-40EA-92A9-A3332492F16E}"
 EndProject
@@ -18,6 +18,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.WebApi.Models.Local", "src\WebApiModels\VSS.Productivity3D.WebApi.Models.Local.csproj", "{0738C3C1-8879-4A71-8025-8CD0D3541AB0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiTests.Local", "test\UnitTests\WebApiTests\WebApiTests.Local.csproj", "{BC3F0CEF-20A3-4A41-9D81-376760EA97AA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.ResponseCaching", "src\ResponseCaching\src\Microsoft.AspNetCore.ResponseCaching\Microsoft.AspNetCore.ResponseCaching.csproj", "{FF15A01B-7441-44EF-B74F-8C79EF47EF6B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore.Local", "..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj", "{0FC4083E-6301-4B1A-81F4-18768D90B664}"
 EndProject
@@ -53,6 +55,10 @@ Global
 		{BC3F0CEF-20A3-4A41-9D81-376760EA97AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC3F0CEF-20A3-4A41-9D81-376760EA97AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC3F0CEF-20A3-4A41-9D81-376760EA97AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF15A01B-7441-44EF-B74F-8C79EF47EF6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF15A01B-7441-44EF-B74F-8C79EF47EF6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF15A01B-7441-44EF-B74F-8C79EF47EF6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF15A01B-7441-44EF-B74F-8C79EF47EF6B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0FC4083E-6301-4B1A-81F4-18768D90B664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0FC4083E-6301-4B1A-81F4-18768D90B664}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FC4083E-6301-4B1A-81F4-18768D90B664}.Release|Any CPU.ActiveCfg = Release|Any CPU

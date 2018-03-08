@@ -1,18 +1,18 @@
 {
   "NoDesignFilter_ER": {
-  "BoundingExtents": {
-    "maxX": 2913.2900000000004,
-    "maxY": 1250.69,
-    "maxZ": 624.1365966796875,
-    "minX": 2306.05,
-    "minY": 1125.2300000000003,
-    "minZ": 591.953857421875
-  },
-  "MinElevation": 591.953857421875,
-  "MaxElevation": 624.1365966796875,
-  "TotalCoverageArea": 0.0,
-  "Code": 0,
-  "Message": "success"
+    "BoundingExtents": {
+      "maxX": 2913.2900000000004,
+      "maxY": 1250.69,
+      "maxZ": 624.1365966796875,
+      "minX": 2306.05,
+      "minY": 1125.2300000000003,
+      "minZ": 591.953857421875
+    },
+    "MinElevation": 591.953857421875,
+    "MaxElevation": 624.1365966796875,
+    "TotalCoverageArea": 0.0,
+    "Code": 0,
+    "Message": "success"
   },
   "NoData_ER": {
     "boundingExtents": null,
@@ -35,6 +35,21 @@
       "minY": 1125.2300000000002,
       "minZ": 591.953857421875
     },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AlignmentFilter": {
+    "BoundingExtents": {
+      "maxX": -115.01824137935459,
+      "maxY": 36.207739740800292,
+      "maxZ": 1E+308,
+      "minX": -115.02513694938637,
+      "minY": 36.206563325785233,
+      "minZ": 1E+308
+    },
+    "MinElevation": 595.8179931640625,
+    "MaxElevation": 622.7540283203125,
+    "TotalCoverageArea": 1453.4388000000004,
     "Code": 0,
     "Message": "success"
   }

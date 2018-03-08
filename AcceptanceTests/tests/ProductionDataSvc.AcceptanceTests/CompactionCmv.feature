@@ -26,6 +26,16 @@ Examples:
 | DesignIntersects | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 3d9086f2-3c04-4d92-9141-5134932b1523 | DesignIntersects_Summary |
 | FilterArea       | ff91dd40-1569-4765-a2bc-014321f76ace | a37f3008-65e5-44a8-b406-9a078ec62ece | BoundaryFilter_Summary   |
 
+Scenario Outline: Compaction Get CMV Summary - No Data
+Given the Compaction service URI "/api/v2/cmv/summary" for operation "CMVSummary"
+And the result file "CompactionGetCMVDataResponse.json"
+And projectUid "<ProjectUID>"
+And filterUid "<FilterUID>"
+When I request result
+Then the result should match the "<ResultName>" from the repository
+Examples: 
+| RequestName      | ProjectUID                           | FilterUID                            | ResultName             |
+| AlignmentFilter  | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c7a | AlignmentFilter_NoData |
 
 ######################################################## CMV Details ############################################################
 Scenario Outline: Compaction Get CMV Details - No Design Filter
