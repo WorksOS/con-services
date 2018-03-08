@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     public async Task Invoke(HttpContext context)
     {
 
-      //HACK allow internal connections without authn for tagfile submission
+      //HACK allow internal connections without authn for tagfile submission by the harvester
       bool internalConnection =
         (context.Request.Path.Value.Contains("api/v1/tagfiles") ||
          context.Request.Path.Value.Contains("api/v2/tagfiles")) && context.Request.Method == "POST" &&
@@ -54,8 +54,10 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
 
         // The v1 TAG file submission end point does not require a customer UID to be provided
+        // However there is some schizophrenia here as we need to support UI manual tag file submission WITH proper authn\z as well
         if ((context.Request.Path.Value.Contains("api/v1/tagfiles") ||
-             context.Request.Path.Value.Contains("api/v2/tagfiles")) && context.Request.Method == "POST")
+             context.Request.Path.Value.Contains("api/v2/tagfiles")) && context.Request.Method == "POST"
+            && !context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid"))
           requireCustomerUid = false;
         else
           customerUid = context.Request.Headers["X-VisionLink-CustomerUid"];
