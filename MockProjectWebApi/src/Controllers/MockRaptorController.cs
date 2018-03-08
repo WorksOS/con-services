@@ -183,6 +183,19 @@ namespace MockProjectWebApi.Controllers
     }
 
     /// <summary>
+    /// Dummies the project projectSettings validation.
+    /// </summary>
+    [Route("api/v2/compaction/validatesettings")]
+    [HttpPost]
+    public BaseDataResult DummyValidateProjectSettingsPost([FromBody] ProjectSettingsRequest request)
+    {
+      BaseDataResult res = new BaseDataResult();
+      var message = $"DummyValidateProjectSettingsGet: res {res}. projectSettings {request.Settings}";
+      Console.WriteLine(message);
+      return res;
+    }
+
+    /// <summary>
     /// Dummies the notification that a filterUid has been updated/deleted
     /// </summary>
     [Route("api/v2/notification/filterchange")]
