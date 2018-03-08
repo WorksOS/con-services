@@ -198,5 +198,21 @@
     },
     "Code": 0,
     "Message": "success"
+  },
+  "AlignmentFilter_NoData": {
+    "cmvSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 0.0,
+      "totalAreaCoveredSqMeters": 0.0,
+      "cmvTarget": {
+        "cmvMachineTarget": 0.0,
+        "targetVaries": false
+      },
+      "minCMVPercent": 0.0,
+      "maxCMVPercent": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
   }
 }
