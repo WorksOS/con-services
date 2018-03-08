@@ -675,7 +675,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
       filter.ReturnEarliestFilteredCellPass = (pdf != null) && pdf.ReturnEarliest.HasValue && pdf.ReturnEarliest.Value;
 
-      log?.LogDebug($"Filter to be sent to Raptor: {JsonConvert.SerializeObject(filter)}");
+    //  log?.LogDebug($"Filter to be sent to Raptor: {JsonConvert.SerializeObject(filter)}");
 
       return filter;
     }
