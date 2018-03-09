@@ -194,6 +194,26 @@ namespace VSS.MasterData.Models.Models
     {
       return LayerNumber != null;
     }
+    public bool ShouldSerializeAlignmentUid()
+    {
+      return AlignmentUid != null;
+    }
+    public bool ShouldSerializeStartStation()
+    {
+      return StartStation != null;
+    }
+    public bool ShouldSerializeEndStation()
+    {
+      return EndStation != null;
+    }
+    public bool ShouldSerializeLeftOffset()
+    {
+      return LeftOffset != null;
+    }
+    public bool ShouldSerializeRightOffset()
+    {
+      return RightOffset != null;
+    }
     #endregion
 
     public bool HasData() =>
