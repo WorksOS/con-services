@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting.WindowsServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
+using System;
 
 namespace VSS.Productivity3D.WebApi
 {
@@ -17,6 +18,13 @@ namespace VSS.Productivity3D.WebApi
   /// </summary>
   public class Program
   {
+    const string LIBUV_THREAD_COUNT = "LIBUV_THREAD_COUNT";
+    const string MAX_WORKER_THREADS = "MAX_WORKER_THREADS";
+    const string MAX_IO_THREADS = "MAX_IO_THREADS";
+    const string MIN_WORKER_THREADS = "MAX_WORKER_THREADS";
+    const string MIN_IO_THREADS = "MIN_IO_THREADS";
+    const string DEFAULT_CONNECTION_LIMIT = "DEFAULT_CONNECTION_LIMIT";
+
 
     /// <summary>
     /// 
@@ -34,12 +42,17 @@ namespace VSS.Productivity3D.WebApi
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
 
+
       var host = new WebHostBuilder()
         .UseConfiguration(config)
         .UseKestrel()
         .UseLibuv(opts =>
         {
-          opts.ThreadCount = 32;
+          if (Int32.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out int libuvThreads))
+          {
+            opts.ThreadCount = libuvThreads;
+          }
+          
         })
         .UseContentRoot(pathToContentRoot)
         .ConfigureLogging(builder =>
@@ -51,11 +64,24 @@ namespace VSS.Productivity3D.WebApi
         .UseStartup<Startup>()
         .Build();
 
-      ThreadPool.SetMaxThreads(1024, 2048);
-      ThreadPool.SetMinThreads(1024, 2048);
+      if (Int32.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out int maxWorkers) &&
+          Int32.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out int maxIo))
+      {
+        ThreadPool.SetMaxThreads(maxWorkers, maxIo);
+      }
 
-      //Check how many requests we can execute
-      ServicePointManager.DefaultConnectionLimit = 128;
+      if (Int32.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out int minWorkers) &&
+          Int32.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out int minIo))
+      {
+        ThreadPool.SetMinThreads(minWorkers, minIo);
+      }
+             
+
+      if (Int32.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out int connectionLimit))
+      {
+        //Check how many requests we can execute
+        ServicePointManager.DefaultConnectionLimit = connectionLimit;
+      }
 
       if (!isService)
         host.Run();
