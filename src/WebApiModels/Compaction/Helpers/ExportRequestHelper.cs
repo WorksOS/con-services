@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         false,
         outputType,
         machineList,
-        false,
+        true,
         fileName,
         exportType,
         ConvertUserPreferences(this.userPreferences, this.projectDescriptor.projectTimeZone));
