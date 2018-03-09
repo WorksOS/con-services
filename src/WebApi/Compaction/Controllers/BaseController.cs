@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly ILogger log;
 
-    private readonly IServiceExceptionHandler serviceExceptionHandler;
+    protected readonly IServiceExceptionHandler serviceExceptionHandler;
 
     /// <summary>
     /// Where to get environment variables, connection string etc. from

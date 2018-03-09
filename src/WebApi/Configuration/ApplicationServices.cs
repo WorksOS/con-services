@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -10,6 +11,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Services;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
@@ -17,6 +19,7 @@ using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
+using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
 
 // ReSharper disable once CheckNamespace
@@ -65,6 +68,9 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<ISchedulerProxy, SchedulerProxy>();
       services.AddScoped<ITransferProxy, TransferProxy>();
+      services.AddSingleton<IHostedService, AddFileProcessingService>();
+      services.AddSingleton<IEnqueueItem<ProjectFileDescriptor>>(provider =>
+        (IEnqueueItem<ProjectFileDescriptor>) provider.GetService<IHostedService>());
 
       // Action services
       services.AddSingleton<IVolumeSummaryHelper, VolumeSummaryHelper>();

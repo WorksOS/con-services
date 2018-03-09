@@ -15,6 +15,7 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Coord.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
@@ -509,20 +510,27 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       List<WGSPoint> alignmentPoints = null;
       if (alignDescriptor != null)
       {
-        TVLPDDesignDescriptor alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
-
         bool success = true;
         bool isCenterline = startStation == 0 && endStation == 0 &&
                             leftOffset == 0 && rightOffset == 0;
         if (isCenterline)
         {
-          //Get the station extents
-          success = raptorClient.GetStationExtents(projectId, alignmentDescriptor,
-            out startStation, out endStation);
+          try
+          {
+            var stationRange = GetAlignmentStationRange(projectId, alignDescriptor);
+            startStation = stationRange.StartStation;
+            endStation = stationRange.EndStation;
+          }
+          catch (Exception e)
+          {
+            success = false;
+          }
         }
         if (success)
         {
           log.LogDebug($"GetAlignmentPoints: projectId={projectId}, station range={startStation}-{endStation}");
+
+          TVLPDDesignDescriptor alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
 
           //Get the alignment points
           TWGS84Point[] pdsPoints = null;
@@ -553,6 +561,45 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       return alignmentPoints;
     }
 
+    /// <summary>
+    /// Get the station range for the alignment file
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="alignDescriptor"></param>
+    /// <returns>The statio range</returns>
+    public AlignmentStationResult GetAlignmentStationRange(long projectId, DesignDescriptor alignDescriptor)
+    {
+      if (alignDescriptor == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+          ContractExecutionStatesEnum.FailedToGetResults,
+          "Invalid request - Missing alignment file"));
+      }
+
+      AlignmentStationResult result = null;
+      var description = TileServiceUtils.DesignDescriptionForLogging(alignDescriptor);
+      log.LogDebug($"GetAlignmentStationRange: projectId={projectId}, alignment={description}");
+ 
+      //Get the station extents
+      TVLPDDesignDescriptor alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
+      double startStation = 0;
+      double endStation = 0;
+      bool success = raptorClient.GetStationExtents(projectId, alignmentDescriptor,
+        out startStation, out endStation);
+      if (success)
+      {
+        result = AlignmentStationResult.CreateAlignmentOffsetResult(startStation, endStation);
+      }
+      else
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+          ContractExecutionStatesEnum.FailedToGetResults,
+          "Failed to get station range for alignment file"));
+      }
+
+      return result;
+    }
+
   }
 
 
@@ -569,6 +616,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       double startStation=0, double endStation=0, double leftOffset=0, double rightOffset=0);
 
     List<List<WGSPoint>> GetDesignBoundaryPolygons(long projectId, DesignDescriptor designDescriptor);
+
+    AlignmentStationResult GetAlignmentStationRange(long projectId, DesignDescriptor alignDescriptor);
   }
 
   public enum FilterBoundaryType

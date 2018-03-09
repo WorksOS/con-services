@@ -9,7 +9,7 @@ using TechTalk.SpecFlow;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-  [Binding]
+  [Binding, Scope(Feature = "Notification")]
   public class NotificationSteps
   {
     private string url;

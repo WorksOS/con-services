@@ -12,8 +12,8 @@
 	Then the Add File Notification result should be 
   """
 	{
-    "MinZoomLevel": 14,
-    "MaxZoomLevel": 21,
+    "MinZoomLevel": 0,
+    "MaxZoomLevel": 0,
     "Code": 0,
     "Message": "Add file notification successful"
   }
@@ -28,8 +28,8 @@
 	Then the Add File Notification result should be 
   """
 	{
-    "MinZoomLevel": 15,
-    "MaxZoomLevel": 21,
+    "MinZoomLevel": 0,
+    "MaxZoomLevel": 0,
     "Code": 0,
     "Message": "Add file notification successful"
   }
