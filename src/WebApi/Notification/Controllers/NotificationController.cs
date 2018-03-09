@@ -20,6 +20,7 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Services;
 using VSS.Productivity3D.WebApi.Models.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
@@ -123,7 +124,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long fileId,
-      [FromQuery] DxfUnitsType dxfUnitsType)
+      [FromQuery] DxfUnitsType dxfUnitsType,
+      [FromServices] IEnqueueItem<ProjectFileDescriptor> fileQueue)
     {
       log.LogDebug("GetAddFile: " + Request.QueryString);
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
@@ -140,13 +142,16 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         fileType);
 
       request.Validate();
-      var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
-      var result = await executor.ProcessAsync(request) as Models.Notification.Models.AddFileResult;
+      /*var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
+      var result = await executor.ProcessAsync(request) as Models.Notification.Models.AddFileResult;*/
+      //Instead, leverage the service
+      fileQueue.EnqueueItem(request);
       //Do we need to validate fileUid ?
       await ClearFilesCaches(projectUid, customHeaders);
       cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
-      return result;
+      return new Models.Notification.Models.AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully,
+        "Add file notification successful");
     }
 
     /// <summary>
