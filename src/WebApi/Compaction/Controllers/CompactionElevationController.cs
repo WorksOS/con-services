@@ -15,6 +15,11 @@ using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 
@@ -49,6 +54,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
+    /// The request factory
+    /// </summary>
+    private readonly IProductionDataRequestFactory requestFactory;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -60,15 +70,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="settingsManager">Compaction settings manager</param>
     /// <param name="exceptionHandler">Service exception handler</param>
     /// <param name="filterServiceProxy">Filter service proxy</param>
+    /// <param name="productionDataRequestFactory"></param>
     public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
       IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy,
-      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) :
+      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, 
+      IProductionDataRequestFactory productionDataRequestFactory) :
       base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionElevationController>();
       this.elevProxy = elevProxy;
+      requestFactory = productionDataRequestFactory;
     }
 
 
@@ -117,6 +130,40 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     #endregion
+
+    /// <summary>
+    /// Gets alignment file extents (station range) from Raptor.
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="alignmentFileUid">Alignment file UID</param>
+    /// <param name="boundingBoxService">Project UID</param>
+    /// <returns>Station range for alignment file</returns>
+    [ProjectUidVerifier]
+    [Route("api/v2/alignmentstationrange")]
+    [HttpGet]
+    public async Task<AlignmentStationResult> GetAlignmentStationRange(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid alignmentFileUid,
+      [FromServices] IBoundingBoxService boundingBoxService)
+    {
+      log.LogInformation("GetAlignmentStationRange: " + Request.QueryString);
+      var projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+
+      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentFileUid);
+
+      var request = requestFactory.Create<AlignmentStationRangeRequestHelper>(r => r
+          .ProjectId(projectId)
+          .Headers(CustomHeaders))
+        .CreateAlignmentStationRangeRequest(alignmentDescriptor);
+
+      request.Validate();
+
+      var result = WithServiceExceptionTryExecute(() =>
+        boundingBoxService.GetAlignmentStationRange(projectId, alignmentDescriptor));
+
+      return result;
+    }
+
 
     #region Project Extents
 

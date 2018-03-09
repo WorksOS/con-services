@@ -8,8 +8,7 @@ using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Drawing;
 using VSS.Productivity3D.Common.Extensions;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
+using Point = VSS.Productivity3D.Common.Models.Point;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {

@@ -17,7 +17,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Point = VSS.Productivity3D.WebApi.Models.MapHandling.Point;
+using Point = VSS.Productivity3D.Common.Models.Point;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 {

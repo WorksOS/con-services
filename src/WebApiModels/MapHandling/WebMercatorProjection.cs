@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.Productivity3D.Common.Extensions;
+using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {

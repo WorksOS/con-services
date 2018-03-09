@@ -6,6 +6,7 @@ using System.Linq;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using Point = VSS.Productivity3D.Common.Models.Point;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {

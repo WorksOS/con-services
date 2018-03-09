@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Common.Extensions;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 
 
@@ -60,8 +61,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     }
 
   }
+
   public interface IAlignmentTileService
   {
-    byte[] GetAlignmentsBitmap(MapParameters parameters, long projectId, IEnumerable<DesignDescriptor> alignmentDescriptors);
+    byte[] GetAlignmentsBitmap(MapParameters parameters, long projectId, IEnumerable<DesignDescriptor> alignmentDescriptors);    
   }
 }
