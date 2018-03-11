@@ -23,6 +23,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var serviceCollection = new ServiceCollection();
 
       const string loggerRepoName = "UnitTestLogTest";
+      Log4NetProvider.RepoName = loggerRepoName;
       var logPath = Directory.GetCurrentDirectory();
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 

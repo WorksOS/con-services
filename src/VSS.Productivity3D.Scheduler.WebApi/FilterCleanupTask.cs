@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Dapper;
 using Hangfire;
 using Microsoft.Extensions.Logging;
@@ -105,7 +106,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
 
       var empty = "\"";
-      string deleteCommand = $"DELETE FROM Filter WHERE (Name = {empty}{empty} OR Name IS NULL) AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
+      string deleteCommand = $"DELETE FROM Filter WHERE fk_FilterTypeID = 1 AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
       int deletedCount = 0;
       try
       {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using Hangfire;
 using Microsoft.AspNetCore.Mvc;
+using Hangfire;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs

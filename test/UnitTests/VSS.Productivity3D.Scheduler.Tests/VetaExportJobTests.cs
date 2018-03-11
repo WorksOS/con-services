@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Hangfire;
 using Hangfire.Common;
 using Hangfire.Server;
 using Hangfire.Storage;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
