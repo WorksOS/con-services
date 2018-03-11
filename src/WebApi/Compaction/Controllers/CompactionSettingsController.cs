@@ -1,20 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Diagnostics.PerformanceData;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.ResponseCaching.Internal;
-using Microsoft.Extensions.Caching.Memory;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -37,7 +34,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IProjectSettingsProxy projectSettingsProxy;
 
-
     private readonly IResponseCache cache;
 
     /// <summary>
@@ -45,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="logger">Logger</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
-    /// <param name="cacheBuilder">The memory cache for the controller</param>
+    /// <param name="cache">The memory cache for the controller</param>
     public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy, IResponseCache cache)
     {
       this.log = logger.CreateLogger<CompactionSettingsController>();

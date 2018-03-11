@@ -16,7 +16,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction
   public class MapOverlayTests
   {
     private static IServiceProvider serviceProvider;
-    private static ILoggerFactory logger;
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -36,7 +35,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 
-      logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      _ = serviceProvider.GetRequiredService<ILoggerFactory>();
     }
 
     [TestMethod]

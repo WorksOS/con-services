@@ -23,11 +23,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
@@ -35,13 +30,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">Logger</param>
     public TileController(IASNodeClient raptorClient, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      log = logger.CreateLogger<TileController>();
     }
 
     /// <summary>
@@ -51,12 +43,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="request">A representation of the tile rendering request.</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor>
-    /// 
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/tiles")]
     [HttpPost]
     public TileResult Post([FromBody] TileRequest request)
@@ -73,12 +62,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="request">A representation of the tile rendering request.</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).</returns>
     /// <executor>TilesExecutor</executor>
-    /// 
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/tiles/png")]
     [HttpPost]
     public FileResult PostRaw([FromBody] TileRequest request)

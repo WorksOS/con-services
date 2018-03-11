@@ -38,7 +38,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   {
     /// <summary>
     /// Raptor client for use by executor
-    /// 
     /// </summary>
     private readonly IASNodeClient raptorClient;
 
@@ -80,7 +79,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.requestFactory = requestFactory;
     }
 
-
     #region Summary Data for Widgets
 
     /// <summary>
@@ -103,8 +101,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
         return CompactionCmvSummaryResult.CreateCmvSummaryResult(CMVSummaryResult.Empty(), request.cmvSettings);
-
-
 
       log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
       try

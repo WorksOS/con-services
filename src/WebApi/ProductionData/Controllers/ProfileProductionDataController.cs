@@ -7,7 +7,6 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
-using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -28,9 +27,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
+    /// Default constructor.
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">Logger</param>
     public ProfileProductionDataController(IASNodeClient raptorClient, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;
@@ -42,13 +40,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="request">Profile production data request structure.></param>
     /// <returns>
-    /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
+    /// Returns JSON structure wtih operation result as profile calculations./>
     /// </returns>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/profiles/productiondata")]
     [HttpPost]
     public ProfileResult Post([FromBody] ProfileProductionDataRequest request)
