@@ -33,7 +33,7 @@ namespace VSS.MasterData.Models.FIlters
       }
       catch (ServiceException ex)
       {
-        log.LogWarning($"Service exception: {ex.GetContent} statusCode: {ex.Code}");
+        log.LogWarning($"Service exception: {nameof(ex)} {ex.Source} {ex.GetContent} statusCode: {ex.Code} {ex.StackTrace}");
         context.Response.StatusCode = (int)ex.Code;
         await context.Response.WriteAsync(ex.GetContent);
       }
@@ -46,7 +46,7 @@ namespace VSS.MasterData.Models.FIlters
         }
         finally
         {
-          log.LogCritical("EXCEPTION: {0}, {1}, {2}", ex.Message, ex.Source, ex.StackTrace);
+          log.LogCritical($"EXCEPTION: {nameof(ex)} {ex.Message} {ex.Source} {ex.StackTrace}");
           if (ex is AggregateException)
           {
             var exception = ex as AggregateException;
