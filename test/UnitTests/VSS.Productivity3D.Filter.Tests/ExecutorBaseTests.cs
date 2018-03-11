@@ -28,15 +28,19 @@ namespace VSS.Productivity3D.Filter.Tests
       var serviceCollection = new ServiceCollection();
 
       const string loggerRepoName = "UnitTestLogTest";
+      
       var logPath = Directory.GetCurrentDirectory();
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-
+      
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
+
+      Log4NetProvider.RepoName = loggerRepoName; // for upgrading to vss.log4net v2.1
       loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
+
       serviceCollection
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()

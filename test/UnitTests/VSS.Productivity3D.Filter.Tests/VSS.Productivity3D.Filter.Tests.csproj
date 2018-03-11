@@ -10,6 +10,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.Filter.Tests</RootNamespace>
+    <DependsOnNETStandard>netstandard2.0</DependsOnNETStandard>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,7 +28,7 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.7.*" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.15.*" />
 

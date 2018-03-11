@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 using Swashbuckle.AspNetCore.Swagger;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -19,6 +20,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Common.Extensions;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Filter.WebAPI.Internal.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -33,7 +35,7 @@ namespace VSS.Productivity3D.Filter.WebApi
   /// </summary>
   public class Startup
   {
-    private const string loggerRepoName = "WebApi";
+    public const string loggerRepoName = "WebApi";
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -99,6 +101,9 @@ namespace VSS.Productivity3D.Filter.WebApi
           config.Filters.Add(new ValidationFilterAttribute());
         }
       );
+
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
       //Configure swagger
       services.AddSwaggerGen(c =>
       {
@@ -139,17 +144,18 @@ namespace VSS.Productivity3D.Filter.WebApi
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       serviceCollection.AddSingleton(loggerFactory);
-      //new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
       serviceCollection.BuildServiceProvider();
 
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
 
       app.UseExceptionTrap();
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
         app.UseMiddleware<NewRelicMiddleware>();
 #endif
+
+      app.UseFilterMiddleware<RequestIDMiddleware>();
+
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
 
@@ -162,8 +168,6 @@ namespace VSS.Productivity3D.Filter.WebApi
 
       app.UseTIDAuthentication();
       app.UseMvc();
-
-
     }
   }
 }

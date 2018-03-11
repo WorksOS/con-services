@@ -12,6 +12,7 @@
       <RootNamespace>VSS.Productivity3D.Filter.WebAPI</RootNamespace>
       <ApplicationIcon />
       <OutputTypeEx>exe</OutputTypeEx>
+      <DependsOnNETStandard>netstandard2.0</DependsOnNETStandard>
     <StartupObject />
   </PropertyGroup>
 
@@ -42,10 +43,10 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="1.1.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.*" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.24.*" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.15.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.7.*" />
@@ -57,6 +58,7 @@
   <ItemGroup>
     <ProjectReference Include="..\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.csproj" />
   </ItemGroup>
+  
   <ItemGroup>
     <None Update="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -77,7 +79,7 @@
     <Reference Include="Microsoft.CSharp" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.0.1" />
     <PackageReference Include="System.Net.Security" Version="4.3.2" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
     <PackageReference Include="NewRelic.Agent.Api" Version="6.16.178" />
   </ItemGroup>
 
