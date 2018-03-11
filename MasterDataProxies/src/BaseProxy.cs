@@ -249,9 +249,16 @@ namespace VSS.MasterData.Proxies
           throw new InvalidOperationException("Incorrect expiration time parameter");
       }
 
-      return await cache.GetOrAdd(cacheKey, opts, async () =>
+      if (!IfCacheNeedsToBeInvalidated(customHeaders))
+        return await cache.GetOrAdd(cacheKey, opts, async () =>
+        {
+          log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
+          return await action.Invoke();
+        });
+
+      return await cache.Add(cacheKey, opts, async () =>
       {
-        log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
+        log.LogDebug($"Item for key {cacheKey} is requested to be invalidated, getting from web api");
         return await action.Invoke();
       });
     }
@@ -388,10 +395,19 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The request headers</param>
     private void ClearCacheIfRequired<T>(string uid, string userId, IDictionary<string, string> customHeaders)
     {
-      string caching = null;
-      customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
-      if (!string.IsNullOrEmpty(caching) && caching == "true")
+      if (IfCacheNeedsToBeInvalidated(customHeaders))
         ClearCacheItem<T>(uid, userId);
+    }
+
+    /// <summary>
+    /// Determines if the cache needs to be invalidated.
+    /// </summary>
+    /// <param name="customHeaders">The custom headers.</param>
+    /// <returns></returns>
+    private bool IfCacheNeedsToBeInvalidated(IDictionary<string, string> customHeaders)
+    {
+      customHeaders.TryGetValue("X-VisionLink-ClearCache", out var caching);
+      return !string.IsNullOrEmpty(caching) && caching == "true";
     }
 
     /// <summary>
