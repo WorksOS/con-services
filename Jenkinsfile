@@ -40,6 +40,9 @@ node('Ubuntu_Slave') {
 		stage ('Build solution') {
 			sh "bash ./build.sh"
 		}
+		stage ('Build solution') {
+			sh "bash ./unittests.sh"
+		}
 		stage ('Prepare Acceptance tests') {
 			sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
 		}

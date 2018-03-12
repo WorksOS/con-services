@@ -81,7 +81,7 @@ namespace WebApiTests
       
       
       // get call
-      var getresponse1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}/{ProjectSettingsType.Targets}", "GET", null, customerUid.ToString());
+      var getresponse1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var getobjresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(getresponse1);
 
       tempSettings = JsonConvert.SerializeObject(getobjresp1.settings).Replace("\"", String.Empty);
@@ -109,7 +109,7 @@ namespace WebApiTests
       var response = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
       Assert.IsTrue(response == "{\"Code\":2001,\"Message\":\"No access to the project for a customer or the project does not exist.\"}", "Actual response different to expected") ;
       // Try to get the project that doesn't exist
-      var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}/{ProjectSettingsType.Targets}", "GET", null, customerUid.ToString());
+      var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       Assert.IsTrue(response1 == "{\"Code\":2001,\"Message\":\"No access to the project for a customer or the project does not exist.\"}", "Actual response different to expected");
     }
 
@@ -162,7 +162,7 @@ namespace WebApiTests
       Assert.AreEqual(projectUid, objresp.projectUid, "Actual project Uid for project settings do not match expected");
 
       // get call
-      var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}/{ProjectSettingsType.Targets}", "GET", null, customerUid.ToString());
+      var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
 
       tempSettings = JsonConvert.SerializeObject(objresp1.settings).Replace("\"", String.Empty);
@@ -213,7 +213,7 @@ namespace WebApiTests
       //Assert.AreEqual(projectUid, objresp.projectUid, "Actual project Uid for project settings do not match expected");
 
       // get call
-      var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}/{ProjectSettingsType.Targets}", "GET", null, customerUid.ToString());
+      var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
 
       tempSettings = objresp1.settings == null ? String.Empty : JsonConvert.SerializeObject(objresp1.settings).Replace("\"", String.Empty);
@@ -275,7 +275,7 @@ namespace WebApiTests
       Assert.AreEqual(projectUid, objresp.projectUid, "Actual project Uid for project settings do not match expected");
 
       // get call
-      var response2 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}/{ProjectSettingsType.Targets}", "GET", null, customerUid.ToString());
+      var response2 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response2);
 
       tempSettings = JsonConvert.SerializeObject(objresp1.settings).Replace("\"", String.Empty);
@@ -339,7 +339,7 @@ namespace WebApiTests
       Assert.AreEqual(projectSettings1, tempSettings, "Actual project settings do not match expected");
       Assert.AreEqual(projectUid, objresp.projectUid, "Actual project Uid for project settings do not match expected");
 
-      var response2 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}/{ProjectSettingsType.Targets}", "GET", null, customerUid.ToString());
+      var response2 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response2);
 
       tempSettings = JsonConvert.SerializeObject(objresp1.settings).Replace("\"", String.Empty);
