@@ -28,7 +28,8 @@ namespace VSS.MasterData.ProjectTests
 
     [TestMethod]
     [DataRow(ProjectSettingsType.Targets)]
-    [DataRow(ProjectSettingsType.ImportedFiles)]
+    //[DataRow(ProjectSettingsType.ImportedFiles)]
+    [DataRow(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_NoDataExists(ProjectSettingsType settingsType)
     {
       string customerUid = Guid.NewGuid().ToString();
@@ -64,7 +65,8 @@ namespace VSS.MasterData.ProjectTests
 
     [TestMethod]
     [DataRow(ProjectSettingsType.Targets)]
-    [DataRow(ProjectSettingsType.ImportedFiles)]
+    //[DataRow(ProjectSettingsType.ImportedFiles)]
+    [DataRow(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_DataExists(ProjectSettingsType settingsType)
     {
       string customerUid = Guid.NewGuid().ToString();
@@ -108,8 +110,8 @@ namespace VSS.MasterData.ProjectTests
       string settings1 = string.Empty;
       string settings2 = @"{firstValue: 10, lastValue: 20}";
       string userId = "my app";
-      ProjectSettingsType settingsType1 = ProjectSettingsType.Targets;
-      ProjectSettingsType settingsType2 = ProjectSettingsType.ImportedFiles;
+      ProjectSettingsType settingsType1 = ProjectSettingsType.ImportedFiles;
+      ProjectSettingsType settingsType2 = ProjectSettingsType.Targets;
 
       var projectRepo = new Mock<IProjectRepository>();
       var project = new Repositories.DBModels.Project() { CustomerUID = customerUid, ProjectUID = projectUid };
@@ -178,13 +180,14 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     [DataRow(ProjectSettingsType.Targets)]
     [DataRow(ProjectSettingsType.ImportedFiles)]
+    [DataRow(ProjectSettingsType.Colors)]
     public async Task UpsertProjectSettingsExecutor(ProjectSettingsType settingsType)
     {
       string customerUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
 
-      string settings = settingsType == ProjectSettingsType.Targets ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";
-      //[{"ImportedFileUid":"83dcb4d2-1ade-4aa5-82b4-978289a48922","IsActivated":false}]
+      string settings = settingsType != ProjectSettingsType.ImportedFiles ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";
+      
       string userId = "my app";
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -201,7 +204,7 @@ namespace VSS.MasterData.ProjectTests
       var producer = new Mock<IKafka>();
  
       var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<Guid>(), It.IsAny<string>(),
+      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<Guid>(), It.IsAny<string>(), settingsType,
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseDataResult());
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
@@ -216,8 +219,9 @@ namespace VSS.MasterData.ProjectTests
       Assert.IsNotNull(result, "executor failed");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect projectUid");
       Assert.IsNotNull(result.settings, "executor should have returned settings");
+      Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
 
-      if (settingsType == ProjectSettingsType.Targets)
+      if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
       {
         var tempSettings = JsonConvert.DeserializeObject<JObject>(settings);
         
@@ -225,7 +229,6 @@ namespace VSS.MasterData.ProjectTests
           "executor returned incorrect firstValue of settings");
         Assert.AreEqual(tempSettings["lastValue"], result.settings["lastValue"],
           "executor should have returned lastValue of settings");
-        Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
       }
       else
       {
@@ -268,7 +271,7 @@ namespace VSS.MasterData.ProjectTests
       var producer = new Mock<IKafka>();
 
       var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<Guid>(), It.IsAny<string>(),
+      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<Guid>(), It.IsAny<string>(), settingsType1,
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseDataResult());
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
