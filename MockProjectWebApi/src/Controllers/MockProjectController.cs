@@ -53,7 +53,7 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The mocked settings</returns>
     [Route("api/v4/mock/projectcolors/{projectUid}")]
     [HttpGet]
-    public ProjectSettingsDataResult GetMockProjectSettingsTyped(string projectUid, ProjectSettingsType settingsType)
+    public ProjectSettingsDataResult GetMockProjectSettingsTyped(string projectUid)
     {
       var settingsType =  ProjectSettingsType.Colors;
       Console.WriteLine($"GetMockProjectSettings: projectUid={projectUid}, settingsType={nameof(settingsType)}");
