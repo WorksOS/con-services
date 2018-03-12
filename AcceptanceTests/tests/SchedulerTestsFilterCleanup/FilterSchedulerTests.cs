@@ -67,12 +67,13 @@ namespace SchedulerTestsFilterCleanup
       var userUid = Guid.NewGuid().ToString();
       var name = "";
       var filterJson = "";
+      var filterType = 1;//Transient
       var actionUtc = new DateTime(2017, 1, 1); // eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff
       var empty = "\"";
       string insertFilter = string.Format(
-        $"INSERT Filter (FilterUID, fk_CustomerUid, fk_ProjectUID, UserID, Name, FilterJson, LastActionedUTC) " +
+        $"INSERT Filter (FilterUID, fk_CustomerUid, fk_ProjectUID, UserID, Name, FilterJson, LastActionedUTC, fk_FilterTypeID) " +
         $"VALUES ({empty}{filterUid}{empty}, {empty}{customerUid}{empty}, {empty}{projectUid}{empty}, {empty}{userUid}{empty}, " +
-        $"{empty}{filterJson}{empty}, {empty}{name}{empty}, {empty}{actionUtc.ToString($"yyyy-MM-dd HH:mm:ss.fffffff")}{empty})");
+        $"{empty}{filterJson}{empty}, {empty}{name}{empty}, {empty}{actionUtc.ToString($"yyyy-MM-dd HH:mm:ss.fffffff")}{empty}, {empty}{filterType}{empty})");
 
       int insertedCount = 0;
       insertedCount = dbConnection.Execute(insertFilter);
