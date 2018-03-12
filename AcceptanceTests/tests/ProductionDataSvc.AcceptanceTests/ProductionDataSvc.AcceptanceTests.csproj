@@ -855,8 +855,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\Profiles\DesignProfileSummaryResponse.json" />
-    <None Include="TestData\ProjectSettingsValidationRequest.json" />
-    <None Include="TestData\ProjectSettingsValidationResponse.json" />
+    <None Include="TestData\ProjectSettingsValidationRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\ProjectSettingsValidationResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\ProjectThumbnailResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
