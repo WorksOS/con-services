@@ -7,7 +7,7 @@ SET @s = (SELECT IF(
     ) > 0,
     "SELECT 1",
     "ALTER TABLE `Filter` 
-            ADD COLUMN `fk_FilterTypeID` INT(10) NOT NULL DEFAULT 0 AFTER `FilterJson`"
+            ADD COLUMN `fk_FilterTypeID` INT(10) NOT NULL DEFAULT 0 AFTER `Name`"
 )); 
 
 PREPARE stmt FROM @s;
