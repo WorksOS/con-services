@@ -25,6 +25,7 @@
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.15.*" />
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.24.*" />
   </ItemGroup>
 
   <ItemGroup>
