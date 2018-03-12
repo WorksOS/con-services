@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Models;
@@ -64,8 +64,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         }
         else
         {
-          if (filterEvent is UpdateFilterEvent)
-            await NotifyRaptor(filterRequest);
+          await NotifyRaptor(filterRequest);
         }
       }
       catch (Exception e)

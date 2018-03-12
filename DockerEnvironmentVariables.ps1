@@ -22,7 +22,7 @@ function SetEnvironmentVariableLocalhost {
     [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "Filter-Producer", "Machine")
     [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-Filter", "Machine")
     [Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://webapi:80/", "Machine")
-    [Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://localhost:3001/", "Machine")
+    [Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://localhost:5000/", "Machine")
     [Environment]::SetEnvironmentVariable("RAPTOR_NOTIFICATION_API_URL", "http://localhost:5001/api/v2/notification", "Machine")
     [Environment]::SetEnvironmentVariable("CUSTOMERSERVICE_API_URL", "http://localhost:5001/api/v1/mock/getcustomersforme", "Machine")
     [Environment]::SetEnvironmentVariable("PROJECT_API_URL","http://localhost:5001/api/v4/mockproject", "Machine")

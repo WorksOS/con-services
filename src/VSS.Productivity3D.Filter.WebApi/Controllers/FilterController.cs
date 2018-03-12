@@ -7,11 +7,11 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Collections.Immutable;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -21,6 +21,7 @@ using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Validators;
 using VSS.Productivity3D.Filter.WebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using System.Linq;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {
@@ -142,7 +143,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     {
       Log.LogInformation($"{ToString()}.CreateFilters: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} FilterListRequest: {JsonConvert.SerializeObject(request)}");
 
-      if (request == null)
+      if (request?.FilterRequests == null || request?.FilterRequests?.Count() == 0)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7, "Missing filters");
       }

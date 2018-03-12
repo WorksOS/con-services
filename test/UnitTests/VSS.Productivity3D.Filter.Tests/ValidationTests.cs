@@ -201,6 +201,26 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
+    public async Task HydrateJsonWithBoundary_IncludeAlignment()
+    {
+      var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
+      var geofenceRepo = new Mock<IGeofenceRepository>();
+      var alignmentUid = Guid.NewGuid().ToString();
+      var startStation = 100.456;
+      var endStation = 200.5;
+      var leftOffset = 4.5;
+      var rightOffset = 2.5;
+
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\":" + endStation + ", \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}", Name = "a filter" });
+
+      var result = await ValidationUtil
+        .HydrateJsonWithBoundary(geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false);
+
+      Assert.AreEqual(request.FilterJson, result, "Wrong hydated json");
+    }
+
+    [TestMethod]
     public async Task HydrateJsonWithBoundary_NoGeofence()
     {      
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
@@ -236,6 +256,38 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
+    public async Task FilterRequestValidation_InvalidAlignment()
+    {
+      var alignmentUid = Guid.NewGuid().ToString();
+      var startStation = 100.456;
+      var leftOffset = 4.5;
+      var rightOffset = 2.5;
+
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\": null, \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}", Name = "a filter" });
+
+      var ex = Assert.ThrowsException<ServiceException>(() => request.Validate(serviceExceptionHandler));
+
+      StringAssert.Contains(ex.GetContent, "2065");
+      StringAssert.Contains(ex.GetContent, "Invalid alignment filter. Start or end station are invalid.");
+    }
+
+    [TestMethod]
+    public async Task FilterRequestValidation_ValidAlignment()
+    {
+      var alignmentUid = Guid.NewGuid().ToString();
+      var startStation = 12.456;
+      double endStation = 56.0;
+      var leftOffset = 4.5;
+      var rightOffset = 2.5;
+
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\": " + startStation + ", \"endStation\": " + endStation + ", \"leftOffset\": " + leftOffset + ", \"rightOffset\": " + rightOffset + "}", Name = "a filter" });
+
+      request.Validate(serviceExceptionHandler);
+    }
+    
+    [TestMethod]
     public async Task HydrateJsonWithBoundary_HappyPath()
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
@@ -254,6 +306,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       Assert.AreEqual(expectedResult, result, "Wrong hydrated json");
     }
+
 
     [TestMethod]
     public void BoundaryRequestValidation_InvalidCustomerUid()

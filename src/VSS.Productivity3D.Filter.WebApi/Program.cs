@@ -1,7 +1,11 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Log4Net.Extensions;
+
 #if NET_4_7
 using Topshelf;
 using System.Diagnostics;
@@ -19,7 +23,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// </summary>
     public static void Main(string[] args)
     {
-#if  NET_4_7
+#if NET_4_7
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
 #endif
@@ -56,6 +60,12 @@ namespace VSS.Productivity3D.Filter.WebApi
         .UseKestrel()
         .UseContentRoot(Directory.GetCurrentDirectory())
         .UseIISIntegration()
+        .ConfigureLogging(builder =>
+        {
+          Log4NetProvider.RepoName = Startup.loggerRepoName;
+          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
+          builder.SetMinimumLevel(LogLevel.Trace);
+        })
         .UseStartup<Startup>()
         .Build();
 
