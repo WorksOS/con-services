@@ -9,7 +9,7 @@
    	You need to resart Visual Studio
 
 #>
-<# 
+<# #>
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-MasterData-Project", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_PORT", "3306", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_USERNAME", "root", "Machine")
@@ -18,7 +18,7 @@
 [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_ReadVSPDB", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_URI", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_PORT", "9092", "Machine")
-[Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "LOCALIPADDRESS", "Machine")
+[Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "10.3.18.4", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_PORT", "9092", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "Project-Consumer", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-Project", "Machine")
@@ -31,12 +31,12 @@
 [Environment]::SetEnvironmentVariable("COORDSYSPOST_API_URL", "http://localhost:5002/api/v1/mock/coordsystem", "Machine")
 [Environment]::SetEnvironmentVariable("RAPTOR_NOTIFICATION_API_URL", "http://localhost:5002/api/v2/notification", "Machine")
 [Environment]::SetEnvironmentVariable("CUSTOMERSERVICE_API_URL", "http://localhost:5002/api/v1/mock/getcustomersforme", "Machine")
-[Environment]::SetEnvironmentVariable("PROJECTSETTINGS_API_URL", "http://localhost:5002/api/v2/compaction", "Machine")
+[Environment]::SetEnvironmentVariable("RAPTOR_PROJECT_SETTINGS_API_URL", "http://mockprojectwebapi:5001/api/v2/compaction", "Machine")
 [Environment]::SetEnvironmentVariable("PROJECTSERVICE_KAFKA_TOPIC_NAME","VSS.Interfaces.Events.MasterData.IProjectEvent", "Machine")
 [Environment]::SetEnvironmentVariable("TCCBASEURL", "mock", "Machine")
 [Environment]::SetEnvironmentVariable("TCCFILESPACEID", "mock", "Machine")
-#>
-<#  Dev environment #>
+<# #>
+<#  Dev environment 
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-MasterData-Project", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_PORT", "3306", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_USERNAME", "root", "Machine")
@@ -53,4 +53,10 @@
 [Environment]::SetEnvironmentVariable("CREATEGEOFENCE_API_URL", "http://mockprojectwebapi:5001/", "Machine")
 [Environment]::SetEnvironmentVariable("COORDSYSVALIDATE_API_URL", "http://mockprojectwebapi:5001/", "Machine")
 [Environment]::SetEnvironmentVariable("COORDSYSPOST_API_URL", "http://mockprojectwebapi:5001/", "Machine")
-
+[Environment]::SetEnvironmentVariable("RAPTOR_NOTIFICATION_API_URL", "http://mockprojectwebapi:5001/api/v2/notification", "Machine")
+[Environment]::SetEnvironmentVariable("CUSTOMERSERVICE_API_URL", "http://mockprojectwebapi:5001/api/v1/mock/getcustomersforme", "Machine")
+[Environment]::SetEnvironmentVariable("RAPTOR_PROJECT_SETTINGS_API_URL", "http://mockprojectwebapi:5001/api/v2/compaction", "Machine")
+[Environment]::SetEnvironmentVariable("PROJECTSERVICE_KAFKA_TOPIC_NAME","VSS.Interfaces.Events.MasterData.IProjectEvent", "Machine")
+[Environment]::SetEnvironmentVariable("TCCBASEURL", "mock", "Machine")
+[Environment]::SetEnvironmentVariable("TCCFILESPACEID", "mock", "Machine")
+#>

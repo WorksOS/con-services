@@ -7,15 +7,17 @@ using Swashbuckle.Swagger.Model;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.FIlters;
+using VSS.MasterData.Project.WebAPI.Common.Extensions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
-using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -30,7 +32,10 @@ namespace VSS.MasterData.Project.WebAPI
   /// </summary>
   public class Startup
   {
-    private const string loggerRepoName = "WebApi";
+    /// <summary>
+    /// The logger repository name
+    /// </summary>
+    public const string LoggerRepoName = "WebApi";
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -44,7 +49,7 @@ namespace VSS.MasterData.Project.WebAPI
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", loggerRepoName);
+      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -109,6 +114,9 @@ namespace VSS.MasterData.Project.WebAPI
           config.Filters.Add(new ValidationFilterAttribute());
         }
         );
+
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
       //Configure swagger
       services.AddSwaggerGen();
 
@@ -157,9 +165,9 @@ namespace VSS.MasterData.Project.WebAPI
       serviceCollection.BuildServiceProvider();
 
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
 
-      app.UseExceptionTrap();
+
+      Common.ResultsHandling.ExceptionsTrapExtensions.UseExceptionTrap(app);
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
       //Enable TID here
@@ -172,6 +180,7 @@ namespace VSS.MasterData.Project.WebAPI
       }
 #endif
 
+      app.UseFilterMiddleware<RequestIDMiddleware>();
 
       app.UseMvc();
 
