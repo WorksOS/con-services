@@ -77,7 +77,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets the target settings for a project and user.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
-    /// <param name="settingsType">The project settings' type.</param>
     /// <returns></returns>
     [Route("api/v4/projectcolors/{projectUid}")]
     [HttpGet]
