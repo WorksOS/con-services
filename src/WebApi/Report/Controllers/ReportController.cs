@@ -73,13 +73,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Produces a CSV formatted export of production data identified by gridded sampling
     /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/export/gridded/csv")]
     [HttpPost]
     public ExportResult PostExportCSVReport([FromBody] ExportGridCSV request)
@@ -116,10 +112,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </returns>
     /// <executor>SummaryPassCountsExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/compaction/passcounts/summary")]
     [HttpPost]
     public PassCountSummaryResult PostSummary([FromBody] PassCounts request)
@@ -139,10 +133,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </returns>
     /// <executor>DetailedPassCountExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/compaction/passcounts/detailed")]
     [HttpPost]
     public PassCountDetailedResult PostDetailed([FromBody] PassCounts request)
@@ -172,10 +164,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </returns>
     /// <executor>SummaryCMVExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/compaction/cmv/summary")]
     [HttpPost]
     public CMVSummaryResult PostSummary([FromBody] CMVRequest request)
@@ -194,10 +184,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </returns>
     /// <executor>DetailedCMVExecutor</executor>     
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/compaction/cmv/detailed")]
     [HttpPost]
     public CMVDetailedResult PostDetailed([FromBody] CMVRequest request)
@@ -256,10 +244,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns></returns>
     /// <executor>SummaryVolumesExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/thickness/summary")]
     [HttpPost]
     public SummaryThicknessResult Post([FromBody] SummaryParametersBase parameters)
@@ -277,10 +263,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns></returns>
     /// <executor>SummarySpeedExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/speed/summary")]
     [HttpPost]
     public SummarySpeedResult Post([FromBody] SummarySpeedRequest parameters)
@@ -298,10 +282,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns></returns>
     /// <executor>CMVChangeSummaryExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/cmvchange/summary")]
     [HttpPost]
     public CMVChangeSummaryResult Post([FromBody] CMVChangeSummaryRequest parameters)

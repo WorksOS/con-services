@@ -10,7 +10,22 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Filters
 {
   public class ActionFilterAttributeTestsBase
   {
-    protected ActionExecutingContext CreateActionExecutingContext(HttpContext httpContext)
+    protected ActionExecutingContext CallOnActionExecuting<T>(string queryString) where T : ActionFilterAttribute, new()
+    {
+      var context = CreateActionExecutingContext(new DefaultHttpContext
+      {
+        Request = {
+          QueryString = new QueryString(queryString)
+        }
+      });
+
+      var validationAttribute = new T();
+      validationAttribute.OnActionExecuting(context);
+
+      return context;
+    }
+
+    private static ActionExecutingContext CreateActionExecutingContext(HttpContext httpContext)
     {
       return new ActionExecutingContext(
         new ActionContext

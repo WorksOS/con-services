@@ -34,11 +34,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
@@ -54,7 +49,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
       this.logger = logger;
-      this.log = logger.CreateLogger<EditDataController>();
     }
 
     /// <summary>
@@ -63,15 +57,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="request">The request representation for the operation.</param>
     /// <returns>A list of the edits applied to the production data for the project and machine.</returns>
     /// <executor>GetEditDataExecutor</executor> 
-    /// 
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/productiondata/getedits")]
     [HttpPost]
-
     public EditDataResult PostEditDataAcquire([FromBody] GetEditDataRequest request)
     {
       request.Validate();
@@ -85,21 +75,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="request">The request representation for the operation</param>
     /// <returns></returns>
     /// <executor>EditDataExecutor</executor>
-    /// 
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectWritableVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
-    [ProjectWritableWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
     [Route("api/v1/productiondata/edit")]
     [HttpPost]
-
     public ContractExecutionResult Post([FromBody]EditDataRequest request)
     {
-      //Validate request
       request.Validate();
+
       if (!request.undo)
       {
         //Validate against existing data edits
@@ -135,15 +119,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           string message = string.Empty;
           foreach (var oe in overlapEdits)
           {
-            message = string.Format("{0}\nMachine: {1}, Override Period: {2}-{3}, Edited Value: {4}",
-                message, oe.assetId, oe.startUTC, oe.endUTC,
-                string.IsNullOrEmpty(oe.onMachineDesignName)
-                    ? oe.onMachineDesignName
-                    : (oe.liftNumber.HasValue ? oe.liftNumber.Value.ToString() : string.Empty));
+            message = $"{message}\nMachine: {oe.assetId}, Override Period: {oe.startUTC}-{oe.endUTC}, Edited Value: {(string.IsNullOrEmpty(oe.onMachineDesignName) ? oe.onMachineDesignName : (oe.liftNumber?.ToString() ?? string.Empty))}";
           }
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  string.Format("Data edit overlaps: {0}", message)));
+                $"Data edit overlaps: {message}"));
         }
       }
     }
@@ -169,6 +149,5 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
                 string.Format("Data edit outside production data date range: {0}-{1}", stats.startTime, stats.endTime)));
       }
     }
-
   }
 }

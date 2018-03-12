@@ -87,8 +87,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>
     /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
     /// </returns>
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/profiles/productiondata/slicer")]
     [HttpGet]
     public async Task<CompactionProfileResult<CompactionProfileDataResult>> GetProfileProductionDataSlicer(
@@ -213,8 +212,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult, type, volumeCalcType);
     }
 
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/profiles/design/slicer")]
     [HttpGet]
     public async Task<CompactionProfileResult<CompactionDesignProfileResult>> GetProfileDesignSlicer(

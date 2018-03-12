@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Where to get environment variables, connection string etc. from
     /// </summary>
-    private IConfigurationStore configStore;
+    private readonly IConfigurationStore configStore;
 
 
     /// <summary>

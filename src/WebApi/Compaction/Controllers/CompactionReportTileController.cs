@@ -51,11 +51,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IGeofenceProxy geofenceProxy;
 
     /// <summary>
-    /// Proxy for getting custom boundaries from filter service.
-    /// </summary>
-    private readonly IBoundaryProxy boundaryProxy;
-
-    /// <summary>
     /// The request factory
     /// </summary>
     private readonly IProductionDataRequestFactory requestFactory;
@@ -71,7 +66,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="logger">Logger</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="geofenceProxy">Geofence proxy</param>
-    /// <param name="boundaryProxy">Custom boundaries proxy</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="settingsManager">Compaction settings manager</param>
@@ -81,16 +75,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="prefProxy">User preferences proxy</param>
     /// <param name="requestFactory">The request factory.</param>
     public CompactionReportTileController(ILoggerFactory logger, IConfigurationStore configStore, IGeofenceProxy geofenceProxy,
-      IBoundaryProxy boundaryProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
+      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator,
       IPreferenceProxy prefProxy, IProductionDataRequestFactory requestFactory)
       : base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
-     // this.log = logger.CreateLogger<CompactionDataController>();
       this.tileGenerator = tileGenerator;
       this.prefProxy = prefProxy;
       this.geofenceProxy = geofenceProxy;
-      this.boundaryProxy = boundaryProxy;
       this.requestFactory = requestFactory;
       this.log = logger.CreateLogger<CompactionReportTileController>();
     }
@@ -189,7 +181,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/projectthumbnail")]
     [HttpGet]
-    [ResponseCache(Duration = 86400, VaryByQueryKeys = new[] {"*"})]
+    [ResponseCache(Duration = 86400, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetProjectThumbnail(
       [FromQuery] Guid projectUid)
     {
@@ -214,8 +206,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
 
-      var tileResult =await  GetGeneratedTile(projectUid, null, null, null, null,
-        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height,true);
+      var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
+        null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height, true);
       //Short-circuit cache time for Archived projects
       if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";

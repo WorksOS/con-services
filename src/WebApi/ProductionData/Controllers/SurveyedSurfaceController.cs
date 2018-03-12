@@ -47,12 +47,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="request">Description of the Surveyed Surface request.</param>
     /// <returns>Execution result.</returns>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectWritableVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
-    [ProjectWritableWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
     [Route("api/v1/surveyedsurfaces")]
     [HttpPost]
     public ContractExecutionResult Post([FromBody] SurveyedSurfaceRequest request)
@@ -67,9 +63,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectId">The model/project identifier.</param>
     /// <param name="surveyedSurfaceId">The Surveyed Surface identifier.</param>
     [Obsolete("This action method is obsolete and no longer used by 3DP application services. It may be in use by Trimble Business Center.")]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectWritableVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
     [HttpGet]
     [Route("api/v1/projects/{projectId}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
     public ContractExecutionResult GetDel([FromRoute] long projectId, [FromRoute] long surveyedSurfaceId)
@@ -91,9 +85,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectUid">The model/project unique identifier.</param>
     /// <param name="surveyedSurfaceId">The Surveyed Surface identifier.</param>
     [Obsolete("This action method is obsolete and no longer used by 3DP application services. It may be in use by Trimble Business Center.")]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
-    [ProjectWritableWithUIDVerifier]
+    [ProjectUidVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
     [HttpGet]
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
     public ContractExecutionResult GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId)
@@ -115,8 +107,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="projectId">The model/project identifier.</param>
     /// <returns>Execution result with a list of Surveyed Surfaces.</returns>
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
     [HttpGet]
     [Route("api/v1/projects/{projectId}/surveyedsurfaces")]
     public SurveyedSurfaceResult Get([FromRoute] long projectId)
@@ -132,8 +123,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="projectUid">The model/project unique identifier.</param>
     /// <returns>Execution result with a list of Surveyed Surfaces.</returns>
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [HttpGet]
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces")]
     public SurveyedSurfaceResult Get([FromRoute] Guid projectUid)
@@ -152,12 +142,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="request">Description of the Surveyed Surface request.</param>
     /// <returns>Execution result.</returns>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectWritableVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
-    [ProjectWritableWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
     [Route("api/v1/surveyedsurfaces/post")]
     [HttpPost]
     public ContractExecutionResult PostPut([FromBody] SurveyedSurfaceRequest request)
@@ -172,12 +158,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="request">Descriptor of the Design File (filename).</param>
     /// <returns>Execution result.</returns>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectWritableVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
-    [ProjectWritableWithUIDVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
     [Route("api/v1/designcache/delete")]
     [HttpPost]
     public ContractExecutionResult PostDelete([FromBody] DesignNameRequest request)

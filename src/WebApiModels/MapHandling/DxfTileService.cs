@@ -20,7 +20,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     private readonly IConfigurationStore config;
     private readonly IFileRepository tccFileRepository;
     private readonly ILogger log;
-    private readonly ILoggerFactory logger;
 
     private readonly string tccFilespaceId;
 
@@ -29,7 +28,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       config = configuration;
       tccFileRepository = tccRepository;
       log = logger.CreateLogger<DxfTileService>();
-      this.logger = logger;
       tccFilespaceId = config.GetValueString("TCCFILESPACEID");
     }
 
