@@ -1,4 +1,6 @@
-﻿using VSS.MasterData.Models.Internal;
+﻿using System;
+using System.Threading.Tasks;
+using VSS.MasterData.Models.Internal;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 
@@ -42,6 +44,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
       return baseFilter.DateRangeType != DateRangeType.ProjectExtents &&
              baseFilter.DateRangeType == topFilter.DateRangeType &&
              baseFilter.ElevationType == null && topFilter.ElevationType == null;
+    }
+
+    public async Task<T> WithSwallowExceptionExecute<T>(Func<Task<T>> a) where T : class
+    {
+      try
+      {
+        return await a.Invoke();
+      }
+      catch
+      { }
+
+      return default(T);
     }
   }
 }
