@@ -72,8 +72,6 @@ namespace VSS.MasterData.Project.WebAPI
     /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddLogging();
-
       //Configure CORS
       services.AddCors(options =>
       {
@@ -160,12 +158,10 @@ namespace VSS.MasterData.Project.WebAPI
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      serviceCollection.AddSingleton(loggerFactory);
-      //new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
-      serviceCollection.BuildServiceProvider();
-
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
-
+      serviceCollection.AddSingleton(loggerFactory);
+      serviceCollection.BuildServiceProvider();
 
       Common.ResultsHandling.ExceptionsTrapExtensions.UseExceptionTrap(app);
       //Enable CORS before TID so OPTIONS works without authentication
