@@ -73,6 +73,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         switch (request.ProjectSettingsType)
         {
           case ProjectSettingsType.Targets:
+          case ProjectSettingsType.Colors:
             result = projectSettings == null ?
               ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, null, request.ProjectSettingsType) :
               ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, JsonConvert.DeserializeObject<JObject>(projectSettings.Settings), projectSettings.ProjectSettingsType);
@@ -109,7 +110,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       try
       {
         result = await raptorProxy
-          .ValidateProjectSettings(Guid.Parse(request.projectUid), request.Settings, headers)
+          .ValidateProjectSettings(Guid.Parse(request.projectUid), request.Settings, request.ProjectSettingsType, headers)
           .ConfigureAwait(false);
       }
       catch (Exception e)

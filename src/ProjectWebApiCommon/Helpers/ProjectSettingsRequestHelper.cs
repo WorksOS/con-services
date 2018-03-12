@@ -46,7 +46,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       try
       {
         result = await raptorProxy
-          .ValidateProjectSettings(Guid.Parse(request.projectUid), request.Settings, customHeaders)
+          .ValidateProjectSettings(Guid.Parse(request.projectUid), request.Settings, request.ProjectSettingsType, customHeaders)
           .ConfigureAwait(false);
       }
       catch (Exception e)
