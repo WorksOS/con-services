@@ -1,7 +1,7 @@
 param ([switch] $uploadArtifact = $false)
 
 $artifactsDir = "$PSScriptRoot/artifacts"
-$artfifactZip = "VSS.Productivity3D.Scheduler.WebApiNet47.zip"
+$artfifactZip = "VSS.Productivity3D.Scheduler.WebApiNet471.zip"
 
 # Tidy up old artifacts.
 Write-Host "Removing existing build artifacts..." -ForegroundColor "darkgray"
@@ -19,7 +19,7 @@ Write-Host "Restoring .NET packages..." -ForegroundColor "darkgray"
 Invoke-Expression "dotnet restore --no-cache VSS.Productivity3D.Scheduler.sln"
 
 Write-Host "Publishing WebApi project..." -ForegroundColor "darkgray"
-$artifactsWorkingDir = "$artifactsDir\VSS.Productivity3D.Scheduler.WebApiNet47"
+$artifactsWorkingDir = "$artifactsDir\VSS.Productivity3D.Scheduler.WebApiNet471"
 
 Invoke-Expression "dotnet publish ./src/VSS.Productivity3D.Scheduler.WebApi/VSS.Productivity3D.Scheduler.WebApi.csproj -o ../../artifacts/VSS.Productivity3D.Scheduler.WebApi -f net471 -c Release"
 Invoke-Expression "dotnet build ./test/UnitTests/VSS.Productivity3D.Scheduler.Tests/VSS.Productivity3D.Scheduler.Tests.csproj"

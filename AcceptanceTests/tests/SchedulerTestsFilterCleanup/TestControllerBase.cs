@@ -30,6 +30,7 @@ namespace SchedulerTestsFilterCleanup
     protected void SetupDi()
     {
       const string loggerRepoName = "UnitTestLogTest";
+      Log4NetProvider.RepoName = loggerRepoName;
       var logPath = Directory.GetCurrentDirectory();
 
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);

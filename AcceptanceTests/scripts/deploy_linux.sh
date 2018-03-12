@@ -14,14 +14,14 @@ dotnet restore --no-cache VSS.Productivity3D.Scheduler.AcceptanceTests.sln
 rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 
 cd tests
-dotnet publish RepositoryTests/RepositoryTests.csproj -o ../../deploy/RepositoryTests -f netcoreapp1.1
+dotnet publish RepositoryTests/RepositoryTests.csproj -o ../../deploy/RepositoryTests -f netcoreapp2.0
 rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
-dotnet publish SchedulerTestsFilterCleanup/SchedulerTestsFilterCleanup.csproj -o ../../deploy/SchedulerTestsFilterCleanup -f netcoreapp1.1
+dotnet publish SchedulerTestsFilterCleanup/SchedulerTestsFilterCleanup.csproj -o ../../deploy/SchedulerTestsFilterCleanup -f netcoreapp2.0
 rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
-dotnet publish SchedulerTestsImportedFileSync/SchedulerTestsImportedFileSync.csproj -o ../../deploy/SchedulerTestsImportedFileSync -f netcoreapp1.1
+dotnet publish SchedulerTestsImportedFileSync/SchedulerTestsImportedFileSync.csproj -o ../../deploy/SchedulerTestsImportedFileSync -f netcoreapp2.0
 rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 
 cd ..
 cd utilities
-dotnet publish TestRun/TestRun.csproj -o ../../deploy/TestRun -f netcoreapp1.1
+dotnet publish TestRun/TestRun.csproj -o ../../deploy/TestRun -f netcoreapp2.0
 rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
