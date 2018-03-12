@@ -42,13 +42,13 @@ namespace VSS.Productivity3D.WebApi
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
 
-
+      bool libuvConfigured = Int32.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out int libuvThreads);
       var host = new WebHostBuilder()
         .UseConfiguration(config)
         .UseKestrel()
         .UseLibuv(opts =>
         {
-          if (Int32.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out int libuvThreads))
+          if (libuvConfigured)
           {
             opts.ThreadCount = libuvThreads;
           }
@@ -64,23 +64,48 @@ namespace VSS.Productivity3D.WebApi
         .UseStartup<Startup>()
         .Build();
 
+      var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+      log.LogInformation("Productivity3D service starting");
+      log.LogInformation($"Num Libuv Threads = {(libuvConfigured ? libuvThreads.ToString() : "Default")}");
+      
+
+
       if (Int32.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out int maxWorkers) &&
           Int32.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out int maxIo))
       {
         ThreadPool.SetMaxThreads(maxWorkers, maxIo);
+        log.LogInformation($"Max Worker Threads = {maxWorkers}");
+        log.LogInformation($"Max IO Threads = {maxIo}");
+      }
+      else
+      {
+        log.LogInformation($"Max Worker Threads = Default");
+        log.LogInformation($"Max IO Threads = Default");
       }
 
       if (Int32.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out int minWorkers) &&
           Int32.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out int minIo))
       {
         ThreadPool.SetMinThreads(minWorkers, minIo);
+        log.LogInformation($"Min Worker Threads = {minWorkers}");
+        log.LogInformation($"Min IO Threads = {minIo}");
+      }
+      else
+      {
+        log.LogInformation($"Min Worker Threads = Default");
+        log.LogInformation($"Min IO Threads = Default");
       }
              
 
-      if (Int32.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out int connectionLimit))
+      if (Int32.TryParse(Environment.GetEnvironmentVariable(DEFAULT_CONNECTION_LIMIT), out int connectionLimit))
       {
         //Check how many requests we can execute
         ServicePointManager.DefaultConnectionLimit = connectionLimit;
+        log.LogInformation($"Default connection limit = {connectionLimit}");
+      }
+      else
+      {
+        log.LogInformation($"Default connection limit = Default");
       }
 
       if (!isService)
