@@ -141,7 +141,7 @@ namespace VSS.MasterData.Proxies
     {
       log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {projectUid}");
       var queryParams = $"?projectUid={projectUid}&projectSettings={projectSettings}";
-      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("PROJECTSETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
+      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
       log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -158,7 +158,7 @@ namespace VSS.MasterData.Proxies
     {
       log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {projectUid}");
       var queryParams = $"?projectUid={projectUid}&projectSettings={projectSettings}&settingsType={settingsType}";
-      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("PROJECTSETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
+      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
       log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -172,7 +172,7 @@ namespace VSS.MasterData.Proxies
     public async Task<BaseDataResult> ValidateProjectSettings(ProjectSettingsRequest request, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {request.projectUid}");
-      BaseDataResult response = await SendRequest<BaseDataResult>("PROJECTSETTINGS_API_URL", JsonConvert.SerializeObject(request), customHeaders, "/validatesettings", "POST", String.Empty);
+      BaseDataResult response = await SendRequest<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", JsonConvert.SerializeObject(request), customHeaders, "/validatesettings", "POST", String.Empty);
       log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
