@@ -150,7 +150,7 @@ namespace VSS.Productivity3D.WebApi
       app.UseSwaggerUi();
 
       //Check if the configuration is correct and we are able to connect to Raptor
-      var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+    /*  var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
       log.LogInformation("Testing Raptor configuration with sending config request");
       try
       {
@@ -164,7 +164,7 @@ namespace VSS.Productivity3D.WebApi
         log.LogError("Exception loading config: {0} at {1}", e.Message, e.StackTrace);
         log.LogCritical("Can't talk to Raptor for some reason - check configuration");
         Environment.Exit(138);
-      }
+      }*/
     }
   }
 }
