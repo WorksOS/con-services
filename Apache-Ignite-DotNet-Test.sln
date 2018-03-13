@@ -27,8 +27,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExceptionReproducer", "Exce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorGridActivator", "RaptorGridActivator\RaptorGridActivator.csproj", "{E351A35B-6C94-4287-9410-D3936C5DC959}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raptor.Designs", "ClassLibrary2\Raptor.Designs.csproj", "{1571B659-199B-4DF7-A2AA-1C79D0F8C29E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Velociraptor.Designs.TTM", "VSS.Velociraptor.Designs.TTM\VSS.Velociraptor.Designs.TTM.csproj", "{DC561602-6780-4764-857D-B7681C08C2E2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Velociraptor.Designs.TTM.Tests", "VSS.Velociraptor.Designs.TTMTests\VSS.Velociraptor.Designs.TTM.Tests.csproj", "{4A823043-58A3-4B97-BA6E-57BDA45F7BC7}"
@@ -149,14 +147,6 @@ Global
 		{E351A35B-6C94-4287-9410-D3936C5DC959}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E351A35B-6C94-4287-9410-D3936C5DC959}.Release|x64.ActiveCfg = Release|Any CPU
 		{E351A35B-6C94-4287-9410-D3936C5DC959}.Release|x64.Build.0 = Release|Any CPU
-		{1571B659-199B-4DF7-A2AA-1C79D0F8C29E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1571B659-199B-4DF7-A2AA-1C79D0F8C29E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1571B659-199B-4DF7-A2AA-1C79D0F8C29E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1571B659-199B-4DF7-A2AA-1C79D0F8C29E}.Debug|x64.Build.0 = Debug|Any CPU
-		{1571B659-199B-4DF7-A2AA-1C79D0F8C29E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1571B659-199B-4DF7-A2AA-1C79D0F8C29E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1571B659-199B-4DF7-A2AA-1C79D0F8C29E}.Release|x64.ActiveCfg = Release|Any CPU
-		{1571B659-199B-4DF7-A2AA-1C79D0F8C29E}.Release|x64.Build.0 = Release|Any CPU
 		{DC561602-6780-4764-857D-B7681C08C2E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DC561602-6780-4764-857D-B7681C08C2E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC561602-6780-4764-857D-B7681C08C2E2}.Debug|x64.ActiveCfg = Debug|Any CPU
