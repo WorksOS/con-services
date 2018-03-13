@@ -6,15 +6,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.Swagger.Model;
-using VSS.Common.Exceptions;
+using Swashbuckle.AspNetCore.Swagger;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.TCCFileAccess;
 
 #if NET_4_7
-  using VSS.Productivity3D.Common.Filters;
+using VSS.Productivity3D.Common.Filters;
 #endif
 
 namespace VSS.Productivity3D.FileAccess.Service.WebAPI
@@ -56,17 +55,14 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
                   .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
       });
 
-      services.AddSwaggerGen();
+      services.AddSwaggerGen(c =>
+      {
+        c.SwaggerDoc("v1", new Info { Title = "File Access API", Description = "API for File Access", Version = "v1" });
+      });
+
 
       services.ConfigureSwaggerGen(options =>
       {
-        options.SingleApiVersion(new Info
-        {
-          Version = "v1",
-          Title = "File Access API",
-          TermsOfService = "None"
-        });
-
         string pathToXml;
 
         var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
@@ -87,13 +83,11 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
         options.DescribeAllEnumsAsStrings();
 
       });
-      //Swagger documentation can be viewed with http://localhost:5000/swagger/ui/index.html   
 
       //Configure application services
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IFileRepository, FileRepository>();
       services.AddMvc();
-
 
       _serviceCollection = services;
     }
@@ -114,10 +108,15 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
       app.UseCors("VSS");
 
       //app.UseResponseCaching();//Disable for now
-      app.UseMvc();
 
       app.UseSwagger();
-      app.UseSwaggerUi();
+
+      //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
+      app.UseSwaggerUI(c =>
+      {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "File Access API");
+      });
+      app.UseMvc();
     }
   }
 }
