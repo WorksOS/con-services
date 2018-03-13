@@ -33,20 +33,21 @@ namespace VSS.Common.Exceptions
       InnerException = innerException;
     }
 
-    private string formatException()
+    private string formatException(bool includeInner)
     {
-      if (InnerException == null)
+      if (InnerException == null || !includeInner)
         return JsonConvert.SerializeObject(GetResult);
       return
         $"{JsonConvert.SerializeObject(GetResult)} with inner exception {InnerException.Message} stack {InnerException.StackTrace} source {InnerException.Source}";
     }
 
-    public Exception InnerException { get; private set; } = null;
+    public new Exception InnerException { get; private set; } = null;
 
     /// <summary>
     /// 
     /// </summary>
-    public string GetContent => formatException();
+    public string GetContent => formatException(false);
+    public string GetFullContent => formatException(true);
 
     public HttpStatusCode Code { get; private set; }
 

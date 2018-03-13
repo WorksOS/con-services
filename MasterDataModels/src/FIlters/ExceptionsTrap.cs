@@ -33,7 +33,7 @@ namespace VSS.MasterData.Models.FIlters
       }
       catch (ServiceException ex)
       {
-        log.LogWarning($"Service exception: {nameof(ex)} {ex.Source} {ex.GetContent} statusCode: {ex.Code} {ex.StackTrace}");
+        log.LogWarning($"Service exception: {nameof(ex)} {ex.Source} {ex.GetFullContent} statusCode: {ex.Code} {ex.StackTrace}");
         context.Response.StatusCode = (int)ex.Code;
         await context.Response.WriteAsync(ex.GetContent);
       }
