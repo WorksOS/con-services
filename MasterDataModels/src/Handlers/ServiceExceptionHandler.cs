@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
@@ -26,11 +27,11 @@ namespace VSS.Common.Exceptions
     /// <summary>
     /// Correctly throw ServiceException for controller types.
     /// </summary>
-    public ServiceException ThrowServiceException(HttpStatusCode statusCode, int errorNumber, string resultCode = null, string errorMessage1 = null, string errorMessage2 = null)
+    public ServiceException ThrowServiceException(HttpStatusCode statusCode, int errorNumber, string resultCode = null, string errorMessage1 = null, string errorMessage2 = null, Exception innerException = null)
     {
       throw new ServiceException(statusCode,
         new ContractExecutionResult(_contractExecutionStatesEnum.GetErrorNumberwithOffset(errorNumber),
-          string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(errorNumber), resultCode, errorMessage1 ?? "null", errorMessage2 ?? "null")));
+          $"{_contractExecutionStatesEnum.FirstNameWithOffset(errorNumber)}  {resultCode} {errorMessage1} {errorMessage2}"),innerException);
     }
   }
 }

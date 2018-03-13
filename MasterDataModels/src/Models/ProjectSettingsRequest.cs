@@ -18,7 +18,7 @@ namespace VSS.MasterData.Models.Models
     /// The type of project settings
     /// </summary>
     ///[JsonIgnore]//So existing contract is not broken
-    [JsonProperty(PropertyName = "projectSettingsType", Required = Required.Always)]
+    [JsonProperty(PropertyName = "projectSettingsType", Required = Required.Default)]
     public ProjectSettingsType ProjectSettingsType { get; set; }
 
     /// <summary>

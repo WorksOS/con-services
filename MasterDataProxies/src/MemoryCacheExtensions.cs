@@ -58,5 +58,18 @@ namespace VSS.MasterData.Proxies
 
       return promiseToSet.Value;
     }
+
+    public static T Add<T>(this IMemoryCache cache, string cacheKey, MemoryCacheEntryOptions opts, Func<T> factory)
+    {
+      Lazy<T> promiseToSet;
+
+      lock (cacheLock)
+      {
+        promiseToSet = new Lazy<T>(factory);
+        cache.Set(cacheKey, promiseToSet);
+      }
+
+      return promiseToSet.Value;
+    }
   }
 }
