@@ -27,6 +27,10 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.MockedClasses.GridFabri
 
         public bool IsClient => false; //throw new NotImplementedException();
 
+        public object ConsistentId => GetHashCode();  //throw new NotImplementedException();
+
+        public IDictionary<string, object> Attributes => throw new NotImplementedException();
+
         public T GetAttribute<T>(string name)
         {
             _attributes.TryGetValue(name, out object Value);
