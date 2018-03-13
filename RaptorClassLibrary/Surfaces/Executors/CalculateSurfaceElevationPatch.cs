@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.Velociraptor.DesignProfiling;
+using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
@@ -84,6 +85,8 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
                     double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
                     double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
 
+                    TriangleQuadTree.Tsearch_state_rec SearchState = TriangleQuadTree.Tsearch_state_rec.Init();
+
                     // Work down through the list of surfaces in the time ordering provided by the caller
                     for (int i = 0; i < Args.IncludedSurveyedSurfaces.Count; i++)
                     {
@@ -123,7 +126,8 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
                                 // based on the processing bit mask passed in
                                 Args.ProcessingMap.ForEachSetBit((x, y) =>
                                 {
-                                    if (Design.InterpolateHeight(ref Hint,
+                                    if (Design.InterpolateHeight(ref SearchState,
+                                                                 ref Hint,
                                                                  OriginXPlusHalfCellSize + (CellSize * x),
                                                                  OriginYPlusHalfCellSize + (CellSize * y),
                                                                  Offset,

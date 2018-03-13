@@ -7,23 +7,24 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor;
 using VSS.Velociraptor.Designs.TTM;
+using VSS.VisionLink.Raptor.Designs;
 
 namespace VSS.Velociraptor.DesignProfiling.Tests
 {
     [TestClass()]
     public class TTMDesignTests
     {
-        private static TTMDesign _design = null;
+        private static TTMDesign design = LoadTheDesign();
 
         private static TTMDesign LoadTheDesign()
         {
-            if (_design == null)
+            if (design == null)
             {
-                _design = new TTMDesign(SubGridTree.DefaultCellSize);
-                _design.LoadFromFile(@"C:\Temp\Bug36372.ttm");
+                design = new TTMDesign(SubGridTree.DefaultCellSize);
+                design.LoadFromFile(@"C:\Temp\Bug36372.ttm");
             }
 
-            return _design;
+            return design;
         }
 
         [Ignore()]
@@ -58,7 +59,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         [TestMethod()]
         public void GetExtentsTest()
         {
-            TTMDesign design = LoadTheDesign();
+//            TTMDesign design = LoadTheDesign();
 
             design.GetExtents(out double x1, out double y1, out double x2, out double y2);
 
@@ -71,7 +72,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         [TestMethod()]
         public void GetHeightRangeTest()
         {
-            TTMDesign design = LoadTheDesign();
+//            TTMDesign design = LoadTheDesign();
 
             design.GetHeightRange(out double z1, out double z2);
 
@@ -109,34 +110,107 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         }
 
         [TestMethod()]
-        public void InterpolateHeightTest()
+        [DataRow(247500.0, 193350.0, 29.875899875665258)]
+        public void InterpolateHeightTest(double probeX, double probeY, double expectedZ)
         {
-            TTMDesign design = LoadTheDesign();
+//            TTMDesign design = LoadTheDesign();
 
             object Hint = null;
-            bool result = design.InterpolateHeight(ref Hint, 247500.0, 193350.0, 0, out double Z);
+
+            TriangleQuadTree.Tsearch_state_rec SearchState = TriangleQuadTree.Tsearch_state_rec.Init();
+
+            bool result = design.InterpolateHeight(ref SearchState, ref Hint, probeX, probeY, 0, out double Z);
 
             Assert.IsTrue(result, "Height interpolation returned false");
-            Assert.IsTrue(Z != Consts.NullReal, "Interpolated heighth value is null");
+
+            Assert.IsTrue(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
+        }
+
+        [TestMethod()]
+        [DataRow(247500.0, 193350.0, 29.875899875665258)]
+        public void InterpolateHeightTestPerf(double probeX, double probeY, double expectedZ)
+        {
+            //            TTMDesign design = LoadTheDesign();
+            object Hint = null;
+
+            TriangleQuadTree.Tsearch_state_rec SearchState = TriangleQuadTree.Tsearch_state_rec.Init();
+            for (int i = 0; i < 1000000; i++)
+            {
+                Hint = null;
+                bool result = design.InterpolateHeight(ref SearchState, ref Hint, probeX, probeY, 0, out double Z);
+                Assert.IsTrue(result);
+            }
+
+            Assert.Fail("Perf Test");
+        }
+
+        [TestMethod()]
+        [DataRow(247500.0, 193350.0, 29.875899875665258)]
+        public void InterpolateHeightTest2(double probeX, double probeY, double expectedZ)
+        {
+            //            TTMDesign design = LoadTheDesign();
+            object Hint = null;
+            bool result = design.InterpolateHeight2(ref Hint, probeX, probeY, 0, out double Z);
+
+            Assert.IsTrue(result, "Height interpolation returned false");
+
+            Assert.IsTrue(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
+        }
+
+        [TestMethod()]
+        [DataRow(247500.0, 193350.0, 29.875899875665258)]
+        public void InterpolateHeightTest2Perf(double probeX, double probeY, double expectedZ)
+        {
+            //            TTMDesign design = LoadTheDesign();
+
+            object Hint = null;
+            for (int i = 0; i < 10000000; i++)
+            {
+                Hint = null;
+                bool result = design.InterpolateHeight2(ref Hint, probeX, probeY, 0, out double Z);
+//                Assert.IsTrue(result);
+            }
+
+            Assert.Fail("Perf Test");
+        }
+
+        [TestMethod()]
+        [DataRow(247500.0, 193350.0, 29.875899875665258)]
+        public void InterpolateHeightTest3Perf(double probeX, double probeY, double expectedZ)
+        {
+            //            TTMDesign design = LoadTheDesign();
+
+            object Hint = null;
+            for (int i = 0; i < 10000000; i++)
+            {
+                Hint = null;
+                bool result = design.InterpolateHeight3(ref Hint, probeX, probeY, 0, out double Z);
+//                Assert.IsTrue(result);
+            }
+
+            Assert.Fail("Perf Test");
         }
 
         [TestMethod()]
         public void InterpolateHeightsTest()
         {
-            TTMDesign design = LoadTheDesign();
+//            TTMDesign design = LoadTheDesign();
+            design.QuadTreeSpatialIndex.dump_tree(" C# ");
+
 
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
             bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTree.DefaultCellSize, 0);
 
             Assert.IsTrue(result, "Heights interpolation returned false");
+
 //            Assert.IsTrue(Z != Consts.NullReal, "Interpolated heighth value is null");
         }
 
         [TestMethod()]
         public void LoadFromFileTest()
         {
-            TTMDesign design = LoadTheDesign();
+//            TTMDesign design = LoadTheDesign();
 
             Assert.IsTrue(design.Data.Triangles.Count > 0, "No triangles present in loaded TTM file.");
             Assert.IsTrue(design.Data.Vertices.Count > 0, "No vertices present in loaded TTM file.");
@@ -145,7 +219,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         [TestMethod()]
         public void SubgridOverlayIndexTest()
         {
-            TTMDesign design = LoadTheDesign();
+//            TTMDesign design = LoadTheDesign();
 
             Assert.IsTrue(design.SubgridOverlayIndex() != null, "SubgridOverlayIndex is null");
         }

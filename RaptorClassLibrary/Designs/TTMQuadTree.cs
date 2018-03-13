@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,16 +12,42 @@ namespace VSS.VisionLink.Raptor.Designs
     {
         public TrimbleTINModel TTM { get; set; }
 
-        //        private FSearchStamps : TPAWord = null;
+        // private FSearchStamps : TPAWord = null;
+
+        private StreamWriter writer = new StreamWriter(@"C:\Temp\DTreeProgress-CSharp.txt", false);
 
         void AddTriangle(Triangle Tri, int Index)
         {
-            key_list_rec key_list = new key_list_rec(); ;
+            key_list_rec key_list = key_list_rec.Init();
 
             FindTriKeys(Tri, ref key_list);
 
-            foreach (var k in key_list.key)
-                add_entity_key(k, Index);
+            for (int k = 0; k < key_list.num_keys; k++)
+            {
+                add_entity_key(key_list.key[k], Index);
+
+                int total = BATree.Select(x => x.Count).Sum();
+
+                writer.WriteLine($"Added ent {Index}, with {key_list.num_keys} keys, using key {key_list.key[k]}, sum elements = {total}");
+
+// Check nothing bad happened (DEBUG ONLY)
+/*                foreach (var block in BATree)
+                {
+                    for (int c = 0; c < block.Count; c++)
+                    {
+                        if (block.element[c].entity_index == 0 && block.element[c].key == 0)
+                        {
+                            c = c;
+                        }
+
+                        if (c > 0 && block.element[c-1].key > block.element[c].key)
+                        {
+                            c = c;
+                        }
+                    }
+                }*/
+
+            }
         }
 
         public TTMQuadTree() : base()
@@ -45,7 +72,7 @@ namespace VSS.VisionLink.Raptor.Designs
             ymax = -1E100;
 
             //  { Find the enclosing rectangle }
-            for (int side = 1; side < 3; side++)
+            for (int side = 0; side < 3; side++)
             {
                 x = Tri.Vertices[side].X;
                 y = Tri.Vertices[side].Y;
@@ -55,7 +82,7 @@ namespace VSS.VisionLink.Raptor.Designs
                 if (y > ymax) ymax = y;
             }
 
-            calc_rectangle_keys(xmin, ymin, xmax, ymax, key_list);
+            calc_rectangle_keys(xmin, ymin, xmax, ymax, ref key_list);
         }
 
         public override void find_tri_keys(Object triangle, ref key_list_rec key_list)
@@ -63,7 +90,7 @@ namespace VSS.VisionLink.Raptor.Designs
             FindTriKeys((Triangle)triangle, ref key_list);
         }
 
-        void Initialise(TrimbleTINModel ATTM, bool AWantSearchStamps)
+        public void Initialise(TrimbleTINModel ATTM, bool AWantSearchStamps)
         {
             TTM = ATTM;
 
@@ -105,7 +132,6 @@ namespace VSS.VisionLink.Raptor.Designs
 
             if (!Initialize_BTree())
             {
-                //SIGLogMessage.PublishNoODS(Self, 'TDQMTTMQuadTree.resize_quadtree: initialize_Btree failed', slmcError);
                 throw new Exception("resize_quadtree: initialize_Btree failed");
             }
 
@@ -113,6 +139,8 @@ namespace VSS.VisionLink.Raptor.Designs
 
             for (int I = 0; I < TTM.Triangles.Count; I++)
                AddTriangle(TTM.Triangles[I], I);
+           
+            writer.Close();
         }
     }
 }

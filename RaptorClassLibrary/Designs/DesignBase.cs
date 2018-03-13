@@ -28,7 +28,8 @@ namespace VSS.Velociraptor.DesignProfiling
 
         public abstract void GetHeightRange(out double z1, out double z2);
 
-        public abstract bool InterpolateHeight(ref object Hint,
+        public abstract bool InterpolateHeight(ref TriangleQuadTree.Tsearch_state_rec SearchState, 
+                                   ref object Hint,
                                    double X, double Y,
                                    double Offset,
                                    out double Z);

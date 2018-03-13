@@ -89,7 +89,9 @@
     <Compile Include="Designs\Storage\Designs.cs" />
     <Compile Include="Designs\GridFabric\Requests\DesignProfilerRaptorRequest.cs" />
     <Compile Include="Designs\DesignProfilerRequestResult.cs" />
+    <Compile Include="Designs\TriangleQuadTree.cs" />
     <Compile Include="Designs\TTMDesign.cs" />
+    <Compile Include="Designs\TTMQuadTree.cs" />
     <Compile Include="Events\Interfaces\IProductionEventChangeList.cs" />
     <Compile Include="Events\ProductionEventChangeList.cs" />
     <Compile Include="Events\ProductionEventChanges.cs" />
