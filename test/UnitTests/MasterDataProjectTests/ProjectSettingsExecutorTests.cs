@@ -204,7 +204,7 @@ namespace VSS.MasterData.ProjectTests
       var producer = new Mock<IKafka>();
  
       var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<Guid>(), It.IsAny<string>(), settingsType,
+      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<ProjectSettingsRequest>(),
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseDataResult());
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
@@ -271,7 +271,7 @@ namespace VSS.MasterData.ProjectTests
       var producer = new Mock<IKafka>();
 
       var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<Guid>(), It.IsAny<string>(), settingsType1,
+      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<ProjectSettingsRequest>(),
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseDataResult());
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
