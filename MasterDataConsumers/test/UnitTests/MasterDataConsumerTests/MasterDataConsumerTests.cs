@@ -27,11 +27,7 @@ namespace MasterDataConsumerTests
 
       // setup Ilogger
       var logPath = System.IO.Directory.GetCurrentDirectory();
-      //var builder = new ConfigurationBuilder()
-      //          .SetBasePath(logPath)
-      //          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-      //var Configuration = builder.Build();
-
+  
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 
       ILoggerFactory loggerFactory = new LoggerFactory();

@@ -31,7 +31,6 @@ namespace MasterDataConsumer.Tests
 
 
     [TestMethod]
-    [Ignore(@"TODO: Needs fixing. New log4net gives an IOException: The process cannot access the file 'C:\VSO\MerinoSandbox\MasterDataConsumers\test\UnitTests\MasterDataConsumerTests\bin\Debug\netcoreapp1.1\UnitTestLogTest.log' because it is being used by another process")]
     public void CanUseLog4net()
     {
       var logPath = Directory.GetCurrentDirectory();
@@ -65,18 +64,19 @@ namespace MasterDataConsumer.Tests
       ILogger loggerPost = retrievedloggerFactory.CreateLogger<MessageResolver>();
       Assert.IsNotNull(retrievedloggerFactory);
       loggerPost.LogDebug("This test is retrieved from Container. Should reference MessageResolver.");
-
-      FileStream fs = new FileStream(logFileFullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-      StreamReader sr = new StreamReader(fs);
       List<string> allLines = new List<string>();
-      while (!sr.EndOfStream)
-        allLines.Add(sr.ReadLine());
+
+      using (FileStream fs = new FileStream(logFileFullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+      using (StreamReader sr = new StreamReader(fs))
+      {
+
+        while (!sr.EndOfStream)
+          allLines.Add(sr.ReadLine());
+      }
 
       Assert.AreEqual(2, allLines.Count());
       Assert.AreEqual(2, Regex.Matches(allLines[0], "LoggingTests").Count);
       Assert.AreEqual(2, Regex.Matches(allLines[1], "MessageResolver").Count);
-      fs.Dispose();
-      sr.Dispose();
     }
 
 

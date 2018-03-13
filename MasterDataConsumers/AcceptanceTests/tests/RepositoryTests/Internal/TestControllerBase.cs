@@ -56,8 +56,9 @@ namespace RepositoryTests.Internal
       loggerFactory.AddLog4Net(loggerRepoName);
 
       ServiceProvider = new ServiceCollection()
-        .AddLogging()
+        .AddSingleton<ILoggerProvider, Log4NetProvider>()
         .AddSingleton(loggerFactory)
+        .AddLogging()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .BuildServiceProvider();
 
