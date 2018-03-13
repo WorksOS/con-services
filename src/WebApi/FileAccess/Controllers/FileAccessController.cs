@@ -55,7 +55,6 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI.FileAccess.Controllers
     /// </returns>
     /// <executor>RawFileAccessExecutor</executor>
     [Route("api/v1/rawfiles")]
-    [HttpPost]
     public FileResult PostRaw([FromBody] FileDescriptor request)
     {
       log.LogInformation("Get file from TCC as an image/png: " + JsonConvert.SerializeObject(request));
