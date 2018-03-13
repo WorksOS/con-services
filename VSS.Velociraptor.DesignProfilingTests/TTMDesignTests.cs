@@ -59,7 +59,6 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         [TestMethod()]
         public void GetExtentsTest()
         {
-//            TTMDesign design = LoadTheDesign();
 
             design.GetExtents(out double x1, out double y1, out double x2, out double y2);
 
@@ -161,8 +160,6 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         [DataRow(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTest2Perf(double probeX, double probeY, double expectedZ)
         {
-            //            TTMDesign design = LoadTheDesign();
-
             object Hint = null;
             for (int i = 0; i < 10000000; i++)
             {
@@ -178,8 +175,6 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         [DataRow(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTest3Perf(double probeX, double probeY, double expectedZ)
         {
-            //            TTMDesign design = LoadTheDesign();
-
             object Hint = null;
             for (int i = 0; i < 10000000; i++)
             {
@@ -210,8 +205,6 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         [TestMethod()]
         public void LoadFromFileTest()
         {
-//            TTMDesign design = LoadTheDesign();
-
             Assert.IsTrue(design.Data.Triangles.Count > 0, "No triangles present in loaded TTM file.");
             Assert.IsTrue(design.Data.Vertices.Count > 0, "No vertices present in loaded TTM file.");
         }
@@ -219,8 +212,6 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         [TestMethod()]
         public void SubgridOverlayIndexTest()
         {
-//            TTMDesign design = LoadTheDesign();
-
             Assert.IsTrue(design.SubgridOverlayIndex() != null, "SubgridOverlayIndex is null");
         }
     }
