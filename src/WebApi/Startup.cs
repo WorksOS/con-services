@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.Swagger.Model;
+using Swashbuckle.AspNetCore.Swagger;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
@@ -72,17 +72,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
           // for jsonProperty validation
           config.Filters.Add(new ValidationFilterAttribute());
         });
-      services.AddSwaggerGen();
+
+      services.AddSwaggerGen(c =>
+      {
+        c.SwaggerDoc("v1", new Info { Title = "Tagfile authorization service API", Description = "API for Tagfile authorization service", Version = "v1" });
+      });
 
       services.ConfigureSwaggerGen(options =>
       {
-        options.SingleApiVersion(new Info
-        {
-          Version = "v1",
-          Title = "Tagfile authorization service API",
-          Description = "API for Tagfile authorization service",
-          TermsOfService = "None"
-        });
         string pathToXml;
 
         var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
@@ -126,10 +123,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
 #endif
       app.UseCors("VSS");
 
-      app.UseMvc();
-
       app.UseSwagger();
-      app.UseSwaggerUi();
+
+      //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
+      app.UseSwaggerUI(c =>
+      {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tagfile authorization service API");
+      });
+
+      app.UseMvc();
     }
   }
 }
