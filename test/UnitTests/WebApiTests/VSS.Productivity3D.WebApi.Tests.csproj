@@ -47,6 +47,7 @@
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
     <WarningsAsErrors />
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
 
