@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
@@ -16,7 +16,6 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
   /// <summary>
   /// Controller for the CoordinateSystemFile resource.
   /// </summary>
-  /// 
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
   {
@@ -24,11 +23,6 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
-    /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
 
     /// <summary>
     /// Logger factory for use by executor
@@ -44,7 +38,6 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<CoordinateSystemController>();
     }
 
     /// <summary>
@@ -55,12 +48,9 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// Returns JSON structure wtih operation result. {"Code":0,"Message":"User-friendly"}
     /// </returns>
     /// <executor>CoordinateSystemExecutorPost</executor>
-    /// 
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [ProjectUidVerifier]
-    [ProjectWritableVerifier]
-    [ProjectWritableWithUIDVerifier]
+    [ProjectIdVerifier(AllowArchivedState = true)]
+    [ProjectUidVerifier(AllowArchivedState = true)]
     [Route("api/v1/coordsystem")]
     [HttpPost]
     public CoordinateSystemSettings Post([FromBody]CoordinateSystemFile request)

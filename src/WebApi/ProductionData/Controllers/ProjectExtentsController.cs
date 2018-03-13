@@ -22,11 +22,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
@@ -40,9 +35,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<ProjectExtentsController>();
     }
-
 
     /// <summary>
     /// Returns a projects data extents information.

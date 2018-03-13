@@ -19,11 +19,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
@@ -37,9 +32,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<ConfigController>();
     }
-
 
     /// <summary>
     /// Gets Raptor Configuration in XML

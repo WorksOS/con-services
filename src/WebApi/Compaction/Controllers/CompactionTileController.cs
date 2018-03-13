@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-    [ValidateWmsParameters, ValidateBoundingBox]
+    [ValidateTileParameters]
     [Route("api/v2/productiondatatiles")]
     [HttpGet]
     public async Task<TileResult> GetProductionDataTile(
@@ -179,7 +179,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-    [ValidateWmsParameters, ValidateBoundingBox]
+    [ValidateTileParameters]
     [Route("api/v2/productiondatatiles/png")]
     [HttpGet]
     public async Task<FileResult> GetProductionDataTileRaw(
@@ -243,7 +243,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-    [ValidateWmsParameters, ValidateWidthAndHeight, ValidateBoundingBox]
+    [ValidateTileParameters]
+    [ValidateWidthAndHeight]
     [Route("api/v2/lineworktiles")]
     [HttpGet]
     public async Task<TileResult> GetLineworkTile(
@@ -295,7 +296,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-    [ValidateWmsParameters, ValidateBoundingBox]
+    [ValidateTileParameters]
     [Route("api/v2/lineworktiles/png")]
     [HttpGet]
     public async Task<FileResult> GetLineworkTileRaw(

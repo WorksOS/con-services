@@ -320,6 +320,7 @@
     <Compile Include="Models\ProfileRequest.cs" />
     <Compile Include="Models\ProjectExtentRequest.cs" />
     <Compile Include="Models\GetMachinesResult.cs" />
+    <Compile Include="Models\ProjectSettingsRequest.cs" />
     <Compile Include="Models\ProjectStatistics.cs" />
     <Compile Include="Models\ScheduleResult.cs" />
     <Compile Include="Models\SummaryParametersBase.cs" />
@@ -350,10 +351,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ProjectSettings.feature</DependentUpon>
     </Compile>
-    <Compile Include="ProjectStatistics.feature.cs">
-      <DependentUpon>ProjectStatistics.feature</DependentUpon>
+    <Compile Include="ProjectSettingsPost.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <DependentUpon>ProjectSettingsPost.feature</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectStatistics.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProjectStatistics.feature</DependentUpon>
     </Compile>
     <Compile Include="ProjectThumbnails.feature.cs">
       <AutoGen>True</AutoGen>
@@ -431,6 +437,7 @@
     <Compile Include="StepDefinitions\NotificationSteps.cs" />
     <Compile Include="StepDefinitions\PassCountDetailSteps.cs" />
     <Compile Include="StepDefinitions\PassCountSummarySteps.cs" />
+    <Compile Include="StepDefinitions\ProjectSettingsPostSteps.cs" />
     <Compile Include="StepDefinitions\ProjectSettingsSteps.cs" />
     <Compile Include="StepDefinitions\ProjectStatisticsSteps.cs" />
     <Compile Include="StepDefinitions\ProjectThumbnailSteps.cs" />
@@ -671,6 +678,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ProjectSettings.feature.cs</LastGenOutput>
     </None>
+    <None Include="ProjectSettingsPost.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ProjectSettingsPost.feature.cs</LastGenOutput>
+    </None>
     <None Include="ProjectStatistics.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ProjectStatistics.feature.cs</LastGenOutput>
@@ -844,6 +855,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\Profiles\DesignProfileSummaryResponse.json" />
+    <None Include="TestData\ProjectSettingsValidationRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\ProjectSettingsValidationResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\ProjectThumbnailResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -975,6 +992,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
+  <ProjectExtensions />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

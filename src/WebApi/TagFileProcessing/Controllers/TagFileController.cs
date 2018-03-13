@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// </returns>
     /// <executor>TagFileExecutor</executor>
     /// 
-    [PostRequestVerifier]
+    [PostRequestVerifier] // TODO (Aaron) Is this required here? Is this API called by TBC ? If not it could be removed...?
         // [ProjectUidVerifier]  Not a requirement to present a TAG file for processing
         // [ProjectWritableWithUIDVerifier]  Not a requirement to present a TAG file for processing
         // [NotLandFillProjectWithUIDVerifier]  Not a requirement to present a TAG file for processing

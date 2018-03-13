@@ -1,47 +1,45 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Filters
 {
+  // MSTest TestClass doesn't work if made generic with <T> where T : ValidateWidthAndHeightAttribute, new()
   [TestClass]
-  public class ValidateBoundingBoxAttributeTests : ActionFilterAttributeTestsBase
+  public class ValidateWidthAndHeightAttributeTests : ActionFilterAttributeTestsBase
   {
     [TestMethod]
     [DataRow(null)]
     [DataRow("")]
     [DataRow("?")]
-    public void Should_return_ServiceException_When_bbox_parameter_is_not_found(string bbox)
+    [DataRow("&width=256")]
+    [DataRow("&width=256&")]
+    [DataRow("&height=256")]
+    [DataRow("&width=abc&height=256")]
+    [DataRow("&width=256&height=abc")]
+    public void Should_return_ServiceException_When_dimensions_are_badly_formatted(string widthAndHeight)
     {
-      var context = CreateActionExecutingContext(new DefaultHttpContext
-      {
-        Request = {
-          QueryString = new QueryString($"?ProjectUid=ff91dd40-1569-4765-a2bc-014321f76ace&mode=height&width=256&height=256{bbox}")
-        }
-      });
+      var queryString = $"?ProjectUid=ff91dd40-1569-4765-a2bc-014321f76ace&mode=height{widthAndHeight}";
 
-      var validationAttribute = new ValidateBoundingBoxAttribute();
-
-      Assert.ThrowsException<ServiceException>(() => validationAttribute.OnActionExecuting(context));
+      Assert.ThrowsException<ServiceException>(() => CallOnActionExecuting<ValidateWidthAndHeightAttribute>(queryString));
     }
 
     [TestMethod]
-    [DataRow("&bbox=36.207437%2C+-115.019999%2C+36.207473%2C+-115.019959")]
-    public void Should_return_successfully_When_bbox_parameter_is_found(string bbox)
+    [DataRow("&width=255&height=256")]
+    [DataRow("&width=256&height=255")]
+    public void Should_throw_When_dimensions_are_invalid(string widthAndHeight)
     {
-      var context = CreateActionExecutingContext(new DefaultHttpContext
-      {
-        Request = {
-          QueryString = new QueryString($"?ProjectUid=ff91dd40-1569-4765-a2bc-014321f76ace&mode=height&width=256&height=256{bbox}")
-        }
-      });
+      var queryString = $"?ProjectUid=ff91dd40-1569-4765-a2bc-014321f76ace&mode=height{widthAndHeight}";
 
-      var validationAttribute = new ValidateBoundingBoxAttribute();
+      Assert.ThrowsException<ServiceException>(() => CallOnActionExecuting<ValidateWidthAndHeightAttribute>(queryString));
+    }
 
-      validationAttribute.OnActionExecuting(context);
+    [TestMethod]
+    public void Should_return_successfully_When_dimensions_are_valid()
+    {
+      var queryString = "?ProjectUid=ff91dd40-1569-4765-a2bc-014321f76ace&mode=height&width=256&height=256";
 
-      Assert.IsNull(context.Result);
+      Assert.IsNull(CallOnActionExecuting<ValidateWidthAndHeightAttribute>(queryString).Result);
     }
   }
 }

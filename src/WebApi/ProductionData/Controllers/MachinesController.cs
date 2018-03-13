@@ -32,11 +32,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
@@ -50,7 +45,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<MachinesController>();
     }
 
     // GET: api/Machines
@@ -60,8 +54,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectId">The project identifier.</param>
     /// <returns>List of machines for the project</returns>
     /// <executor>GetMachineIdsExecutor</executor> 
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/projects/{projectId}/machines")]
     [HttpGet]
 
@@ -78,8 +71,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectUid">The project unique identifier.</param>
     /// <returns>List of machines for the project</returns>
     /// <executor>GetMachineIdsExecutor</executor> 
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/projects/{projectUid}/machines")]
     [HttpGet]
 
@@ -99,8 +91,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="machineId">The machine identifier.</param>
     /// <returns>Info about machine</returns>
     /// <executor>GetMachineIdsExecutor</executor> 
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/projects/{projectId}/machines/{machineId}")]
     [HttpGet]
 
@@ -121,8 +112,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="machineId">The machine identifier.</param>
     /// <returns>Info about machine</returns>
     /// <executor>GetMachineIdsExecutor</executor> 
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/projects/{projectUid}/machines/{machineId}")]
     [HttpGet]
 
@@ -144,8 +134,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectId">The project identifier.</param>
     /// <returns>List with all available OnMachine designs in the selected datamodel as reported to Raptor via tag files.</returns>
     /// <executor>GetMachineDesignsExecutor</executor> 
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/projects/{projectId}/machinedesigns")]
     [HttpGet]
 
@@ -163,8 +152,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectUid">The project unique identifier.</param>
     /// <returns>List with all available OnMachine designs in the selected datamodel as reported to Raptor via tag files.</returns>
     /// <executor>GetMachineDesignsExecutor</executor> 
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/projects/{projectUid}/machinedesigns")]
     [HttpGet]
 
@@ -182,11 +170,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectId">The project identifier.</param>
     /// <returns>List with all available OnMachine layerids in the selected datamodel.</returns>
     /// <executor>GetLayerIdsExecutor</executor> 
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/projects/{projectId}/liftids")]
     [HttpGet]
-
     public LayerIdsExecutionResult GetMachineLayerIds([FromRoute] long projectId)
     {
       ProjectID Id = ProjectID.CreateProjectID(projectId);
@@ -200,11 +186,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectUid">The project unique identifier.</param>
     /// <returns>List with all available OnMachine layerids in the selected datamodel.</returns>
     /// <executor>GetLayerIdsExecutor</executor> 
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/projects/{projectUid}/liftids")]
     [HttpGet]
-
     public LayerIdsExecutionResult GetMachineLayerIds([FromRoute] Guid projectUid)
     {
       long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
@@ -225,7 +209,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectIdVerifier]
     [Route("api/v1/projects/{projectId}/machinelifts")]
     [HttpGet]
-
     public MachineLayerIdsExecutionResult GetMachineLifts([FromRoute] long projectId, [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
     {
       ProjectID Id = ProjectID.CreateProjectID(projectId);
@@ -246,7 +229,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/projects/{projectUid}/machinelifts")]
     [HttpGet]
-
     public MachineLayerIdsExecutionResult GetMachineLifts([FromRoute] Guid projectUid, [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
     {
       long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);

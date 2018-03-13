@@ -93,8 +93,8 @@ namespace ProductionDataSvc.AcceptanceTests
  testRunner.When("I request Add File Notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 12
- testRunner.Then("the Add File Notification result should be", "{\n  \"MinZoomLevel\": 14,\n  \"MaxZoomLevel\": 21,\n  \"Code\": 0,\n  \"Message\": \"Add file" +
-                    " notification successful\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the Add File Notification result should be", "{\n  \"MinZoomLevel\": 0,\n  \"MaxZoomLevel\": 0,\n  \"Code\": 0,\n  \"Message\": \"Add file n" +
+                    "otification successful\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -122,8 +122,8 @@ namespace ProductionDataSvc.AcceptanceTests
   testRunner.When("I request Add File Notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 28
- testRunner.Then("the Add File Notification result should be", "{\n  \"MinZoomLevel\": 15,\n  \"MaxZoomLevel\": 21,\n  \"Code\": 0,\n  \"Message\": \"Add file" +
-                    " notification successful\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the Add File Notification result should be", "{\n  \"MinZoomLevel\": 0,\n  \"MaxZoomLevel\": 0,\n  \"Code\": 0,\n  \"Message\": \"Add file n" +
+                    "otification successful\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
