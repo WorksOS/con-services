@@ -19,10 +19,21 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        /// <summary>
+        /// Primary task constructor
+        /// </summary>
+        /// <param name="requestDescriptor"></param>
+        /// <param name="raptorNodeID"></param>
+        /// <param name="gridDataType"></param>
         public PipelinedSubGridTask(long requestDescriptor, string raptorNodeID, GridDataType gridDataType) : base(requestDescriptor, raptorNodeID, gridDataType)
         {
         }
 
+        /// <summary>
+        /// Transfers a single subgrid response from a query context into the task processing context
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
         public override bool TransferResponse(object response)
         {
             if (PipeLine != null && !PipeLine.Aborted /*&& PipeLine.OperationNode != null*/)
@@ -62,6 +73,25 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
             {
                 Log.Info("Nulling pipeline reference");
                 PipeLine = null;
+            }
+        }
+
+        /// <summary>
+        /// Transfers a single subgrid response from a query context into the task processing context
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        public override bool TransferResponses(object[] responses)
+        {
+            if (PipeLine != null && !PipeLine.Aborted /*&& PipeLine.OperationNode != null*/)
+            {
+                // PipeLine.OperationNode.AddSubGridToOperateOn(response);
+                return true;
+            }
+            else
+            {
+                Log.InfoFormat(" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
+                return false;
             }
         }
     }

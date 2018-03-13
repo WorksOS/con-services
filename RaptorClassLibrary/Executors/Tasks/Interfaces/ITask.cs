@@ -12,6 +12,8 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks.Interfaces
 
         bool TransferResponse(object response);
 
+        bool TransferResponses(object[] responses);
+
         GridDataType GridDataType { get; set; }
 
         string RaptorNodeID { get; set; }

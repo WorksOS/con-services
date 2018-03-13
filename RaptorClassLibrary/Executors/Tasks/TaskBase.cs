@@ -64,6 +64,12 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         public abstract bool TransferResponse(object response);
 
         /// <summary>
+        /// TransferReponses is the sink for sets of responses received from the processing layers.
+        /// </summary>
+        /// <param name="response"></param>
+        public abstract bool TransferResponses(object [] responses);
+
+        /// <summary>
         /// Cancel sets the cancelled flag to true for the processing engine to take note of and 
         /// take any required actions to cancel an active request.
         /// </summary>

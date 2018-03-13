@@ -11,6 +11,7 @@ using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
+using System;
 
 namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
 {
@@ -133,6 +134,24 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
             }
 
             return TileRenderer.Displayer.RenderSubGrid((response as IClientLeafSubGrid[])[0]);
+        }
+
+        /// <summary>
+        /// Transfers a set of subgrids responses into the processing task
+        /// </summary>
+        /// <param name="responses"></param>
+        /// <returns></returns>
+        public override bool TransferResponses(object [] responses)
+        {
+            foreach (Object response in responses)
+            {
+                if (!TransferResponse(response))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
