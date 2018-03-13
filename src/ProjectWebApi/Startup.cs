@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.Swagger.Model;
+using Swashbuckle.AspNetCore.Swagger;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -15,7 +15,6 @@ using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Project.WebAPI.Common.Extensions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Project.WebAPI.Middleware;
@@ -115,19 +114,13 @@ namespace VSS.MasterData.Project.WebAPI
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-      //Configure swagger
-      services.AddSwaggerGen();
+      services.AddSwaggerGen(c =>
+      {
+        c.SwaggerDoc("v1", new Info { Title = "Project Service API", Version = "v1" });
+      });
 
       services.ConfigureSwaggerGen(options =>
       {
-        options.SingleApiVersion(new Info
-        {
-          Version = "v1",
-          Title = "Project Master Data API",
-          Description = "API for project data",
-          TermsOfService = "None"
-        });
-
         string pathToXml;
 
         var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
@@ -166,8 +159,6 @@ namespace VSS.MasterData.Project.WebAPI
       Common.ResultsHandling.ExceptionsTrapExtensions.UseExceptionTrap(app);
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
-      //Enable TID here
-      app.UseTIDAuthentication();
 
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
@@ -178,10 +169,16 @@ namespace VSS.MasterData.Project.WebAPI
 
       app.UseFilterMiddleware<RequestIDMiddleware>();
 
-      app.UseMvc();
-
       app.UseSwagger();
-      app.UseSwaggerUi();
+
+      //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
+      app.UseSwaggerUI(c =>
+      {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Service API");
+      });
+
+      app.UseTIDAuthentication();
+      app.UseMvc();
     }
   }
 }
