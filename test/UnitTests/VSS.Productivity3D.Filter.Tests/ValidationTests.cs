@@ -138,8 +138,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2042");
-      StringAssert.Contains(ex.GetContent,
-        "Invalid filterJson. Exception: Unexpected character encountered while parsing value:");
+      StringAssert.Contains(ex.GetContent, "Invalid filterJson. Exception: ");
     }
 
     [TestMethod]
