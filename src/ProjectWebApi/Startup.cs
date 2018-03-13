@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.Swagger.Model;
+using Swashbuckle.AspNetCore.Swagger;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -109,19 +109,15 @@ namespace VSS.MasterData.Project.WebAPI
           config.Filters.Add(new ValidationFilterAttribute());
         }
         );
-      //Configure swagger
-      services.AddSwaggerGen();
+
+      services.AddSwaggerGen(c =>
+      {
+        c.SwaggerDoc("v1", new Info { Title = "Project Service API", Description = "API for project service", Version = "v1" });
+      });
+
 
       services.ConfigureSwaggerGen(options =>
       {
-        options.SingleApiVersion(new Info
-        {
-          Version = "v1",
-          Title = "Project Master Data API",
-          Description = "API for project data",
-          TermsOfService = "None"
-        });
-
         string pathToXml;
 
         var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
@@ -173,10 +169,14 @@ namespace VSS.MasterData.Project.WebAPI
 #endif
 
 
-      app.UseMvc();
-
       app.UseSwagger();
-      app.UseSwaggerUi();
+
+      //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
+      app.UseSwaggerUI(c =>
+      {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Service API");
+      });
+      app.UseMvc();
     }
   }
 }
