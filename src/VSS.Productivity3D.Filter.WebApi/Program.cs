@@ -93,6 +93,12 @@ namespace VSS.Productivity3D.Filter.WebApi
         //TODO For some reason setting configuration for a topshelf service does not work
         .UseUrls(config["server.urls"])
         .UseContentRoot(pathToContentRoot)
+        .ConfigureLogging(builder =>
+        {
+          Log4NetProvider.RepoName = Startup.loggerRepoName;
+          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
+          builder.SetMinimumLevel(LogLevel.Trace);
+        })
         .UseStartup<Startup>()
         .Build();
 
