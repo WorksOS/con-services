@@ -5,6 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -14,10 +18,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
   [TestClass]
   public class CompactionProfileResultHelperTests
   {
-    public IServiceProvider serviceProvider;
+    private static IServiceProvider serviceProvider;
+    private static ILoggerFactory logger;
 
-    [TestInitialize]
-    public void InitTest()
+    [ClassInitialize]
+    public static void ClassInit(TestContext context)
     {
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
@@ -25,8 +30,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       var serviceCollection = new ServiceCollection();
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
+      serviceCollection
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
+        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
+
+      logger = serviceProvider.GetRequiredService<ILoggerFactory>();
     }
 
     #region FindCutFillElevations tests
