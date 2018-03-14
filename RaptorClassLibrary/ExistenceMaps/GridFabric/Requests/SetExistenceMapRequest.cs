@@ -19,7 +19,6 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         public SetExistenceMapRequest()
         {
-
         }
 
         /// <summary>

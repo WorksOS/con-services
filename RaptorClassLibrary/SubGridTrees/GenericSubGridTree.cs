@@ -22,7 +22,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public T this[uint x, uint y] { get { return GetCell(x, y); } set { setCell(x, y, value); } }
+        public T this[uint x, uint y] { get { return GetCell(x, y); } set { SetCell(x, y, value); } }
 
         /// <summary>
         /// Generic cell value setter for the sub grid tree. 
@@ -34,19 +34,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         private T GetCell(uint cellX, uint cellY)
         {
-            ISubGrid subGrid = ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.ReturnExistingLeafOnly);
+            ISubGrid subGrid = LocateSubGridContaining(cellX, cellY, NumLevels);
 
-            if (subGrid != null)
-            {
-                byte subGridX, subGridY;
-
-                subGrid.GetSubGridCellIndex(cellX, cellY, out subGridX, out subGridY);
-                return ((GenericLeafSubGrid<T>)subGrid).Items[subGridX, subGridY];
-            }
-            else
+            if (subGrid == null)
             {
                 return NullCellValue;
             }
+
+            subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
+            return ((GenericLeafSubGrid<T>)subGrid).Items[subGridX, subGridY];
         }
 
         /// <summary>
@@ -59,21 +55,17 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
         /// <param name="value"></param>
-        private void setCell(uint cellX, uint cellY, T value)
+        private void SetCell(uint cellX, uint cellY, T value)
         {
             ISubGrid subGrid = ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf);
 
-            if (subGrid != null)
-            {
-                byte subGridX, subGridY;
-
-                subGrid.GetSubGridCellIndex(cellX, cellY, out subGridX, out subGridY);
-                ((GenericLeafSubGrid<T>)subGrid).Items[subGridX, subGridY] = value;
-            }
-            else
+            if (subGrid == null)
             {
                 Debug.Assert(false, "Unable to create cell subgrid");
             }
+
+            subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
+            ((GenericLeafSubGrid<T>)subGrid).Items[subGridX, subGridY] = value;
         }
 
         /// <summary>

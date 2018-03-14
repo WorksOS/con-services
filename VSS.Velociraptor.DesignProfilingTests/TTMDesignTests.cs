@@ -22,6 +22,8 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             {
                 design = new TTMDesign(SubGridTree.DefaultCellSize);
                 design.LoadFromFile(@"C:\Temp\Bug36372.ttm");
+
+                // design.QuadTreeSpatialIndex.dump_tree(" C# ");
             }
 
             return design;
@@ -112,8 +114,6 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         [DataRow(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTest(double probeX, double probeY, double expectedZ)
         {
-//            TTMDesign design = LoadTheDesign();
-
             object Hint = null;
 
             TriangleQuadTree.Tsearch_state_rec SearchState = TriangleQuadTree.Tsearch_state_rec.Init();
@@ -129,7 +129,6 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         [DataRow(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTestPerf(double probeX, double probeY, double expectedZ)
         {
-            //            TTMDesign design = LoadTheDesign();
             object Hint = null;
 
             TriangleQuadTree.Tsearch_state_rec SearchState = TriangleQuadTree.Tsearch_state_rec.Init();
@@ -147,7 +146,6 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         [DataRow(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTest2(double probeX, double probeY, double expectedZ)
         {
-            //            TTMDesign design = LoadTheDesign();
             object Hint = null;
             bool result = design.InterpolateHeight2(ref Hint, probeX, probeY, 0, out double Z);
 
@@ -165,7 +163,6 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             {
                 Hint = null;
                 bool result = design.InterpolateHeight2(ref Hint, probeX, probeY, 0, out double Z);
-//                Assert.IsTrue(result);
             }
 
             Assert.Fail("Perf Test");
@@ -180,26 +177,65 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             {
                 Hint = null;
                 bool result = design.InterpolateHeight3(ref Hint, probeX, probeY, 0, out double Z);
-//                Assert.IsTrue(result);
             }
 
             Assert.Fail("Perf Test");
         }
 
         [TestMethod()]
-        public void InterpolateHeightsTest()
+        [DataRow(247500.0, 193350.0)]
+        public void InterpolateHeightsTest(Double probeX, Double probeY)
         {
-//            TTMDesign design = LoadTheDesign();
-            design.QuadTreeSpatialIndex.dump_tree(" C# ");
+            float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
+            bool result = design.InterpolateHeights(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
+
+            Assert.IsTrue(result, "Heights interpolation returned false");
+        }
+
+        [TestMethod()]
+        [DataRow(247500.0, 193350.0)]
+        public void InterpolateHeightsTestPerf(Double probeX, Double probeY)
+        {
+
+            float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+            
+            for (int i = 0; i < 10000; i++)
+            {
+                bool result = design.InterpolateHeights(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
+            }
+
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        [DataRow(247500.0, 193350.0)]
+        public void InterpolateHeightsTest2Perf(Double probeX, Double probeY)
+        {
 
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
-            bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTree.DefaultCellSize, 0);
+            for (int i = 0; i < 10000; i++)
+            {
+                bool result = design.InterpolateHeights2(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
+            }
 
-            Assert.IsTrue(result, "Heights interpolation returned false");
+            Assert.Fail();
+        }
 
-//            Assert.IsTrue(Z != Consts.NullReal, "Interpolated heighth value is null");
+        [TestMethod()]
+        [DataRow(247500.0, 193350.0)]
+        public void InterpolateHeightsTest3Perf(Double probeX, Double probeY)
+        {
+
+            float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+            for (int i = 0; i < 10000; i++)
+            {
+                bool result = design.InterpolateHeights3(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
+            }
+
+            Assert.Fail();
         }
 
         [TestMethod()]

@@ -701,6 +701,42 @@ namespace VSS.Velociraptor.DesignProfiling
 
         public override bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubgridY) => false;
 
+        private bool CheckHint(ref Object hint, double x, double y, double offset, out double z)
+        {
+            if (hint == null)
+            {
+                z = Consts.NullHeight;
+                return false;
+            }
+
+            Triangle hintAsTriangle = (hint as Triangle);
+
+            z = hintAsTriangle.GetHeight(x, y);
+            if (z != Consts.NullReal)
+            {
+                z += offset;
+                return true;
+            }
+
+            // Try to see if any of the neigbours of hint will give a result
+            for (int side = 0; side < 3; side++)
+            {
+                if (hintAsTriangle.Neighbours[side] != null)
+                {
+                    z = (hintAsTriangle.Neighbours[side]).GetHeight(x, y);
+                    if (z != Consts.NullReal)
+                    {
+                        hint = hintAsTriangle.Neighbours[side];
+                        z += offset;
+                        return true;
+                    }
+                }
+            }
+
+            hint = null;
+            return false;
+        }
+
         /// <summary>
         /// Interpolates a single spot height fromn the design
         /// </summary>
@@ -715,50 +751,15 @@ namespace VSS.Velociraptor.DesignProfiling
                                                double Offset,
                                                out double Z)
         {
-            if (Hint != null)
-            {
-                Triangle hintAsTriangle = (Hint as Triangle);
+            if (CheckHint(ref Hint, X, Y, Offset, out Z))
+                return true;
 
-                Z = hintAsTriangle.GetHeight(X, Y);
-                if (Z != Consts.NullReal)
-                {
-                    Z += Offset;
-                    return true;
-                }
-
-                Hint = null;
-
-                // Try to see if any of the neigbours of hint will give a result
-                for (int side = 0; side < 3; side++)
-                {
-                    if (hintAsTriangle.Neighbours[side] != null)
-                    {
-                        Z = (hintAsTriangle.Neighbours[side]).GetHeight(X, Y);
-                        if (Z != Consts.NullReal)
-                        {
-                            Hint = hintAsTriangle.Neighbours[side];
-                            Z += Offset;
-                            return true;
-                        }
-                    }
-                }
-
-            }
-            
             // Search in the subgrid triangle list for this subgrid from the spatial index
             Z = Consts.NullReal;
 
             FSpatialIndex.CalculateIndexOfCellContainingPosition(X, Y, out uint CellX, out uint CellY);
-            GenericLeafSubGrid<List<Triangle>> leaf = FSpatialIndex.LocateSubGridContaining(CellX, CellY) as GenericLeafSubGrid<List<Triangle>>;
 
-            if (leaf == null)
-            {
-                // There are no triangles that can satisfy the query
-                return false;
-            }
-
-            leaf.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
-            List<Triangle> cell = leaf.Items[SubGridX, SubGridY];
+            List<Triangle> cell = FSpatialIndex[CellX, CellY];
 
             if (cell == null)
             {
@@ -796,35 +797,8 @@ namespace VSS.Velociraptor.DesignProfiling
                                                double Offset,
                                                out double Z)
         {
-            if (Hint != null)
-            {
-                Triangle hintAsTriangle = (Hint as Triangle);
-
-                Z = hintAsTriangle.GetHeight(X, Y);
-                if (Z != Consts.NullReal)
-                {
-                    Z += Offset;
-                    return true;
-                }
-
-                Hint = null;
-/*
-                // Try to see if any of the neigbours of hint will give a result
-                for (int side = 0; side < 3; side++)
-                {
-                    if (hintAsTriangle.Neighbours[side] != null)
-                    {
-                        Z = (hintAsTriangle.Neighbours[side]).GetHeight(X, Y);
-                        if (Z != Consts.NullReal)
-                        {
-                            Hint = hintAsTriangle.Neighbours[side];
-                            Z += Offset;
-                            return true;
-                        }
-                    }
-                }
-*/
-            }
+            if (CheckHint(ref Hint, X, Y, Offset, out Z))
+                return true;
 
             // Search in the subgrid triangle list for this subgrid from the spatial index
 
@@ -873,42 +847,13 @@ namespace VSS.Velociraptor.DesignProfiling
                                                double Offset,
                                                out double Z)
         {
-            if (Hint != null)
-            {
-                Triangle hintAsTriangle = (Hint as Triangle);
-
-                Z = hintAsTriangle.GetHeight(X, Y);
-                if (Z != Consts.NullReal)
-                {
-                    Z += Offset;
-                    return true;
-                }
-
-                Hint = null;
-
-/*
- // Try to see if any of the neigbours of hint will give a result
-                for (int side = 0; side < 3; side++)
-                {
-                    if (hintAsTriangle.Neighbours[side] != null)
-                    {
-                        Z = (hintAsTriangle.Neighbours[side]).GetHeight(X, Y);
-                        if (Z != Consts.NullReal)
-                        {
-                            Hint = hintAsTriangle.Neighbours[side];
-                            Z += Offset;
-                            return true;
-                        }
-                    }
-                }
-*/
-            }
-
+            if (CheckHint(ref Hint, X, Y, Offset, out Z))
+                return true;
+            
             SearchState.start_search(X - 0.1, Y - 0.1, X + 0.1, Y + 0.1, true, QuadTreeSpatialIndex);
 
             int eindex = 0;
             int interationCount = 0;
-
 
             while (QuadTreeSpatialIndex.next_entity(ref SearchState, ref eindex, ref Hint))
             {
@@ -952,7 +897,6 @@ namespace VSS.Velociraptor.DesignProfiling
 
             try
             {
-
                 SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                 {
                     if (InterpolateHeight(ref SearchState,
@@ -1006,6 +950,55 @@ namespace VSS.Velociraptor.DesignProfiling
                 SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                 {
                     if (InterpolateHeight2(ref Hint,
+                                          OriginXPlusHalfCellSize + (CellSize * x),
+                                          OriginYPlusHalfCellSize + (CellSize * y),
+                                          0, out double Z))
+                    {
+                        Patch[x, y] = (float)(Z + Offset);
+                        ValueCount++;
+                    }
+                    else
+                    {
+                        Patch[x, y] = Consts.NullHeight;
+                    }
+                });
+
+                return ValueCount > 0;
+            }
+            catch // (Exception E)
+            {
+                // TODO readd when logging available
+                // SIGLogMessage.PublishNoODS(Self, Format('Exception "%s" occurred in TTTMDesign.InterpolateHeights', [E.Message]), slmcException);
+
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Interpolates heights from the design for all the cells in a subgrid
+        /// </summary>
+        /// <param name="Patch"></param>
+        /// <param name="OriginX"></param>
+        /// <param name="OriginY"></param>
+        /// <param name="CellSize"></param>
+        /// <param name="Offset"></param>
+        /// <returns></returns>
+        public /*override*/ bool InterpolateHeights3(float[,] Patch,
+                                                 double OriginX, double OriginY,
+                                                 double CellSize,
+                                                 double Offset)
+        {
+            int ValueCount = 0;
+            object Hint = null;
+            double HalfCellSize = CellSize / 2;
+            double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
+            double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
+
+            try
+            {
+                SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+                {
+                    if (InterpolateHeight3(ref Hint,
                                           OriginXPlusHalfCellSize + (CellSize * x),
                                           OriginYPlusHalfCellSize + (CellSize * y),
                                           0, out double Z))
