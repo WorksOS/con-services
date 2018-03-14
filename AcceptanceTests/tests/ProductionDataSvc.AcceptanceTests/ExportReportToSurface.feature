@@ -4,15 +4,16 @@
 Background: 
 	Given the Export Report To Surface service URI "/api/v2/export/surface" and the result file "ExportReportToSurfaceResponse.json"
 
-Scenario Outline: ExportReportToSurface - Good Request
+Scenario Outline: ExportReportToSurface - Good Request - With Tolerance
   And projectUid "<ProjectUID>"
 	And fileName is "<FileName>"
 	And tolerance "<Tolerance>"
 	When I request an Export Report To Surface
 	Then the export result should successful
 	Examples: 
-	| RequestName    | ProjectUID                           | Tolerance | FileName             | ResultName    |
-	| With Tolerance | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1.50      | SurfaceWithTolerance | WithTolerance |
+	| RequestName      | ProjectUID                           | Tolerance | FileName             | ResultName                  |
+	| No Excluded SS   | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1.50      | SurfaceWithTolerance | WithToleranceNoExcludedSS   |
+  | With Excluded SS | 86a42bbf-9d0e-4079-850f-835496d715c5 | 1.50      | SurfaceWithTolerance | WithToleranceWithExcludedSS |
 
 Scenario Outline: ExportReportToSurface - Good Request - No Tolerance
   And projectUid "<ProjectUID>"
