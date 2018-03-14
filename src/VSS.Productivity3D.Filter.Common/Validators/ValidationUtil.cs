@@ -38,41 +38,64 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       this.ServiceExceptionHandler = serviceExceptionHandler;
     }
 
-    /// <summary>
-    /// Validates a <see cref="ProjectData"/> for a given customer and throws if invalid.
-    /// </summary>
-    public static async Task<ProjectData> ValidateProjectForCustomer(IProjectListProxy projectListProxy,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
-      string customerUid, string projectUid)
-    {
-      ProjectData project = null;
-      const string functionName = "ValidateProjectForCustomer";
+    ///// <summary>
+    ///// Validates a <see cref="ProjectData"/> for a given customer and throws if invalid.
+    ///// </summary>
+    //public static async Task<ProjectData> ValidateProjectForCustomer(IProjectListProxy projectListProxy,
+    //  ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
+    //  string customerUid, string projectUid)
+    //{
+    //  ProjectData project = null;
+    //  const string functionName = "ValidateProjectForCustomer";
 
-      try
-      {
-        var projects = await projectListProxy.GetProjectsV4(customerUid, customHeaders).ConfigureAwait(false);
+    //  //await 
 
-        project = projects.SingleOrDefault(p => p.ProjectUid == projectUid);
-      }
-      catch (Exception e)
-      {
-        log.LogError(
-          $"{functionName}: projectListProxy.GetProjectsV4 failed with exception. customerUid:{customerUid} ProjectUid:{projectUid}. Exception Thrown: {e.Message}. ");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 7, e.Message);
-      }
+    //  try
+    //  {
+    //    var projects = await projectListProxy.GetProjectsV4(customerUid, customHeaders).ConfigureAwait(false);
 
-      if (project == null)
-      {
-        log.LogInformation(
-          $"{functionName}: projectListProxy: customerUid:{customerUid} ProjectUid:{projectUid}. returned no project match");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 8);
-      }
+    //    project = projects.SingleOrDefault(p => p.ProjectUid == projectUid);
+    //  }
+    //  catch (Exception e)
+    //  {
+    //    log.LogError(
+    //      $"{functionName}: projectListProxy.GetProjectsV4 failed with exception. customerUid:{customerUid} ProjectUid:{projectUid}. Exception Thrown: {e.Message}. ");
+    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 7, e.Message);
+    //  }
 
-      log.LogInformation(
-        $"{functionName}: succeeded: customerUid:{customerUid} ProjectUid:{projectUid}.");
+    //  if (project == null)
+    //  {
+    //    log.LogInformation(
+    //      $"{functionName}: projectListProxy: customerUid:{customerUid} ProjectUid:{projectUid}. returned no project match");
+    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 8);
+    //  }
 
-      return project;
-    }
+    //  log.LogInformation(
+    //    $"{functionName}: succeeded: customerUid:{customerUid} ProjectUid:{projectUid}.");
+
+    //  return project;
+    //}
+
+    //private async Task<ProjectData> GetProjectForCustomer(IProjectListProxy projectListProxy,
+    //  ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
+    //  string customerUid, string projectUid)
+    //{
+    //  ProjectData project = null;
+    //  //const string functionName = "ValidateProjectForCustomer";
+
+    //  try
+    //  {
+    //    var projects = await projectListProxy.GetProjectsV4(customerUid, customHeaders).ConfigureAwait(false);
+    //    project = projects.SingleOrDefault(p => p.ProjectUid == projectUid);
+    //  }
+    //  catch (Exception e)
+    //  {
+    //    log.LogError(
+    //      $"{System.Reflection.MethodBase.GetCurrentMethod().Name}: projectListProxy.GetProjectsV4 failed with exception. customerUid:{customerUid} ProjectUid:{projectUid}. Exception Thrown: {e.Message}. ");
+    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 7, e.Message);
+    //  }
+    //  return project;
+    //}
 
     /// <summary>
     /// Hydrates the filterJson string with the boundary data and uses the MasterData Models filter model to do so - to isolate logic there

@@ -28,6 +28,10 @@
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.15.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Filters\Authentication\Models\" />
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>

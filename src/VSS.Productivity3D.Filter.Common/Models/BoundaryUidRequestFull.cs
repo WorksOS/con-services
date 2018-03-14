@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
@@ -20,7 +21,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public static BoundaryUidRequestFull Create(
       string customerUid,
       bool isApplicationContext,
-      string projectUid,
+      ProjectData projectData,
       string userUid,
       string boundaryUid)
     {
@@ -28,7 +29,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
       {
         BoundaryUid = boundaryUid,
         IsApplicationContext = isApplicationContext,
-        ProjectUid = projectUid,
+        ProjectUid = projectData?.ProjectUid,
         CustomerUid = customerUid,
         UserUid = userUid
       };

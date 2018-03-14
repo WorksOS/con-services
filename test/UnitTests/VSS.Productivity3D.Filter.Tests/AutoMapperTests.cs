@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        Guid.NewGuid().ToString(),
+        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
 
@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        Guid.NewGuid().ToString(),
+        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
       filterRequest.FilterUid = Guid.NewGuid().ToString();
@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         "ApplicationName",
-        Guid.NewGuid().ToString(),
+        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
 
@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         "ApplicationName",
-        Guid.NewGuid().ToString(),
+        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
       filterRequest.FilterUid = Guid.NewGuid().ToString();
@@ -147,7 +147,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        Guid.NewGuid().ToString(),
+        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
 
@@ -171,7 +171,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        Guid.NewGuid().ToString(),
+        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json" }
       );
 
@@ -251,7 +251,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         Guid.NewGuid().ToString(),
         false,
-        Guid.NewGuid().ToString(),
+        new ProjectData() { ProjectUid = Guid.NewGuid().ToString() },
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString()
       );
@@ -269,7 +269,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         Guid.NewGuid().ToString(),
         false,
-        Guid.NewGuid().ToString(),
+        new ProjectData() { ProjectUid = Guid.NewGuid().ToString() },
         Guid.NewGuid().ToString(),
         new BoundaryRequest { BoundaryUid = Guid.NewGuid().ToString(), Name = "the name", BoundaryPolygonWKT = "the WKT" }
       );
@@ -294,7 +294,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         Guid.NewGuid().ToString(),
         false,
-        Guid.NewGuid().ToString(),
+        new ProjectData() { ProjectUid = Guid.NewGuid().ToString() },
         Guid.NewGuid().ToString(),
         new BoundaryRequest { BoundaryUid = Guid.NewGuid().ToString(), Name = "the name", BoundaryPolygonWKT = "the WKT" }
       );

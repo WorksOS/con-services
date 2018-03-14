@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 10, e.Message);
       }
 
-      FilterJsonHelper.ParseFilterJson(await GetProjectForRequest(filterRequest), filters);
+      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, filters);
 
       // may be none, return success and empty list
       return new FilterDescriptorListResult

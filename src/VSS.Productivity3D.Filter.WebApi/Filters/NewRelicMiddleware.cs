@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using VSS.Productivity3D.Filter.WebApi.Filters;
+using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 
 namespace VSS.Productivity3D.Common.Filters
 {
