@@ -903,9 +903,9 @@ namespace VSS.Velociraptor.DesignProfiling
                                           ref Hint,
                                           OriginXPlusHalfCellSize + (CellSize * x),
                                           OriginYPlusHalfCellSize + (CellSize * y),
-                                          0, out double Z))
+                                          Offset, out double Z))
                     {
-                        Patch[x, y] = (float)(Z + Offset);
+                        Patch[x, y] = (float)Z;
                         ValueCount++;
                     }
                     else
@@ -950,11 +950,11 @@ namespace VSS.Velociraptor.DesignProfiling
                 SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                 {
                     if (InterpolateHeight2(ref Hint,
-                                          OriginXPlusHalfCellSize + (CellSize * x),
-                                          OriginYPlusHalfCellSize + (CellSize * y),
-                                          0, out double Z))
+                                           OriginXPlusHalfCellSize + (CellSize * x),
+                                           OriginYPlusHalfCellSize + (CellSize * y),
+                                           Offset, out double Z))
                     {
-                        Patch[x, y] = (float)(Z + Offset);
+                        Patch[x, y] = (float)Z;
                         ValueCount++;
                     }
                     else
@@ -999,11 +999,11 @@ namespace VSS.Velociraptor.DesignProfiling
                 SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                 {
                     if (InterpolateHeight3(ref Hint,
-                                          OriginXPlusHalfCellSize + (CellSize * x),
-                                          OriginYPlusHalfCellSize + (CellSize * y),
-                                          0, out double Z))
+                                           OriginXPlusHalfCellSize + (CellSize * x),
+                                           OriginYPlusHalfCellSize + (CellSize * y),
+                                           Offset, out double Z))
                     {
-                        Patch[x, y] = (float)(Z + Offset);
+                        Patch[x, y] = (float)Z;
                         ValueCount++;
                     }
                     else
@@ -1122,7 +1122,6 @@ namespace VSS.Velociraptor.DesignProfiling
 
                         return true;
                     });
-
                 }
                 finally
                 {
