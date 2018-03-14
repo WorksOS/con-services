@@ -19,6 +19,10 @@ namespace VSS.VisionLink.Raptor
 
         private static RaptorServerConfig instance = null;
 
+        /// <summary>
+        /// Constructs a static instance of the configuration information supplied to the process on the command line
+        /// </summary>
+        /// <returns></returns>
         public static RaptorServerConfig Instance()
         {
             if (instance == null)

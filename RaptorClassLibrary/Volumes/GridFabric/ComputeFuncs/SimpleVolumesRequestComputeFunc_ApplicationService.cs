@@ -25,7 +25,6 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.ComputeFuncs
         /// </summary>
         public SimpleVolumesRequestComputeFunc_ApplicationService() : base(RaptorGrids.RaptorImmutableGridName(), ServerRoles.ASNODE)
         {
-
         }
 
         /// <summary>

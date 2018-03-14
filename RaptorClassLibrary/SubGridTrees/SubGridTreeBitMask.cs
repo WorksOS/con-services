@@ -58,7 +58,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>                        
         public bool GetCell(uint CellX, uint CellY)
         {
-            ISubGrid SubGrid = ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.ReturnExistingLeafOnly);
+            ISubGrid SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
 
             if (SubGrid == null)
             {
@@ -117,7 +117,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         public bool GetLeaf(uint CellX, uint CellY)
         {
-            ISubGrid SubGrid = ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.CreatePathToLeaf);
+            ISubGrid SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
 
             if (SubGrid != null)
             {
@@ -140,7 +140,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             BoundingIntegerExtent2D SubGridCellsExtents = new BoundingIntegerExtent2D();
             SubGridCellsExtents.SetInverted();
 
-            ScanAllSubGrids(x => {
+            ScanAllSubGrids(x => 
+            {
                 SubGridCellsExtents.Include((x as SubGridTreeLeafBitmapSubGrid).ComputeCellsExtents());
                 return true;
             });
@@ -199,7 +200,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         {
             long totalBits = 0;
 
-            ScanAllSubGrids(x => {
+            ScanAllSubGrids(x => 
+            {
                 totalBits += ((x as SubGridTreeLeafBitmapSubGrid)).Bits.CountBits();
                 return true;
             });
@@ -214,7 +216,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         public BoundingWorldExtent3D ComputeCellsWorldExtents()
         {
-
             BoundingIntegerExtent2D SubGridCellsExtents = ComputeCellsExtents();
 
             if (SubGridCellsExtents.IsValidExtent)
@@ -332,7 +333,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         public bool ClearCellIfSet(uint CellX, uint CellY)
         {
-            ISubGrid SubGrid = ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.ReturnExistingLeafOnly);
+            ISubGrid SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
 
             if (SubGrid == null)
             {

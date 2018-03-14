@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.TAGFiles
 {
+    /// <summary>
+    /// The array of all names TAGs that are supported by the TAG file parser
+    /// </summary>
     public static class TAGValueNames
     {
         public const string kTagFileTimeTag  = "TIME";
@@ -125,8 +128,15 @@ namespace VSS.VisionLink.Raptor.TAGFiles
         public const string kTagFileICCCATargetTag = "CCA_MINIMUM_PASSES";
     }
 
+    /// <summary>
+    /// Utility class for TAG names
+    /// </summary>
     public static class TagValueNamesArray
     {
+        /// <summary>
+        /// Returns all TAG name strings as a list
+        /// </summary>
+        /// <returns></returns>
         public static List<string> Names()
         {
             Dictionary<string, string> constProperties = new Dictionary<string, string>();

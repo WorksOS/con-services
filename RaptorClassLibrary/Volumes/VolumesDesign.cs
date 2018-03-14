@@ -24,6 +24,15 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// </summary>
         public DesignDescriptor DesignDescriptor = DesignDescriptor.Null();
 
+        /// <summary>
+        /// Computes the design elevations for the subgrid identitied by originCellAddress
+        /// </summary>
+        /// <param name="siteModelID"></param>
+        /// <param name="originCellAddress"></param>
+        /// <param name="cellSize"></param>
+        /// <param name="designHeights"></param>
+        /// <param name="errorCode"></param>
+        /// <returns></returns>
         public bool GetDesignHeights(long siteModelID,
                                      SubGridCellAddress originCellAddress,
                                      double cellSize,
@@ -33,6 +42,16 @@ namespace VSS.VisionLink.Raptor.Volumes
             return GetDesignHeights(DesignDescriptor, siteModelID, originCellAddress, cellSize, out designHeights, out errorCode);
         }
 
+        /// <summary>
+        /// Computes the design elevations for the subgrid identitied by originCellAddress
+        /// </summary>
+        /// <param name="DesignDescriptor"></param>
+        /// <param name="siteModelID"></param>
+        /// <param name="originCellAddress"></param>
+        /// <param name="cellSize"></param>
+        /// <param name="designHeights"></param>
+        /// <param name="errorCode"></param>
+        /// <returns></returns>
         public static bool GetDesignHeights(DesignDescriptor DesignDescriptor,
                                             long siteModelID,
                                             SubGridCellAddress originCellAddress,

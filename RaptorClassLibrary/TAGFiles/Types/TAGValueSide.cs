@@ -11,7 +11,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Types
     /// </summary>
     public enum TAGValueSide
     {
+        /// <summary>
+        /// Left hand blade tip, wheel, track, drum etc
+        /// </summary>
         Left,
+
+        /// <summary>
+        /// Right hand blade tip, wheel, track, drum etc
+        /// </summary>
         Right
     }
 }
