@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.MasterDataConsumer
 
       var serviceCollection = new ServiceCollection()
         .AddSingleton<ILoggerProvider, Log4NetProvider>()
-        .AddSingleton(new LoggerFactory())
+        .AddSingleton<ILoggerFactory>(new LoggerFactory())
         .AddTransient<IKafka, RdKafkaDriver>()
         .AddTransient<IMessageTypeResolver, MessageResolver>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
