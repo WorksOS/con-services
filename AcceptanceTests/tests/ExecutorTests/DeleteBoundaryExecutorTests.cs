@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
@@ -118,7 +119,7 @@ namespace ExecutorTests
       var request = BoundaryUidRequestFull.Create(
         custUid.ToString(),
         false,
-        projectUid.ToString(),
+        new ProjectData() { ProjectUid = projectUid.ToString() },
         userId.ToString(),
         boundaryUid.ToString());
       request.Validate(ServiceExceptionHandler);

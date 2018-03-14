@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
@@ -30,7 +31,7 @@ namespace ExecutorTests
       string name = string.Empty;
       const string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -52,7 +53,7 @@ namespace ExecutorTests
       string name = string.Empty;
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson });
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -84,7 +85,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated });
+      var request = FilterRequestFull.Create(null, custUid, false, userId, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -103,7 +104,7 @@ namespace ExecutorTests
       string filterJson1 = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJson2 = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson1 });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson1 });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -113,7 +114,7 @@ namespace ExecutorTests
       Assert.AreEqual(name, result1.FilterDescriptor.Name, "executor returned incorrect filter Name");
       Assert.AreEqual(filterJson1, result1.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
 
-      request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson2 });
+      request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson2 });
       var result2 = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result2, "executor should always return a result");
@@ -150,7 +151,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, projectUid, new FilterRequest { Name = name, FilterJson = filterJsonUpdated });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -171,7 +172,7 @@ namespace ExecutorTests
       string name = "the Name";
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -193,7 +194,7 @@ namespace ExecutorTests
       string name = "the Name";
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson });
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -225,7 +226,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -270,7 +271,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonUpdated });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonUpdated });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -316,7 +317,7 @@ namespace ExecutorTests
       });
 
       // try to update a filter with same name but upper case (allowed!)
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonNew });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonNew });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -359,7 +360,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest { Name = name, FilterJson = filterJsonUpdated });
+      var request = FilterRequestFull.Create(null, custUid, false, userId, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -400,7 +401,7 @@ namespace ExecutorTests
       WriteEventToDb(filterEvent);
 
       // now try to change the 2nd filter to the name of the first
-      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid2, Name = name, FilterJson = filterJsonUpdated });
+      var request = FilterRequestFull.Create(null, custUid, false, userId, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid2, Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -432,7 +433,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated });
+      var request = FilterRequestFull.Create(null, custUid, false, userId, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);

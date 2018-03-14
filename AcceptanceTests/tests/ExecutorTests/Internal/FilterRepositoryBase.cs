@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 
 namespace ExecutorTests.Internal
@@ -36,7 +37,7 @@ namespace ExecutorTests.Internal
         customerUid ?? Guid.NewGuid().ToString(),
         isApplicationContext,
         userId ?? Guid.NewGuid().ToString(),
-        projectUid ?? Guid.NewGuid().ToString(),
+        new ProjectData() { ProjectUid = projectUid ?? Guid.NewGuid().ToString() },
         new FilterRequest
         {
           FilterUid = filterUid ?? Guid.NewGuid().ToString(),

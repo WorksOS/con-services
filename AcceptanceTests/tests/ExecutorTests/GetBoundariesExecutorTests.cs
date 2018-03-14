@@ -149,7 +149,7 @@ namespace ExecutorTests
       var request = BaseRequestFull.Create(
         custUid.ToString(),
         false,
-        projectUid.ToString(),
+        new ProjectData() { ProjectUid = projectUid.ToString() },
         userId.ToString());
       request.Validate(ServiceExceptionHandler);
       return request;

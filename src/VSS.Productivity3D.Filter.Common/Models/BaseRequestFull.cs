@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
       return new BaseRequestFull
       {
         IsApplicationContext = isApplicationContext,
-        ProjectUid = projectData.ProjectUid,
+        ProjectUid = projectData?.ProjectUid,
         CustomerUid = customerUid,
         UserUid = userUid
       };

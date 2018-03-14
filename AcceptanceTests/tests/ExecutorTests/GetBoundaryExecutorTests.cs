@@ -190,7 +190,7 @@ namespace ExecutorTests
       var request = BoundaryUidRequestFull.Create(
         custUid.ToString(),
         false,
-        projectUid.ToString(),
+        new ProjectData() { ProjectUid = projectUid.ToString() },
         userId.ToString(),
         boundaryUid.ToString());
       request.Validate(ServiceExceptionHandler);
