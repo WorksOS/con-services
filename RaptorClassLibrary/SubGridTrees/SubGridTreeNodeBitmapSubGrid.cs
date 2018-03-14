@@ -35,7 +35,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// </summary>
         public SubGridTreeNodeBitmapSubGrid()
         {
-            Bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             double cellSize,
             int indexOriginOffset*/) : base(owner, parent, level /*, cellSize, indexOriginOffset*/)
         {
-            Bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
         }
 
 //      Function NonInstanceMemorySize : Integer; Override;
