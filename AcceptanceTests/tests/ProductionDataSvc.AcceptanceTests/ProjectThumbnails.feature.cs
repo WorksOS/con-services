@@ -79,11 +79,11 @@ testRunner.And("the expected response is in the \"ProjectThumbnailResponse.json\
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ProjectThumbnailWithProductionData")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("WithProductionData")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectThumbnails")]
-        public virtual void ProjectThumbnailWithProductionData()
+        public virtual void WithProductionData()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ProjectThumbnailWithProductionData", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("WithProductionData", ((string[])(null)));
 #line 7
 this.ScenarioSetup(scenarioInfo);
 #line 3
@@ -98,11 +98,11 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ProjectThumbnailWithoutProductionData")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("WithoutProductionData")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectThumbnails")]
-        public virtual void ProjectThumbnailWithoutProductionData()
+        public virtual void WithoutProductionData()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ProjectThumbnailWithoutProductionData", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("WithoutProductionData", ((string[])(null)));
 #line 12
 this.ScenarioSetup(scenarioInfo);
 #line 3
