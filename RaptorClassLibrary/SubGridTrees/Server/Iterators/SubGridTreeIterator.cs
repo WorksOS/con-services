@@ -198,7 +198,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             int LevelIdx = 1;
             ISubGrid SubGrid;
             bool AllowedToUseSubgrid;
-            SubGridTreeBitmapSubGridBits DummyExistanceMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits DummyExistanceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             ISubGrid Result = null;
 

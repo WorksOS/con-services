@@ -62,22 +62,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         }
 
         /// <summary>
-        /// The options used to control the initial state of a BitMask when it is created
-        /// </summary>
-        public enum SubGridBitsCreationOptions
-        {
-            /// <summary>
-            /// All bits in the bit mask are set to on (1)
-            /// </summary>
-            Filled,
-
-            /// <summary>
-            /// All bits in the bit mask are set to off (0)
-            /// </summary>
-            Unfilled
-        }
-
-        /// <summary>
         /// Initialise the internal state of a new structure. This must be called prior to use of the instance.
         /// If filled is true then all bits in the bits array will be set to '1'
         /// </summary>

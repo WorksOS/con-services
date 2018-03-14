@@ -93,12 +93,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <summary>
         /// Existence map of where we know Prod Data exists 
         /// </summary>
-        public SubGridTreeBitmapSubGridBits ProdDataMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits ProdDataMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
         /// Existence map of cells matching current filter settings
         /// </summary>
-        public SubGridTreeBitmapSubGridBits FilterMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits FilterMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
         /// Constructor the the base client subgrid. This decorates the standard (owner, parent, level)

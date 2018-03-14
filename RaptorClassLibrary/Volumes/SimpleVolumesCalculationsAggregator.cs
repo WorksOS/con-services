@@ -210,8 +210,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
             DesignHeights = null;
 
-            // FCellArea is a handy place to store the cell area, rather than calculate
-            // it all the time (value wont change);
+            // FCellArea is a handy place to store the cell area, rather than calculate it all the time (value wont change);
             double CellArea = CellSize * CellSize;
 
             // Query the patch of elevations from the surface model for this subgrid
@@ -225,7 +224,7 @@ namespace VSS.VisionLink.Raptor.Volumes
                 }
             }
 
-            SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             // TODO: Liftbuildsettings not available in Ignite
             bool StandardVolumeProcessing = true; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness == Consts.NullHeight || LiftBuildSettings.TargetLiftThickness <= 0)

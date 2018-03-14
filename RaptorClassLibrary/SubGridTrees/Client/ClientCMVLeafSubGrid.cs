@@ -22,7 +22,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// First pass map records which cells hold cell pass machine speeds that were derived
         /// from the first pass a machine made over the corresponding cell
         /// </summary>
-        public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
         /// Constructor. Set the grid to CCV.

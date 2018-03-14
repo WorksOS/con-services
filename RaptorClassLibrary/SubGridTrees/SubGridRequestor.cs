@@ -78,7 +78,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
         // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
         [NonSerialized]
-        private SubGridTreeBitmapSubGridBits ProcessingMap; // = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+        private SubGridTreeBitmapSubGridBits ProcessingMap; // = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         [NonSerialized]
         private SurveyedSurfaces FilteredSurveyedSurfaces = null;
@@ -121,7 +121,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             AreaControlSet = areaControlSet;
 
-            ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             // Construct the appropriate list of surveyed surfaces
             // Obtain local reference to surveyed surface list. If it is replaced while processing the
@@ -149,7 +149,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 SiteModelID = SiteModel.ID,
                 IncludedSurveyedSurfaces = FilteredSurveyedSurfaces,
                 EarliestSurface = ReturnEarliestFilteredCellPass,
-                ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled)
+                ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
             };
         }
 

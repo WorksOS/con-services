@@ -26,13 +26,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// First pass map records which cells hold cell pass heights that were derived
         /// from the first pass a machine made over the corresponding cell
         /// </summary>
-        public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
         /// Surveyed surface map records which cells hold cell pass heights that were derived
         /// from a surveyed surface
         /// </summary>
-        public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
         /// Constructor. Set the grid to HeightAndTime.
