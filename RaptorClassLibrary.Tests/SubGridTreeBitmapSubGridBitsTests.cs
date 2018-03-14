@@ -30,18 +30,18 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             Assert.IsTrue(SawAnExcpetion, "Did not see an exception as expected.");
 
             // Test the constructor with filled false produces bitmask with all bits set to off
-            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
             Assert.IsTrue(bits2.IsEmpty() && !bits2.IsFull(), "Bits is not empty as expected");
 
             // Test the constructor with filled true produces bitmask with all bits set to on
-            SubGridTreeBitmapSubGridBits bits3 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits3 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
             Assert.IsTrue(!bits3.IsEmpty() && bits3.IsFull(), "Bits is not full as expected");
         }
 
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Clear()
         {
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
             Assert.IsTrue(bits.IsFull(), "Bits not full");
 
             bits.Clear();
@@ -51,7 +51,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Fill()
         {
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
             Assert.IsTrue(bits.IsEmpty(), "Bits not empty");
 
             bits.Fill();
@@ -61,9 +61,9 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Equality()
         {
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
-            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
-            SubGridTreeBitmapSubGridBits bits3 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits3 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
             Assert.IsTrue(bits.Equals(bits2), "Bits does not equal bits2, which it should");
             Assert.IsFalse(bits.Equals(bits3), "Bits equals bits3, which it should not");
@@ -72,9 +72,9 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Assignment()
         {
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
-            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
-            SubGridTreeBitmapSubGridBits bits3 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits3 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
             Assert.IsTrue(bits.Equals(bits2), "Bits does not equal bits2, which it should");
             Assert.IsFalse(bits.Equals(bits3), "Bits equals bits3, which it should not");
@@ -117,7 +117,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             ms.Position = 0;
 
-            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
             bits2.Read(br, new byte[10000]);
 
             Assert.IsTrue(bits.Equals(bits2), "Bits not equal after serialisation with full mask");
@@ -127,7 +127,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridTreeBitmapSubGridBitsTests_Serialisation_Empty()
         {
             // Test serialisation with full mask
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             MemoryStream ms = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
@@ -146,7 +146,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridTreeBitmapSubGridBitsTests_Serialisation_Arbitrary()
         {
             // Test serialisation with arbitrary bits set
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
             bits.SetBit(0, 0);
             bits.SetBit(10, 10);
             bits.SetBit(20, 20);
@@ -170,7 +170,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridTreeBitmapSubGridBitsTests_SetBitValue()
         {
             // Test setting a bit on and off, at two corners to test boundary conditions
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
             bits.SetBitValue(0, 0, true);
 
             Assert.IsTrue(bits.Bits[0] != 0, "Bit row 0 not modified to non-zero as expected");
@@ -197,7 +197,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridTreeBitmapSubGridBitsTests_SetBit()
         {
             // Test setting a bit on and off, at two corners to test boundary conditions
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
             bits.SetBit(0, 0);
 
             Assert.IsTrue(bits.Bits[0] != 0, "Bit row 0 not modified to non-zero as expected");
@@ -213,7 +213,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridTreeBitmapSubGridBitsTests_ClearBit()
         {
             // Test setting a bit on and off, at two corners to test boundary conditions
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
             bits.SetBit(0, 0);
 
             Assert.IsTrue(bits.Bits[0] != 0, "Bit row 0 not modified to non-zero as expected");
@@ -240,7 +240,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridTreeBitmapSubGridBitsTests_BitSet()
         {
             // Test testing a bit is on or off, at two corners to test boundary conditions
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             Assert.IsTrue(bits.BitSet(0, 0) == false, "Bit (0, 0) unexpectedly set to 1");
             Assert.IsTrue(bits.BitSet(31, 31) == false, "Bit (31, 31) unexpectedly set to 1");
@@ -255,7 +255,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridTreeBitmapSubGridBitsTests_ComputeCellsExtents()
         {
             // Test extents for empty, full and arbitrary masks
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
             BoundingIntegerExtent2D boundsFull = bits.ComputeCellsExtents();
             Assert.IsTrue(boundsFull.Equals(new BoundingIntegerExtent2D(0, 0, SubGridTree.SubGridTreeDimensionMinus1, SubGridTree.SubGridTreeDimensionMinus1)),
@@ -274,7 +274,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridTreeBitmapSubGridBitsTests_ForEach_Action()
         {
             // Test iteration action for empty, full and arbitrary masks
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
             int sum;
 
@@ -297,7 +297,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridTreeBitmapSubGridBitsTests_ForEach_Function()
         {
             // Test iteration function for empty, full and arbitrary masks
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             bits.ForEach((x, y) => { return true; });
             Assert.IsTrue(bits.CountBits() == SubGridTree.CellsPerSubgrid, "All bits not set with function returning true");
@@ -315,7 +315,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridTreeBitmapSubGridBitsTests_ForEachSetBit()
         {
             // Test iteration action for empty, full and arbitrary masks
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
             int sum;
 
@@ -338,7 +338,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridTreeBitmapSubGridBitsTests_ForEachClearBit()
         {
             // Test iteration action for empty, full and arbitrary masks
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
             int sum;
 
@@ -360,7 +360,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_RowToString()
         {
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             string s = bits.RowToString(0);
             Assert.IsTrue(s == " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0", "Row to string on empty row is incorrect, result = '{0}'", s);
@@ -373,9 +373,9 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Operators_Equality()
         {
-            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
-            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
-            SubGridTreeBitmapSubGridBits bits3 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits3 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             Assert.IsTrue(bits1 == bits2, "Equality check failed on identical masks");
             Assert.IsFalse(bits2 == bits3, "Equality check succeeded on different masks");
@@ -384,9 +384,9 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Operators_Inequality()
         {
-            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
-            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
-            SubGridTreeBitmapSubGridBits bits3 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits3 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             Assert.IsTrue(bits1 != bits3, "Inequality check failed on different masks");
             Assert.IsFalse(bits1 != bits2, "Inequality check succeeded on identical masks");
@@ -395,8 +395,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Operators_AND()
         {
-            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
-            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             Assert.IsTrue((bits1 & bits2) == bits2, "ANDing clear and full masks did not produce an empty mask");
 
@@ -407,8 +407,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Operators_OR()
         {
-            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
-            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             Assert.IsTrue((bits1 | bits2) == bits1, "Oring clear and full masks did not produce a full mask");
 
@@ -422,8 +422,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Operators_XOR()
         {
-            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
-            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             Assert.IsTrue((bits1 ^ bits1).IsEmpty(), "XORing bits with self did not result in empty mask");
             Assert.IsTrue(bits1 == (bits1 ^ bits2), "XORing an empty mask with a full mask did not produce a full mask");
@@ -437,8 +437,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Operators_NOT()
         {
-            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
-            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             Assert.IsTrue(~bits1 == bits2, "NOTing a full mask did not produce an empty mask");
             Assert.IsTrue(bits1 == ~bits2, "NOTing an empty mask did not produce a full mask");
@@ -450,8 +450,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Operators_Subtraction()
         {
-            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Filled);
-            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits1 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+            SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             Assert.IsTrue((bits1 - bits2).IsFull(), "Subtracting clear from full mask did not return full mask");
             Assert.IsTrue((bits2 - bits1).IsEmpty(), "Subtracting full from clear mask did not return clear mask");
@@ -460,7 +460,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_CellXY_Indexer()
         {
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             Assert.IsTrue(bits.IsEmpty(), "Bits not empty after creation");
             bits[0, 0] = true;
@@ -472,7 +472,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_SubGridTreeBitmapSubGridBitsTests_SumBitRows()
         {
-            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             Assert.IsTrue(bits.SumBitRows() == 0, "Non-zero number of bits for empty bit mask");
 

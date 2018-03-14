@@ -217,6 +217,7 @@
     <Compile Include="Servers\Client\RaptorMutableClientServer.cs" />
     <Compile Include="Servers\RaptorNodeID.cs" />
     <Compile Include="Storage\StorageMutability.cs" />
+    <Compile Include="SubGridTrees\SubGridBitsCreationOptions.cs" />
     <Compile Include="TAGFiles\Executors\ProcessTAGFilesExecutor.cs" />
     <Compile Include="TAGFiles\GridFabric\Arguments\ProcessTAGFileRequestArgument.cs" />
     <Compile Include="TAGFiles\GridFabric\ComputeFuncs\ProcessTAGFileComputeFunc.cs" />
