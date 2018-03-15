@@ -46,6 +46,7 @@ namespace RepositoryTests.Internal
     public void SetupLogging()
     {
       const string loggerRepoName = "UnitTestLogTest";
+      Log4NetProvider.RepoName = loggerRepoName;
       var logPath = Directory.GetCurrentDirectory();
 
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
@@ -55,8 +56,9 @@ namespace RepositoryTests.Internal
       loggerFactory.AddLog4Net(loggerRepoName);
 
       ServiceProvider = new ServiceCollection()
-        .AddLogging()
+        .AddSingleton<ILoggerProvider, Log4NetProvider>()
         .AddSingleton(loggerFactory)
+        .AddLogging()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .BuildServiceProvider();
 

@@ -7,7 +7,7 @@ namespace VSS.MasterData.Repositories
 {
   public interface IFilterRepository
   {
-    Task<IEnumerable<Filter>> GetFiltersForProjectUser(string customerUid, string projectUid, string userUid, bool includeTransient = false);
+    Task<IEnumerable<Filter>> GetFiltersForProjectUser(string customerUid, string projectUid, string userUid, bool includeAll = false);
     Task<IEnumerable<Filter>> GetFiltersForProject(string projectUid);
     Task<Filter> GetFilter(string filterUid);
     Task<int> StoreEvent(IFilterEvent evt);

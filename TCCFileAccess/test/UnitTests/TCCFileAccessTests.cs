@@ -24,12 +24,14 @@ namespace VSS.TCCFileAccess.UnitTests
       var serviceCollection = new ServiceCollection();
 
       string loggerRepoName = "UnitTestLogTest";
+      Log4NetProvider.RepoName = loggerRepoName;
       var logPath = Directory.GetCurrentDirectory();
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
+
 
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);

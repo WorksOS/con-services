@@ -135,5 +135,15 @@ namespace VSS.ConfigurationStore
 
       return theBoolToReturn;
     }
+
+    public IConfigurationSection GetSection(string key)
+    {
+      return _configuration.GetSection(key);
+    }
+
+    public IConfigurationSection GetLoggingConfig()
+    {
+      return GetSection("Logging");
+    }
   }
 }

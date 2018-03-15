@@ -14,14 +14,14 @@ If (Test-path $artfifactZip) {
     Remove-item $artfifactZip
 }
 
-# Restore, build/publish for configuration net47.
+# Restore, build/publish for configuration net471.
 Write-Host "Restoring .NET packages..." -ForegroundColor "darkgray"
 Invoke-Expression "dotnet restore ./VSS.Productivity3D.MasterDataConsumer.sln --no-cache"
 
 Write-Host "Publishing WebApi project..." -ForegroundColor "darkgray"
-$artifactsWorkingDir = "$artifactsDir\MasterdataConsumerNet47"
+$artifactsWorkingDir = "$artifactsDir\MasterdataConsumerNet471"
 
-Invoke-Expression "dotnet publish ./src/MasterdataConsumer/VSS.Productivity3D.MasterDataConsumer.csproj -o $artifactsWorkingDir -f net47"
+Invoke-Expression "dotnet publish ./src/MasterdataConsumer/VSS.Productivity3D.MasterDataConsumer.csproj -o $artifactsWorkingDir -f net471"
 
 # Compress build artifacts.
 Write-Host "Compressing build artifacts..." -ForegroundColor "darkgray"
