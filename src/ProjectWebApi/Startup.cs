@@ -118,6 +118,8 @@ namespace VSS.MasterData.Project.WebAPI
       {
         c.SwaggerDoc("v1", new Info { Title = "Project Service API", Version = "v1" });
       });
+      });
+
 
       services.ConfigureSwaggerGen(options =>
       {
@@ -168,7 +170,6 @@ namespace VSS.MasterData.Project.WebAPI
 #endif
 
       app.UseFilterMiddleware<RequestIDMiddleware>();
-
       app.UseSwagger();
 
       //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json

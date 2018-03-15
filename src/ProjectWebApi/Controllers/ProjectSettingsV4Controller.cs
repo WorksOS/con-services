@@ -77,15 +77,48 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets the target settings for a project and user.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
-    /// <param name="settingsType">The project settings' type.</param>
     /// <returns></returns>
-    [Route("api/v4/projectsettings/{projectUid}/{settingsType}")]
+    [Route("api/v4/projectcolors/{projectUid}")]
     [HttpGet]
-    public async Task<ProjectSettingsResult> GetProjectSettings(string projectUid, ProjectSettingsType settingsType)
+    public async Task<ProjectSettingsResult> GetProjectSettings(string projectUid)
     {
-      return await GetProjectSettingsForType(projectUid, settingsType);
+      return await GetProjectSettingsForType(projectUid, ProjectSettingsType.Colors);
     }
 
+
+    /// <summary>
+    /// Upserts the target project settings for a project and user.
+    /// </summary>
+    /// <returns></returns>
+    [Route("api/v4/projectcolors")]
+    [HttpPut]
+    public async Task<ProjectSettingsResult> UpsertProjectColors([FromBody]ProjectSettingsRequest request)
+    {
+      if (string.IsNullOrEmpty(request?.projectUid))
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
+      LogCustomerDetails("UpsertProjectSettings", request?.projectUid);
+      log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
+
+      request.ProjectSettingsType = ProjectSettingsType.Colors;
+
+      var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+          .CustomerUid(customerUid))
+        .CreateProjectSettingsRequest(request.projectUid, request.Settings, request.ProjectSettingsType);
+      projectSettingsRequest.Validate();
+
+      var result = (await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
+            customerUid, userId, null, customHeaders,
+            producer, kafkaTopicName,
+            null, raptorProxy, null,
+            projectRepo)
+          .ProcessAsync(projectSettingsRequest)
+      )) as ProjectSettingsResult;
+
+      log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
+      return result;
+    }
 
     /// <summary>
     /// Upserts the target project settings for a project and user.
@@ -100,9 +133,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       LogCustomerDetails("UpsertProjectSettings", request?.projectUid);
       log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
 
+      request.ProjectSettingsType = ProjectSettingsType.Targets;
+
       var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
             .CustomerUid(customerUid))
-          .CreateProjectSettingsRequest(request?.projectUid, request?.Settings, request?.ProjectSettingsType ?? ProjectSettingsType.Unknown);
+          .CreateProjectSettingsRequest(request.projectUid, request.Settings, request.ProjectSettingsType);
       projectSettingsRequest.Validate();
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
