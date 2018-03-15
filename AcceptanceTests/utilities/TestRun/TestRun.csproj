@@ -27,8 +27,8 @@
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="7.0.7-m61" />
     <PackageReference Include="Dapper" Version="1.50.4" />
     <PackageReference Include="Hangfire.MySql.NetCore" Version="1.0.7" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.6.15" />
-    <PackageReference Include="Hangfire.Core" Version="1.6.15" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.6.17" />
+    <PackageReference Include="Hangfire.Core" Version="1.6.17" />
 
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
