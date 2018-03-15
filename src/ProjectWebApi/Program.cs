@@ -96,7 +96,11 @@ namespace VSS.MasterData.Project.WebAPI
       webHost = new WebHostBuilder()
         .UseKestrel()
         .UseConfiguration(config)
-        .UseKestrel(opts=>opts.ThreadCount=32)
+        .UseKestrel()
+        .UseLibuv(opts =>
+        {
+          opts.ThreadCount = 32;
+        })
         //TODO For some reason setting configuration for a topshelf service does not work
         .UseUrls(config["server.urls"])
         .UseContentRoot(pathToContentRoot)
