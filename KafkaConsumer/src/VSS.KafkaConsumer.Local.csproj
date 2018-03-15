@@ -30,7 +30,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Confluent.Kafka" Version="0.11.*" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.5.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
   </ItemGroup>
 
   <ItemGroup>

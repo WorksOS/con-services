@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Models.Models
 {
@@ -36,6 +37,15 @@ namespace VSS.MasterData.Models.Models
     [JsonProperty(PropertyName = "filterJson")]
     public string FilterJson { get; set; }
 
+    /// <summary>
+    /// Gets or sets the type of filter
+    /// </summary>
+    /// <value>
+    /// The type of filter.
+    /// </value>
+    [JsonProperty(PropertyName = "filterType")]
+    public FilterType FilterType { get; set; }
+
     public override bool Equals(object obj)
     {
       var otherFilter = obj as FilterDescriptor;
@@ -46,7 +56,8 @@ namespace VSS.MasterData.Models.Models
 
       return otherFilter.FilterUid == FilterUid
              && otherFilter.Name == Name
-             && otherFilter.FilterJson == FilterJson;
+             && otherFilter.FilterJson == FilterJson
+             && otherFilter.FilterType == FilterType;
     }
 
     public override int GetHashCode()
