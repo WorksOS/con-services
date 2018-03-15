@@ -6,6 +6,6 @@ namespace VSS.TRex.Rendering.Abstractions
   {
     Color Color { get; set; }
     IBrush Brush { get; set; }
-    int Width { get; set; }
+    float Width { get; set; }
   }
 }
