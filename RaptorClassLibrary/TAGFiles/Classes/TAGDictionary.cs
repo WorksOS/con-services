@@ -41,8 +41,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 // If field type is 15, then read an extra var int to determine extended data type
                 if (tempFieldType == 15)
                 {
-                    short tempFieldTypeExtended;
-                    if (!reader.ReadVarInt(out tempFieldTypeExtended))
+                    if (!reader.ReadVarInt(out short tempFieldTypeExtended))
                     {
                         return false;
                     }
