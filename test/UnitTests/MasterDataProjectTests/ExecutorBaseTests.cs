@@ -29,6 +29,7 @@ namespace VSS.MasterData.ProjectTests
       var logPath = Directory.GetCurrentDirectory();
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 
+      Log4NetProvider.RepoName = loggerRepoName;
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);

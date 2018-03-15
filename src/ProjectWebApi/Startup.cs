@@ -7,15 +7,16 @@ using Swashbuckle.AspNetCore.Swagger;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.FIlters;
+using VSS.MasterData.Project.WebAPI.Common.Extensions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
-using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -30,7 +31,10 @@ namespace VSS.MasterData.Project.WebAPI
   /// </summary>
   public class Startup
   {
-    private const string loggerRepoName = "WebApi";
+    /// <summary>
+    /// The logger repository name
+    /// </summary>
+    public const string LoggerRepoName = "WebApi";
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -44,7 +48,7 @@ namespace VSS.MasterData.Project.WebAPI
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", loggerRepoName);
+      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -67,8 +71,6 @@ namespace VSS.MasterData.Project.WebAPI
     /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddLogging();
-
       //Configure CORS
       services.AddCors(options =>
       {
@@ -110,11 +112,12 @@ namespace VSS.MasterData.Project.WebAPI
         }
         );
 
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
       services.AddSwaggerGen(c =>
       {
-        c.SwaggerDoc("v1", new Info { Title = "Project Service API", Description = "API for project service", Version = "v1" });
+        c.SwaggerDoc("v1", new Info { Title = "Project Service API", Version = "v1" });
       });
-
 
       services.ConfigureSwaggerGen(options =>
       {
@@ -148,18 +151,14 @@ namespace VSS.MasterData.Project.WebAPI
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();
       serviceCollection.AddSingleton(loggerFactory);
-      //new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
       serviceCollection.BuildServiceProvider();
 
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      app.UseExceptionTrap();
+      Common.ResultsHandling.ExceptionsTrapExtensions.UseExceptionTrap(app);
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCors("VSS");
-      //Enable TID here
-      app.UseTIDAuthentication();
 
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
@@ -168,7 +167,7 @@ namespace VSS.MasterData.Project.WebAPI
       }
 #endif
 
-
+      app.UseFilterMiddleware<RequestIDMiddleware>();
       app.UseSwagger();
 
       //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
@@ -176,6 +175,8 @@ namespace VSS.MasterData.Project.WebAPI
       {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Service API");
       });
+
+      app.UseTIDAuthentication();
       app.UseMvc();
     }
   }
