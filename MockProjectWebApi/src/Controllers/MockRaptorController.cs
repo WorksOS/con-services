@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
 using System;
-using System.Text;
-using MockProjectWebApi.Utils;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -170,6 +169,7 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Dummies the project projectSettings validation.
     /// </summary>
+    [Route("api/v2/validatesettings")]
     [Route("api/v2/compaction/validatesettings")]
     [HttpGet]
     public BaseDataResult DummyValidateProjectSettingsGet(
@@ -185,6 +185,7 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Dummies the project projectSettings validation.
     /// </summary>
+    [Route("api/v2/validatesettings")]
     [Route("api/v2/compaction/validatesettings")]
     [HttpPost]
     public BaseDataResult DummyValidateProjectSettingsPost([FromBody] ProjectSettingsRequest request)
