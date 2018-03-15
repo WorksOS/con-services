@@ -17,7 +17,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
-    <!--     <PackageReference Include="Microsoft.Framework.Runtime" Version="1.0.0-beta6" /> -->
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />

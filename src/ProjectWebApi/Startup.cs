@@ -118,8 +118,6 @@ namespace VSS.MasterData.Project.WebAPI
       {
         c.SwaggerDoc("v1", new Info { Title = "Project Service API", Version = "v1" });
       });
-      });
-
 
       services.ConfigureSwaggerGen(options =>
       {

@@ -17,7 +17,7 @@ namespace ExecutorTests
     [TestMethod]
     [DataRow(ProjectSettingsType.Targets)]
     [DataRow(ProjectSettingsType.ImportedFiles)]
-    public async Task GetProjectSettingsExecutor_InvalidProjectUid(ProjectSettingsType settingsType)
+    public void GetProjectSettingsExecutor_InvalidProjectUid(ProjectSettingsType settingsType)
     {
       string projectUid = string.Empty;
       string settings = string.Empty;
@@ -142,7 +142,7 @@ namespace ExecutorTests
     [TestMethod]
     [DataRow(ProjectSettingsType.Targets)]
     [DataRow(ProjectSettingsType.ImportedFiles)]
-    public async Task UpsertProjectSettingsExecutor_InvalidProjectSettings(ProjectSettingsType settingsType)
+    public void UpsertProjectSettingsExecutor_InvalidProjectSettings(ProjectSettingsType settingsType)
     {
       string projectUid = Guid.NewGuid().ToString();
       string settings = null;
