@@ -94,7 +94,6 @@ namespace VSS.MasterData.Project.WebAPI
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
 
       webHost = new WebHostBuilder()
-        .UseKestrel()
         .UseConfiguration(config)
         .UseKestrel()
         .UseLibuv(opts =>
