@@ -29,7 +29,7 @@ namespace ExecutorTests
       string userUid = TestUtility.UIDs.JWT_USER_ID;
       string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = string.Empty;
-      const string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      const string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson });
 
@@ -101,8 +101,8 @@ namespace ExecutorTests
       string userUid = TestUtility.UIDs.JWT_USER_ID;
       string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = string.Empty;
-      string filterJson1 = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
-      string filterJson2 = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
+      string filterJson1 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson2 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson1 });
 
@@ -120,7 +120,7 @@ namespace ExecutorTests
       Assert.IsNotNull(result2, "executor should always return a result");
       Assert.AreNotEqual(result1.FilterDescriptor.FilterUid, result2.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
       Assert.AreEqual(name, result2.FilterDescriptor.Name, "executor returned incorrect filter Name");
-      Assert.AreEqual("{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"elevationType\":3,\"vibeStateOn\":true}", result2.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
+      Assert.AreEqual("{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"elevationType\":3,\"vibeStateOn\":true}", result2.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
 
       var fr = FilterRepo.GetFiltersForProjectUser(custUid, projectUid, userUid, true);
       fr.Wait();
@@ -136,8 +136,8 @@ namespace ExecutorTests
       string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = string.Empty;
-      string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
-      string filterJsonUpdated = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
       WriteEventToDb(new CreateFilterEvent
       {
@@ -160,7 +160,7 @@ namespace ExecutorTests
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreNotEqual(filterUid, result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
       Assert.AreEqual(name, result.FilterDescriptor.Name, "executor returned incorrect filter Name");
-      Assert.AreEqual("{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"elevationType\":3,\"vibeStateOn\":true}", result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
+      Assert.AreEqual("{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"elevationType\":3,\"vibeStateOn\":true}", result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
     }
 
     [TestMethod]
@@ -170,7 +170,7 @@ namespace ExecutorTests
       string userUid = TestUtility.UIDs.JWT_USER_ID;
       string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = "the Name";
-      string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson });
 
@@ -211,7 +211,7 @@ namespace ExecutorTests
       string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
-      string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonUpdated = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
       WriteEventToDb(new CreateFilterEvent
@@ -256,7 +256,7 @@ namespace ExecutorTests
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = "theName updated";
-      string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonUpdated = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
       WriteEventToDb(new CreateFilterEvent
@@ -278,7 +278,7 @@ namespace ExecutorTests
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsNotNull(result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
+      Assert.IsNotNull(result.FilterDescriptor.FilterUid, "executor returned null FilterUid");
       Assert.AreEqual(filterUid, result.FilterDescriptor.FilterUid, "executor returned incorrect FilterUid");
       Assert.AreEqual(nameUpdated, result.FilterDescriptor.Name, "executor returned incorrect filter Name");
       Assert.AreEqual(filterJson, result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson, should return original");
@@ -301,8 +301,8 @@ namespace ExecutorTests
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = name.ToUpper();
-      string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
-      string filterJsonNew = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";//should be ignored
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJsonNew = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";//should be ignored
 
       WriteEventToDb(new CreateFilterEvent
       {

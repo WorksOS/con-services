@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var getResult = await GetProjectBoundaries(projectUid);
       if (getResult.GeofenceData.Any(g => request.Name.Equals(g.GeofenceName, StringComparison.OrdinalIgnoreCase)))
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 62, "Duplicate boundary name");
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 62);
       }
 
       var executor = RequestExecutorContainer.Build<UpsertBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepository, ProjectRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);

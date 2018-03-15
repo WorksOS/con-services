@@ -43,7 +43,7 @@ namespace WebApiTests
       //Now duplicate
       responseCreate = ts.CallFilterWebApi($"api/v1/boundary/{ProjectUid}", "PUT", boundary);
       boundaryResponse = JsonConvert.DeserializeObject<GeofenceDataSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.AreEqual("Duplicate boundary name", boundaryResponse.Message, "Expecting success");
+      Assert.AreEqual("Duplicate boundary name", boundaryResponse.Message, "Expecting duplicate boundary name");
       Assert.AreEqual(2062, boundaryResponse.Code, "Wrong error code");
     }
 

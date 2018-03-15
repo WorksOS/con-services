@@ -49,5 +49,35 @@ namespace ExecutorTests.Internal
 
       return request;
     }
+
+
+
+    protected FilterRequestFull CreateAndValidateRequest(
+      ProjectData projectData,
+      bool isApplicationContext = false,
+      string userId = null,
+      string filterUid = null,
+      string name = null,
+      string filterJson = "",
+      string boundaryUid = null,
+      string customerUid = null)
+    {
+      var request = FilterRequestFull.Create(
+        new Dictionary<string, string>(),
+        customerUid ?? Guid.NewGuid().ToString(),
+        isApplicationContext,
+        userId ?? Guid.NewGuid().ToString(),
+        projectData ?? new ProjectData() { ProjectUid = Guid.NewGuid().ToString() },
+        new FilterRequest
+        {
+          FilterUid = filterUid ?? Guid.NewGuid().ToString(),
+          Name = Guid.NewGuid().ToString(),
+          FilterJson = filterJson
+        });
+
+      request.Validate(ServiceExceptionHandler);
+
+      return request;
+    }
   }
 }

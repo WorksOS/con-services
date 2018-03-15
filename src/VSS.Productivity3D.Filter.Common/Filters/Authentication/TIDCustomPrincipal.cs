@@ -84,15 +84,12 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
     {
       var project = GetProjectForCustomer(projectUid);
 
-      if (project != null) 
-      {
-        return project;     
-      }
+      if (project != null) { return project; }
       else
       {
         InvalidateProjectList();
         project = GetProjectForCustomer(projectUid);
-        return project;
+        if (project != null) { return project; }
       }
 
       throw new ServiceException(HttpStatusCode.Unauthorized,
