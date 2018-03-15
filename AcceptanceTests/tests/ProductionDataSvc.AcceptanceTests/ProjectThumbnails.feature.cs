@@ -91,8 +91,8 @@ this.FeatureBackground();
 #line 8
  testRunner.When("I request a Report Tile for project UID \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 9
- testRunner.Then("The resulting thumbnail should match \"ThumbnailWithProductionData\" from the respo" +
-                    "nse repository within \"3\" percent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("The resulting thumbnail should match \"ProductionData\" from the response repositor" +
+                    "y within \"3\" percent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -110,8 +110,8 @@ this.FeatureBackground();
 #line 13
  testRunner.When("I request a Report Tile for project UID \"290df997-7331-405f-ac9c-bebd193965e0\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 14
- testRunner.Then("The resulting thumbnail should match \"ThumbnailNoProductionData\" from the respons" +
-                    "e repository within \"3\" percent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("The resulting thumbnail should match \"NoProductionData\" from the response reposit" +
+                    "ory within \"3\" percent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
