@@ -26,21 +26,6 @@ namespace VSS.Productivity3D.Filter.Common.Models
 
     public IDictionary<string, string> CustomHeaders { get; set; }
 
-    //public static FilterRequestFull Create(IDictionary<string, string> customHeaders, string customerUid, bool isApplicationContext, string userId, string projectUid, FilterRequest request = null)
-    //{
-    //  return new FilterRequestFull
-    //  {
-    //    FilterUid = request?.FilterUid ?? string.Empty,
-    //    Name = request?.Name ?? string.Empty,
-    //    FilterJson = request?.FilterJson ?? string.Empty,
-    //    CustomerUid = customerUid,
-    //    IsApplicationContext = isApplicationContext,
-    //    UserId = userId,
-    //    ProjectUid = projectUid,
-    //    CustomHeaders = customHeaders
-    //  };
-    //}
-
     public static FilterRequestFull Create(IDictionary<string, string> customHeaders, string customerUid, bool isApplicationContext, string userId, ProjectData projectData, FilterRequest request = null)
     {
       return new FilterRequestFull
@@ -56,21 +41,6 @@ namespace VSS.Productivity3D.Filter.Common.Models
         CustomHeaders = customHeaders
       };
     }
-
-    //public static FilterRequestFull Create(IDictionary<string, string> customHeaders, TIDCustomPrincipal customPrincipal, ProjectData projectData, FilterRequest request = null)
-    //{
-    //  return new FilterRequestFull
-    //  {
-    //    FilterUid = request?.FilterUid ?? string.Empty,
-    //    Name = request?.Name ?? string.Empty,
-    //    FilterJson = request?.FilterJson ?? string.Empty,
-    //    CustomerUid = customPrincipal.CustomerUid,
-    //    IsApplicationContext = customPrincipal.IsApplication,
-    //    UserId = (customPrincipal?.Identity as GenericIdentity)?.Name,
-    //    ProjectUid = projectData.ProjectUid,
-    //    CustomHeaders = customHeaders
-    //  };
-    //}
 
     public override void Validate(IServiceExceptionHandler serviceExceptionHandler)
     {

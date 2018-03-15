@@ -10,6 +10,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Validators;
 
@@ -150,40 +151,63 @@ namespace VSS.Productivity3D.Filter.Tests
       requestFull.Validate(serviceExceptionHandler);
     }
 
-    //[TestMethod]
-    //public async Task CustomerProjectValidation_HappyPath()
-    //{
-    //  var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
+    [TestMethod]
+    public async Task CustomerProjectValidation_HappyPath()
+    {
+      var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
 
-    //  var projectListProxy = new Mock<IProjectListProxy>();
-    //  var projects = new List<MasterData.Models.Models.ProjectData>
-    //  {
-    //    new MasterData.Models.Models.ProjectData {ProjectUid = projectUid, CustomerUid = custUid}
-    //  };
-    //  var customHeaders = new Dictionary<string, string>();
-    //  projectListProxy.Setup(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders)).ReturnsAsync(projects);
+      var projectListProxy = new Mock<IProjectListProxy>();
+      var projectData = new ProjectData { ProjectUid = projectUid, CustomerUid = custUid };
+      var projects = new List<ProjectData> { projectData };
 
-    //  await ValidationUtil.ValidateProjectForCustomer(projectListProxy.Object, log, serviceExceptionHandler,
-    //    customHeaders, custUid, projectUid).ConfigureAwait(false);
-    //}
+      var customHeaders = new Dictionary<string, string>();
+      projectListProxy.Setup(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders)).ReturnsAsync(projects);
 
-    //[TestMethod]
-    //public async Task CustomerProjectValidation_NoAssociation()
-    //{
-    //  var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
+      TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(), 
+        custUid, "","", projectListProxy.Object, customHeaders);
 
-    //  var projectListProxy = new Mock<IProjectListProxy>();
-    //  var projects = new List<MasterData.Models.Models.ProjectData>();
-    //  var customHeaders = new Dictionary<string, string>();
-    //  projectListProxy.Setup(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders)).ReturnsAsync(projects);
+      Assert.AreEqual(projectData, principal.GetProject(projectUid));     
+    }
 
-    //  var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await ValidationUtil
-    //    .ValidateProjectForCustomer(projectListProxy.Object, log, serviceExceptionHandler,
-    //      customHeaders, custUid, projectUid).ConfigureAwait(false));
+    [TestMethod]
+    public async Task CustomerProjectValidation_NoAssociation()
+    {
+      var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
 
-    //  StringAssert.Contains(ex.GetContent, "2008");
-    //  StringAssert.Contains(ex.GetContent, "Validation of Customer/Project failed. Not allowed.");
-    //}
+      var projectListProxy = new Mock<IProjectListProxy>();
+      var projects = new List<MasterData.Models.Models.ProjectData>();
+      var customHeaders = new Dictionary<string, string>();
+      projectListProxy.Setup(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders)).ReturnsAsync(projects);
+
+      TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
+        custUid, "", "", projectListProxy.Object, customHeaders);
+      
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => principal.GetProject(projectUid));
+
+      StringAssert.Contains(ex.GetContent, "-5");
+      StringAssert.Contains(ex.GetContent, "Missing Project or project does not belong to customer");
+    }
+
+
+    [TestMethod]
+    public async Task CustomerProjectValidation_HappyPath_CacheSimulation()
+    {
+      var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
+
+      var projectListProxy = new Mock<IProjectListProxy>();
+      var projectData = new ProjectData { ProjectUid = projectUid, CustomerUid = custUid };
+      var projects = new List<ProjectData> { projectData };
+
+      var customHeaders = new Dictionary<string, string>();
+      projectListProxy.SetupSequence(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders))
+        .ReturnsAsync(new List<ProjectData>())
+        .ReturnsAsync(projects);
+
+      TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
+        custUid, "", "", projectListProxy.Object, customHeaders);
+
+      Assert.AreEqual(projectData, principal.GetProject(projectUid));
+    }
 
     [TestMethod]
     public async Task HydrateJsonWithBoundary_NoPolygonUid()

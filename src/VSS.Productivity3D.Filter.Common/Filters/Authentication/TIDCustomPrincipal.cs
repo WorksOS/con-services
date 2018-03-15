@@ -97,24 +97,22 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
             $"Missing Project or project does not belong to customer {CustomerUid}:{EmailAddress} or don't have access to the project {projectUid}"));
     }
 
+    /// <summary>
+    /// Gets the data for a project for this customer
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns></returns>
     private ProjectData GetProjectForCustomer(string projectUid)
     {
-      ProjectData project = null;
-      try
-      {
-        var projects = ProjectProxy.GetProjectsV4(CustomerUid, ContextHeaders).Result;
-        project = projects.SingleOrDefault(p => p.ProjectUid == projectUid);
-      }
-      catch (Exception e)
-      {
-        //TODO tidy this logging, probably want to catch a specific exception
-        //log.LogDebug(
-        //  $"{System.Reflection.MethodBase.GetCurrentMethod().Name}: projectListProxy.GetProjectsV4 failed with exception. customerUid:{customerUid} ProjectUid:{projectUid}. Exception Thrown: {e.Message}. ");
-        //serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 7, e.Message);
-      }
-      return project;
+      var projects = ProjectProxy.GetProjectsV4(CustomerUid, ContextHeaders).Result;
+      return projects.FirstOrDefault(p => p.ProjectUid == projectUid);
     }
 
+    /// <summary>
+    /// Invalidates the response cache for this customer
+    /// Used in situations where responses can change but not often
+    /// for example when a project is created.
+    /// </summary>
     private void InvalidateProjectList()
     {
       ProjectProxy.ClearCacheItem(CustomerUid);
