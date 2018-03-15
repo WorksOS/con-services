@@ -242,22 +242,6 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Check that a property exists in the dynamic object
-    /// </summary>
-    /// <param name="obj">dynamic object</param>
-    /// <param name="propertyName">Property name as string</param>
-    /// <returns>true or false</returns>
-    private static bool HasProperty(dynamic obj, string propertyName)
-    {
-      var expandoDict = (IDictionary<string, object>)obj;
-      if (expandoDict.ContainsKey(propertyName) && expandoDict[propertyName] != null)
-      {
-        return true;
-      }
-      return false;
-    }
-
-    /// <summary>
     /// Create an ExpandoObject of all the fields from the event array
     /// </summary>
     /// <param name="allColumnNames">All the column names from the array</param>
