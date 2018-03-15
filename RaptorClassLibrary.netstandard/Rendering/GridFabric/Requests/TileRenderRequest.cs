@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs;
+using VSS.TRex.Rendering.Abstractions;
 
 namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Requests
 {
@@ -17,12 +18,12 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Requests
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public Bitmap Execute(TileRenderRequestArgument arg)
+        public IBitmap Execute(TileRenderRequestArgument arg)
         {
             // Construct the function to be used
-            IComputeFunc<TileRenderRequestArgument, Bitmap> func = new TileRenderRequestComputeFunc();
+            IComputeFunc<TileRenderRequestArgument, IBitmap> func = new TileRenderRequestComputeFunc();
 
-            Task<Bitmap> taskResult = _Compute.ApplyAsync(func, arg);
+            Task<IBitmap> taskResult = _Compute.ApplyAsync(func, arg);
 
             //Bitmap result = compute.Apply(func, arg);
 

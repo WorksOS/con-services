@@ -10,6 +10,7 @@ using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Rendering.Executors;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Servers;
+using VSS.TRex.Rendering.Abstractions;
 
 namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
 {
@@ -18,7 +19,7 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
     /// a client server instance requesting it.
     /// </summary>
     [Serializable]
-    public class TileRenderRequestComputeFunc : BaseRaptorComputeFunc, IComputeFunc<TileRenderRequestArgument, Bitmap>
+    public class TileRenderRequestComputeFunc : BaseRaptorComputeFunc, IComputeFunc<TileRenderRequestArgument, IBitmap>
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -30,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
         {
         }
 
-        public Bitmap Invoke(TileRenderRequestArgument arg)
+        public IBitmap Invoke(TileRenderRequestArgument arg)
         {
             Log.Info("In TileRenderRequestComputeFunc.Invoke()");
 
@@ -56,7 +57,7 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
 
                 Log.Info("Executing render.Execute()");
 
-                Bitmap bmp = render.Execute();
+              IBitmap bmp = render.Execute();
                 Log.Info($"Render status = {render.ResultStatus}");
 
                 if (bmp == null)

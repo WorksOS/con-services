@@ -6,9 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="Apache.Ignite" Version="2.4.0" />
+    <PackageReference Include="Apache.Ignite.Log4Net" Version="2.4.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
     <ProjectReference Include="..\VSS.Velociraptor.Designs.TTM.netstandard\VSS.Velociraptor.Designs.TTM.netstandard.csproj" />
     <ProjectReference Include="..\VSS.Velociraptor.Geometry.netstandard\VSS.Velociraptor.Geometry.netstandard.csproj" />
   </ItemGroup>

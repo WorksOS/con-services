@@ -14,6 +14,7 @@ using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Rendering.Displayers;
+using VSS.TRex.Rendering.Abstractions;
 using log4net;
 using System.Reflection;
 
@@ -283,7 +284,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// (zoomed out a lot) where meaningful detail cannot be drawn on the tile
         /// </summary>
         /// <returns></returns>
-        private Bitmap RenderTileAsRepresentationalDueToScale()
+        private IBitmap RenderTileAsRepresentationalDueToScale()
         {
             PVMDisplayerBase RepresentationalDisplayer = PVMDisplayerFactory.GetDisplayer(Mode /*, FICOptions*/);
 
@@ -326,7 +327,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// Executor that implements requesting and rendering subgrid information to create the rendered tile
         /// </summary>
         /// <returns></returns>
-        public Bitmap Execute()
+        public IBitmap Execute()
         {
             BoundingWorldExtent3D SpatialExtents;
             // WorkingColourPalette  : TICDisplayPaletteBase;

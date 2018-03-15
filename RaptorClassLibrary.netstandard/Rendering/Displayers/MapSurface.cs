@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
+using VSS.TRex.Rendering.Abstractions;
 
 namespace VSS.VisionLink.Raptor.Rendering.Displayers
 {
@@ -84,8 +85,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         //    FPrintTextReportSection :Boolean;
 
         Color DrawCanvasPenColor = Color.Black; // Cached pen color for the DrawCanvas
-        Pen DrawCanvasPen = new Pen(Color.Black);
-        SolidBrush DrawCanvasBrush = new SolidBrush(Color.Black);
+        IPen DrawCanvasPen;
+        IBrush DrawCanvasBrush;
 
         // Polypoints is an array of screen coordinate vertices used for calls to the
         // WIN32 DC API Polygon() and Polyline() calls. It is defined here in order to
@@ -263,8 +264,9 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         //DisplaySurface : TPaintBox;
         //DrawCanvas : TCanvas; { The canvas being displayed on, screen or printer }
 
-        public Bitmap BitmapCanvas = null;
-        public Graphics DrawCanvas = null;
+        public IBitmap BitmapCanvas = null;
+        public IRenderingFactory RenderingFactory=null;
+        public IGraphics DrawCanvas = null;
 
         public int ClipHeight = 0; // Viewport height 
         public int ClipWidth = 0; // Viewport width 
@@ -351,8 +353,11 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
             DrawNonSquareAspectScale = true;
             DrawNonSquareAspectScaleAsVerticalDistanceBar = false;
 
-            BitmapCanvas = new Bitmap(100, 100);
-            DrawCanvas = Graphics.FromImage(BitmapCanvas);
+            IPen DrawCanvasPen = RenderingFactory.CreatePen(Color.Black);
+            IBrush DrawCanvasBrush = RenderingFactory.CreateBrush(Color.Black);
+
+            BitmapCanvas = RenderingFactory.CreateBitmap(100, 100);
+            DrawCanvas = RenderingFactory.CreateGraphics(BitmapCanvas);
 
             DrawCanvasPenColor = Color.Black;
 
@@ -1100,8 +1105,8 @@ double BorderSize)
                 PrevDisplayHeight = BitmapCanvas.Height;
             }
 
-            BitmapCanvas = new Bitmap(AWidth, AHeight);
-            DrawCanvas = Graphics.FromImage(BitmapCanvas);
+            BitmapCanvas = RenderingFactory.CreateBitmap(AWidth, AHeight);
+            DrawCanvas = RenderingFactory.CreateGraphics(BitmapCanvas);
 
             if (BitmapCanvas != null)
             {

@@ -3,6 +3,7 @@ using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Servers.Client;
+using VSS.TRex.Rendering.Abstractions;
 
 namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
 {
@@ -32,7 +33,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
         /// </summary>
         /// <param name="argument"></param>
         /// <returns></returns>
-        public Bitmap RenderTile(TileRenderRequestArgument argument)
+        public IBitmap RenderTile(TileRenderRequestArgument argument)
         {
             TileRenderRequest request = new TileRenderRequest();
 
