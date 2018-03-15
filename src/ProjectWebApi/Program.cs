@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Net;
+using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
@@ -32,6 +34,11 @@ namespace VSS.MasterData.Project.WebAPI
         .Build();
 
 #if NET_4_7 //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
+
+      ServicePointManager.DefaultConnectionLimit = 256;
+      ThreadPool.SetMaxThreads(256, 256);
+
+
       HostFactory.Run(x =>
       {
         x.Service<FilterContainer>(s =>
@@ -80,6 +87,7 @@ namespace VSS.MasterData.Project.WebAPI
       webHost = new WebHostBuilder()
         .UseKestrel()
         .UseConfiguration(config)
+        .UseKestrel(opts=>opts.ThreadCount=32)
         //TODO For some reason setting configuration for a topshelf service does not work
         .UseUrls(config["server.urls"])
         .UseContentRoot(pathToContentRoot)
