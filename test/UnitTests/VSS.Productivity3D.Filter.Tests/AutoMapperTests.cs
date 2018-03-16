@@ -18,7 +18,9 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapFilterDBModelToResult()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void MapFilterDBModelToResult(FilterType filterType)
     {
       var filter = new MasterData.Repositories.DBModels.Filter
       {
@@ -26,7 +28,7 @@ namespace VSS.Productivity3D.Filter.Tests
         UserId = Guid.NewGuid().ToString(),
         ProjectUid = Guid.NewGuid().ToString(),
         FilterUid = Guid.NewGuid().ToString(),
-        FilterType = FilterType.Persistent,
+        FilterType = filterType,
         Name = "the name",
         FilterJson = "the Json",
         IsDeleted = false,
@@ -41,7 +43,9 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapFilterRequestToCreateKafkaEvent_UserContext()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void MapFilterRequestToCreateKafkaEvent_UserContext(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -50,7 +54,7 @@ namespace VSS.Productivity3D.Filter.Tests
         false,
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = FilterType.Persistent }
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
 
       var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
@@ -66,7 +70,9 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapFilterRequestToCreateKafkaEvent_UserContext_NoFilterUID()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void MapFilterRequestToCreateKafkaEvent_UserContext_NoFilterUID(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -75,58 +81,7 @@ namespace VSS.Productivity3D.Filter.Tests
         false,
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = FilterType.Persistent }
-      );
-      filterRequest.FilterUid = Guid.NewGuid().ToString();
-
-      var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
-      Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
-        "CustomerUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
-        "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.Name, result.Name, "name has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "FilterJson has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterType, result.FilterType, "FilterType has not been mapped correctly");
-    }
-
-    [TestMethod]
-    public void MapFilterRequestToCreateKafkaEvent_ApplicationContext()
-    {
-      var filterRequest = FilterRequestFull.Create
-      (
-        null,
-        Guid.NewGuid().ToString(),
-        false,
-        "ApplicationName",
-        Guid.NewGuid().ToString(),
-        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = FilterType.Persistent }
-      );
-
-      var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
-      Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
-        "CustomerUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
-        "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
-      Assert.AreEqual(filterRequest.Name, result.Name, "name has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "FilterJson has not been mapped correctly");
-      Assert.AreEqual(filterRequest.FilterType, result.FilterType, "FilterType has not been mapped correctly");
-    }
-
-    [TestMethod]
-    public void MapFilterRequestToCreateKafkaEvent_ApplicationContext_NoFilterUID()
-    {
-      var filterRequest = FilterRequestFull.Create
-      (
-        null,
-        Guid.NewGuid().ToString(),
-        false,
-        "ApplicationName",
-        Guid.NewGuid().ToString(),
-        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = FilterType.Persistent }
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
       filterRequest.FilterUid = Guid.NewGuid().ToString();
 
@@ -143,7 +98,64 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapFilterRequestToUpdateKafkaEvent()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void MapFilterRequestToCreateKafkaEvent_ApplicationContext(FilterType filterType)
+    {
+      var filterRequest = FilterRequestFull.Create
+      (
+        null,
+        Guid.NewGuid().ToString(),
+        false,
+        "ApplicationName",
+        Guid.NewGuid().ToString(),
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
+      );
+
+      var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
+      Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
+        "CustomerUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
+        "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.Name, result.Name, "name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "FilterJson has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterType, result.FilterType, "FilterType has not been mapped correctly");
+    }
+
+    [TestMethod]
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void MapFilterRequestToCreateKafkaEvent_ApplicationContext_NoFilterUID(FilterType filterType)
+    {
+      var filterRequest = FilterRequestFull.Create
+      (
+        null,
+        Guid.NewGuid().ToString(),
+        false,
+        "ApplicationName",
+        Guid.NewGuid().ToString(),
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
+      );
+      filterRequest.FilterUid = Guid.NewGuid().ToString();
+
+      var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
+      Assert.AreEqual(filterRequest.CustomerUid, result.CustomerUID.ToString(),
+        "CustomerUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.UserId, result.UserID, "UserUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.ProjectUid, result.ProjectUID.ToString(),
+        "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterUid, result.FilterUID.ToString(), "filterUid has not been mapped correctly");
+      Assert.AreEqual(filterRequest.Name, result.Name, "name has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterJson, result.FilterJson, "FilterJson has not been mapped correctly");
+      Assert.AreEqual(filterRequest.FilterType, result.FilterType, "FilterType has not been mapped correctly");
+    }
+
+    [TestMethod]
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void MapFilterRequestToUpdateKafkaEvent(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -152,7 +164,7 @@ namespace VSS.Productivity3D.Filter.Tests
         false,
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = FilterType.Persistent }
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
 
       var result = AutoMapperUtility.Automapper.Map<UpdateFilterEvent>(filterRequest);
@@ -168,7 +180,9 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapFilterRequestToDeleteKafkaEvent()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void MapFilterRequestToDeleteKafkaEvent(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -177,7 +191,7 @@ namespace VSS.Productivity3D.Filter.Tests
         false,
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
-        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = FilterType.Persistent }
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
 
       var result = AutoMapperUtility.Automapper.Map<DeleteFilterEvent>(filterRequest);
@@ -190,7 +204,9 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void MapFilterDBModelRequestToDeleteKafkaEvent()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void MapFilterDBModelRequestToDeleteKafkaEvent(FilterType filterType)
     {
       var filter = new MasterData.Repositories.DBModels.Filter
       {
@@ -198,7 +214,7 @@ namespace VSS.Productivity3D.Filter.Tests
         UserId = Guid.NewGuid().ToString(),
         ProjectUid = Guid.NewGuid().ToString(),
         FilterUid = Guid.NewGuid().ToString(),
-        FilterType = FilterType.Persistent,
+        FilterType = filterType,
         Name = "the name",
         FilterJson = "the Json",
         IsDeleted = false,

@@ -197,13 +197,16 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task HydrateJsonWithBoundary_NoPolygonUid()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public async Task HydrateJsonWithBoundary_NoPolygonUid(FilterType filterType)
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
       var geofenceRepo = new Mock<IGeofenceRepository>();
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest {FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true}", Name = "a filter", FilterType = FilterType.Persistent });
+        new FilterRequest {FilterUid = filterUid, FilterType = filterType, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true}", Name = "a filter" });
 
       var result = await ValidationUtil
         .HydrateJsonWithBoundary(geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false);
@@ -212,7 +215,10 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task HydrateJsonWithBoundary_IncludeAlignment()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public async Task HydrateJsonWithBoundary_IncludeAlignment(FilterType filterType)
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
       var geofenceRepo = new Mock<IGeofenceRepository>();
@@ -223,7 +229,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var rightOffset = 2.5;
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\":" + endStation + ", \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}", Name = "a filter", FilterType = FilterType.Persistent });
+        new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\":" + endStation + ", \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}" });
 
       var result = await ValidationUtil
         .HydrateJsonWithBoundary(geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false);
@@ -232,14 +238,17 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task HydrateJsonWithBoundary_NoGeofence()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public async Task HydrateJsonWithBoundary_NoGeofence(FilterType filterType)
     {      
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
       var geofenceRepo = new Mock<IGeofenceRepository>();
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync((Geofence)null);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + boundaryUid + "\"}", Name = "a filter", FilterType = FilterType.Persistent });
+        new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + boundaryUid + "\"}" });
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await ValidationUtil
         .HydrateJsonWithBoundary(geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false));
@@ -249,7 +258,10 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task HydrateJsonWithBoundary_InvalidBoundary()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public async Task HydrateJsonWithBoundary_InvalidBoundary(FilterType filterType)
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
       var geofenceRepo = new Mock<IGeofenceRepository>();
@@ -257,7 +269,7 @@ namespace VSS.Productivity3D.Filter.Tests
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + boundaryUid + "\"}", Name = "a filter" });
+        new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + boundaryUid + "\"}" });
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await ValidationUtil
         .HydrateJsonWithBoundary(geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false));
@@ -267,7 +279,10 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task FilterRequestValidation_InvalidAlignment()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public async Task FilterRequestValidation_InvalidAlignment(FilterType filterType)
     {
       var alignmentUid = Guid.NewGuid().ToString();
       var startStation = 100.456;
@@ -275,7 +290,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var rightOffset = 2.5;
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\": null, \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}", Name = "a filter", FilterType = FilterType.Persistent });
+        new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\": null, \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}" });
 
       var ex = Assert.ThrowsException<ServiceException>(() => request.Validate(serviceExceptionHandler));
 
@@ -284,7 +299,10 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task FilterRequestValidation_ValidAlignment()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public async Task FilterRequestValidation_ValidAlignment(FilterType filterType)
     {
       var alignmentUid = Guid.NewGuid().ToString();
       var startStation = 12.456;
@@ -293,13 +311,16 @@ namespace VSS.Productivity3D.Filter.Tests
       var rightOffset = 2.5;
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\": " + startStation + ", \"endStation\": " + endStation + ", \"leftOffset\": " + leftOffset + ", \"rightOffset\": " + rightOffset + "}", Name = "a filter", FilterType = FilterType.Persistent });
+        new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\": " + startStation + ", \"endStation\": " + endStation + ", \"leftOffset\": " + leftOffset + ", \"rightOffset\": " + rightOffset + "}" });
 
       request.Validate(serviceExceptionHandler);
     }
     
     [TestMethod]
-    public async Task HydrateJsonWithBoundary_HappyPath()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public async Task HydrateJsonWithBoundary_HappyPath(FilterType filterType)
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
       var geofenceRepo = new Mock<IGeofenceRepository>();
@@ -307,7 +328,7 @@ namespace VSS.Productivity3D.Filter.Tests
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUid\": \"id\", \"vibeStateOn\": true, \"polygonUid\": \"" + geofence.GeofenceUID + "\"}", Name = "a filter", FilterType = FilterType.Persistent });
+        new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"designUid\": \"id\", \"vibeStateOn\": true, \"polygonUid\": \"" + geofence.GeofenceUID + "\"}" });
 
       var result = await ValidationUtil
         .HydrateJsonWithBoundary(geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false);

@@ -29,7 +29,9 @@ namespace VSS.Productivity3D.Filter.Tests
   public class FilterExecutorTests : ExecutorBaseTests
   {
     [TestMethod]
-    public async Task GetFilterExecutor()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public async Task GetFilterExecutor(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
@@ -49,7 +51,7 @@ namespace VSS.Productivity3D.Filter.Tests
         FilterUid = filterUid,
         Name = name,
         FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}",
-        FilterType = FilterType.Persistent,
+        FilterType = filterType,
         LastActionedUtc = DateTime.UtcNow
       };
       filterRepo.As<IFilterRepository>().Setup(ps => ps.GetFilter(It.IsAny<string>())).ReturnsAsync(filter);
@@ -83,7 +85,9 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task GetFilterExecutor_DoesntBelongToUser()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public async Task GetFilterExecutor_DoesntBelongToUser(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string requestingUserUid = Guid.NewGuid().ToString();
@@ -92,7 +96,6 @@ namespace VSS.Productivity3D.Filter.Tests
       string filterUid = Guid.NewGuid().ToString();
       string name = "blah";
       string filterJson = "{{\"dateRangeType\":\"0\",\"elevationType\":null}}";
-      FilterType filterType = FilterType.Persistent;
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -251,7 +254,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task UpsertFilterExecutor_FilterWithBoundary()
+    public async Task UpsertFilterExecutor_TransientFilterWithBoundary()
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
@@ -330,7 +333,9 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task UpsertFilterExecutor_Persistent()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public async Task UpsertFilterExecutor_Persistent(FilterType filterType)
     {
       // this scenario, the FilterUid is supplied, and is provided in Request
       // so this will result in an updated filter
@@ -340,7 +345,6 @@ namespace VSS.Productivity3D.Filter.Tests
       string filterUid = Guid.NewGuid().ToString();
       string name = "not entry";
       string filterJson = "{\"designUid\":\"id\",\"vibeStateOn\":true}";
-      FilterType filterType = FilterType.Persistent;
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -411,7 +415,9 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public async Task DeleteFilterExecutor()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public async Task DeleteFilterExecutor(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
@@ -419,7 +425,6 @@ namespace VSS.Productivity3D.Filter.Tests
       string filterUid = Guid.NewGuid().ToString();
       string name = "not entry";
       string filterJson = "theJsonString";
-      FilterType filterType = FilterType.Persistent;
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
