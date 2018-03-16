@@ -64,6 +64,10 @@ namespace VSS.MasterData.Project.WebAPI
 #else
         var host = new WebHostBuilder()
           .UseKestrel()
+          .UseLibuv(opts =>
+          {
+            opts.ThreadCount = 32;
+          })
           .UseContentRoot(Directory.GetCurrentDirectory())
           .UseIISIntegration()
           .ConfigureLogging(builder =>
