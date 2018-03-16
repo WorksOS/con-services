@@ -79,7 +79,12 @@ namespace VSS.MasterData.Project.WebAPI
           .UseStartup<Startup>()
           .Build();
 
-        host.Run();
+      ThreadPool.SetMaxThreads(1024, 2048);
+      ThreadPool.SetMinThreads(1024, 2048);
+
+      //Check how many requests we can execute
+      ServicePointManager.DefaultConnectionLimit = 128;
+      host.Run();
 #endif
     }
   }
@@ -104,7 +109,6 @@ namespace VSS.MasterData.Project.WebAPI
         {
           opts.ThreadCount = 32;
         })
-        //TODO For some reason setting configuration for a topshelf service does not work
         .UseUrls(config["server.urls"])
         .UseContentRoot(pathToContentRoot)
         .ConfigureLogging(builder =>
@@ -115,6 +119,12 @@ namespace VSS.MasterData.Project.WebAPI
           })
         .UseStartup<Startup>()
         .Build();
+
+      ThreadPool.SetMaxThreads(1024, 2048);
+      ThreadPool.SetMinThreads(1024, 2048);
+
+      //Check how many requests we can execute
+      ServicePointManager.DefaultConnectionLimit = 128;
 
       webHost.Start();
     }
