@@ -74,6 +74,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analytics\AggregatorBase.cs" />
+    <Compile Include="Analytics\CutFillAggregator.cs" />
+    <Compile Include="Analytics\GridFabric\Arguments\CutFillStatisticsArgument.cs" />
+    <Compile Include="Analytics\GridFabric\ComputeFuncs\CutFillStatisticsComputeFunc_ClusterCompute.cs" />
+    <Compile Include="Analytics\GridFabric\ComputeFuncs\CutFillStatisticsComputeFunc_ApplicationService.cs" />
+    <Compile Include="Analytics\GridFabric\Requests\CutFillStatisticsRequest_ClusterCompute.cs" />
+    <Compile Include="Analytics\GridFabric\Requests\CutFillStatisticsRequest_ApplicationService.cs" />
+    <Compile Include="Analytics\Interfaces\IAggregatorBase.cs" />
+    <Compile Include="Analytics\GridFabric\Responses\CutFillStatisticsResponse.cs" />
+    <Compile Include="Analytics\Servers\Client\AnalyticsServer.cs" />
     <Compile Include="Cells\CellStatic.cs" />
     <Compile Include="Compression\AttributeValueModifiers.cs" />
     <Compile Include="Compression\AttributeValueRangeCalculator.cs" />
@@ -501,6 +511,7 @@
     <Compile Include="Interfaces\ISubGridRequestsAggregator.cs" />
     <Compile Include="Volumes\ProdReportSelectionType.cs" />
     <Compile Include="Volumes\Servers\Client\RaptorSimpleVolumesServer.cs" />
+    <Compile Include="Volumes\SimpleVolumesCalculationsAggregatorState.cs" />
     <Compile Include="Volumes\SimpleVolumesCalculationsAggregator.cs" />
     <Compile Include="Volumes\VolumeConputationType.cs" />
     <Compile Include="Volumes\VolumesCalculator.cs" />
@@ -525,7 +536,10 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Analytics\Executors\Tasks\" />
+    <Folder Include="Analytics\Models\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

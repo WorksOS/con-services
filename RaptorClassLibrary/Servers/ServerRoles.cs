@@ -40,5 +40,10 @@ namespace VSS.VisionLink.Raptor.Servers
         /// A server responsible for rendering tiles from production data
         /// </summary>
         public static string TILE_RENDERING_NODE = "TileRendering";
+
+        /// <summary>
+        /// A server responsible for computing various analytics, such as cut fill statistics, from production data
+        /// </summary>
+        public static string ANALYTICS_NODE = "Analytics";
     }
 }
