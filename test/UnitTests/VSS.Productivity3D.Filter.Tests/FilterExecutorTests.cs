@@ -49,6 +49,7 @@ namespace VSS.Productivity3D.Filter.Tests
         FilterUid = filterUid,
         Name = name,
         FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}",
+        FilterType = FilterType.Persistent,
         LastActionedUtc = DateTime.UtcNow
       };
       filterRepo.As<IFilterRepository>().Setup(ps => ps.GetFilter(It.IsAny<string>())).ReturnsAsync(filter);
@@ -77,6 +78,8 @@ namespace VSS.Productivity3D.Filter.Tests
         "executor returned incorrect FilterDescriptor Name");
       Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", result.FilterDescriptor.FilterJson,
         "executor returned incorrect FilterDescriptor FilterJson");
+      Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType,
+        "executor returned incorrect FilterDescriptor FilterType");
     }
 
     [TestMethod]
@@ -89,6 +92,7 @@ namespace VSS.Productivity3D.Filter.Tests
       string filterUid = Guid.NewGuid().ToString();
       string name = "blah";
       string filterJson = "{{\"dateRangeType\":\"0\",\"elevationType\":null}}";
+      FilterType filterType = FilterType.Persistent;
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -102,6 +106,7 @@ namespace VSS.Productivity3D.Filter.Tests
         FilterUid = filterUid,
         Name = name,
         FilterJson = filterJson,
+        FilterType = filterType,
         LastActionedUtc = DateTime.UtcNow
       };
 
@@ -148,6 +153,7 @@ namespace VSS.Productivity3D.Filter.Tests
           FilterUid = filterUid,
           Name = name,
           FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}",
+          FilterType = FilterType.Persistent,
           LastActionedUtc = DateTime.UtcNow
         }
       };
@@ -179,6 +185,8 @@ namespace VSS.Productivity3D.Filter.Tests
         "executor returned incorrect filterDescriptor Name");
       Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}",
         filterListResult.FilterDescriptors[0].FilterJson, "executor returned incorrect filterDescriptor FilterJson");
+      Assert.AreEqual(filterListToTest.FilterDescriptors[0].FilterType, filterListResult.FilterDescriptors[0].FilterType,
+        "executor returned incorrect filterDescriptor FilterType");
     }
 
     [TestMethod]
@@ -191,6 +199,7 @@ namespace VSS.Productivity3D.Filter.Tests
       string filterUid = Guid.NewGuid().ToString();
       string name = string.Empty;
       string filterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true}";
+      FilterType filterType = FilterType.Transient;
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -213,6 +222,7 @@ namespace VSS.Productivity3D.Filter.Tests
           FilterUid = filterUid,
           Name = name,
           FilterJson = filterJson,
+          FilterType = filterType,
           LastActionedUtc = DateTime.UtcNow
         }
       };
@@ -229,7 +239,7 @@ namespace VSS.Productivity3D.Filter.Tests
           false,
           userUid,
           projectUid,
-          new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson }
+          new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType }
         );
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object, projectListProxy.Object, 
@@ -270,6 +280,7 @@ namespace VSS.Productivity3D.Filter.Tests
           FilterUid = filterUid,
           Name = string.Empty,
           FilterJson = filterJson,
+          FilterType = FilterType.Transient,
           LastActionedUtc = DateTime.UtcNow
         }
       };
@@ -298,7 +309,7 @@ namespace VSS.Productivity3D.Filter.Tests
           false,
           userUid,
           projectUid,
-          new FilterRequest { Name = string.Empty, FilterJson = filterJson }
+          new FilterRequest { Name = string.Empty, FilterJson = filterJson, FilterType = FilterType.Transient }
         );
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
@@ -329,6 +340,7 @@ namespace VSS.Productivity3D.Filter.Tests
       string filterUid = Guid.NewGuid().ToString();
       string name = "not entry";
       string filterJson = "{\"designUid\":\"id\",\"vibeStateOn\":true}";
+      FilterType filterType = FilterType.Persistent;
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -348,6 +360,7 @@ namespace VSS.Productivity3D.Filter.Tests
         FilterUid = filterUid,
         Name = name,
         FilterJson = filterJson,
+        FilterType = filterType,
         LastActionedUtc = DateTime.UtcNow
       };
       var filters = new List<MasterData.Repositories.DBModels.Filter>
@@ -360,6 +373,7 @@ namespace VSS.Productivity3D.Filter.Tests
           FilterUid = filterUid,
           Name = name,
           FilterJson = filterJson,
+          FilterType = filterType,
           LastActionedUtc = DateTime.UtcNow
         }
       };
@@ -378,7 +392,7 @@ namespace VSS.Productivity3D.Filter.Tests
           false, 
           userUid, 
           projectUid,
-          new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson });
+          new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object, null, 
@@ -392,6 +406,8 @@ namespace VSS.Productivity3D.Filter.Tests
         "executor returned incorrect FilterDescriptor Name");
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterJson, result.FilterDescriptor.FilterJson,
         "executor returned incorrect FilterDescriptor FilterJson");
+      Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType,
+        "executor returned incorrect FilterDescriptor FilterType");
     }
 
     [TestMethod]
@@ -403,6 +419,7 @@ namespace VSS.Productivity3D.Filter.Tests
       string filterUid = Guid.NewGuid().ToString();
       string name = "not entry";
       string filterJson = "theJsonString";
+      FilterType filterType = FilterType.Persistent;
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -425,6 +442,7 @@ namespace VSS.Productivity3D.Filter.Tests
           FilterUid = filterUid,
           Name = name,
           FilterJson = filterJson,
+          FilterType = filterType,
           LastActionedUtc = DateTime.UtcNow
         }
       };
@@ -432,7 +450,7 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.As<IFilterRepository>().Setup(ps => ps.StoreEvent(It.IsAny<DeleteFilterEvent>())).ReturnsAsync(1);
 
       var request =
-        FilterRequestFull.Create(null, custUid, false, userUid, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson });
+        FilterRequestFull.Create(null, custUid, false, userUid, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, null, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request);

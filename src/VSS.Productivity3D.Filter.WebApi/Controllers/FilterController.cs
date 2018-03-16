@@ -22,6 +22,7 @@ using VSS.Productivity3D.Filter.Common.Validators;
 using VSS.Productivity3D.Filter.WebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using System.Linq;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {
@@ -65,7 +66,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
           ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
           projectUid);
 
-      requestFull.Validate(ServiceExceptionHandler);
+      requestFull.Validate(ServiceExceptionHandler, true);
 
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null);
@@ -97,7 +98,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
           projectUid,
           new FilterRequest { FilterUid = filterUid });
 
-      requestFull.Validate(ServiceExceptionHandler);
+      requestFull.Validate(ServiceExceptionHandler, true);
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null, this.ProjectListProxy);
@@ -154,7 +155,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       //Only transient filters for now. Supporting batching of permanent filters requires rollback logic when one or more fails.
       foreach (var filterRequest in request.FilterRequests)
       {
-        if (!string.IsNullOrEmpty(filterRequest.Name))
+        if (filterRequest.FilterType != FilterType.Transient)
         {
           ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 24);
         }
@@ -219,7 +220,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         projectUid,
         new FilterRequest { FilterUid = filterUid });
 
-      requestFull.Validate(ServiceExceptionHandler);
+      requestFull.Validate(ServiceExceptionHandler, true);
 
       await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, customHeaders,
         (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);

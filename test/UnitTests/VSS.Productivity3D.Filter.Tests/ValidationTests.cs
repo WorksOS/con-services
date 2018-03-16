@@ -11,6 +11,7 @@ using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Validators;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Tests
 {
@@ -24,6 +25,7 @@ namespace VSS.Productivity3D.Filter.Tests
     private readonly string boundaryUid = Guid.NewGuid().ToString();
     private const string Name = "blah";
     private const string FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true}";
+    private const FilterType filterType = FilterType.Persistent;
     private const string GeometryWKT =
       "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))";
 
@@ -38,7 +40,7 @@ namespace VSS.Productivity3D.Filter.Tests
           false,
           userUid,
           projectUid,
-          new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = FilterJson}
+          new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = FilterJson, FilterType = filterType}
         );
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
@@ -57,7 +59,7 @@ namespace VSS.Productivity3D.Filter.Tests
           false,
           string.Empty,
           projectUid,
-          new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = FilterJson}
+          new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = FilterJson, FilterType = filterType }
         );
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
@@ -70,7 +72,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var requestFull =
         FilterRequestFull.Create(null, custUid, false, userUid, null,
-          new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = FilterJson});
+          new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = FilterJson, FilterType = filterType });
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2001");
@@ -82,7 +84,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var requestFull =
         FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-          new FilterRequest {FilterUid = "this is so wrong", Name = Name, FilterJson = FilterJson});
+          new FilterRequest {FilterUid = "this is so wrong", Name = Name, FilterJson = FilterJson, FilterType = filterType });
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2002");
@@ -94,9 +96,19 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var requestFull =
         FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-          new FilterRequest {FilterUid = null, Name = Name, FilterJson = string.Empty});
+          new FilterRequest {FilterUid = null, Name = Name, FilterJson = string.Empty, FilterType = filterType });
 
       requestFull.Validate(serviceExceptionHandler);
+    }
+
+    [TestMethod]
+    public void FilterRequestValidation_MissingName()
+    {
+      var requestFull =
+        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+          new FilterRequest { FilterUid = filterUid, Name = string.Empty, FilterJson = string.Empty, FilterType = filterType });
+
+      Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
     }
 
     [TestMethod]
@@ -104,7 +116,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var requestFull =
         FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-          new FilterRequest {FilterUid = filterUid, Name = null, FilterJson = string.Empty});
+          new FilterRequest {FilterUid = filterUid, Name = null, FilterJson = string.Empty, FilterType = FilterType.Transient });
 
       requestFull.Validate(serviceExceptionHandler);
     }
@@ -114,7 +126,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var requestFull =
         FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-          new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = null});
+          new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = null, FilterType = filterType });
 
       requestFull.Validate(serviceExceptionHandler);
     }
@@ -126,7 +138,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var requestFull =
         FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-          new FilterRequest {FilterUid = filterUid, Name = "", FilterJson = filterJson});
+          new FilterRequest {FilterUid = filterUid, Name = string.Empty, FilterJson = filterJson, FilterType = FilterType.Transient});
       requestFull.Validate(serviceExceptionHandler);
     }
 
@@ -134,7 +146,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_Should_fail_When_supplied_string_is_invalid_json()
     {
       var requestFull = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = "de blah"});
+        new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = "de blah", FilterType = filterType });
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
       StringAssert.Contains(ex.GetContent, "2042");
@@ -191,7 +203,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofenceRepo = new Mock<IGeofenceRepository>();
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest {FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true}", Name = "a filter"});
+        new FilterRequest {FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true}", Name = "a filter", FilterType = FilterType.Persistent });
 
       var result = await ValidationUtil
         .HydrateJsonWithBoundary(geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false);
@@ -211,7 +223,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var rightOffset = 2.5;
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\":" + endStation + ", \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}", Name = "a filter" });
+        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\":" + endStation + ", \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}", Name = "a filter", FilterType = FilterType.Persistent });
 
       var result = await ValidationUtil
         .HydrateJsonWithBoundary(geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false);
@@ -227,7 +239,7 @@ namespace VSS.Productivity3D.Filter.Tests
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync((Geofence)null);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + boundaryUid + "\"}", Name = "a filter" });
+        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + boundaryUid + "\"}", Name = "a filter", FilterType = FilterType.Persistent });
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await ValidationUtil
         .HydrateJsonWithBoundary(geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false));
@@ -263,7 +275,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var rightOffset = 2.5;
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\": null, \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}", Name = "a filter" });
+        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\": null, \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}", Name = "a filter", FilterType = FilterType.Persistent });
 
       var ex = Assert.ThrowsException<ServiceException>(() => request.Validate(serviceExceptionHandler));
 
@@ -281,7 +293,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var rightOffset = 2.5;
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\": " + startStation + ", \"endStation\": " + endStation + ", \"leftOffset\": " + leftOffset + ", \"rightOffset\": " + rightOffset + "}", Name = "a filter" });
+        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\": " + startStation + ", \"endStation\": " + endStation + ", \"leftOffset\": " + leftOffset + ", \"rightOffset\": " + rightOffset + "}", Name = "a filter", FilterType = FilterType.Persistent });
 
       request.Validate(serviceExceptionHandler);
     }
@@ -295,7 +307,7 @@ namespace VSS.Productivity3D.Filter.Tests
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
-        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUid\": \"id\", \"vibeStateOn\": true, \"polygonUid\": \"" + geofence.GeofenceUID + "\"}", Name = "a filter" });
+        new FilterRequest { FilterUid = filterUid, FilterJson = "{\"designUid\": \"id\", \"vibeStateOn\": true, \"polygonUid\": \"" + geofence.GeofenceUID + "\"}", Name = "a filter", FilterType = FilterType.Persistent });
 
       var result = await ValidationUtil
         .HydrateJsonWithBoundary(geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false);

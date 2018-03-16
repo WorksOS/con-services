@@ -6,6 +6,7 @@ using TestUtility;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Filter = VSS.MasterData.Models.Models.Filter;
 
 namespace WebApiTests
@@ -32,9 +33,10 @@ namespace WebApiTests
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter();
+      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
-        "| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
-        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
+        "| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
+       $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
       };
       ts.PublishEventCollection(eventsArray);
       mysql.VerifyTestResultDatabaseRecordCount("Filter", "FilterUID", 1, filterUid);
@@ -42,6 +44,7 @@ namespace WebApiTests
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterJson, filterJson, "JSON Filter doesn't match for GET request");
       Assert.AreEqual(filterResponseGet.FilterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterType, filterType, "Filter type doesn't match for GET request");
     }
 
     [TestMethod]
@@ -52,9 +55,10 @@ namespace WebApiTests
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(ElevationType.Last);
+      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
-        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
-        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
+        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
+        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
       };
       ts.PublishEventCollection(eventsArray);
       mysql.VerifyTestResultDatabaseRecordCount("Filter", "FilterUID", 1, filterUid);
@@ -62,6 +66,7 @@ namespace WebApiTests
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterJson, filterJson, "JSON Filter doesn't match for GET request");
       Assert.AreEqual(filterResponseGet.FilterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterType, filterType, "Filter type doesn't match for GET request");
     }
 
     [TestMethod]
@@ -72,9 +77,10 @@ namespace WebApiTests
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(null, true);
+      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
-        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
-        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
+        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
+        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
       };
       ts.PublishEventCollection(eventsArray);
       mysql.VerifyTestResultDatabaseRecordCount("Filter", "FilterUID", 1, filterUid);
@@ -82,6 +88,7 @@ namespace WebApiTests
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterJson, filterJson, "JSON Filter doesn't match for GET request");
       Assert.AreEqual(filterResponseGet.FilterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterType, filterType, "Filter type doesn't match for GET request");
     }
 
     [TestMethod]
@@ -92,9 +99,10 @@ namespace WebApiTests
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(null, null, true);
+      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
-        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
-        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
+        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
+        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
       };
       ts.PublishEventCollection(eventsArray);
       mysql.VerifyTestResultDatabaseRecordCount("Filter", "FilterUID", 1, filterUid);
@@ -102,6 +110,7 @@ namespace WebApiTests
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterJson, filterJson, "JSON Filter doesn't match for GET request");
       Assert.AreEqual(filterResponseGet.FilterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterType, filterType, "Filter type doesn't match for GET request");
     }
 
     [TestMethod]
@@ -112,9 +121,10 @@ namespace WebApiTests
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(null, null, null, 2);
+      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
-        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
-        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
+        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
+        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
       };
       ts.PublishEventCollection(eventsArray);
       mysql.VerifyTestResultDatabaseRecordCount("Filter", "FilterUID", 1, filterUid);
@@ -122,6 +132,7 @@ namespace WebApiTests
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterJson, filterJson, "JSON Filter doesn't match for GET request");
       Assert.AreEqual(filterResponseGet.FilterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterType, filterType, "Filter type doesn't match for GET request");
     }
 
     [TestMethod]
@@ -132,9 +143,10 @@ namespace WebApiTests
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(null, null, null, null);
+      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
-        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
-        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
+        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
+        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
       };
       ts.PublishEventCollection(eventsArray);
       mysql.VerifyTestResultDatabaseRecordCount("Filter", "FilterUID", 1, filterUid);
@@ -142,6 +154,7 @@ namespace WebApiTests
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterJson, filterJson, "JSON Filter doesn't match for GET request");
       Assert.AreEqual(filterResponseGet.FilterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterType, filterType, "Filter type doesn't match for GET request");
     }
 
     [TestMethod]
@@ -152,9 +165,10 @@ namespace WebApiTests
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter();
+      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
-        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
-        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId}  | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
+        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
+        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
       };
       ts.PublishEventCollection(eventsArray);
       mysql.VerifyTestResultDatabaseRecordCount("Filter", "FilterUID", 1, filterUid);
@@ -162,6 +176,7 @@ namespace WebApiTests
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterJson, filterJson, "JSON Filter doesn't match for GET request");
       Assert.AreEqual(filterResponseGet.FilterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterType, filterType, "Filter type doesn't match for GET request");
     }
 
     [TestMethod]
@@ -172,9 +187,10 @@ namespace WebApiTests
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter();
+      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
-        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
-        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
+        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
+        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
       };
       ts.PublishEventCollection(eventsArray);
       mysql.VerifyTestResultDatabaseRecordCount("Filter", "FilterUID", 1, filterUid);
@@ -182,6 +198,7 @@ namespace WebApiTests
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterJson, filterJson, "JSON Filter doesn't match for GET request");
       Assert.AreEqual(filterResponseGet.FilterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterType, filterType, "Filter type doesn't match for GET request");
     }
 
     [TestMethod]
@@ -192,9 +209,10 @@ namespace WebApiTests
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(ElevationType.Highest, true, true, 1);
+      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
-        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
-        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
+        $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
+        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
       };
       ts.PublishEventCollection(eventsArray);
       mysql.VerifyTestResultDatabaseRecordCount("Filter", "FilterUID", 1, filterUid);
@@ -202,6 +220,7 @@ namespace WebApiTests
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterJson, filterJson, "JSON Filter doesn't match for GET request");
       Assert.AreEqual(filterResponseGet.FilterDescriptor.Name, filterName, "Filter name doesn't match for GET request");
+      Assert.AreEqual(filterResponseGet.FilterDescriptor.FilterType, filterType, "Filter type doesn't match for GET request");
     }
 
     [TestMethod]
@@ -218,11 +237,12 @@ namespace WebApiTests
       var filterJson1 = CreateTestFilter(ElevationType.Highest, true, true, 1);
       var filterJson2 = CreateTestFilter(ElevationType.Last, true, true, 1);
       var filterJson3 = CreateTestFilter(ElevationType.Lowest, true, true, 1);
+      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
-        $"| TableName | FilterUID    | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | FilterJson    | IsDeleted | LastActionedUTC |",
-        $"| Filter    | {filterUid1} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson1}  | 0         | {ts.EventDate:yyyy-MM-dd} |",
-        $"| Filter    | {filterUid2} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson2}  | 0         | {ts.EventDate:yyyy-MM-dd} |",
-        $"| Filter    | {filterUid3} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {filterJson3}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
+        $"| TableName | FilterUID    | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
+        $"| Filter    | {filterUid1} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson1}  | 0         | {ts.EventDate:yyyy-MM-dd} |",
+        $"| Filter    | {filterUid2} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson2}  | 0         | {ts.EventDate:yyyy-MM-dd} |",
+        $"| Filter    | {filterUid3} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson3}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
 
       };
       ts.PublishEventCollection(eventsArray);
@@ -256,7 +276,6 @@ namespace WebApiTests
     /// <summary>
     /// Create the filter and convert it to json 
     /// </summary>
-    /// <param name="filterUid">filter uid</param>
     /// <param name="elevation">ElevationType</param>
     /// <param name="vibestate">true or false</param>
     /// <param name="forward">true or false</param>
