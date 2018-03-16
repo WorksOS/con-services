@@ -117,7 +117,7 @@ namespace VSS.VisionLink.Raptor.Analytics
                 DesignProfilerRequestResult ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;
                 ClientHeightLeafSubGrid ElevationSubgrid = SubGrid as ClientHeightLeafSubGrid;
 
-                if (CutFillDesign?.GetDesignHeights(SiteModelID, SubGrid.OriginAsCellAddress(), SubGrid.CellSize, out DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult) == false)
+                if (CutFillDesign?.GetDesignHeights(SiteModelID, SubGrid.OriginAsCellAddress(), SubGrid.CellSize, out DesignElevations, out ProfilerRequestResult) == false)
                 {
                     if (ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
                     {

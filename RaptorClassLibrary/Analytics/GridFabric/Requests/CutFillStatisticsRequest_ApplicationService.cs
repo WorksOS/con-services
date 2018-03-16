@@ -14,14 +14,14 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Requests
     /// <summary>
     /// Sends a request to the grid for a cut fill statistics request to be executed
     /// </summary>
-    public class CutFillStatisticsRequest_ApplicationService : GenericASNodeRequest<CutFillStatisticsArgument, CutFillStatisticsComputeFunc_ApplicationService, CutFillStatisticsResponse>
+    public class CutFillStatisticsRequest_ApplicationService : GenericASNodeRequest<CutFillStatisticsArgument, CutFillStatisticsComputeFunc_ApplicationService, CutFillStatisticsResponse>, IComputeFunc<CutFillStatisticsArgument, CutFillStatisticsResponse>
     {
         /// <summary>
         /// Add specific behaviour here if needed
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public override CutFillStatisticsResponse Execute(CutFillStatisticsArgument arg)
+        public CutFillStatisticsResponse Invoke(CutFillStatisticsArgument arg)
         {
             return base.Execute(arg);
         }

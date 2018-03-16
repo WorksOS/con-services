@@ -76,13 +76,17 @@
   <ItemGroup>
     <Compile Include="Analytics\AggregatorBase.cs" />
     <Compile Include="Analytics\CutFillAggregator.cs" />
+    <Compile Include="Analytics\Factories\AnalyticsRequestFactory.cs" />
     <Compile Include="Analytics\GridFabric\Arguments\CutFillStatisticsArgument.cs" />
+    <Compile Include="Analytics\GridFabric\ComputeFuncs\AnalyticsComputeFunc_ClusterCompute.cs" />
+    <Compile Include="Analytics\GridFabric\ComputeFuncs\AnalyticsComputeFunc_ApplicationService.cs" />
     <Compile Include="Analytics\GridFabric\ComputeFuncs\CutFillStatisticsComputeFunc_ClusterCompute.cs" />
     <Compile Include="Analytics\GridFabric\ComputeFuncs\CutFillStatisticsComputeFunc_ApplicationService.cs" />
     <Compile Include="Analytics\GridFabric\Requests\CutFillStatisticsRequest_ClusterCompute.cs" />
     <Compile Include="Analytics\GridFabric\Requests\CutFillStatisticsRequest_ApplicationService.cs" />
     <Compile Include="Analytics\Interfaces\IAggregatorBase.cs" />
     <Compile Include="Analytics\GridFabric\Responses\CutFillStatisticsResponse.cs" />
+    <Compile Include="Analytics\Servers\Client\CutFillStatistics_AnalyticsServer.cs" />
     <Compile Include="Analytics\Servers\Client\AnalyticsServer.cs" />
     <Compile Include="Cells\CellStatic.cs" />
     <Compile Include="Compression\AttributeValueModifiers.cs" />

@@ -1,5 +1,11 @@
 ﻿using Apache.Ignite.Core.Compute;
 using System.Drawing;
+using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.Analytics.GridFabric.Reponses;
+using VSS.VisionLink.Raptor.Analytics.GridFabric.Requests;
+using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
+using VSS.VisionLink.Raptor.GridFabric.Requests;
+using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Servers;
@@ -7,11 +13,23 @@ using VSS.VisionLink.Raptor.Servers.Client;
 
 namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
 {
-    /// <summary>
-    /// The server used to house tile rendering services
-    /// </summary>
-    public class AnalyticsServer<TRequest, TArgument, TResponse> : RaptorApplicationServiceServer where TRequest : class, IComputeFunc<TArgument, TResponse>, new()
+    public class AnalyticsRequest<TRequest, TArgument, TResponse>
+        where TRequest : class, IComputeFunc<TArgument, TResponse>, new()
+        where TResponse : class, IResponseAggregateWith<TResponse>, new()
     {
+        public GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse> Request_ClusterCompute = new GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse>();
+        public GenericASNodeRequest<TArgument, TRequest, TResponse> Request_ApplicationService = new GenericASNodeRequest<TArgument, TRequest, TResponse>();
+    }
+
+    /// <summary>
+    /// The server used to house analytics request services
+    /// </summary>
+    public class AnalyticsServer<TRequest, TArgument, TResponse> : RaptorApplicationServiceServer 
+        where TRequest : class, IComputeFunc<TArgument, TResponse>, new()
+        where TResponse : class, IResponseAggregateWith<TResponse>, new()
+    {
+        private AnalyticsRequest<TRequest, TArgument, TResponse> analyticsRequest = new AnalyticsRequest<TRequest, TArgument, TResponse>();
+
         /// <summary>
         /// Default no-arg constructor that creates a server with the default Application Service role and the specialise tile rendering role.
         /// </summary>
@@ -23,21 +41,24 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
         /// Creates a new instance of a tile rendering server. 
         /// </summary>
         /// <returns></returns>
-        public static RaptorTileRenderingServer NewInstance()
+        public static AnalyticsServer<TRequest, TArgument, TResponse> NewInstance()
         {
-            return new RaptorTileRenderingServer();
+            return new AnalyticsServer<TRequest, TArgument, TResponse>();
         }
 
         /// <summary>
-        /// Render a thematic tile bitmap according to the given arguments
+        /// Executes the request
         /// </summary>
         /// <param name="argument"></param>
         /// <returns></returns>
-        public TResponse RenderTile(TArgument argument)
+        public TResponse Execute(TArgument argument)
         {
-            TRequest request = new TRequest();
+            GenericASNodeRequest<TArgument, TRequest, TResponse> request = new GenericASNodeRequest<TArgument, TRequest, TResponse>();
+            // GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse> request = new GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse>();
 
             return request.Execute(argument);
+
+            //return analyticsRequest.Request_ApplicationService.Execute(argument);
         }
     }
 }
