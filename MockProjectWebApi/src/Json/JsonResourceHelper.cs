@@ -21,6 +21,10 @@ namespace MockProjectWebApi.Json
       return GetJsonFromEmbeddedResource($"UserPreferences.{resourceName}");
     }
 
+    public static string GetGoldenDimensionsFilterJson(string resourceName)
+    {
+      return GetJsonFromEmbeddedResource($"Filters.GoldenDimensions.{resourceName}");
+    }
     public static string GetDimensionsFilterJson(string resourceName)
     {
       return GetJsonFromEmbeddedResource($"Filters.Dimensions.{resourceName}");

@@ -21,7 +21,8 @@ namespace MockProjectWebApi.Controllers
     {
       Console.WriteLine("GetMockFilter: projectUid={0}, filterUid={1}", projectUid, filterUid);
 
-      return GetFilter(projectUid, filterUid);
+      var filterResult = GetFilter(projectUid, filterUid);
+      return filterResult;
     }
 
     /// <summary>
@@ -63,7 +64,22 @@ namespace MockProjectWebApi.Controllers
       {
         case ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1:
           {
-            return new FilterListData { filterDescriptors = this.goldenDataFilterDescriptors };
+            var filters = new FilterListData
+            {
+              filterDescriptors = this.goldenDataFilterDescriptors
+            };
+
+            filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilter);
+            filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilterElevationTypeFirst);
+            filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilterElevationTypeLast);
+            filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.InvalidDateFilterElevationTypeFirst);
+            filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.InvalidDateFilterElevationTypeLast);
+            filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.NoDataFilterElevationTypeFirst);
+            filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.NoDataFilterElevationTypeLast);
+            filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.SummaryVolumesBaseFilter20170305);
+            filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.SummaryVolumesTopFilter20170621);
+
+            return filters;
           }
         case ConstantsUtil.DIMENSIONS_PROJECT_UID:
         case ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID:
